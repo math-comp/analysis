@@ -67,7 +67,7 @@ Section Differential.
 Context {K : numDomainType} {V W : normedModType K}.
 
 Definition diff (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
-  (get (fun (df : {linear V -> W}) => continuous df /\ forall x,
+  (get (fun (df : c0linType V W) => forall x,
       f x = f (lim F) + df (x - lim F) +o_(x \near F) (x - lim F))).
 
 Local Notation "''d' f x" := (@diff _ (Phantom _ (nbhs x)) f).
@@ -75,8 +75,7 @@ Local Notation "''d' f x" := (@diff _ (Phantom _ (nbhs x)) f).
 Fact diff_key : forall T, T -> unit. Proof. by constructor. Qed.
 CoInductive differentiable_def (f : V -> W) (x : filter_on V)
   (phF : phantom (set (set V)) x) : Prop := DifferentiableDef of
-  (continuous ('d f x) /\
-  f = cst (f (lim x)) + 'd f x \o center (lim x) +o_x (center (lim x))).
+  f = cst (f (lim x)) + 'd f x \o center (lim x) +o_x (center (lim x)).
 
 Local Notation differentiable f F :=
   (@differentiable_def f _ (Phantom _ (nbhs F))).
@@ -90,20 +89,19 @@ Hint Mode is_diff_def - - ! - : typeclass_instances.
 
 Lemma diffP (F : filter_on V) (f : V -> W) :
   differentiable f F <->
-  continuous ('d f F) /\
   (forall x, f x = f (lim F) + 'd f F (x - lim F) +o_(x \near F) (x - lim F)).
 Proof. by split=> [[] |]; last constructor; rewrite funeqE. Qed.
 
 Lemma diff_continuous (x : filter_on V) (f : V -> W) :
-  differentiable f x -> continuous ('d f x).
-Proof. by move=> /diffP []. Qed.
+  continuous ('d f x).
+Proof. exact: cts_fun. Qed.
 (* We should have a continuous class or structure *)
 Hint Extern 0 (continuous _) => solve[apply: diff_continuous] : core.
 
 Lemma diffE (F : filter_on V) (f : V -> W) :
   differentiable f F ->
   forall x, f x = f (lim F) + 'd f F (x - lim F) +o_(x \near F) (x - lim F).
-Proof. by move=> /diffP []. Qed.
+Proof. by move=> /diffP. Qed.
 
 Lemma littleo_center0 (x : V) (f : V -> W) (e : V -> V) :
   [o_x e of f] = [o_ 0 (e \o shift x) of f \o shift x] \o center x.
@@ -128,14 +126,14 @@ Local Notation "''d' f x" := (@diff _ _ _ _ (Phantom _ (nbhs x)) f).
 Hint Extern 0 (continuous _) => solve[now apply: diff_continuous] : core.
 
 Lemma diff_locallyxP (x : V) (f : V -> W) :
-  differentiable f x <-> continuous ('d f x) /\
+  differentiable f x <->
   forall h, f (h + x) = f x + 'd f x h +o_(h \near 0) h.
 Proof.
-split=> [dxf|[dfc dxf]].
-  split => //; apply: eqaddoEx => h; have /diffE -> := dxf.
+split=> dxf.
+  apply: eqaddoEx => h; have /diffE -> := dxf.
   rewrite lim_id // addrK; congr (_ + _); rewrite littleo_center0 /= addrK.
   by congr ('o); rewrite funeqE => k /=; rewrite addrK.
-apply/diffP; split=> //; apply: eqaddoEx; move=> y.
+apply/diffP/eqaddoEx; move=> y.
 rewrite lim_id // -[in LHS](subrK x y) dxf; congr (_ + _).
 rewrite -(comp_centerK x id) -[X in the_littleo _ _ _ X](comp_centerK x).
 by rewrite -[_ (y - x)]/((_ \o (center x)) y) -littleo_center0.
@@ -143,7 +141,7 @@ Qed.
 
 Lemma diff_locallyx (x : V) (f : V -> W) : differentiable f x ->
   forall h, f (h + x) = f x + 'd f x h +o_(h \near 0) h.
-Proof. by move=> /diff_locallyxP []. Qed.
+Proof. by move=> /diff_locallyxP. Qed.
 
 Lemma diff_locallyxC (x : V) (f : V -> W) : differentiable f x ->
   forall h, f (x + h) = f x + 'd f x h +o_(h \near 0) h.
@@ -151,12 +149,12 @@ Proof. by move=> ?; apply/eqaddoEx => h; rewrite [x + h]addrC diff_locallyx. Qed
 
 Lemma diff_locallyP (x : V) (f : V -> W) :
   differentiable f x <->
-  continuous ('d f x) /\ (f \o shift x = cst (f x) + 'd f x +o_ 0 id).
+  f \o shift x = cst (f x) + 'd f x +o_ 0 id.
 Proof. by apply: iff_trans (diff_locallyxP _ _) _; rewrite funeqE. Qed.
 
 Lemma diff_locally (x : V) (f : V -> W) : differentiable f x ->
   (f \o shift x = cst (f x) + 'd f x +o_ 0 id).
-Proof. by move=> /diff_locallyP []. Qed.
+Proof. by move=> /diff_locallyP. Qed.
 
 End Differential_numFieldType.
 
@@ -192,11 +190,11 @@ Context {R : numFieldType} {V W : normedModType R}.
 Lemma differentiable_continuous (x : V) (f : V -> W) :
   differentiable f x -> {for x, continuous f}.
 Proof.
-move=> /diff_locallyP [dfc]; rewrite -addrA.
+move=> /diff_locallyP; rewrite -addrA.
 rewrite (littleo_bigO_eqo (cst (1 : R))); last first.
   by apply/eqOP; near=> k; rewrite /cst [`|1|]normr1 mulr1; near do by [].
 rewrite addfo; first by move=> /eqolim; rewrite cvg_comp_shift add0r.
-by apply/eqolim0P; apply: (cvg_trans (dfc 0)); rewrite linear0.
+by apply/eqolim0P; apply: (cvg_trans (cts_fun 0)); rewrite linear0.
 Unshelve. all: by end_near. Qed.
 
 Section littleo_lemmas.
@@ -398,10 +396,9 @@ Notation derivemxE := deriveEjacobian (only parsing).
 Section DifferentialR3.
 Variable R : numFieldType.
 
-Fact dcst (V W : normedModType R) (a : W) (x : V) : continuous (0 : V -> W) /\
+Fact dcst (V W : normedModType R) (a : W) (x : V) :
   cst a \o shift x = cst (cst a x) + \0 +o_ 0 id.
 Proof.
-split; first exact: cst_continuous.
 apply/eqaddoE; rewrite addr0 funeqE => ? /=; rewrite -[LHS]addr0; congr (_ + _).
 by rewrite littleoE; last exact: littleo0_subproof.
 Qed.
@@ -410,20 +407,18 @@ Variables (V W : normedModType R).
 
 Fact dadd (f g : V -> W) x :
   differentiable f x -> differentiable g x ->
-  continuous ('d f x \+ 'd g x) /\
   (f + g) \o shift x = cst ((f + g) x) + ('d f x \+ 'd g x) +o_ 0 id.
 Proof.
-move=> df dg; split => [?|]; do ?exact: continuousD.
+move=> df dg.
 apply/(@eqaddoE R); rewrite funeqE => y /=; rewrite -[(f + g) _]/(_ + _).
 by rewrite ![_ (_ + x)]diff_locallyx// addrACA addox addrACA.
 Qed.
 
 Fact dopp (f : V -> W) x :
-  differentiable f x -> continuous (- ('d f x : V -> W)) /\
+  differentiable f x ->
   (- f) \o shift x = cst (- f x) \- 'd f x +o_ 0 id.
 Proof.
-move=> df; split; first by move=> ?; apply: continuousN.
-apply/eqaddoE; rewrite funeqE => y /=.
+move=> df; apply/eqaddoE; rewrite funeqE => y /=.
 by rewrite -[(- f) _]/(- (_ _)) diff_locallyx// !opprD oppox.
 Qed.
 
@@ -432,31 +427,27 @@ Lemma is_diff_eq (V' W' : normedModType R) (f f' g : V' -> W') (x : V') :
 Proof. by move=> ? <-. Qed.
 
 Fact dscale (f : V -> W) k x :
-  differentiable f x -> continuous (k \*: 'd f x) /\
+  differentiable f x ->
   (k *: f) \o shift x = cst ((k *: f) x) + k \*: 'd f x +o_ 0 id.
 Proof.
-move=> df; split; first by move=> ?; apply: continuousZl_tmp.
-apply/eqaddoE; rewrite funeqE => y /=.
+move=> df; apply/eqaddoE; rewrite funeqE => y /=.
 by rewrite -[(k *: f) _]/(_ *: _) diff_locallyx // !scalerDr scaleox.
 Qed.
 
 (* NB: could be generalized with K : absRingType instead of R; DONE? *)
 Fact dscalel (k : V -> R) (f : W) x :
   differentiable k x ->
-  continuous (fun z : V => 'd k x z *: f) /\
   (fun z => k z *: f) \o shift x =
     cst (k x *: f) + (fun z => 'd k x z *: f) +o_ 0 id.
 Proof.
-move=> df; split.
-  move=> ?; exact/continuousZr_tmp/diff_continuous.
-apply/eqaddoE; rewrite funeqE => y /=.
+move=> df; apply/eqaddoE; rewrite funeqE => y /=.
 by rewrite diff_locallyx //= !scalerDl scaleolx.
 Qed.
 
-Fact dlin (V' W' : normedModType R) (f : {linear V' -> W'}) x :
-  continuous f -> f \o shift x = cst (f x) + f +o_ 0 id.
+Fact dlin (V' W' : normedModType R) (f : c0linType V' W') x :
+  f \o shift x = cst (f x) + f +o_ 0 id.
 Proof.
-move=> df; apply: eqaddoE; rewrite funeqE => y /=.
+apply: eqaddoE; rewrite funeqE => y /=.
 rewrite linearD addrC -[LHS]addr0; congr (_ + _).
 by rewrite littleoE; last exact: littleo0_subproof. (*fixme*)
 Qed.
@@ -520,11 +511,11 @@ by rewrite -mulrA mulVf ?lt0r_neq0 // mulr1 [ltRHS]splitr ltrDl.
 Qed.
 
 Lemma diff_unique (V W : normedModType R) (f : V -> W)
-  (df : {linear V -> W}) x :
-  continuous df -> f \o shift x = cst (f x) + df +o_ 0 id ->
+  (df : c0linType V W) x :
+  f \o shift x = cst (f x) + df +o_ 0 id ->
   'd f x = df :> (V -> W).
 Proof.
-move=> dfc dxf; apply/subr0_eq; rewrite -[LHS]/(_ \- _).
+move=> dxf; apply/subr0_eq; rewrite -[LHS]/(_ \- _).
 apply/littleo_linear0/eqoP/eq_some_oP => /=; rewrite funeqE => y /=.
 have hdf h : (f \o shift x = cst (f x) + h +o_ 0 id) ->
     h = f \o shift x - cst (f x) +o_ 0 id.
@@ -536,10 +527,10 @@ rewrite (hdf _ dxf).
 suff /diff_locally /hdf -> : differentiable f x.
   by rewrite opprD addrCA -(addrA (_ - _)) addKr oppox addox.
 apply/diffP => /=.
-apply: (@getPex _ (fun (df : {linear V -> W}) => continuous df /\
+apply: (@getPex _ (fun (df : c0linType V W) =>
   forall y, f y = f (lim (nbhs x)) + df (y - lim (nbhs x))
                   +o_(y \near x) (y - lim (nbhs x)))).
-exists df; split=> //; apply: eqaddoEx => z.
+exists df; apply: eqaddoEx => z.
 rewrite (hdf _ dxf) !addrA lim_id // /(_ \o _) /= subrK [f _ + _]addrC addrK.
 rewrite -addrA -[LHS]addr0; congr (_ + _).
 apply/eqP; rewrite eq_sym addrC addr_eq0 oppox; apply/eqP.
@@ -547,8 +538,11 @@ rewrite [in LHS]littleo_center0 (comp_centerK x id).
 by rewrite -[- _ in RHS](comp_centerK x).
 Qed.
 
-Lemma diff_cst (V W : normedModType R) a x : ('d (cst a) x : V -> W) = 0.
-Proof. by apply/diff_unique; have [] := dcst a x. Qed.
+Lemma diff_cst (V W : normedModType R) a x : 'd (cst a) x = 0 :> (V -> W).
+Proof.
+rewrite -[RHS]/((0 : c0linType V W) : V -> W).
+by apply: diff_unique; have := dcst a x.
+Qed.
 
 Variables (V W : normedModType R).
 
@@ -584,11 +578,8 @@ by elim/big_ind : _ => // ? ? g h ?; apply: differentiableD; [exact:g|exact:h].
 Qed.
 
 Lemma diffN (f : V -> W) x :
-  differentiable f x -> 'd (- f) x = - ('d f x : V -> W) :> (V -> W).
-Proof.
-move=> df; rewrite -[RHS]/(@GRing.opp _ \o _); apply/diff_unique;
-by have [] := dopp df.
-Qed.
+  differentiable f x -> 'd (- f) x = - 'd f x :> (V -> W).
+Proof. by move=> df; apply/diff_unique; have := dopp df. Qed.
 
 Lemma differentiableN (f : V -> W) x :
   differentiable f x -> differentiable (- f) x.
@@ -600,7 +591,7 @@ Global Instance is_diffN (f df : V -> W) x :
   is_diff x f df -> is_diff x (- f) (- df).
 Proof.
 move=> dfx; apply: DiffDef; first exact: differentiableN.
-by rewrite diffN // diff_val.
+by rewrite diffN //= diff_val.
 Qed.
 
 Global Instance is_diffB (f g df dg : V -> W) x :
@@ -638,27 +629,33 @@ Qed.
 Lemma diffZl (k : V -> R) (f : W) x : differentiable k x ->
   'd (fun z => k z *: f) x = (fun z => 'd k x z *: f) :> (_ -> _).
 Proof.
-move=> df; set g := RHS; have glin : linear g.
+move=> df; set g := RHS.
+have glin : linear g.
   by move=> a u v; rewrite /g linearP /= scalerDl -scalerA.
+have gc0 : continuous g.
+  move=> y.
+  apply: (@continuous_comp _ _ _ ('d k x) ( *:%R^~ f)); first exact: cts_fun.
+  exact: scalel_continuous.
 pose glM := GRing.isLinear.Build _ _ _ _ _ glin.
-pose gL : {linear _ -> _} := HB.pack g glM.
-by apply:(@diff_unique _ _ _ gL); have [] := dscalel f df.
+pose glC := isContinuous.Build _ _ _ gc0.
+pose gL : c0linType _ _ := HB.pack g glM glC.
+by apply:(@diff_unique _ _ _ gL); have := dscalel f df.
 Qed.
 
 Lemma differentiableZl (k : V -> R) (f : W) x :
   differentiable k x -> differentiable (fun z => k z *: f) x.
 Proof.
-by move=> df; apply/diff_locallyP; rewrite diffZl //; have [] := dscalel f df.
+by move=> df; apply/diff_locallyP; rewrite diffZl //; have := dscalel f df.
 Qed.
 
-Lemma diff_lin (V' W' : normedModType R) (f : {linear V' -> W'}) x :
-  continuous f -> 'd f x = f :> (V' -> W').
-Proof. by move=> fcont; apply/diff_unique => //; apply: dlin. Qed.
+Lemma diff_lin (V' W' : normedModType R) (f : c0linType V' W') x :
+  'd f x = f :> (V' -> W').
+Proof. by apply/diff_unique => //; apply: dlin. Qed.
 
-Lemma linear_differentiable (V' W' : normedModType R) (f : {linear V' -> W'})
-  x : continuous f -> differentiable f x.
+Lemma linear_differentiable (V' W' : normedModType R) (f : c0linType V' W') x :
+  differentiable f x.
 Proof.
-by move=> fcont; apply/diff_locallyP; rewrite diff_lin //; have := dlin x fcont.
+by apply/diff_locallyP; rewrite diff_lin //; have := dlin f x.
 Qed.
 
 Global Instance is_diff_id (x : V) : is_diff x id id.
@@ -670,8 +667,10 @@ Qed.
 
 Global Instance is_diff_scaler (k : R) (x : V) : is_diff x ( *:%R k) ( *:%R k).
 Proof.
-apply: DiffDef; first exact/linear_differentiable/scaler_continuous.
-by rewrite diff_lin //; apply: scaler_continuous.
+have sc := isContinuous.Build _ _ _ (@scaler_continuous _ V k).
+set slc : c0linType V V := HB.pack ( *:%R k) sc.
+apply: DiffDef; first exact: (linear_differentiable slc).
+by rewrite (diff_lin slc).
 Qed.
 
 Global Instance is_diff_scalel (k : R) (x : V) :
@@ -680,25 +679,30 @@ Proof.
 have sx_lin : linear ( *:%R ^~ x : R -> _).
   by move=> u y z; rewrite scalerDl scalerA.
 pose sxlM := GRing.isLinear.Build _ _ _ _ _ sx_lin.
-pose sxL : {linear _ -> _} := HB.pack ( *:%R ^~ x) sxlM.
+have sxc0 : continuous ( *:%R ^~ x : R -> _) by exact: scalel_continuous.
+pose sxc := isContinuous.Build _ _ _ sxc0.
+pose sxL : c0linType _ _ := HB.pack ( *:%R ^~ x) sxlM sxc.
 have -> : *:%R ^~ x = sxL by rewrite funeqE.
-apply: DiffDef; first exact/linear_differentiable/scalel_continuous.
-by rewrite diff_lin //; apply: scalel_continuous.
+apply: DiffDef; first exact: linear_differentiable.
+by rewrite diff_lin.
 Qed.
 
 Lemma differentiable_coord m n (M : 'M[R]_(m.+1, n.+1)) i j :
   differentiable (fun N : 'M[R]_(m.+1, n.+1) => N i j : R ) M.
 Proof.
-have @f : {linear 'M[R]_(m.+1, n.+1) -> R}.
-  by exists (fun N : 'M[R]_(_, _) => N i j); do 2![eexists]; do ?[constructor];
-     rewrite ?mxE// => ? *; rewrite ?mxE//; move=> ?; rewrite !mxE.
-rewrite (_ : (fun _ => _) = f) //; exact/linear_differentiable/coord_continuous.
+have fM : linear (fun N : 'M[R]_(_, _) => N i j) by move=> ? ? ?; rewrite !mxE.
+pose flin := GRing.isLinear.Build _ _ _ _ _ fM.
+have fc0 : continuous (fun N : 'M[R]_(_, _) => N i j).
+  exact: coord_continuous.
+pose fc := isContinuous.Build _ _ _ fc0.
+exact: (linear_differentiable (HB.pack (fun N : 'M[R]_(_, _) => N i j) flin fc)). 
 Qed.
 
-Lemma linear_lipschitz (V' W' : normedModType R) (f : {linear V' -> W'}) :
-  continuous f -> exists2 k, k > 0 & forall x, `|f x| <= k * `|x|.
+Lemma linear_lipschitz (V' W' : normedModType R) (f : c0linType V' W') :
+  exists2 k, k > 0 & forall x, `|f x| <= k * `|x|.
 Proof.
-move=> /(_ 0); rewrite /continuous_at linear0 => /(_ _ (nbhsx_ballx _ _ ltr01)).
+move: (@cts_fun _ _ f) => /(_ 0).
+rewrite /continuous_at linear0 => /(_ _ (nbhsx_ballx _ _ ltr01)).
 move=> /nbhs_ballP [_ /posnumP[e] he]; exists (2 / e%:num) => // x.
 have [|xn0] := real_le0P (normr_real x).
   by rewrite normr_le0 => /eqP->; rewrite linear0 !normr0 mulr0.
@@ -714,44 +718,43 @@ rewrite normfV ger0_norm /k // invfM/= -mulrA mulVf ?gt_eqF//.
 by rewrite mulr1 invf_div gtr_pMr// invf_lt1// ltr1n.
 Qed.
 
-Lemma linear_eqO (V' W' : normedModType R) (f : {linear V' -> W'}) :
-  continuous f -> (f : V' -> W') =O_ 0 id.
+Lemma linear_eqO (V' W' : normedModType R) (f : c0linType V' W') :
+  (f : V' -> W') =O_ 0 id.
 Proof.
-move=> /linear_lipschitz [k kgt0 flip]; apply/eqO_exP; exists k => //.
+case: (linear_lipschitz f) => k kgt0 flip; apply/eqO_exP; exists k => //.
 exact: filterE.
 Qed.
 
 Lemma diff_eqO (V' W' : normedModType R) (x : filter_on V') (f : V' -> W') :
-  differentiable f x -> ('d f x : V' -> W') =O_ 0 id.
-Proof. by move=> /diff_continuous /linear_eqO; apply. Qed.
+  ('d f x : V' -> W') =O_ 0 id.
+Proof. exact: linear_eqO. Qed.
 
 Lemma compOo_eqox (U V' W' : normedModType R) (f : U -> V') (g : V' -> W') x :
   [O_ 0 id of g] ([o_ 0 id of f] x) =o_(x \near 0) x.
 Proof. by rewrite -[LHS]/((_ \o _) x) compOo_eqo. Qed.
 
 Fact dcomp (U V' W' : normedModType R) (f : U -> V') (g : V' -> W') x :
-  differentiable f x -> differentiable g (f x) ->
-  continuous ('d g (f x) \o 'd f x) /\ forall y,
+  differentiable f x -> differentiable g (f x) -> forall y,
   g (f (y + x)) = g (f x) + ('d g (f x) \o 'd f x) y +o_(y \near 0) y.
 Proof.
-move=> df dg; split; first by move=> ?; apply: continuous_comp.
+move=> df dg.
 apply: eqaddoEx => y; rewrite diff_locallyx// -addrA diff_locallyxC// linearD.
 rewrite addrA -[LHS]addrA; congr (_ + _ + _).
-rewrite diff_eqO // ['d f x : _ -> _]diff_eqO //.
+rewrite [X in X _ + _]diff_eqO ['d f x : _ -> _]diff_eqO //.
 by rewrite {2}eqoO addOx compOo_eqox compoO_eqox addox.
 Qed.
 
 Lemma diff_comp (U V' W' : normedModType R) (f : U -> V') (g : V' -> W') x :
   differentiable f x -> differentiable g (f x) ->
   'd (g \o f) x = 'd g (f x) \o 'd f x :> (U -> W').
-Proof. by move=> df dg; apply/diff_unique; have [? /funext] := dcomp df dg. Qed.
+Proof. by move=> df dg; apply/diff_unique; have /funext := dcomp df dg. Qed.
 
 Lemma differentiable_comp (U V' W' : normedModType R) (f : U -> V')
   (g : V' -> W') x : differentiable f x -> differentiable g (f x) ->
   differentiable (g \o f) x.
 Proof.
-move=> df dg; apply/diff_locallyP; rewrite diff_comp //;
-by have [? /funext]:= dcomp df dg.
+move=> df dg; apply/diff_locallyP; rewrite diff_comp //.
+by have /funext := dcomp df dg.
 Qed.
 
 Global Instance is_diff_comp (U V' W' : normedModType R) (f df : U -> V')
@@ -824,20 +827,22 @@ Lemma diff_bilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
   continuous (fun p => f p.1 p.2) -> 'd (fun q => f q.1 q.2) p =
   (fun q => f p.1 q.2 + f q.1 p.2) :> (U * V' -> W').
 Proof.
-pose d q := f p.1 q.2 + f q.1 p.2.
-move=> fc; have lind : linear d.
+pose d q := f p.1 q.2 + f q.1 p.2 => fc.
+have lind : linear d.
   by move=> ? ? ?; rewrite /d linearPr linearPl scalerDr addrACA.
 pose dlM := GRing.isLinear.Build _ _ _ _ _ lind.
-pose dL : {linear _ -> _} := HB.pack d dlM.
-rewrite -/d -[d]/(dL : _ -> _).
-by apply/diff_unique; have [] := dbilin p fc.
+have [lc0 ld] := dbilin p fc.
+pose dlC := isContinuous.Build _ _ _ lc0.
+pose dL : c0linType _ _ := HB.pack d dlM dlC.
+by rewrite -/d -[d]/(dL : _ -> _); apply: diff_unique.
 Qed.
 
 Lemma differentiable_bilin (U V' W' : normedModType R)
   (f : {bilinear U -> V' -> W'}) p :
   continuous (fun p => f p.1 p.2) -> differentiable (fun p => f p.1 p.2) p.
 Proof.
-by move=> fc; apply/diff_locallyP; rewrite diff_bilin //; apply: dbilin p fc.
+move=> fc; apply/diff_locallyP; rewrite diff_bilin //.
+by have [_] := dbilin p fc.
 Qed.
 
 Lemma mulr_is_bilinear :
@@ -892,16 +897,18 @@ move=> df dg.
 pose d y := ('d f x y, 'd g x y).
 have lin_pair : linear d by move=> ???; rewrite /d !linearPZ.
 pose pairlM := GRing.isLinear.Build _ _ _ _ _ lin_pair.
-pose pairL : {linear _ -> _} := HB.pack d pairlM.
-rewrite -/d -[d]/(pairL : _ -> _).
-by apply: diff_unique; have [] := dpair df dg.
+have [pairC0 paird] := dpair df dg.
+pose pairC := isContinuous.Build _ _ _ pairC0.
+pose pairL : c0linType _ _ := HB.pack d pairlM pairC.
+by rewrite -/d -[d]/(pairL : _ -> _); apply: diff_unique.
 Qed.
 
 Lemma differentiable_pair (U V' W' : normedModType R) (f : U -> V')
   (g : U -> W') x : differentiable f x -> differentiable g x ->
   differentiable (fun y => (f y, g y)) x.
 Proof.
-by move=> df dg; apply/diff_locallyP; rewrite diff_pair //; apply: dpair.
+move=> df dg; apply/diff_locallyP; rewrite diff_pair //.
+by have [_] := dpair df dg.
 Qed.
 
 Global Instance is_diff_pair (U V' W' : normedModType R) (f df : U -> V')
@@ -983,16 +990,24 @@ by rewrite normrM normfV (@ger0_norm _ 2) // addrK; apply/ltW.
 Unshelve. all: by end_near. Qed.
 
 Lemma diff_Rinv (x : R) : x != 0 ->
-  'd GRing.inv x = (fun h : R => - x ^- 2 *: h) :> (R -> R).
+  'd GRing.inv x = ( *:%R (- x ^- 2)) :> (R -> R).
 Proof.
-move=> xn0; have -> : (fun h : R => - x ^- 2 *: h) = ( *:%R (- x ^- 2)) by [].
-by apply: diff_unique; have [] := dinv xn0.
+move=> xn0.
+pose f := ( *:%R (- x ^- 2) : R -> R).
+have fM : linear f.
+  by move=> ? ? ?; rewrite /f scalerDr scalerA mulrC -scalerA.
+pose fl := GRing.isLinear.Build _ _ _ _ _ fM.
+have [fc0] := dinv xn0.
+pose fc := isContinuous.Build _ _ _ fc0.
+set g : c0linType _ _ := HB.pack f fl fc.
+exact: (@diff_unique _ _ _ g).
 Qed.
 
 Lemma differentiable_Rinv (x : R) : x != 0 ->
   differentiable (GRing.inv : R -> R) x.
 Proof.
-by move=> xn0; apply/diff_locallyP; rewrite diff_Rinv //; apply: dinv.
+move=> xn0; apply/diff_locallyP; rewrite diff_Rinv //.
+by have [_] := dinv xn0.
 Qed.
 
 Lemma diffV (f : V -> R) x : differentiable f x -> f x != 0 ->
@@ -1043,23 +1058,26 @@ Qed.
 
 Lemma deriv1E f x : derivable f x 1 -> 'd f x = ( *:%R^~ (f^`() x)) :> (R -> U).
 Proof.
-pose d (h : R) := h *: (f^`() x)%classic.
-move=> df; have lin_scal : linear d by move=> ? ? ?; rewrite /d scalerDl scalerA.
+pose d (h : R) := h *: (f^`() x)%classic => df.
+have lin_scal : linear d by move=> ? ? ?; rewrite /d scalerDl scalerA.
 pose scallM := GRing.isLinear.Build _ _ _ _ _ lin_scal.
-pose scalL : {linear _ -> _} := HB.pack d scallM.
-rewrite -/d -[d]/(scalL : _ -> _).
-by apply: diff_unique; [apply: scalel_continuous|apply: der1].
+have scallC0 : continuous d by apply: scalel_continuous.
+pose scallC := isContinuous.Build _ _ _ scallC0.
+pose scalL : c0linType _ _ := HB.pack d scallM scallC.
+by rewrite -/d -[d]/(scalL : _ -> _); apply/diff_unique/der1.
 Qed.
 
 Lemma diff1E f x :
-  differentiable f x -> 'd f x = (fun h => h *: f^`()%classic x) :> (R -> U).
+  differentiable f x -> 'd f x = ( *:%R^~ (f^`()%classic x)) :> (R -> U).
 Proof.
-pose d (h : R) := h *: 'd f x 1.
-move=> df; have lin_scal : linear d by move=> ? ? ?; rewrite /d scalerDl scalerA.
+pose d (h : R) := h *: 'd f x 1 => df.
+have lin_scal : linear d by move=> ? ? ?; rewrite /d scalerDl scalerA.
 pose scallM := GRing.isLinear.Build _ _ _ _ _ lin_scal.
-pose scalL : {linear _ -> _} := HB.pack d scallM.
-have -> : (fun h => h *: f^`()%classic x) = scalL by rewrite derive1E'.
-apply: diff_unique; first exact: scalel_continuous.
+have scallC0 : continuous d by apply: scalel_continuous.
+pose scallC := isContinuous.Build _ _ _ scallC0.
+pose scalL : c0linType _ _ := HB.pack d scallM scallC.
+have -> : ( *:%R^~ (f^`()%classic x)) = scalL by rewrite derive1E'.
+apply: diff_unique.
 apply/eqaddoE; have /diff_locally -> := df; congr (_ + _ + _).
 by rewrite funeqE => h /=; rewrite -{1}[h]mulr1 linearZ.
 Qed.
@@ -1067,8 +1085,7 @@ Qed.
 Lemma derivable1_diffP f x : derivable f x 1 <-> differentiable f x.
 Proof.
 split=> dfx.
-  by apply/diff_locallyP; rewrite deriv1E //; split;
-    [apply: scalel_continuous|apply: der1].
+  by apply/diff_locallyP; rewrite deriv1E //; apply: der1.
 apply/derivable_nbhsP/eqaddoE.
 have -> : (fun h => (f \o shift x) h%:A) = f \o shift x.
   by rewrite funeqE=> ?; rewrite [_%:A]mulr1.
@@ -1255,8 +1272,7 @@ Proof. exact/diff_derivable. Qed.
 Global Instance is_derive_id (x v : V) : is_derive x v id v.
 Proof.
 apply: (DeriveDef (@derivable_id _ _)).
-rewrite deriveE// (@diff_lin _ _ _ idfun)//=.
-by rewrite /continuous_at.
+by rewrite deriveE// (@diff_lin _ _ _ idfun).
 Qed.
 
 Global Instance is_deriveNid (x v : V) : is_derive x v -%R (- v).

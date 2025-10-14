@@ -732,6 +732,7 @@ HB.instance Definition _ := TopologicalNmodule_isTopologicalLmodule.Build
   K (E * F)%type prod_scale_continuous.
 HB.instance Definition _ :=
   Uniform_isTvs.Build K (E * F)%type prod_locally_convex.
+HB.instance Definition _ := Choice.on (E * F)%type.
 
 End prod_Tvs.
 
@@ -819,5 +820,7 @@ Qed.
 
 HB.instance Definition _ := GRing.SubChoice_isSubLmodule.Build
   K (continuousType M N) _ (c0linType M N) submod_closed.
+
+HB.instance Definition _ := isPointed.Build (c0linType M N) 0.
 
 End ContinuousLinear_sub_Continuous.

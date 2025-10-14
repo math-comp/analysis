@@ -241,5 +241,6 @@ Qed.
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build K 'M[K]_(m.+1, n.+1)
     mx_normZ.
+HB.instance Definition _ := Equality.on 'M[K]_(m.+1, n.+1).
 
 End matrix_NormedModule.
