@@ -46,7 +46,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import ProperNotations.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -229,7 +229,7 @@ Unshelve. all: by end_near. Qed.
 Section ae_eq.
 Local Open Scope ring_scope.
 Context d (T : sigmaRingType d) (R : realType).
-Implicit Types (U V : Type) (W : ringType).
+Implicit Types (U V : Type) (W : pzRingType).
 Variables (mu : {measure set T -> \bar R}) (D : set T).
 Local Notation ae_eq := (ae_eq mu D).
 

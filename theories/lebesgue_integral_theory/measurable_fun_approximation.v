@@ -65,7 +65,7 @@ rewrite predeqE => r; split => [/= /[!in_itv]/= /andP[nr rn1]|]; last first.
   rewrite subitvE !bnd_simp ler_pdivlMr// ler_pdivrMr//.
   by rewrite -natrX -2!natrM 2!ler_nat.
 have ?: 0 <= r * 2 ^+ n.+1 by rewrite mulr_ge0// (le_trans _ nr).
-rewrite -bigcup_seq /=; exists (trunc (r * 2 ^+ n.+1)).
+rewrite -bigcup_seq /=; exists (truncn (r * 2 ^+ n.+1)).
   rewrite /= mem_index_iota truncn_ge_nat// truncn_lt_nat//.
   by rewrite !natrM natrX ler_pM2r// ltr_pM2r// nr.
 rewrite /= in_itv/= ler_pdivrMr// ltr_pdivlMr//.
@@ -186,15 +186,15 @@ apply/negP => /andP[/allP An0]; rewrite mulf_eq0 => /orP[|].
   by apply/negP; near: n; exists 1%N => //= m /=; rewrite lt0n pnatr_eq0.
 rewrite pnatr_eq0 eqb0 notin_setE /B => /not_andP[] // /negP.
 rewrite -ltNge => fxn.
-have K : (trunc (fine (f x) * 2 ^+ n) < n * 2 ^ n)%N.
+have K : (truncn (fine (f x) * 2 ^+ n) < n * 2 ^ n)%N.
   rewrite truncn_lt_nat; last by rewrite mulr_ge0// ltW.
   by rewrite natrM natrX ltr_pM2r// -lte_fin (fineK fxfin).
 have /[!mem_index_enum]/(_ isT) := An0 (Ordinal K).
 rewrite implyTb indicE mem_set ?mulr1; last first.
   rewrite /A K /= inE; split=> //=; exists (fine (f x)); last by rewrite fineK.
-  by rewrite in_itv/= ler_pdivrMr// ltr_pdivlMr// trunc_itv// mulr_ge0// ltW.
+  by rewrite in_itv/= ler_pdivrMr// ltr_pdivlMr// truncn_itv// mulr_ge0// ltW.
 apply/negP; rewrite mulf_eq0 -exprVn negb_or expf_neq0//= andbT.
-rewrite pnatr_eq0 -lt0n trunc_gt0 -ler_pdivrMr// ltW//; near: n.
+rewrite pnatr_eq0 -lt0n truncn_gt0 -ler_pdivrMr// ltW//; near: n.
 exact: near_infty_natSinv_expn_lt (PosNum fx_gt0).
 Unshelve. all: by end_near. Qed.
 
@@ -285,7 +285,7 @@ have /(fpos_approx_neq0 Dx)[m _ Hm] : (0 < f x < +oo)%E by rewrite lt0e fx0 f0.
 near=> n.
 have mn : (m <= n)%N by near: n; exists m.
 have : fine (f x) < n%:R.
-  near: n; exists (trunc (fine (f x))).+2 => //= p /= fxp.
+  near: n; exists (truncn (fine (f x))).+2 => //= p /= fxp.
   by rewrite (lt_trans (truncnS_gt _))// ltr_nat.
 rewrite -lte_fin (fineK fxfin) => fxn.
 have [approx_nx0|[k [/andP[k0 kn2n] ? ->]]] := f_ub_approx fxn.
@@ -321,7 +321,7 @@ move=> Dx fxoo; have approx_x n : approx n x = n%:R.
   rewrite /approx foo_B1// mulr1 big1 ?add0r// => /= i _.
   by rewrite fgen_A0 // ?mulr0 // fxoo leey.
 move=> /cvg_ex[/= l /cvgrPdist_lt/(_ _ ltr01) [n _]].
-move=> /(_ ((trunc l).+2 + n) (leq_addl _ _)); apply/negP.
+move=> /(_ ((truncn l).+2 + n) (leq_addl _ _)); apply/negP.
 rewrite -leNgt approx_x distrC natrD addrAC ger0_norm ler_wpDr//.
   by rewrite lerBrDl -natr1 lerD// ltW// truncnS_gt.
 by rewrite subr_ge0 -natr1 ler_wpDr// ltW// truncnS_gt.

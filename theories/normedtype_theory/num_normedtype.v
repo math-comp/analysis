@@ -559,7 +559,7 @@ move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
   have [i iFan] : exists i, F (a + i.+1%:R) < F a - n%:R.
     move/cvgrNy_lt : nyF.
     move/(_ (F a - n%:R)) => [z [zreal zFan]].
-    by exists (trunc (z - a)); rewrite zFan// -ltrBlDl truncnS_gt.
+    by exists (truncn (z - a)); rewrite zFan// -ltrBlDl truncnS_gt.
   by exists i => //=; rewrite in_itv/= yFa (lt_le_trans _ Fany).
 - move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].
   exists `|ceil (F (a + n.+1%:R) - F a)%R|.+1 => //=.

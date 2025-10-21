@@ -343,7 +343,7 @@ Notation r_gt0 := vitali_collection_partition_ub_gt0.
 Lemma ex_vitali_collection_partition i :
   V i -> exists n, vitali_collection_partition n i.
 Proof.
-move=> Vi; pose f := trunc (r / (radius (B i))%:num).
+move=> Vi; pose f := truncn (r / (radius (B i))%:num).
 have f_ge0 : (0 <= f)%N.
   by rewrite truncn_ge_nat// divr_ge0// (le_trans _ (VBr Vi)).
 have [m /andP[mf fm]] := leq_ltn_expn f.-1.

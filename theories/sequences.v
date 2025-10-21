@@ -540,7 +540,7 @@ Proof. by rewrite funeqE => n; rewrite /series /= sumrN. Qed.
 Lemma seriesD (V : zmodType) (f g : V ^nat) : series (f + g) = series f + series g.
 Proof. by rewrite /series /= funeqE => n; rewrite big_split. Qed.
 
-Lemma seriesZ (R : ringType) (V : lmodType R) (f : V ^nat) k :
+Lemma seriesZ (R : pzRingType) (V : lmodType R) (f : V ^nat) k :
   series (k *: f) = k *: series f.
 Proof. by rewrite funeqE => n; rewrite /series /= -scaler_sumr. Qed.
 
@@ -1172,7 +1172,7 @@ Qed.
 Lemma is_cvg_series_exp_coeff_pos : cvgn (series (exp x)).
 Proof.
 rewrite /series; near \oo => N; have xN : x < N%:R.
-  near: N; exists (trunc x).+2 => // m/= xm.
+  near: N; exists (truncn x).+2 => // m/= xm.
   by rewrite (lt_trans (truncnS_gt _))// ltr_nat.
 rewrite -(@is_cvg_series_restrict N.+1).
 by apply: (nondecreasing_is_cvgn (incr_S1 N)); eexists; exact: S1_sup.
@@ -2799,7 +2799,7 @@ have : cvg (a @ \oo).
   have [n rne] : exists n, 2 * (r n)%:num < e.
     pose eps := e / 2.
     have [n n1e] : exists n, n.+1%:R^-1 < eps.
-      exists (trunc eps^-1).
+      exists (truncn eps^-1).
       by rewrite -ltf_pV2 ?(posrE,divr_gt0)// invrK truncnS_gt.
     exists n.+1; rewrite -ltr_pdivlMl //.
     have /lt_trans : (r n.+1)%:num < n.+1%:R^-1.
@@ -2901,7 +2901,7 @@ set O_inf := \bigcap_i (O i).
 have O_infempty : O_inf = set0.
   rewrite -subset0 => x.
   have [M FxM] := BoundedF x; rewrite /O_inf /O /=.
-  move=> /(_ (trunc M).+1 Logic.I)[f Ff]; apply/negP; rewrite -leNgt.
+  move=> /(_ (truncn M).+1 Logic.I)[f Ff]; apply/negP; rewrite -leNgt.
   by rewrite (le_trans (FxM _ Ff))// ltW// truncnS_gt.
 have ContraBaire : exists i, not (dense (O i)).
   have dOinf : ~ dense O_inf.

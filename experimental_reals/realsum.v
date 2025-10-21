@@ -140,13 +140,13 @@ Lemma summable_countn0 : summable f -> countable [pred x | f x != 0].
 Proof.
 case/summableP=> M ge0_M bM; pose E (p : nat) := [pred x | `|f x| > 1 / p.+1%:~R].
 set F := [pred x | _]; have le: {subset F <= [pred x | `[< exists p, x \in E p >]]}.
-  move=> x; rewrite !inE => nz_fx; exists (Num.trunc `|f x|^-1).
+  move=> x; rewrite !inE => nz_fx; exists (Num.truncn `|f x|^-1).
   rewrite inE mul1r invf_plt ?unfold_in /= ?normr_gt0 //.
-  by have/trunc_itv/andP[]: 0 <= `|f x|^-1 by rewrite invr_ge0 normr_ge0.
+  by have/truncn_itv/andP[]: 0 <= `|f x|^-1 by rewrite invr_ge0 normr_ge0.
 apply/(countable_sub le)/cunion_countable=> i /=.
 case: (existsTP (fun s : seq T => {subset E i <= s}))=> /= [[s le_Eis]|].
   by apply/finite_countable/finiteP; exists s => x /le_Eis.
-move=> /finiteNP/(_ ((Num.trunc M).+1 * i.+1)%N)/asboolP/exists_asboolP h.
+move=> /finiteNP/(_ ((Num.truncn M).+1 * i.+1)%N)/asboolP/exists_asboolP h.
 have/asboolP[] := xchooseP h.
 set s := xchoose h=> eq_si uq_s le_sEi; pose J := [fset x in s].
 suff: \sum_(x : J) `|f (val x)| > M by rewrite ltNge bM.
@@ -155,7 +155,7 @@ apply/(@lt_le_trans _ _ (\sum_(x : J) 1 / i.+1%:~R)); last first.
   by have:= fsvalP m; rewrite in_fset => /le_sEi.
 rewrite mul1r sumr_const -cardfE card_fseq undup_id // eq_si.
 rewrite -mulr_natr natrM mulrC mulfK ?pnatr_eq0//.
-by case/trunc_itv/andP: ge0_M.
+by case/truncn_itv/andP: ge0_M.
 Qed.
 
 End SummableCountable.

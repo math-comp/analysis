@@ -350,14 +350,14 @@ Qed.
 
 End order_min.
 
-Lemma intrD1 {R : ringType} (i : int) : i%:~R + 1 = (i + 1)%:~R :> R.
+Lemma intrD1 {R : pzRingType} (i : int) : i%:~R + 1 = (i + 1)%:~R :> R.
 Proof. by rewrite intrD. Qed.
 
-Lemma intr1D {R : ringType} (i : int) : 1 + i%:~R = (1 + i)%:~R :> R.
+Lemma intr1D {R : pzRingType} (i : int) : 1 + i%:~R = (1 + i)%:~R :> R.
 Proof. by rewrite intrD. Qed.
 
 Section trunc_floor_ceil.
-Context {R : archiDomainType}.
+Context {R : archiRealDomainType}.
 Implicit Type x : R.
 
 Lemma abs_ceil_ge x : `|x| <= `|Num.ceil x|.+1%:R.

@@ -280,14 +280,14 @@ transitivity (\int[mu]_(x in D) limn (g^~ x)).
     rewrite /g; case: (f x) fx0 => [r r0|_|//]; last first.
       by exists 1%N => // m /= m0; rewrite mulry gtr0_sg// ?ltr0n// mul1e leey.
     near=> n; rewrite lee_fin -ler_pdivrMr//.
-    near: n; exists (trunc (M / r)).+1 => // m /= Mrm.
+    near: n; exists (truncn (M / r)).+1 => // m /= Mrm.
     by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
   - rewrite lt0_mulye//; apply/cvgeNyPleNy; near=> M;
     have M0 : (M <= 0)%R by [].
     rewrite /g; case: (f x) fx0 => [r r0|//|_]; last first.
       by exists 1%N => // m /= m0; rewrite mulrNy gtr0_sg// ?ltr0n// mul1e leNye.
     near=> n; rewrite lee_fin -ler_ndivrMr//.
-    near: n; exists (trunc (M / r)).+1 => // m /= Mrm.
+    near: n; exists (truncn (M / r)).+1 => // m /= Mrm.
     by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
   - rewrite -fx0 mule0 /g -fx0.
     under eq_fun do rewrite mule0/=. (*TODO: notation broken*)
@@ -307,7 +307,7 @@ rewrite -(@fineK _ (\int[mu]_(x in D) f x)); last first.
 rewrite -lee_pdivrMr//; last first.
   by move: if_gt0 ifoo; case: (\int[mu]_(x in D) f x).
 near: n.
-exists (trunc (M * (fine (\int[mu]_(x in D) f x))^-1)).+1 => //.
+exists (truncn (M * (fine (\int[mu]_(x in D) f x))^-1)).+1 => //.
 move=> n /=; rewrite -(@ler_nat R) -lee_fin; apply: le_trans.
 by rewrite lee_fin ltW// truncnS_gt.
 Unshelve. all: by end_near. Qed.
@@ -484,7 +484,7 @@ Proof.
 move=> muD0; pose g : (T -> \bar R)^nat := fun n => cst n%:R%:E.
 have <- : (fun t => limn (g^~ t)) = cst +oo.
   rewrite funeqE => t; apply/cvg_lim => //=.
-  apply/cvgeryP/cvgryPge => M; exists (trunc M).+1 => //= m/= Mn.
+  apply/cvgeryP/cvgryPge => M; exists (truncn M).+1 => //= m/= Mn.
   by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
 rewrite monotone_convergence //.
 - under [in LHS]eq_fun do rewrite integral_cstr.
@@ -492,7 +492,7 @@ rewrite monotone_convergence //.
   have [muDoo|muDoo] := ltP (mu D) +oo; last first.
     exists 1%N => // m /= m0; move: muDoo; rewrite leye_eq => /eqP ->.
     by rewrite mulry gtr0_sg ?mul1e ?leey// ltr0n.
-  exists (trunc (M / fine (mu D))).+1 => // m /=.
+  exists (truncn (M / fine (mu D))).+1 => // m /=.
   rewrite -lez_nat => MDm; rewrite -(@fineK _ (mu D)) ?ge0_fin_numE//.
   rewrite -lee_pdivrMr; last by rewrite fine_gt0// lt0e muD0 measure_ge0.
   by rewrite lee_fin (le_trans (ltW (truncnS_gt _)))// ler_nat.
@@ -1254,7 +1254,7 @@ move=> mf; split=> [iDf0|Df0].
     rewrite predeqE => t; split=> [[Dt ft0]|[n _ /= [Dt nft]]].
       have [ftoo|ftoo] := eqVneq `|f t| +oo.
         by exists 0%N => //; split => //=; rewrite ftoo /= leey.
-      pose m := trunc (fine `|f t|)^-1.
+      pose m := truncn (fine `|f t|)^-1.
       have ftfin : `|f t|%E \is a fin_num by rewrite ge0_fin_numE// ltey.
       exists m => //; split => //=.
       rewrite -(@fineK _ `|f t|) // lee_fin invf_ple; last 2 first.
