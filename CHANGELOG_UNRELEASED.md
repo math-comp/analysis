@@ -12,7 +12,7 @@
 
 - in `probability.v`:
   + definition `ccdf`
-  + lemmas `cdf_fin_num`, `lebesgue_stieltjes_cdf_id`, `cdf_ccdf_1`, `ccdf_fin_num`, `ccdf_nonincreasing`, `cvg_ccdfy0`, `cvg_ccdfNy1`, `ccdf_right_continuous`
+  + lemmas `lebesgue_stieltjes_cdf_id`, `cdf_ccdf_1`, `ccdf_nonincreasing`, `cvg_ccdfy0`, `cvg_ccdfNy1`, `ccdf_right_continuous`, `ge0_expectation_ccdf`
   + corollaries `ccdf_cdf_1`, `ccdf_1_cdf`, `cdf_1_ccdf`
 
 - in `num_normedtype.v`:
