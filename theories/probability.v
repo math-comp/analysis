@@ -481,7 +481,7 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 
 Let mu : {measure set _ -> \bar R} := @lebesgue_measure R.
 
-Lemma expectation_nonneg_tail (X : {RV P >-> R}) : (forall x, 0 <= X x)%R ->
+Lemma ge0_expectation_ccdf (X : {RV P >-> R}) : (forall x, 0 <= X x)%R ->
   'E_P[X] = \int[mu]_(r in `[0%R, +oo[) ccdf X r.
 Proof.
 pose GR := measurableTypeR R.
