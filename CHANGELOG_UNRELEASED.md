@@ -326,6 +326,13 @@
 
 ### Renamed
 
+- in `reals.v`:
+  + `sup_le_ub` -> `ge_sub`
+  + `le_inf` -> `inf_le`
+  + `le_sup` -> `sup_le`
+  + `sup_ubound` -> `ub_le_sup`
+  + `inf_lbound` -> `ge_inf`
+
 ### Generalized
 
 - in `pseudometric_normed_Zmodule.v`:
@@ -359,6 +366,10 @@
 - notations `[measure of _]`, `[measure of _]`
 - notations `[content of _]`, `[content of _]`
 - notations `[outer_measure of _]`, `[outer_measure of _]`
+
+- in `reals.v`:
+  + notation `sup_ub` (was deprecated since 1.3.0)
+  + notation `inf_lb` (was deprecated since 1.3.0)
 
 ### Infrastructure
 

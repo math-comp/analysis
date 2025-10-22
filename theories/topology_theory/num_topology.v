@@ -156,7 +156,7 @@ suff [x [Ax /andP[sAex xsA]]] : exists x, A x /\ sup A - e%:num < x < sup A.
   apply supAeU; rewrite /ball /= ltr_distl (addrC x e%:num) -ltrBlDl sAex.
   by rewrite andbT (le_lt_trans _ xsA) // lerBlDl lerDr.
 apply: contrapT => /forallNP Ax.
-suff /(sup_le_ub A0) : ubound A (sup A - e%:num).
+suff /(ge_sup A0) : ubound A (sup A - e%:num).
   by rewrite leNgt => /negP; apply; rewrite ltrBlDl ltrDr.
 move=> y Ay; have /not_andP[//|/negP] := Ax y.
 rewrite negb_and leNgt => /orP[//|]; apply: contra => sAey.
@@ -169,13 +169,13 @@ Lemma right_bounded_interior (R : realType) (X : set R) :
 Proof.
 move=> uX r Xr; rewrite /mkset ltNge; apply/negP.
 rewrite le_eqVlt => /orP[/eqP supXr|]; last first.
-  by apply/negP; rewrite -leNgt sup_ubound//; exact: interior_subset.
+  by apply/negP; rewrite -leNgt ub_le_sup//; exact: interior_subset.
 suff : ~ X° (sup X) by rewrite supXr.
 case/nbhs_ballP => _/posnumP[e] supXeX.
 have [f XsupXf] : exists f : {posnum R}, X (sup X + f%:num).
   exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprD addNKr normrN.
   by rewrite gtr0_norm // ltr_pdivrMr // ltr_pMr // ltr1n.
-have : sup X + f%:num <= sup X by exact: sup_ubound.
+have : sup X + f%:num <= sup X by exact: ub_le_sup.
 by apply/negP; rewrite -ltNge; rewrite ltrDl.
 Qed.
 
@@ -184,13 +184,13 @@ Lemma left_bounded_interior (R : realType) (X : set R) :
 Proof.
 move=> lX r Xr; rewrite /mkset ltNge; apply/negP.
 rewrite le_eqVlt => /orP[/eqP rinfX|]; last first.
-  by apply/negP; rewrite -leNgt inf_lbound//; exact: interior_subset.
+  by apply/negP; rewrite -leNgt ge_inf//; exact: interior_subset.
 suff : ~ X° (inf X) by rewrite -rinfX.
 case/nbhs_ballP => _/posnumP[e] supXeX.
 have [f XsupXf] : exists f : {posnum R}, X (inf X - f%:num).
   exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprB addrC subrK.
   by rewrite gtr0_norm // ltr_pdivrMr // ltr_pMr // ltr1n.
-have : inf X <= inf X - f%:num by exact: inf_lbound.
+have : inf X <= inf X - f%:num by exact: ge_inf.
 by apply/negP; rewrite -ltNge; rewrite ltrBlDr ltrDl.
 Qed.
 

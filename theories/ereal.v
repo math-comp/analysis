@@ -511,7 +511,7 @@ have [|] := eqVneq (ubound U) set0.
 set u : R := sup U.
 exists u%:E; split; last first.
   apply/lbP=> -[r0 /ubP Sr0| |].
-  - rewrite lee_fin; apply/sup_le_ub; first by exists r, r%:E.
+  - rewrite lee_fin; apply: ge_sup; first by exists r, r%:E.
     by apply/ubP => _ -[[r2 ? <-| // | /= _ <-]]; rewrite -lee_fin; exact: Sr0.
   - by rewrite leey.
   - by move/ereal_ub_ninfty=> [|/eqP //]; [move/eqP : S0|rewrite (negbTE Snoo)].
@@ -585,7 +585,7 @@ Lemma ereal_sup_EFin (A : set R) :
   has_ubound A -> A !=set0 -> ereal_sup (EFin @` A) = (sup A)%:E.
 Proof.
 move=> has_ubA A0; apply/eqP; rewrite eq_le; apply/andP; split.
-  by apply: ub_ereal_sup => /= y [r Ar <-{y}]; rewrite lee_fin sup_ubound.
+  by apply: ub_ereal_sup => /= y [r Ar <-{y}]; rewrite lee_fin ub_le_sup.
 set esup := ereal_sup _; have := leey esup.
 rewrite [X in _ X]le_eqVlt => /predU1P[->|esupoo]; first by rewrite leey.
 have := leNye esup; rewrite [in X in X -> _]le_eqVlt => /predU1P[/esym|ooesup].
@@ -1082,18 +1082,18 @@ Let contract := @contract R.
 Lemma sup_contract_le1 S : S !=set0 -> (`|sup (contract @` S)| <= 1)%R.
 Proof.
 case=> x Sx; rewrite ler_norml; apply/andP; split; last first.
-  apply: sup_le_ub; first by exists (contract x), x.
+  apply: ge_sup; first by exists (contract x), x.
   by move=> r [y Sy] <-; case/ler_normlP : (contract_le1 y).
 rewrite (@le_trans _ _ (contract x)) //.
   by case/ler_normlP : (contract_le1 x); rewrite lerNl.
-apply: sup_ubound; last by exists x.
+apply: ub_le_sup; last by exists x.
 by exists 1%R => r [y Sy <-]; case/ler_normlP : (contract_le1 y).
 Qed.
 
 Lemma contract_sup S : S !=set0 -> contract (ereal_sup S) = sup (contract @` S).
 Proof.
 move=> S0; apply/eqP; rewrite eq_le; apply/andP; split; last first.
-  apply: sup_le_ub.
+  apply: ge_sup.
     by case: S0 => x Sx; exists (contract x), x.
   by move=> x [y Sy] <-{x}; rewrite le_contract; exact/ereal_sup_ubound.
 rewrite leNgt; apply/negP.
@@ -1109,7 +1109,7 @@ suff [x [? [ubSx x1]]] : exists x, (x < csup)%R /\ ubound (contract @` S) x /\
 exists ((supc + csup) / 2)%R; split; first by rewrite midf_lt.
 split => [r [y Sy <-{r}]|].
   rewrite (@le_trans _ _ supc) ?midf_le //; last by rewrite ltW.
-  apply: sup_ubound; last by exists y.
+  apply: ub_le_sup; last by exists y.
   by exists 1%R => r [z Sz <-]; case/ler_normlP : (contract_le1 z).
 rewrite ler_norml; apply/andP; split; last first.
   rewrite ler_pdivrMr // mul1r (_ : 2 = 1 + 1)%R // lerD //.

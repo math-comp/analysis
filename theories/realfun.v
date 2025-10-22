@@ -436,7 +436,7 @@ rewrite lerBlDr {}/M.
 move: b ab pb lef ubf => [[|] b|[//|]] ab pb lef ubf; set M := sup _ => Mefp.
 - near=> r; rewrite ler_distl; apply/andP; split.
   + suff: f r <= M by apply: le_trans; rewrite lerBlDr lerDl.
-    apply: sup_ubound => //=; exists r => //; rewrite in_itv/=.
+    apply: ub_le_sup => //=; exists r => //; rewrite in_itv/=.
     by apply/andP; split; near: r; [exact: nbhs_right_gt|exact: nbhs_right_lt].
   + rewrite (le_trans Mefp)// lerD2r lef//=; last 2 first.
       by rewrite in_itv/= ap.
@@ -444,7 +444,7 @@ move: b ab pb lef ubf => [[|] b|[//|]] ab pb lef ubf; set M := sup _ => Mefp.
     apply/andP; split; near: r; [exact: nbhs_right_gt|exact: nbhs_right_lt].
 - near=> r; rewrite ler_distl; apply/andP; split.
   + suff: f r <= M by apply: le_trans; rewrite lerBlDr lerDl.
-    apply: sup_ubound => //=; exists r => //; rewrite in_itv/=.
+    apply: ub_le_sup => //=; exists r => //; rewrite in_itv/=.
     by apply/andP; split; near: r; [exact: nbhs_right_gt|exact: nbhs_right_le].
   + rewrite (le_trans Mefp)// lerD2r lef//=; last 2 first.
       by rewrite in_itv/= ap.
@@ -452,7 +452,7 @@ move: b ab pb lef ubf => [[|] b|[//|]] ab pb lef ubf; set M := sup _ => Mefp.
     by apply/andP; split; near: r; [exact: nbhs_right_gt|exact: nbhs_right_le].
 - near=> r; rewrite ler_distl; apply/andP; split.
   suff: f r <= M by apply: le_trans; rewrite lerBlDr lerDl.
-  apply: sup_ubound => //=; exists r => //; rewrite in_itv/= andbT.
+  apply: ub_le_sup => //=; exists r => //; rewrite in_itv/= andbT.
     by near: r; apply: nbhs_right_gt.
   rewrite (le_trans Mefp)// lerD2r lef//.
   - by rewrite in_itv/= andbT; near: r; exact: nbhs_right_gt.
@@ -2508,7 +2508,7 @@ rewrite ereal_sup_EFin//; last exact: variations_neq0.
 rewrite -EFinD -sup_sumE; last 2 first.
   by split => //; exact: variations_neq0.
   by split => //; exact: variations_neq0.
-apply: le_sup.
+apply: sup_le.
 - move=> r/= [s [l' acl' <-{s}]] [t [l cbl] <-{t} <-{r}].
   exists (variation a b f (l' ++ l)); split; last by rewrite -variation_cat// ltW.
   exact/variations_variation/(itv_partition_cat acl' cbl).
@@ -2542,7 +2542,7 @@ rewrite [x in (_ + x)%E]ereal_sup_EFin //; last exact: variations_neq0.
 rewrite -EFinD -sup_sumE /has_sup; [|(by split => //; exact: variations_neq0)..].
 apply: ub_ereal_sup => ? [? [l pacl <- <-]]; rewrite lee_fin.
 apply: (le_trans (variation_itv_partitionLR _ ac _ _)) => //.
-apply: sup_ubound => /=.
+apply: ub_le_sup => /=.
   case: bdAB => M ubdM; case: bdAC => N ubdN; exists (N + M).
   move=> q [?] [i pabi <-] [? [j pbcj <-]] <-.
   by apply: lerD; [apply: ubdN; exists i|apply: ubdM; exists j].

@@ -1259,10 +1259,10 @@ have ? : ubound (range (@atan R)) (pi / 2).
 rewrite (_ : pi / 2 = sup (range atan)).
   by apply/(nondecreasing_cvgr le_atan); exists (pi / 2).
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
-  by apply: sup_le_ub => //; exists 0, 0 => //; exact: atan0.
+  by apply: ge_sup => //; exists 0, 0 => //; exact: atan0.
 have -> : pi / 2 = sup `[0, pi / 2[ :> R.
   by rewrite real_interval.sup_itv// bnd_simp divr_gt0// pi_gt0.
-apply: le_sup; last 2 first.
+apply: sup_le; last 2 first.
 - by exists 0; rewrite /= in_itv/= lexx/= divr_gt0// pi_gt0.
 - split; first by exists 0, 0 => //; rewrite atan0.
   by exists (pi / 2) => _ [x _ <-]; exact/ltW/atan_ltpi2.

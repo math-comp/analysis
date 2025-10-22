@@ -142,7 +142,7 @@ rewrite -EFinD lee_fin -inf_sumE //; first last.
 apply: lb_le_inf.
   by exists (r1%:num + r2%:num); exists r1%:num => //; exists r2%:num.
 move=> ? [+ []] => _/posnumP[p] xpy [+ []] => _/posnumP[q] yqz <-.
-apply: inf_lbound; first by exists 0 => ? /= [/ltW].
+apply: ge_inf; first by exists 0 => ? /= [/ltW].
 by split => //; exact: (ball_triangle xpy).
 Qed.
 

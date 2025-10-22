@@ -1024,7 +1024,7 @@ have : {in D, (fun x => inf [set sups (h ^~ x) n | n in [set n | 0 <= n]%N])
 move/eq_measurable_fun; apply; apply: measurable_fun_infs => //.
   move=> t Dt; have [M hM] := f_lb _ Dt; exists M => _ [m /= nm <-].
   rewrite (@le_trans _ _ (h m t)) //; first by apply hM => /=; exists m.
-  by apply: sup_ubound; [exact/has_ubound_sdrop/f_ub|exists m => /=].
+  by apply: ub_le_sup; [exact/has_ubound_sdrop/f_ub|exists m => /=].
 by move=> k; exact: measurable_fun_sups.
 Qed.
 
