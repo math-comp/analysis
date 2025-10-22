@@ -360,7 +360,7 @@ suff : forall n, \sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X.
     apply: (lee_sum_nneg_ord (fun n => mu (X `&` A n)) xpredT) => n _.
     exact: outer_measure_ge0.
   move XAx : (mu (X `&` ~` A')) => [x| |].
-  - rewrite -leeBrDr //; apply: ub_ereal_sup => /= _ [n _] <-.
+  - rewrite -leeBrDr //; apply: ge_ereal_sup => /= _ [n _] <-.
     by rewrite EFinN leeBrDr // -XAx XA.
   - suff : mu X = +oo by move=> ->; rewrite leey.
     by apply/eqP; rewrite -leye_eq -XAx le_outer_measure.
@@ -497,13 +497,13 @@ Local Notation "mu^*" := mu_ext.
 
 Lemma le_mu_ext : {homo mu^* : A B / A `<=` B >-> A <= B}.
 Proof.
-move=> A B AB; apply/le_ereal_inf => x [B' [mB' BB']].
+move=> A B AB; apply/ereal_inf_le_tmp => x [B' [mB' BB']].
 by move=> <-{x}; exists B' => //; split => //; apply: subset_trans AB BB'.
 Qed.
 
 Lemma mu_ext_ge0 A : 0 <= mu^* A.
 Proof.
-apply: lb_ereal_inf => x [B [mB AB] <-{x}]; rewrite lime_ge //=.
+apply: le_ereal_inf_tmp => x [B [mB AB] <-{x}]; rewrite lime_ge //=.
   exact: is_cvg_nneseries.
 by near=> n; rewrite sume_ge0.
 Unshelve. all: by end_near. Qed.
@@ -537,7 +537,7 @@ have [G PG] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
     move=> [x [B [mB AnB muBx] xS]].
     by exists B; split => //; rewrite muBx -Sr; exact/ltW.
   - by have := Aoo n; rewrite /mu^* Soo.
-  - suff : lbound S 0 by move/lb_ereal_inf; rewrite Soo.
+  - suff : lbound S 0 by move/le_ereal_inf_tmp; rewrite Soo.
     by move=> /= _ [B [mB AnB] <-]; exact: nneseries_ge0.
 have muG_ge0 x : 0 <= (mu \o uncurry G) x by exact: measure_ge0.
 apply: (@le_trans _ _ (\esum_(i in setT) (mu \o uncurry G) i)).
@@ -601,7 +601,7 @@ Lemma Rmu_ext d (R : realType) (T : semiRingOfSetsType d)
   (measure mu)^* = mu^*.
 Proof.
 apply/funeqP => /= X; rewrite /mu_ext/=; apply/eqP; rewrite eq_le.
-rewrite ?lb_ereal_inf// => _ [F [Fm XS] <-]; rewrite ereal_inf_lbound//; last first.
+rewrite !le_ereal_inf_tmp// => _ [F [Fm XS] <-]; rewrite ereal_inf_lbound//; last first.
   exists F; first by split=> // i; exact: sub_gen_smallest.
   by rewrite (eq_eseriesr (fun _ _ => RmuE _ (Fm _))).
 pose K := [set: nat] `*`` fun i => decomp (F i).
@@ -635,7 +635,7 @@ move=> mX; apply/eqP; rewrite eq_le; apply/andP; split.
   apply/cvg_lim => //; rewrite -cvg_shiftS.
   rewrite (_ : [sequence _]_n = cst (mu X)); first exact: cvg_cst.
   by rewrite funeqE => n /=; rewrite big_nat_recl//= big1 ?adde0.
-apply/lb_ereal_inf => x [A [mA XA] <-{x}].
+apply/le_ereal_inf_tmp => x [A [mA XA] <-{x}].
 have XUA : X = \bigcup_n (X `&` A n).
   rewrite predeqE => t; split => [Xt|[i _ []//]].
   by have [i _ Ait] := XA _ Xt; exists i.
@@ -668,7 +668,7 @@ apply: smallest_sub.
   split => //; [by move=> X mX; rewrite setTD; exact: measurableC |
                 by move=> u_ mu_; exact: bigcupT_measurable].
 move=> A mA; apply le_caratheodory_measurable => // X.
-apply lb_ereal_inf => _ [B [mB XB] <-].
+apply: le_ereal_inf_tmp => _ [B [mB XB] <-].
 rewrite -(eq_eseriesr (fun _ _ => SetRing.RmuE _ (mB _))) => //.
 have RmB i : measurable (B i : set rT) by exact: sub_gen_smallest.
 set BA := eseries (fun n => Rmu (B n `&` A)).

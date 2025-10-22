@@ -1281,7 +1281,7 @@ suff: exists2 v : (\bar R)^nat, v @ \oo --> ereal_inf S &
   exists u => //; move: vcvg.
   have: cst (ereal_inf S) @ \oo --> ereal_inf S by exact: cvg_cst.
   apply: squeeze_cvge; apply: nearW => n; rewrite /cst/=.
-  by rewrite ereal_inf_le /= 1?ltW; last by exists (u n).
+  by rewrite ge_ereal_inf /= 1?ltW; last by exists (u n).
 have [infNy|NinfNy] := eqVneq (ereal_inf S) -oo.
   exists [sequence - (n%:R%:E)]_n => /=; last first.
     by move=> n; setoid_rewrite set_mem_set; apply: lb_ereal_infNy_adherent.
@@ -1453,9 +1453,9 @@ have <- : sup (range v_) = fine l.
       by apply: ereal_sup_ubound; exists (m + N)%N.
     - by exists (v_ 0%N), 0%N.
   rewrite fineK//; apply/eqP; rewrite eq_le; apply/andP; split.
-    apply: le_ereal_sup => _ /= [_ [m _] <-] <-.
+    apply: ereal_sup_le => _ /= [_ [m _] <-] <-.
     by exists (m + N)%N => //; rewrite /v_/= fineK// u_fin_num// leq_addl.
-  apply: ub_ereal_sup => /= _ [m _] <-.
+  apply: ge_ereal_sup => /= _ [m _] <-.
   rewrite (@le_trans _ _ (u_ (m + N)%N))//; first by rewrite nd_u_// leq_addr.
   apply: ereal_sup_ubound => /=; exists (fine (u_ (m + N))); first by exists m.
   by rewrite fineK// u_fin_num// leq_addl.
@@ -2418,13 +2418,13 @@ Qed.
 
 Lemma nonincreasing_esups u : nonincreasing_seq (esups u).
 Proof.
-move=> m n mn; apply: le_ereal_sup => _ /= [k nk <-]; exists k => //=.
+move=> m n mn; apply: ereal_sup_le => _ /= [k nk <-]; exists k => //=.
 by rewrite (leq_trans mn).
 Qed.
 
 Lemma nondecreasing_einfs u : nondecreasing_seq (einfs u).
 Proof.
-move=> m n mn; apply: le_ereal_inf => _ /= [k nk <-]; exists k => //=.
+move=> m n mn; apply: ereal_inf_le_tmp => _ /= [k nk <-]; exists k => //=.
 by rewrite (leq_trans mn).
 Qed.
 
@@ -2487,9 +2487,9 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   apply: lime_ge; first exact: is_cvg_esups.
   near=> m; apply: ereal_inf_lbound => /=.
   by exists [set k | (m <= k)%N] => //=; exists m.
-apply: lb_ereal_inf => /= _ [A [r /= r0 rA] <-].
+apply: le_ereal_inf_tmp => /= _ [A [r /= r0 rA] <-].
 apply: lime_le; first exact: is_cvg_esups.
-near=> m;   apply: le_ereal_sup => _ [n /= mn] <-.
+near=> m; apply: ereal_sup_le => _ [n /= mn] <-.
 exists n => //; apply: rA => //=; apply: leq_trans mn.
 by near: m; exists r.
 Unshelve. all: by end_near. Qed.
@@ -2519,11 +2519,11 @@ move=> lfin; rewrite !limn_einf_lim; apply/cvg_lim => //; apply: cvg_trans; last
 suff : einfs (fun n => l + u n) = (fun n => l + einfs u n) by move=> ->.
 rewrite funeqE => n.
 apply/eqP; rewrite eq_le; apply/andP; split.
-- rewrite addeC -leeBlDr//; apply: lb_ereal_inf => /= _ [m /= mn] <-.
+- rewrite addeC -leeBlDr//; apply: le_ereal_inf_tmp => /= _ [m /= mn] <-.
   rewrite leeBlDr//; apply: ereal_inf_lbound.
   by exists m => //; rewrite addeC.
-- apply: lb_ereal_inf => /= _ [m /= mn] <-.
-  by rewrite leeD2l//; apply: ereal_inf_lbound; exists m => /=.
+- apply: le_ereal_inf_tmp => /= _ [m /= mn] <-.
+  by rewrite leeD2l//; apply: ereal_inf_lbound; exists m.
 Qed.
 
 Lemma limn_esup_le_cvg u l : limn_esup u <= l -> (forall n, l <= u n) ->
@@ -2537,7 +2537,7 @@ apply/cvg_closeP; split; first exact: is_cvg_esups.
 rewrite closeE//; apply/eqP.
 rewrite eq_le -[X in X <= _ <= _]limn_esup_lim supul/=.
 apply: (lime_ge (@is_cvg_esups _ _)); apply: nearW => m.
-have /le_trans : l <= einfs u m by apply: lb_ereal_inf => _ [p /= pm] <-.
+have /le_trans : l <= einfs u m by apply: le_ereal_inf_tmp => _ [p /= pm] <-.
 by apply; exact: einfs_le_esups.
 Qed.
 
@@ -2561,7 +2561,7 @@ move=> uoo; suff: limn_esup u = -oo.
   by move=> {}uoo; split => //; apply/eqP; rewrite -leeNy_eq -uoo limn_einf_sup.
 rewrite limn_esup_lim; apply: cvg_lim => //=; apply/cvgeNyPle => M.
 have /cvgeNyPle/(_ M)[m _ uM] := uoo.
-near=> n; apply: ub_ereal_sup => _ [k /= nk <-].
+near=> n; apply: ge_ereal_sup => _ [k /= nk <-].
 by apply: uM => /=; rewrite (leq_trans _ nk)//; near: n; exists m.
 Unshelve. all: by end_near. Qed.
 

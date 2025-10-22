@@ -489,7 +489,7 @@ Lemma sprob_kernelP d d' (X : measurableType d) (Y : measurableType d')
   ereal_sup [set k x [set: _] | x in [set: _]] <= 1 <->
   forall x, k x [set: Y] <= 1.
 Proof.
-split => [+ x|k1]; last by apply: ub_ereal_sup => _ /= [z _ <-]; exact: k1.
+split => [+ x|k1]; last by apply: ge_ereal_sup => _ /= [z _ <-]; exact: k1.
 by apply/le_trans/ereal_sup_ubound => /=; exists x.
 Qed.
 
@@ -553,7 +553,7 @@ HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
 
 Let sprob_kernel : @Kernel_isSubProbability d d' X Y R k.
 Proof.
-by split; apply: ub_ereal_sup => x [y _ <-{x}]; rewrite prob_kernel.
+by split; apply: ge_ereal_sup => x [y _ <-{x}]; rewrite prob_kernel.
 Qed.
 
 HB.instance Definition _ := sprob_kernel.

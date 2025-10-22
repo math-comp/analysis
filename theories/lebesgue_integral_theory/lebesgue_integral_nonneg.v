@@ -811,7 +811,7 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
       exact: nneseries_split.
     by rewrite ge0_integral_measure_add// -ge0_integral_measure_sum.
   by apply: leeDl; exact: integral_ge0.
-rewrite ge0_integralE//=; apply: ub_ereal_sup => /= _ [g /= gf] <-.
+rewrite ge0_integralE//=; apply: ge_ereal_sup => /= _ [g /= gf] <-.
 rewrite -integralT_nnsfun (integral_measure_series_nnsfun _ mD).
 apply: lee_nneseries => [n _ _|n _].
   by apply: integral_ge0 => // x _; rewrite lee_fin.
@@ -981,7 +981,7 @@ have lim_f_ t : f_ ^~ t @ \oo --> (f \_ D) t.
         by rewrite /f_ big_mkord patchT// in_setE big_ord_recr/=; right.
       rewrite (@le_trans _ _ (f_ O t))// ?ereal_sup_ubound//.
       by rewrite /f_ patchN// big_mkord big_ord0 inE/= in_set0.
-    apply: ub_ereal_sup => x [n _ <-].
+    apply: ge_ereal_sup => x [n _ <-].
     by rewrite /f_ restrict_lee// big_mkord; exact: bigsetU_bigcup.
   apply: ereal_nondecreasing_cvgn => a b ab.
   rewrite /f_ !big_mkord restrict_lee //; last exact: subset_bigsetU.
@@ -1052,7 +1052,7 @@ Lemma ge0_integral_ereal_sup :
   ereal_sup [set \int[mu]_(x in `[0%R, i.+1%:R]) (f x)%:E | i in [set: nat]].
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
-  apply: ub_ereal_sup => /=_ [n _ <-].
+  apply: ge_ereal_sup => /=_ [n _ <-].
   apply: ge0_subset_integral => //=.
   - by apply/measurable_EFinP; exact: measurable_funS mf.
   - by move=> ? _; rewrite lee_fin f0.
@@ -1075,7 +1075,7 @@ rewrite -ge0_integral_bigsetU//=; first last.
 rewrite big_mkord -bigsetU_seqDU.
 move: n => [|n].
   rewrite big_ord0 integral_set0.
-  apply: ereal_sup_ge.
+  apply: le_ereal_sup_tmp.
   exists (\int[mu]_(x in `[0%R, 1%:R]) (f x)%:E) => //.
   by apply: integral_ge0 => /= ? _; rewrite lee_fin f0.
 rewrite [X in \int[_]_(_ in X) _](_ : _ = `[0%R, n.+1%:R]%classic); last first.
@@ -1088,7 +1088,7 @@ rewrite [X in \int[_]_(_ in X) _](_ : _ = `[0%R, n.+1%:R]%classic); last first.
   rewrite -(bigcup_mkord _ (fun k => `[0%R, k.+1%:R]%classic)).
   exists n => //=.
   by rewrite in_itv/= x0 Snx.
-apply: ereal_sup_ge.
+apply: le_ereal_sup_tmp.
 exists (\int[mu]_(x in `[0%R, n.+1%:R]) (f x)%:E); first by exists n.
 apply: ge0_subset_integral => //= [|? _]; last by rewrite lee_fin f0.
 exact/measurable_EFinP/measurableT_comp.
@@ -1596,14 +1596,14 @@ transitivity (ereal_sup (range (fun n => (f \_ (F n)) x))).
     by move=> {}x; exact: f0.
   by rewrite -subsetEset; exact: nndF.
 apply/eqP; rewrite eq_le; apply/andP; split.
-- apply: ub_ereal_sup => _/= [n _ <-].
+- apply: ge_ereal_sup => _/= [n _ <-].
   apply: restrict_lee; last exact: bigcup_sup.
   by move=> ? [? _]; exact: f0.
 - rewrite patchE; case: ifPn=> [|/negP].
     rewrite inE => -[n _ Fnx].
-    by apply: ereal_sup_ge; exists (f \_ (F n) x) => //; rewrite patchE mem_set.
+    by apply: le_ereal_sup_tmp; exists (f \_ (F n) x) => //; rewrite patchE mem_set.
   rewrite inE -[X in X -> _]/((~` _) x) setC_bigcup => nFx.
-  apply/ereal_sup_ge; exists point => //=; exists 0%R => //.
+  apply/le_ereal_sup_tmp; exists point => //=; exists 0%R => //.
   by rewrite patchE memNset//; exact: nFx.
 Qed.
 

@@ -761,8 +761,8 @@ have nudelta n : nu E <= g_ (v n).
     rewrite v0/=; apply: ereal_sup_ubound => /=; exists E; split => //.
     by apply: (subset_trans EDAoo); exact: setDS.
   suff : nu E <= d_ (U_ (v n)) by have [<- _] := Pv n.
-  have /le_ereal_sup := EH n.+1; rewrite ereal_sup1 => /le_trans; apply.
-  apply/le_ereal_sup => x/= [A' [mA' A'D ?]].
+  have /ereal_sup_le := EH n.+1; rewrite ereal_sup1 => /le_trans; apply.
+  apply/ereal_sup_le => x/= [A' [mA' A'D ?]].
   exists A' => //; split => //.
   by apply: (subset_trans A'D); apply: setDS; rewrite Ubig.
 apply: (@closed_cvg _ _ _ _ _ (fun v => nu E <= v) _ _ _ g_cvg_0) => //.
@@ -1282,7 +1282,7 @@ Definition sup_int_approxRN := ereal_sup int_approxRN.
 
 Lemma sup_int_approxRN_ge0 : 0 <= sup_int_approxRN.
 Proof.
-rewrite -(ereal_sup1 0) le_ereal_sup// sub1set inE.
+rewrite -(ereal_sup1 0) ereal_sup_le// sub1set inE.
 exists (fun=> 0); last exact: integral0.
 by split => //; [exact: integrable0|move=> E; rewrite integral0].
 Qed.
@@ -1311,7 +1311,7 @@ Qed.
 Lemma sup_int_approxRN_lty : M < +oo.
 Proof.
 rewrite /sup_int_approxRN; have [m hm] := int_approxRN_ub.
-rewrite (@le_lt_trans _ _ m%:E)// ?ltey// ub_ereal_sup// => x IGx.
+rewrite (@le_lt_trans _ _ m%:E)// ?ltey// ge_ereal_sup// => x IGx.
 by apply: hm; rewrite inE.
 Qed.
 
@@ -1786,7 +1786,7 @@ have Gh : G h.
   by rewrite (le_lt_trans (hnu _ measurableT))// ltey_eq fin_num_measure.
 have : \int[mu]_x h x <= M.
   rewrite -(ereal_sup1 (\int[mu]_x h x)).
-  rewrite (@le_ereal_sup _ [set \int[mu]_x h x] (int_approxRN mu nu))//.
+  rewrite (@ereal_sup_le _ [set \int[mu]_x h x] (int_approxRN mu nu))//.
   by rewrite sub1set inE; exists h.
 by rewrite leNgt int_h_M.
 Qed.

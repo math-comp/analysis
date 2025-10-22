@@ -332,6 +332,12 @@
   + `le_sup` -> `sup_le`
   + `sup_ubound` -> `ub_le_sup`
   + `inf_lbound` -> `ge_inf`
+  + `ub_ereal_sup` -> `ge_ereal_sup`
+  + `ereal_inf_le` -> `ge_ereal_inf`
+  + `le_ereal_sup` -> `ereal_sup_le`
+  + `le_ereal_inf` -> `ereal_inf_le_tmp`
+  + `lb_ereal_inf` -> `le_ereal_inf_tmp`
+  + `ereal_sup_ge` -> `le_ereal_sup_tmp`
 
 ### Generalized
 
@@ -370,6 +376,11 @@
 - in `reals.v`:
   + notation `sup_ub` (was deprecated since 1.3.0)
   + notation `inf_lb` (was deprecated since 1.3.0)
+  + notation `ereal_sup_ub` (was deprecated since 1.3.0)
+  + notation `ereal_inf_lb` (was deprecated since 1.3.0)
+
+- in `ereal.v`:
+  + notation `ereal_sup_le` (was deprecated since 1.11.0)
 
 ### Infrastructure
 

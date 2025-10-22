@@ -299,23 +299,23 @@ Proof.
 pose g n := fun x => einfs (f ^~ x) n.
 have mg := measurable_fun_einfs mf.
 have g0 n x : D x -> 0 <= g n x.
-  by move=> Dx; apply: lb_ereal_inf => _ [m /= nm <-]; exact: f0.
+  by move=> Dx; apply: le_ereal_inf_tmp => _ [m /= nm <-]; exact: f0.
 under eq_integral do rewrite limn_einf_lim.
 rewrite limn_einf_lim monotone_convergence //; last first.
-  move=> x Dx m n mn /=; apply: le_ereal_inf => _ /= [p /= np <-].
+  move=> x Dx m n mn /=; apply: ereal_inf_le_tmp => _ /= [p /= np <-].
   by exists p => //=; rewrite (leq_trans mn).
 apply: lee_lim.
 - apply/cvg_ex; eexists; apply/ereal_nondecreasing_cvgn => a b ab.
   apply: ge0_le_integral => //; [exact: g0| exact: mg| exact: g0| exact: mg|].
-  move=> x Dx; apply: le_ereal_inf => _ [n /= bn <-].
+  move=> x Dx; apply: ereal_inf_le_tmp => _ [n /= bn <-].
   by exists n => //=; rewrite (leq_trans ab).
 - apply/cvg_ex; eexists; apply/ereal_nondecreasing_cvgn => a b ab.
-  apply: le_ereal_inf => // _ [n /= bn <-].
+  apply: ereal_inf_le_tmp => // _ [n /= bn <-].
   by exists n => //=; rewrite (leq_trans ab).
 - apply: nearW => m.
   have : forall n p, (p >= n)%N ->
       \int[mu]_(x in D) g n x <= einfs (fun k => \int[mu]_(x in D) f k x) n.
-    move=> n p np; apply: lb_ereal_inf => /= _ [k /= nk <-].
+    move=> n p np; apply: le_ereal_inf_tmp => /= _ [k /= nk <-].
     apply: ge0_le_integral => //; [exact: g0|exact: mg|exact: f0|].
     by move=> x Dx; apply: ereal_inf_lbound; exists k.
   exact.
