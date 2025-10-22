@@ -347,6 +347,10 @@
 - in `probabilitity.v`:
   + lemma `exponential_pdf_ge0` (hypothesis generalized)
 
+- in `unstable.v`:
+  + generalized from `numDomainType` to `pzRingType`:
+    + definition `onem`, lemmas `onme0`, `onem1`, `add_onemK`, `onemD`, `onemMr`, `onemM`
+
 ### Deprecated
 
 ### Removed

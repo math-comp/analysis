@@ -232,21 +232,38 @@ elim/big_ind2 : _ => // [|m A n B Am Bn]; first by rewrite cards0.
 by rewrite (leq_trans (leq_card_setU _ _))// leq_add.
 Qed.
 
-Section onem.
-Variable R : numDomainType.
-Implicit Types r : R.
+Definition onem {R : pzRingType} (r : R) : R := 1 - r.
+Notation "`1- r" := (onem r) : ring_scope.
 
-Definition onem r := 1 - r.
-Local Notation "`1- r" := (onem r).
+Section onem_ring.
+Context {R : pzRingType}.
+Implicit Type r : R.
 
-Lemma onem0 : `1-0 = 1. Proof. by rewrite /onem subr0. Qed.
+Lemma onem0 : `1-0 = 1 :> R. Proof. by rewrite /onem subr0. Qed.
 
-Lemma onem1 : `1-1 = 0. Proof. by rewrite /onem subrr. Qed.
+Lemma onem1 : `1-1 = 0 :> R. Proof. by rewrite /onem subrr. Qed.
 
 Lemma onemK r : `1-(`1-r) = r. Proof. exact: subKr. Qed.
 
-Lemma add_onemK r : r + `1- r = 1.
-Proof. by rewrite /onem addrC subrK. Qed.
+Lemma add_onemK r : r + `1- r = 1. Proof. by rewrite /onem addrC subrK. Qed.
+
+Lemma onemD r s : `1-(r + s) = `1-r - s.
+Proof. by rewrite /onem addrAC opprD addrA addrAC. Qed.
+
+Lemma onemMr r s : s * `1-r = s - s * r.
+Proof. by rewrite /onem mulrBr mulr1. Qed.
+
+Lemma onemM r s : `1-(r * s) = `1-r + `1-s - `1-r * `1-s.
+Proof.
+rewrite /onem mulrBr mulr1 mulrBl mul1r opprB -addrA.
+by rewrite (addrC (1 - r)) !addrA subrK opprB addrA subrK addrK.
+Qed.
+
+End onem_ring.
+
+Section onem_order.
+Variable R : numDomainType.
+Implicit Types r : R.
 
 Lemma onem_gt0 r : r < 1 -> 0 < `1-r. Proof. by rewrite subr_gt0. Qed.
 
@@ -265,20 +282,7 @@ Proof. by move=> ? ?; rewrite subr_ge0 exprn_ile1. Qed.
 Lemma onemX_lt1 r n : 0 < r -> `1-(r ^+ n) < 1.
 Proof. by move=> ?; rewrite onem_lt1// exprn_gt0. Qed.
 
-Lemma onemD r s : `1-(r + s) = `1-r - s.
-Proof. by rewrite /onem addrAC opprD addrA addrAC. Qed.
-
-Lemma onemMr r s : s * `1-r = s - s * r.
-Proof. by rewrite /onem mulrBr mulr1. Qed.
-
-Lemma onemM r s : `1-(r * s) = `1-r + `1-s - `1-r * `1-s.
-Proof.
-rewrite /onem mulrBr mulr1 mulrBl mul1r opprB -addrA.
-by rewrite (addrC (1 - r)) !addrA subrK opprB addrA subrK addrK.
-Qed.
-
-End onem.
-Notation "`1- r" := (onem r) : ring_scope.
+End onem_order.
 
 Lemma onemV (F : numFieldType) (x : F) : x != 0 -> `1-(x^-1) = (x - 1) / x.
 Proof. by move=> ?; rewrite mulrDl divff// mulN1r. Qed.
