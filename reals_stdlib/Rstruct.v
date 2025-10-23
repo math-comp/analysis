@@ -543,21 +543,21 @@ Qed.
 Lemma factE n : fact n = n`!.
 Proof. by elim: n => //= n ih; rewrite factS mulSn ih. Qed.
 
-Section bigmaxr.
+(*Section bigmaxr.
 Context {R : realDomainType}.
 
 (* bigop pour le max pour des listes non vides ? *)
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 Definition bigmaxr (r : R) s := \big[Num.max/head r s]_(i <- s) i.
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bigmaxr_nil (x0 : R) : bigmaxr x0 [::] = x0.
 Proof.
 #[warning="-deprecated"] by rewrite /bigmaxr /= big_nil.
 Qed.
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bigmaxr_un (x0 x : R) : bigmaxr x0 [:: x] = x.
 Proof.
@@ -565,7 +565,7 @@ Proof.
 Qed.
 
 (* previous definition *)
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bigmaxrE (r : R) s : bigmaxr r s = foldr Num.max (head r s) (behead s).
 Proof.
@@ -578,7 +578,7 @@ rewrite (_ : bigmaxr _ _ = if s isn't h :: t then r else \big[Num.max/h]_(i <- s
 by case: s => //=; rewrite /bigmaxr big_nil.
 Qed.
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 Lemma bigrmax_dflt (x y : R) s : Num.max x (\big[Num.max/x]_(j <- y :: s) j) =
   Num.max x (\big[Num.max/y]_(i <- y :: s) i).
 Proof.
@@ -587,7 +587,7 @@ by rewrite !big_cons !big_nil maxxx maxCA maxxx maxC.
 by rewrite big_cons maxCA IH maxCA [in RHS]big_cons IH.
 Qed.
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bigmaxr_cons (x0 x y : R) lr :
   bigmaxr x0 (x :: y :: lr) = Num.max x (bigmaxr x0 (y :: lr)).
@@ -596,7 +596,7 @@ Proof.
 by rewrite [y :: lr]lock /bigmaxr /= -lock big_cons bigrmax_dflt.
 Qed.
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bigmaxr_ler (x0 : R) s i :
   (i < size s)%N -> (nth x0 s i) <= (bigmaxr x0 s).
@@ -610,7 +610,7 @@ by rewrite big_cons bigrmax_dflt le_max orbC IH.
 Qed.
 
 (* Compatibilité avec l'addition *)
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bigmaxr_addr (x0 : R) lr (x : R) :
   bigmaxr (x0 + x) (map (fun y : R => y + x) lr) = (bigmaxr x0 lr) + x.
@@ -622,7 +622,7 @@ elim: t h => /= [|h' t IH] h; first by rewrite ?(big_cons,big_nil) -addr_maxl.
 by rewrite [in RHS]big_cons bigrmax_dflt addr_maxl -IH big_cons bigrmax_dflt.
 Qed.
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bigmaxr_mem (x0 : R) lr : (0 < size lr)%N -> bigmaxr x0 lr \in lr.
 Proof.
@@ -636,7 +636,7 @@ rewrite big_cons bigrmax_dflt inE eq_le; case: lerP => /=.
 Qed.
 
 (* TODO: bigmaxr_morph? *)
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bigmaxr_mulr (A : finType) (s : seq A) (k : R) (x : A -> R) :
   0 <= k -> bigmaxr 0 (map (fun i => k * x i) s) = k * bigmaxr 0 (map x s).
@@ -650,7 +650,7 @@ by rewrite !bigmaxr_un.
 by rewrite bigmaxr_cons {}ih bigmaxr_cons maxr_pMr.
 Qed.
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bigmaxr_index (x0 : R) lr :
   (0 < size lr)%N -> (index (bigmaxr x0 lr) lr < size lr)%N.
@@ -662,7 +662,7 @@ move: (@bigmaxr_mem x0 (h :: t) isT).
 by rewrite ltnS index_mem inE /= eq_sym H.
 Qed.
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bigmaxr_lerP (x0 : R) lr (x : R) :
   (0 < size lr)%N ->
@@ -675,7 +675,7 @@ move=> lr_size; apply: (iffP idP) => [le_x i i_size | H].
 by move/(nthP x0): (bigmaxr_mem x0 lr_size) => [i i_size <-]; apply: H.
 Qed.
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bigmaxr_ltrP (x0 : R) lr (x : R) :
   (0 < size lr)%N ->
@@ -688,7 +688,7 @@ move=> lr_size; apply: (iffP idP) => [lt_x i i_size | H].
 by move/(nthP x0): (bigmaxr_mem x0 lr_size) => [i i_size <-]; apply: H.
 Qed.
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bigmaxrP (x0 : R) lr (x : R) :
   (x \in lr /\ forall i, (i < size lr) %N -> (nth x0 lr i) <= x) -> (bigmaxr x0 lr = x).
@@ -700,18 +700,7 @@ move=> [] /(nthP x0) [] j j_size j_nth x_ler; apply: le_anti; apply/andP; split.
 by rewrite -j_nth (bigmaxr_ler _ j_size).
 Qed.
 
-(* surement à supprimer à la fin
-Lemma bigmaxc_lttc x0 lc :
-  uniq lc -> forall i, (i < size lc)%N -> (i != index (bigmaxc x0 lc) lc)
-    -> lttc (nth x0 lc i) (bigmaxc x0 lc).
-Proof.
-move=> lc_uniq Hi size_i /negP neq_i.
-rewrite lttc_neqAle (bigmaxc_letc _ size_i) andbT.
-apply/negP => /eqP H; apply: neq_i; rewrite -H eq_sym; apply/eqP.
-by apply: index_uniq.
-Qed. *)
-
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bigmaxr_lerif (x0 : R) lr :
   uniq lr -> forall i, (i < size lr)%N ->
@@ -727,12 +716,12 @@ by apply: bigmaxr_mem; apply: (leq_trans _ i_size).
 Qed.
 
 (* bigop pour le max pour des listes non vides ? *)
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Definition bmaxrf n (f : {ffun 'I_n.+1 -> R}) :=
   bigmaxr (f ord0) (codom f).
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bmaxrf_ler n (f : {ffun 'I_n.+1 -> R}) i :
   (f i) <= (bmaxrf f).
@@ -745,7 +734,7 @@ suff -> : nth (f ord0) (codom f) i = f i; first by [].
 by rewrite /codom (nth_map ord0) ?size_enum_ord // nth_ord_enum.
 Qed.
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bmaxrf_index n (f : {ffun 'I_n.+1 -> R}) :
   (index (bmaxrf f) (codom f) < n.+1)%N.
@@ -758,15 +747,15 @@ rewrite [in X in (_ < X)%N](_ : n.+1 = size (codom f)); last first.
 by apply: bigmaxr_index; rewrite size_codom card_ord.
 Qed.
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Definition index_bmaxrf n f := Ordinal (@bmaxrf_index n f).
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 Lemma ordnat i n (ord_i : (i < n)%N) : i = Ordinal ord_i :> nat.
 Proof. by []. Qed.
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma eq_index_bmaxrf n (f : {ffun 'I_n.+1 -> R}) :
   f (index_bmaxrf f) = bmaxrf f.
@@ -781,7 +770,7 @@ move/(nth_index (f ord0)) => <-; rewrite (nth_map ord0).
 by rewrite size_enum_ord; apply: bmaxrf_index.
 Qed.
 
-#[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
+#[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
 #[warning="-deprecated"]
 Lemma bmaxrf_lerif n (f : {ffun 'I_n.+1 -> R}) :
   injective f -> forall i,
@@ -791,6 +780,6 @@ Proof.
 by move=> inj_f i; rewrite /Num.leif bmaxrf_ler -(inj_eq inj_f) eq_index_bmaxrf.
 Qed.
 
-End bigmaxr.
+End bigmaxr.*)
 
 End ssreal_struct_contd.
