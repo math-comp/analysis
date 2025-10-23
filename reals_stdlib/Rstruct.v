@@ -543,7 +543,7 @@ Qed.
 Lemma factE n : fact n = n`!.
 Proof. by elim: n => //= n ih; rewrite factS mulSn ih. Qed.
 
-(*Section bigmaxr.
+Section bigmaxr.
 Context {R : realDomainType}.
 
 (* bigop pour le max pour des listes non vides ? *)
@@ -780,6 +780,6 @@ Proof.
 by move=> inj_f i; rewrite /Num.leif bmaxrf_ler -(inj_eq inj_f) eq_index_bmaxrf.
 Qed.
 
-End bigmaxr.*)
+End bigmaxr.
 
 End ssreal_struct_contd.
