@@ -2598,8 +2598,8 @@ HB.instance Definition _ :=
 
 End fct_zmodType.
 
-Section fct_ringType.
-Variables (T : pointedType) (M : ringType).
+Section fct_pzRingType.
+Variables (T : Type) (M : pzRingType).
 Implicit Types f g h : T -> M.
 
 Let mulrA : associative (fun f g => f \* g).
@@ -2617,24 +2617,38 @@ Proof. by move=> f g h; rewrite funeqE=> x/=; rewrite mulrDl. Qed.
 Let mulrDr : right_distributive (fun f g => f \* g) +%R.
 Proof. by move=> f g h; rewrite funeqE=> x/=; rewrite mulrDr. Qed.
 
+HB.instance Definition _ := @GRing.Zmodule_isPzRing.Build (T -> M) (cst 1)
+  (fun f g => f \* g) mulrA mul1r mulr1 mulrDl mulrDr.
+
+End fct_pzRingType.
+
+Section fct_nzRingType.
+Variables (T : pointedType) (M : nzRingType).
+
 Let oner_neq0 : cst 1 != 0 :> (T -> M).
 Proof. by apply/eqP; rewrite funeqE => /(_ point) /eqP; rewrite oner_eq0. Qed.
 
-HB.instance Definition _ := @GRing.Zmodule_isRing.Build (T -> M) (cst 1)
-  (fun f g => f \* g) mulrA mul1r mulr1 mulrDl mulrDr oner_neq0.
+HB.instance Definition _ :=
+  @GRing.PzSemiRing_isNonZero.Build (T -> M) oner_neq0.
 
-End fct_ringType.
+End fct_nzRingType.
 
-Program Definition fct_comRingType (T : pointedType) (M : comRingType) :=
-  GRing.Ring_hasCommutativeMul.Build (T -> M) _.
-Next Obligation.
-by move=> T M f g; rewrite funeqE => x; rewrite /GRing.mul/= mulrC.
-Qed.
-HB.instance Definition _ (T : pointedType) (M : comRingType) :=
-  fct_comRingType T M.
+Section fct_comPzRingType.
+Variables (T : Type) (M : comPzRingType).
+
+Let mulrC : commutative (@GRing.mul (T -> M)).
+Proof. by move=> f g; rewrite funeqE => x; rewrite /GRing.mul/= mulrC. Qed.
+
+HB.instance Definition _ :=
+  GRing.PzRing_hasCommutativeMul.Build (T -> M) mulrC.
+
+End fct_comPzRingType.
+
+HB.instance Definition _ (T : pointedType) (M : comNzRingType) :=
+  GRing.ComPzRing.on (T -> M).
 
 Section fct_lmod.
-Variables (U : Type) (R : ringType) (V : lmodType R).
+Variables (U : Type) (R : pzRingType) (V : lmodType R).
 Program Definition fct_lmodMixin := @GRing.Zmodule_isLmodule.Build R (U -> V)
   (fun k f => k \*: f) _ _ _ _.
 Next Obligation. by move=> k f v; rewrite funeqE=> x; exact: scalerA. Qed.
@@ -2652,12 +2666,12 @@ Lemma fct_sumE (I T : Type) (M : nmodType) r (P : {pred I}) (f : I -> T -> M) :
   \sum_(i <- r | P i) f i = fun x => \sum_(i <- r | P i) f i x.
 Proof. by apply/funext => ?; elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 
-Lemma fct_prodE (I : Type) (T : pointedType) (M : ringType) r (P : {pred I})
+Lemma fct_prodE (I : Type) (T : pointedType) (M : pzRingType) r (P : {pred I})
     (f : I -> T -> M) :
   \prod_(i <- r | P i) f i = fun x => \prod_(i <- r | P i) f i x.
 Proof. by apply/funext => ?; elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 
-Lemma mul_funC (T : Type) {R : comSemiRingType} (f : T -> R) (r : R) :
+Lemma mul_funC (T : Type) {R : comPzSemiRingType} (f : T -> R) (r : R) :
   r \*o f = r \o* f.
 Proof. by apply/funext => x/=; rewrite mulrC. Qed.
 
@@ -2675,7 +2689,7 @@ Lemma sumrfctE (T : Type) (K : nmodType) (s : seq (T -> K)) :
   \sum_(f <- s) f = (fun x => \sum_(f <- s) f x).
 Proof. exact: fct_sumE. Qed.
 
-Lemma prodrfctE (T : pointedType) (K : ringType) (s : seq (T -> K)) :
+Lemma prodrfctE (T : pointedType) (K : pzRingType) (s : seq (T -> K)) :
   \prod_(f <- s) f = (fun x => \prod_(f <- s) f x).
 Proof. exact: fct_prodE. Qed.
 
@@ -2686,11 +2700,11 @@ Proof. by elim: n => [//|n h]; rewrite funeqE=> ?; rewrite !mulrSr h. Qed.
 Lemma opprfctE (T : Type) (K : zmodType) (f : T -> K) : - f = (fun x => - f x).
 Proof. by []. Qed.
 
-Lemma mulrfctE (T : pointedType) (K : ringType) (f g : T -> K) :
+Lemma mulrfctE (T : pointedType) (K : pzRingType) (f g : T -> K) :
   f * g = (fun x => f x * g x).
 Proof. by []. Qed.
 
-Lemma scalrfctE (T : Type) (K : ringType) (L : lmodType K)
+Lemma scalrfctE (T : Type) (K : pzRingType) (L : lmodType K)
     k (f : T -> L) :
   k *: f = (fun x : T => k *: f x).
 Proof. by []. Qed.
@@ -2698,7 +2712,7 @@ Proof. by []. Qed.
 Lemma cstE (T T': Type) (x : T) : cst x = fun _: T' => x.
 Proof. by []. Qed.
 
-Lemma exprfctE (T : pointedType) (K : ringType) (f : T -> K) n :
+Lemma exprfctE (T : pointedType) (K : pzRingType) (f : T -> K) n :
   f ^+ n = (fun x => f x ^+ n).
 Proof. by elim: n => [|n h]; rewrite funeqE=> ?; rewrite ?expr0 ?exprS ?h. Qed.
 

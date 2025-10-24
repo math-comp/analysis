@@ -78,7 +78,7 @@ From mathcomp Require Import numfun lebesgue_measure lebesgue_integral.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldTopology.Exports.
 
 Local Open Scope classical_set_scope.
@@ -1597,9 +1597,9 @@ have bigcupA : \bigcup_n A n = setT.
   have fink2 xy : fin_num_fun (k2 xy) by exact: kernel_finite_transition.
   apply/seteqP; split => // y _.
   have {}fink2 := fink2 (x, y) _ measurableT.
-  exists (Num.trunc (fine (k2 (x, y) setT))).+1 => //=.
+  exists (Num.truncn (fine (k2 (x, y) setT))).+1 => //=.
   have : (0 <= fine (k2 (x, y) [set: T2]))%R by rewrite fine_ge0.
-  by move=> /Num.Theory.trunc_itv/andP[_]; rewrite -lte_fin fineK.
+  by move=> /truncn_itv/andP[_]; rewrite -lte_fin fineK.
 have lty n : kproduct k1 k2 x (A n `*` setT) < +oo.
   have fink1 : fin_num_fun (k1 x) by exact: kernel_finite_transition.
   apply: (@le_lt_trans _ _ (n%:R%:E * k1 x (A n))) => /=.

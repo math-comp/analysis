@@ -316,6 +316,7 @@ Proof.
 move=> finF; elim/Peq : R => R in zero times plus a F finF *.
 have [->|a0] := eqVneq a zero.
   by rewrite Monoid.mul0m fsbig1//; move=> i _; rewrite Monoid.mul0m.
+#[warning="deprecated"] (* FIXME *)
 rewrite big_distrr [RHS](full_fsbigID (F @^-1` [set zero])); last first.
   apply: sub_finite_set finF => x /= [Px aFN0].
   by split=> //; apply: contra_not aFN0 => ->; rewrite Monoid.simpm.

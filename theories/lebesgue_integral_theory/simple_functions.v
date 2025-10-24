@@ -150,13 +150,13 @@ Lemma cst_sfunE x : @cst_sfun x =1 cst x. Proof. by []. Qed.
 End sfun.
 
 (* a better way to refactor function stuffs *)
-Lemma fctD (T : pointedType) (K : ringType) (f g : T -> K) : f + g = f \+ g.
+Lemma fctD (T : pointedType) (K : pzRingType) (f g : T -> K) : f + g = f \+ g.
 Proof. by []. Qed.
-Lemma fctN (T : pointedType) (K : ringType) (f : T -> K) : - f = \- f.
+Lemma fctN (T : pointedType) (K : pzRingType) (f : T -> K) : - f = \- f.
 Proof. by []. Qed.
-Lemma fctM (T : pointedType) (K : ringType) (f g : T -> K) : f * g = f \* g.
+Lemma fctM (T : pointedType) (K : pzRingType) (f g : T -> K) : f * g = f \* g.
 Proof. by []. Qed.
-Lemma fctZ (T : pointedType) (K : ringType) (L : lmodType K) k (f : T -> L) :
+Lemma fctZ (T : pointedType) (K : pzRingType) (L : lmodType K) k (f : T -> L) :
    k *: f = k \*: f.
 Proof. by []. Qed.
 Arguments cst _ _ _ _ /.
@@ -173,7 +173,7 @@ Qed.
 
 HB.instance Definition _ := GRing.isSubringClosed.Build _ sfun
   sfun_subring_closed.
-HB.instance Definition _ := [SubChoice_isSubComRing of {sfun aT >-> rT} by <:].
+HB.instance Definition _ := [SubChoice_isSubComNzRing of {sfun aT >-> rT} by <:].
 
 Implicit Types (f g : {sfun aT >-> rT}).
 

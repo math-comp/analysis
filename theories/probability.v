@@ -188,7 +188,7 @@ have cdf_n1 : cdf X n%:R @[n --> \oo] --> 1.
   pose F n := X @^-1` `]-oo, n%:R].
   have <- : \bigcup_n F n = setT.
     rewrite -preimage_bigcup -subTset => t _/=.
-    by exists (trunc (X t)).+1 => //=; rewrite in_itv/= ltW// truncnS_gt.
+    by exists (truncn (X t)).+1 => //=; rewrite in_itv/= ltW// truncnS_gt.
   apply: nondecreasing_cvg_mu => //; first exact: bigcup_measurable.
   move=> n m nm; apply/subsetPset => x/=; rewrite !in_itv/= => /le_trans.
   by apply; rewrite ler_nat.
@@ -210,7 +210,7 @@ have cdf_opp_n0 : (cdf X \o -%R) n%:R @[n --> \oo] --> 0.
   pose F n := X @^-1` `]-oo, (- n%:R)%R].
   have <- : \bigcap_n F n = set0.
     rewrite -subset0 => t.
-    set m := (trunc `|X t|).+1.
+    set m := (truncn `|X t|).+1.
     move=> /(_ m I); rewrite /F/= in_itv/= leNgt => /negP; apply.
     by rewrite ltrNl /m (le_lt_trans (ler_norm _))// normrN truncnS_gt.
   apply: nonincreasing_cvg_mu => //=.
@@ -1689,7 +1689,7 @@ Lemma normal_peak_ge0 s : 0 <= normal_peak s. Proof. by rewrite invr_ge0. Qed.
 Lemma normal_peak_gt0 s : s != 0 -> 0 < normal_peak s.
 Proof.
 move=> s0; rewrite invr_gt0// sqrtr_gt0.
-by rewrite pmulrn_rgt0// mulr_gt0 ?pi_gt0// exprn_even_gt0/=.
+by rewrite mulrn_wgt0// mulr_gt0 ?pi_gt0// exprn_even_gt0/=.
 Qed.
 
 Let normal_pdf0 m s x : R := normal_peak s * normal_fun m s x.

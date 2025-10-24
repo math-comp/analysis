@@ -389,7 +389,7 @@ rewrite [X in measurable X](_ : _ =
   apply: bigcupT_measurable => k; rewrite -(setIid D) setIACA.
   exact/measurableI/emeasurable_fun_infty_c/emeasurable_fun_c_infty.
 rewrite predeqE => t; split => [/= [Dt ft]|].
-  exists (trunc `|fine (f t)|).+1 => //=; split=> //; split.
+  exists (truncn `|fine (f t)|).+1 => //=; split=> //; split.
     rewrite -[leRHS](fineK ft) lee_fin lerNl.
     by rewrite (le_trans (ler_norm _))// normrN ltW// truncnS_gt.
   rewrite -[leLHS](fineK ft) lee_fin (le_trans (ler_norm _))//.
@@ -637,7 +637,7 @@ move=> /(_ `|floor r|%N Logic.I); rewrite /= in_itv/= ltNge.
 rewrite lee_fin; have [r0|r0] := leP 0%R r.
   by rewrite (le_trans _ r0) // lerNl oppr0 ler0n.
 rewrite lerNl -abszN natr_absz gtr0_norm; last by rewrite ltrNr oppr0 floor_lt0.
-by rewrite mulrNz lerNl opprK ge_floor.
+by rewrite mulrNz lerNl opprK floor_le_tmp.
 Qed.
 
 Lemma eset1y : [set +oo] = \bigcap_k `]k%:R%:E, +oo[%classic :> set (\bar R).
@@ -1115,7 +1115,7 @@ split=> [|f g|f g]; rewrite !inE/=.
 Qed.
 HB.instance Definition _ := GRing.isSubringClosed.Build _
   (@mfun d default_measure_display aT rT) mfun_subring_closed.
-HB.instance Definition _ := [SubChoice_isSubComRing of {mfun aT >-> rT} by <:].
+HB.instance Definition _ := [SubChoice_isSubComNzRing of {mfun aT >-> rT} by <:].
 
 Implicit Types (f g : {mfun aT >-> rT}).
 

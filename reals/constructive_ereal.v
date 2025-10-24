@@ -3822,7 +3822,7 @@ Proof. by case: x => [x|//|]; rewrite /= ?leey// lee_fin sqrtr_ge0. Qed.
 Lemma lee_sqrt x y : 0 <= y -> (sqrte x <= sqrte y) = (x <= y).
 Proof.
 case: x y => [x||] [y||] yge0 //=.
-- exact: mathcomp_extra.ler_sqrt.
+- exact: ler_sqrt.
 - by rewrite !leey.
 - by rewrite leNye lee_fin sqrtr_ge0.
 Qed.

@@ -322,7 +322,7 @@ apply/countable_uniformityP.
 exists (fun n => [set xy : T * T | ball xy.1 n.+1%:R^-1 xy.2]); last first.
   by move=> n; exact: (entourage_ball _ n.+1%:R^-1%:pos).
 move=> E; rewrite -entourage_ballE => -[e e0 subE].
-exists (Num.trunc e^-1); apply: subset_trans subE => xy; apply: le_ball.
+exists (Num.truncn e^-1); apply: subset_trans subE => xy; apply: le_ball.
 by rewrite /= -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0// ltW// truncnS_gt.
 Qed.
 

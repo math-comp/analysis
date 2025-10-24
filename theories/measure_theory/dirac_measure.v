@@ -101,9 +101,9 @@ Lemma infinite_card_dirac (A : set T) : infinite_set A ->
   \esum_(i in A) \d_ i A = +oo :> \bar R.
 Proof.
 move=> infA; apply/eqyP => r r0.
-have [B BA Br] := infinite_set_fset (trunc r).+1 infA.
+have [B BA Br] := infinite_set_fset (truncn r).+1 infA.
 apply: esum_ge; exists [set` B] => //.
-apply: (@le_trans _ _ (trunc r).+1%:R%:E).
+apply: (@le_trans _ _ (truncn r).+1%:R%:E).
   by rewrite lee_fin ltW// truncnS_gt.
 move: Br; rewrite -(@ler_nat R) -lee_fin => /le_trans; apply.
 rewrite (eq_fsbigr (cst 1))/=; last first.

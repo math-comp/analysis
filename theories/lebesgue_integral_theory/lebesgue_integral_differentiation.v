@@ -564,8 +564,8 @@ have cMfx_int x : c%:E < HL f x ->
   move=> cMfx; rewrite /r_; case: pselect => //= => {}cMfx.
   case: (r_proof _ cMfx) => /= r r0.
   rewrite /iavg (lebesgue_measure_ball _ (ltW r0)) inver mulrn_eq0//= gt_eqF//.
-  rewrite -(@lte_pmul2r _ (r *+ 2)%:E)//; last by rewrite lte_fin// pmulrn_rgt0.
-  by rewrite muleAC -[in X in _ < X]EFinM mulVf ?gt_eqF ?pmulrn_rgt0// mul1e.
+  rewrite -(@lte_pmul2r _ (r *+ 2)%:E)//; last by rewrite lte_fin// mulrn_wgt0.
+  by rewrite muleAC -[in X in _ < X]EFinM mulVf ?gt_eqF ?mulrn_wgt0// mul1e.
 set B := fun r => ball r (r_ r).
 have {}Kcmf : K `<=` cover [set i | HL f i > c%:E] (fun i => ball i (r_ i)).
   by move=> r /Kcmf /= cMfr; exists r => //; exact: ballxx.
@@ -715,7 +715,7 @@ have [t0|t0] := leP t 0%R; first by rewrite /= davg0//= subrr normr0 ltW.
 rewrite sub0r normrN /= ger0_norm; last by rewrite fine_ge0// davg_ge0.
 rewrite -lee_fin fineK//; last by rewrite dfx//= sub0r normrN gtr0_norm.
 rewrite /davg/= /iavg/= (lebesgue_measure_ball _ (ltW t0))//.
-rewrite inver mulrn_eq0/= gt_eqF// lee_pdivrMl//; last by rewrite pmulrn_rgt0.
+rewrite inver mulrn_eq0/= gt_eqF// lee_pdivrMl//; last by rewrite mulrn_wgt0.
 rewrite (@le_trans _ _ (\int[mu]_(y in ball x t) e%:E))//.
   apply: ge0_le_integral => //=.
   - exact: measurable_ball.
@@ -1130,7 +1130,7 @@ have : (mu (ball x r))^-1 *
   near=> a; rewrite mule_ge0 ?inve_ge0///= lee_pmul2l//; last 2 first.
     by rewrite lebesgue_measure_ball// fin_numV// eqe mulrn_eq0/= gt_eqF.
     rewrite lebesgue_measure_ball// inver mulrn_eq0/= gt_eqF// lte_fin.
-    by rewrite invr_gt0// pmulrn_rgt0.
+    by rewrite invr_gt0// mulrn_wgt0.
   apply: le_abse_integral => //; first exact: measurable_ball.
   exact/measurable_EFinP/measurable_funB.
 set f := (f in f r @[r --> 0^'+] --> _ -> _).

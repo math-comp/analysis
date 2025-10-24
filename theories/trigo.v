@@ -92,7 +92,7 @@ Qed.
 End periodic.
 
 Section alternating.
-Variables (U : zmodType) (V : ringType).
+Variables (U : zmodType) (V : pzRingType).
 Implicit Type f : U -> V.
 
 Definition alternating f (T : U) := forall x, f (x + T) = - f x.
@@ -1145,7 +1145,7 @@ case: (He (Num.sg x * acos x1)); split; last first.
   rewrite -[X in 1 - X]div1r -[X in X - _]divr1// -mulNr addf_div ?lt0r_neq0//.
   rewrite mul1r mulr1 [X in X - 1]addrC addrK// sqrtrM ?sqr_ge0// sqrtrV//.
   rewrite invrK// mulrA divfK//; last by rewrite sqrtr_eq0 -ltNge.
-  by rewrite sqrtr_sqr mulr_sg_norm.
+  by rewrite sqrtr_sqr -numEsg.
 rewrite -ltr_norml normrM.
 have pi2 : 0 < pi / 2 :> R by rewrite divr_gt0 // pi_gt0.
 have [->|xD0] := eqVneq x 0; first by rewrite sgr0 normr0 mul0r.

@@ -203,7 +203,7 @@ exists (fun n => sval (cid (He (PosNum (invn n))))).
   apply/cvgrPdist_lt => r r0; near=> t.
   rewrite /sval/=; case: cid => x [px xpt _].
   rewrite distrC (lt_le_trans xpt)// -(@invrK _ r) lef_pV2 ?posrE ?invr_gt0//.
-  near: t; exists (trunc r^-1) => // s /= rs.
+  near: t; exists (truncn r^-1) => // s /= rs.
   by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
 rewrite /sval/=; case: cid => // x [px xpn].
@@ -260,7 +260,7 @@ exists (fun n => sval (cid (He (PosNum (invn n))))).
   apply/cvgrPdist_lt => r r0; near=> t.
   rewrite /sval/=; case: cid => x [xpt _].
   rewrite distrC (lt_le_trans xpt)// -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0//.
-  near: t; exists (trunc r^-1) => // s /= rs.
+  near: t; exists (truncn r^-1) => // s /= rs.
   by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
 rewrite /sval/=; case: cid => // x [px xpn].
@@ -294,7 +294,7 @@ have y_p : y_ n @[n --> \oo] --> p.
   rewrite /y_ /sval/=; case: cid2 => //= x /andP[_ + _].
   rewrite -ltrBlDl => /lt_le_trans; apply.
   rewrite -(invrK e) lef_pV2// ?posrE ?invr_gt0//.
-  near: t; exists (trunc e^-1) => // s /= es.
+  near: t; exists (truncn e^-1) => // s /= es.
   by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
 have /fine_cvgP[[m _ mfy_] /= _] := h _ (conj py_ y_p).
 near \oo => n.
@@ -2982,7 +2982,7 @@ have FrBFl (x : elt_type) : exists m, m.+1%:R ^-1 < Fr (sval x) - Fl (sval x).
     apply: (@nondecreasing_at_left_at_right _ _ a b) => //.
     by case: x {Fc Fd cd} => x/= /[1!inE] -[].
   have {}FlFr : Fl (sval x) < Fr (sval x) by rewrite lt_neqAle FlFr andbT.
-  exists (trunc (Fr (sval x) - Fl (sval x))^-1).
+  exists (truncn (Fr (sval x) - Fl (sval x))^-1).
   by rewrite invf_plt ?posrE ?subr_gt0// truncnS_gt.
 pose S m := [set x | x \in (`]a, b[) /\ m.+1%:R ^-1 < Fr x - Fl x].
 have jumpfafb m (s : seq R) : (forall i, (i < size s)%N -> nth b s i \in S m) ->
@@ -3009,7 +3009,7 @@ have jumpfafb m (s : seq R) : (forall i, (i < size s)%N -> nth b s i \in S m) ->
   by rewrite -big_nat.
 have fin_S m : finite_set (S m).
   apply: contrapT => /infinite_set_fset.
-  move=> /(_ (m.+1 * (trunc (F b - F a)).+1).+1)[B BSm mFbFaB].
+  move=> /(_ (m.+1 * (truncn (F b - F a)).+1).+1)[B BSm mFbFaB].
   set s := sort <=%R B.
   have := jumpfafb m s.
   have HsSm n : (n < size s)%N -> nth b s n \in S m.
