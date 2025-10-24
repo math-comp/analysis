@@ -142,13 +142,13 @@ have [J0|/set0P J0] := eqVneq J set0.
 move=> /subset_itvP ij; apply: leeB => /=.
   have [ui|ui] := asboolP (has_ubound I).
     have [uj /=|uj] := asboolP (has_ubound J); last by rewrite leey.
-    by rewrite lee_fin le_sup // => r Ir; exists r; split => //; apply: ij.
+    by rewrite lee_fin sup_le // => r Ir; exists r; split => //; apply: ij.
   have [uj /=|//] := asboolP (has_ubound J).
   by move: ui; have := subset_has_ubound ij uj.
 have [lj /=|lj] := asboolP (has_lbound J); last by rewrite leNye.
 have [li /=|li] := asboolP (has_lbound I); last first.
   by move: li; have := subset_has_lbound ij lj.
-rewrite lee_fin lerNl opprK le_sup// ?has_inf_supN//; last exact/nonemptyN.
+rewrite lee_fin lerNl opprK sup_le// ?has_inf_supN//; last exact/nonemptyN.
 move=> r [r' Ir' <-{r}]; exists (- r')%R.
 by split => //; exists r' => //; apply: ij.
 Qed.
@@ -860,8 +860,8 @@ Lemma outer_measure_open A : (l^* A)%mu =
   ereal_inf [set (l^* U)%mu | U in [set U | open U /\ A `<=` U]].
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split.
-  by apply: lb_ereal_inf => /= _ /= [U [oU AU] <-]; exact: le_outer_measure.
-apply/lee_addgt0Pr => /= e e0; apply: ereal_inf_le.
+  by apply: le_ereal_inf_tmp => /= _ /= [U [oU AU] <-]; exact: le_outer_measure.
+apply/lee_addgt0Pr => /= e e0; apply: ge_ereal_inf.
 have [U [oU AU UAe]] := @outer_measure_open_le A _ e0.
 by exists (mu U) => //=; exists U.
 Qed.
@@ -1051,7 +1051,7 @@ Let lebesgue_regularity_innerE_bounded (A : set R) : measurable A ->
   mu A = ereal_sup [set mu K | K in [set K | compact K /\ K `<=` A]].
 Proof.
 move=> mA muA; apply/eqP; rewrite eq_le; apply/andP; split; last first.
-  by apply: ub_ereal_sup => /= x [B /= [cB BA <-{x}]]; exact: le_outer_measure.
+  by apply: ge_ereal_sup => /= x [B /= [cB BA <-{x}]]; exact: le_outer_measure.
 apply/lee_addgt0Pr => e e0.
 have [B [cB BA /= ABe]] := lebesgue_regularity_inner mA muA e0.
 rewrite -{1}(setDKU BA) (@le_trans _ _ (mu B + mu (A `\` B)))//.

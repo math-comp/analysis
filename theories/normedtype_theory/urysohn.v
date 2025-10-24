@@ -51,7 +51,7 @@ Definition edist (xy : X * X) : \bar R :=
 
 Lemma edist_ge0 (xy : X * X) : (0 <= edist xy)%E.
 Proof.
-by apply: lb_ereal_inf => z [+ []] => _/posnumP[r] _ <-; rewrite lee_fin.
+by apply: le_ereal_inf_tmp => z [+ []] => _/posnumP[r] _ <-; rewrite lee_fin.
 Qed.
 Hint Resolve edist_ge0 : core.
 
@@ -68,7 +68,7 @@ Qed.
 Lemma edist_fin r (xy : X * X) :
   0 < r -> ball xy.1 r xy.2 -> (edist xy <= r%:E)%E.
 Proof.
-move: r => _/posnumP[r] => ?; rewrite -(ereal_inf1 r%:num%:E) le_ereal_inf //.
+move: r => _/posnumP[r] => ?; rewrite -(ereal_inf1 r%:num%:E) ereal_inf_le_tmp//.
 by move=> ? -> /=; exists r%:num; split.
 Qed.
 
@@ -142,7 +142,7 @@ rewrite -EFinD lee_fin -inf_sumE //; first last.
 apply: lb_le_inf.
   by exists (r1%:num + r2%:num); exists r1%:num => //; exists r2%:num.
 move=> ? [+ []] => _/posnumP[p] xpy [+ []] => _/posnumP[q] yqz <-.
-apply: inf_lbound; first by exists 0 => ? /= [/ltW].
+apply: ge_inf; first by exists 0 => ? /= [/ltW].
 by split => //; exact: (ball_triangle xpy).
 Qed.
 
@@ -221,7 +221,7 @@ Context {R : realType} {T : pseudoMetricType R} (A : set T).
 Definition edist_inf z := ereal_inf [set edist (z, a) | a in A].
 
 Lemma edist_inf_ge0 w : (0 <= edist_inf w)%E.
-Proof. by apply: lb_ereal_inf => ? /= [? ? <-]. Qed.
+Proof. by apply: le_ereal_inf_tmp => ? /= [? ? <-]. Qed.
 Hint Resolve edist_inf_ge0 : core.
 
 Lemma edist_inf_neqNy w : (edist_inf w != -oo)%E.

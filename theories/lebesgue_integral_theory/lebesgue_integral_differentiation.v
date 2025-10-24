@@ -430,7 +430,7 @@ Local Notation HL := HL_maximal.
 Lemma HL_maximal_ge0 f D : locally_integrable D f ->
   forall x, 0 <= HL (f \_ D) x.
 Proof.
-move=> Df x; apply: ereal_sup_ge => //=.
+move=> Df x; apply: le_ereal_sup_tmp => //=.
 pose k := \int[mu]_(x in D `&` ball x 1) `|f x|%:E.
 exists ((mu (ball x 1))^-1 * k); last first.
   by rewrite mule_ge0 ?inve_ge0// integral_ge0.
@@ -551,7 +551,7 @@ move=> /= locf c0.
 rewrite lebesgue_regularity_inner_sup//; last first.
   rewrite -[X in measurable X]setTI; apply: emeasurable_fun_o_infty => //.
   exact: measurable_HL_maximal.
-apply: ub_ereal_sup => /= x /= [K [cK Kcmf <-{x}]].
+apply: ge_ereal_sup => /= x /= [K [cK Kcmf <-{x}]].
 have r_proof x : HL f x > c%:E -> {r | (0 < r)%R & iavg f (ball x r) > c%:E}.
   move=> /ereal_sup_gt/cid2[y /= /cid2[r]].
   by rewrite in_itv/= andbT => rg0 <-{y} Hc; exists r.
@@ -798,7 +798,7 @@ Let is_cvg_ereal_sup_davg f x :
 Proof.
 apply: nondecreasing_at_right_is_cvge; near=> e => y z.
 rewrite !in_itv/= => /andP[y0 ye] /andP[z0 ze] yz.
-apply: le_ereal_sup => _ /= -[b [yb b0]] <-.
+apply: ereal_sup_le => _ /= -[b [yb b0]] <-.
 by exists b => //; split => //; exact: le_ball yb.
 Unshelve. all: by end_near. Qed.
 
@@ -808,7 +808,7 @@ Proof.
 move=> [mf _ locf]; rewrite /lim_sup_davg lime_sup_lim; apply: lime_le.
   exact: is_cvg_ereal_sup_davg.
 near=> e.
-apply: ub_ereal_sup => _ [b [eb] /= b0] <-.
+apply: ge_ereal_sup => _ [b [eb] /= b0] <-.
 suff : forall r, davg f x r <= HL_maximal f x + `|f x|%:E by exact.
 move=> r.
 apply: (@le_trans _ _ ((mu (ball x r))^-1 *

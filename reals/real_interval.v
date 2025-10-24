@@ -59,10 +59,10 @@ Proof.
 case: b; last first.
   by rewrite -setUitv1// sup_setU ?sup1// => ? ? ? ->; exact/ltW.
 set s := sup _; apply/eqP; rewrite eq_le; apply/andP; split.
-- apply sup_le_ub; last by move=> ? /ltW.
+- apply: ge_sup; last by move=> ? /ltW.
   by exists (x - 1); rewrite !set_itvE/= ltrBlDr ltrDl.
 - rewrite leNgt; apply/negP => sx; pose p := (s + x) / 2.
-  suff /andP[?]: (p < x) && (s < p) by apply/negP; rewrite -leNgt sup_ubound.
+  suff /andP[?]: (p < x) && (s < p) by apply/negP; rewrite -leNgt ub_le_sup.
   by rewrite !midf_lt.
 Qed.
 

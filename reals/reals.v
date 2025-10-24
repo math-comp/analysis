@@ -262,7 +262,7 @@ Lemma sup0 : sup (@set0 R) = 0. Proof. exact: supremum0. Qed.
 
 Lemma sup1 x : sup [set x] = x. Proof. exact: supremum1. Qed.
 
-Lemma sup_ubound {E} : has_ubound E -> ubound E (sup E).
+Lemma ub_le_sup {E} : has_ubound E -> ubound E (sup E).
 Proof.
 move=> ubE; apply/ubP=> x x_in_E; move: (x) (x_in_E).
 by apply/ubP/sup_upper_bound=> //; split; first by exists x.
@@ -271,7 +271,7 @@ Qed.
 Lemma sup_ub_strict E : has_ubound E ->
   ~ E (sup E) -> E `<=` [set r | r < sup E].
 Proof.
-move=> ubE EsupE r Er; rewrite /mkset lt_neqAle sup_ubound // andbT.
+move=> ubE EsupE r Er; rewrite /mkset lt_neqAle ub_le_sup // andbT.
 by apply/negP => /eqP supEr; move: EsupE; rewrite -supEr.
 Qed.
 
@@ -283,7 +283,7 @@ have /sup_adherent/(_  has_supE) : 0 < sup E - x by rewrite subr_gt0.
 by case=> e Ee; rewrite subKr => /ltW hlte; apply/downP; exists e.
 Qed.
 
-Lemma sup_le_ub {E} x : E !=set0 -> (ubound E) x -> sup E <= x.
+Lemma ge_sup {E} x : E !=set0 -> (ubound E) x -> sup E <= x.
 Proof.
 move=> hasE leEx; set y := sup E; pose z := (x + y) / 2%:R.
 have Dz: 2%:R * z = x + y by rewrite mulrC divfK// pnatr_eq0.
@@ -300,10 +300,10 @@ Lemma sup_setU (A B : set R) : has_sup B ->
   (forall a b, A a -> B b -> a <= b) -> sup (A `|` B) = sup B.
 Proof.
 move=> [B0 [l Bl]] AB; apply/eqP; rewrite eq_le; apply/andP; split.
-- apply sup_le_ub => [|x [Ax|]]; first by apply: subset_nonempty B0 => ?; right.
-  by case: B0 => b Bb; rewrite (le_trans (AB _ _ Ax Bb)) // sup_ubound //; exists l.
-- by move=> Bx; rewrite sup_ubound //; exists l.
-- apply sup_le_ub => // b Bb; apply: sup_ubound; last by right.
+- apply: ge_sup => [|x [Ax|]]; first by apply: subset_nonempty B0 => ?; right.
+  by case: B0 => b Bb; rewrite (le_trans (AB _ _ Ax Bb))// ub_le_sup//; exists l.
+- by move=> Bx; rewrite ub_le_sup //; exists l.
+- apply: ge_sup => // b Bb; apply: ub_le_sup; last by right.
   by exists l => x [Ax|Bx]; [rewrite (le_trans (AB _ _ Ax Bb)) // Bl|exact: Bl].
 Qed.
 
@@ -311,12 +311,14 @@ Lemma sup_gt (S : set R) (x : R) : S !=set0 ->
   (x < sup S -> exists2 y, S y & x < y)%R.
 Proof.
 move=> S0; rewrite not_exists2P => + g; apply/negP; rewrite -leNgt.
-by apply sup_le_ub => // y Sy; move: (g y) => -[// | /negP]; rewrite leNgt.
+by apply: ge_sup => // y Sy; move: (g y) => -[// | /negP]; rewrite leNgt.
 Qed.
 
 End RealLemmas.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="Renamed `sup_ubound`.")]
-Notation sup_ub := sup_ubound (only parsing).
+#[deprecated(since="mathcomp-analysis 1.14.0", note="Renamed `ub_le_sup`.")]
+Notation sup_ubound := ub_le_sup (only parsing).
+#[deprecated(since="mathcomp-analysis 1.14.0", note="Renamed `ge_sup`.")]
+Notation sup_le_ub := ge_sup (only parsing).
 
 Section sup_sum.
 Context {R : realType}.
@@ -330,8 +332,8 @@ have ABsup : has_sup [set x + y | x in A & y in B].
   case: ubA ubB => p up [q uq]; exists (p + q) => ? [r Ar [s Bs] <-].
   by apply: lerD; [exact: up | exact: uq].
 apply: le_anti; apply/andP; split.
-  apply: sup_le_ub; first by case: ABsup.
-  by move=> ? [p Ap [q Bq] <-]; apply: lerD; exact: sup_ubound.
+  apply: ge_sup; first by case: ABsup.
+  by move=> ? [p Ap [q Bq] <-]; apply: lerD; exact: ub_le_sup.
 rewrite leNgt -subr_gt0; apply/negP.
 set eps := (_ + _ - _) => epos.
 have e2pos : 0 < eps / 2%:R by rewrite divr_gt0// ltr0n.
@@ -386,19 +388,19 @@ Proof. by rewrite /inf image_set0 sup0 oppr0. Qed.
 Lemma inf1 x : inf [set x] = x.
 Proof. by rewrite /inf image_set1 sup1 opprK. Qed.
 
-Lemma inf_lbound E : has_lbound E -> lbound E (inf E).
-Proof. by move/has_lb_ubN/sup_ubound/ub_lbN; rewrite setNK. Qed.
+Lemma ge_inf E : has_lbound E -> lbound E (inf E).
+Proof. by move/has_lb_ubN/ub_le_sup/ub_lbN; rewrite setNK. Qed.
 
 Lemma inf_lb_strict E : has_lbound E ->
   ~ E (inf E) -> E `<=` [set r | inf E < r].
 Proof.
-move=> lE EinfE r Er; rewrite /mkset lt_neqAle inf_lbound // andbT.
+move=> lE EinfE r Er; rewrite /mkset lt_neqAle ge_inf// andbT.
 by apply/negP => /eqP infEr; move: EinfE; rewrite infEr.
 Qed.
 
 Lemma lb_le_inf E x : nonempty E -> (lbound E) x -> x <= inf E.
 Proof.
-by move=> /(nonemptyN E) En0 /lb_ubN /(sup_le_ub En0); rewrite lerNr.
+by move=> /(nonemptyN E) En0 /lb_ubN /(ge_sup En0); rewrite lerNr.
 Qed.
 
 Lemma has_infPn E : nonempty E ->
@@ -424,8 +426,8 @@ by move=> <-; rewrite ltrNr opprK => r'x; exists r'.
 Qed.
 
 End InfTheory.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="Renamed `inf_lbound`.")]
-Notation inf_lb := inf_lbound (only parsing).
+#[deprecated(since="mathcomp-analysis 1.14.0", note="Renamed `ge_inf`.")]
+Notation inf_lbound := ge_inf (only parsing).
 
 (* -------------------------------------------------------------------- *)
 Section FloorTheory.
@@ -584,7 +586,7 @@ case: nzubA => u /ubP ubA; exists u; apply/ubP=> y /downP [].
 by move=> z zA /le_trans; apply; apply/ubA.
 Qed.
 
-Lemma le_sup A B : A `<=` down B -> nonempty A -> has_sup B ->
+Lemma sup_le A B : A `<=` down B -> nonempty A -> has_sup B ->
   sup A <= sup B.
 Proof.
 move=> le_AB nz_A hs_B; have hs_A: has_sup A.
@@ -598,10 +600,10 @@ move/(lt_le_trans lt_Bx); rewrite ltNge.
 by move/ubP : (sup_upper_bound hs_B) => ->.
 Qed.
 
-Lemma le_inf A B : -%R @` B `<=` down (-%R @` A) -> nonempty B -> has_inf A ->
+Lemma inf_le A B : -%R @` B `<=` down (-%R @` A) -> nonempty B -> has_inf A ->
   inf A <= inf B.
 Proof.
-move=> SBA AB Ai; rewrite lerNl opprK le_sup// ?has_inf_supN//.
+move=> SBA AB Ai; rewrite lerNl opprK sup_le// ?has_inf_supN//.
 exact/nonemptyN.
 Qed.
 
@@ -610,7 +612,7 @@ Proof.
 have [supA|supNA] := pselect (has_sup A); last first.
   by rewrite !sup_out // => /has_sup_down.
 have supDA : has_sup (down A) by apply/has_sup_down.
-apply/eqP; rewrite eq_le !le_sup //.
+apply/eqP; rewrite eq_le !sup_le //.
 - by case: supA => -[x xA] _; exists x; apply/le_down.
 - by rewrite downK; exact: le_down.
 - by case: supA.
@@ -633,10 +635,14 @@ Lemma lt_inf_imfset {T : Type} (F : T -> R) l :
 Proof.
 set P := [set y | _]; move=> hs; rewrite -subr_gt0.
 move=> /inf_adherent/(_ hs)[_ [x ->]]; rewrite addrC subrK => ltFxl.
-by exists x => //; rewrite (inf_lbound hs.2)//; exists x.
+by exists x => //; rewrite (ge_inf hs.2)//; exists x.
 Qed.
 
 End Sup.
+#[deprecated(since="mathcomp-analysis 1.14.0", note="Renamed `inf_le`.")]
+Notation le_inf := inf_le (only parsing).
+#[deprecated(since="mathcomp-analysis 1.14.0", note="Renamed `sup_le`.")]
+Notation le_sup := sup_le (only parsing).
 
 Lemma int_lbound_has_minimum (B : set int) i : B !=set0 -> lbound B i ->
   exists j, B j /\ forall k, B k -> j <= k.

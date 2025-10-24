@@ -81,9 +81,9 @@ Local Open Scope ereal_scope.
 Lemma limf_esup_ge0 f F : ~ F set0 ->
   (forall x, 0 <= f x) -> 0 <= limf_esup f F.
 Proof.
-move=> F0 f0; rewrite limf_esupE; apply: lb_ereal_inf => /= x [A].
+move=> F0 f0; rewrite limf_esupE; apply: le_ereal_inf_tmp => /= x [A].
 have [-> /F0//|/set0P[y Ay FA] <-{x}] := eqVneq A set0.
-by apply: ereal_sup_ge; exists (f y).
+by apply: le_ereal_sup_tmp; exists (f y).
 Qed.
 
 End limf_esup_einf_realType.

@@ -1284,11 +1284,11 @@ Proof.
 move=> x Xx/=; rewrite in_itv/=.
 case: (asboolP (has_lbound _)) => ?; case: (asboolP (has_ubound _)) => ? //=.
 + by case: asboolP => ?; case: asboolP => ? //=;
-     rewrite !(lteifF,lteifT,sup_ubound,inf_lbound,sup_ub_strict,inf_lb_strict).
+     rewrite !(lteifF,lteifT,ub_le_sup,ge_inf,sup_ub_strict,inf_lb_strict).
 + by case: asboolP => XinfX; rewrite !(lteifF, lteifT);
-     [rewrite inf_lbound | rewrite inf_lb_strict].
+     [rewrite ge_inf | rewrite inf_lb_strict].
 + by case: asboolP => XsupX; rewrite !(lteifF, lteifT);
-     [rewrite sup_ubound | rewrite sup_ub_strict].
+     [rewrite ub_le_sup | rewrite sup_ub_strict].
 Qed.
 
 Lemma is_intervalP (X : set R) : is_interval X <-> X = [set x | x \in Rhull X].
@@ -1358,8 +1358,8 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
       by exists x; split => //; rewrite /mkset lexx /= (ltW xy).
     by move: sepA; rewrite /separated => -[] /disjoints_subset + _; apply.
   have /andP[xz zy] : x <= z < y.
-    rewrite sup_ubound//=; [|by exists y => u [_] /andP[]|].
-    + rewrite lt_neqAle sup_le_ub ?andbT; last by move=> u [_] /andP[].
+    rewrite ub_le_sup//=; [|by exists y => u [_] /andP[]|].
+    + rewrite lt_neqAle ge_sup ?andbT; last by move=> u [_] /andP[].
       * by apply/negP; apply: contraPnot A1y => /eqP <-.
       * by exists x; split => //; rewrite /mkset /= lexx /= (ltW xy).
     + by split=> //; rewrite /mkset lexx (ltW xy).
@@ -1389,7 +1389,7 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
   have nA0z1 : ~ (A false) z1.
     move=> A0z1; have : z < z1 by rewrite /z1 ltrDl.
     apply/negP; rewrite -leNgt.
-     apply: sup_ubound; first by exists y => u [_] /andP[].
+     apply: ub_le_sup; first by exists y => u [_] /andP[].
     by split => //; rewrite /mkset /z1 (le_trans xz) /= ?lerDl // (ltW z1y).
   by rewrite EU => -[//|]; apply: contra_not ncA1z1; exact: subset_closure.
 Qed.
