@@ -2931,7 +2931,7 @@ have /= [? ?]:= funf 0 Logic.I.
 by split => //.
 Unshelve. all: by end_near. Qed.
 
-Lemma infinite_setD (A B : set R) :
+Lemma infinite_setD {T} (A B : set T) :
   infinite_set A -> finite_set B ->
   infinite_set (A `\` B).
 Proof.
@@ -2946,8 +2946,7 @@ by rewrite finite_setU => -[].
 Qed.
 
 Theorem bolzano_weierstrass (E : set R) :
-  infinite_set E -> bounded_set E ->
-  limit_point E !=set0.
+  infinite_set E -> bounded_set E -> limit_point E !=set0.
 Proof.
 move=> infiniteE boundedE.
 pose G := [set x | infinite_set (`[x, +oo[ `&` E)].
@@ -3081,7 +3080,6 @@ have : infinite_set (`]l - e, l + e[ `&` E).
     rewrite -ltNge => xle.
     split => //.
     by rewrite lex xle.
-
   have L2 : `[l - e, l + e[ `&` E = (`[l - e, +oo[ `&` E) `\`
                                        (`[l + e, +oo[ `&` E).
     rewrite /ball_/=.
@@ -3119,14 +3117,823 @@ rewrite -ltrBlDr opprK -ltrBrDl opprK M2/=.
 by rewrite ltrBlDr addrC -ltrBlDr.
 Qed.
 
+Definition adherence_set (E : set R) :=
+  [set x : R | forall U, nbhs x U -> U `&` E !=set0].
 
-Theorem bolzano_weierstrass (x : ('rV[R]_p.+1)^nat):
-  bounded_fun x -> exists2 f, increasing_seq f & cvgn (x \o f : ('rV[R]_p.+1)^nat).
+Lemma adherence_set0 : adherence_set set0 = set0.
 Proof.
+rewrite -subset0 => x.
+rewrite /adherence_set/= => /(_ setT).
+move/(_ (filter_nbhsT (nbhs_filter x))).
+by rewrite setI0 => /set0P/eqP.
+Qed.
 
+Lemma adherence_setE (E : set R) x : E !=set0 ->
+  adherence_set E x <-> forall e, e > 0 -> `[x - e, x + e] `&` E !=set0.
+Proof.
+move=> E0.
+split.
+  rewrite /adherence_set/= => H e e0.
+apply: H.
+  apply/nbhs_closedballP.
+  exists (PosNum e0).
+  by rewrite closed_ball_itv.
+move=> /= H U.
+rewrite nbhsE/= => -[A] [oA Ax] AU.
+have [e /= e0 exA] := open_subball oA Ax.
+have e30 : 0 < e / 3 by rewrite divr_gt0.
+have e20 : 0 < e / 2 by rewrite divr_gt0.
+have := H _ e30.
+apply: subset_nonempty.
+apply: setSI.
+apply: subset_trans AU.
+apply: subset_trans; last first.
+  apply: (exA _ _ e20).
+  rewrite /ball_/=.
+  rewrite sub0r normrN gtr0_norm//.
+  by rewrite gtr_pMr// invf_lt1 ?ltr1n.
+move=> y/=.
+rewrite !in_itv /ball/=.
+rewrite ltr_norml.
+move=> /andP[H1 H2].
+apply/andP; split.
+  rewrite -ltrBlDr opprK.
+  rewrite addrC ltrBlDr.
+  rewrite (le_lt_trans H2)//.
+  rewrite ltrD2l.
+  rewrite ltr_pdivrMr// -mulrA.
+  rewrite ltr_pMr//.
+  rewrite -ltr_pdivrMr// div1r.
+  by rewrite ltf_pV2 ?posrE// ltr_nat.
+rewrite ltrBlDr addrC -ltrBlDr.
+rewrite (lt_le_trans _ H1)//.
+rewrite ltrD2l.
+rewrite ltrN2.
+rewrite ltr_pdivrMr// -mulrA.
+rewrite ltr_pMr//.
+rewrite -ltr_pdivrMr// div1r.
+by rewrite ltf_pV2 ?posrE// ltr_nat.
+Qed.
 
+Lemma adherence_setE2 (E : set R) : E !=set0 ->
+  adherence_set E = [set x : R | inf [set y : R | exists t, E t /\ y = `|x - t| ] = 0].
+Proof.
+move=> E0.
+apply/seteqP; split.
+  move=> x Ex/=.
+  move/(adherence_setE _ E0) in Ex.
+  rewrite /= in Ex.
+  apply/eqP.
+  rewrite eq_le; apply/andP; split; last first.
+    apply/lb_le_inf.
+      have [y [/=xy Ey]] := Ex _ ltr01.
+      exists `|x - y| => /=.
+      by exists y; split => //.
+    by move=> y/= [z [Ez ->]].
+  rewrite leNgt.
+  set z : R := inf _.
+  apply/negP => z0.
+  have z20 : 0 < z / 2 by rewrite divr_gt0.
+  have [y [/= + Ey]] := Ex _ z20.
+  rewrite in_itv/= => H1.
+  set A : set R := [set y | (exists t : R, E t /\ y = `|x - t|)].
+  have H2 : A `|x - y| by exists y.
+  have : z <= `|x - y|.
+    apply: ge_inf => //=.
+    by exists 0 => u/= [t [Et ->]].
+  rewrite leNgt => /negP; apply.
+  rewrite ltr_norml; apply/andP; split.
+    rewrite -ltrBlDr (opprK y) addrC ltrBlDr.
+    move/andP : H1 => [_] /le_lt_trans; apply.
+    rewrite ltrD2l.
+      by rewrite gtr_pMr// invf_lt1// ltr1n.
+    rewrite ltrBlDl -ltrBlDr.
+    move/andP : H1 => [+ _].
+    apply: lt_le_trans.
+    rewrite ler_ltB//.
+    by rewrite gtr_pMr// invf_lt1// ltr1n.
+move=> x/=.
+move=> inf0.
+apply/adherence_setE => //= e e0.
+move: e0.
+rewrite -inf0.
+move/inf_lt.
+have : [set y | (exists t : R, E t /\ y = `|x - t|)] !=set0.
+  case: E0 => y Ey.
+  exists `|x - y| =>/=.
+  by exists y.
+move=> /[swap] /[apply] => -[y/= [t [Et ->{y}]]] xte.
+exists t; split => //=.
+rewrite in_itv/=.
+move: xte.
+rewrite ltr_norml => /andP[H1 H2].
+apply/andP; split.
+  by rewrite lerBlDl -lerBlDr ltW.
+move: H1.
+by rewrite -ltrBlDr opprK addrC ltrBlDr => /ltW.
+Qed.
 
+Lemma adherence_set_cvg (x : R) (E : set R) :
+  adherence_set E x <->
+  exists2 a_, range a_ `<=` E & a_ n @[n --> \oo] --> x.
+Proof.
+split.
+  move=> Ex.
+  have xE0 : forall n, ball x n.+1%:R^-1 `&` E !=set0.
+    move=> n.
+    move: Ex.
+    rewrite /adherence_set/= => /(_ (ball x n.+1%:R^-1)).
+    apply.
+    apply: nbhsx_ballx.
+    by rewrite invr_gt0 ltr0n.
+    pose a_ (n : nat) := sval (cid (xE0 n)).
+  have xa : (a_ n - x) @[n --> \oo] --> 0.
+  apply/cvgrPdist_lt => /= e e0.
+  near=> n.
+  rewrite sub0r normrN.
+  rewrite /a_.
+  case: cid => //= r.
+  rewrite /ball/= => -[+ _].
+  rewrite distrC.
+  move=> /lt_le_trans; apply.
+  rewrite invf_ple ?posrE//.
+  rewrite -natr1 -lerBlDr.
+  near: n.
+  by apply: nbhs_infty_ger.
+  exists a_.
+    move=> y [n _].
+    rewrite /a_.
+    by case: cid => //= r [] _ + <-.
+  by apply/subr_cvg0.
+move=> [a_ a_E a_x].
+have H1 : inf [set y | exists n : nat, y = `|x - a_ n| ] = 0.
+  apply/eqP; rewrite eq_le; apply/andP; split.
+    apply/ler_addgt0Pl => /= e e0.
+    rewrite addr0.
+    move/cvgrPdist_le : a_x => /(_ _ e0)[N _ a_x].
+    rewrite (@le_trans _ _ (`|x - a_ N |))//; last first.
+      by apply: a_x => //=.
+    apply: ge_inf => //=.
+      by exists 0 => /= y [m ->].
+    by exists N.
+  apply: lb_le_inf => /=.
+    exists (`|x - a_ 0|) => /=.
+    by exists 0.
+  by move=> y/= [m ->].
+have H2 : inf [set y | exists t : R, E t /\ y = `|x - t| ] = 0.
+  apply/eqP; rewrite eq_le; apply/andP; split; last first.
+    apply: lb_le_inf => /=.
+      exists (`|x - a_ 0|) => /=.
+      exists (a_ 0); split => //.
+      apply: a_E.
+      by exists 0.    by rewrite /lbound/= => y [t [Et ->]].
+  rewrite -H1.
+  apply: inf_le => //=.
+  - move=> _/= [_ [n ->] <-].
+    rewrite /down/=.
+    exists (- `|x - a_ n|).
+    split => //.
+    exists (`|x - a_ n|) => //.
+    exists (a_ n); split => //.
+    by apply: a_E.
+  - exists (`|x - a_ 0|) => /=.
+    by exists 0.
+  - split.
+      exists (`|x - a_ 0|) =>/=.
+      exists (a_ 0) => //=.
+      split => //.
+      apply: a_E.
+      by exists 0 => //=.
+    by exists 0 => y/= [z [?] ->].
+rewrite adherence_setE2//.
+exists (a_ 0).
+apply: a_E.
+by exists 0.
+Unshelve. all: end_near. Qed.
 
+Definition adherence_seq (u_ : R^nat) (a : R) :=
+  forall (e : R) (n : nat), e > 0 -> exists2 p, (p >= n)%N & `|u_ p - a| <= e.
+
+Lemma nat_has_minimum (B : set nat) : B !=set0 ->
+  exists j, B j /\ forall k, B k -> (j <= k)%N.
+Proof.
+move=> B0.
+pose B' : set int := [set x%:~R | x in B].
+have B'0 : B' !=set0.
+  case: B0 => b Bb.
+  exists b%:~R.
+  by exists b.
+have : lbound B' 0.
+  move=> _ [b0 Bb0 <-].
+  by rewrite ler0z.
+move/(int_lbound_has_minimum B'0) => [_ [[i Bi <-]]] H.
+exists i; split => // k Bk.
+have := H k%:~R.
+rewrite ler_int; apply.
+by exists k.
+Qed.
+
+Lemma increasing_seq_mono d (T : orderType d) (f : nat -> T) :
+  increasing_seq f ->
+  {mono f : x y / (x < y)%O}.
+Proof.
+move=> H x y.
+apply/idP/idP.
+  apply: contraTT.
+  rewrite -!leNgt le_eqVlt => /predU1P[->//|yx].
+  by rewrite H ltnW.
+rewrite lt_neqAle => /andP[xy yx].
+rewrite ltNge.
+rewrite H.
+rewrite -ltnNge.
+by rewrite ltn_neqAle xy.
+Qed.
+
+Lemma increasing_seq_neary0 (v : nat -> nat) : increasing_seq v ->
+  \forall n \near nbhs \oo, (0 < v n)%N.
+Proof.
+move/increasing_seq_mono => H.
+near=> n.
+rewrite (@leq_ltn_trans (v 0))//.
+have n0 : (0 < n)%N.
+  near: n.
+  exact: nbhs_infty_gt.
+have := H 0 n.
+by rewrite ltEnat/= n0.
+Unshelve. all: end_near. Qed.
+
+Lemma increasing_seq_neary (v : nat -> nat) N : increasing_seq v ->
+  \forall n \near nbhs \oo, (N < v n)%N.
+Proof.
+move=> H.
+elim: N => [|N ih].
+  exact: increasing_seq_neary0.
+case: ih => M _ /= ih.
+near=> n.
+rewrite (@leq_ltn_trans (v n.-1))//.
+  apply: ih => /=.
+  rewrite -(leq_add2r 1)// !addn1 prednK//.
+    near: n.
+    exact: nbhs_infty_gt.
+  near: n.
+  exact: nbhs_infty_gt.
+move/increasing_seq_mono in H.
+have := H n.-1 n.
+rewrite ltEnat/= => ->.
+rewrite prednK//.
+near: n.
+exact: nbhs_infty_gt.
+Unshelve. all: end_near. Qed.
+
+Definition adhA (u_ : R^nat) (a : R) Ni i :=
+  [set j | (j > Ni)%N /\ `|u_ j - a| <= i.+1%:R^-1].
+
+Section adherence_seq_cvg.
+Variables (u_ : R^nat) (a : R).
+
+Let A := adhA u_ a.
+
+Let adherence_seq_cvg_direct :
+  adherence_seq u_ a ->
+  exists2 f : nat -> nat, increasing_seq f & (u_ \o f @ \oo --> a).
+Proof.
+move=> u_a.
+pose elt_prop (Ni : nat * nat) : Prop :=
+  [/\ `|u_ Ni.1 - a| <= Ni.2%:R^-1, A Ni.1 Ni.2 !=set0 & (0 < Ni.2)%N].
+pose elt_type := {Ni : nat * nat | elt_prop Ni}.
+pose N_ (x : elt_type) := (proj1_sig x).1.
+pose idx_ (x : elt_type) := (proj1_sig x).2.
+pose A_ (x : elt_type) := A (N_ x) (idx_ x).
+have N_prop (x : elt_type) : `|u_ (N_ x) - a| <= (idx_ x)%:R^-1.
+  by move: x => [[N i]] [].
+have A_prop (x : elt_type) : A_ x !=set0.
+  by move: x => [[N i]] [].
+pose elt_rel (i j : elt_type) :=
+  (idx_ j = (idx_ i).+1) /\
+  (N_ j > N_ i)%N /\
+  N_ j = proj1_sig (cid (nat_has_minimum (A_prop i))).
+have [N0 N0prop] : {N0 : nat | `| u_ N0 - a | <= 1^-1}.
+  move: u_a.
+  rewrite /adherence_seq => /(_ 1 1).
+  rewrite ltr01 => /(_ isT)/cid2[N1 ?] N1a1.
+  exists N1.
+  by rewrite invr1.
+have A0 : A N0 1 !=set0.
+  rewrite /A/=.
+  move: u_a.
+  rewrite /adherence_seq => /(_ (2^-1) N0.+1).
+  rewrite invr_gt0// ltr0n => /(_ isT)[j N0j j1].
+  exists j; split.
+    exact: N0j.
+  exact: j1.
+have : {v : nat -> elt_type |
+    v 0%N = exist elt_prop (N0, 1) (And3 N0prop A0 isT) /\
+    forall n, elt_rel (v n) (v n.+1) }.
+  apply: dependent_choice => //.
+  move=> [[N n] /=].
+  rewrite /elt_prop => /= -[uNn ANn0 n_gt0].
+  pose new := proj1_sig (cid (nat_has_minimum ANn0)).
+  have new0 : (0 < new)%N.
+    rewrite /new.
+    case: cid => //= x [[+ _] _].
+    exact: leq_trans.
+  have Hnew : `|u_ new - a| <= n.+1%:R^-1.
+    rewrite /new.
+    case: cid => /= x [ANnx xmin].
+    by case: ANnx => Nx.
+  have H : A new n.+1 !=set0.
+    rewrite /A.
+    move: u_a.
+    rewrite /adherence_seq => /(_ (n.+2%:R^-1) new.+1).
+    rewrite invr_gt0// ltr0n => /(_ isT)/cid2[m nm um].
+    exists m; split.
+      done.
+    by done.
+  pose new' := exist elt_prop (new, n.+1) (And3 Hnew H isT).
+  exists new'.
+  rewrite /elt_rel/= /N_/=.
+  split.
+    by rewrite /idx_/=.
+  split.
+    rewrite /new.
+    case: cid => // x [ANnx/= xmin].
+    by case: ANnx.
+  rewrite /new.
+  case: cid => // x [Hx1 Hx2]/=.
+  case: cid => //= y.
+  rewrite /A_ /N_ /idx_/= => -[ANny ymin].
+  apply/eqP; rewrite eq_le.
+  rewrite leEnat.
+  rewrite (Hx2 _ ANny).
+  by rewrite (ymin _ Hx1).
+move=> [v [v0 indv]].
+have v_incr k p : (k < p)%N -> (N_ (v k) < N_ (v p))%N.
+  move=> kp.
+  have {}indv : forall n, (N_ (v n) < N_ (v n.+1))%O.
+    move=> n.
+    by have [_ []] := indv n.
+  move/increasing_seqP in indv.
+  move/increasing_seq_mono in indv.
+  suff: (N_ (v k) < N_ (v p))%O by [].
+  by rewrite indv.
+have idx_v : forall n, (n <= idx_ (v n))%N.
+  elim=> // n.
+  move/leq_ltn_trans; apply.
+  by have [->] := indv n.
+pose next k : nat := N_ (v k.+1).
+have H1 : (u_(next k) - a) @[k --> \oo] --> (0:R).
+  apply/cvgrPdist_le => /= e e0.
+  near=> n.
+  rewrite sub0r normrN.
+  rewrite /next.
+  rewrite (le_trans (N_prop (v n.+1)))//.
+  rewrite invf_ple ?posrE//; last first.
+    rewrite ltr0n.
+    case: (v n.+1) => -[? ?] [/=].
+    by rewrite /idx_/=.
+  rewrite (@le_trans _ _ n.+1%:R)//; last first.
+    rewrite ler_nat.
+    by rewrite idx_v.
+  rewrite -nat1r -lerBlDl.
+  near: n.
+  exact: nbhs_infty_ger.
+exists next.
+  apply/increasing_seqP => n.
+  rewrite /next/=.
+  by apply: v_incr.
+by apply/subr_cvg0.
+Unshelve. all: end_near. Qed.
+
+Lemma adherence_seq_cvg : adherence_seq u_ a <->
+  exists2 f : nat -> nat, increasing_seq f & (u_ \o f @ \oo --> a).
+Proof.
+split => // -[f incf].
+move/cvgrPdist_le => /= H.
+move=> e n e0.
+have [N _ {}H] := H _ e0.
+exists (f (n + N)).
+  rewrite (@leq_trans (f n))//.
+    clear -n incf.
+    elim: n => // n.
+    rewrite -ltnS => /leq_trans; apply.
+    move/increasing_seqP in incf.
+    exact: incf.
+  rewrite -leEnat.
+  rewrite incf.
+  by rewrite leq_addr.
+by rewrite distrC H//= leq_addl.
+Qed.
+
+End adherence_seq_cvg.
+
+Section limit_point_adherence_seq.
+Variables (u_ : R^nat) (a : R).
+
+(*
+Let A Ni i :=
+  [set j | (j > Ni)%N /\ `|u_ j - a| <= i.+1%:R^-1].
+*)
+
+Let U := range u_.
+
+Lemma limit_point_fin n : limit_point U a ->
+  limit_point (U `\` [set u_ k | k in `I_n]) a.
+Proof.
+move/limit_pointP' => H.
+apply/limit_pointP' => V aV.
+rewrite setIDA.
+apply: infinite_setD.
+by apply: H.
+apply: finite_image.
+by apply: finite_II.
+Qed.
+
+Lemma limit_point_adherence_seq : limit_point U a -> adherence_seq u_ a.
+Proof.
+move=> u_a (* e n e0*).
+pose U_ j := U `\` [set u_ k | k in [set k | k < j]%N].
+pose a1U k := `]a - k.+1%:R^-1, a + k.+1%:R^-1[ `&` (U_ k `\ a).
+pose A Ni i := [set j |
+  (j > Ni)%N /\
+  `|u_ j - a| <= i.+1%:R^-1].
+have a1U0 k : a1U k !=set0.
+  move/limit_point_fin : u_a => /(_ k){}u_a.
+  have [a_ [au a_a a_cvg]] := (limit_pointP _ _).1 u_a.
+  move/cvgrPdist_lt : a_cvg => /(_ (k.+1%:R^-1)).
+  rewrite invr_gt0 ltr0n => /(_ isT)[N _ a_cvg].
+  exists (a_ N); split => //=.
+    have := a_cvg N (leqnn N).
+    rewrite ltr_norml in_itv/= => /andP[H1 H2].
+    rewrite ltrBlDl -ltrBlDr H2/=.
+    by rewrite -ltrBlDr addrC -ltrBrDr.
+  split; last first.
+    apply/eqP.
+    exact: a_a.
+  rewrite /U_.
+  split => /=.
+    have /au : range a_ (a_ N) by exists N.
+    by case.
+  case => x xk uxaN.
+  have /au : range a_ (a_ N) by exists N.
+  case => _; apply => /=.
+  by exists x.
+have mema1U : forall k, exists N1, u_ N1 \in a1U k.
+  move=> k.
+  have := (a1U0 k) => -[] /= y [/= a1y [Uny ya]].
+  case: Uny => Uy /= Uny.
+  case: Uy => m _ umy.
+  exists m.
+  rewrite inE /a1U; split => /=.
+    by rewrite umy.
+  split => //.
+    split => //=.
+      by exists m.
+    apply: contra_not Uny => -[x xn uxm].
+    exists x => //.
+    by subst y.
+  by rewrite umy.
+have [N1 N1a1U] := mema1U 1.
+pose elt_prop (Ni : nat * nat) : Prop :=
+  [/\ `|u_ Ni.1 - a| <= Ni.2%:R^-1, A Ni.1 Ni.2 !=set0 & (0 < Ni.2)%N].
+pose elt_type := {Ni : nat * nat | elt_prop Ni}.
+pose N_ (x : elt_type) := (proj1_sig x).1.
+pose idx_ (x : elt_type) := (proj1_sig x).2.
+have N_prop (x : elt_type) : `|u_ (N_ x) - a| <= (idx_ x)%:R^-1.
+  by move: x => [[N i]] [].
+have A_prop (x : elt_type) : A (N_ x) (idx_ x) !=set0.
+  by move: x => [[N i]] [].
+have idx_gt0 (x : elt_type) : (0 < idx_ x)%N.
+  by move: x => [[N i]] [].
+pose elt_rel (i j : elt_type) :=
+  (idx_ j = (idx_ i).+1) /\
+  (N_ j > N_ i)%N /\
+  N_ j = proj1_sig (cid (nat_has_minimum (A_prop i))).
+have [N0 N0prop] : {N0 : nat | `| u_ N0 - a | <= 1^-1}.
+  apply/cid.
+  have [a_ [au a_a a_cvg]] := (limit_pointP _ _).1 u_a.
+  move/cvgrPdist_le : a_cvg => /(_ _ ltr01)[N _ a_cvg].
+  have aaN1 := a_cvg N (leqnn N).
+  have /au : range a_ (a_ N) by exists N.
+  case => x _ uxaN.
+  exists x.
+  rewrite uxaN.
+  rewrite distrC.
+  by rewrite invr1.
+have A0 : A N0 1 !=set0.
+  rewrite /A/=.
+  have [N2] := mema1U N0.+1.
+  rewrite inE => -[/= uN2 [UuN2 uN2_a]].
+  move: UuN2 => -[] [x _ uxuN2] /= H.
+  exists x => /=.
+  split.
+    rewrite ltnNge; apply/negP => N2N0.
+    apply: H.
+    by exists x => //.
+  rewrite ler_distl.
+  rewrite uxuN2.
+  move: uN2.
+  rewrite in_itv/= => /andP[H1 H2].
+  apply/andP; split.
+    rewrite (le_trans _ (ltW H1))//.
+    by rewrite lerB// lef_pV2// ?posrE// ler_nat//.
+  by rewrite (le_trans (ltW H2))// lerD2l lef_pV2// ?posrE// ler_nat.
+have : {v : nat -> elt_type |
+    v 0%N = exist elt_prop (N0, 1) (And3 N0prop A0 isT) /\
+    forall n, elt_rel (v n) (v n.+1) }.
+  apply: dependent_choice => //.
+  move=> [[N n] /=].
+  rewrite /elt_prop => /= -[uNn ANn0 n_gt0].
+  pose new := proj1_sig (cid (nat_has_minimum ANn0)).
+  have new0 : (0 < new)%N.
+    rewrite /new.
+    case: cid => //= x [[+ _] _].
+    by apply: leq_trans.
+  have Hnew : `|u_ new - a| <= n.+1%:R^-1.
+    rewrite /new.
+    case: cid => /= x [ANnx xmin].
+    by case: ANnx => Nx.
+  have H : A new n.+1 !=set0.
+    rewrite /A/=.
+    have [N2] := mema1U (maxn n.+1 new.+1).
+    rewrite inE => -[/= uN2 [UuN2 uN2_a]].
+    case: UuN2 => -[x _ uxuN2] /= H.
+    have newx : (new < x)%N.
+      rewrite ltnNge; apply/negP => N2N0.
+      apply: H.
+      exists x.
+      by rewrite leq_max !ltnS N2N0 orbT.
+      done.
+    exists x => //=.
+    split.
+      done.
+    move: uN2.
+    rewrite !in_itv/= => /andP[H1 H2].
+    rewrite ler_distl.
+    apply/andP; split.
+      rewrite uxuN2.
+      rewrite (le_trans _ (ltW H1))//.
+      rewrite lerB//.
+      rewrite lef_pV2 ?posrE//.
+      rewrite ler_nat ltnS.
+      by rewrite leq_max//= ltnS leqnn.
+    rewrite uxuN2.
+    rewrite (le_trans (ltW H2))// lerD2l lef_pV2//= ?posrE// ler_nat.
+    rewrite ltnS.
+    by rewrite leq_max ltnSn.
+  pose new' := exist elt_prop (new, n.+1) (And3 Hnew H isT).
+  exists new'.
+  rewrite /elt_rel/= /N_/=.
+  split.
+    by rewrite /idx_/=.
+  split.
+    rewrite /new.
+    case: cid => // x [ANnx/= xmin].
+    by case: ANnx.
+  rewrite /new.
+  case: cid => // x [Hx1 Hx2]/=.
+  case: cid => //= y.
+  rewrite /A /N_ /idx_/= => -[ANny ymin].
+  apply/eqP; rewrite eq_le.
+  rewrite leEnat.
+  rewrite (Hx2 _ ANny)/=.
+  by rewrite (ymin _ Hx1).
+move=> [v [v0 indv]].
+have v_incr k p : (k < p)%N -> (N_ (v k) < N_ (v p))%N.
+  move=> kp.
+  have {}indv : forall n, (N_ (v n) < N_ (v n.+1))%O.
+    move=> n.
+    by have [_ []] := indv n.
+  move/increasing_seqP in indv.
+  move/increasing_seq_mono in indv.
+  suff: (N_ (v k) < N_ (v p))%O by [].
+  by rewrite indv.
+have idx_v : forall n, (n <= idx_ (v n))%N.
+  elim=> // n.
+  move/leq_ltn_trans; apply.
+  by have [->] := indv n.
+apply/adherence_seq_cvg.
+exists (fun n => N_ (v n)).
+  apply/increasing_seqP => n.
+  by apply: v_incr.
+apply/cvgrPdist_le => /= e e0.
+near=> n.
+have := N_prop (v n).
+rewrite distrC => /le_trans.
+apply.
+rewrite invf_ple//; last first.
+  rewrite posrE.
+  rewrite ltr0n.
+  by rewrite idx_gt0.
+rewrite (@le_trans _ _ n%:R)//; last first.
+  rewrite ler_nat.
+  by rewrite idx_v.
+near: n.
+exact: nbhs_infty_ger.
+Unshelve. all: end_near. Qed.
+
+End limit_point_adherence_seq.
+
+Lemma dirichlet (x_ : R^nat) : finite_set (range x_) ->
+  exists k : nat,
+  exists2 A : set nat, infinite_set A &
+    (forall n, A n -> x_ n = x_ k) /\
+    forall n, ~ A n -> x_ n != x_ k.
+Proof.
+case=> x; move: x x_.
+elim.
+  move=> x_.
+  rewrite card_eq_sym.
+  move/card_set_bijP => -[/= f [ffun finj fsur]].
+  red in fsur.
+  have : range x_ (x_ 0) by exists 0.
+  by move/fsur => /= [].
+move=> [_|n ih].
+  move=> x_.
+  rewrite card_eq_sym.
+  move/card_set_bijP => -[/= f [ffun finj fsur]].
+  exists 0.
+  exists setT => //.
+    exact: infinite_nat.
+  split.
+    case=> // n _.
+    red in fsur.
+    have /fsur/=[k] : range x_ (x_ 0) by exists 0.
+    rewrite ltnS leqn0 => /eqP ->{k} <-.
+    have /fsur/=[k] : range x_ (x_ n.+1) by exists n.+1.
+    by rewrite ltnS leqn0 => /eqP ->{k} <-.
+  by move=> n /=.
+move=> x_.
+rewrite card_eq_sym => n2x.
+move: n2x.
+rewrite card_eq_sym.
+move/eq_cardSP => -[r [ir _ irr]] n2x.
+have [|] := pselect (exists2 A : set nat, infinite_set A &
+    (forall n0, A n0 -> x_ n0 = x_ ir) /\ (forall n0, ~ A n0 -> x_ n0 != x_ ir)).
+  move=> [A infA [An1 ?]].
+  exists ir.
+  by exists A.
+move=> abs.
+have : exists2 B, finite_set B & (forall n0, B n0 -> x_ n0 = x_ ir) /\
+                                 (forall n0, ~ B n0 -> x_ n0 != x_ ir).
+  have H : finite_set (x_ @^-1` [set x_ ir]).
+    apply: contrapT => H.
+    apply: abs.
+    eexists.
+      exact: H.
+     by split => // n0 /= /eqP.
+  eexists.
+    exact: H.
+  split.
+    by move=> n0 /= .
+  by move=> n0/= /eqP.
+move=> [B finB] [H1 H2].
+have [N BN] : exists N, ~ B N.
+  apply/existsNP => abs'.
+  have BT : B = setT.
+    rewrite -subTset => x _.
+    exact: abs'.
+  move: finB.
+  rewrite BT.
+  by apply/infinite_nat.
+have xN0 : x_ N != x_ ir.
+  by apply: H2.
+pose y_ : nat -> R := fun k => if k \in B then x_ N else x_ k.
+have : (range y_ #= `I_n.+1)%card.
+  have Hy_ : range y_ = (range x_) `\ x_ ir.
+    apply/seteqP; split=> [z|].
+      move=> -[x] _ <-{z}; split => //.
+        rewrite /y_.
+        by case: ifPn => //.
+      move=> /=.
+      rewrite /y_.
+      case: ifPn => //.
+        move=> _.
+        apply/eqP.
+        done.
+      by rewrite notin_setE => /H2/eqP.
+    move=> z [[x _ <-{z}]]/= x0.
+    rewrite /y_.
+    exists x => //.
+    case: ifPn => //.
+    move/set_mem => /H1.
+    done.
+  by rewrite Hy_ irr.
+move/ih => -[k [A infA Ak]].
+have [Bk|Bk] := pselect (B k).
+  exists N.
+  exists (A `\` B).
+    by apply: infinite_setD.
+  split.
+    move=> n0 [An0 Bn0].
+    have := Ak.1 _ An0.
+    rewrite /y_.
+    rewrite memNset//.
+    by rewrite mem_set//.
+  move=> n0.
+  rewrite -[X in X -> _]/((~` (_ `\` _)) n0).
+  rewrite setCD => -[|Bn0].
+    move/Ak.2.
+    rewrite /y_.
+    case: ifPn => n0B.
+      by rewrite mem_set// eqxx.
+    by rewrite mem_set//.
+   move/H1 : Bn0 => ->.
+   by rewrite eq_sym.
+exists k.
+exists (A `\` B).
+  by apply: infinite_setD.
+split.
+  move=> n0 [An0 Bn0].
+  have := Ak.1 _ An0.
+  rewrite /y_.
+  rewrite memNset//.
+  by rewrite memNset//.
+move=> n0.
+rewrite -[X in X -> _]/((~` (_ `\` _)) n0).
+rewrite setCD => -[|Bn0].
+  move/Ak.2.
+  rewrite /y_.
+  case: ifPn => n0B.
+    rewrite memNset//.
+    move/set_mem : n0B => /H1.
+    move=> ->.
+    move/H2 : Bk.
+    by rewrite eq_sym.
+  by rewrite memNset//.
+have := H2 _ Bk.
+have <- := H1 _ Bn0.
+by rewrite eq_sym.
+Qed.
+
+Theorem bolzano_weierstrass2 (x_ : R^nat):
+  bounded_fun x_ -> exists2 f : nat -> nat, increasing_seq f & cvgn (x_ \o f).
+Proof.
+move=> bnd_x.
+set U := range x_.
+have bndU : bounded_set U.
+  (* TODO: lemma *)
+  case: bnd_x => N [Nreal Nx_].
+  exists N; split => // x /Nx_ {}Nx_ /= y [x0 _ <-].
+  exact: Nx_.
+have [infU|finU] := pselect (infinite_set U).
+  have [/= l Ul] := bolzano_weierstrass infU bndU.
+  have x_l := limit_point_adherence_seq Ul.
+  have [+ _] := adherence_seq_cvg x_ l.
+  move=> /(_ x_l).
+  case => f fi fl.
+  exists f => //.
+  apply/cvg_ex.
+  by exists l.
+move/contrapT in finU.
+have [k [A infA Ak]] := dirichlet finU.
+have : forall x : nat, {y : nat | (x < y)%N /\ A y}.
+  move=> x.
+  apply/cid.
+  move: infA => /infiniteP.
+  move/pcard_leP => /injfunPex[f EF TF].
+  have : exists n, (x < f n)%N.
+    elim: x.
+      apply/not_existsP => H.
+      have /negP := H 0; rewrite -leqNgt leqn0 => /eqP f00.
+      have /negP := H 1; rewrite -leqNgt leqn0 => /eqP f10.
+      have := TF 0 1; rewrite !inE => /(_ Logic.I Logic.I).
+      rewrite f00 f10 => /(_ erefl).
+      apply/eqP.
+      by rewrite eq_sym oner_eq0.
+    move=> n [m ih].
+    apply/not_existsP => H.
+    have {}H : forall x, (f x <= n.+1)%N.
+      move=> x; rewrite leqNgt; apply/negP.
+      exact: H.
+    have : f @` `I_n.+3 `<=` `I_n.+2.
+      move=> /= x [y] yn2 <-.
+      rewrite ltnS.
+      exact: H.
+    move/pigeonhole.
+    rewrite ltnn falseE; apply.
+    move=> a b _ _.
+    move/TF.
+    by apply => //; rewrite inE.
+  case=> n xfn.
+  exists (f n).
+  split.
+    done.
+  by apply: (EF n).
+move/dependent_choice => /(_ 0)[g [g00 gincr]].
+exists g.
+  apply/increasing_seqP.
+  move=> n.
+  by have [] := gincr n.
+apply/cvg_ex; exists (x_ k).
+apply/cvgrPdist_le => /= e e0.
+near=> n.
+have := (gincr n.-1).2.
+rewrite prednK.
+move/Ak.1 ->.
+by rewrite subrr normr0 ltW.
+near: n.
+by exists 1%N.
+Unshelve. all: end_near. Qed.
 
 End bolzano_weierstrass.
 
