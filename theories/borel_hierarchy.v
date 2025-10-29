@@ -131,10 +131,16 @@ Definition perfectly_normal_space' (x : R) :=
   forall E : set T, open E -> 
     exists f : T -> R, continuous f /\ E = f @^-1` ~`[set x].
 
-Definition perfectly_normal_space01 :=
+(*Definition perfectly_normal_space01 :=
   forall E F : set T, closed E -> closed F -> [disjoint E & F] ->
     exists f : T -> R, continuous f /\ E = f @^-1` [set 0] /\ F = f @^-1` [set 1] 
       /\ f @` [set: T] = `[0, 1]%classic.
+ *)
+Definition perfectly_normal_space01 :=
+  forall E F : set T, closed E -> closed F -> [disjoint E & F] ->
+    exists f : T -> R,
+      [/\ continuous f, E = f @^-1` [set 0], F = f @^-1` [set 1]
+        & range f `<=` `[0, 1]%classic].
 
 Definition perfectly_normal_space_Gdelta :=
   normal_space T /\ forall E : set T, closed E -> Gdelta E.
@@ -174,7 +180,7 @@ elim: n => [|n IH]; first by rewrite !big_geq.
 by rewrite !big_nat_recr //= EFinD IH.
 Qed.
 
-Let perfectly_normal_space_12 : perfectly_normal_space_Gdelta -> perfectly_normal_space 0.
+Local Lemma perfectly_normal_space_12 : perfectly_normal_space_Gdelta -> perfectly_normal_space 0.
 Proof.
 move=> pnsGd E cE.
 case: (pnsGd) => nT cEGdE.
@@ -323,28 +329,17 @@ rewrite {1}/f_sum big_geq // -[0 x]fi0 gerDl.
 by rewrite leNgt invr_gt0 exprn_gt0.
 Qed.
 
-Let perfectly_normal_space_13 : perfectly_normal_space_Gdelta -> perfectly_normal_space' 0.
-move=> pnsGd E oE.
-case: (pnsGd) => nT cEGdE.
-have clcpE: closed (~`E).
-  by rewrite closedC.
-have[U oU hE]:= cEGdE (~` E) clcpE.
-have/boolp.choice[f_n Hn]: forall n, exists f : T -> R, 
-  [/\ continuous f, range f `<=` `[0, 1], f @` (~` E) `<=` [set 0] & f @` (~` U n) `<=` [set 1]].
-  move=> n.
-  apply/uniform_separatorP.
-  apply: normal_uniform_separator => //.
-  - by rewrite closedC.
-  - rewrite hE.
-    rewrite -subsets_disjoint.
-    exact: bigcap_inf.
-Admitted.
-
-Let perfectly_normal_space_23 : perfectly_normal_space 0 -> perfectly_normal_space' 0.
+Local Lemma perfectly_normal_space_23 : perfectly_normal_space 0 -> perfectly_normal_space' 0.
 Proof.
-Admitted.
+move=> pns' E cE; case: (pns' (~`E)).
+  by rewrite closedC.
+move=> f [cf f0]; exists f.
+split.
+  by [].
+by rewrite -[LHS]setCK f0 preimage_setC.
+Qed.
 
-Let perfectly_normal_space_32 : perfectly_normal_space' 0 -> perfectly_normal_space 0.
+Local Lemma perfectly_normal_space_32 : perfectly_normal_space' 0 -> perfectly_normal_space 0.
 Proof.
 move=> pns' E cE; case: (pns' (~`E)).
   by rewrite openC.
@@ -354,13 +349,46 @@ split.
 by rewrite -[RHS]setCK preimage_setC -f0 setCK.
 Qed.
 
-Let perfectly_normal_space_24 : perfectly_normal_space 0 -> perfectly_normal_space01.
+(* (norm \o f) @^-1` [set 0] = f @^-1` [set 0] *)
+Lemma norm_preimage0 (f : T -> R) :
+  continuous f ->
+  exists f' : T -> R, [/\ continuous f', (forall x, f' x >= 0)
+                        & f' @^-1` [set 0] = f @^-1` [set 0]].
 Proof.
-Admitted.
+move=> cf; exists (fun x => `|f x|); split => //.
+- move=> x; exact/continuous_comp/norm_continuous/cf.
+- apply/seteqP; split => [x|x /= ->]; [exact: normr0_eq0 | by rewrite normr0].
+Qed.
 
-Let perfectly_normal_space_34 : perfectly_normal_space' 0 -> perfectly_normal_space01.
+Local Lemma perfectly_normal_space_24 : perfectly_normal_space 0 -> perfectly_normal_space01.
 Proof.
-Admitted.
+move=> pns0 E F cE cF EF.
+have [_ [/norm_preimage0 [f [cf f_ge0 <-]] E0]] := pns0 E cE.
+have [_ [/norm_preimage0 [g [cg g_ge0 <-]] F0]] := pns0 F cF.
+have fg_gt0 x : f x + g x > 0.
+  move: (f_ge0 x) (g_ge0 x).
+  rewrite !le_eqVlt => /orP[/eqP|] Hf /orP[/eqP|] Hg; last exact: addr_gt0.
+  + by move: EF; rewrite E0 F0 => /disj_setPRL/(_ x); elim.
+  + by rewrite -Hf add0r.
+  + by rewrite -Hg addr0.
+have fg_neq0 x : f x + g x != 0 by apply: lt0r_neq0.
+exists (fun x => f x / (f x + g x)); split.
+- move=> x; apply: (continuousM (cf x)).
+  apply: continuous_comp; [exact/continuousD/cg/cf | exact: inv_continuous].
+- rewrite E0.
+  apply/seteqP; split => x /=; first by move->; rewrite mul0r.
+  move/(f_equal (GRing.mul ^~ (f x + g x))).
+  by rewrite -mulrA mulVf // mulr1 mul0r.
+- rewrite F0.
+  apply/seteqP; split => x /=.
+    rewrite -{1}(addr0 (f x)) => <-; exact: mulfV.
+  move/(f_equal (GRing.mul ^~ (f x + g x))).
+  rewrite -mulrA mulVf // mulr1 mul1r => /eqP.
+  by rewrite addrC -subr_eq subrr eq_sym => /eqP.
+- move=> _ [x] _ /= <-.
+  have fgx : (f x + g x)^-1 >= 0 by apply/ltW; rewrite invr_gt0.
+  by rewrite in_itv /= mulr_ge0 //= -(mulfV (fg_neq0 x)) ler_pM // lerDl.
+Qed.
 
 Local Lemma perfectly_normal_space_42 :                                 
 perfectly_normal_space01  -> perfectly_normal_space 0.                  
@@ -371,7 +399,7 @@ case=> f [] cf [] Ef [] _ _.
 by exists f; split.                                                     
 Qed.                                                                    
                                                                         
-Let perfectly_normal_space_41 :
+Local Lemma perfectly_normal_space_41 :
   perfectly_normal_space01 -> perfectly_normal_space_Gdelta.
 Proof.            
 move=> pns01; split; first exact: perfectly_normal_space01_normal.
@@ -389,19 +417,19 @@ Qed.
 
 Theorem Vedenissoff_closed : perfectly_normal_space_Gdelta <-> perfectly_normal_space 0.
 Proof.
-move: perfectly_normal_space_12 perfectly_normal_space_23 perfectly_normal_space_34 perfectly_normal_space_41.
+move: perfectly_normal_space_12 perfectly_normal_space_24 perfectly_normal_space_41.
 tauto.
 Qed.
 
 Theorem Vedenissoff_open : perfectly_normal_space_Gdelta <-> perfectly_normal_space' 0.
 Proof.
-move: perfectly_normal_space_12 perfectly_normal_space_23 perfectly_normal_space_34 perfectly_normal_space_41.
+move: Vedenissoff_closed perfectly_normal_space_23 perfectly_normal_space_32.
 tauto.
 Qed.
 
 Theorem Vedenissoff01 : perfectly_normal_space_Gdelta <-> perfectly_normal_space01.
 Proof.
-move: perfectly_normal_space_12 perfectly_normal_space_23 perfectly_normal_space_34 perfectly_normal_space_41.
+move: perfectly_normal_space_12 perfectly_normal_space_24 perfectly_normal_space_41.
 tauto.
 Qed.
 
