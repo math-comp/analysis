@@ -362,7 +362,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
 have : nondecreasing_seq (sintegral mu \o g).
   by move=> m n mn; apply: le_sintegral => // x; exact/nd_g.
 move=> /ereal_nondecreasing_cvgn/cvg_lim -> //.
-apply: ub_ereal_sup => _ [n _ <-] /=; apply: le_sintegral => // x.
+apply: ge_ereal_sup => _ [n _ <-] /=; apply: le_sintegral => // x.
 rewrite -limg // (nondecreasing_cvgn_le (nd_g x)) //.
 by apply/cvg_ex; exists (f x); exact: gf.
 Qed.
@@ -396,7 +396,7 @@ Let nnintegral0 : nnintegral mu (cst 0) = 0.
 Proof.
 rewrite /nnintegral /=; apply/eqP; rewrite eq_le; apply/andP; split; last first.
   by apply/ereal_sup_ubound; exists nnsfun0; [|exact: sintegral0].
-apply/ub_ereal_sup => /= x [f /= f0 <-]; have {}f0 : forall x, f x = 0%R.
+apply/ge_ereal_sup => /= x [f /= f0 <-]; have {}f0 : forall x, f x = 0%R.
   by move=> y; apply/eqP; rewrite eq_le -2!lee_fin f0 //= lee_fin//.
 by rewrite (eq_sintegral (@nnsfun0 _ T R)) ?sintegral0.
 Qed.
@@ -405,7 +405,7 @@ Let nnintegral_nnsfun (h : {nnsfun T >-> R}) :
   nnintegral mu (EFin \o h) = sintegral mu h.
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split.
-  by apply/ub_ereal_sup => /= _ -[g /= gh <-]; rewrite le_sintegral.
+  by apply/ge_ereal_sup => /= _ -[g /= gh <-]; rewrite le_sintegral.
 by apply: ereal_sup_ubound => /=; exists h.
 Qed.
 
@@ -479,8 +479,8 @@ Lemma ge0_le_measure_integral (f : T -> \bar R) S : measurable S ->
   (forall x, 0 <= f x) -> measurable_fun [set: T] f ->
   \int[m1]_(x in S) f x <= \int[m2]_(x in S) f x.
 Proof.
-move=> ms f0 mf; rewrite !ge0_integralE //= ub_ereal_sup// => _ [h/= hfS] <-.
-by apply: ereal_sup_ge; exists (sintegral m2 h);
+move=> ms f0 mf; rewrite !ge0_integralE //= ge_ereal_sup// => _ [h/= hfS] <-.
+by apply: le_ereal_sup_tmp; exists (sintegral m2 h);
   [exists h|exact: le_measure_sintegral].
 Qed.
 

@@ -1024,7 +1024,7 @@ have : {in D, (fun x => inf [set sups (h ^~ x) n | n in [set n | 0 <= n]%N])
 move/eq_measurable_fun; apply; apply: measurable_fun_infs => //.
   move=> t Dt; have [M hM] := f_lb _ Dt; exists M => _ [m /= nm <-].
   rewrite (@le_trans _ _ (h m t)) //; first by apply hM => /=; exists m.
-  by apply: sup_ubound; [exact/has_ubound_sdrop/f_ub|exists m => /=].
+  by apply: ub_le_sup; [exact/has_ubound_sdrop/f_ub|exists m => /=].
 by move=> k; exact: measurable_fun_sups.
 Qed.
 
@@ -1568,7 +1568,7 @@ Lemma outer_measure_open_itv_cover A : (l^* A)%mu =
   ereal_inf [set \sum_(k <oo) l (F k) | F in open_itv_cover A].
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split.
-  apply: le_ereal_inf => _ /= [F [Fitv AF <-]].
+  apply: ereal_inf_le_tmp => _ /= [F [Fitv AF <-]].
   exists (fun i => `](sval (cid (Fitv i))).1, (sval (cid (Fitv i))).2]%classic).
   + split=> [i|].
     * have [?|?] := ltP (sval (cid (Fitv i))).1 (sval (cid (Fitv i))).2.

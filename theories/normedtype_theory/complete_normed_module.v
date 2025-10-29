@@ -50,7 +50,7 @@ have D_has_sup : has_sup D; first split.
 exists (sup D).
 apply/cvgrPdist_le => /= _ /posnumP[eps]; near=> x.
 rewrite ler_distl; move/ubP: (sup_upper_bound D_has_sup) => -> //=.
-  apply: sup_le_ub => //; first by case: D_has_sup.
+  apply: ge_sup => //; first by case: D_has_sup.
   have Fxeps : F (ball_ [eta normr] x eps%:num).
     by near: x; apply: nearP_dep; apply: F_cauchy.
   apply/ubP => y /(_ _ Fxeps) /downP[z].
@@ -65,6 +65,6 @@ by near: y; near: x; apply: nearP_dep; apply: F_cauchy.
 Unshelve. all: by end_near. Qed.
 
 HB.instance Definition _ (R : realType) := Uniform_isComplete.Build R^o
-  (@R_complete R). (* todo : delete *)
+  (@R_complete R). (* TODO: delete *)
 
 HB.instance Definition _ (R : realType) := Complete.copy R R^o.

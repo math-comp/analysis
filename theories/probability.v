@@ -230,8 +230,8 @@ have cdf_s : cdf X r @[r --> a^'+] --> s%:E.
   - apply: nondecreasing_at_right_cvge; first by rewrite ltBSide /= ?ltrDl.
     by move=> *; exact: cdf_nondecreasing.
   - apply/fin_numPlt/andP; split=>//.
-    + by rewrite (lt_le_trans (ltNyr 0%R)) ?lb_ereal_inf//= => l[? _] <-.
-    + rewrite (le_lt_trans _ (ltry 1%R))// ereal_inf_le//=.
+    + by rewrite (lt_le_trans (ltNyr 0%R)) ?le_ereal_inf_tmp//= => l[? _] <-.
+    + rewrite (le_lt_trans _ (ltry 1%R))// ge_ereal_inf//=.
       exists (cdf X (a + 1)); last exact: cdf_le1.
       by exists (a + 1%R) => //; rewrite in_itv /=; apply/andP; rewrite ltrDl.
 have cdf_ns : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> s%:E.
@@ -2161,7 +2161,6 @@ apply: ge0_emeasurable_sum.
   by move=> k x/= [_ x01] _; rewrite lee_fin poisson_pmf_ge0.
 move=> k Ysk; apply/measurableT_comp => //.
 apply: measurable_poisson_pmf => //.
-rewrite setTI.
-rewrite (_ : _ @^-1` _ = `]0, +oo[%classic)//.
+rewrite setTI (_ : _ @^-1` _ = `]0, +oo[%classic)//.
 by apply/seteqP; split => /= x /=; rewrite in_itv/= andbT.
 Qed.

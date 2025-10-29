@@ -278,7 +278,7 @@ Lemma le_psum (F1 F2 : T -> R) :
   (forall x, 0 <= F1 x <= F2 x) -> summable F2 -> psum F1 <= psum F2.
 Proof.
 move=> le_F smF2; have smF1: summable F1 by apply/(le_summable le_F).
-rewrite /psum (asboolT smF1) (asboolT smF2); apply/le_sup; first last.
+rewrite /psum (asboolT smF1) (asboolT smF2); apply: sup_le; first last.
 + by apply/summable_sup.
 + by exists 0, fset0; rewrite big_fset0.
 move=> x [J ->]; apply/downP; exists (\sum_(j : J) `|F2 (val j)|).
@@ -331,7 +331,7 @@ move=> le_z; have: summable S; first (apply/summable_seqP; exists z).
 + by apply/(le_trans _ (le_z [::] _)) => //; rewrite big_nil.
 + by move=> J uqJ; apply/le_z.
 move/summable_sup=> [neS hsS]; rewrite psum_sup.
-apply/sup_le_ub => //; apply/ubP=> r [J ->].
+apply: ge_sup => //; apply/ubP=> r [J ->].
 by rewrite (big_fset_seq \`|_|) le_z /=; case: J => J /= /canonical_uniq.
 Qed.
 
@@ -349,7 +349,7 @@ Lemma max_sup {R : realType} x (E : set R) :
   (E `&` ubound E)%classic x -> sup E = x.
 Proof.
 case=> /= xE xubE; have nzE: nonempty E by exists x.
-apply/eqP; rewrite eq_le sup_le_ub //=.
+apply/eqP; rewrite eq_le ge_sup //=.
 have : has_sup E by split; exists x.
 by move/sup_upper_bound/ubP; apply.
 Qed.
@@ -672,7 +672,7 @@ Proof.
 move=> leS; have ge0_d: 0 <= d.
   by apply/(le_trans _ (leS [::] _)); rewrite // big_nil.
 have smS: summable S by apply/summable_seqP; exists d.
-split=> //; rewrite /psum (asboolT smS); apply/sup_le_ub.
+split=> //; rewrite /psum (asboolT smS); apply: ge_sup.
   by exists 0, fset0; rewrite big_fset0.
 apply/ubP=> _ [J ->]; rewrite (big_fset_seq \`|_|) /=.
 by apply/leS; case: J => J /= /canonical_uniq.
@@ -795,16 +795,16 @@ Proof.
 move=> ge0_S1 ge0_S2 smS1 smS2; have smD := summableD smS1 smS2.
 have ge0D: forall x, 0 <= S1 x + S2 x by move=> x; rewrite addr_ge0.
 rewrite !psumE // (rwP eqP) eq_le -(rwP andP); split.
-  apply/sup_le_ub.
+  apply: ge_sup.
   + by exists 0, fset0; rewrite big_fset0.
   apply/ubP=> _ [J ->]; rewrite big_split /=.
   apply/lerD; rewrite -psumE 1?(le_trans _ (gerfin_psum J _)) //.
   + by apply/ler_sum=> j _ /=; apply/ler_norm.
   + by apply/ler_sum=> j _ /=; apply/ler_norm.
-rewrite -lerBrDr; apply/sup_le_ub.
+rewrite -lerBrDr; apply: ge_sup.
 + by exists 0, fset0; rewrite big_fset0.
 apply/ubP=> _ [J1 ->]; rewrite lerBrDr addrC.
-rewrite -lerBrDr; apply/sup_le_ub.
+rewrite -lerBrDr; apply: ge_sup.
 + by exists 0, fset0; rewrite big_fset0.
 apply/ubP=> _ [J2 ->]; rewrite lerBrDr addrC.
 pose J := J1 `|` J2; rewrite -psumE ?(le_trans _ (gerfin_psum J _)) //.
@@ -831,13 +831,13 @@ case/asboolP: (summable S) => [smS|NsmS]; last first.
   by rewrite mulKf // gt_eqF.
 have smZ := summableZ c smS; rewrite (rwP eqP) eq_le.
 apply/andP; split; first rewrite {1}/psum asboolT //.
-  apply/sup_le_ub.
+  apply: ge_sup.
   + by exists 0, fset0; rewrite big_fset0.
   apply/ubP=> _ [J ->]; rewrite -ler_pdivrMl //.
   rewrite mulr_sumr (le_trans _ (gerfin_psum J _)) //.
   apply/ler_sum=> /= j _; rewrite normrM.
   by rewrite gtr0_norm // mulKf ?gt_eqF.
-rewrite -ler_pdivlMl // {1}/psum asboolT //; apply/sup_le_ub.
+rewrite -ler_pdivlMl // {1}/psum asboolT //; apply: ge_sup.
 + by exists 0, fset0; rewrite big_fset0.
 apply/ubP=> _ [J ->]; rewrite ler_pdivlMl //.
 rewrite mulr_sumr; apply/(le_trans _ (gerfin_psum J _))=> //.
