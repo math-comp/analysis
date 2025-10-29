@@ -318,16 +318,15 @@ set MS12 := (S1 * S2)%R.
 set C := ((((y * s1 ^+ 2)%R + (m1 * s2 ^+ 2)%R)%E - m2 * s1 ^+ 2) / DS12)%R.
 under eq_integral do rewrite expRD EFinM.
 rewrite ge0_integralZr//=; last first.
- apply/measurable_EFinP.
- apply: measurableT_comp => //.
- apply: measurable_funM => //.
- apply: measurableT_comp => //.
- apply: (@measurableT_comp _ _ _ _ _ _ (fun t : R => t ^+ 2)%R) => //.
- exact: measurable_funD.
+  apply/measurable_EFinP.
+  apply: measurableT_comp => //.
+  apply: measurable_funM => //.
+  apply: measurableT_comp => //.
+  apply: (@measurableT_comp _ _ _ _ _ _ (fun t : R => t ^+ 2)%R) => //.
+  exact: measurable_funD.
 rewrite /normal_peak /normal_fun.
 rewrite [in RHS]EFinM.
-rewrite [in RHS]sqr_sqrtr//; last first.
-  by rewrite addr_ge0// sqr_ge0.
+rewrite [in RHS]sqr_sqrtr//; last by rewrite addr_ge0// sqr_ge0.
 rewrite muleA; congr *%E; last by rewrite -mulNr.
 (* gauss integral *)
 have MS12DS12_gt0 : (0 < MS12 / DS12)%R.
@@ -340,14 +339,11 @@ transitivity (((Num.sqrt S1 * Num.sqrt S2 * pi *+ 2)^-1)%:E
   congr *%E.
   apply: eq_integral => x _.
   rewrite -EFinM; congr EFin.
-  rewrite normal_pdfE; last first.
-    apply: lt0r_neq0.
-    by rewrite sqrtr_gt0.
+  rewrite normal_pdfE; last by rewrite lt0r_neq0// sqrtr_gt0.
   rewrite mulrA mulVf// ?mul1r//.
   rewrite lt0r_neq0// invr_gt0 sqrtr_gt0 pmulrn_lgt0// mulr_gt0// ?pi_gt0//.
-  rewrite exprn_even_gt0//=.
-  by rewrite lt0r_neq0// sqrtr_gt0.
-rewrite ge0_integralZl//; last 3 first.
+  by rewrite exprn_even_gt0//= lt0r_neq0// sqrtr_gt0.
+rewrite ge0_integralZl//=; last 3 first.
   apply/measurable_EFinP.
   exact: measurable_normal_pdf.
   move=> x _.

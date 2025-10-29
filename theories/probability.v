@@ -3284,7 +3284,8 @@ rewrite /normal_pdf ifF//.
 exact/negP/negP.
 Qed.
 
-Local Definition normal_prob2 := (fun m => normal_prob m s) : _ -> pprobability _ _.
+Local Definition normal_prob2 :=
+  (fun m => normal_prob m s) : R -> pprobability (measurableTypeR R) R.
 
 Lemma bij_shift x : bijective (id \+ @cst R R x).
 Proof.
@@ -3337,104 +3338,6 @@ Qed.
 From mathcomp Require Import charge.
 Open Scope charge_scope.
 
-(*
-Lemma radon_nikodym_crestr_fin U (mU : measurable U)
-(Uoo : (@lebesgue_measure R U < +oo)%E) :
- ae_eq lebesgue_measure setT ('d charge_of_finite_measure (mfrestr mU Uoo) '/d
- [the sigma_finite_measure _ _ of @lebesgue_measure R])
- (EFin \o \1_U).
-Proof.
-apply: integral_ae_eq => //=.
-- admit.
-- admit.
-move=> E _ mE.
-rewrite -Radon_Nikodym_integral.
-rewrite integral_indic/=.
-by rewrite /mfrestr/mrestr setIC.
-Admitted.
-*)
-
-(*
-Lemma radon_nikodym_crestr U (mU : measurable U) :
- ae_eq lebesgue_measure setT ('d charge_of_finite_measure (mfrestr mU Uoo) '/d
- [the sigma_finite_measure _ _ of @lebesgue_measure R])
- (EFin \o \1_U).
-Proof.
-*)
-
-(*
-rewrite [RHS](_:_= ('d charge_of_finite_measure (mfrestr mU Uoo) '/d
- [the sigma_finite_measure _ _ of @lebesgue_measure R])
- (EFin \o \1_U)
-  move=> x _.
-  rewrite epatch_indic.
-  rewrite -radon_nikodym_crestr.
-rewrite [RHS]integral_mkcond.
-under [RHS]eq_integral do rewrite epatch_indic.
-
-rewrite -integral_pushforward.
-apply: eq_integral.
-move=> x _.
-Admitted.
-*)
-(*Local Definition normal_prob2 :=
-  (fun m => normal_prob m s) : _ -> pprobability _ _.
-*)
-(*
-Lemma normal_shift0 x : 
-normal_prob2 x =
-  @pushforward _ _ _
-  (measurableTypeR R) _ (normal_prob2 0%R) (fun z => z + x)
-     :> (set R -> \bar R).
-Proof.
-apply: funext.
-move=> U.
-rewrite /normal_prob2/=.
-rewrite /pushforward/=.
-rewrite /normal_prob.
-rewrite shift_preimage.
-rewrite integration_by_substitution_shift/=.
-apply: eq_integral.
-move=> z Uz.
-congr EFin.
-rewrite /normal_pdf/=.
-rewrite ifF; last exact/negP/negP.
-rewrite ifF; last exact/negP/negP.
-rewrite {2}/normal_fun.
-by rewrite subr0.
-Qed.
-*)
-
-(*
-Lemma measurable_normal_prob2_ocitv a b:
- measurable_fun [set: R] (normal_prob2 ^~ `]a, b]%classic).
-Proof.
-apply: (@measurability _ _ _ _ _ _
-  (@pset _ _ _ : set (set (pprobability _ R)))) => //.
-move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
-
-rewrite /normal_prob2/=.
-rewrite /normal_prob.
-
-under [X in measurable_fun _ X]eq_fun.
-  move=> x.
-  rewrite (_: normal_kernel _ _ = (fine (normal_kernel x `]a, b]%classic))%:E); last first.
-      rewrite fineK//.
-      rewrite ge0_fin_numE//.
-      apply: (@le_lt_trans _ _ 1%E); last exact: ltey.
-      exact: probability_le1.
-    rewrite normal_shift0/=.
-  over.
-apply: measurableT_comp; last by [].
-apply: measurableT_comp; first exact: EFin_measurable.
-rewrite /=.
-under [X in measurable_fun _ X]eq_fun.
-  move=> x.
-  rewrite /normal_prob.
-(pushforward_shift_itv (normal_kernel 0) a b x).
-apply: continuous_measurable_fun.
-*)
-
 (* outline of proof:
    1. It is enough to prove that `(fun x => normal_prob x s Ys)` is continuous for
       all measurable set `Ys`.
@@ -3454,58 +3357,48 @@ apply: continuous_measurable_fun.
       added by the integral of `normal_pdf a s x` on ]a - e, a + e[
  *)
 
-Let normal_pdf0 m s x : R := normal_peak s * normal_fun m s x.
+Let normal_peak_fun m sigma x : R :=
+  normal_peak sigma * normal_fun m sigma x.
 
-Let normal_pdf0_ge0 m x : 0 <= normal_pdf0 m s x.
+Let normal_peak_fun_ge0 m x : 0 <= normal_peak_fun m s x.
 Proof. by rewrite mulr_ge0 ?normal_peak_ge0 ?expR_ge0. Qed.
 
-Let continuous_normal_pdf0 m : continuous (normal_pdf0 m s).
+Let continuous_normal_peak_fun m : continuous (normal_peak_fun m s).
 Proof.
 move=> x; apply: cvgM; first exact: cvg_cst.
 apply: (@cvg_comp _ R^o _ _ _ _
    (nbhs (- (x - m) ^+ 2 / (s ^+ 2 *+ 2)))); last exact: continuous_expR.
 apply: cvgM; last exact: cvg_cst; apply: (@cvgN _ R^o).
 apply: (@cvg_comp _ _ _ _ (@GRing.exp R^~ 2) _ (nbhs (x - m))).
-  apply: (@cvgB _ R^o) => //; exact: cvg_cst.
+  by apply: (@cvgB _ R^o) => //; exact: cvg_cst.
 exact: sqr_continuous.
 Qed.
 
-Let normal_pdf0_ub m x : normal_pdf0 m s x <= normal_peak s.
+Let normal_peak_fun_ub m x : normal_peak_fun m s x <= normal_peak s.
 Proof.
-rewrite /normal_pdf0 ler_piMr ?normal_peak_ge0//.
+rewrite /normal_peak_fun ler_piMr ?normal_peak_ge0//.
 rewrite -[leRHS]expR0 ler_expR mulNr oppr_le0 mulr_ge0// ?sqr_ge0//.
 by rewrite invr_ge0 mulrn_wge0// sqr_ge0.
 Qed.
 
+Let normal_peak_funxx e : normal_peak_fun e s e = normal_peak s.
+Proof.
+rewrite /normal_peak_fun /normal_fun.
+by rewrite subrr expr0n/= oppr0 mul0r expR0 mulr1.
+Qed.
+
 Let g' a e : R -> R := fun x => if x \in (ball a e : set R^o) then
-  normal_peak s else normal_pdf0 e s `|x - a|.
+  normal_peak s else normal_peak_fun e s `|x - a|.
 
-Let ballFE_le (a e x : R) : x <= (a - e)%R ->
-  (x \in (ball a e : set R^o)) = false.
+Let normal_fun0 x a : normal_fun 0 s `|x - a| = normal_fun a s x.
 Proof.
-move=> xae.
-apply: memNset.
-rewrite ball_itv/= in_itv/=; apply/negP/andP/not_andP; left.
-by apply/negP; rewrite -leNgt.
+by rewrite /normal_peak_fun /normal_fun subr0 real_normK// num_real.
 Qed.
 
-Let ballFE_ge (a e x : R) : a + e <= x ->
-  (x \in (ball a e : set R^o)) = false.
-Proof.
-move=> xae.
-apply: memNset.
-rewrite ball_itv/= in_itv/=; apply/negP/andP/not_andP; right.
-by apply/negP; rewrite -leNgt.
-Qed.
-
-Let g'a0 (a : R) : g' a 0 = normal_pdf0 a s.
+Let g'a0 (a : R) : g' a 0 = normal_peak_fun a s.
 Proof.
 apply/funext => x; rewrite /g'.
-have /orP [x0|x0] := le_total x a.
-  rewrite ballFE_le; last by rewrite subr0.
-  by rewrite /normal_pdf0 /normal_fun subr0 real_normK// num_real.
-rewrite ballFE_ge; last by rewrite addr0.
-by rewrite /normal_pdf0 /normal_fun subr0 real_normK// num_real.
+by rewrite /normal_peak_fun normal_fun0 memNset// le0_ball0.
 Qed.
 
 Let mg' a e : measurable_fun setT (g' a e).
@@ -3522,7 +3415,19 @@ Qed.
 Let g'_ge0 a e x : 0 <= g' a e x.
 Proof.
 rewrite /g'; case: ifP => _; first by rewrite normal_peak_ge0.
-exact: normal_pdf0_ge0.
+exact: normal_peak_fun_ge0.
+Qed.
+
+Let ballFE_le (a e x : R) : x <= (a - e)%R ->
+  x \notin (ball a e : set R^o).
+Proof.
+by move=> xae; rewrite memNset// ball_itv/= in_itv/= !ltNge xae/=.
+Qed.
+
+Let ballFE_ge (a e x : R) : a + e <= x ->
+  x \notin (ball a e : set R^o).
+Proof.
+by move=> xae; rewrite memNset// ball_itv/= in_itv/= !ltNge xae andbF.
 Qed.
 
 Let continuous_g' (a e : R) : 0 <= e -> continuous (g' a e).
@@ -3556,85 +3461,77 @@ apply: withinU_continuous.
       near=> t.
       have tae : t < a - e by near: t; exact: lt_nbhsl.
       rewrite /g'.
-      rewrite !ballFE_le ?(@ltW _ _ _ (a - e))//.
-      rewrite /normal_pdf0 /normal_fun !aNe//.
-      rewrite -!/(normal_fun _ _ _) -!/(normal_pdf0 _ _ _).
+      rewrite !(negbTE (ballFE_le (ltW _)))//.
+      rewrite /normal_peak_fun /normal_fun !aNe//.
+      rewrite -!/(normal_fun _ _ _) -!/(normal_peak_fun _ _ _).
       move=> {tae}; near: t.
       move: eps eps0.
-      apply/(@cvgrPdist_le R^o).
-      exact: continuous_normal_pdf0.
+      apply/cvgrPdist_le.
+      exact: continuous_normal_peak_fun.
     * apply/(@cvgrPdist_lt _ R^o) => eps eps0.
       near=> t.
-      rewrite /g' !ballFE_le//.
+      rewrite /g'.
+      rewrite !(negPf (ballFE_le _))//.
       rewrite -addrAC subrr sub0r normrN (ger0_norm e0)//.
-      rewrite /normal_pdf0 /normal_fun subrr -(subrr (a - e)) aNe//.
+      rewrite /normal_peak_fun /normal_fun subrr -(subrr (a - e)) aNe//.
+      rewrite -!/(normal_peak_fun _ _ _).
       near: t; move: eps eps0.
-      apply/(@cvgrPdist_lt _ R^o).
-      apply: cvg_at_left_filter.
-      exact: continuous_normal_pdf0.
+      apply/cvgrPdist_lt/cvg_at_left_filter.
+      exact: continuous_normal_peak_fun.
   move: e0; rewrite le_eqVlt => /predU1P[<-|e0].
     rewrite g'a0.
     apply: continuous_subspaceT.
-    exact: continuous_normal_pdf0.
+    exact: continuous_normal_peak_fun.
   apply/continuous_within_itvP; first by rewrite -(opprK e) ler_ltB// opprK gtrN.
   split.
   + move=> x xae.
-    rewrite /continuous_at.
-    rewrite /g' ifT; last by rewrite ball_itv inE/=.
-    apply/(@cvgrPdist_le _ R^o) => eps eps0.
+    rewrite /continuous_at /g' ifT; last by rewrite ball_itv inE.
+    apply/cvgrPdist_le => eps eps0.
     near=> t.
     rewrite ifT; first by rewrite subrr normr0 ltW.
     rewrite ball_itv inE/= in_itv/=; apply/andP; split.
-      near: t.
-      apply: lt_nbhsr.
+    - near: t; apply: lt_nbhsr.
       by move: xae; rewrite in_itv/= => /andP[].
-    near: t.
-    apply: lt_nbhsl.
-    by move: xae; rewrite in_itv/= => /andP[].
+    - near: t; apply: lt_nbhsl.
+      by move: xae; rewrite in_itv/= => /andP[].
   + apply/(@cvgrPdist_le _ R^o) => eps eps0.
     near=> t.
-    rewrite /g' ballFE_le// ifT; last first.
+    rewrite /g' (negPf (ballFE_le _))// ifT; last first.
       rewrite ball_itv inE/= in_itv/=; apply/andP => []; split => //.
-      near: t.
-      apply: nbhs_right_lt.
-      by rewrite -(opprK e) ler_ltB// opprK gtrN.
-    rewrite /normal_pdf0.
-    rewrite addrAC subrr sub0r normrN /normal_fun (gtr0_norm e0) subrr.
-    by rewrite expr0n/= oppr0 mul0r expR0 mulr1 subrr normr0 ltW.
-  + apply/(@cvgrPdist_le _ R^o) => eps eps0.
+      near: t; apply: nbhs_right_lt.
+      by rewrite ltrBlDr -addrA ltrDl// addr_gt0.
+    rewrite addrAC subrr sub0r normrN (gtr0_norm e0).
+    by rewrite normal_peak_funxx subrr normr0 ltW.
+  + apply/cvgrPdist_le => eps eps0.
     near=> t.
-    rewrite /g' ballFE_ge// ifT; last first.
+    rewrite /g' (negPf (ballFE_ge _))// ifT; last first.
       rewrite ball_itv inE/= in_itv/=; apply/andP => []; split => //.
-      near: t.
-      apply: nbhs_left_gt.
-      by rewrite -(opprK e) ler_ltB// opprK gtrN.
-    rewrite /normal_pdf0.
-    rewrite addrAC subrr add0r /normal_fun (gtr0_norm e0) subrr expr0n oppr0.
-    by rewrite mul0r expR0 mulr1 subrr normr0 ltW.
+      near: t; apply: nbhs_left_gt.
+      by rewrite ltrBlDr -addrA ltrDl// addr_gt0.
+    rewrite addrAC subrr add0r (gtr0_norm e0).
+    by rewrite normal_peak_funxx subrr normr0 ltW.
 - apply/continuous_within_itvcyP; split.
   + move=> x.
     rewrite in_itv/= andbT => aex.
-    apply/(@cvgrPdist_le _ R^o) => /= eps eps0.
+    apply/cvgrPdist_le => /= eps eps0.
     near=> t.
     have tae : a + e < t by near: t; exact: lt_nbhsr.
-    rewrite /g'.
-    rewrite !ballFE_ge ?(@ltW _ _ (a + e)%E)//.
-    rewrite /normal_pdf0 /normal_fun !aDe// ?(@ltW _ _ (a + e)).
-    move=> {tae}; near: t.
-    move: eps eps0.
-    apply/(@cvgrPdist_le _ R^o).
-    exact: continuous_normal_pdf0.
-  + apply/(@cvgrPdist_le _ R^o) => eps eps0.
-    near=> t.
-    rewrite /g' !ballFE_ge//.
-    rewrite addrAC subrr add0r (ger0_norm e0)//.
-    rewrite /normal_pdf0 /normal_fun subrr -(subrr (a + e)).
-    rewrite aDe//.
+    rewrite /g' !(negPf (ballFE_ge (ltW _)))//.
+    rewrite /normal_peak_fun /normal_fun !aDe// -!/(normal_peak_fun _ _ _).
     near: t.
-    move: eps eps0.
-    apply/cvgrPdist_le.
+    apply/cvgrPdist_le : eps eps0.
+    exact: continuous_normal_peak_fun.
+  + apply/cvgrPdist_le => eps eps0.
+    near=> t.
+    rewrite /g' !(negPf (ballFE_ge _))//.
+    rewrite addrAC subrr add0r (ger0_norm e0)//.
+    rewrite /normal_peak_fun /normal_fun subrr -(subrr (a + e)) aDe//.
+    rewrite -!/(normal_peak_fun _ _ _).
+    near: t.
+    apply/cvgrPdist_le : eps eps0.
     apply: cvg_at_right_filter.
-    exact: continuous_normal_pdf0.
+    under eq_fun do rewrite -/(normal_peak_fun _ _ _).
+    exact: continuous_normal_peak_fun.
 Unshelve. all: end_near. Qed.
 
 Let gE_Ny a e : 0 <= e ->
@@ -3650,10 +3547,10 @@ rewrite ge0_integration_by_substitution_shift_itvNy => /=; first last.
 under eq_integral.
   move=> x.
   rewrite inE/= in_itv/= => xae.
-  rewrite /g' ballFE_le//; last exact: lerB.
+  rewrite /g' (negPf (ballFE_le _)); last exact: lerB.
   rewrite -(normrN (x - e - a)) !opprB addrA.
   have /normr_idP -> : 0 <= a + e - x by rewrite subr_ge0 ler_wpDr.
-  rewrite /normal_pdf0 /normal_fun.
+  rewrite /normal_peak_fun /normal_fun.
   rewrite -(addrAC _ (- x)) addrK.
   rewrite -(sqrrN (a - x)) opprB.
   over.
@@ -3673,9 +3570,9 @@ rewrite ge0_integration_by_substitution_shift_itvy => /=; first last.
 under eq_integral.
   move=> x.
   rewrite inE/= in_itv/= andbT => aex.
-  rewrite /g' ballFE_ge//; last exact: lerD.
+  rewrite /g' (negPf (ballFE_ge _))//; last exact: lerD.
   have /normr_idP -> : 0 <= x + e - a by rewrite subr_ge0 ler_wpDr.
-  rewrite /normal_pdf0 /normal_fun -(addrAC _ (- a)) addrK.
+  rewrite /normal_peak_fun /normal_fun -(addrAC _ (- a)) addrK.
   over.
 rewrite /=.
 by apply: eq_integral => /= x xay; rewrite /normal_pdf (negbTE s0).
@@ -3691,12 +3588,13 @@ have mg := mg' a e.
 apply: (@continuity_under_integral _ _ _ mu _ _ _ (a - e) (a + e) _ _ g) => //=.
 - move=> x _.
   by apply: (integrableS measurableT) => //=; exact: integrable_normal_pdf.
-- apply/aeW => y _ x _.
+- apply/aeW => y Vy x.
+  rewrite inE/= in_itv/= => /andP[aex xae].
   under [X in _ _ X]eq_fun.
     move=> x0.
-    rewrite normal_pdfE// /normal_pdf0 /normal_fun -(sqrrN (y - _)) opprB.
+    rewrite normal_pdfE// -(sqrrN (y - _)) opprB.
     over.
-  exact: continuous_normal_pdf0.
+  exact: continuous_normal_peak_fun.
 - apply: (integrableS measurableT) => //=.
   apply/integrableP; split; first exact/measurable_EFinP.
   rewrite -(setUv (ball a e)) ge0_integral_setU//=; last 4 first.
@@ -3740,9 +3638,9 @@ apply: (@continuity_under_integral _ _ _ mu _ _ _ (a - e) (a + e) _ _ g) => //=.
   apply: aeW => /= y Vy.
   rewrite ger0_norm; last exact: normal_pdf_ge0.
   rewrite normal_pdfE// /g /g'.
-  case: ifPn => [_|]; first exact: normal_pdf0_ub.
+  case: ifPn => [_|]; first exact: normal_peak_fun_ub.
   rewrite notin_setE/= ball_itv/= in_itv/= => aey.
-  rewrite /normal_pdf0 ler_pM//.
+  rewrite /normal_peak_fun ler_pM//.
   rewrite ler_expR !mulNr lerN2 ler_pM //.
     exact: sqr_ge0.
     by rewrite invr_ge0 mulrn_wge0// sqr_ge0.
@@ -3759,7 +3657,7 @@ apply: (@continuity_under_integral _ _ _ mu _ _ _ (a - e) (a + e) _ _ g) => //=.
     by rewrite -addrA -opprD subr_ge0.
     by rewrite subr_ge0 (le_trans _ aey)// ltW.
   by rewrite -addrA -opprD lerD2l lerN2 ltW.
-by rewrite inE/= in_itv/= ltrBlDl ltrDl// ltrDr andbb.
+- by rewrite -ball_itv inE; exact: ballxx.
 Unshelve. end_near. Qed.
 
 Lemma measurable_normal_prob2 :
@@ -3767,7 +3665,7 @@ Lemma measurable_normal_prob2 :
 Proof.
 apply: (@measurability _ _ _ _ _ _
   (@pset _ _ _ : set (set (pprobability _ R)))) => //.
-move=>_  -[_ [r r01] [Ys mYs <-]] <-.
+move=>_  -[_ [r r01] [Ys mYs <-]]  <-.
 apply: emeasurable_fun_infty_o => //=.
 under [X in _ _ X]eq_fun.
   move=> x.
@@ -3777,6 +3675,7 @@ under [X in _ _ X]eq_fun.
       by rewrite le_measure ?inE.
     exact: (le_lt_trans (probability_le1 _ _) (ltey _)).
   over.
+rewrite -/(measurable_fun _ _) {r r01}.
 apply/measurable_EFinP; apply: continuous_measurable_fun.
 exact: normal_prob_continuous.
 Qed.
