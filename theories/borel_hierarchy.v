@@ -131,11 +131,6 @@ Definition perfectly_normal_space' (x : R) :=
   forall E : set T, open E -> 
     exists f : T -> R, continuous f /\ E = f @^-1` ~`[set x].
 
-(*Definition perfectly_normal_space01 :=
-  forall E F : set T, closed E -> closed F -> [disjoint E & F] ->
-    exists f : T -> R, continuous f /\ E = f @^-1` [set 0] /\ F = f @^-1` [set 1] 
-      /\ f @` [set: T] = `[0, 1]%classic.
- *)
 Definition perfectly_normal_space01 :=
   forall E F : set T, closed E -> closed F -> [disjoint E & F] ->
     exists f : T -> R,
@@ -148,28 +143,13 @@ Definition perfectly_normal_space_Gdelta :=
 Lemma perfectly_normal_space01_normal :
   perfectly_normal_space01 -> normal_space T.
 Proof.
-move=> pns01 A cA B /set_nbhsP[C] [oC AC CB].
-case: (pns01 A (~` C) cA).
-- by rewrite closedC.
-- exact/disj_setPCl.
-move=> f [/continuousP /= cf] [f0] [f1] f01.
-exists (f @^-1` `]-oo, 1/2]).
-  apply/set_nbhsP.
-  exists (f @^-1` `]-oo, 1/2[).
-  split => //.
-  - exact: cf.
-  - by rewrite f0 => x /= ->; rewrite in_itv /=.
-  - by apply: preimage_subset => x /=; rewrite !in_itv /=; apply: ltW.
-apply: subset_trans CB.
-have<-:= proj1 (closure_id _).
-  have<-:= (setCK C).
-  rewrite f1 preimage_setC.
-  apply: preimage_subset => x /=; rewrite in_itv /=.
-  apply: contraTnot => ->.
-  by rewrite -ltNge ltr_pdivrMr // mul1r ltr1n.
-have/continuousP /continuous_closedP:= cf.
-apply.
-exact: lray_closed.
+move=> pns01.
+rewrite (@normal_separatorP R).
+move=> A B cA cB /eqP AB.
+apply/uniform_separatorP.
+have[f [] cf Af Bf f01] := pns01 _ _ cA cB AB.
+exists f.
+by split => //; rewrite (Af, Bf); exact:image_preimage_subset.
 Qed.
 
 Lemma EFin_series (f : R^nat) : EFin \o series f = eseries (EFin \o f).
