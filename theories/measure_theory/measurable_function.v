@@ -174,6 +174,7 @@ End measurable_fun.
   solve [apply: measurable_id] : core.
 Arguments eq_measurable_fun {d1 d2 T1 T2 D} f {g}.
 Arguments measurable_fun_eqP {d1 d2 T1 T2 D} f {g}.
+Arguments measurable_funS {d1 d2 T1 T2} E {D f}.
 
 Section mfun.
 Context {d d'} {aT : sigmaRingType d} {rT : sigmaRingType d'}.

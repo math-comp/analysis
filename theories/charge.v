@@ -1845,7 +1845,7 @@ have int_f_E j S : measurable S -> \int[mu]_(x in S) f_ j x = nu (S `&` E j).
   have mSIEj := measurableI _ _ mS (mE j).
   have mSDEj := measurableD mS (mE j).
   rewrite -{1}(setUIDK S (E j)) (ge0_integral_setU _ mSIEj mSDEj)//; last 2 first.
-    - by rewrite setUIDK; exact: (measurable_funS measurableT).
+    - by rewrite setUIDK; exact: measurable_funTS.
     - by apply/disj_set2P; rewrite setDE setIACA setICr setI0.
   rewrite /f_ -(eq_integral _ (g_ j)); last first.
     by move=> x /[!inE] SIEjx; rewrite /f_ ifT// inE; exact: (@subIsetr _ S).
@@ -1957,7 +1957,7 @@ have -> : \int[nu]_(x in E) f x =
   under eq_integral => x /[!inE] /fE -> //.
   apply: monotone_convergence => //.
   - move=> n; apply/measurable_EFinP.
-    by apply: (measurable_funS measurableT) => //; exact/measurable_funP.
+    by apply: measurable_funTS => //; exact/measurable_funP.
   - by move=> n x Ex //=; rewrite lee_fin.
   - by move=> x Ex a b ab; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 have -> : \int[mu]_(x in E) (f \* g) x =

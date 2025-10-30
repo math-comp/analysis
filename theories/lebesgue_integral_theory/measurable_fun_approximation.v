@@ -456,8 +456,8 @@ have-> : D `&` (f \+ g) @^-1` A =
   by case: (f x) (g x) Afgx => [rf||] [rg||].
 have Dfg : D `&` [set x | f x +? g x] `<=` D by apply: subIset; left.
 apply: hwlogD => //.
-- by apply: (measurable_funS mD) => //; do ?exact: measurableI.
-- by apply: (measurable_funS mD) => //; do ?exact: measurableI.
+- by apply: (measurable_funS _ mD) => //; do ?exact: measurableI.
+- by apply: (measurable_funS _ mD) => //; do ?exact: measurableI.
 - by rewrite -setIA setIid.
 - by move=> ? [].
 Qed.
@@ -552,8 +552,8 @@ have-> : D `&` (fun x => f x * g x) @^-1` A =
   by apply: contra_notT NA0; rewrite negbK => /eqP <-.
 have Dfg : D `&` [set x | f x *? g x] `<=` D by apply: subIset; left.
 apply: hwlogM => //.
-- by apply: (measurable_funS mD) => //; do ?exact: measurableI.
-- by apply: (measurable_funS mD) => //; do ?exact: measurableI.
+- by apply: (measurable_funS _ mD) => //; do ?exact: measurableI.
+- by apply: (measurable_funS _ mD) => //; do ?exact: measurableI.
 - by rewrite -setIA setIid.
 - by move=> ? [].
 Qed.

@@ -229,7 +229,7 @@ split.
   apply/funext => n; apply: ae_eq_integral => //.
   + apply: measurableT_comp => //; apply: emeasurable_funB => //.
     apply/measurable_restrict => //; first exact: measurableD.
-    exact: (measurable_funS mD).
+    exact: (measurable_funS D).
   + by rewrite /g_; apply: measurableT_comp => //; exact: emeasurable_funB.
   + exists N; split => //; rewrite -(setCK N); apply: subsetC => x /= Nx Dx.
     by rewrite /f_' /f' /restrict mem_set.
@@ -242,7 +242,7 @@ split.
   set Y := (X in _ -> _ --> X); rewrite [X in _ --> X -> _](_ : _ = Y) //.
   apply: ae_eq_integral => //.
     apply/measurable_restrict => //; first exact: measurableD.
-    exact: (measurable_funS mD).
+    exact: (measurable_funS D).
   exists N; split => //; rewrite -(setCK N); apply: subsetC => x /= Nx Dx.
   by rewrite /f' /restrict mem_set.
 Qed.

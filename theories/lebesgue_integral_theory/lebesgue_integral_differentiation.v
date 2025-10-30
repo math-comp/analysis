@@ -142,11 +142,11 @@ have intg : mu.-integrable E (EFin \o h).
 exists h; split => //; rewrite [eps%:num]splitr; apply: le_lt_trans.
   pose fgh x := `|(f x - g x)%:E| + `|(g x - h x)%:E|.
   apply: (@ge0_le_integral _ _ _ mu _ mE _ fgh) => //.
-  - apply: (measurable_funS mE) => //; do 2 apply: measurableT_comp => //.
+  - apply: (measurable_funS E) => //; do 2 apply: measurableT_comp => //.
     exact: measurable_funB.
   - by move=> z _; rewrite adde_ge0.
   - apply: measurableT_comp => //; apply: measurable_funD;
-      apply: (measurable_funS mE (@subset_refl _ E));
+      apply: (measurable_funS _ mE (@subset_refl _ E));
       (apply: measurableT_comp => //);
       exact: measurable_funB.
   - move=> x _; rewrite -(subrK (g x) (f x)) -(addrA (_ + _)%R) lee_fin.
@@ -161,12 +161,12 @@ rewrite EFinD lteD// -(setDKU AE) ge0_integral_setU => //; first last.
 - exact: measurableD.
 rewrite (@ae_eq_integral _ _ _ mu A (cst 0)) //; first last.
 - by apply: aeW => z Az; rewrite (gh z) ?inE// subrr abse0.
-- apply: (measurable_funS mE) => //; do 2 apply: measurableT_comp => //.
+- apply: (measurable_funS E) => //; do 2 apply: measurableT_comp => //.
   exact: measurable_funB.
 rewrite integral0 adde0.
 apply: (le_lt_trans (integral_le_bound (M *+ 2)%:E _ _ _ _)) => //.
 - exact: measurableD.
-- apply: (measurable_funS mE) => //; apply: measurableT_comp => //.
+- apply: (measurable_funS E) => //; apply: measurableT_comp => //.
   exact: measurable_funB.
 - by rewrite lee_fin mulrn_wge0// ltW.
 - apply: aeW => z [Ez _]; rewrite /= lee_fin mulr2n.
@@ -331,7 +331,8 @@ Lemma locally_integrableS (A B : set R) f :
 Proof.
 move=> mA mB AB [mfB oT ifB].
 have ? : measurable_fun [set: R] (f \_ A).
-  apply/(measurable_restrictT _ _).1 => //; apply: (measurable_funS _ AB) => //.
+  apply/(measurable_restrictT _ _).1 => //.
+  apply: (measurable_funS _ _ AB) => //.
   exact/(measurable_restrictT _ _).2.
 split => // K KT cK; apply: le_lt_trans (ifB _ KT cK).
 apply: ge0_le_integral => //=; first exact: compact_measurable.
@@ -1043,7 +1044,7 @@ rewrite -invfM lef_pV2 ?posrE ?divr_gt0// -(@natr1 _ n) -lerBlDr.
 by near: n; exact: nbhs_infty_ger.
 Unshelve. all: by end_near. Qed.
 
-Lemma lebesgue_differentiation f : locally_integrable setT f ->
+Lemma lebesgue_differentiation f : locally_integrable [set: R] f ->
   {ae mu, forall x, lebesgue_pt f x}.
 Proof.
 move=> locf.
