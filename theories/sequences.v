@@ -57,7 +57,7 @@ From mathcomp Require Import ereal topology tvs normedtype landau.
 (*                             is convergent and its limit is sup u_n         *)
 (*    nonincreasing_cvgn u_ == if u_ is nonincreasing u_ and bound by below   *)
 (*                             then u_ is convergent                          *)
-(*                 adjacent == adjacent sequences lemma                       *)
+(*             adjacent_seq == adjacent sequences lemma                       *)
 (*                   cesaro == Cesaro's lemma                                 *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -681,7 +681,7 @@ rewrite -(opprK u_); apply: is_cvgN; apply/(@near_nondecreasing_is_cvgn _ (- m))
 - by apply: filterS u_m => x u_x; rewrite lerNl opprK.
 Qed.
 
-Lemma adjacent (u_ v_ : R ^nat) : nondecreasing_seq u_ -> nonincreasing_seq v_ ->
+Lemma adjacent_seq (u_ v_ : R ^nat) : nondecreasing_seq u_ -> nonincreasing_seq v_ ->
   v_ - u_ @ \oo --> 0 ->
   [/\ limn v_ = limn u_, cvgn u_ & cvgn v_].
 Proof.
@@ -699,6 +699,8 @@ by split=> //; apply/eqP; rewrite -subr_eq0 -limB //; exact/eqP/cvg_lim.
 Qed.
 
 End sequences_R_lemmas.
+#[deprecated(since="mathcomp-analysis 1.14.0", note="renamed to `adjacent_seq`")]
+Notation adjacent := adjacent_seq (only parsing).
 
 Definition harmonic {R : fieldType} : R ^nat := [sequence n.+1%:R^-1]_n.
 Arguments harmonic {R} n /.
