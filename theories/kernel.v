@@ -899,8 +899,7 @@ apply: measurable_fun_if => //.
 - rewrite setTI [X in measurable X](_ : _ = [set t | f t setT != 0]).
     by apply/seteqP; split => [x /negbT//|x /negbTE].
   exact: kernel_measurable_neq_cst.
-- apply: (@measurable_funS _ _ _ _ setT) => //.
-  exact: kernel_measurable_fun_eq_cst.
+- by apply: measurable_funTS => //; exact: kernel_measurable_fun_eq_cst.
 - apply: emeasurable_funM.
     exact: measurable_funS (measurable_kernel f U mU).
   apply/measurable_EFinP.
