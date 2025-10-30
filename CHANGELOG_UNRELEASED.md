@@ -92,12 +92,11 @@
     `integrable_XMonemX_restrict`, `integral_XMonemX_restrict`
   + definition `beta_fun`
   + lemmas `EFin_beta_fun`, `beta_fun_sym`, `beta_fun0n`, `beta_fun00`,
-    `beta_fun1S`, `beta_fun11`, `beta_funSSS`, `beta_funSS`, `beta_fun_fact`
+    `beta_fun1Sn`, `beta_fun11`, `beta_funSSnSm`, `beta_funSnSm`, `beta_fun_fact`
   + lemmas `beta_funE`, `beta_fun_gt0`, `beta_fun_ge0`
   + definition `beta_pdf`
   + lemmas `measurable_beta_pdf`, `beta_pdf_ge0`, `beta_pdf_le_beta_funV`,
     `integrable_beta_pdf`, `bounded_beta_pdf_01`
-  + lemma `invr_nonneg_proof`, definition `invr_nonneg`
   + definition `beta_prob`
   + lemmas `integral_beta_pdf`, `beta_prob01`, `beta_prob_fin_num`,
     `beta_prob_dom`, `beta_prob_uniform`,
@@ -113,7 +112,7 @@
 
 
 - in `unstable.v`:
-  + lemmas `leq_prod2`, `leq_fact2`, `normr_onem`
+  + lemmas `leq_Mprod_prodD`, `leq_fact2`, `normr_onem`
 
 - in `num_normedtype.v`:
   + lemmas `bigcup_ointsub_sup`, `bigcup_ointsub_mem`

@@ -76,7 +76,7 @@ elim: r => [|a l]; first by rewrite !big_nil exp1n.
 by rewrite !big_cons; case: ifPn => // Pa <-; rewrite expnMn.
 Qed.
 
-Lemma leq_prod2 (x y n m : nat) : (n <= x)%N -> (m <= y)%N ->
+Lemma leq_Mprod_prodD (x y n m : nat) : (n <= x)%N -> (m <= y)%N ->
   (\prod_(m <= i < y) i * \prod_(n <= i < x) i <= \prod_(n + m <= i < x + y) i)%N.
 Proof.
 move=> nx my; rewrite big_addn -addnBA//.
@@ -102,7 +102,7 @@ rewrite [leqRHS](_ : _ =
   by rewrite -fact_split// ltnS leq_add.
 rewrite mulnA mulnC leq_mul2l; apply/orP; right.
 do 2 rewrite -addSn -addnS.
-exact: leq_prod2.
+exact: leq_Mprod_prodD.
 Qed.
 
 Section max_min.
