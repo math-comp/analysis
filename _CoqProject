@@ -132,6 +132,7 @@ theories/gauss_integral.v
 theories/all_analysis.v
 
 theories/showcase/summability.v
+theories/showcase/sorgenfreyline.v
 theories/showcase/pnt.v
 
 analysis_stdlib/Rstruct_topology.v
