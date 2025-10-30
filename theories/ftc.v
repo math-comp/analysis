@@ -836,39 +836,6 @@ Qed.
 
 End integration_by_parts.
 
-(* PR#1656 *)
-Lemma derivable_oy_continuous_within_itvcy {R : numFieldType}
-  {V : normedModType R} (f : R -> V) (x : R) :
-  derivable_oy_continuous_bnd f x -> {within `[x, +oo[, continuous f}.
-Proof.
-Admitted.
-
-(* #PR1656 *)
-Lemma derivable_oy_continuous_bndW_oo {R : numFieldType} {V : normedModType R}
-    (a c d : R) (f : R -> V) :
-  (c < d) ->
-  (a <= c) ->
-  derivable_oy_continuous_bnd f a ->
-  derivable_oo_continuous_bnd f c d.
-Proof.
-Admitted.
-
-(* PR#1662 *)
-Lemma measurable_fun_itv_bndo_bndcP {R : realType} (a : itv_bound R) (b : R)
-    (f : R -> R) :
-  measurable_fun [set` Interval a (BLeft b)] f <->
-  measurable_fun [set` Interval a (BRight b)] f.
-Proof.
-Admitted.
-
-(* PR#1662 *)
-Lemma measurable_fun_itv_obnd_cbndP {R : realType} (a : R) (b : itv_bound R)
-    (f : R -> R) :
-  measurable_fun [set` Interval (BRight a) b] f <->
-  measurable_fun [set` Interval (BLeft a) b] f.
-Proof.
-Admitted.
-
 Section integration_by_partsy_ge0.
 Context {R : realType}.
 Notation mu := lebesgue_measure.
@@ -949,11 +916,11 @@ under eq_bigr => i _.
     rewrite (integration_by_parts _ _ _ (@Ffai i) _ _ (@Ggai i)); last 5 first.
     - by rewrite ltrD2l ltr_nat.
     - exact: continuous_subspaceW cf.
-    - apply: derivable_oy_continuous_bndW_oo Foy.
+    - apply: derivable_oy_continuousWoo Foy.
       + by rewrite ltrD2l ltr_nat.
       + by rewrite lerDl.
     - exact: continuous_subspaceW cg.
-    - apply: derivable_oy_continuous_bndW_oo Goy.
+    - apply: derivable_oy_continuousWoo Goy.
       + by rewrite ltrD2l ltr_nat.
       + by rewrite lerDl.
     over.
@@ -985,7 +952,7 @@ Let sumN_Nsum_fG n :
 Proof.
 rewrite big_nat_cond fin_num_sumeN; rewrite -?big_nat_cond//; move=> m _.
 rewrite seqDUE integral_itv_obnd_cbnd; last exact: measurable_funS mfG.
-apply: integral_fune_fin_num => //=.
+apply: integrable_fin_num => //=.
 apply: continuous_compact_integrable; first exact: segment_compact.
 exact: continuous_subspaceW cfG.
 Qed.
@@ -1068,11 +1035,13 @@ Notation mu := lebesgue_measure.
 Local Open Scope ereal_scope.
 Local Open Scope classical_set_scope.
 
+(* TODO: move *)
 Lemma derivable_oy_continuous_bndN (F : R -> R^o) (a : R) :
-  derivable_oy_continuous_bnd F a ->
-  derivable_oy_continuous_bnd (- F)%R a.
+  derivable_oy_continuous_bnd F a -> derivable_oy_continuous_bnd (- F)%R a.
 Proof.
-Admitted.
+move=> [/= derF Fa]; split; last exact: cvgN.
+by move=> /= x xa; exact/derivableN/derF.
+Qed.
 
 Variables (F G f g : R -> R^o) (a FGoo : R).
 Hypothesis cf : {within `[a, +oo[, continuous f}.
