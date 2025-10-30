@@ -81,6 +81,8 @@
   + lemmas `open_disjoint_itv_open`, `open_disjoint_itv_is_interval`,
     `open_disjoint_itv_trivIset`, `open_disjoint_itv_bigcup`
 
+- in `exp.v`:
+  + lemma `ln_eq0`
 
 ### Changed
 
