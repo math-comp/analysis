@@ -104,8 +104,7 @@ Proof.
 case: n A => [A _ | ]; last by apply rV_compact_nondegenerate.
 have P0 : #|{: 'I_1 * 'I_0}| = 0 by rewrite card_prod/= !card_ord muln0.
 pose v0 := Matrix (ffun0 P0 : {ffun 'I_1 * 'I_0 -> T}).
-rewrite (_ : mkset _ = [set v0]).
-  apply: compact_set1.
+rewrite (_ : mkset _ = [set v0]); first by apply: compact_set1.
 rewrite predeqE => x /=; split=>[ _ | _ [] //].
 by apply/matrixP=>? [].
 Qed.
@@ -240,9 +239,9 @@ by rewrite [leRHS]/normr /= mx_normrE; apply/bigmax_geP; right => /=; exists j.
 Qed.
 
 Section matrix_NormedModule.
-Variables (K : numFieldType) (m n : nat).
 
-Lemma mx_normZ (l : K) (x : 'M[K]_(m, n)) : `| l *: x | = `| l | * `| x |.
+Lemma mx_normZ (K : numDomainType) m n (l : K) (x : 'M[K]_(m, n)) : 
+  `| l *: x | = `| l | * `| x |.
 Proof.
 rewrite {1 3}/normr /= !mx_normE
  (eq_bigr (fun i => (`|l| * `|x i.1 i.2|)%:nng)); last first.
@@ -251,8 +250,8 @@ elim/big_ind2 : _ => // [|a b c d bE dE]; first by rewrite mulr0.
 by rewrite !num_max bE dE maxr_pMr.
 Qed.
 
-HB.instance Definition _ :=
+HB.instance Definition _ (K : numFieldType) m n :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build K 'M[K]_(m, n)
-    mx_normZ.
+    (@mx_normZ K m n).
 
 End matrix_NormedModule.
