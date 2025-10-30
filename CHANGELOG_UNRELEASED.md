@@ -72,6 +72,9 @@
            `derivable_Nyo_continuousWoo`,
            `derivable_Nyo_continuousW`
 
+- in `exp.v`:
+  + lemma `ln_eq0`
+
 ### Changed
 
 - in `lebesgue_stieltjes_measure.v` specialized from `numFieldType` to `realFieldType`:
