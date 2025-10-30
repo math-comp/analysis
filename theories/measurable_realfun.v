@@ -1708,7 +1708,7 @@ move=> mf mg mA Afin [C [mC C0 nC] epspos].
 have [B [mB Beps Bunif]] : exists B, [/\ d.-measurable B, mu B < eps%:E &
     {uniform (A `\` C) `\` B,  f @\oo --> g}].
   apply: pointwise_almost_uniform => //.
-  - by move=> n; apply : (measurable_funS mA _ (mf n)) => ? [].
+  - by move=> n; apply : (measurable_funS _ mA _ (mf n)) => ? [].
   - by apply: measurableI => //; exact: measurableC.
   - by rewrite (le_lt_trans _ Afin)// le_measure// inE//; exact: measurableD.
   - by move=> x; rewrite setDE; case => Ax /(subsetC nC); rewrite setCK; exact.
