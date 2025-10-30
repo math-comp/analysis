@@ -63,6 +63,15 @@
   + `measurable_function.v`
   + `measure.v`
 
+- in `realfun.v`:
+  + lemmas `derivable_oy_continuous_within_itvcy`,
+           `derivable_oy_continuous_within_itvNyc`
+  + lemmas `derivable_oo_continuousW`,
+           `derivable_oy_continuousWoo`,
+           `derivable_oy_continuousW`,
+           `derivable_Nyo_continuousWoo`,
+           `derivable_Nyo_continuousW`
+
 - in `pseudometric_normed_Zmodule.v`:
   + lemma `continuous_comp_cvg`
 
@@ -72,14 +81,6 @@
 - in `ftc.v`:
   + lemmas `integration_by_substitution_onem`, `Rintegration_by_substitution_onem`
 
-- in `realfun.v`:
-  + lemmas `derivable_oy_continuous_within_itvcy`,
-           `derivable_oy_continuous_within_itvNyc`
-  + lemmas `derivable_oo_continuousW`,
-           `derivable_oy_continuousWoo`,
-           `derivable_oy_continuousW`,
-           `derivable_Nyo_continuousWoo`,
-           `derivable_Nyo_continuousW`
 - in `probability.v`:
   + lemmas `continuous_onemXn`, `onemXn_derivable`,
     `derivable_oo_continuous_bnd_onemXnMr`, `derive_onemXn`,
@@ -395,19 +396,6 @@
   + `le_ereal_inf` -> `ereal_inf_le_tmp`
   + `lb_ereal_inf` -> `le_ereal_inf_tmp`
   + `ereal_sup_ge` -> `le_ereal_sup_tmp`
-- in `measure.v`
-  + definition `ess_sup` moved to `ess_sup_inf.v`
-
-- in `convex.v`
-  + lemma `conv_gt0` to `convR_gt0`
-- in `tvs.v`
-  + HB class `TopologicalNmodule` moved to `PreTopologicalNmodule`
-  + HB class `TopologicalZmodule` moved to `PreTopologicalZmodule`
-  + HB class `TopologicalLmodule` moved to `PreTopologicalLmodule`
-  + structure `topologicalLmodule` moved to `preTopologicalLmodule`
-  + HB class `UniformNmodule` moved to `PreUniformNmodule`
-  + HB class `UniformZmodule` moved to `PreUniformZmodule`
-  + HB class `UniformLmodule` moved to `PreUniformLmodule`
 
 - in `probability.v`:
   + `bernoulli` -> `bernoulli_prob`
