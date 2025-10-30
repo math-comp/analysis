@@ -2176,7 +2176,6 @@ by apply/seteqP; split => /= x /=; rewrite in_itv/= andbT.
 Qed.
 
 (**md lemmas about the function $x \mapsto (1 - x)^n$ *)
-(* TODO: move? *)
 Section about_onemXn.
 Context {R : realType}.
 Implicit Types x y : R.
@@ -2315,9 +2314,11 @@ rewrite -restrict_EFin; apply/integrable_restrict => //=.
 by rewrite setTI; exact: integrable_XMonemX.
 Qed.
 
+Local Open Scope ereal_scope.
+
 Lemma integral_XMonemX_restrict U a b :
-  (\int[mu]_(x in U) (XMonemX a b \_ `[0, 1] x)%:E =
-   \int[mu]_(x in U `&` `[0%R, 1%R]) (XMonemX a b x)%:E)%E.
+  \int[mu]_(x in U) (XMonemX a b \_ `[0, 1] x)%:E =
+  \int[mu]_(x in U `&` `[0%R, 1%R]) (XMonemX a b x)%:E.
 Proof.
 rewrite [RHS]integral_mkcondr /=; apply: eq_integral => x xU /=.
 by rewrite restrict_EFin.
@@ -2333,8 +2334,10 @@ Local Notation XMonemX := (@XMonemX R).
 
 Definition beta_fun a b : R := \int[mu]_x (XMonemX a.-1 b.-1 \_`[0,1]) x.
 
+Local Open Scope ereal_scope.
+
 Lemma EFin_beta_fun a b :
-  ((beta_fun a b)%:E = \int[mu]_x (XMonemX a.-1 b.-1 \_`[0,1] x)%:E)%E.
+  (beta_fun a b)%:E = \int[mu]_x (XMonemX a.-1 b.-1 \_`[0,1] x)%:E.
 Proof.
 rewrite fineK//; apply: integrable_fin_num => //=.
 under eq_fun.
@@ -2344,10 +2347,12 @@ under eq_fun.
 by apply/integrable_restrict => //=; rewrite setTI; exact: integrable_XMonemX.
 Qed.
 
+Local Close Scope ereal_scope.
+
 Lemma beta_fun_sym a b : beta_fun a b = beta_fun b a.
 Proof.
 rewrite -[LHS]Rintegral_mkcond Rintegration_by_substitution_onem//=.
-- rewrite subrr -[RHS]Rintegral_mkcond; apply: eq_Rintegral => x x01.
+- rewrite onem1 -[RHS]Rintegral_mkcond; apply: eq_Rintegral => x x01.
   by rewrite XMonemXC.
 - by rewrite ltr01 lexx.
 - exact: within_continuous_XMonemX.
@@ -2368,7 +2373,7 @@ rewrite Rintegral_cst//= mul1r lebesgue_measure_itv/= lte_fin ltr01.
 by rewrite oppr0 adde0.
 Qed.
 
-Lemma beta_fun1S b : beta_fun 1 b.+1 = b.+1%:R^-1.
+Lemma beta_fun1Sn b : beta_fun 1 b.+1 = b.+1%:R^-1.
 Proof.
 rewrite /beta_fun -Rintegral_mkcond.
 under eq_Rintegral do rewrite XMonemX0n.
@@ -2376,9 +2381,9 @@ by rewrite Rintegral_onemXn.
 Qed.
 
 Lemma beta_fun11 : beta_fun 1 1 = 1.
-Proof. by rewrite (beta_fun1S O) invr1. Qed.
+Proof. by rewrite (beta_fun1Sn O) invr1. Qed.
 
-Lemma beta_funSSS a b :
+Lemma beta_funSSnSm a b :
   beta_fun a.+2 b.+1 = a.+1%:R / b.+1%:R * beta_fun a.+1 b.+2.
 Proof.
 rewrite -[LHS]Rintegral_mkcond.
@@ -2408,12 +2413,12 @@ transitivity (a.+1%:R / b.+1%:R * \int[mu]_(x in `[0, 1]) XMonemX a b.+1 x).
 by rewrite Rintegral_mkcond.
 Qed.
 
-Lemma beta_funSS a b : beta_fun a.+1 b.+1 =
+Lemma beta_funSnSm a b : beta_fun a.+1 b.+1 =
   a`!%:R / (\prod_(b.+1 <= i < (a + b).+1) i)%:R * beta_fun 1 (a + b).+1.
 Proof.
 elim: a b => [b|a ih b].
   by rewrite fact0 mul1r add0n /index_iota subnn big_nil invr1 mul1r.
-rewrite beta_funSSS [in LHS]ih !mulrA; congr *%R; last by rewrite addSnnS.
+rewrite beta_funSSnSm [in LHS]ih !mulrA; congr *%R; last by rewrite addSnnS.
 rewrite -mulrA mulrCA 2!mulrA.
 rewrite -natrM (mulnC a`!) -factS -mulrA -invfM; congr (_ / _).
 rewrite big_add1 [in RHS]big_nat_recl/=; last by rewrite addSn ltnS leq_addl.
@@ -2423,7 +2428,7 @@ Qed.
 Lemma beta_fun_fact a b :
   beta_fun a.+1 b.+1 = (a`! * b`!)%:R / (a + b).+1`!%:R.
 Proof.
-rewrite beta_funSS beta_fun1S natrM -!mulrA; congr *%R.
+rewrite beta_funSnSm beta_fun1Sn natrM -!mulrA; congr *%R.
 (* (b+1 b+2 ... b+1 b+a)^-1 / (a+b+1) = b! / (a+b+1)! *)
 rewrite factS [in RHS]mulnC natrM invfM mulrA; congr (_ / _).
 rewrite -(@invrK _ b`!%:R) -invfM; congr (_^-1).
@@ -2502,23 +2507,23 @@ Qed.
 
 Local Notation mu := lebesgue_measure.
 
-Let int_beta_pdf01 : (\int[mu]_(x in `[0%R, 1%R]) (beta_pdf x)%:E =
-                      \int[mu]_x (beta_pdf x)%:E :> \bar R)%E.
+Local Open Scope ereal_scope.
+
+Let int_beta_pdf01 : \int[mu]_(x in `[0%R, 1%R]) (beta_pdf x)%:E =
+                     \int[mu]_x (beta_pdf x)%:E :> \bar R.
 Proof.
 rewrite integral_mkcond/=; apply: eq_integral => /=x _.
 by rewrite /beta_pdf/= !patchE; case: ifPn => [->//|_]; rewrite mul0r.
 Qed.
 
+Local Close Scope ereal_scope.
+
 Lemma integrable_beta_pdf : mu.-integrable [set: _] (EFin \o beta_pdf).
 Proof.
 apply/integrableP; split.
   by apply/measurable_EFinP; exact: measurable_beta_pdf.
-under eq_integral.
-  move=> /= x _.
-  rewrite ger0_norm//; last by rewrite beta_pdf_ge0.
-  over.
-simpl.
-rewrite -int_beta_pdf01.
+under eq_integral=> /= x _ do rewrite ger0_norm ?beta_pdf_ge0//.
+rewrite /= -int_beta_pdf01.
 apply: (@le_lt_trans _ _ (\int[mu]_(x in `[0%R, 1%R]) (beta_fun a b)^-1%:E)%E).
   apply: ge0_le_integral => //=.
   - by move=> x _; rewrite lee_fin beta_pdf_ge0.
@@ -2546,14 +2551,6 @@ by rewrite patchE; case: ifPn => //; rewrite inE => ?; exact: XMonemX_le1.
 Unshelve. all: by end_near. Qed.
 
 End beta_pdf.
-
-(* TODO: move? *)
-Lemma invr_nonneg_proof (R : numDomainType) (p : {nonneg R}) :
-  (0 <= (p%:num)^-1)%R.
-Proof. by rewrite invr_ge0. Qed.
-
-Definition invr_nonneg (R : numDomainType) (p : {nonneg R}) :=
-  NngNum (invr_nonneg_proof p).
 
 Section beta.
 Local Open Scope ring_scope.
@@ -2611,7 +2608,7 @@ HB.instance Definition _ := isMeasure.Build _ _ _ beta_num
   beta_num0 beta_num_ge0 beta_num_sigma_additive.
 
 Definition beta_prob :=
-  @mscale _ _ _ (invr_nonneg (NngNum (beta_fun_ge0 a b))) beta_num.
+  mscale ((NngNum (beta_fun_ge0 a b))%:num^-1)%:nng beta_num.
 
 HB.instance Definition _ := Measure.on beta_prob.
 
@@ -2686,19 +2683,23 @@ rewrite /XMonemX !expr0 mul1r.
 by rewrite /uniform_pdf x10 subr0 invr1.
 Qed.
 
+Local Open Scope ereal_scope.
+
 Lemma integral_beta_prob_bernoulli_prob_lty {R : realType} a b (f : R -> R) U :
   measurable_fun setT f ->
   (forall x, x \in `[0, 1]%R -> 0 <= f x <= 1)%R ->
-  (\int[beta_prob a b]_x `|bernoulli_prob (f x) U| < +oo :> \bar R)%E.
+  \int[beta_prob a b]_x `|bernoulli_prob (f x) U| < +oo.
 Proof.
 move=> mf /= f01.
-apply: (@le_lt_trans _ _ (\int[beta_prob a b]_x cst 1 x))%E.
+apply: (@le_lt_trans _ _ (\int[beta_prob a b]_x cst 1 x)).
   apply: ge0_le_integral => //=.
     apply: measurableT_comp => //=.
     by apply: (measurableT_comp (measurable_bernoulli_prob2 _)).
   by move=> x _; rewrite gee0_abs// probability_le1.
 by rewrite integral_cst//= mul1e -ge0_fin_numE// beta_prob_fin_num.
 Qed.
+
+Local Close Scope ereal_scope.
 
 Lemma integral_beta_prob_bernoulli_prob_onemX_lty {R : realType} n a b U :
   (\int[beta_prob a b]_x `|bernoulli_prob (`1-x ^+ n) U| < +oo :> \bar R)%E.

@@ -1268,7 +1268,7 @@ Proof. by have /derivableP := @derivable_id x v; rewrite derive_val. Qed.
 End derive_id.
 
 Lemma derive1_onem {R : numFieldType} :
-  (fun x => 1 - x : R^o)^`()%classic = cst (-1).
+  (fun x => `1-x : R^o)^`()%classic = cst (-1).
 Proof.
 by apply/funext => x; rewrite derive1E deriveB// derive_id derive_cst sub0r.
 Qed.
@@ -1338,25 +1338,12 @@ rewrite scalerA -scalerDl mulrCA -[f x * _]exprS.
 by rewrite [in LHS]mulr_natl exprfctE -mulrSr mulr_natl.
 Qed.
 
-(*Global Instance is_deriveX f n x v (df : R) :
-  is_derive x v f df -> is_derive x v (f ^+ n.+1) ((n.+1%:R * f x ^+n) *: df).
-Proof.
-move=> dfx; elim: n => [|n ihn]; first by rewrite expr1 expr0 mulr1 scale1r.
-rewrite exprS; apply: is_derive_eq.
-rewrite scalerA -scalerDl mulrCA -[f x * _]exprS.
-by rewrite [in LHS]mulr_natl exprfctE -mulrSr mulr_natl.
-Qed.*)
-
 Lemma derivableX f n x v : derivable f x v -> derivable (f ^+ n) x v.
 Proof. by case: n => [_|n /derivableP]; [rewrite expr0|]. Qed.
 
 Lemma deriveX f n x v : derivable f x v ->
   'D_v (f ^+ n) x = (n%:R * f x ^+ n.-1) *: 'D_v f x.
 Proof. by move=> /derivableP df; rewrite derive_val. Qed.
-
-(*Lemma deriveX f n x v : derivable f x v ->
-  'D_v (f ^+ n.+1) x = (n.+1%:R * f x ^+ n) *: 'D_v f x.
-Proof. by move=> /derivableP df; rewrite derive_val. Qed.*)
 
 Fact der_inv f x v : f x != 0 -> derivable f x v ->
   (fun h => h^-1 *: (((fun y => (f y)^-1) \o shift x) (h *: v) - (f x)^-1)) @
