@@ -2756,7 +2756,7 @@ apply: integrableB => //=.
     by rewrite lee_fin invr_ge0 beta_fun_ge0.
   rewrite (_ : integral _ _ _ = \int[lebesgue_measure]_x
     (((@XMonemX R a.-1 b.-1) \_ `[0, 1]) x)%:E)%E; last first.
-    rewrite integral_mkcond/=; apply: eq_integral => /= x _.
+    rewrite [LHS]integral_mkcond/=; apply: eq_integral => /= x _.
     by rewrite !patchE; case: ifPn => // ->.
   have /integrableP[_] := @integrable_XMonemX_restrict R a b.
   under eq_integral.

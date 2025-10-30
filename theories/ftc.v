@@ -1801,8 +1801,8 @@ Local Open Scope ereal_scope.
 Lemma integration_by_substitution_onem (G : R -> R) (r : R) :
   (0 < r <= 1)%R ->
   {within `[0%R, r], continuous G} ->
-  (\int[mu]_(x in `[0%R, r]) (G x)%:E =
-  \int[mu]_(x in `[`1-r, 1%R]) (G `1-x)%:E).
+  \int[mu]_(x in `[0%R, r]) (G x)%:E =
+  \int[mu]_(x in `[`1-r, 1%R]) (G `1-x)%:E.
 Proof.
 move=> r01 cG.
 have := @integration_by_substitution_decreasing R onem G `1-r 1.
