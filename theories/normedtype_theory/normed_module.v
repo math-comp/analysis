@@ -2026,6 +2026,8 @@ apply: (subset_trans (closed_ball_subset _ _) xrB) => //=.
 by rewrite lter_pdivrMr // ltr_pMr // ltr1n.
 Qed.
 
+End Closed_Ball_normedModType.
+
 Lemma open_subball {R : numFieldType} {M : normedModType R} (A : set M)
   (x : M) : open A -> A x -> \forall e \near 0^'+, ball x e `<=` A.
 Proof.
@@ -2045,13 +2047,6 @@ move/subsets_disjoint; rewrite setCK => ze2K0.
 exists (e / 2); first by rewrite /= divr_gt0.
 move=> x /= + x0; rewrite sub0r normrN gtr0_norm// => xe.
 by move: ze2K0; apply: subsetI_eq0 => //=; exact: closed_ball_subset.
-Qed.
-
-Lemma locally_compactR (R : realType) : locally_compact [set: R].
-Proof.
-move=> x _; rewrite withinET; exists (closed_ball x 1).
-  by apply/nbhs_closedballP; exists 1%:pos.
-by split; [apply: closed_ballR_compact | apply: closed_ball_closed].
 Qed.
 
 Lemma interior_closed_ballE (R : realType) (V : normedModType R) (x : V)
@@ -2078,4 +2073,251 @@ move=> r0; split; first exact: open_interior.
 by rewrite interior_closed_ballE //; exact: ballxx.
 Qed.
 
-End Closed_Ball_normedModType.
+Lemma locally_compactR (R : realType) : locally_compact [set: R].
+Proof.
+move=> x _; rewrite withinET; exists (closed_ball x 1).
+  by apply/nbhs_closedballP; exists 1%:pos.
+by split; [apply: closed_ballR_compact | apply: closed_ball_closed].
+Qed.
+
+Section bigcup_ointsub_lemmas.
+Context {R : realType} {U : set R}.
+
+Lemma bigcup_ointsubxx q : open U -> U (ratr q) ->
+  ratr q \in bigcup_ointsub U q.
+Proof.
+move=> oU Uq.
+have [e /= e0 eU] := open_subball oU Uq.
+pose B := ball (@ratr R q) (e / 2).
+have Bq : B (ratr q) by apply: ballxx; rewrite divr_gt0.
+apply/mem_set; exists B => //; split => //; split.
+- by apply: ball_open; rewrite divr_gt0.
+- by rewrite /B ball_itv; exact: interval_is_interval.
+- apply: eU => //; last by rewrite divr_gt0.
+  rewrite ball_normE/= /ball/= sub0r normrN gtr0_norm ?divr_gt0//.
+  by rewrite gtr_pMr// invf_lt1// ltr1n.
+Qed.
+
+Lemma nondisjoint_bigcup_ointsub (p q : rat) :
+  bigcup_ointsub U p `&` bigcup_ointsub U q !=set0 ->
+  bigcup_ointsub U p = bigcup_ointsub U q.
+Proof.
+move=> [x /= [[A [[oA itvA AU Ap Ax]]] [B [[oB itvB BU Bq Bx]]]]].
+rewrite eqEsubset; split.
+- apply: bigcup_ointsub_sup.
+  + exact: open_bigcup_ointsub.
+  + exact: is_interval_bigcup_ointsub.
+  + exact: bigcup_ointsub_sub.
+  + exists (A `|` B) => /= ; last by right.
+    split; last by left.
+    split; [exact: openU| |by rewrite subUset].
+    apply/connected_intervalP/connectedU; [|exact/connected_intervalP..].
+    by exists x.
+- apply: bigcup_ointsub_sup.
+  + exact: open_bigcup_ointsub.
+  + exact: is_interval_bigcup_ointsub.
+  + exact: bigcup_ointsub_sub.
+  + exists (A `|` B) => /= ; last by left.
+    split; last by right.
+    split; [exact: openU| |by rewrite subUset].
+    apply/connected_intervalP/connectedU; [|exact/connected_intervalP..].
+    by exists x.
+Qed.
+
+End bigcup_ointsub_lemmas.
+
+(**md proof that an open set of real numbers can be written as
+   the union of disjoint open intervals *)
+Module OpenSetDisjointItvs.
+Section opensetdisjointitvs.
+Context {R : realType}.
+Variable U : set R.
+Hypothesis oU : open U.
+
+(**md We first work out a proof where disjoint open intervals are indexed by
+   rational numbers. The "sequence" of open intervals in question is
+   `lt_disjoint_rat_seq`. This is the "sequence" of `bigcup_ointsub U` that
+   are non-overlapping. *)
+Section rat_index.
+Variables (f : rat -> nat) (g : nat -> rat).
+Hypotheses (cfg : cancel f g) (cgf : cancel g f).
+
+Definition lt_disjoint := [set q | forall p, U (ratr p) ->
+  (f p < f q)%N -> bigcup_ointsub U q `&` bigcup_ointsub U p = set0].
+
+Let bigcup_lt_disjoint :
+  U = \bigcup_(q in lt_disjoint) bigcup_ointsub U q.
+Proof.
+rewrite [LHS]open_bigcup_rat//; apply/seteqP; split => /=; last first.
+  by move=> r [q/= ?] Uqr; exists q => //=; exact: bigcup_ointsub_mem Uqr.
+move=> r [q/= Uq] Uqr.
+suff [p_idx [pUq Up]] : exists p_idx,
+    let p := g p_idx in ratr p \in bigcup_ointsub U q /\
+    forall q', ratr q' \in bigcup_ointsub U q -> (f p <= f q')%N.
+  have q_p : bigcup_ointsub U q `&` bigcup_ointsub U (g p_idx) !=set0.
+    exists (ratr (g p_idx)); split; first exact/set_mem.
+    apply/set_mem; rewrite bigcup_ointsubxx//.
+    by move/set_mem : pUq; exact: bigcup_ointsub_sub.
+  exists (g p_idx).
+  - rewrite /= => q' Uq' q'p.
+    apply/notP => /eqP/set0P[s [ps ts]].
+    suff : ratr q' \in bigcup_ointsub U q by move/Up; rewrite leqNgt q'p.
+    rewrite (@nondisjoint_bigcup_ointsub _ _ _ (g p_idx))//.
+    rewrite (@nondisjoint_bigcup_ointsub _ _ _ q') ?bigcup_ointsubxx//.
+    by exists s.
+  - by rewrite (@nondisjoint_bigcup_ointsub _ _ _ q)// setIC.
+pose P := [pred i : 'I_(f q).+1 | ratr (g i) \in bigcup_ointsub U q].
+have Pord_max : P ord_max.
+  by rewrite /P/= cfg// bigcup_ointsubxx//; exact/set_mem.
+pose min : 'I_(f q).+1 := [arg min_(i < ord_max | P i) idfun i].
+exists min => /=; split.
+- by rewrite /min; case: arg_minnP.
+- move=> q' pUp; rewrite /min; case: arg_minnP => //= i giq ismall.
+  rewrite cgf.
+  have [fq'fq|fqfq'] := ltnP (f q') (f q).+1.
+    have := ismall (Ordinal fq'fq).
+    by rewrite cfg => /(_ pUp).
+  by rewrite (leq_trans _ (ltnW fqfq'))// (ismall ord_max).
+Qed.
+
+Let lt_disjoint_rat_seq0 q : set R :=
+  if pselect (lt_disjoint q) then bigcup_ointsub U q else set0.
+
+Let lt_disjoint_rat_seq0_trivIset : trivIset (U \o ratr) lt_disjoint_rat_seq0.
+Proof.
+apply/trivIsetP => /= i j Ui Uj.
+wlog : i j Ui Uj / i < j.
+  move=> wlg; rewrite neq_lt => /orP[|] ij.
+    by rewrite wlg// lt_eqF.
+  by rewrite setIC wlg// lt_eqF.
+move=> ij _.
+rewrite /lt_disjoint_rat_seq0/=.
+case: pselect => disj_i; case: pselect => disj_j; rewrite ?(setI0,set0I)//.
+have [?|fjfi] := ltnP (f i) (f j); first by rewrite setIC disj_j.
+rewrite disj_i// ltn_neqAle fjfi andbT.
+have : i != j by rewrite lt_eqF.
+apply: contra => /eqP.
+by move/can_inj : cfg => /[apply] => /esym/eqP.
+Qed.
+
+Let lt_disjoint_rat_seq0_comp_trivIset :
+  trivIset (U \o ratr \o g) (lt_disjoint_rat_seq0 \o g).
+Proof.
+apply/trivIsetP => i j/= Ugi Ugj ij.
+move/trivIsetP : lt_disjoint_rat_seq0_trivIset => /(_ (g i) (g j)) /=.
+by apply => //; apply: contra ij; move/eqP/(can_inj cgf)/eqP.
+Qed.
+
+Let lt_disjoint_rat_seq0_set0 q :
+  ratr q \notin U -> lt_disjoint_rat_seq0 q = set0.
+Proof.
+move=> qU.
+rewrite /lt_disjoint_rat_seq0; case: pselect => //= disj_q.
+rewrite /bigcup_ointsub bigcup0// => B/=[[]oB iB].
+by move=> /[apply] /mem_set; rewrite (negPf qU).
+Qed.
+
+Let lt_disjoint_rat_seq0_open_itv q :
+  open (lt_disjoint_rat_seq0 q) /\ is_interval (lt_disjoint_rat_seq0 q).
+Proof.
+split.
+- rewrite /lt_disjoint_rat_seq0; case: pselect => //= _.
+  + exact: open_bigcup_ointsub.
+  + exact: open0.
+- rewrite /lt_disjoint_rat_seq0; case: pselect => //= _.
+  + exact: is_interval_bigcup_ointsub.
+  + by [].
+Qed.
+
+Let bigcup_lt_disjoint_rat_seq0 : U = \bigcup_q lt_disjoint_rat_seq0 q.
+Proof.
+rewrite bigcup_lt_disjoint bigcup_mkcond; apply: eq_bigcup => // q _.
+rewrite /lt_disjoint_rat_seq0; case: pselect => //= Icondq.
+- by rewrite mem_set.
+- by rewrite memNset.
+Qed.
+
+Let bigcup_U_lt_disjoint_rat_seq :
+  U = \bigcup_(q in [set n | U (ratr n)]) lt_disjoint_rat_seq0 q.
+Proof.
+rewrite [LHS]bigcup_lt_disjoint_rat_seq0 [RHS]bigcup_mkcond.
+apply: eq_bigcupr => q _; case: ifPn => //.
+rewrite notin_setE/= => Uq.
+by rewrite lt_disjoint_rat_seq0_set0// memNset.
+Qed.
+
+Definition lt_disjoint_rat_seq q : set R :=
+  if ratr q \in U then lt_disjoint_rat_seq0 q else set0.
+
+Lemma lt_disjoint_rat_seq_open_itv q :
+  open (lt_disjoint_rat_seq q) /\ is_interval (lt_disjoint_rat_seq q).
+Proof. by rewrite /lt_disjoint_rat_seq; case: ifPn => qU//; split. Qed.
+
+Lemma lt_disjoint_rat_seq_trivIset : trivIset setT (lt_disjoint_rat_seq \o g).
+Proof.
+move/trivIset_mkcond: lt_disjoint_rat_seq0_trivIset => // /trivIsetP H.
+apply/trivIsetP => i j/= _ _ ij.
+rewrite /lt_disjoint_rat_seq; case: ifPn => //; rewrite ?(setI0,set0I)//.
+rewrite /lt_disjoint_rat_seq0; case: pselect => /=; rewrite ?(setI0,set0I)//.
+case: ifPn => //; rewrite ?(setI0,set0I)//.
+case: pselect => /=; rewrite ?(setI0,set0I)//.
+move=> disj_gj gjU K3 K4.
+have := H (g i) (g j) Logic.I Logic.I.
+rewrite !ifT//.
+rewrite /lt_disjoint_rat_seq0/=; case: pselect => //=; case: pselect => //= _ _.
+apply.
+by apply: contra ij => /eqP/(can_inj cgf)/eqP.
+Qed.
+
+Lemma bigcup_lt_disjoint_rat_seq : U = \bigcup_q lt_disjoint_rat_seq q.
+Proof.
+rewrite [LHS]bigcup_U_lt_disjoint_rat_seq.
+rewrite [in LHS]bigcup_mkcond [in RHS]bigcup_mkcond.
+apply: eq_bigcupr => q _.
+by rewrite [in RHS]mem_set.
+Qed.
+
+End rat_index.
+
+(**md now the proof where disjoint open intervals are indexed by
+   natural numbers *)
+Lemma open_disjoint_itv : exists I : nat -> set R,
+  [/\ forall q, open (I q) /\ is_interval (I q),
+      trivIset setT I & U = \bigcup_q I q].
+Proof.
+have /card_set_bijP[/= f] := card_rat.
+rewrite setTT_bijective => -[g cfg cgf].
+exists (lt_disjoint_rat_seq f \o g); split.
+- by move=> n; exact: lt_disjoint_rat_seq_open_itv.
+- exact: lt_disjoint_rat_seq_trivIset.
+- rewrite (bigcup_lt_disjoint_rat_seq cfg cgf) [LHS](reindex_bigcup g setT)//.
+  by move=> q/= _; exists (f q).
+Qed.
+
+End opensetdisjointitvs.
+End OpenSetDisjointItvs.
+
+(* proof that an open set of real numbers can be written as
+   the union of disjoint open intervals *)
+Section open_set_disjoint_real_intervals.
+Context {R : realType}.
+Variable U : set R.
+Hypothesis oU : open U.
+
+(* the sequence of non-overlapping open intervals that cover U *)
+Definition open_disjoint_itv : nat -> set R :=
+  sval (cid (OpenSetDisjointItvs.open_disjoint_itv oU)).
+
+Lemma open_disjoint_itv_open i : open (open_disjoint_itv i).
+Proof. by rewrite /open_disjoint_itv; case: cid => //= I [/(_ i)[]]. Qed.
+
+Lemma open_disjoint_itv_is_interval i : is_interval (open_disjoint_itv i).
+Proof. by rewrite /open_disjoint_itv; case: cid => //= I [/(_ i)[]]. Qed.
+
+Lemma open_disjoint_itv_trivIset : trivIset [set: nat] open_disjoint_itv.
+Proof. by rewrite /open_disjoint_itv; case: cid => //= I [_]. Qed.
+
+Lemma open_disjoint_itv_bigcup : U = \bigcup_q open_disjoint_itv q.
+Proof. by rewrite /open_disjoint_itv; case: cid => //= I [_]. Qed.
+
+End open_set_disjoint_real_intervals.
