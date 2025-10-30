@@ -184,10 +184,8 @@ Let f x := limn (f_sum^~ x).
 Local Lemma ndf_sum y : {homo f_sum^~ y : a b / (a <= b)%N >-> a <= b}.
 Proof.
 move=> a b ab.
-rewrite /f_sum (big_cat_nat _ ab) //= lerDl.
-rewrite (big_morph (@^~ y) (id1:=0) (op1:=GRing.add)) //=.
-rewrite sumr_ge0 // => i _.
-by rewrite mulr_ge0 // invr_ge0 exprn_ge0.
+rewrite !f_sumE -subr_ge0 sub_series_geq // sumr_ge0 //= => i _.
+by rewrite mulr_ge0.
 Qed.
 
 Local Lemma cvgn_f_sum y : cvgn (f_sum^~ y).
@@ -288,8 +286,8 @@ split.
   apply: (le_lt_trans (ler_normD _ _)).
   rewrite (splitr eps).
   apply: ltr_leD => //.
-  have Hfn0 x := proj1 (elimT andP (sum_f_n_oo f_n_ge0 f_n_le1 n x)).
-  have Hfn1 x := proj2 (elimT andP (sum_f_n_oo f_n_ge0 f_n_le1 n x)).
+  have Hfn0 x := proj1 (andP (sum_f_n_oo f_n_ge0 f_n_le1 n x)).
+  have Hfn1 x := proj2 (andP (sum_f_n_oo f_n_ge0 f_n_le1 n x)).
   apply: (@le_trans _ _ (2^-n)).
     rewrite ler_norml !lerBDl (le_trans (Hfn1 t)) ?lerDl //=.
     by rewrite (le_trans (Hfn1 x)) // lerDr.
