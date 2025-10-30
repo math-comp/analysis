@@ -37,10 +37,11 @@ Lemma coord_continuous {K : numFieldType} m n i j :
   continuous (fun M : 'M[K]_(m, n) => M i j).
 Proof.
 move=> /= M s /= /(nbhs_ballP (M i j)) [e e0 es].
-apply/nbhs_ballP; exists e => //= N [] _ MN; exact/es/MN.
+by apply/nbhs_ballP; exists e => //= N [_ MN]; exact/es/MN.
 Qed.
 
-#[local]Lemma rV_compact_nondegenerate (T : ptopologicalType) n (A : 'I_n.+1 -> set T) :
+#[local]Lemma rV_compact_nondegenerate (T : ptopologicalType) n
+    (A : 'I_n.+1 -> set T) :
   (forall i, compact (A i)) ->
   compact [ set v : 'rV[T]_n.+1 | forall i, A i (v ord0 i)].
 Proof.
@@ -101,12 +102,11 @@ Lemma rV_compact (T : ptopologicalType) n (A : 'I_n -> set T) :
   (forall i, compact (A i)) ->
   compact [ set v : 'rV[T]_n | forall i, A i (v ord0 i)].
 Proof.
-case: n A => [A _ | ]; last by apply rV_compact_nondegenerate.
+case: n A => [A _ | ]; last exact: rV_compact_nondegenerate.
 have P0 : #|{: 'I_1 * 'I_0}| = 0 by rewrite card_prod/= !card_ord muln0.
 pose v0 := Matrix (ffun0 P0 : {ffun 'I_1 * 'I_0 -> T}).
-rewrite (_ : mkset _ = [set v0]); first by apply: compact_set1.
-rewrite predeqE => x /=; split=>[ _ | _ [] //].
-by apply/matrixP=>? [].
+rewrite (_ : mkset _ = [set v0]); first exact: compact_set1.
+by rewrite predeqE => x /=; split => [ _ | _ []//]; apply/rowP => -[].
 Qed.
 
 Section mx_norm.
@@ -202,18 +202,18 @@ Section matrix_pseudoMetricNormedZmod.
 Variables (K : numFieldType) (m n : nat).
 
 Local Lemma ball_gt0 (x y : 'M[K]_(m, n)) e : ball x e y -> 0 < e.
-Proof. by rewrite /ball/==> [[]]. Qed.
+Proof. by case. Qed.
 
 Lemma mx_norm_ball : @ball _ 'M[K]_(m, n) = ball_ (fun x => `| x |).
 Proof.
-rewrite /normr /ball_ predeq3E => x e y /=; rewrite mx_normE; split=>[[e_gt0 xey]|xey].
-- move: e_gt0 (e_gt0) xey => /ltW/nonnegP[{}e] e_gt0 xey.
+rewrite /normr /ball_ predeq3E => x e y/= /[!mx_normE]; split=> [[]|xey].
+- move=> /[dup] => /ltW/nonnegP[{}e] e_gt0 xey.
   rewrite num_lt; apply/bigmax_ltP => /=.
   by rewrite -num_lt /=; split => // -[? ?] _; rewrite !mxE; exact: xey.
 - have e_gt0 : 0 < e by rewrite (le_lt_trans _ xey).
   move: e_gt0 (e_gt0) xey => /ltW/nonnegP[{}e] e_gt0.
-  move=> /(bigmax_ltP _ _ _ (fun _ => _%:itv)) /= [e0 xey].
-  split=>// i j.
+  move=> /(bigmax_ltP _ _ _ (fun=> _%:itv)) /= [e0 xey].
+  split=> // i j.
   by move: (xey (i, j)); rewrite !mxE; exact.
 Qed.
 
@@ -227,8 +227,8 @@ Lemma bounded_closed_compact (R : realType) n (A : set 'rV[R]_n) :
 Proof.
 move=> [M [Mreal normAltM]] Acl.
 have Mnco : compact
-  [set v : 'rV[R]_n | forall i, v ord0 i \in `[(- (M + 1)), (M + 1)]].
-  apply: (@rV_compact _  _ (fun _ => `[(- (M + 1)), (M + 1)]%classic)).
+    [set v : 'rV[R]_n | forall i, v ord0 i \in `[(- (M + 1)), (M + 1)]].
+  apply: (@rV_compact _  _ (fun=> `[(- (M + 1)), (M + 1)]%classic)).
   by move=> _; apply: segment_compact.
 apply: subclosed_compact Acl Mnco _ => v /normAltM normvleM i.
 suff : `|v ord0 i : R| <= M + 1 by rewrite ler_norml.
@@ -240,11 +240,11 @@ Qed.
 
 Section matrix_NormedModule.
 
-Lemma mx_normZ (K : numDomainType) m n (l : K) (x : 'M[K]_(m, n)) : 
+Lemma mx_normZ (K : numDomainType) m n (l : K) (x : 'M[K]_(m, n)) :
   `| l *: x | = `| l | * `| x |.
 Proof.
 rewrite {1 3}/normr /= !mx_normE
- (eq_bigr (fun i => (`|l| * `|x i.1 i.2|)%:nng)); last first.
+    (eq_bigr (fun i => (`|l| * `|x i.1 i.2|)%:nng)); last first.
   by move=> i _; rewrite mxE //=; apply/eqP; rewrite -num_eq /= normrM.
 elim/big_ind2 : _ => // [|a b c d bE dE]; first by rewrite mulr0.
 by rewrite !num_max bE dE maxr_pMr.
