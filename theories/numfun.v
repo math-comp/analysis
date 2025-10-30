@@ -294,7 +294,7 @@ Hint Extern 0 (is_true (0%R <= _ ^\+ _)%E) => solve [apply: funepos_ge0] : core.
 #[global]
 Hint Extern 0 (is_true (0%R <= _ ^\- _)%E) => solve [apply: funeneg_ge0] : core.
 
-Definition indic {T} {R : ringType} (A : set T) (x : T) : R := (x \in A)%:R.
+Definition indic {T} {R : pzRingType} (A : set T) (x : T) : R := (x \in A)%:R.
 Reserved Notation "'\1_' A" (at level 8, A at level 2, format "'\1_' A") .
 Notation "'\1_' A" := (indic A) : ring_scope.
 
@@ -309,7 +309,7 @@ Canonical indic_inum {T} {R : numDomainType} (A : set T) (x : T) :=
   Itv.mk (@num_spec_indic T R A x).
 
 Section indic_ringType.
-Context (T : Type) (R : ringType).
+Context (T : Type) (R : pzRingType).
 Implicit Types A D : set T.
 
 Lemma indicE A (x : T) : \1_A x = (x \in A)%:R :> R. Proof. by []. Qed.
@@ -411,7 +411,7 @@ apply/funext => x; rewrite patchE/= indicE.
 by case: ifPn => /=; rewrite ?mule1// mule0.
 Qed.
 
-Lemma xsection_indic (R : ringType) T1 T2 (A : set (T1 * T2)) x :
+Lemma xsection_indic (R : nzRingType) T1 T2 (A : set (T1 * T2)) x :
   xsection A x = (fun y => (\1_A (x, y) : R)) @^-1` [set 1].
 Proof.
 apply/seteqP; split => [y/mem_set/=|y/=]; rewrite indicE.
@@ -419,7 +419,7 @@ apply/seteqP; split => [y/mem_set/=|y/=]; rewrite indicE.
 by rewrite /xsection/=; case: (_ \in _) => //= /esym/eqP /[!oner_eq0].
 Qed.
 
-Lemma ysection_indic (R : ringType) T1 T2 (A : set (T1 * T2)) y :
+Lemma ysection_indic (R : nzRingType) T1 T2 (A : set (T1 * T2)) y :
   ysection A y = (fun x => (\1_A (x, y) : R)) @^-1` [set 1].
 Proof.
 apply/seteqP; split => [x/mem_set/=|x/=]; rewrite indicE.
@@ -461,7 +461,8 @@ by rewrite ler_pdivrMr//= ler_pMr// ?subr_gt0// ler1n.
 Unshelve. all: by end_near. Qed.
 
 Section ring.
-Context (aT : pointedType) (rT : ringType).
+(* TODO: generalize to the potentially-zero case? *)
+Context (aT : pointedType) (rT : nzRingType).
 
 Lemma fimfun_mulr_closed : mulr_closed (@fimfun aT rT).
 Proof.
@@ -471,7 +472,7 @@ Qed.
 
 HB.instance Definition _ :=
    @GRing.isMulClosed.Build _ (@fimfun aT rT) fimfun_mulr_closed.
-HB.instance Definition _ := [SubZmodule_isSubRing of {fimfun aT >-> rT} by <:].
+HB.instance Definition _ := [SubZmodule_isSubNzRing of {fimfun aT >-> rT} by <:].
 
 Implicit Types f g : {fimfun aT >-> rT}.
 
@@ -506,14 +507,15 @@ End ring.
 Arguments indic_fimfun {aT rT} _.
 
 Section comring.
-Context (aT : pointedType) (rT : comRingType).
-HB.instance Definition _ := [SubRing_isSubComRing of {fimfun aT >-> rT} by <:].
+Context (aT : pointedType) (rT : comNzRingType).
+HB.instance Definition _ :=
+  [SubNzRing_isSubComNzRing of {fimfun aT >-> rT} by <:].
 
 Implicit Types (f g : {fimfun aT >-> rT}).
 HB.instance Definition _ f g := FImFun.copy (f \* g) (f * g).
 End comring.
 
-HB.factory Record FiniteDecomp (T : pointedType) (R : ringType) (f : T -> R) :=
+HB.factory Record FiniteDecomp (T : pointedType) (R : nzRingType) (f : T -> R) :=
   { fimfunE : exists (r : seq R) (A_ : R -> set T),
       forall x, f x = \sum_(y <- r) (y * \1_(A_ y) x) }.
 HB.builders Context T R f of @FiniteDecomp T R f.

@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import fingroup perm rat archimedean finmap.
 From mathcomp Require Import boolp classical_sets functions.
@@ -59,10 +59,10 @@ Proof.
 case: b; last first.
   by rewrite -setUitv1// sup_setU ?sup1// => ? ? ? ->; exact/ltW.
 set s := sup _; apply/eqP; rewrite eq_le; apply/andP; split.
-- apply sup_le_ub; last by move=> ? /ltW.
+- apply: ge_sup; last by move=> ? /ltW.
   by exists (x - 1); rewrite !set_itvE/= ltrBlDr ltrDl.
 - rewrite leNgt; apply/negP => sx; pose p := (s + x) / 2.
-  suff /andP[?]: (p < x) && (s < p) by apply/negP; rewrite -leNgt sup_ubound.
+  suff /andP[?]: (p < x) && (s < p) by apply/negP; rewrite -leNgt ub_le_sup.
   by rewrite !midf_lt.
 Qed.
 
@@ -163,7 +163,7 @@ Lemma itvbndyEbigcup b x : [set` Interval (BSide b x) +oo%O] =
 Proof.
 rewrite predeqE => y; split=> /=; last first.
   by move=> [n _]/=; rewrite in_itv => /andP[xy yn]; rewrite in_itv /= xy.
-rewrite in_itv /= andbT => xy; exists (trunc y).+1 => //=.
+rewrite in_itv /= andbT => xy; exists (truncn y).+1 => //=.
 by rewrite in_itv /= xy /= truncnS_gt.
 Qed.
 
@@ -172,7 +172,7 @@ Lemma itvNybndEbigcup b x : [set` Interval -oo%O (BSide b x)] =
 Proof.
 rewrite predeqE => y; split=> /=; last first.
   by move=> [n _]/=; rewrite in_itv => /andP[ny yx]; rewrite in_itv.
-rewrite in_itv /= => yx; exists (trunc `|y|).+1 => //=; rewrite in_itv/=.
+rewrite in_itv /= => yx; exists (truncn `|y|).+1 => //=; rewrite in_itv/=.
 by rewrite yx /= andbT ltrNl (le_lt_trans (ler_norm _))// normrN truncnS_gt.
 Qed.
 
@@ -266,7 +266,7 @@ move gxE : (g x) => gx; case: gx gxE => [gx| |gxoo fxoo]; last 2 first.
   - by exists 0%N => //; rewrite /E/= gxoo addey// ?leey// -ltNye.
 move fxE : (f x) => fx; case: fx fxE => [fx fxE gxE|fxoo gxE _|//]; last first.
   by exists 0%N => //; rewrite /E/= fxoo gxE// addye// leey.
-rewrite lte_fin -subr_gt0 => fgx; exists (trunc (fx - gx)^-1) => //.
+rewrite lte_fin -subr_gt0 => fgx; exists (truncn (fx - gx)^-1) => //.
 by rewrite /E/= fxE gxE lee_fin invf_ple ?posrE//; apply/ltW/truncnS_gt.
 Qed.
 
@@ -279,7 +279,7 @@ apply/seteqP; split=> [x ->|].
   by move=> i _/=; rewrite in_itv/= lexx ltrBlDr ltrDl invr_gt0 ltr0n.
 move=> x rx; apply/esym/eqP; rewrite eq_le (itvP (rx 0%N _))// andbT.
 apply/ler_addgt0Pl => e e_gt0; rewrite -lerBlDl ltW//.
-have := rx (trunc e^-1) I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
+have := rx (truncn e^-1) I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
 by rewrite lerB// invf_ple ?posrE//; apply/ltW/truncnS_gt.
 Qed.
 
@@ -290,7 +290,7 @@ Proof.
 apply/seteqP; split => [|]; last first.
   move=> x [n _ /=] /[!in_itv] /andP[-> /le_lt_trans]; apply.
   by rewrite ltrBlDr ltrDl invr_gt0 ltr0n.
-move=> x/= /[!in_itv]/= /andP[sx xs]; exists (trunc (s - x)^-1) => //=.
+move=> x/= /[!in_itv]/= /andP[sx xs]; exists (truncn (s - x)^-1) => //=.
 rewrite in_itv/= sx/= lerBrDl addrC -lerBrDl -[leRHS]invrK.
 by rewrite lef_pV2 ?posrE ?ltr0n// ?invr_gt0 ?subr_gt0// ltW// truncnS_gt.
 Qed.
@@ -306,23 +306,23 @@ apply eq_bigcupr => k _; apply/seteqP; split=> [_/= [y ysr] <-|x/= xsr].
 by exists (- x); rewrite ?oppr_itv//= opprK// negbK opprB opprK addrC.
 Qed.
 
-Lemma itv_bndy_bigcup_BLeft_shift {R : archiDomainType} b (x : R) n:
+Lemma itv_bndy_bigcup_BLeft_shift {R : archiRealDomainType} b (x : R) n:
   [set` Interval (BSide b x) +oo%O] =
   \bigcup_i [set` Interval (BSide b x) (BLeft (x + (i + n)%:R))].
 Proof.
 apply/seteqP; split=> y; rewrite /= !in_itv/= andbT; last first.
   by move=> [k _ /=]; move: b => [|] /=; rewrite in_itv/= => /andP[//] /ltW.
-move=> xy; exists (trunc (y - x)).+1 => //=.
+move=> xy; exists (truncn (y - x)).+1 => //=.
 by rewrite in_itv/= xy/= natrD addrA ltr_wpDr// -ltrBDl truncnS_gt.
 Qed.
 
-Lemma itv_bndy_bigcup_BRight (R : archiDomainType) b (x : R) :
+Lemma itv_bndy_bigcup_BRight (R : archiRealDomainType) b (x : R) :
   [set` Interval (BSide b x) +oo%O] =
   \bigcup_n [set` Interval (BSide b x) (BRight (x + n%:R))].
 Proof.
 apply/seteqP; split=> y; rewrite /= !in_itv/= andbT; last first.
   by move=> [k _ /=]; move: b => [|] /=; rewrite in_itv/= => /andP[//] /ltW.
-move=> xy; exists (trunc (y - x)).+1 => //=; rewrite in_itv/= xy/= -lerBlDl.
+move=> xy; exists (truncn (y - x)).+1 => //=; rewrite in_itv/= xy/= -lerBlDl.
 by rewrite ltW// truncnS_gt.
 Qed.
 #[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `itv_bndy_bigcup_BRight`")]
@@ -353,10 +353,10 @@ Qed.
 #[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `itvNy_bnd_bigcup_BLeft`")]
 Notation itv_infty_bnd_bigcup := itvNy_bnd_bigcup_BLeft (only parsing).
 
-Lemma bigcup_itvT {R : archiDomainType} b1 b2 :
+Lemma bigcup_itvT {R : archiRealDomainType} b1 b2 :
   \bigcup_n [set` Interval (BSide b1 (- n%:R)) (BSide b2 n%:R)] = [set: R].
 Proof.
-rewrite -subTset => x _ /=; exists (trunc `|x|).+1 => //=.
+rewrite -subTset => x _ /=; exists (truncn `|x|).+1 => //=.
 have := truncnS_gt `|x|; rewrite in_itv/=; move: b1 b2 => [] []/=.
 - by rewrite ltr_norml => /andP[/ltW ->].
 - by move/ltW; rewrite ler_norml => /andP[-> ->].

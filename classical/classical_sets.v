@@ -637,7 +637,7 @@ Proof. by move=> A B C; rewrite setIC setICA setIA. Qed.
 Lemma setIACA : @interchange (set T) setI setI.
 Proof. by move=> A B C D; rewrite -setIA [B `&` _]setICA setIA. Qed.
 
-Lemma setIid : idempotent (@setI T).
+Lemma setIid : idempotent_op (@setI T).
 Proof. by move=> A; rewrite predeqE => ?; split=> [[]|]. Qed.
 
 Lemma setIIl A B C : A `&` B `&` C = (A `&` C) `&` (B `&` C).
@@ -691,7 +691,7 @@ Proof. by move=> A B C; rewrite setUC setUCA setUA. Qed.
 Lemma setUACA : @interchange (set T) setU setU.
 Proof. by move=> A B C D; rewrite -setUA [B `|` _]setUCA setUA. Qed.
 
-Lemma setUid : idempotent (@setU T).
+Lemma setUid : idempotent_op (@setU T).
 Proof. move=> p; rewrite /setU/mkset predeqE => a; tauto. Qed.
 
 Lemma setUUl A B C : A `|` B `|` C = (A `|` C) `|` (B `|` C).
@@ -3167,12 +3167,12 @@ Lemma joinIB A B : (A `&` B) `|` A `\` B = A.
 Proof. by rewrite setUC -setDDr setDv setD0. Qed.
 
 #[export]
-HB.instance Definition _ :=
-  Order.hasRelativeComplement.Build set_display (set T) subKI joinIB.
+HB.instance Definition _ := Order.BDistrLattice_hasSectionalComplement.Build
+  set_display (set T) subKI joinIB.
 
 #[export]
-HB.instance Definition _ := Order.hasComplement.Build set_display (set T)
-  (fun x => esym (setTD x)).
+HB.instance Definition _ := Order.CBDistrLattice_hasComplement.Build
+  set_display (set T) (fun x => esym (setTD x)).
 
 End SetOrder.
 Module Exports. HB.reexport. End Exports.

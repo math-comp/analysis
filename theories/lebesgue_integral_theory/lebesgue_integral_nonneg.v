@@ -280,14 +280,14 @@ transitivity (\int[mu]_(x in D) limn (g^~ x)).
     rewrite /g; case: (f x) fx0 => [r r0|_|//]; last first.
       by exists 1%N => // m /= m0; rewrite mulry gtr0_sg// ?ltr0n// mul1e leey.
     near=> n; rewrite lee_fin -ler_pdivrMr//.
-    near: n; exists (trunc (M / r)).+1 => // m /= Mrm.
+    near: n; exists (truncn (M / r)).+1 => // m /= Mrm.
     by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
   - rewrite lt0_mulye//; apply/cvgeNyPleNy; near=> M;
     have M0 : (M <= 0)%R by [].
     rewrite /g; case: (f x) fx0 => [r r0|//|_]; last first.
       by exists 1%N => // m /= m0; rewrite mulrNy gtr0_sg// ?ltr0n// mul1e leNye.
     near=> n; rewrite lee_fin -ler_ndivrMr//.
-    near: n; exists (trunc (M / r)).+1 => // m /= Mrm.
+    near: n; exists (truncn (M / r)).+1 => // m /= Mrm.
     by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
   - rewrite -fx0 mule0 /g -fx0.
     under eq_fun do rewrite mule0/=. (*TODO: notation broken*)
@@ -307,7 +307,7 @@ rewrite -(@fineK _ (\int[mu]_(x in D) f x)); last first.
 rewrite -lee_pdivrMr//; last first.
   by move: if_gt0 ifoo; case: (\int[mu]_(x in D) f x).
 near: n.
-exists (trunc (M * (fine (\int[mu]_(x in D) f x))^-1)).+1 => //.
+exists (truncn (M * (fine (\int[mu]_(x in D) f x))^-1)).+1 => //.
 move=> n /=; rewrite -(@ler_nat R) -lee_fin; apply: le_trans.
 by rewrite lee_fin ltW// truncnS_gt.
 Unshelve. all: by end_near. Qed.
@@ -484,7 +484,7 @@ Proof.
 move=> muD0; pose g : (T -> \bar R)^nat := fun n => cst n%:R%:E.
 have <- : (fun t => limn (g^~ t)) = cst +oo.
   rewrite funeqE => t; apply/cvg_lim => //=.
-  apply/cvgeryP/cvgryPge => M; exists (trunc M).+1 => //= m/= Mn.
+  apply/cvgeryP/cvgryPge => M; exists (truncn M).+1 => //= m/= Mn.
   by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
 rewrite monotone_convergence //.
 - under [in LHS]eq_fun do rewrite integral_cstr.
@@ -492,7 +492,7 @@ rewrite monotone_convergence //.
   have [muDoo|muDoo] := ltP (mu D) +oo; last first.
     exists 1%N => // m /= m0; move: muDoo; rewrite leye_eq => /eqP ->.
     by rewrite mulry gtr0_sg ?mul1e ?leey// ltr0n.
-  exists (trunc (M / fine (mu D))).+1 => // m /=.
+  exists (truncn (M / fine (mu D))).+1 => // m /=.
   rewrite -lez_nat => MDm; rewrite -(@fineK _ (mu D)) ?ge0_fin_numE//.
   rewrite -lee_pdivrMr; last by rewrite fine_gt0// lt0e muD0 measure_ge0.
   by rewrite lee_fin (le_trans (ltW (truncnS_gt _)))// ler_nat.
@@ -811,7 +811,7 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
       exact: nneseries_split.
     by rewrite ge0_integral_measure_add// -ge0_integral_measure_sum.
   by apply: leeDl; exact: integral_ge0.
-rewrite ge0_integralE//=; apply: ub_ereal_sup => /= _ [g /= gf] <-.
+rewrite ge0_integralE//=; apply: ge_ereal_sup => /= _ [g /= gf] <-.
 rewrite -integralT_nnsfun (integral_measure_series_nnsfun _ mD).
 apply: lee_nneseries => [n _ _|n _].
   by apply: integral_ge0 => // x _; rewrite lee_fin.
@@ -981,7 +981,7 @@ have lim_f_ t : f_ ^~ t @ \oo --> (f \_ D) t.
         by rewrite /f_ big_mkord patchT// in_setE big_ord_recr/=; right.
       rewrite (@le_trans _ _ (f_ O t))// ?ereal_sup_ubound//.
       by rewrite /f_ patchN// big_mkord big_ord0 inE/= in_set0.
-    apply: ub_ereal_sup => x [n _ <-].
+    apply: ge_ereal_sup => x [n _ <-].
     by rewrite /f_ restrict_lee// big_mkord; exact: bigsetU_bigcup.
   apply: ereal_nondecreasing_cvgn => a b ab.
   rewrite /f_ !big_mkord restrict_lee //; last exact: subset_bigsetU.
@@ -1052,7 +1052,7 @@ Lemma ge0_integral_ereal_sup :
   ereal_sup [set \int[mu]_(x in `[0%R, i.+1%:R]) (f x)%:E | i in [set: nat]].
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
-  apply: ub_ereal_sup => /=_ [n _ <-].
+  apply: ge_ereal_sup => /=_ [n _ <-].
   apply: ge0_subset_integral => //=.
   - by apply/measurable_EFinP; exact: measurable_funS mf.
   - by move=> ? _; rewrite lee_fin f0.
@@ -1075,7 +1075,7 @@ rewrite -ge0_integral_bigsetU//=; first last.
 rewrite big_mkord -bigsetU_seqDU.
 move: n => [|n].
   rewrite big_ord0 integral_set0.
-  apply: ereal_sup_ge.
+  apply: le_ereal_sup_tmp.
   exists (\int[mu]_(x in `[0%R, 1%:R]) (f x)%:E) => //.
   by apply: integral_ge0 => /= ? _; rewrite lee_fin f0.
 rewrite [X in \int[_]_(_ in X) _](_ : _ = `[0%R, n.+1%:R]%classic); last first.
@@ -1088,7 +1088,7 @@ rewrite [X in \int[_]_(_ in X) _](_ : _ = `[0%R, n.+1%:R]%classic); last first.
   rewrite -(bigcup_mkord _ (fun k => `[0%R, k.+1%:R]%classic)).
   exists n => //=.
   by rewrite in_itv/= x0 Snx.
-apply: ereal_sup_ge.
+apply: le_ereal_sup_tmp.
 exists (\int[mu]_(x in `[0%R, n.+1%:R]) (f x)%:E); first by exists n.
 apply: ge0_subset_integral => //= [|? _]; last by rewrite lee_fin f0.
 exact/measurable_EFinP/measurableT_comp.
@@ -1254,7 +1254,7 @@ move=> mf; split=> [iDf0|Df0].
     rewrite predeqE => t; split=> [[Dt ft0]|[n _ /= [Dt nft]]].
       have [ftoo|ftoo] := eqVneq `|f t| +oo.
         by exists 0%N => //; split => //=; rewrite ftoo /= leey.
-      pose m := trunc (fine `|f t|)^-1.
+      pose m := truncn (fine `|f t|)^-1.
       have ftfin : `|f t|%E \is a fin_num by rewrite ge0_fin_numE// ltey.
       exists m => //; split => //=.
       rewrite -(@fineK _ `|f t|) // lee_fin invf_ple; last 2 first.
@@ -1596,14 +1596,14 @@ transitivity (ereal_sup (range (fun n => (f \_ (F n)) x))).
     by move=> {}x; exact: f0.
   by rewrite -subsetEset; exact: nndF.
 apply/eqP; rewrite eq_le; apply/andP; split.
-- apply: ub_ereal_sup => _/= [n _ <-].
+- apply: ge_ereal_sup => _/= [n _ <-].
   apply: restrict_lee; last exact: bigcup_sup.
   by move=> ? [? _]; exact: f0.
 - rewrite patchE; case: ifPn=> [|/negP].
     rewrite inE => -[n _ Fnx].
-    by apply: ereal_sup_ge; exists (f \_ (F n) x) => //; rewrite patchE mem_set.
+    by apply: le_ereal_sup_tmp; exists (f \_ (F n) x) => //; rewrite patchE mem_set.
   rewrite inE -[X in X -> _]/((~` _) x) setC_bigcup => nFx.
-  apply/ereal_sup_ge; exists point => //=; exists 0%R => //.
+  apply/le_ereal_sup_tmp; exists point => //=; exists 0%R => //.
   by rewrite patchE memNset//; exact: nFx.
 Qed.
 

@@ -19,12 +19,12 @@ Local Open Scope ring_scope.
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Section Linear1.
-Context (R : ringType) (U : lmodType R) (V : zmodType) (s : R -> V -> V).
+Context (R : pzRingType) (U : lmodType R) (V : zmodType) (s : R -> V -> V).
 HB.instance Definition _ := gen_eqMixin {linear U -> V | s}.
 HB.instance Definition _ := gen_choiceMixin {linear U -> V | s}.
 End Linear1.
 Section Linear2.
-Context (R : ringType) (U : lmodType R) (V : zmodType) (s : GRing.Scale.law R V).
+Context (R : pzRingType) (U : lmodType R) (V : zmodType) (s : GRing.Scale.law R V).
 HB.instance Definition _ :=
   isPointed.Build {linear U -> V | GRing.Scale.Law.sort s} \0.
 End Linear2.

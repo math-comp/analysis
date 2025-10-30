@@ -202,13 +202,6 @@ Lemma is_ball_closure (A : set R) : is_ball A ->
   closure A = closed_ball (cpoint A) (radius A)%:num.
 Proof. by move=> ballA; rewrite /closed_ball -ballE. Qed.
 
-Lemma closure_ball (c r : R) : closure (ball c r) = closed_ball c r.
-Proof.
-have [r0|r0] := leP r 0.
-  by rewrite closed_ball0// ((ball0 _ _).2 r0) closure0.
-by rewrite (is_ball_closure (is_ball_ball _ _)) cpoint_ball// radius_ball ?ltW.
-Qed.
-
 Lemma scale_ballE k x r : 0 <= k -> k *` ball x r = ball x (k * r).
 Proof.
 move=> k0; have [r0|r0] := ltP 0 r.
@@ -350,7 +343,7 @@ Notation r_gt0 := vitali_collection_partition_ub_gt0.
 Lemma ex_vitali_collection_partition i :
   V i -> exists n, vitali_collection_partition n i.
 Proof.
-move=> Vi; pose f := trunc (r / (radius (B i))%:num).
+move=> Vi; pose f := truncn (r / (radius (B i))%:num).
 have f_ge0 : (0 <= f)%N.
   by rewrite truncn_ge_nat// divr_ge0// (le_trans _ (VBr Vi)).
 have [m /andP[mf fm]] := leq_ltn_expn f.-1.

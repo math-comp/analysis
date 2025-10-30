@@ -1,5 +1,4 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
-From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
 From mathcomp Require Import archimedean.
@@ -499,7 +498,7 @@ Proof.
 split=> [/cvgryPge|/cvgnyPge] Foo.
   by apply/cvgnyPge => A; near do rewrite -(@ler_nat R); apply: Foo.
 apply/cvgryPgey; near=> A; near=> n.
-rewrite pmulrn ceil_le_int// [ceil _]intEsign.
+rewrite pmulrn -ceil_le_int_tmp [ceil _]intEsign.
 by rewrite le_gtF ?expr0 ?mul1r ?lez_nat ?ceil_ge0//; near: n; apply: Foo.
 Unshelve. all: by end_near. Qed.
 
@@ -560,7 +559,7 @@ move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
   have [i iFan] : exists i, F (a + i.+1%:R) < F a - n%:R.
     move/cvgrNy_lt : nyF.
     move/(_ (F a - n%:R)) => [z [zreal zFan]].
-    by exists (trunc (z - a)); rewrite zFan// -ltrBlDl truncnS_gt.
+    by exists (truncn (z - a)); rewrite zFan// -ltrBlDl truncnS_gt.
   by exists i => //=; rewrite in_itv/= yFa (lt_le_trans _ Fany).
 - move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].
   exists `|ceil (F (a + n.+1%:R) - F a)%R|.+1 => //=.
@@ -591,7 +590,7 @@ move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
     move/cvgrNy_lt : nyF => /(_ (F a - n%:R))[z [zreal zFan]].
     exists `|ceil (a - z)|%N.
     rewrite zFan// ltrBlDr -ltrBlDl.
-    rewrite (le_lt_trans (Num.Theory.le_ceil _)) ?num_real//.
+    rewrite (le_lt_trans (Num.Theory.ceil_ge _)) ?num_real//.
     by rewrite (le_lt_trans (ler_norm _))// -natr1 -intr_norm ltrDl.
   by exists i => //=; rewrite in_itv/= yFa andbT (lt_le_trans _ Fany).
 - move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].
@@ -716,7 +715,7 @@ End near_in_itv.
   note="use `near_in_itvoo` instead")]
 Notation near_in_itv := near_in_itvoo (only parsing).
 
-Lemma nbhs_infty_gtr {R : archiFieldType} (r : R) :
+Lemma nbhs_infty_gtr {R : archiRealFieldType} (r : R) :
   \forall n \near \oo, r < n%:R.
 Proof.
 exists `|ceil r|.+1 => // n/=; rewrite -(ler_nat R); apply: lt_le_trans.
@@ -724,7 +723,7 @@ rewrite -natr1 -[ltLHS]addr0 ler_ltD//.
 by rewrite (le_trans (ceil_ge _))// natr_absz ler_int ler_norm.
 Qed.
 
-Lemma near_infty_natSinv_lt (R : archiFieldType) (e : {posnum R}) :
+Lemma near_infty_natSinv_lt (R : archiRealFieldType) (e : {posnum R}) :
   \forall n \near \oo, n.+1%:R^-1 < e%:num.
 Proof.
 near=> n; rewrite -(@ltr_pM2r _ n.+1%:R) // mulVf.
@@ -733,7 +732,7 @@ rewrite (lt_trans (archi_boundP _)) // ltr_nat.
 by near: n; exists (Num.bound e%:num^-1).
 Unshelve. all: by end_near. Qed.
 
-Lemma near_infty_natSinv_expn_lt (R : archiFieldType) (e : {posnum R}) :
+Lemma near_infty_natSinv_expn_lt (R : archiRealFieldType) (e : {posnum R}) :
   \forall n \near \oo, 1 / 2 ^+ n < e%:num.
 Proof.
 near=> n.

@@ -479,7 +479,7 @@ have [M M0 muM] : exists2 M, (0 <= M)%R &
 apply/eqP/negPn/negP => /eqP muED0; move/not_forallP : muM; apply.
 have [muEDoo|] := ltP (mu (E `&` D)) +oo; last first.
   by rewrite leye_eq => /eqP ->; exists 1%N; rewrite mul1e leye_eq.
-exists (trunc (M * (fine (mu (E `&` D)))^-1)).+1.
+exists (truncn (M * (fine (mu (E `&` D)))^-1)).+1.
 apply/negP; rewrite -ltNge.
 rewrite -[X in _ * X](@fineK _ (mu (E `&` D))); last first.
   by rewrite fin_numElt muEDoo (lt_le_trans _ (measure_ge0 _ _)).

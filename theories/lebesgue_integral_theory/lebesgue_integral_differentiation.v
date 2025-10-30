@@ -430,7 +430,7 @@ Local Notation HL := HL_maximal.
 Lemma HL_maximal_ge0 f D : locally_integrable D f ->
   forall x, 0 <= HL (f \_ D) x.
 Proof.
-move=> Df x; apply: ereal_sup_ge => //=.
+move=> Df x; apply: le_ereal_sup_tmp => //=.
 pose k := \int[mu]_(x in D `&` ball x 1) `|f x|%:E.
 exists ((mu (ball x 1))^-1 * k); last first.
   by rewrite mule_ge0 ?inve_ge0// integral_ge0.
@@ -551,7 +551,7 @@ move=> /= locf c0.
 rewrite lebesgue_regularity_inner_sup//; last first.
   rewrite -[X in measurable X]setTI; apply: emeasurable_fun_o_infty => //.
   exact: measurable_HL_maximal.
-apply: ub_ereal_sup => /= x /= [K [cK Kcmf <-{x}]].
+apply: ge_ereal_sup => /= x /= [K [cK Kcmf <-{x}]].
 have r_proof x : HL f x > c%:E -> {r | (0 < r)%R & iavg f (ball x r) > c%:E}.
   move=> /ereal_sup_gt/cid2[y /= /cid2[r]].
   by rewrite in_itv/= andbT => rg0 <-{y} Hc; exists r.
@@ -564,8 +564,8 @@ have cMfx_int x : c%:E < HL f x ->
   move=> cMfx; rewrite /r_; case: pselect => //= => {}cMfx.
   case: (r_proof _ cMfx) => /= r r0.
   rewrite /iavg (lebesgue_measure_ball _ (ltW r0)) inver mulrn_eq0//= gt_eqF//.
-  rewrite -(@lte_pmul2r _ (r *+ 2)%:E)//; last by rewrite lte_fin// pmulrn_rgt0.
-  by rewrite muleAC -[in X in _ < X]EFinM mulVf ?gt_eqF ?pmulrn_rgt0// mul1e.
+  rewrite -(@lte_pmul2r _ (r *+ 2)%:E)//; last by rewrite lte_fin// mulrn_wgt0.
+  by rewrite muleAC -[in X in _ < X]EFinM mulVf ?gt_eqF ?mulrn_wgt0// mul1e.
 set B := fun r => ball r (r_ r).
 have {}Kcmf : K `<=` cover [set i | HL f i > c%:E] (fun i => ball i (r_ i)).
   by move=> r /Kcmf /= cMfr; exists r => //; exact: ballxx.
@@ -715,7 +715,7 @@ have [t0|t0] := leP t 0%R; first by rewrite /= davg0//= subrr normr0 ltW.
 rewrite sub0r normrN /= ger0_norm; last by rewrite fine_ge0// davg_ge0.
 rewrite -lee_fin fineK//; last by rewrite dfx//= sub0r normrN gtr0_norm.
 rewrite /davg/= /iavg/= (lebesgue_measure_ball _ (ltW t0))//.
-rewrite inver mulrn_eq0/= gt_eqF// lee_pdivrMl//; last by rewrite pmulrn_rgt0.
+rewrite inver mulrn_eq0/= gt_eqF// lee_pdivrMl//; last by rewrite mulrn_wgt0.
 rewrite (@le_trans _ _ (\int[mu]_(y in ball x t) e%:E))//.
   apply: ge0_le_integral => //=.
   - exact: measurable_ball.
@@ -798,7 +798,7 @@ Let is_cvg_ereal_sup_davg f x :
 Proof.
 apply: nondecreasing_at_right_is_cvge; near=> e => y z.
 rewrite !in_itv/= => /andP[y0 ye] /andP[z0 ze] yz.
-apply: le_ereal_sup => _ /= -[b [yb b0]] <-.
+apply: ereal_sup_le => _ /= -[b [yb b0]] <-.
 by exists b => //; split => //; exact: le_ball yb.
 Unshelve. all: by end_near. Qed.
 
@@ -808,7 +808,7 @@ Proof.
 move=> [mf _ locf]; rewrite /lim_sup_davg lime_sup_lim; apply: lime_le.
   exact: is_cvg_ereal_sup_davg.
 near=> e.
-apply: ub_ereal_sup => _ [b [eb] /= b0] <-.
+apply: ge_ereal_sup => _ [b [eb] /= b0] <-.
 suff : forall r, davg f x r <= HL_maximal f x + `|f x|%:E by exact.
 move=> r.
 apply: (@le_trans _ _ ((mu (ball x r))^-1 *
@@ -1130,7 +1130,7 @@ have : (mu (ball x r))^-1 *
   near=> a; rewrite mule_ge0 ?inve_ge0///= lee_pmul2l//; last 2 first.
     by rewrite lebesgue_measure_ball// fin_numV// eqe mulrn_eq0/= gt_eqF.
     rewrite lebesgue_measure_ball// inver mulrn_eq0/= gt_eqF// lte_fin.
-    by rewrite invr_gt0// pmulrn_rgt0.
+    by rewrite invr_gt0// mulrn_wgt0.
   apply: le_abse_integral => //; first exact: measurable_ball.
   exact/measurable_EFinP/measurable_funB.
 set f := (f in f r @[r --> 0^'+] --> _ -> _).

@@ -42,6 +42,8 @@ From mathcomp Require Import ftc gauss_integral hoelder.
 (*            pmf X r := fine (P (X @^-1` [set r]))                           *)
 (*            cdf X r == cumulative distribution function of X                *)
 (*                    := distribution P X `]-oo, r]                           *)
+(*           ccdf X r == complementary cumulative distribution function of X  *)
+(*                    := distribution P X `]r, +oo[                           *)
 (*      enum_prob X k == probability of the kth value in the range of X       *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -74,8 +76,10 @@ From mathcomp Require Import ftc gauss_integral hoelder.
 
 Reserved Notation "'{' 'RV' P >-> R '}'"
   (at level 0, format "'{' 'RV'  P  '>->'  R '}'").
-Reserved Notation "''E_' P [ X ]" (format "''E_' P [ X ]").
-Reserved Notation "''V_' P [ X ]" (format "''V_' P [ X ]").
+Reserved Notation "''E_' P [ X ]"
+  (at level 5, P, X at level 4, format "''E_' P [ X ]").
+Reserved Notation "''V_' P [ X ]"
+  (at level 5, P, X at level 4, format "''V_' P [ X ]").
 Reserved Notation "'M_ P X" (at level 5, P, X at level 4, format "''M_' P  X").
 Reserved Notation "{ 'dmfun' aT >-> T }" (format "{ 'dmfun'  aT  >->  T }").
 Reserved Notation "'{' 'dRV' P >-> R '}'" (format "'{' 'dRV'  P  '>->'  R '}'").
@@ -169,11 +173,6 @@ Lemma cdf_ge0 r : 0 <= cdf X r. Proof. by []. Qed.
 
 Lemma cdf_le1 r : cdf X r <= 1. Proof. exact: probability_le1. Qed.
 
-Lemma cdf_fin_num r : cdf X r \is a fin_num.
-Proof.
-by rewrite ge0_fin_numE ?cdf_ge0//; exact/(le_lt_trans (cdf_le1 r))/ltry.
-Qed.
-
 Lemma cdf_nondecreasing : nondecreasing_fun (cdf X).
 Proof. by move=> r s rs; rewrite le_measure ?inE//; exact: subitvPr. Qed.
 
@@ -189,7 +188,7 @@ have cdf_n1 : cdf X n%:R @[n --> \oo] --> 1.
   pose F n := X @^-1` `]-oo, n%:R].
   have <- : \bigcup_n F n = setT.
     rewrite -preimage_bigcup -subTset => t _/=.
-    by exists (trunc (X t)).+1 => //=; rewrite in_itv/= ltW// truncnS_gt.
+    by exists (truncn (X t)).+1 => //=; rewrite in_itv/= ltW// truncnS_gt.
   apply: nondecreasing_cvg_mu => //; first exact: bigcup_measurable.
   move=> n m nm; apply/subsetPset => x/=; rewrite !in_itv/= => /le_trans.
   by apply; rewrite ler_nat.
@@ -211,7 +210,7 @@ have cdf_opp_n0 : (cdf X \o -%R) n%:R @[n --> \oo] --> 0.
   pose F n := X @^-1` `]-oo, (- n%:R)%R].
   have <- : \bigcap_n F n = set0.
     rewrite -subset0 => t.
-    set m := (trunc `|X t|).+1.
+    set m := (truncn `|X t|).+1.
     move=> /(_ m I); rewrite /F/= in_itv/= leNgt => /negP; apply.
     by rewrite ltrNl /m (le_lt_trans (ler_norm _))// normrN truncnS_gt.
   apply: nonincreasing_cvg_mu => //=.
@@ -231,8 +230,8 @@ have cdf_s : cdf X r @[r --> a^'+] --> s%:E.
   - apply: nondecreasing_at_right_cvge; first by rewrite ltBSide /= ?ltrDl.
     by move=> *; exact: cdf_nondecreasing.
   - apply/fin_numPlt/andP; split=>//.
-    + by rewrite (lt_le_trans (ltNyr 0%R)) ?lb_ereal_inf//= => l[? _] <-.
-    + rewrite (le_lt_trans _ (ltry 1%R))// ereal_inf_le//=.
+    + by rewrite (lt_le_trans (ltNyr 0%R)) ?le_ereal_inf_tmp//= => l[? _] <-.
+    + rewrite (le_lt_trans _ (ltry 1%R))// ge_ereal_inf//=.
       exists (cdf X (a + 1)); last exact: cdf_le1.
       by exists (a + 1%R) => //; rewrite in_itv /=; apply/andP; rewrite ltrDl.
 have cdf_ns : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> s%:E.
@@ -301,13 +300,13 @@ Let fcdf r := fine (cdf (idTR : {RV P >-> R}) r).
 
 Let fcdf_nd : nondecreasing fcdf.
 Proof.
-by move=> *; apply: fine_le; [exact: cdf_fin_num.. | exact: cdf_nondecreasing].
+by move=> *; rewrite fine_le ?fin_num_measure// cdf_nondecreasing.
 Qed.
 
 Let fcdf_rc : right_continuous fcdf.
 Proof.
 move=> a; apply: fine_cvg.
-by rewrite fineK; [exact: cdf_right_continuous | exact: cdf_fin_num].
+by rewrite fineK ?fin_num_measure//; exact: cdf_right_continuous.
 Qed.
 
 #[local] HB.instance Definition _ :=
@@ -331,7 +330,7 @@ rewrite /lebesgue_stieltjes_measure /measure_extension/=.
 rewrite measurable_mu_extE/=; last exact: is_ocitv.
 have [ab | ba] := leP a b; last first.
   by rewrite set_itv_ge ?wlength0 ?measure0// bnd_simp -leNgt ltW.
-rewrite wlength_itv_bnd// EFinB !fineK ?cdf_fin_num//.
+rewrite wlength_itv_bnd// EFinB !fineK ?fin_num_measure//.
 rewrite /cdf /distribution /pushforward !preimage_id.
 have : `]a, b]%classic = `]-oo, b] `\` `]-oo, a] => [|->].
   by rewrite -[RHS]setCK setCD setCitvl setUC -[LHS]setCK setCitv.
@@ -340,6 +339,56 @@ by rewrite -ge0_fin_numE// fin_num_measure.
 Qed.
 
 End lebesgue_stieltjes_measure_of_cdf.
+
+Definition ccdf d (T : measurableType d) (R : realType) (P : probability T R)
+  (X : {RV P >-> R}) (r : R) := distribution P X `]r, +oo[.
+
+Section complementary_cumulative_distribution_function.
+Context d {T : measurableType d} {R : realType} (P : probability T R).
+Variable X : {RV P >-> R}.
+Local Open Scope ereal_scope.
+
+Lemma cdf_ccdf_1 r : cdf X r + ccdf X r = 1.
+Proof.
+rewrite /cdf /ccdf -measureU//= -eq_opE; last exact: disjoint_rays.
+by rewrite itv_setU_setT probability_setT.
+Qed.
+
+Corollary ccdf_cdf_1 r : ccdf X r + cdf X r = 1.
+Proof. by rewrite -(cdf_ccdf_1 r) addeC. Qed.
+
+Corollary ccdf_1_cdf r : ccdf X r = 1 - cdf X r.
+Proof. by rewrite -(ccdf_cdf_1 r) addeK ?fin_num_measure. Qed.
+
+Corollary cdf_1_ccdf r : cdf X r = 1 - ccdf X r.
+Proof. by rewrite -(cdf_ccdf_1 r) addeK ?fin_num_measure. Qed.
+
+Lemma ccdf_nonincreasing : nonincreasing_fun (ccdf X).
+Proof. by move=> r s rs; rewrite le_measure ?inE//; exact: subitvPl. Qed.
+
+Lemma cvg_ccdfy0 : ccdf X @ +oo%R --> 0.
+Proof.
+have : 1 - cdf X r @[r --> +oo%R] --> 1 - 1.
+  by apply: cvgeB; [| exact: cvg_cst | exact: cvg_cdfy1].
+by rewrite subee// (eq_cvg _ _ ccdf_1_cdf).
+Qed.
+
+Lemma cvg_ccdfNy1 : ccdf X @ -oo%R --> 1.
+Proof.
+have : 1 - cdf X r @[r --> -oo%R] --> 1 - 0.
+  by apply: cvgeB; [| exact: cvg_cst | exact: cvg_cdfNy0].
+by rewrite sube0 (eq_cvg _ _ ccdf_1_cdf).
+Qed.
+
+Lemma ccdf_right_continuous : right_continuous (ccdf X).
+Proof.
+move=> r.
+have : 1 - cdf X s @[s --> r^'+] --> 1 - cdf X r.
+  by apply: cvgeB; [| exact: cvg_cst | exact: cdf_right_continuous].
+by rewrite ccdf_1_cdf (eq_cvg _ _ ccdf_1_cdf).
+Qed.
+
+End complementary_cumulative_distribution_function.
 
 HB.lock Definition expectation {d} {T : measurableType d} {R : realType}
   (P : probability T R) (X : T -> R) := (\int[P]_w (X w)%:E)%E.
@@ -374,7 +423,7 @@ exact: le_trans (le_abse_integral _ _ _).
 Qed.
 
 Lemma expectationZl (X : T -> R) (k : R) : X \in Lfun P 1 ->
-  'E_P[k \o* X] = k%:E * 'E_P [X].
+  'E_P[k \o* X] = k%:E * 'E_P[X].
 Proof.
 by move=> ?; rewrite unlock muleC -integralZr//; exact/Lfun1_integrable.
 Qed.
@@ -425,6 +474,77 @@ Qed.
 End expectation_lemmas.
 #[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to `expectationZl`")]
 Notation expectationM := expectationZl (only parsing).
+
+Section tail_expectation_formula.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+
+Let mu : {measure set _ -> \bar R} := @lebesgue_measure R.
+
+Lemma ge0_expectation_ccdf (X : {RV P >-> R}) : (forall x, 0 <= X x)%R ->
+  'E_P[X] = \int[mu]_(r in `[0%R, +oo[) ccdf X r.
+Proof.
+pose GR := measurableTypeR R.
+pose distrX := distribution P X.
+pose D : set R := `[0%R, +oo[%classic.
+move=> X_ge0.
+transitivity (\int[P]_x ((EFin \_ D) \o X) x).
+  rewrite expectation_def; apply: eq_integral => x _ /=.
+  by rewrite /D patchE ifT// set_itvE inE /=.
+transitivity (\int[distrX]_r (EFin \_ D) r).
+  rewrite ge0_integral_distribution// -?measurable_restrictT /D// => r.
+  by apply: erestrict_ge0 => s /=; rewrite in_itv/= andbT lee_fin.
+transitivity (\int[distrX]_r (\int[mu]_(s in D) (\1_`]-oo, r[ s)%:E)).
+  apply: eq_integral => r _.
+  rewrite integral_indic /D//= setIC -(set_itv_splitI `[0%R, r[).
+  rewrite lebesgue_measure_itv/= lte_fin patchE.
+  have [r_pos | r_neg | <-] := ltgtP.
+  - by rewrite mem_set ?EFinN ?sube0//= in_itv/= ltW.
+  - by rewrite memNset//= in_itv/= leNgt r_neg.
+  - by rewrite mem_set//= in_itv/= lexx.
+transitivity (\int[distrX]_r (\int[mu]_s (\1_`[0, r[ s)%:E)).
+  apply: eq_integral => r _; rewrite /D integral_mkcond.
+  apply: eq_integral => /= s _.
+  have [s_ge0 | s_lt0] := leP 0%R s.
+  - have [s_ltr | s_ger] := ltP s r.
+    + rewrite indicE mem_set/=; last by rewrite in_itv/= s_ge0 s_ltr.
+      by rewrite patchE/= ifT ?indicE mem_set//= in_itv/= andbT.
+    + rewrite indicE memNset/=; last by rewrite in_itv/= s_ge0 ltNge s_ger.
+      rewrite patchE ifT//; last by rewrite mem_set//= in_itv/= andbT.
+      by rewrite indicE memNset//= in_itv/= ltNge s_ger.
+  - rewrite indicE memNset/=; last by rewrite in_itv/= leNgt s_lt0.
+    by rewrite patchE/= ifF// memNset//= in_itv/= andbT leNgt s_lt0.
+transitivity (\int[mu]_s (\int[distrX]_r (\1_`[0, r[ s)%:E)).
+  rewrite (fubini_tonelli (fun p : R * GR => (\1_`[0, p.1[ p.2)%:E))//=.
+  apply/measurable_EFinP/measurable_indic => /=.
+  pose fsnd (p : R * GR) := (0 <= p.2)%R.
+  pose f21 (p : R * GR) := (p.2 < p.1)%R.
+  rewrite [X in measurable X](_ : _ =
+      fsnd @^-1` [set true] `&` f21 @^-1` [set true]); last first.
+    by apply/seteqP; split => p; rewrite in_itv/= => /andP.
+  apply: measurableI.
+  - have : measurable_fun setT fsnd by exact: measurable_fun_ler.
+    by move=> /(_ measurableT [set true]); rewrite setTI; exact.
+  - have : measurable_fun setT f21 by exact: measurable_fun_ltr.
+    by move=> /(_ measurableT [set true]); rewrite setTI; exact.
+transitivity (\int[mu]_(s in D) (\int[distrX]_r (\1_`[0, r[ s)%:E)).
+  rewrite [in RHS]integral_mkcond/=.
+  apply: eq_integral => s _; rewrite patchE /D.
+  have [s0|s0] := leP 0%R s; first by rewrite mem_set//= in_itv/= s0.
+  rewrite memNset//= ?in_itv/= ?leNgt ?s0//.
+  by apply: integral0_eq => r _; rewrite indicE/= memNset//= in_itv/= leNgt s0.
+apply: eq_integral => s; rewrite /D inE/= in_itv/= andbT => s_ge0.
+rewrite integral_indic//=.
+  rewrite /ccdf setIT set_itvoy; congr distribution.
+  by apply/funext => r/=; rewrite in_itv/= s_ge0.
+pose fgts (r : R) := (s < r)%R.
+have : measurable_fun setT fgts by exact: measurable_fun_ltr.
+rewrite [X in measurable X](_ : _ = fgts @^-1` [set true]).
+  by move=> /(_ measurableT [set true]); rewrite setTI; exact.
+by apply: eq_set => r; rewrite in_itv/= s_ge0.
+Qed.
+
+End tail_expectation_formula.
 
 HB.lock Definition covariance {d} {T : measurableType d} {R : realType}
     (P : probability T R) (X Y : T -> R) :=
@@ -1569,7 +1689,7 @@ Lemma normal_peak_ge0 s : 0 <= normal_peak s. Proof. by rewrite invr_ge0. Qed.
 Lemma normal_peak_gt0 s : s != 0 -> 0 < normal_peak s.
 Proof.
 move=> s0; rewrite invr_gt0// sqrtr_gt0.
-by rewrite pmulrn_rgt0// mulr_gt0 ?pi_gt0// exprn_even_gt0/=.
+by rewrite mulrn_wgt0// mulr_gt0 ?pi_gt0// exprn_even_gt0/=.
 Qed.
 
 Let normal_pdf0 m s x : R := normal_peak s * normal_fun m s x.
@@ -1770,14 +1890,14 @@ Section exponential_pdf.
 Context {R : realType}.
 Notation mu := lebesgue_measure.
 Variable rate : R.
-Hypothesis rate_gt0 : 0 < rate.
+Hypothesis rate_ge0 : 0 <= rate.
 
 Let exponential_pdfT x := rate * expR (- rate * x).
 Definition exponential_pdf := exponential_pdfT \_ `[0%R, +oo[.
 
 Lemma exponential_pdf_ge0 x : 0 <= exponential_pdf x.
 Proof.
-by apply: restrict_ge0 => {}x _; apply: mulr_ge0; [exact: ltW|exact: expR_ge0].
+by apply: restrict_ge0 => {}x _; apply: mulr_ge0 => //; exact: expR_ge0.
 Qed.
 
 Lemma lt0_exponential_pdf x : x < 0 -> exponential_pdf x = 0.
@@ -1837,7 +1957,6 @@ Context {R : realType}.
 Local Open Scope ring_scope.
 Notation mu := lebesgue_measure.
 Variable rate : R.
-Hypothesis rate_gt0 : 0 < rate.
 
 Lemma derive1_exponential_pdf :
   {in `]0, +oo[%R, (fun x => - (expR : R^o -> R^o) (- rate * x))^`()%classic
@@ -1874,21 +1993,22 @@ apply: (@continuous_FTC2 _ _ (fun x => - expR (- rate * x))) => //.
   by apply: derive1_exponential_pdf; rewrite in_itv/= andbT.
 Qed.
 
-Lemma integral_exponential_pdf : (\int[mu]_x (exponential_pdf rate x)%:E = 1)%E.
+Lemma integral_exponential_pdf (rate_gt0 : 0 < rate) :
+  (\int[mu]_x (exponential_pdf rate x)%:E = 1)%E.
 Proof.
 have mEex : measurable_fun setT (EFin \o exponential_pdf rate).
   by apply/measurable_EFinP; exact: measurable_exponential_pdf.
 rewrite -(setUv `[0, +oo[%classic) ge0_integral_setU//=; last 4 first.
   exact: measurableC.
   by rewrite setUv.
-  by move=> x _; rewrite lee_fin exponential_pdf_ge0.
+  by move=> x _; rewrite lee_fin exponential_pdf_ge0// ltW.
   exact/disj_setPCl.
 rewrite [X in _ + X]integral0_eq ?adde0; last first.
   by move=> x x0; rewrite /exponential_pdf patchE ifF// memNset.
 rewrite (@ge0_continuous_FTC2y _ _
   (fun x => - (expR (- rate * x))) _ 0)//.
 - by rewrite mulr0 expR0 EFinN oppeK add0e.
-- by move=> x _; apply: exponential_pdf_ge0.
+- by move=> x _; apply: exponential_pdf_ge0; exact: ltW.
 - exact: within_continuous_exponential_pdf.
 - rewrite -oppr0; apply: (@cvgN _ R^o).
   rewrite (_ : (fun x => expR (- rate * x)) =
@@ -1900,15 +2020,17 @@ rewrite (@ge0_continuous_FTC2y _ _
 - exact: derive1_exponential_pdf.
 Qed.
 
-Lemma integrable_exponential_pdf :
+Lemma integrable_exponential_pdf (rate_gt0 : 0 < rate) :
   mu.-integrable setT (EFin \o (exponential_pdf rate)).
 Proof.
 have mEex : measurable_fun setT (EFin \o exponential_pdf rate).
   by apply/measurable_EFinP; exact: measurable_exponential_pdf.
 apply/integrableP; split => //.
-under eq_integral do rewrite /= ger0_norm ?exponential_pdf_ge0//.
-by rewrite /= integral_exponential_pdf ltry.
+under eq_integral do rewrite /= ger0_norm ?(exponential_pdf_ge0 (ltW _))//.
+by rewrite /= integral_exponential_pdf// ltry.
 Qed.
+
+Hypothesis rate_gt0 : 0 < rate.
 
 Local Notation exponential := (exponential_prob rate).
 
@@ -1918,7 +2040,7 @@ Proof. by rewrite /exponential integral_set0. Qed.
 Let exponential_ge0 A : (0 <= exponential A)%E.
 Proof.
 rewrite /exponential integral_ge0//= => x _.
-by rewrite lee_fin exponential_pdf_ge0.
+by rewrite lee_fin exponential_pdf_ge0// ltW.
 Qed.
 
 Let exponential_sigma_additive : semi_sigma_additive exponential.
@@ -1926,11 +2048,11 @@ Proof.
 move=> /= F mF tF mUF; rewrite /exponential; apply: cvg_toP.
   apply: ereal_nondecreasing_is_cvgn => m n mn.
   apply: lee_sum_nneg_natr => // k _ _; apply: integral_ge0 => /= x Fkx.
-  by rewrite lee_fin; apply: exponential_pdf_ge0.
+  by rewrite lee_fin exponential_pdf_ge0// ltW.
 rewrite ge0_integral_bigcup//=.
 - apply/measurable_funTS/measurableT_comp => //.
   exact: measurable_exponential_pdf.
-- by move=> x _; rewrite lee_fin exponential_pdf_ge0.
+- by move=> x _; rewrite lee_fin exponential_pdf_ge0// ltW.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _
@@ -1950,23 +2072,28 @@ Context {R : realType}.
 Implicit Types (rate : R) (k : nat).
 
 Definition poisson_pmf rate k : R :=
-  (rate ^+ k) * k`!%:R^-1 * expR (- rate).
+  if rate > 0 then (rate ^+ k) * k`!%:R^-1 * expR (- rate) else 1.
 
-Lemma poisson_pmf_ge0 rate k : 0 <= rate -> 0 <= poisson_pmf rate k.
-Proof. by move=> r0; rewrite /poisson_pmf 2?mulr_ge0// exprn_ge0. Qed.
+Lemma poisson_pmf_ge0 rate k : 0 <= poisson_pmf rate k.
+Proof.
+rewrite /poisson_pmf; case: ifPn => // rate0.
+by rewrite 2?mulr_ge0// exprn_ge0// ltW.
+Qed.
 
 End poisson_pmf.
 
-Lemma measurable_poisson_pmf {R : realType} D (rate : R) k :
+Lemma measurable_poisson_pmf {R : realType} D k : measurable D ->
   measurable_fun D (@poisson_pmf R ^~ k).
 Proof.
+move=> mD; rewrite /poisson_pmf; apply: measurable_fun_if => //.
+  exact: measurable_fun_ltr.
 apply: measurable_funM; first exact: measurable_funM.
 by apply: measurable_funTS; exact: measurableT_comp.
 Qed.
 
 Definition poisson_prob {R : realType} (rate : R) (k : nat)
    : set nat -> \bar R :=
-  fun U => if 0 <= rate then
+  fun U => if 0 < rate then
     \esum_(k in U) (poisson_pmf rate k)%:E else \d_0%N U.
 
 Section poisson.
@@ -2004,8 +2131,10 @@ rewrite /poisson; case: ifPn => [rate0|_]; last by rewrite probability_setT.
 rewrite [RHS](_ : _ = (expR (- rate))%:E * (expR rate)%:E); last first.
   by rewrite -EFinM expRN mulVf ?gt_eqF ?expR_gt0.
 rewrite -nneseries_esumT; last by move=> *; rewrite lee_fin poisson_pmf_ge0.
-under eq_eseriesr do rewrite EFinM muleC.
-rewrite nneseriesZl/=; last by move=> *; rewrite lee_fin divr_ge0// exprn_ge0.
+under eq_eseriesr.
+  move=> n _; rewrite /poisson_pmf rate0 EFinM muleC; over.
+rewrite /= nneseriesZl/=; last first.
+  by move=> n _; rewrite lee_fin divr_ge0// exprn_ge0// ltW.
 congr *%E; rewrite expRE -EFin_lim; last first.
   rewrite /pseries/=; under eq_fun do rewrite mulrC.
   exact: is_cvg_series_exp_coeff.
@@ -2023,12 +2152,15 @@ Lemma measurable_poisson_prob {R : realType} n :
 Proof.
 apply: (measurability (@pset _ _ _ : set (set (pprobability _ R)))) => //.
 move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
-apply: measurable_fun_if => //=; first exact: measurable_fun_ler.
+apply: measurable_fun_if => //=; first exact: measurable_fun_ltr.
 apply: (eq_measurable_fun (fun t =>
     \sum_(k <oo | k \in Ys) (poisson_pmf t k)%:E))%E.
   move=> x /set_mem[_/= x01].
   by rewrite nneseries_esum ?set_mem_set// =>*; rewrite lee_fin poisson_pmf_ge0.
 apply: ge0_emeasurable_sum.
   by move=> k x/= [_ x01] _; rewrite lee_fin poisson_pmf_ge0.
-by move=> k Ysk; apply/measurableT_comp => //; exact: measurable_poisson_pmf.
+move=> k Ysk; apply/measurableT_comp => //.
+apply: measurable_poisson_pmf => //.
+rewrite setTI (_ : _ @^-1` _ = `]0, +oo[%classic)//.
+by apply/seteqP; split => /= x /=; rewrite in_itv/= andbT.
 Qed.

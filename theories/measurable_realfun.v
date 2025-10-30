@@ -334,8 +334,7 @@ Proof. by rewrite ball_itv; exact: measurable_itv. Qed.
 
 Lemma measurable_closed_ball (x : R) r : measurable (closed_ball x r).
 Proof.
-have [r0|r0] := leP r 0; first by rewrite closed_ball0.
-rewrite closed_ball_itv//.
+by have [r0|r0] := leP r 0; [rewrite closed_ball0|rewrite closed_ball_itv].
 Qed.
 
 End salgebra_R_ssets.
@@ -390,7 +389,7 @@ rewrite [X in measurable X](_ : _ =
   apply: bigcupT_measurable => k; rewrite -(setIid D) setIACA.
   exact/measurableI/emeasurable_fun_infty_c/emeasurable_fun_c_infty.
 rewrite predeqE => t; split => [/= [Dt ft]|].
-  exists (trunc `|fine (f t)|).+1 => //=; split=> //; split.
+  exists (truncn `|fine (f t)|).+1 => //=; split=> //; split.
     rewrite -[leRHS](fineK ft) lee_fin lerNl.
     by rewrite (le_trans (ler_norm _))// normrN ltW// truncnS_gt.
   rewrite -[leLHS](fineK ft) lee_fin (le_trans (ler_norm _))//.
@@ -638,7 +637,7 @@ move=> /(_ `|floor r|%N Logic.I); rewrite /= in_itv/= ltNge.
 rewrite lee_fin; have [r0|r0] := leP 0%R r.
   by rewrite (le_trans _ r0) // lerNl oppr0 ler0n.
 rewrite lerNl -abszN natr_absz gtr0_norm; last by rewrite ltrNr oppr0 floor_lt0.
-by rewrite mulrNz lerNl opprK ge_floor.
+by rewrite mulrNz lerNl opprK floor_le_tmp.
 Qed.
 
 Lemma eset1y : [set +oo] = \bigcap_k `]k%:R%:E, +oo[%classic :> set (\bar R).
@@ -647,7 +646,7 @@ rewrite eqEsubset; split=> [_ -> i _/=|]; first by rewrite in_itv /= ltry.
 move=> [r| |/(_ O Logic.I)] // /(_ `|ceil r|%N Logic.I); rewrite /= in_itv /=.
 rewrite andbT lte_fin ltNge.
 have [r0|r0] := ltP 0%R r; last by rewrite (le_trans r0).
-by rewrite natr_absz gtr0_norm// ?le_ceil// ceil_gt0.
+by rewrite natr_absz gtr0_norm// ?ceil_ge// ceil_gt0.
 Qed.
 
 End erealwithrays.
@@ -1025,7 +1024,7 @@ have : {in D, (fun x => inf [set sups (h ^~ x) n | n in [set n | 0 <= n]%N])
 move/eq_measurable_fun; apply; apply: measurable_fun_infs => //.
   move=> t Dt; have [M hM] := f_lb _ Dt; exists M => _ [m /= nm <-].
   rewrite (@le_trans _ _ (h m t)) //; first by apply hM => /=; exists m.
-  by apply: sup_ubound; [exact/has_ubound_sdrop/f_ub|exists m => /=].
+  by apply: ub_le_sup; [exact/has_ubound_sdrop/f_ub|exists m => /=].
 by move=> k; exact: measurable_fun_sups.
 Qed.
 
@@ -1116,7 +1115,7 @@ split=> [|f g|f g]; rewrite !inE/=.
 Qed.
 HB.instance Definition _ := GRing.isSubringClosed.Build _
   (@mfun d default_measure_display aT rT) mfun_subring_closed.
-HB.instance Definition _ := [SubChoice_isSubComRing of {mfun aT >-> rT} by <:].
+HB.instance Definition _ := [SubChoice_isSubComNzRing of {mfun aT >-> rT} by <:].
 
 Implicit Types (f g : {mfun aT >-> rT}).
 
@@ -1569,7 +1568,7 @@ Lemma outer_measure_open_itv_cover A : (l^* A)%mu =
   ereal_inf [set \sum_(k <oo) l (F k) | F in open_itv_cover A].
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split.
-  apply: le_ereal_inf => _ /= [F [Fitv AF <-]].
+  apply: ereal_inf_le_tmp => _ /= [F [Fitv AF <-]].
   exists (fun i => `](sval (cid (Fitv i))).1, (sval (cid (Fitv i))).2]%classic).
   + split=> [i|].
     * have [?|?] := ltP (sval (cid (Fitv i))).1 (sval (cid (Fitv i))).2.

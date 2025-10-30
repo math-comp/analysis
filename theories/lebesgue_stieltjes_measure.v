@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import finmap fingroup perm rat archimedean.
 From HB Require Import structures.
@@ -285,14 +285,14 @@ have [J0|/set0P J0] := eqVneq J set0.
 move=> /subset_itvP ij; apply: leeB => /=.
   have [ui|ui] := asboolP (has_ubound I).
     have [uj /=|uj] := asboolP (has_ubound J); last by rewrite leey.
-    rewrite lee_fin; apply: ndf; apply/le_sup => //.
+    rewrite lee_fin; apply: ndf; apply: sup_le => //.
     by move=> r Ir; exists r; split => //; apply: ij.
   have [uj /=|//] := asboolP (has_ubound J).
   by move: ui; have := subset_has_ubound ij uj.
 have [lj /=|lj] := asboolP (has_lbound J); last by rewrite leNye.
 have [li /=|li] := asboolP (has_lbound I); last first.
   by move: li; have := subset_has_lbound ij lj.
-rewrite lee_fin; apply/ndf/le_inf => //.
+rewrite lee_fin; apply/ndf/inf_le => //.
 move=> r [r' Ir' <-{r}]; exists (- r')%R.
 by split => //; exists r' => //; apply: ij.
 Qed.
@@ -309,7 +309,8 @@ End wlength.
 Section wlength_extension.
 Context {R : realType}.
 
-Lemma wlength_semi_additive (f : R -> R) : measure.semi_additive (wlength f).
+Lemma wlength_semi_additive (f : R -> R) :
+  measure_function.semi_additive (wlength f).
 Proof.
 move=> /= I n /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym-/funext {I}->.
 move=> Itriv [[/= a1 a2] _] /esym /[dup] + ->.
@@ -485,7 +486,7 @@ Lemma wlength_sigma_finite (f : R -> R) :
 Proof.
 exists (fun k => `](- k%:R), k%:R]%classic).
   apply/esym; rewrite -subTset => /= x _ /=.
-  exists (trunc `|x|).+1; rewrite //= in_itv/=.
+  exists (truncn `|x|).+1; rewrite //= in_itv/=.
   by have := truncnS_gt `|x|; rewrite ltr_norml => /andP[-> /ltW->].
 move=> k; split => //; rewrite wlength_itv /= -EFinB.
 by case: ifP; rewrite ltey.

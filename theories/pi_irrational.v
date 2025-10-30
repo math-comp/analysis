@@ -55,15 +55,15 @@ Let b0 : b != 0. Proof. by rewrite pnatr_eq0. Qed.
 Let P1_size : size (a%:P -  b *: 'X) = 2.
 Proof.
 have hs : size (- (b *: 'X)) = 2%N.
-  by rewrite size_opp (* TODO: size_opp -> sizeN *) size_scale ?b0// size_polyX.
-by rewrite addrC size_addl hs ?size_polyC//; case: (a != 0).
+  by rewrite size_polyN size_scale ?b0// size_polyX.
+by rewrite addrC size_polyDl hs ?size_polyC//; case: (a != 0).
 Qed.
 
 Let P1_lead_coef : lead_coef (a%:P - b *: 'X) = - b.
 Proof.
 rewrite addrC lead_coefDl.
   by rewrite lead_coefN lead_coefZ lead_coefX mulr1.
-by rewrite size_opp size_scale ?b0// size_polyX size_polyC; case: (a != 0).
+by rewrite size_polyN size_scale ?b0// size_polyX size_polyC; case: (a != 0).
 Qed.
 
 Let P_size : size ((a%:P -  b*:'X) ^+ n) = n.+1.

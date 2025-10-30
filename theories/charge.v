@@ -100,7 +100,8 @@ Local Open Scope classical_set_scope.
 Local Open Scope ereal_scope.
 
 HB.mixin Record isAdditiveCharge d (T : semiRingOfSetsType d) (R : numFieldType)
-  (mu : set T -> \bar R) := { charge_semi_additive : measure.semi_additive mu }.
+  (mu : set T -> \bar R) :=
+  { charge_semi_additive : measure_function.semi_additive mu }.
 
 #[short(type=additive_charge)]
 HB.structure Definition AdditiveCharge d (T : semiRingOfSetsType d)
@@ -135,7 +136,7 @@ Let finite : fin_num_fun mu. Proof. exact: charge_finite. Qed.
 
 HB.instance Definition _ := isFinite.Build d T R mu finite.
 
-Let semi_additive : measure.semi_additive mu.
+Let semi_additive : measure_function.semi_additive mu.
 Proof.
 move=> I n mI trivI mUI.
 rewrite (semi_sigma_additive_is_additive charge0)//.
@@ -165,7 +166,7 @@ Qed.
 Hint Resolve charge0 : core.
 
 Lemma charge_semi_additiveW nu :
-  nu set0 = 0 -> measure.semi_additive nu -> semi_additive2 nu.
+  nu set0 = 0 -> measure_function.semi_additive nu -> semi_additive2 nu.
 Proof.
 move=> nu0 anu A B mA mB + AB; rewrite -bigcup2inE bigcup_mkord.
 move=> /(anu (bigcup2 A B)) ->.
@@ -296,7 +297,7 @@ Qed.
 HB.instance Definition _ := isFinite.Build _ _ _
   restr crestr_finite_measure_function.
 
-Let crestr_semi_additive : measure.semi_additive restr.
+Let crestr_semi_additive : measure_function.semi_additive restr.
 Proof.
 move=> F n mF tF mU; pose FD i := F i `&` D.
 have mFD i : measurable (FD i) by exact: measurableI.
@@ -400,7 +401,7 @@ Proof. by move=> mU; apply: fin_numM => //; exact: fin_num_measure. Qed.
 HB.instance Definition _ := isFinite.Build _ _ _
   cscale cscale_finite_measure_function.
 
-Let cscale_semi_additive : measure.semi_additive cscale.
+Let cscale_semi_additive : measure_function.semi_additive cscale.
 Proof.
 move=> F n mF tF mU; rewrite /cscale charge_semi_additive//.
 rewrite fin_num_sume_distrr// => i j _ _.
@@ -760,8 +761,8 @@ have nudelta n : nu E <= g_ (v n).
     rewrite v0/=; apply: ereal_sup_ubound => /=; exists E; split => //.
     by apply: (subset_trans EDAoo); exact: setDS.
   suff : nu E <= d_ (U_ (v n)) by have [<- _] := Pv n.
-  have /le_ereal_sup := EH n.+1; rewrite ereal_sup1 => /le_trans; apply.
-  apply/le_ereal_sup => x/= [A' [mA' A'D ?]].
+  have /ereal_sup_le := EH n.+1; rewrite ereal_sup1 => /le_trans; apply.
+  apply/ereal_sup_le => x/= [A' [mA' A'D ?]].
   exists A' => //; split => //.
   by apply: (subset_trans A'D); apply: setDS; rewrite Ubig.
 apply: (@closed_cvg _ _ _ _ _ (fun v => nu E <= v) _ _ _ g_cvg_0) => //.
@@ -1281,7 +1282,7 @@ Definition sup_int_approxRN := ereal_sup int_approxRN.
 
 Lemma sup_int_approxRN_ge0 : 0 <= sup_int_approxRN.
 Proof.
-rewrite -(ereal_sup1 0) le_ereal_sup// sub1set inE.
+rewrite -(ereal_sup1 0) ereal_sup_le// sub1set inE.
 exists (fun=> 0); last exact: integral0.
 by split => //; [exact: integrable0|move=> E; rewrite integral0].
 Qed.
@@ -1310,7 +1311,7 @@ Qed.
 Lemma sup_int_approxRN_lty : M < +oo.
 Proof.
 rewrite /sup_int_approxRN; have [m hm] := int_approxRN_ub.
-rewrite (@le_lt_trans _ _ m%:E)// ?ltey// ub_ereal_sup// => x IGx.
+rewrite (@le_lt_trans _ _ m%:E)// ?ltey// ge_ereal_sup// => x IGx.
 by apply: hm; rewrite inE.
 Qed.
 
@@ -1785,7 +1786,7 @@ have Gh : G h.
   by rewrite (le_lt_trans (hnu _ measurableT))// ltey_eq fin_num_measure.
 have : \int[mu]_x h x <= M.
   rewrite -(ereal_sup1 (\int[mu]_x h x)).
-  rewrite (@le_ereal_sup _ [set \int[mu]_x h x] (int_approxRN mu nu))//.
+  rewrite (@ereal_sup_le _ [set \int[mu]_x h x] (int_approxRN mu nu))//.
   by rewrite sub1set inE; exists h.
 by rewrite leNgt int_h_M.
 Qed.

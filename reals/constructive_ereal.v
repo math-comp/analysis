@@ -31,6 +31,12 @@ From mathcomp Require Import mathcomp_extra interval_inference.
 (* |               `\bar R` |==| coproduct of `R` and $\{+\infty, -\infty\}$| *)
 (* |                        |  | notation for `extended (R:Type)`           | *)
 (* |                 `r%:E` |==| injects real numbers into `\bar R`         | *)
+(* |                    - x |==| opposite of x : \bar R                     | *)
+(* |               0, 1, -1 |==| 0%R, 1%R%:E, - 1%R%:E                      | *)
+(* |               <number> |==| <number>%:R%:E with <number> a sequence    | *)
+(* |                        |  | of digits                                  | *)
+(* |              -<number> |==| - <number>%:R%:E with <number> a sequence  | *)
+(* |                        |  | of digits                                  | *)
 (* |        `+%E, -%E, *%E` |==| addition/opposite/multiplication for       | *)
 (* |                        |  | extended reals                             | *)
 (* |        `x^-1`, `x / y` |==| inverse and division for extended reals    | *)
@@ -59,6 +65,12 @@ From mathcomp Require Import mathcomp_extra interval_inference.
 (*                  \bar R == coproduct of R and {+oo, -oo};                  *)
 (*                            notation for extended (R:Type)                  *)
 (*                    r%:E == injects real numbers into \bar R                *)
+(*                     - x == opposite of x : \bar R                          *)
+(*                0, 1, -1 == 0%R, 1%R%:E, - 1%R%:E                           *)
+(*                <number> == <number>%:R%:E with <number> a sequence         *)
+(*                            of digits                                       *)
+(*               -<number> == - <number>%:R%:E with <number> a sequence       *)
+(*                            of digits                                       *)
 (*           +%E, -%E, *%E == addition/opposite/multiplication for extended   *)
 (*                            reals                                           *)
 (*             x^-1, x / y == inverse and division for extended reals         *)
@@ -582,6 +594,53 @@ Notation "x ^+ n" := (expe x%E n) : ereal_scope.
 Notation "x *+ n" := (ednatmul x%dE n) : ereal_dual_scope.
 Notation "x *+ n" := (enatmul x%E n) : ereal_scope.
 
+(**md Notation for constant numerals. This has been introduced so
+that, e.g., in the scope `ereal_scope`, `-<n>` is correctly parsed
+without requiring one writes `- <n>%:E`. See the Rocq reference manual
+for the `Number Notation` command
+and [PR #1704](https://github.com/math-comp/analysis/pull/1704)
+for more explanations. *)
+Variant Ione := IOne : Ione.
+Inductive Inatmul := INatmul : Ione -> nat -> Inatmul.
+Inductive IEFin := IEFinP : Inatmul -> IEFin | IEFinN : IEFin -> IEFin.
+Variant Idummy_placeholder :=.
+
+Definition parse (x : Number.int) : IEFin :=
+  match x with
+  | Number.IntDecimal (Decimal.Pos u) => IEFinP (INatmul IOne (Nat.of_uint u))
+  | Number.IntDecimal (Decimal.Neg u) =>
+      IEFinN (IEFinP (INatmul IOne (Nat.of_uint u)))
+  | Number.IntHexadecimal (Hexadecimal.Pos u) =>
+      IEFinP (INatmul IOne (Nat.of_hex_uint u))
+  | Number.IntHexadecimal (Hexadecimal.Neg u) =>
+      IEFinN (IEFinP (INatmul IOne (Nat.of_hex_uint u)))
+  end.
+
+Definition print (x : IEFin) : option Number.int :=
+  match x with
+  | IEFinP (INatmul IOne n) =>
+      Some (Number.IntDecimal (Decimal.Pos (Nat.to_uint n)))
+  | IEFinN (IEFinP (INatmul IOne n)) =>
+      Some (Number.IntDecimal (Decimal.Neg (Nat.to_uint n)))
+  | _ => None
+  end.
+
+Arguments GRing.one {_}.
+#[warnings="-via-type-remapping,-via-type-mismatch"]
+Number Notation Idummy_placeholder parse print (via IEFin
+  mapping [[EFin] => IEFinP, [oppe] => IEFinN,
+           [GRing.natmul] => INatmul, [GRing.one] => IOne])
+  : ereal_scope.
+#[warnings="-via-type-remapping,-via-type-mismatch"]
+Number Notation Idummy_placeholder parse print (via IEFin
+  mapping [[EFin] => IEFinP, [oppe] => IEFinN,
+           [GRing.natmul] => INatmul, [GRing.one] => IOne])
+  : ereal_dual_scope.
+Arguments GRing.one : clear implicits.
+
+Notation "- 1" := (oppe 1 : dual_extended _) : ereal_dual_scope.
+Notation "- 1" := (oppe 1) : ereal_scope.
+
 Notation "\- f" := (fun x => - f x)%dE : ereal_dual_scope.
 Notation "\- f" := (fun x => - f x)%E : ereal_scope.
 Notation "f \+ g" := (fun x => f x + g x)%dE : ereal_dual_scope.
@@ -684,10 +743,10 @@ Proof. by rewrite lee_fin ler0N1. Qed.
 Lemma lte0N1 : 0 < (-1)%:E :> \bar R = false.
 Proof. by rewrite lte_fin ltr0N1. Qed.
 
-Lemma lteN10 : - 1%E < 0 :> \bar R.
+Lemma lteN10 : -1 < 0 :> \bar R.
 Proof. by rewrite lte_fin ltrN10. Qed.
 
-Lemma leeN10 : - 1%E <= 0 :> \bar R.
+Lemma leeN10 : -1 <= 0 :> \bar R.
 Proof. by rewrite lee_fin lerN10. Qed.
 
 Lemma lte0n n : (0 < n%:R%:E :> \bar R) = (0 < n)%N.
@@ -1273,13 +1332,13 @@ Proof. by move=> rreal; rewrite muleC real_mulrNy. Qed.
 
 Definition real_mulr_infty := (real_mulry, real_mulyr, real_mulrNy, real_mulNyr).
 
-Lemma mulN1e x : (- 1%E) * x = - x.
+Lemma mulN1e x : -1 * x = - x.
 Proof.
 by case: x => [r| |]/=;
   rewrite /mule ?mulN1r// eqe oppr_eq0 oner_eq0/= lte_fin oppr_gt0 ltr10.
 Qed.
 
-Lemma muleN1 x : x * (- 1%E) = - x. Proof. by rewrite muleC mulN1e. Qed.
+Lemma muleN1 x : x * -1 = - x. Proof. by rewrite muleC mulN1e. Qed.
 
 Lemma mule_neq0 x y : x != 0 -> y != 0 -> x * y != 0.
 Proof.
@@ -1742,6 +1801,17 @@ Qed.
 
 Lemma lte_add_pinfty x y : x < +oo -> y < +oo -> x + y < +oo.
 Proof. by move: x y => -[r [r'| |]| |] // ? ?; rewrite -EFinD ltry. Qed.
+
+Lemma lt0_adde x y : x + y < 0 -> (x < 0) || (y < 0).
+Proof.
+move: x y => [x| |] [y| |]//; rewrite ?lee_fin ?lte_fin.
+- rewrite !ltNge -negb_and; apply: contra.
+  by move=> /andP[? ?]; rewrite addr_ge0.
+- by move=> _; rewrite ltNyr orbT.
+- by move=> _; rewrite ltNyr.
+- by move=> _; rewrite ltNy0.
+- by rewrite ltNy0.
+Qed.
 
 Lemma lte_sum_pinfty I (s : seq I) (P : pred I) (f : I -> \bar R) :
   (forall i, P i -> f i < +oo) -> \sum_(i <- s | P i) f i < +oo.
@@ -2311,7 +2381,7 @@ Qed.
 Lemma iter_mule n x y : iter n ( *%E x) y = x ^+ n * y.
 Proof. by elim: n => [|n ih]; rewrite ?mul1e// [LHS]/= ih expeS muleA. Qed.
 
-HB.instance Definition _ := Monoid.isComLaw.Build (\bar R) 1%E mule
+HB.instance Definition _ := Monoid.isComLaw.Build (\bar R) 1 mule
   muleA muleC mul1e.
 
 Lemma muleCA : left_commutative ( *%E : \bar R -> \bar R -> \bar R ).
@@ -2439,6 +2509,15 @@ move: x => [x| |]/=.
 - by rewrite invey eq_sym onee_eq0.
 - by rewrite inveNy.
 Qed.
+
+Lemma inve_eqy x : (x^-1 == +oo) = (x == 0).
+Proof.
+case: x => [r| |] //=; apply/idP/idP => [|]; first by rewrite inver; case: ifPn.
+by rewrite eqe => /eqP ->; rewrite inver// eqxx.
+Qed.
+
+Lemma inve_eqNy x : (x^-1 == -oo) = (x == -oo).
+Proof. by case: x => [r| |] //=; rewrite inver; case: ifPn. Qed.
 
 Lemma inve_ge0 x : (0 <= x^-1) = (0 <= x).
 Proof.
@@ -2667,6 +2746,9 @@ Proof. by move=> x; have [|//] := leP x -oo; rewrite leeNy_eq => /eqP. Qed.
 Lemma miney : right_id (+oo : \bar R) mine.
 Proof. by move=> x; rewrite minC minye. Qed.
 
+HB.instance Definition _ :=
+  Monoid.isLaw.Build (\bar R) +oo mine minA minye miney.
+
 Lemma oppe_max : {morph -%E : x y / maxe x y >-> mine x y : \bar R}.
 Proof.
 move=> [x| |] [y| |] //=.
@@ -2749,6 +2831,9 @@ move: x => [x| |] ih.
 - by rewrite mulry gtr0_sg// mul1e enatmul_pinfty.
 - by rewrite mulrNy gtr0_sg// mul1e enatmul_ninfty.
 Qed.
+
+Lemma mule_natr x n : x * n%:R%:E = x *+ n.
+Proof. by rewrite muleC mule_natl. Qed.
 
 Lemma lte_pmul x1 y1 x2 y2 :
   0 <= x1 -> 0 <= x2 -> x1 < y1 -> x2 < y2 -> x1 * x2 < y1 * y2.
@@ -3286,6 +3371,9 @@ Proof. by move=> x y z; rewrite !dual_addeE oppe_min adde_maxr oppe_max. Qed.
 Lemma dmule_natl x n : n%:R%:E * x = x *+ n.
 Proof. by rewrite mule_natl ednatmulE. Qed.
 
+Lemma dmule_natr x n : x * n%:R%:E = x *+ n.
+Proof. by rewrite mule_natr ednatmulE. Qed.
+
 Lemma lee_pdaddl y x z : 0 <= x -> y <= z -> y <= x + z.
 Proof. by move=> *; rewrite -[y]dadd0e lee_dD. Qed.
 
@@ -3734,7 +3822,7 @@ Proof. by case: x => [x|//|]; rewrite /= ?leey// lee_fin sqrtr_ge0. Qed.
 Lemma lee_sqrt x y : 0 <= y -> (sqrte x <= sqrte y) = (x <= y).
 Proof.
 case: x y => [x||] [y||] yge0 //=.
-- exact: mathcomp_extra.ler_sqrt.
+- exact: ler_sqrt.
 - by rewrite !leey.
 - by rewrite leNye lee_fin sqrtr_ge0.
 Qed.

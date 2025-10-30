@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import archimedean.
@@ -78,7 +78,7 @@ From mathcomp Require Import numfun lebesgue_measure lebesgue_integral.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldTopology.Exports.
 
 Local Open Scope classical_set_scope.
@@ -194,7 +194,7 @@ Lemma measure_fam_uubP : measure_fam_uub <->
 Proof.
 split => [|] [r kr]; last by exists r%:num.
 suff r_gt0 : (0 < r)%R by exists (PosNum r_gt0).
-by rewrite -lte_fin; apply: (le_lt_trans _ (kr point)).
+by rewrite -lte_fin; exact: le_lt_trans (kr point).
 Qed.
 
 End measure_fam_uub.
@@ -489,7 +489,7 @@ Lemma sprob_kernelP d d' (X : measurableType d) (Y : measurableType d')
   ereal_sup [set k x [set: _] | x in [set: _]] <= 1 <->
   forall x, k x [set: Y] <= 1.
 Proof.
-split => [+ x|k1]; last by apply: ub_ereal_sup => _ /= [z _ <-]; exact: k1.
+split => [+ x|k1]; last by apply: ge_ereal_sup => _ /= [z _ <-]; exact: k1.
 by apply/le_trans/ereal_sup_ubound => /=; exists x.
 Qed.
 
@@ -553,7 +553,7 @@ HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
 
 Let sprob_kernel : @Kernel_isSubProbability d d' X Y R k.
 Proof.
-by split; apply: ub_ereal_sup => x [y _ <-{x}]; rewrite prob_kernel.
+by split; apply: ge_ereal_sup => x [y _ <-{x}]; rewrite prob_kernel.
 Qed.
 
 HB.instance Definition _ := sprob_kernel.
@@ -1597,9 +1597,9 @@ have bigcupA : \bigcup_n A n = setT.
   have fink2 xy : fin_num_fun (k2 xy) by exact: kernel_finite_transition.
   apply/seteqP; split => // y _.
   have {}fink2 := fink2 (x, y) _ measurableT.
-  exists (Num.trunc (fine (k2 (x, y) setT))).+1 => //=.
+  exists (Num.truncn (fine (k2 (x, y) setT))).+1 => //=.
   have : (0 <= fine (k2 (x, y) [set: T2]))%R by rewrite fine_ge0.
-  by move=> /Num.Theory.trunc_itv/andP[_]; rewrite -lte_fin fineK.
+  by move=> /truncn_itv/andP[_]; rewrite -lte_fin fineK.
 have lty n : kproduct k1 k2 x (A n `*` setT) < +oo.
   have fink1 : fin_num_fun (k1 x) by exact: kernel_finite_transition.
   apply: (@le_lt_trans _ _ (n%:R%:E * k1 x (A n))) => /=.
@@ -1666,7 +1666,7 @@ HB.instance Definition _ :=
 
 Let measure_uub : measure_fam_uub kernel_snd.
 Proof.
-exists 2 => /= -[x y].
+exists 2%R => /= -[x y].
 rewrite /kernel_snd/= (@le_lt_trans _ _ 1%:E) ?lte1n//.
 exact: sprob_kernel_le1.
 Qed.

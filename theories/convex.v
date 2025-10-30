@@ -62,7 +62,7 @@ End def.
 (** technical relations between the parameters of the quasi-associativity law *)
 Section lemmas.
 
-Lemma pq_sr (R : comRingType) (p q r s : R) :
+Lemma pq_sr (R : comPzRingType) (p q r s : R) :
   p = r * s ->
   1 - s = (1 - p) * (1 - q) ->
   (1 - p) * q = s * (1 - r).
@@ -73,7 +73,7 @@ rewrite -mulrDr (addrC _ 1) -spq mulr1 prs.
 by rewrite !opprB addrC subrKA mulrDr mulr1 mulrN mulrC.
 Qed.
 
-Lemma sE (R : ringType) (p q s : R) :
+Lemma sE (R : pzRingType) (p q s : R) :
   1 - s = (1 - p) * (1 - q) ->
   s = 1 - (1 - p) * (1 - q).
 Proof. by move/eqP; rewrite subr_eq addrC -subr_eq => /eqP ->. Qed.

@@ -142,13 +142,13 @@ have [J0|/set0P J0] := eqVneq J set0.
 move=> /subset_itvP ij; apply: leeB => /=.
   have [ui|ui] := asboolP (has_ubound I).
     have [uj /=|uj] := asboolP (has_ubound J); last by rewrite leey.
-    by rewrite lee_fin le_sup // => r Ir; exists r; split => //; apply: ij.
+    by rewrite lee_fin sup_le // => r Ir; exists r; split => //; apply: ij.
   have [uj /=|//] := asboolP (has_ubound J).
   by move: ui; have := subset_has_ubound ij uj.
 have [lj /=|lj] := asboolP (has_lbound J); last by rewrite leNye.
 have [li /=|li] := asboolP (has_lbound I); last first.
   by move: li; have := subset_has_lbound ij lj.
-rewrite lee_fin lerNl opprK le_sup// ?has_inf_supN//; last exact/nonemptyN.
+rewrite lee_fin lerNl opprK sup_le// ?has_inf_supN//; last exact/nonemptyN.
 move=> r [r' Ir' <-{r}]; exists (- r')%R.
 by split => //; exists r' => //; apply: ij.
 Qed.
@@ -202,7 +202,7 @@ Context {R : realType}.
 
 Notation hlength := (@hlength R).
 
-Lemma hlength_semi_additive : measure.semi_additive hlength.
+Lemma hlength_semi_additive : measure_function.semi_additive hlength.
 Proof.
 move=> /= I n /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym-/funext {I}->.
 move=> Itriv [[/= a1 a2] _] /esym /[dup] + ->.
@@ -860,8 +860,8 @@ Lemma outer_measure_open A : (l^* A)%mu =
   ereal_inf [set (l^* U)%mu | U in [set U | open U /\ A `<=` U]].
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split.
-  by apply: lb_ereal_inf => /= _ /= [U [oU AU] <-]; exact: le_outer_measure.
-apply/lee_addgt0Pr => /= e e0; apply: ereal_inf_le.
+  by apply: le_ereal_inf_tmp => /= _ /= [U [oU AU] <-]; exact: le_outer_measure.
+apply/lee_addgt0Pr => /= e e0; apply: ge_ereal_inf.
 have [U [oU AU UAe]] := @outer_measure_open_le A _ e0.
 by exists (mu U) => //=; exists U.
 Qed.
@@ -1051,7 +1051,7 @@ Let lebesgue_regularity_innerE_bounded (A : set R) : measurable A ->
   mu A = ereal_sup [set mu K | K in [set K | compact K /\ K `<=` A]].
 Proof.
 move=> mA muA; apply/eqP; rewrite eq_le; apply/andP; split; last first.
-  by apply: ub_ereal_sup => /= x [B /= [cB BA <-{x}]]; exact: le_outer_measure.
+  by apply: ge_ereal_sup => /= x [B /= [cB BA <-{x}]]; exact: le_outer_measure.
 apply/lee_addgt0Pr => e e0.
 have [B [cB BA /= ABe]] := lebesgue_regularity_inner mA muA e0.
 rewrite -{1}(setDKU BA) (@le_trans _ _ (mu B + mu (A `\` B)))//.
@@ -1162,7 +1162,7 @@ have {}EBr2 : \esum_(i in E) mu (closure (B i)) <=
   by apply: bigcup_measurable => *; exact: measurable_closure.
 have finite_set_F i : finite_set (F i).
   apply: contrapT.
-  pose M := (trunc ((r%:num + 2) *+ 2 / (1 / (2 ^ i.+1)%:R))).+1.
+  pose M := (truncn ((r%:num + 2) *+ 2 / (1 / (2 ^ i.+1)%:R))).+1.
   move/(infinite_set_fset M) => [/= C CsubFi McardC].
   have MC : (M%:R * (1 / (2 ^ i.+1)%:R))%:E <=
             mu (\bigcup_(j in [set` C]) closure (B j)).
@@ -1350,8 +1350,8 @@ apply: le_trans; apply: lee_nneseries => //; first by move=> *; exact: esum_ge0.
 move=> n _.
 rewrite -(set_mem_set (F n)) -nneseries_esum// -nneseries_esum// -nneseriesZl//.
 apply: lee_nneseries => // m mFn.
-rewrite (ballE (is_ballB m))// closure_ball lebesgue_measure_closed_ball//.
-rewrite scale_ballE// closure_ball lebesgue_measure_closed_ball//.
+rewrite (ballE (is_ballB m))// closure_ballE lebesgue_measure_closed_ball//.
+rewrite scale_ballE// closure_ballE lebesgue_measure_closed_ball//.
 by rewrite -EFinM mulrnAr.
 Qed.
 
@@ -1390,7 +1390,7 @@ Let vitali_cover_mclosure (F : set nat) k :
   vitali_cover A B F -> (R.-ocitv.-measurable).-sigma.-measurable (closure (B k)).
 Proof.
 case => + _ => /(_ k)/ballE ->.
-by rewrite closure_ball; exact: measurable_closed_ball.
+by rewrite closure_ballE; exact: measurable_closed_ball.
 Qed.
 
 Let vitali_cover_measurable (F : set nat) k :
@@ -1452,7 +1452,7 @@ have muGSfin C : C `<=` G -> mu (\bigcup_(k in C) closure (B k)) \is a fin_num.
   apply: lee_nneseries => // n _.
   case: ifPn => [/set_mem nC|]; last by rewrite measure0.
   rewrite (vitali_cover_ballE _ ABF) ifT; last exact/mem_set/CG.
-  by rewrite closure_ball lebesgue_measure_closed_ball// lebesgue_measure_ball.
+  by rewrite closure_ballE lebesgue_measure_closed_ball// lebesgue_measure_ball.
 have muGfin : mu (\bigcup_(k in G) closure (B k)) \is a fin_num.
   by rewrite -(bigB0 G) muGSfin.
 have [c Hc] : exists c : {posnum R},
@@ -1522,7 +1522,7 @@ have {}Hc : mu (\bigcup_(k in G) closure (B k) `\`
   rewrite setIidr; last exact: bigcup_subset.
   by rewrite lteBlDr-?lteBlDl//; exact: muGSfin.
 have bigBG_fin (r : {posnum R}) : finite_set (bigB G r%:num).
-  pose M := (trunc (fine (mu O) / r%:num)).+1.
+  pose M := (truncn (fine (mu O) / r%:num)).+1.
   apply: contrapT => /infinite_set_fset /= /(_ M)[G0 G0G'r MG0].
   have : mu O < mu (\bigcup_(k in bigB G r%:num) closure (B k)).
     apply: (@lt_le_trans _ _ (mu (\bigcup_(k in [set` G0]) closure (B k)))).
@@ -1540,8 +1540,8 @@ have bigBG_fin (r : {posnum R}) : finite_set (bigB G r%:num).
       apply: lee_sum => //= i /G0G'r [iG rBi].
       rewrite -[leRHS]fineK//; last first.
         rewrite (vitali_cover_ballE _ ABF).
-        by rewrite closure_ball lebesgue_measure_closed_ball.
-      rewrite (vitali_cover_ballE _ ABF) closure_ball.
+        by rewrite closure_ballE lebesgue_measure_closed_ball.
+      rewrite (vitali_cover_ballE _ ABF) closure_ballE.
       by rewrite lebesgue_measure_closed_ball// fineK// lee_fin mulr2n ler_wpDl.
     rewrite le_measure? inE//; last exact: bigcup_subset.
     - by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
@@ -1557,7 +1557,7 @@ have bigBG_fin (r : {posnum R}) : finite_set (bigB G r%:num).
       move/trivIsetP : tB => /(_ _ _ Gi Gj ij).
       by apply: subsetI_eq0 => //=; exact: subset_closure.
     rewrite /= lee_nneseries// => n _.
-    rewrite (vitali_cover_ballE _ ABF)// closure_ball.
+    rewrite (vitali_cover_ballE _ ABF)// closure_ballE.
     by rewrite lebesgue_measure_closed_ball// lebesgue_measure_ball.
   rewrite le_measure? inE//.
   + by apply: bigcup_measurable => k _; exact: vitali_cover_measurable ABF.

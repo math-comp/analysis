@@ -35,6 +35,47 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
 
+Lemma coprime_prodr (I : Type) (r : seq I) (P : {pred I}) (F : I -> nat) (a : I)
+    (l : seq I) :
+  all (coprime (F a)) [seq F i | i <- [seq i <- l | P i]] ->
+  coprime (F a) (\prod_(j <- l | P j) F j).
+Proof.
+elim: l => /= [_|h t ih]; first by rewrite big_nil coprimen1.
+rewrite big_cons; case: ifPn => // Ph.
+rewrite map_cons => /= /andP[FaFh FatP].
+by rewrite coprimeMr FaFh/= ih.
+Qed.
+
+Lemma Gauss_dvd_prod (I : eqType) (r : seq I) (P : {pred I}) (F : I -> nat)
+    (n : nat) :
+  pairwise coprime [seq F i | i <- [seq i <- r | P i]] ->
+  reflect (forall i, i \in r -> P i -> F i %| n)
+          (\prod_(i <- r | P i) F i %| n).
+Proof.
+elim: r => /= [_|a l HI].
+  by rewrite big_nil dvd1n; apply: ReflectT => i; rewrite in_nil.
+rewrite big_cons; case: ifP => [Pa|nPa]; last first.
+  move/HI/equivP; apply; split=> [Fidvdn i|Fidvdn i il].
+    by rewrite in_cons => /predU1P[->|]; [rewrite nPa|exact: Fidvdn].
+  by apply: Fidvdn; rewrite in_cons il orbT.
+rewrite map_cons pairwise_cons => /andP[allcoprimea pairwisecoprime].
+rewrite Gauss_dvd; last exact: coprime_prodr.
+apply: (equivP (andPP idP (HI pairwisecoprime))).
+split=> [[Fadvdn Fidvdn] i|Fidvdn].
+  by rewrite in_cons => /predU1P[->//|]; exact: Fidvdn.
+split=> [|i il].
+  by apply: Fidvdn => //; exact: mem_head.
+by apply: Fidvdn; rewrite in_cons il orbT.
+Qed.
+
+Lemma expn_prod (I : eqType) (r : seq I) (P : {pred I}) (F : I -> nat)
+    (n : nat) :
+  ((\prod_(i <- r | P i) F i) ^ n = \prod_(i <- r | P i) (F i) ^ n)%N.
+Proof.
+elim: r => [|a l]; first by rewrite !big_nil exp1n.
+by rewrite !big_cons; case: ifPn => // Pa <-; rewrite expnMn.
+Qed.
+
 Section max_min.
 Variable R : realFieldType.
 
@@ -96,6 +137,12 @@ Qed.
 
 Definition monotonous d (T : porderType d) (pT : predType T) (A : pT) (f : T -> T) :=
   {in A &, {mono f : x y / (x <= y)%O}} \/ {in A &, {mono f : x y /~ (x <= y)%O}}.
+
+Lemma mono_leq_infl f : {mono f : m n / (m <= n)%N} -> forall n, (n <= f n)%N.
+Proof.
+move=> fincr; elim=> [//| n HR]; rewrite (leq_ltn_trans HR)//.
+by rewrite ltn_neqAle fincr (inj_eq (incn_inj fincr)) -ltn_neqAle.
+Qed.
 
 (* NB: these lemmas have been introduced to develop the theory of bounded variation *)
 Section path_lt.
@@ -177,21 +224,46 @@ Arguments big_rmcond_in {R idx op I r} P.
 
 Reserved Notation "`1- x" (format "`1- x", at level 2).
 
-Section onem.
-Variable R : numDomainType.
-Implicit Types r : R.
+Lemma card_big_setU (I : Type) (T : finType) (r : seq I) (P : {pred I})
+    (F : I -> {set T}) :
+  (#|\bigcup_(i <- r | P i)  F i| <= \sum_(i <- r | P i) #|F i|)%N.
+Proof.
+elim/big_ind2 : _ => // [|m A n B Am Bn]; first by rewrite cards0.
+by rewrite (leq_trans (leq_card_setU _ _))// leq_add.
+Qed.
 
-Definition onem r := 1 - r.
-Local Notation "`1- r" := (onem r).
+Definition onem {R : pzRingType} (r : R) : R := 1 - r.
+Notation "`1- r" := (onem r) : ring_scope.
 
-Lemma onem0 : `1-0 = 1. Proof. by rewrite /onem subr0. Qed.
+Section onem_ring.
+Context {R : pzRingType}.
+Implicit Type r : R.
 
-Lemma onem1 : `1-1 = 0. Proof. by rewrite /onem subrr. Qed.
+Lemma onem0 : `1-0 = 1 :> R. Proof. by rewrite /onem subr0. Qed.
+
+Lemma onem1 : `1-1 = 0 :> R. Proof. by rewrite /onem subrr. Qed.
 
 Lemma onemK r : `1-(`1-r) = r. Proof. exact: subKr. Qed.
 
-Lemma add_onemK r : r + `1- r = 1.
-Proof. by rewrite /onem addrC subrK. Qed.
+Lemma add_onemK r : r + `1- r = 1. Proof. by rewrite /onem addrC subrK. Qed.
+
+Lemma onemD r s : `1-(r + s) = `1-r - s.
+Proof. by rewrite /onem addrAC opprD addrA addrAC. Qed.
+
+Lemma onemMr r s : s * `1-r = s - s * r.
+Proof. by rewrite /onem mulrBr mulr1. Qed.
+
+Lemma onemM r s : `1-(r * s) = `1-r + `1-s - `1-r * `1-s.
+Proof.
+rewrite /onem mulrBr mulr1 mulrBl mul1r opprB -addrA.
+by rewrite (addrC (1 - r)) !addrA subrK opprB addrA subrK addrK.
+Qed.
+
+End onem_ring.
+
+Section onem_order.
+Variable R : numDomainType.
+Implicit Types r : R.
 
 Lemma onem_gt0 r : r < 1 -> 0 < `1-r. Proof. by rewrite subr_gt0. Qed.
 
@@ -210,20 +282,7 @@ Proof. by move=> ? ?; rewrite subr_ge0 exprn_ile1. Qed.
 Lemma onemX_lt1 r n : 0 < r -> `1-(r ^+ n) < 1.
 Proof. by move=> ?; rewrite onem_lt1// exprn_gt0. Qed.
 
-Lemma onemD r s : `1-(r + s) = `1-r - s.
-Proof. by rewrite /onem addrAC opprD addrA addrAC. Qed.
-
-Lemma onemMr r s : s * `1-r = s - s * r.
-Proof. by rewrite /onem mulrBr mulr1. Qed.
-
-Lemma onemM r s : `1-(r * s) = `1-r + `1-s - `1-r * `1-s.
-Proof.
-rewrite /onem mulrBr mulr1 mulrBl mul1r opprB -addrA.
-by rewrite (addrC (1 - r)) !addrA subrK opprB addrA subrK addrK.
-Qed.
-
-End onem.
-Notation "`1- r" := (onem r) : ring_scope.
+End onem_order.
 
 Lemma onemV (F : numFieldType) (x : F) : x != 0 -> `1-(x^-1) = (x - 1) / x.
 Proof. by move=> ?; rewrite mulrDl divff// mulN1r. Qed.
@@ -295,20 +354,20 @@ Qed.
 
 End order_min.
 
-Lemma intrD1 {R : ringType} (i : int) : i%:~R + 1 = (i + 1)%:~R :> R.
+Lemma intrD1 {R : pzRingType} (i : int) : i%:~R + 1 = (i + 1)%:~R :> R.
 Proof. by rewrite intrD. Qed.
 
-Lemma intr1D {R : ringType} (i : int) : 1 + i%:~R = (1 + i)%:~R :> R.
+Lemma intr1D {R : pzRingType} (i : int) : 1 + i%:~R = (1 + i)%:~R :> R.
 Proof. by rewrite intrD. Qed.
 
 Section trunc_floor_ceil.
-Context {R : archiDomainType}.
+Context {R : archiRealDomainType}.
 Implicit Type x : R.
 
 Lemma abs_ceil_ge x : `|x| <= `|Num.ceil x|.+1%:R.
 Proof.
 rewrite -natr1 natr_absz; have [x0|x0] := ltP 0 x.
-  by rewrite !gtr0_norm ?ceil_gt0// (le_trans (Num.Theory.le_ceil _))// lerDl.
+  by rewrite !gtr0_norm ?ceil_gt0// (le_trans (Num.Theory.ceil_ge _))// lerDl.
 by rewrite !ler0_norm ?ceil_le0// ?ceilNfloor opprK intrD1 ltW// floorD1_gt.
 Qed.
 

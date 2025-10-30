@@ -737,14 +737,14 @@ Qed.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Local Definition distN (e : R) : nat := Num.trunc e^-1.
+Local Definition distN (e : R) : nat := Num.truncn e^-1.
 
 Local Lemma distN0 : distN 0 = 0%N.
-Proof. by rewrite /distN invr0 trunc0. Qed.
+Proof. by rewrite /distN invr0 truncn0. Qed.
 
 Local Lemma distN_nat (n : nat) : distN n%:R^-1 = n.
 Proof.
-by rewrite /distN invrK; apply/eqP; rewrite -(@eqr_nat R) -natrE.
+by rewrite /distN invrK; apply/eqP; rewrite -(@eqr_nat R) -natrEtruncn.
 Qed.
 
 Local Lemma distN_le e1 e2 : e1 > 0 -> e1 <= e2 -> (distN e2 <= distN e1)%N.
@@ -953,7 +953,7 @@ Definition type : Type := let _ := countableBase in let _ := entF in T.
 Lemma countable_uniform_bounded (x y : T) : @ball _ type x 2 y.
 Proof.
 rewrite /ball; exists O%N; rewrite /n_step_ball; split; rewrite // /distN.
-rewrite (_ : Num.trunc _ = 0)//.
+rewrite (_ : Num.truncn _ = 0)//.
 by apply/eqP; rewrite truncn_eq// invr_ge0// ler0n/= invf_lt1// ltr1n.
 Qed.
 
