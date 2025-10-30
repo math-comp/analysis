@@ -1192,6 +1192,13 @@ Definition derivable_Nyo_continuous_bnd (f : R -> V) (x : R) :=
 Definition derivable_oy_continuous_bnd (f : R -> V) (x : R) :=
   {in `]x, +oo[, forall x, derivable f x 1} /\ f @ x^'+ --> f x.
 
+Lemma derivable_oy_continuous_bndN (f : R -> V) (x : R) :
+  derivable_oy_continuous_bnd f x -> derivable_oy_continuous_bnd (- f) x.
+Proof.
+move=> [/= derF Fa]; split; last exact: cvgN.
+by move=> /= ? ?; exact/derivableN/derF.
+Qed.
+
 Lemma derivable_oy_continuous_within_itvcy (f : R -> V) (x : R) :
   derivable_oy_continuous_bnd f x -> {within `[x, +oo[, continuous f}.
 Proof.

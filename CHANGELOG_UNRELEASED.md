@@ -72,6 +72,9 @@
            `derivable_Nyo_continuousWoo`,
            `derivable_Nyo_continuousW`
 
+- in `realfun.v`:
+  + lemma `derivable_oy_continuous_bndN`
+
 - in `ftc.v`:
   + lemmas `integration_by_partsy_ge0_ge0`,
            `integration_by_partsy_le0_ge0`,
@@ -329,6 +332,9 @@
 - in `probability.v`:
   + definition `poisson_pmf`, lemmas `poisson_pmf_ge0`, `measurable_poisson_pmf`,
   + definition `poisson_prob`
+
+- in `measurable_function.v`:
+  + lemma `measurable_funS`: implicits changed
 
 ### Renamed
 
