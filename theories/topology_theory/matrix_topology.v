@@ -6,8 +6,9 @@ From mathcomp Require Import uniform_structure pseudometric_structure.
 (**md**************************************************************************)
 (* # Matrix topology                                                          *)
 (* ```                                                                        *)
-(*                  mx_ent m n A == entourages for the m x n matrices         *)
-(*                 mx_ball m n A == balls for the m x n matrices              *)
+(*              @mx_ent m n T == entourages for the m x n matrices with       *)
+(*                               coefficients of type T                       *)
+(*                  mx_ball A == balls for the matrix A                       *)
 (* ```                                                                        *)
 (* Matrices `'M[T]_(m, n)` are endowed with the structures of:                *)
 (* - topology                                                                 *)
@@ -183,30 +184,32 @@ Section matrix_PseudoMetric.
 Variables (m n : nat) (R : numDomainType) (T : pseudoMetricType R).
 Implicit Types (x y : 'M[T]_(m, n)) (e : R).
 
-Definition mx_ball x e y := forall i j, ball (x i j) e (y i j).
+Definition mx_ball x e y := 0 < e /\ forall i j, ball (x i j) e (y i j).
 
 Local Lemma mx_ball_center x e : 0 < e -> mx_ball x e x.
-Proof. by move=> ? ? ?; exact: ballxx. Qed.
+Proof. by move=> ?; split=> [//|? ?]; exact: ballxx. Qed.
 
 Local Lemma mx_ball_sym x y e : mx_ball x e y -> mx_ball y e x.
-Proof. by move=> xe_y ? ?; apply/ball_sym/xe_y. Qed.
+Proof. by move=> [e0 xe_y]; split=>[//|? ?]; apply/ball_sym/xe_y. Qed.
 
 Local Lemma mx_ball_triangle x y z e1 e2 :
   mx_ball x e1 y -> mx_ball y e2 z -> mx_ball x (e1 + e2) z.
 Proof.
-by move=> xe1_y ye2_z ??; apply: ball_triangle; [exact: xe1_y|exact: ye2_z].
+move=> [e10 xe1_y] [e20 ye2_z]; split; first exact: addr_gt0.
+by move=> i j; apply: ball_triangle; [exact: xe1_y|exact: ye2_z].
 Qed.
 
 Local Lemma mx_entourage : entourage = entourage_ mx_ball.
 Proof.
 rewrite predeqE=> A; split; last first.
   move=> [_/posnumP[e] sbeA].
-  exists (fun _ _ => [set xy | ball xy.1 e%:num xy.2]) => //= _ _.
+  exists (fun _ _ => [set xy | ball xy.1 e%:num xy.2]) => //=.
+  by move=> [] ? ? /= P; exact: sbeA.
 move=> [P]; rewrite -entourage_ballE => entP sPA.
 set diag := fun e : {posnum R} => [set xy : T * T | ball xy.1 e%:num xy.2].
 exists (\big[Num.min/1%:pos]_i \big[Num.min/1%:pos]_j xget 1%:pos
   (fun e : {posnum R} => diag e `<=` P i j))%:num => //=.
-move=> MN MN_min; apply: sPA => i j.
+move=> MN/= [] _ MN_min; apply: sPA => i j.
 have /(xgetPex 1%:pos): exists e : {posnum R}, diag e `<=` P i j.
   by have [_/posnumP[e]] := entP i j; exists e.
 apply; apply: le_ball (MN_min i j).
@@ -220,4 +223,3 @@ End matrix_PseudoMetric.
 
 HB.instance Definition _ (R : numFieldType) (T : completePseudoMetricType R)
   (m n : nat) := Uniform_isComplete.Build 'M[T]_(m, n) cauchy_cvg.
-

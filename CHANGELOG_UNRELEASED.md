@@ -324,6 +324,9 @@
   + definition `poisson_pmf`, lemmas `poisson_pmf_ge0`, `measurable_poisson_pmf`,
   + definition `poisson_prob`
 
+- in `matrix_topology.v`:
+  + definition `mx_ball`
+
 ### Renamed
 
 - in `reals.v`:
@@ -366,6 +369,11 @@
 - in `unstable.v`:
   + generalized from `numDomainType` to `pzRingType`:
     + definition `onem`, lemmas `onme0`, `onem1`, `add_onemK`, `onemD`, `onemMr`, `onemM`
+
+- in `matrix_normedtype.v`:
+  + lemmas `rV_compact`, `mx_norm_ball`, `bounded_closed_compact`,
+    `mx_normZ`
+  + example `matrix_triangle`
 
 ### Deprecated
 
