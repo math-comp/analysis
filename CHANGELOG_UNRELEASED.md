@@ -339,6 +339,9 @@
   + `lb_ereal_inf` -> `le_ereal_inf_tmp`
   + `ereal_sup_ge` -> `le_ereal_sup_tmp`
 
+- in `sequences.v`:
+  + `adjacent` -> `adjacent_seq`
+
 ### Generalized
 
 - in `pseudometric_normed_Zmodule.v`:
