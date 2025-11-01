@@ -1267,6 +1267,12 @@ Proof. by have /derivableP := @derivable_id x v; rewrite derive_val. Qed.
 
 End derive_id.
 
+Lemma derive1_onem {R : numFieldType} :
+  (fun x => `1-x : R^o)^`()%classic = cst (-1).
+Proof.
+by apply/funext => x; rewrite derive1E deriveB// derive_id derive_cst sub0r.
+Qed.
+
 Section Derive_lemmasVR.
 Variables (R : numFieldType) (V : normedModType R).
 Implicit Types (f g : V -> R) (x v : V).

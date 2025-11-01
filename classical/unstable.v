@@ -76,6 +76,35 @@ elim: r => [|a l]; first by rewrite !big_nil exp1n.
 by rewrite !big_cons; case: ifPn => // Pa <-; rewrite expnMn.
 Qed.
 
+Lemma leq_Mprod_prodD (x y n m : nat) : (n <= x)%N -> (m <= y)%N ->
+  (\prod_(m <= i < y) i * \prod_(n <= i < x) i <= \prod_(n + m <= i < x + y) i)%N.
+Proof.
+move=> nx my; rewrite big_addn -addnBA//.
+rewrite [in leqRHS]/index_iota -addnBAC// iotaD big_cat/=.
+rewrite mulnC leq_mul//.
+  by apply: leq_prod; move=> i _; rewrite leq_addr.
+rewrite subnKC//.
+rewrite -[in leqLHS](add0n m) big_addn.
+rewrite [in leqRHS](_ : y - m = ((y - m + x) - x))%N; last first.
+  by rewrite -addnBA// subnn addn0.
+rewrite -[X in iota X _](add0n x) big_addn -addnBA// subnn addn0.
+by apply: leq_prod => i _; rewrite leq_add2r leq_addr.
+Qed.
+
+Lemma leq_fact2 (x y n m : nat) : (n <= x) %N -> (m <= y)%N ->
+  (x`! * y`! * ((n + m).+1)`! <= n`! * m`! * ((x + y).+1)`!)%N.
+Proof.
+move=> nx my.
+rewrite (fact_split nx) -!mulnA leq_mul2l; apply/orP; right.
+rewrite (fact_split my) mulnCA -!mulnA leq_mul2l; apply/orP; right.
+rewrite [leqRHS](_ : _ =
+    (n + m).+1`! * \prod_((n + m).+2 <= i < (x + y).+2) i)%N; last first.
+  by rewrite -fact_split// ltnS leq_add.
+rewrite mulnA mulnC leq_mul2l; apply/orP; right.
+do 2 rewrite -addSn -addnS.
+exact: leq_Mprod_prodD.
+Qed.
+
 Section max_min.
 Variable R : realFieldType.
 
@@ -283,6 +312,14 @@ Lemma onemX_lt1 r n : 0 < r -> `1-(r ^+ n) < 1.
 Proof. by move=> ?; rewrite onem_lt1// exprn_gt0. Qed.
 
 End onem_order.
+
+Lemma normr_onem {R : realDomainType} (x : R) :
+  (0 <= x <= 1 -> `| `1-x | <= 1)%R.
+Proof.
+move=> /andP[x0 x1]; rewrite ler_norml; apply/andP; split.
+  by rewrite lerBrDl lerBlDr (le_trans x1)// lerDl.
+by rewrite lerBlDr lerDl.
+Qed.
 
 Lemma onemV (F : numFieldType) (x : F) : x != 0 -> `1-(x^-1) = (x - 1) / x.
 Proof. by move=> ?; rewrite mulrDl divff// mulN1r. Qed.
