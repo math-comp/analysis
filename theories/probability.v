@@ -2889,7 +2889,10 @@ congr (_ + _).
     by apply/measurableT_comp => //; exact: measurable_XMonemX.
     by have /integrableP[_] := @beta_prob_integrable R a b c d.
   rewrite /beta_pdf.
-  under eq_integral do rewrite EFinM -muleA muleC -muleA.
+  under eq_integral.
+    move=> x _.
+    rewrite EFinM -(muleA (x ^+ c)%:E) muleC -(muleA (`1-x ^+ d)%:E).
+    over.
   rewrite /=.
   transitivity ((beta_fun a b)^-1%:E * \int[mu]_(x in `[0%R, 1%R])
       (@XMonemX R (a + c).-1 (b + d).-1 \_`[0,1] x)%:E)%E.
