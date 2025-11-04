@@ -2928,7 +2928,7 @@ rewrite integralZr//=; last first.
   - exact: integrableS (integrable_XMonemX_restrict _ _).
 transitivity ((\int[mu]_x ((@XMonemX R a.-1 b.-1 \_`[0,1] x)%:E -
    (@XMonemX R (a + c).-1 (b + d).-1 \_`[0,1] x)%:E)) * (beta_fun a b)^-1%:E)%E.
-  congr (_ * _)%E; rewrite integral_mkcond/=; apply: eq_integral => x _.
+  congr (_ * _)%E; rewrite [LHS]integral_mkcond/=; apply eq_integral => x _.
   rewrite !patchE; case: ifPn => [->|]; last by rewrite EFinN subee.
   rewrite /onem -EFinM mulrBl mul1r EFinB EFinN; congr (_ - _)%E.
   rewrite XMonemXM.
