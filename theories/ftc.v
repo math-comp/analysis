@@ -544,7 +544,7 @@ Qed.
 
 Corollary continuous_FTC2 f F a b : (a < b)%R ->
   {within `[a, b], continuous f} ->
-  derivable_oo_continuous_bnd F a b ->
+  derivable_oo_LRcontinuous F a b ->
   {in `]a, b[, F^`() =1 f} ->
   (\int[mu]_(x in `[a, b]) (f x)%:E = (F b)%:E - (F a)%:E)%E.
 Proof.
@@ -791,10 +791,10 @@ Implicit Types (F G f g : R -> R) (a b : R).
 
 Lemma integration_by_parts F G f g a b : (a < b)%R ->
     {within `[a, b], continuous f} ->
-    derivable_oo_continuous_bnd F a b ->
+    derivable_oo_LRcontinuous F a b ->
     {in `]a, b[, F^`() =1 f} ->
     {within `[a, b], continuous g} ->
-    derivable_oo_continuous_bnd G a b ->
+    derivable_oo_LRcontinuous G a b ->
     {in `]a, b[, G^`() =1 g} ->
   \int[mu]_(x in `[a, b]) (F x * g x)%:E = (F b * G b - F a * G a)%:E -
   \int[mu]_(x in `[a, b]) (f x * G x)%:E.
@@ -804,13 +804,13 @@ have cfg : {within `[a, b], continuous (f * G + F * g)%R}.
   apply/subspace_continuousP => x abx; apply: cvgD.
   - apply: cvgM.
     + by move/subspace_continuousP : cf; exact.
-    + have := derivable_oo_continuous_bnd_within Gab.
+    + have := derivable_oo_LRcontinuous_within Gab.
       by move/subspace_continuousP; exact.
   - apply: cvgM.
-    + have := derivable_oo_continuous_bnd_within Fab.
+    + have := derivable_oo_LRcontinuous_within Fab.
       by move/subspace_continuousP; exact.
     + by move/subspace_continuousP : cg; exact.
-have FGab : derivable_oo_continuous_bnd (F * G)%R a b.
+have FGab : derivable_oo_LRcontinuous (F * G)%R a b.
   move: Fab Gab => /= [abF FFa FFb] [abG GGa GGb];split; [|exact:cvgM..].
   by move=> z zab; apply: derivableM; [exact: abF|exact: abG].
 have FGfg : {in `]a, b[, (F * G)^`() =1 f * G + F * g}%R.
@@ -823,13 +823,13 @@ have ? : mu.-integrable `[a, b] (fun x => ((f * G) x)%:E).
   apply: continuous_compact_integrable => //; first exact: segment_compact.
   apply/subspace_continuousP => x abx; apply: cvgM.
   + by move/subspace_continuousP : cf; exact.
-  + have := derivable_oo_continuous_bnd_within Gab.
+  + have := derivable_oo_LRcontinuous_within Gab.
     by move/subspace_continuousP; exact.
 rewrite /= integralD//=.
 - by rewrite addeAC subee ?add0e// integrable_fin_num.
 - apply: continuous_compact_integrable => //; first exact: segment_compact.
   apply/subspace_continuousP => x abx;apply: cvgM.
-  + have := derivable_oo_continuous_bnd_within Fab.
+  + have := derivable_oo_LRcontinuous_within Fab.
     by move/subspace_continuousP; exact.
   + by move/subspace_continuousP : cg; exact.
 Qed.
@@ -844,10 +844,10 @@ Implicit Types (F G f g : R -> R) (a b : R).
 Lemma Rintegration_by_parts F G f g a b :
     (a < b)%R ->
     {within `[a, b], continuous f} ->
-    derivable_oo_continuous_bnd F a b ->
+    derivable_oo_LRcontinuous F a b ->
     {in `]a, b[, F^`() =1 f} ->
     {within `[a, b], continuous g} ->
-    derivable_oo_continuous_bnd G a b ->
+    derivable_oo_LRcontinuous G a b ->
     {in `]a, b[, G^`() =1 g} ->
   \int[mu]_(x in `[a, b]) (F x * g x) = (F b * G b - F a * G a) -
   \int[mu]_(x in `[a, b]) (f x * G x).
@@ -861,7 +861,7 @@ suff: mu.-integrable `[a, b] (fun x => (f x * G x)%:E).
 apply: continuous_compact_integrable.
   exact: segment_compact.
 move=> /= z; apply: continuousM; [exact: cf|].
-exact: (derivable_oo_continuous_bnd_within Gab).
+exact: (derivable_oo_LRcontinuous_within Gab).
 Qed.
 
 End Rintegration_by_parts.
@@ -1054,13 +1054,13 @@ Lemma integration_by_substitution_decreasing F G a b : (a < b)%R ->
   {in `]a, b[, continuous F^`()} ->
   cvg (F^`() x @[x --> a^'+]) ->
   cvg (F^`() x @[x --> b^'-]) ->
-  derivable_oo_continuous_bnd F a b ->
+  derivable_oo_LRcontinuous F a b ->
   {within `[F b, F a], continuous G} ->
   \int[mu]_(x in `[F b, F a]) (G x)%:E =
   \int[mu]_(x in `[a, b]) (((G \o F) * - F^`()) x)%:E.
 Proof.
 move=> ab decrF cF' /cvg_ex[/= r F'ar] /cvg_ex[/= l F'bl] Fab cG.
-have cF := derivable_oo_continuous_bnd_within Fab.
+have cF := derivable_oo_LRcontinuous_within Fab.
 have FbFa : (F b < F a)%R by apply: decrF; rewrite //= in_itv/= (ltW ab) lexx.
 have mGFF' : measurable_fun `]a, b[ ((G \o F) * F^`())%R.
   apply: measurable_funM.
@@ -1077,7 +1077,7 @@ have {}mGFF' : measurable_fun `[a, b] ((G \o F) * F^`())%R.
 have intG : mu.-integrable `[F b, F a] (EFin \o G).
   by apply: continuous_compact_integrable => //; exact: segment_compact.
 pose PG x := parameterized_integral mu (F b) x G.
-have PGFbFa : derivable_oo_continuous_bnd PG (F b) (F a).
+have PGFbFa : derivable_oo_LRcontinuous PG (F b) (F a).
   have [/= dF rF lF] := Fab; split => /=.
   - move=> x xFbFa /=.
     have xFa : (x < F a)%R by move: xFbFa; rewrite in_itv/= => /andP[].
@@ -1147,7 +1147,7 @@ rewrite oppeD//= -(continuous_FTC2 ab _ _ DPGFE); last 2 first.
     apply: cvgN; apply: cvg_trans F'bl; apply: near_eq_cvg.
     by near=> z; rewrite fE// in_itv/=; apply/andP; split.
 - have [/= dF rF lF] := Fab.
-  have := derivable_oo_continuous_bnd_within PGFbFa.
+  have := derivable_oo_LRcontinuous_within PGFbFa.
   move=> /(continuous_within_itvP _ FbFa)[_ PGFb PGFa]; split => /=.
   - move=> x xab; apply/derivable1_diffP; apply: differentiable_comp => //.
     apply: differentiable_comp; apply/derivable1_diffP.
@@ -1205,7 +1205,7 @@ Lemma integration_by_substitution_increasing F G a b : (a < b)%R ->
   {in `]a, b[, continuous F^`()} ->
   cvg (F^`() x @[x --> a^'+]) ->
   cvg (F^`() x @[x --> b^'-]) ->
-  derivable_oo_continuous_bnd F a b ->
+  derivable_oo_LRcontinuous F a b ->
   {within `[F a, F b], continuous G} ->
   \int[mu]_(x in `[F a, F b]) (G x)%:E =
   \int[mu]_(x in `[a, b]) (((G \o F) * F^`()) x)%:E.
@@ -1275,7 +1275,7 @@ Lemma decreasing_ge0_integration_by_substitutiony F G a :
   {in `]a, +oo[, continuous F^`()} ->
   cvg (F^`() x @[x --> a^'+]) ->
   cvg (F^`() x @[x --> +oo%R]) ->
-  derivable_oy_continuous_bnd F a -> F x @[x --> +oo%R] --> -oo%R ->
+  derivable_oy_Rcontinuous F a -> F x @[x --> +oo%R] --> -oo%R ->
   {within `]-oo, F a], continuous G} ->
   {in `]-oo, F a[, forall x, (0 <= G x)%R} ->
   \int[mu]_(x in `]-oo, F a]) (G x)%:E =
@@ -1452,7 +1452,7 @@ Lemma increasing_ge0_integration_by_substitutiony F G a :
   {in `]a, +oo[, continuous F^`()} ->
   cvg (F^`() x @[x --> a^'+]) ->
   cvg (F^`() x @[x --> +oo%R]) ->
-  derivable_oy_continuous_bnd F a -> F x @[x --> +oo%R] --> +oo%R->
+  derivable_oy_Rcontinuous F a -> F x @[x --> +oo%R] --> +oo%R->
   {within `[F a, +oo[, continuous G} ->
   {in `]F a, +oo[, forall x, (0 <= G x)%R} ->
   \int[mu]_(x in `[F a, +oo[) (G x)%:E =
@@ -1551,7 +1551,7 @@ Lemma increasing_ge0_integration_by_substitutionNy F G b :
   {in `]-oo, b[, continuous F^`()} ->
   cvg (F^`() x @[x --> -oo%R]) ->
   F^`() x @[x --> b^'-] --> F^`() b (* TODO: try with cvg (F^`() x @[x --> b^'-]) *) ->
-  derivable_Nyo_continuous_bnd F b -> F x @[x --> -oo%R] --> -oo%R->
+  derivable_Nyo_Lcontinuous F b -> F x @[x --> -oo%R] --> -oo%R->
   {within `]-oo, F b], continuous G} ->
   {in `]-oo, F b[, forall x, (0 <= G x)%R} ->
   \int[mu]_(x in `]-oo, F b]) (G x)%:E =

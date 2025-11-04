@@ -281,7 +281,7 @@ have [c2 Ic2 Hc2] : exists2 c2, x < c2 < b & (f b - f x) / (b - x) = 'D_1 f c2.
   have derivef z : z \in `]x, b[ -> is_derive z 1 f ('D_1 f z).
     by move=> zxb; apply/derivableP/xbf; exact: zxb.
   have [|z zxb fbfx] := MVT xb derivef.
-    apply/(derivable_oo_continuous_bnd_within (And3 xbf _ cvg_left)).
+    apply/(derivable_oo_LRcontinuous_within (And3 xbf _ cvg_left)).
     apply/cvg_at_right_filter.
     have := derivable_within_continuous HDf.
     rewrite continuous_open_subspace//.
@@ -293,7 +293,7 @@ have [c1 Ic1 Hc1] : exists2 c1, a < c1 < x & (f x - f a) / (x - a) = 'D_1 f c1.
   have derivef z : z \in `]a, x[ -> is_derive z 1 f ('D_1 f z).
     by move=> zax; apply /derivableP/axf.
   have [|z zax fxfa] := MVT ax derivef.
-    apply/(derivable_oo_continuous_bnd_within (And3 axf cvg_right _)).
+    apply/(derivable_oo_LRcontinuous_within (And3 axf cvg_right _)).
     apply/cvg_at_left_filter.
     have := derivable_within_continuous HDf.
     rewrite continuous_open_subspace//.
@@ -311,7 +311,7 @@ have [d Id h] :
   have derivef z : z \in `]c1, c2[ -> is_derive z 1 Df ('D_1 Df z).
     by move=> zc1c2; apply/derivableP/h.
   have [|z zc1c2 {}h] := MVT c1c2 derivef.
-    apply: (derivable_oo_continuous_bnd_within (And3 h _ _)).
+    apply: (derivable_oo_LRcontinuous_within (And3 h _ _)).
     + apply: cvg_at_right_filter.
       move: cDf; rewrite continuous_open_subspace//.
       by apply; rewrite inE/= in_itv/= (andP Ic1).1 (lt_trans _ (andP Ic2).2).
