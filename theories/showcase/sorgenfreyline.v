@@ -301,11 +301,14 @@ Proof. by do!case/andP=>??; rewrite -maxrN ge_max opprB !lerBlDr !ler_wpDr. Qed.
 Definition continuous_at_sorgenfrey_to_Rtopo x (f : sorgenfrey -> R) :=
   forall eps : R, 0 < eps -> exists2 d : R, 0 < d & forall y : R, x <= y < x + d -> `|f x - f y| < eps.
 
+Let Rmetric := GRing_regular__canonical__pseudometric_structure_PseudoMetric R.
+
 Lemma continuous_at_sorgenfrey_to_RtopoP f x :
-  continuous_at_sorgenfrey_to_Rtopo x f -> @continuous_at sorgenfrey Rtopo x f.
+  continuous_at_sorgenfrey_to_Rtopo x f <-> @continuous_at sorgenfrey Rtopo x f.
 Proof.
-move=> H B.
-rewrite -(@filter_from_ballE R (GRing_regular__canonical__pseudometric_structure_PseudoMetric R)).
+split=> [H B | H e He].
+(* -> *)
+rewrite -(@filter_from_ballE R Rmetric).
 case => eps /= eps0 epsB.
 change (nbhs (f y @[y --> x]) B).
 case: (H eps eps0) => /= d d0 H'.
@@ -319,13 +322,26 @@ rewrite in_itv /= => /andP[xz zx] <- {y}.
 apply: epsB.
 apply: H'.
 by rewrite xz zx.
+(* <- *)
+have [] := H (ball (f x : Rmetric) e).
+  by exists e.
+move=> F [[/= Fd Fsub <-] [[a1 a2] Fdi bix] Fpre].
+move: bix.
+rewrite /b /= in_itv /= =>/andP[a1x xa2].
+exists (a2-x).
+  by rewrite subr_gt0.
+move=> y.
+rewrite subrKC => /andP[xy ya2].
+apply: (Fpre y).
+exists (a1,a2) => //.
+by rewrite /b /= in_itv /= ya2 (le_trans a1x).
 Qed.
 
 Lemma continuous_sdist :
   forall x, @continuous_at sorgenfrey Rtopo x sdist.
 Proof.
 move=> x.
-apply: continuous_at_sorgenfrey_to_RtopoP => /= eps eps0.
+apply/continuous_at_sorgenfrey_to_RtopoP => /= eps eps0.
 pose xepsE := [set y | x + y \in E /\ 0 < y < eps].
 exists (xget eps xepsE).
   by case: (xgetP eps xepsE) => // y -> [] _ /andP[].
