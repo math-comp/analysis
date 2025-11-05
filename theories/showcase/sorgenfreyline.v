@@ -183,45 +183,6 @@ From mathcomp Require Import topology normedtype.
 Let Rtopo := num_topology.numFieldTopology
   .Real_sort__canonical__topology_structure_Topological R.
 
-Local Lemma dlE x : dl x = [set shift x (- y) | y in E] `&` `[0, +oo[.
-Proof.
-rewrite /dl; apply/seteqP; split=> y /=; rewrite in_itv inE /=.
-  case=> Exy ->; split => //.
-  by exists (x - y) => //; rewrite opprB addrAC addrK.
-case=> -[] u Eu <- /[!andbT] ->; split => //.
-by rewrite opprD opprK subrKC.
-Qed.
-
-Local Lemma drE x : dr x = (center x) @` E `&` `]0, +oo[.
-Proof.
-rewrite /dr; apply/seteqP; split=> y /=; rewrite in_itv inE /=.
-  case=> Exy ->; split => //.
-  by exists (x + y) => //; rewrite addrAC subrr add0r.
-case=> -[] v Ev <- /[!andbT] ->; split => //.
-by rewrite mathcomp_extra.subrKC.
-Qed.
-
-Local Lemma lt_dr_set0 x y : x < y -> dr x = set0 -> dr y = set0.
-Proof.
-move=> xy.
-rewrite !drE !(rwP eqP); apply: contraLR.
-case/set0P=> u /= [] [] v Ev <-.
-rewrite in_itv /= andbT subr_gt0 => yv.
-apply/set0P; exists (v - x) => /=.
-rewrite in_itv /= subr_gt0 (lt_trans xy yv); split => //.
-by exists v.
-Qed.
-
-Local Lemma lt_dl_set0 x y : x < y -> dl y = set0 -> dl x = set0.
-move=> xy.
-rewrite !dlE !(rwP eqP); apply: contraLR.
-case/set0P=> u /= [] [] v Ev <-.
-rewrite in_itv /= andbT addrC subr_ge0 => vx.
-apply/set0P; exists (y - v) => /=.
-rewrite in_itv /= subr_ge0 (le_trans vx (ltW xy)); split => //.
-by exists v => //; rewrite addrC.
-Qed.
-
 Lemma abs_subr_min (x y t u : R) :
   `|Num.min x y - Num.min t u| <= Num.max `|x - t| `|y - u|.
 Proof.
