@@ -72,6 +72,16 @@
            `derivable_Nyo_continuousWoo`,
            `derivable_Nyo_continuousW`
 
+- in `num_normedtype.v`:
+  + lemmas `bigcup_ointsub_sup`, `bigcup_ointsub_mem`
+
+- in `normed_module.v`:
+  + lemma `bigcup_ointsubxx`, `nondisjoint_bigcup_ointsub`
+  + definition `open_disjoint_itv`
+  + lemmas `open_disjoint_itv_open`, `open_disjoint_itv_is_interval`,
+    `open_disjoint_itv_trivIset`, `open_disjoint_itv_bigcup`
+
+
 ### Changed
 
 - in `lebesgue_stieltjes_measure.v` specialized from `numFieldType` to `realFieldType`:
