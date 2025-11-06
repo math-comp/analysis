@@ -1,10 +1,9 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
-From mathcomp Require Import interval rat.
+From mathcomp Require Import interval rat interval_inference.
 From mathcomp Require Import boolp classical_sets functions mathcomp_extra.
-From mathcomp Require Import unstable reals ereal interval_inference.
-From mathcomp Require Import topology tvs normedtype landau sequences derive.
-From mathcomp Require Import realfun interval_inference convex.
+From mathcomp Require Import unstable reals topology ereal tvs normedtype.
+From mathcomp Require Import landau sequences derive realfun convex.
 
 (**md**************************************************************************)
 (* # Theory of exponential/logarithm functions                                *)
@@ -785,6 +784,13 @@ have [x0|x0 x1] := leP x 0; first by rewrite ln0.
 by rewrite -ler_expR expR0 lnK.
 Qed.
 
+Lemma ln_eq0 x : 0 < x -> (ln x == 0) = (x == 1).
+Proof.
+move=> x0; apply/idP/idP => [/eqP lnx0|/eqP ->]; last by rewrite ln1.
+have [| |//] := ltgtP x 1; last by move/ln_gt0; rewrite lnx0 ltxx.
+by move/(conj x0)/andP/ln_lt0; rewrite lnx0 ltxx.
+Qed.
+
 Lemma continuous_ln x : 0 < x -> {for x, continuous ln}.
 Proof.
 move=> x_gt0; rewrite -[x]lnK//.
@@ -1246,12 +1252,9 @@ Proof. by rewrite 2!ltNge lne_ge0. Qed.
 
 Lemma lne_eq0 x : (lne x == 0) = (x == 1).
 Proof.
-apply/idP/idP => /eqP; last by move=> ->; rewrite lne1.
-have [|x0] := leP x 0.
-  by case: x => [r| |]//; rewrite lee_fin => /= ->.
-rewrite -lne1 => /lne_inj.
-rewrite ?in_itv/= ?leey ?andbT// => /(_ _ _)/eqP.
-by apply => //; exact: ltW.
+rewrite /lne; move: x => [r| |] //; case: ifPn => r0.
+  by apply/esym; rewrite lt_eqF// lte_fin (le_lt_trans r0).
+by rewrite !eqe ln_eq0// ltNge.
 Qed.
 
 Lemma lne_gt0 x : (0 < lne x) = (1 < x).
