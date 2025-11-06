@@ -784,15 +784,11 @@ have [x0|x0 x1] := leP x 0; first by rewrite ln0.
 by rewrite -ler_expR expR0 lnK.
 Qed.
 
-Lemma ln_eq0 x : (ln x == 0) = (x <= 0) || (x == 1).
+Lemma ln_eq0 x : 0 < x -> (ln x == 0) = (x == 1).
 Proof.
-apply/idP/orP; last by move=> [/ln0 ->//|/eqP ->]; rewrite ln1.
-rewrite eq_le => /andP[x_le0 x_ge0].
-have [x0|x0] := leP x 0; [by left|right].
-rewrite eq_le !leNgt; apply/andP; split; apply/negP.
-  by move/ln_gt0; rewrite ltNge x_le0.
-move=> x1; have /(_ x) := ln_lt0.
-by rewrite x0 x1 => /(_ isT); rewrite ltNge x_ge0.
+move=> x0; apply/idP/idP => [/eqP lnx0|/eqP ->]; last by rewrite ln1.
+have [| |//] := ltgtP x 1; last by move/ln_gt0; rewrite lnx0 ltxx.
+by move/(conj x0)/andP/ln_lt0; rewrite lnx0 ltxx.
 Qed.
 
 Lemma continuous_ln x : 0 < x -> {for x, continuous ln}.
@@ -1258,7 +1254,7 @@ Lemma lne_eq0 x : (lne x == 0) = (x == 1).
 Proof.
 rewrite /lne; move: x => [r| |] //; case: ifPn => r0.
   by apply/esym; rewrite lt_eqF// lte_fin (le_lt_trans r0).
-by rewrite !eqe ln_eq0 (negPf r0).
+by rewrite !eqe ln_eq0// ltNge.
 Qed.
 
 Lemma lne_gt0 x : (0 < lne x) = (1 < x).
