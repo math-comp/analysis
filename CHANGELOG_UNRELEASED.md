@@ -357,6 +357,13 @@
 - in `sequences.v`:
   + `adjacent` -> `adjacent_seq`
 
+- in `realfun.v`:
+  + `derivable_oo_continuous_bnd` -> `derivable_oo_LRcontinuous`
+  + `derivable_oo_continuous_bnd_within` -> `derivable_oo_LRcontinuous_within`
+  + `derivable_Nyo_continuous_bnd` -> `derivable_Nyo_Lcontinuous`
+  + `derivable_oy_continuous_bnd` -> `derivable_oy_Rcontinuous`
+  + `derivable_oy_continuous_within_itvcy` -> `derivable_oy_Rcontinuous_within_itvcy`
+
 ### Generalized
 
 - in `pseudometric_normed_Zmodule.v`:

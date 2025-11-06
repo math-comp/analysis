@@ -21,12 +21,12 @@ From mathcomp Require Import normedtype derive sequences real_interval.
 (*         increasing_fun f == the function f is (strictly) increasing        *)
 (*         decreasing_fun f == the function f is (strictly) decreasing        *)
 (*                                                                            *)
-(*   derivable_oo_continuous_bnd f x y == f is derivable in `]x, y[ and       *)
+(*     derivable_oo_LRcontinuous f x y == f is derivable in `]x, y[ and       *)
 (*                             continuous up to the boundary, i.e.,           *)
 (*                             f @ x^'+ --> f x  and  f @ y^'- --> f y        *)
-(*     derivable_oy_continuous_bnd f x == f is derivable in `]x, +oo[ and     *)
+(*        derivable_oy_Rcontinuous f x == f is derivable in `]x, +oo[ and     *)
 (*                             f @ x^'+ --> f x                               *)
-(*    derivable_Nyo_continuous_bnd f x == f is derivable in `]-oo, x[ and     *)
+(*       derivable_Nyo_Lcontinuous f x == f is derivable in `]-oo, x[ and     *)
 (*                             f @ x^'- --> f x                               *)
 (*                                                                            *)
 (*      itv_partition a b s == s is a partition of the interval `[a, b]       *)
@@ -1163,15 +1163,15 @@ End lime_sup_inf.
 #[deprecated(since="mathcomp-analysis 1.3.0", note="use `limf_esup_ge0` instead")]
 Notation lime_sup_ge0 := __deprecated__lime_sup_ge0 (only parsing).
 
-Section derivable_oo_continuous_bnd.
+Section derivable_oo_LRcontinuous.
 Context {R : numFieldType} {V : normedModType R}.
 
-Definition derivable_oo_continuous_bnd (f : R -> V) (x y : R) :=
+Definition derivable_oo_LRcontinuous (f : R -> V) (x y : R) :=
   [/\ {in `]x, y[, forall x, derivable f x 1},
       f @ x^'+ --> f x & f @ y^'- --> f y].
 
-Lemma derivable_oo_continuous_bnd_within (f : R -> V) (x y : R) :
-  derivable_oo_continuous_bnd f x y -> {within `[x, y], continuous f}.
+Lemma derivable_oo_LRcontinuous_within (f : R -> V) (x y : R) :
+  derivable_oo_LRcontinuous f x y -> {within `[x, y], continuous f}.
 Proof.
 move=> [fxy fxr fyl]; apply/subspace_continuousP => z /=.
 rewrite in_itv/= => /andP[]; rewrite le_eqVlt => /predU1P[<-{z} xy|].
@@ -1186,14 +1186,14 @@ apply/differentiable_continuous; rewrite -derivable1_diffP.
 by apply: fxy; rewrite in_itv/= xz zy.
 Qed.
 
-Definition derivable_Nyo_continuous_bnd (f : R -> V) (x : R) :=
+Definition derivable_Nyo_Lcontinuous (f : R -> V) (x : R) :=
   {in `]-oo, x[, forall x, derivable f x 1} /\ f @ x^'- --> f x.
 
-Definition derivable_oy_continuous_bnd (f : R -> V) (x : R) :=
+Definition derivable_oy_Rcontinuous (f : R -> V) (x : R) :=
   {in `]x, +oo[, forall x, derivable f x 1} /\ f @ x^'+ --> f x.
 
-Lemma derivable_oy_continuous_within_itvcy (f : R -> V) (x : R) :
-  derivable_oy_continuous_bnd f x -> {within `[x, +oo[, continuous f}.
+Lemma derivable_oy_Rcontinuous_within_itvcy (f : R -> V) (x : R) :
+  derivable_oy_Rcontinuous f x -> {within `[x, +oo[, continuous f}.
 Proof.
 move=> [df cfx]; apply/subspace_continuousP => z /=.
 rewrite in_itv/= => /andP[]; rewrite le_eqVlt => /predU1P[<-{z} _|].
@@ -1204,8 +1204,8 @@ apply/differentiable_continuous; rewrite -derivable1_diffP.
 by apply: df; rewrite in_itv/= xz.
 Qed.
 
-Lemma derivable_Noy_continuous_within_itvNyc (f : R -> V) (x : R) :
-  derivable_Nyo_continuous_bnd f x -> {within `]-oo, x], continuous f}.
+Lemma derivable_Noy_Lcontinuous_within_itvNyc (f : R -> V) (x : R) :
+  derivable_Nyo_Lcontinuous f x -> {within `]-oo, x], continuous f}.
 Proof.
 move=> [df cfx]; apply/subspace_continuousP => z /=.
 rewrite in_itv/=; rewrite le_eqVlt => /predU1P[->{z}|].
@@ -1216,7 +1216,19 @@ apply/differentiable_continuous; rewrite -derivable1_diffP.
 by apply: df; rewrite in_itv.
 Qed.
 
-End derivable_oo_continuous_bnd.
+End derivable_oo_LRcontinuous.
+(*#[deprecated(since="mathcomp-analysis 1.14.0", note="use `derivable_oo_LRcontinuous` instead")]
+Notation derivable_oo_continuous_bnd := derivable_oo_LRcontinuous (only parsing).
+#[deprecated(since="mathcomp-analysis 1.14.0", note="use `derivable_oo_LRcontinuous_within` instead")]
+Notation derivable_oo_continuous_bnd_within := derivable_oo_LRcontinuous_within (only parsing).
+#[deprecated(since="mathcomp-analysis 1.14.0", note="use `derivable_Nyo_Lcontinuous` instead")]
+Notation derivable_Nyo_continuous_bnd := derivable_Nyo_Lcontinuous (only parsing).
+#[deprecated(since="mathcomp-analysis 1.14.0", note="use `derivable_oy_Rcontinuous` instead")]
+Notation derivable_oy_continuous_bnd := derivable_oy_Rcontinuous (only parsing).
+#[deprecated(since="mathcomp-analysis 1.14.0", note="use `derivable_oy_Rcontinuous_within_itvcy` instead")]
+Notation derivable_oy_continuous_within_itvcy := derivable_oy_Rcontinuous_within_itvcy (only parsing).
+#[deprecated(since="mathcomp-analysis 1.14.0", note="use `derivable_Noy_Lcontinuous_within_itvNyc` instead")]
+Notation derivable_Noy_continuous_within_itvNyc := derivable_Noy_Lcontinuous_within_itvNyc (only parsing).*)
 
 Section derivable_oo_continuousW.
 Context {R : realFieldType} {V : normedModType R}.
@@ -1224,8 +1236,8 @@ Context {R : realFieldType} {V : normedModType R}.
 Lemma derivable_oo_continuousW (a b c d : R) (f : R -> V) :
   c < d ->
   `[c, d] `<=` `[a, b] ->
-  derivable_oo_continuous_bnd f a b ->
-  derivable_oo_continuous_bnd f c d.
+  derivable_oo_LRcontinuous f a b ->
+  derivable_oo_LRcontinuous f c d.
 Proof.
 move=> cd cdab [/[dup]df + fa fb].
 have /andP[ac db] : (a <= c) && (d <= b).
@@ -1247,8 +1259,8 @@ Qed.
 Lemma derivable_oy_continuousWoo (a c d : R) (f : R -> V) :
   c < d ->
   a <= c ->
-  derivable_oy_continuous_bnd f a ->
-  derivable_oo_continuous_bnd f c d.
+  derivable_oy_Rcontinuous f a ->
+  derivable_oo_LRcontinuous f c d.
 Proof.
 move=> cd ac [df fa]; split.
 - by apply: in1_subset_itv df; exact: subset_itv.
@@ -1265,8 +1277,8 @@ Qed.
 
 Lemma derivable_oy_continuousW (a c : R) (f : R -> V) :
   a <= c ->
-  derivable_oy_continuous_bnd f a ->
-  derivable_oy_continuous_bnd f c.
+  derivable_oy_Rcontinuous f a ->
+  derivable_oy_Rcontinuous f c.
 Proof.
 move=> ac [df fa]; split.
 - by apply: in1_subset_itv df; exact: subset_itv.
@@ -1280,8 +1292,8 @@ Qed.
 Lemma derivable_Nyo_continuousWoo (b c d : R) (f : R -> V) :
   c < d ->
   d <= b ->
-  derivable_Nyo_continuous_bnd f b ->
-  derivable_oo_continuous_bnd f c d.
+  derivable_Nyo_Lcontinuous f b ->
+  derivable_oo_LRcontinuous f c d.
 Proof.
 move=> cd db [df fa]; split.
 - by apply: in1_subset_itv df; exact: subset_itv.
@@ -1298,8 +1310,8 @@ Qed.
 
 Lemma derivable_Nyo_continuousW (b d : R) (f : R -> V) :
   d <= b ->
-  derivable_Nyo_continuous_bnd f b ->
-  derivable_Nyo_continuous_bnd f d.
+  derivable_Nyo_Lcontinuous f b ->
+  derivable_Nyo_Lcontinuous f d.
 Proof.
 move=> db [df fa]; split.
 - by apply: in1_subset_itv df; exact: subset_itv.
