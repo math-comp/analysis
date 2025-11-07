@@ -17,7 +17,7 @@ install: [make "-C" "classical" "install"]
 depends: [
   ("coq" {>= "8.20" & < "8.21~"}
   | "coq-core" { (>= "9.0" & < "9.1~") | (= "dev") })
-  "coq-mathcomp-ssreflect" { (>= "2.4.0" & < "2.5~") | (= "dev") }
+  "coq-mathcomp-ssreflect" { (>= "2.4.0" & < "2.6~") | (= "dev") }
   "coq-mathcomp-fingroup"
   "coq-mathcomp-algebra"
   "coq-mathcomp-finmap" { (>= "2.1.0") }
