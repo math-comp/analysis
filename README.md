@@ -95,7 +95,7 @@ Other work using MathComp-Analysis:
 - [Taming Differentiable Logics with Coq Formalisation](https://drops.dagstuhl.de/storage/00lipics/lipics-vol309-itp2024/LIPIcs.ITP.2024.4/LIPIcs.ITP.2024.4.pdf) (2024)
 - [Décomposition Algébrique Cylindrique en Coq/Rocq](https://inria.hal.science/hal-04859512/document) (2025)
 - [Semantics of Probabilistic Programs using s-Finite Kernels in Dependent Type Theory](https://dl.acm.org/doi/pdf/10.1145/3732291) (2025)
-- [A Formal Foundation for Equational Reasoning on Probabilistic Programs](https://staff.aist.go.jp/reynald.affeldt/documents/eddy_aplas2025.pdf)
+- [A Formal Foundation for Equational Reasoning on Probabilistic Programs](https://staff.aist.go.jp/reynald.affeldt/documents/eddy_aplas2025.pdf) (2025)
   doi:[10.1007/978-981-95-3585-9_3](https://doi.org/10.1007/978-981-95-3585-9_3)
 
 ## About the stability of this library
