@@ -1793,6 +1793,46 @@ Qed.
 
 End integration_by_substitution.
 
+Section integration_by_substitution_onem.
+Context {R : realType}.
+Let mu := (@lebesgue_measure R).
+Local Open Scope ereal_scope.
+
+Lemma integration_by_substitution_onem (G : R -> R) (r : R) :
+  (0 < r <= 1)%R ->
+  {within `[0%R, r], continuous G} ->
+  \int[mu]_(x in `[0%R, r]) (G x)%:E =
+  \int[mu]_(x in `[`1-r, 1%R]) (G `1-x)%:E.
+Proof.
+move=> r01 cG.
+have := @integration_by_substitution_decreasing R onem G `1-r 1.
+rewrite onemK onem1 => -> //.
+- by apply: eq_integral => x xr; rewrite !fctE derive1_onem opprK mulr1.
+- by rewrite ltrBlDl ltrDr; case/andP : r01.
+- by move=> x y _ _ xy; rewrite ler_ltB.
+- by rewrite derive1_onem; move=> ? ?; exact: cvg_cst.
+- by rewrite derive1_onem; exact: is_cvg_cst.
+- by rewrite derive1_onem; exact: is_cvg_cst.
+- split => /=.
+  + by move=> x xr1; exact: derivableB.
+  + apply: cvg_at_right_filter; rewrite onemK.
+    apply: (@continuous_comp_cvg _ _ _ _ onem)=> //=.
+      by move=> x; apply: continuousB => //; exact: cvg_cst.
+    by under eq_fun do rewrite -/(onem _) onemK; exact: cvg_id.
+  + by apply: cvg_at_left_filter; apply: cvgB => //; exact: cvg_cst.
+Qed.
+
+Lemma Rintegration_by_substitution_onem (G : R -> R) (r : R) :
+  (0 < r <= 1)%R ->
+  {within `[0%R, r], continuous G} ->
+  (\int[mu]_(x in `[0, r]) (G x) =
+  \int[mu]_(x in `[`1-r, 1]) (G `1-x))%R.
+Proof.
+by move=> r01 cG; rewrite [in LHS]/Rintegral integration_by_substitution_onem.
+Qed.
+
+End integration_by_substitution_onem.
+
 Section ge0_integralT_even.
 Context {R : realType}.
 Let mu := @lebesgue_measure R.

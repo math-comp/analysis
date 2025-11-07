@@ -72,6 +72,49 @@
            `derivable_Nyo_continuousWoo`,
            `derivable_Nyo_continuousW`
 
+- in `pseudometric_normed_Zmodule.v`:
+  + lemma `continuous_comp_cvg`
+
+- in `derive.v`:
+  + lemma `derive1_onem`
+
+- in `ftc.v`:
+  + lemmas `integration_by_substitution_onem`, `Rintegration_by_substitution_onem`
+
+- in `probability.v`:
+  + lemmas `continuous_onemXn`, `onemXn_derivable`,
+    `derivable_oo_continuous_bnd_onemXnMr`, `derive_onemXn`,
+    `Rintegral_onemXn`
+  + definition `XMonemX`
+  + lemmas `XMonemX_ge0`, `XMonemX_le1`, `XMonemX0n`, `XMonemXn0`,
+    `XMonemX00`, `XMonemXC`, `XMonemXM`
+  + lemmas `continuous_XMonemX`, `within_continuous_XMonemX`,
+    `measurable_XMonemX`, `bounded_XMonemX`, `integrable_XMonemX`,
+    `integrable_XMonemX_restrict`, `integral_XMonemX_restrict`
+  + definition `beta_fun`
+  + lemmas `EFin_beta_fun`, `beta_fun_sym`, `beta_fun0n`, `beta_fun00`,
+    `beta_fun1Sn`, `beta_fun11`, `beta_funSSnSm`, `beta_funSnSm`, `beta_fun_fact`
+  + lemmas `beta_funE`, `beta_fun_gt0`, `beta_fun_ge0`
+  + definition `beta_pdf`
+  + lemmas `measurable_beta_pdf`, `beta_pdf_ge0`, `beta_pdf_le_beta_funV`,
+    `integrable_beta_pdf`, `bounded_beta_pdf_01`
+  + definition `beta_prob`
+  + lemmas `integral_beta_pdf`, `beta_prob01`, `beta_prob_fin_num`,
+    `beta_prob_dom`, `beta_prob_uniform`,
+    `integral_beta_prob_bernoulli_prob_lty`,
+    `integral_beta_prob_bernoulli_prob_onemX_lty`,
+    `integral_beta_prob_bernoulli_prob_onem_lty`, `beta_prob_integrable`,
+    `beta_prob_integrable_onem`, `beta_prob_integrable_dirac`,
+    `beta_prob_integrable_onem_dirac`, `integral_beta_prob`
+  + definition `div_beta_fun`
+  + lemmas `div_beta_fun_ge0`, `div_beta_fun_le1`
+  + definition `beta_prob_bernoulli_prob`
+  + lemma `beta_prob_bernoulli_probE`
+
+
+- in `unstable.v`:
+  + lemmas `leq_Mprod_prodD`, `leq_fact2`, `normr_onem`
+
 - in `num_normedtype.v`:
   + lemmas `bigcup_ointsub_sup`, `bigcup_ointsub_mem`
 
@@ -353,6 +396,13 @@
   + `le_ereal_inf` -> `ereal_inf_le_tmp`
   + `lb_ereal_inf` -> `le_ereal_inf_tmp`
   + `ereal_sup_ge` -> `le_ereal_sup_tmp`
+
+- in `probability.v`:
+  + `bernoulli` -> `bernoulli_prob`
+  + `bernoulli_probE` -> `bernoulliE`
+  + `integral_bernoulli_prob` -> `integral_bernoulli_prob`
+  + `measurable_bernoulli` -> `measurable_bernoulli_prob`
+  + `measurable_bernoulli2` -> `measurable_bernoulli_prob2`
 
 - in `sequences.v`:
   + `adjacent` -> `adjacent_seq`

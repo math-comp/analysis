@@ -1217,7 +1217,7 @@ by apply: df; rewrite in_itv.
 Qed.
 
 End derivable_oo_LRcontinuous.
-(*#[deprecated(since="mathcomp-analysis 1.14.0", note="use `derivable_oo_LRcontinuous` instead")]
+#[deprecated(since="mathcomp-analysis 1.14.0", note="use `derivable_oo_LRcontinuous` instead")]
 Notation derivable_oo_continuous_bnd := derivable_oo_LRcontinuous (only parsing).
 #[deprecated(since="mathcomp-analysis 1.14.0", note="use `derivable_oo_LRcontinuous_within` instead")]
 Notation derivable_oo_continuous_bnd_within := derivable_oo_LRcontinuous_within (only parsing).
@@ -1228,7 +1228,7 @@ Notation derivable_oy_continuous_bnd := derivable_oy_Rcontinuous (only parsing).
 #[deprecated(since="mathcomp-analysis 1.14.0", note="use `derivable_oy_Rcontinuous_within_itvcy` instead")]
 Notation derivable_oy_continuous_within_itvcy := derivable_oy_Rcontinuous_within_itvcy (only parsing).
 #[deprecated(since="mathcomp-analysis 1.14.0", note="use `derivable_Noy_Lcontinuous_within_itvNyc` instead")]
-Notation derivable_Noy_continuous_within_itvNyc := derivable_Noy_Lcontinuous_within_itvNyc (only parsing).*)
+Notation derivable_Noy_continuous_within_itvNyc := derivable_Noy_Lcontinuous_within_itvNyc (only parsing).
 
 Section derivable_oo_continuousW.
 Context {R : realFieldType} {V : normedModType R}.
