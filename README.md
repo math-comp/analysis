@@ -89,6 +89,7 @@ Publications about MathComp-Analysis:
 - [The Radon-Nikodým Theorem and the Lebesgue-Stieltjes Measure in Coq](https://www.jstage.jst.go.jp/article/jssst/41/2/41_2_41/_pdf/-char/en) (2024) doi:[10.11309/jssst.41.2_41](https://doi.org/10.11309/jssst.41.2_41)
 - [A Comprehensive Overview of the Lebesgue Differentiation Theorem in Coq](https://drops.dagstuhl.de/storage/00lipics/lipics-vol309-itp2024/LIPIcs.ITP.2024.5/LIPIcs.ITP.2024.5.pdf) (2024) doi:[10.4230/LIPIcs.ITP.2024.5](https://doi.org/10.4230/LIPIcs.ITP.2024.5)
 - [Prouver que pi est irrationnel avec MathComp-Analysis](https://hal.science/hal-04859455/document) (2025)
+- [Formalizing Concentration Inequalities in Rocq: Infrastructure and Automation](https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ITP.2025.21) (2025)
 
 Other work using MathComp-Analysis:
 - [A Formal Classical Proof of Hahn-Banach in Coq](https://lipn.univ-paris13.fr/~kerjean/slides/slidesTYPES19.pdf) (2019)
