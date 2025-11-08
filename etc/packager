@@ -33,8 +33,10 @@ fi
 # verify whether $TAG exists
 git rev-parse --verify $TAG
 
-ARCHIVEURL="https://github.com/math-comp/analysis/archive/$TAG.tar.gz"
+ARCHIVEURL="https://github.com/math-comp/analysis/releases/download/$TAG/analysis-$TAG.tar.gz"
 GITROOT=$(git rev-parse --show-toplevel)
+
+SED=gsed
 
 # we build the url file content and the list of packages, and where to put them
 if [ $VERSION == "dev" ]
@@ -42,14 +44,13 @@ then
 # variables useful for package construction
   URLLINE="src: \"git+https://github.com/math-comp/analysis.git\""
   PKGS=$(ls -fs -d -1 $GITROOT/*.opam \
-        | sed -r "s?.*coq-mathcomp-([^/]+).opam?\1?" \
+        | $SED -r "s?.*coq-mathcomp-([^/]+).opam?\1?" \
         | paste -sd " " -)
   PKGPREFIX="$GITROOT/opam/extra-dev/packages"
 else
   ARCHIVE=$(mktemp)
-  PREFIX=$(echo analysis-$TAG | sed "s/\+/-/")
-  git archive --format=tgz --output=$ARCHIVE \
-      --prefix=$PREFIX/ $TAG # reproduce github archive
+  PREFIX=$(echo analysis-$TAG | $SED "s/\+/-/")
+  wget -O $ARCHIVE $ARCHIVEURL
   SUM=$(sha256sum $ARCHIVE | cut -d " " -f 1)
   EXTRACTED=$(mktemp -d)
   tar -C $EXTRACTED -zxvf $ARCHIVE
@@ -57,7 +58,7 @@ else
   URLLINE="src: \"$ARCHIVEURL\""
   CHECKSUMLINE="checksum: \"sha256=$SUM\""
   PKGS=$(ls -fs -d -1 $EXTRACTED/*/*.opam \
-        | sed -r "s?.*coq-mathcomp-([^/]+).opam?\1?" \
+        | $SED -r "s?.*coq-mathcomp-([^/]+).opam?\1?" \
         | paste -sd " " -)
   PKGPREFIX="$GITROOT/opam/released/packages"
 fi
@@ -71,7 +72,7 @@ do pkgdir="$PKGPREFIX/coq-mathcomp-$pkg/coq-mathcomp-$pkg.$VERSION"
    if [ $VERSION == "dev" ]
    then cp $GITROOT/coq-mathcomp-$pkg.opam $pkgdir/opam
    else git show "$BRANCH:coq-mathcomp-$pkg.opam" > $pkgdir/opam
-        sed -r "/^version/d" -i $pkgdir/opam
+        $SED -r "/^version/d" -i $pkgdir/opam
    fi
    echo "" >> $pkgdir/opam
    echo "url {" >> $pkgdir/opam
