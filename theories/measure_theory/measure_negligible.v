@@ -40,6 +40,7 @@ Reserved Notation "f = g %[ae mu 'in' D ]"
   (at level 70, g at next level, format "f  =  g  '%[ae'  mu  'in'  D ]").
 Reserved Notation "f = g %[ae mu ]"
   (at level 70, g at next level, format "f  =  g  '%[ae'  mu ]").
+Reserved Notation "m1 `<< m2" (at level 51).
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -324,12 +325,82 @@ Proof. by apply: filterS => x /= /[apply] ->. Qed.
 
 End ae_eqe.
 
-Section absolute_continuity_lemmas.
+Reserved Notation "m .-null_set" (at level 2, format "m .-null_set").
+
+Section null_set.
+Context d (T : semiRingOfSetsType d) (R : numDomainType).
+Implicit Types m : set T -> \bar R.
+
+Definition null_set m := [set N | forall A, measurable A -> A `<=` N -> m A = 0].
+
+End null_set.
+
+Notation "m .-null_set" := (null_set m).
+
+Section null_set_lemma.
+Context d (T : measurableType d) (R : realType).
+Implicit Types m : {content set T -> \bar R}.
+
+Lemma negligible_null_set m A :
+measurable A -> m.-negligible A -> m.-null_set A.
+Proof.
+move=> mA /(negligibleP _ mA) A0 B mB BA.
+by apply/eqP; rewrite -measure_le0 -A0 le_measure// inE.
+Qed.
+
+Lemma measure_null_setP m A :
+measurable A -> m.-null_set A <-> m A = 0.
+Proof.
+move=> mA.
+split.
+- move=> nA.
+  exact: nA.
+- move=> A0 B mB BA.
+  by apply/eqP; rewrite -measure_le0 -A0 le_measure// inE.
+Qed.
+
+End null_set_lemma.
+
+Section absolute_continuity.
+Context d (T : semiRingOfSetsType d) (R : realType).
+Implicit Types m : set T -> \bar R.
+
+Definition negligible_dominates m1 m2 :=
+  forall A, measurable A -> m2.-negligible A -> m1.-negligible A.
+
+Local Notation "m1 `<< m2" := (negligible_dominates m1 m2).
+End absolute_continuity.
+
+Notation "m1 `<< m2" := (negligible_dominates m1 m2).
+
+Section null_dominates_lemmas.
+Context d (T : semiRingOfSetsType d) (R : realType).
+Implicit Types m : set T -> \bar R.
+
+Lemma null_dominates_trans m1 m2 m3 : m1 `<< m2 -> m2 `<< m3 -> m1 `<< m3.
+Proof. by move=> m12 m23 A mA /m23-/(_ mA) /m12; exact. Qed.
+
+End null_dominates_lemmas.
+
+Section measure_null_dominates_lemmas.
 Context d (T : measurableType d) (R : realType) (U : Type).
 Implicit Types (m : {measure set T -> \bar R}) (f g : T -> U).
 
-Lemma measure_dominates_ae_eq m1 m2 f g E : measurable E ->
-  m2 `<< m1 -> ae_eq m1 E f g -> ae_eq m2 E f g.
-Proof. by move=> mE m21 [A [mA A0 ?]]; exists A; split => //; exact: m21. Qed.
+Lemma null_dominatesP m1 m2 :
+  m1 `<< m2 <-> (forall A, measurable A -> m2 A = 0 -> m1 A = 0).
+Proof.
+split.
+- move=> m1m2 A mA; move/(negligibleP _ mA) => neg2A; apply/(negligibleP _ mA).
+  exact: m1m2.
+- move=> H A mA; move/(negligibleP _ mA) => A0.
+  apply/negligibleP=> //; exact: H.
+Qed.
 
-End absolute_continuity_lemmas.
+Lemma measure_negligible_dominates_ae_eq m1 m2 f g E : measurable E ->
+  m2 `<< m1 -> ae_eq m1 E f g -> ae_eq m2 E f g.
+Proof.
+move=> mE /negligible_dominatesP m21 [A [mA A0 ?]]; exists A; split => //.
+exact: m21.
+Qed.
+
+End measure_negligible_dominates_lemmas.

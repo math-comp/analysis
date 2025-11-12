@@ -1659,18 +1659,3 @@ HB.instance Definition _ := @isMeasurable.Build (measure_tuple_display d)
   (n.-tuple T) (g_sigma_preimage coors) tuple_set0 tuple_setC tuple_bigcup.
 
 End measurable_tuple.
-
-Section absolute_continuity.
-Context d (T : semiRingOfSetsType d) (R : realType).
-Implicit Types m : set T -> \bar R.
-
-Definition measure_dominates m1 m2 :=
-  forall A, measurable A -> m2 A = 0 -> m1 A = 0.
-
-Local Notation "m1 `<< m2" := (measure_dominates m1 m2).
-
-Lemma measure_dominates_trans m1 m2 m3 : m1 `<< m2 -> m2 `<< m3 -> m1 `<< m3.
-Proof. by move=> m12 m23 A mA /m23-/(_ mA) /m12; exact. Qed.
-
-End absolute_continuity.
-Notation "m1 `<< m2" := (measure_dominates m1 m2).
