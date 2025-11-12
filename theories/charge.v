@@ -429,11 +429,17 @@ HB.instance Definition _ := isCharge.Build _ _ _ cscale
 End charge_scale.
 
 Lemma dominates_cscalel d (T : measurableType d) (R : realType)
-  (mu : set T -> \bar R)
+  (mu : {measure set T -> \bar R})
   (nu : {charge set T -> \bar R})
   (c : R) : nu `<< mu -> cscale c nu `<< mu.
-Proof. by move=> numu E mE /numu; rewrite /cscale => ->//; rewrite mule0. Qed.
+Proof.
+move=> numu E mE /(numu _ mE) nE; exists E; split => //.
+rewrite /cscale.
 
+have := (negligibleP nu mE).1 nE.
+*)
+
+(*
 Lemma dominates_cscaler d (T : measurableType d) (R : realType)
   (nu : {charge set T -> \bar R})
   (mu : set T -> \bar R)
@@ -442,6 +448,7 @@ Proof.
 move=> /negbTE c0 munu E mE /eqP; rewrite /cscale mule_eq0 eqe c0/=.
 by move=> /eqP/munu; exact.
 Qed.
+*)
 
 Section charge_opp.
 Local Open Scope ereal_scope.
@@ -507,6 +514,7 @@ HB.instance Definition _ := isCharge.Build _ _ _ cadd
 
 End charge_add.
 
+(*
 Lemma dominates_cadd d (T : measurableType d) (R : realType)
   (mu : {sigma_finite_measure set T -> \bar R})
   (nu0 nu1 : {charge set T -> \bar R}) :
@@ -515,6 +523,7 @@ Lemma dominates_cadd d (T : measurableType d) (R : realType)
 Proof.
 by move=> nu0mu nu1mu A mA A0; rewrite /cadd nu0mu// nu1mu// adde0.
 Qed.
+*)
 
 Section pushforward_charge.
 Local Open Scope ereal_scope.
@@ -560,6 +569,7 @@ HB.end.
 
 Section dominates_pushforward.
 
+(*
 Lemma dominates_pushforward d d' (T : measurableType d) (T' : measurableType d')
   (R : realType) (mu : {measure set T -> \bar R})
   (nu : {charge set T -> \bar R}) (f : T -> T') (mf : measurable_fun setT f) :
@@ -567,6 +577,7 @@ Lemma dominates_pushforward d d' (T : measurableType d) (T' : measurableType d')
 Proof.
 by move=> numu A mA; apply: numu; rewrite -[X in measurable X]setTI; exact: mf.
 Qed.
+*)
 
 End dominates_pushforward.
 
@@ -1032,6 +1043,7 @@ have mAN : measurable (A `&` N) by exact: measurableI.
 suff : mu (A `&` N) = 0 by move=> /(nu_mu _ mAN) ->; rewrite oppe0.
 by apply/eqP; rewrite eq_le measure_ge0// andbT -muA0 le_measure// inE.
 Qed.
+*)
 
 End jordan_decomposition.
 
@@ -1090,6 +1102,7 @@ Context {R : realType} d (T : measurableType d).
 Variable nu : {charge set T -> \bar R}.
 Variables (P N : set T) (nuPN : hahn_decomposition nu P N).
 
+(*
 Lemma dominates_charge_variation (mu : {measure set T -> \bar R}) :
   nu `<< mu -> charge_variation nuPN `<< mu.
 Proof.
@@ -1097,7 +1110,9 @@ move=> numu A mA muA0.
 rewrite /charge_variation/= (jordan_pos_dominates nuPN numu)// add0e.
 by rewrite (jordan_neg_dominates nuPN numu).
 Qed.
+*)
 
+(*
 Lemma charge_variation_continuous (mu : {measure set T -> \bar R}) :
   nu `<< mu -> forall e : R, (0 < e)%R ->
   exists d : R, (0 < d)%R /\
@@ -1145,6 +1160,7 @@ have /(_ _ _)/cvg_lim <-// := lim_sup_set_cvg (charge_variation nuPN) F.
   by apply: nearW => k; exact: echarge.
 by rewrite -ge0_fin_numE// fin_num_measure//; exact: bigcup_measurable.
 Qed.
+*)
 
 End charge_variation_continuous.
 
@@ -1211,6 +1227,7 @@ Hypothesis intf : mu.-integrable setT f.
 Let intnf : mu.-integrable [set: T] (abse \o f).
 Proof. exact: integrable_abse. Qed.
 
+(*
 Lemma dominates_induced : induced intnf `<< mu.
 Proof.
 move=> /= A mA muA.
@@ -1221,6 +1238,7 @@ rewrite le_eqVlt; apply/orP; left; apply/eqP.
 under eq_integral do rewrite abse_id.
 by apply: null_set_integral => //=; exact: integrableS intnf.
 Qed.
+*)
 
 End dominates_induced.
 
