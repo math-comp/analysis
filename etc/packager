@@ -36,7 +36,7 @@ git rev-parse --verify $TAG
 ARCHIVEURL="https://github.com/math-comp/analysis/releases/download/$TAG/analysis-$TAG.tar.gz"
 GITROOT=$(git rev-parse --show-toplevel)
 
-SED=gsed
+SED=$(command -v gsed || echo "sed")
 
 # we build the url file content and the list of packages, and where to put them
 if [ $VERSION == "dev" ]
