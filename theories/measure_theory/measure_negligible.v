@@ -366,7 +366,7 @@ Context d (T : semiRingOfSetsType d) (R : realType).
 Implicit Types m : set T -> \bar R.
 
 Definition negligible_dominates m1 m2 :=
-  forall A, measurable A -> m2.-negligible A -> m1.-negligible A.
+  forall A, measurable A -> m2.-null_set A -> m1.-null_set A.
 
 Local Notation "m1 `<< m2" := (negligible_dominates m1 m2).
 End absolute_continuity.
@@ -382,25 +382,36 @@ Proof. by move=> m12 m23 A mA /m23-/(_ mA) /m12; exact. Qed.
 
 End null_dominates_lemmas.
 
-Section measure_null_dominates_lemmas.
+Section content_null_dominates_lemmas.
 Context d (T : measurableType d) (R : realType) (U : Type).
-Implicit Types (m : {measure set T -> \bar R}) (f g : T -> U).
+Implicit Types (mu : {content set T -> \bar R}) (f g : T -> U).
 
-Lemma null_dominatesP m1 m2 :
-  m1 `<< m2 <-> (forall A, measurable A -> m2 A = 0 -> m1 A = 0).
+Lemma null_dominatesP (nu : set T -> \bar R) mu :
+  nu `<< mu <-> (forall A, measurable A -> mu A = 0 -> nu A = 0).
 Proof.
 split.
-- move=> m1m2 A mA; move/(negligibleP _ mA) => neg2A; apply/(negligibleP _ mA).
-  exact: m1m2.
-- move=> H A mA; move/(negligibleP _ mA) => A0.
-  apply/negligibleP=> //; exact: H.
+- move=> dom A mA muA0.
+  apply: (dom A mA) => //.
+  move=> B mB BA.
+  apply/eqP; rewrite -measure_le0 -muA0.
+  by apply: le_measure => //; rewrite inE.
+- move=> H A mA muA0 B mB BA.
+  apply: H => //.
+  exact: muA0.
 Qed.
 
-Lemma measure_negligible_dominates_ae_eq m1 m2 f g E : measurable E ->
-  m2 `<< m1 -> ae_eq m1 E f g -> ae_eq m2 E f g.
+End content_null_dominates_lemmas.
+
+Section measure_null_dominates_lemmas.
+Context d (T : measurableType d) (R : realType) (U : Type).
+Implicit Types (nu mu : {measure set T -> \bar R}) (f g : T -> U).
+
+
+Lemma measure_null_dominates_ae_eq nu mu f g E : measurable E ->
+  nu `<< mu -> ae_eq mu E f g -> ae_eq nu E f g.
 Proof.
-move=> mE /negligible_dominatesP m21 [A [mA A0 ?]]; exists A; split => //.
+move=> mE /null_dominatesP m21 [A [mA A0 ?]]; exists A; split => //.
 exact: m21.
 Qed.
 
-End measure_negligible_dominates_lemmas.
+End measure_null_dominates_lemmas.
