@@ -390,7 +390,7 @@ Context d (T : semiRingOfSetsType d) (R : realType).
 Implicit Types m : set T -> \bar R.
 
 Lemma null_dominates_trans m1 m2 m3 : m1 `<< m2 -> m2 `<< m3 -> m1 `<< m3.
-Proof. by move=> m12 m23 A /m23-/m12. Qed.
+Proof. by move=> m12 m23 A /m23/m12. Qed.
 
 End null_dominates_lemmas.
 
