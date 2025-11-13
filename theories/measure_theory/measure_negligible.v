@@ -337,48 +337,60 @@ End null_set.
 
 Notation "m .-null_set" := (null_set m).
 
-Section null_set_lemma.
+Section null_set_lemmas.
+Context d (T : semiRingOfSetsType d) (R : numDomainType).
+Implicit Types m : set T -> \bar R.
+
+Lemma subset_null_set m A B :
+  A `<=` B -> m.-null_set B -> m.-null_set A.
+Proof.
+move=> AB Bnull C mC CA.
+apply: Bnull => //.
+exact: subset_trans AB.
+Qed.
+
+End null_set_lemmas.
+
+Section content_null_set_lemmas.
 Context d (T : measurableType d) (R : realType).
 Implicit Types m : {content set T -> \bar R}.
 
 Lemma negligible_null_set m A :
-measurable A -> m.-negligible A -> m.-null_set A.
+m.-negligible A -> m.-null_set A.
 Proof.
-move=> mA /(negligibleP _ mA) A0 B mB BA.
-by apply/eqP; rewrite -measure_le0 -A0 le_measure// inE.
+move=> [B [mB B0 AB]].
+apply: (subset_null_set AB).
+move=> C mC CB.
+by apply/eqP; rewrite -measure_le0 -B0 le_measure// inE.
 Qed.
 
 Lemma measure_null_setP m A :
 measurable A -> m.-null_set A <-> m A = 0.
 Proof.
-move=> mA.
-split.
-- move=> nA.
-  exact: nA.
-- move=> A0 B mB BA.
-  by apply/eqP; rewrite -measure_le0 -A0 le_measure// inE.
+move=> mA; split; first exact.
+by move=> A0 B mB BA; apply/eqP; rewrite -measure_le0 -A0 le_measure// inE.
 Qed.
 
-End null_set_lemma.
+End content_null_set_lemmas.
 
 Section absolute_continuity.
 Context d (T : semiRingOfSetsType d) (R : realType).
 Implicit Types m : set T -> \bar R.
 
-Definition negligible_dominates m1 m2 :=
-  forall A, measurable A -> m2.-null_set A -> m1.-null_set A.
+Definition null_set_dominates m1 m2 :=
+  m2.-null_set `<=` m1.-null_set.
 
-Local Notation "m1 `<< m2" := (negligible_dominates m1 m2).
+Local Notation "m1 `<< m2" := (null_set_dominates m1 m2).
 End absolute_continuity.
 
-Notation "m1 `<< m2" := (negligible_dominates m1 m2).
+Notation "m1 `<< m2" := (null_set_dominates m1 m2).
 
 Section null_dominates_lemmas.
 Context d (T : semiRingOfSetsType d) (R : realType).
 Implicit Types m : set T -> \bar R.
 
 Lemma null_dominates_trans m1 m2 m3 : m1 `<< m2 -> m2 `<< m3 -> m1 `<< m3.
-Proof. by move=> m12 m23 A mA /m23-/(_ mA) /m12; exact. Qed.
+Proof. by move=> m12 m23 A /m23-/m12. Qed.
 
 End null_dominates_lemmas.
 
@@ -391,11 +403,11 @@ Lemma null_dominatesP (nu : set T -> \bar R) mu :
 Proof.
 split.
 - move=> dom A mA muA0.
-  apply: (dom A mA) => //.
+  apply: (dom A) => //.
   move=> B mB BA.
   apply/eqP; rewrite -measure_le0 -muA0.
   by apply: le_measure => //; rewrite inE.
-- move=> H A mA muA0 B mB BA.
+- move=> H A muA0 B mB BA.
   apply: H => //.
   exact: muA0.
 Qed.
@@ -406,12 +418,10 @@ Section measure_null_dominates_lemmas.
 Context d (T : measurableType d) (R : realType) (U : Type).
 Implicit Types (nu mu : {measure set T -> \bar R}) (f g : T -> U).
 
-
 Lemma measure_null_dominates_ae_eq nu mu f g E : measurable E ->
   nu `<< mu -> ae_eq mu E f g -> ae_eq nu E f g.
 Proof.
-move=> mE /null_dominatesP m21 [A [mA A0 ?]]; exists A; split => //.
-exact: m21.
+by move=> mE /null_dominatesP m21 [A [*]]; exists A; split => //; exact: m21.
 Qed.
 
 End measure_null_dominates_lemmas.
