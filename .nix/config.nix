@@ -45,7 +45,7 @@ in {
 
   ## select an entry to build in the following `bundles` set
   ## defaults to "default"
-  default-bundle = "9.0";
+  default-bundle = "9.1";
 
   ## write one `bundles.name` attribute set per
   ## alternative configuration

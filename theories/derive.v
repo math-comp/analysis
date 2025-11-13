@@ -4,7 +4,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval poly.
 From mathcomp Require Import sesquilinear.
 From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
 From mathcomp Require Import functions reals interval_inference topology.
-From mathcomp Require Import prodnormedzmodule tvs normedtype landau.
+From mathcomp Require Import prodnormedzmodule tvs normedtype landau ereal.
 
 (**md**************************************************************************)
 (* # Differentiation                                                          *)
@@ -2141,3 +2141,251 @@ exact/derivable1_diffP/derivable_horner.
 Qed.
 
 End derive_horner.
+
+Lemma deriveE1 (R : numFieldType) (V W : normedModType R) (f : V -> W) (x v : V) :
+  'D_v f x = (fun h => f (h *: v + x))^`() 0.
+Proof.
+rewrite /derive /derive1/=; apply: esym.
+by under [X in fmap X]funext do rewrite addr0 scale0r add0r.
+Qed.
+
+Lemma is_derive_comp (R : numFieldType) (U V W : normedModType R) (f : V -> W)
+    (g : U -> V) (x u : U) (v : V) (w : W) :
+  differentiable f (g x) -> is_derive x u g v ->
+  is_derive x u (f \o g) ('d f (g x) v).
+Proof.
+move=> fgx gx.
+have gx0: differentiable (fun h : R^o => g (h *: u + x)%E) 0.
+  exact/derivable1_diffP/(derivable1P _ _ u).
+have fgx1: differentiable (fun h : R => (f \o g) (h *: u + x)%E) 0.
+  apply: (@differentiable_comp _ _ _ _ (fun h : R^o => g (h *: u + x)) f) => //.
+  by rewrite scale0r add0r.
+apply: DeriveDef; first exact/derivable1P/diff_derivable.
+rewrite deriveE1 derive1E'//.
+rewrite (@diff_comp _ _ _ _ _ f)//; last by rewrite scale0r add0r/=.
+by rewrite scale0r add0r/= -derive1E'// -deriveE1 derive_val.
+Qed.
+(*
+Section MVI.
+  (* TODO: backport convex types *)
+Theorem MVI (R : realType) (U V : normedModType R) (f : U -> V) (a b : U) :
+  (forall t : R, t \in `[0, 1]%R -> differentiable f (t *: a + (1 - t) *: b)) ->
+  (`|f b - f a|%:E <= ereal_sup [set `|'d f (t *: a + (1 - t) *: b)%R|%:E | t in `[0%R, 1%R]] * `|b - a|%:E)%E.
+Proof.
+have [-> _|ab] := eqVneq a b; first by rewrite !subrr !normr0 mule0.
+suff: forall g : R -> V, (forall t, t \in `[0, 1]%R -> derivable g t 1) ->
+    (`|g 1 - g 0|%:E <= ereal_sup [set `|derive1 g t|%:E | t in `[0%R, 1%R]])%E.
+  pose g t := (t *: a + (1 - t) *: b).
+  move=> + fdiff.
+  have fgd (t : R) : t \in `[0, 1]%R -> is_derive t 1 (f \o g) ('d f (g t) (derive1 g t)).
+    move=> /fdiff ft.
+    apply: is_derive_comp.
+    Search is_derive .
+
+    move=> t01; apply: differentiable_comp; last exact: fdiff.
+    by apply: differentiableD; apply: differentiableZl.
+  move=> /(_ (f \o g) _)/wrap[t /fgd/diff_derivable //|].
+  rewrite /g/= subr0 subrr !scale1r !scale0r add0r addr0 -normrN opprB.
+  move=> /le_trans; apply; apply/ereal_supP => _/= [] t t01 <-.
+  have ab0: (0 < `|b - a|) by rewrite normr_gt0 subr_eq0 eq_sym.
+  rewrite -lee_pdivrMr//; apply: ereal_sup_ge.
+  exists (`|'d f ((t *: a + (1 - t) *: b)%E)|%:E); first by exists t.
+  rewrite lee_pdivrMr// derive1E'; last exact: fgd.
+  rewrite diff_comp.
+
+  Search diff derive1.
+  Search (_ <= ereal_sup _ )%E.
+  Search (_ <= sup _ ).
+  apply: sup_le_ub.
+
+    Search GRing.scale (differentiable _ _).
+  /wrap.
+under [X in X @` _]funext => t. rewrite -/(g t). over.
+have <- : g 0 = b by rewrite /g scale0r add0r subr0 scale1r.
+have <- : g 1 = a by rewrite /g scale1r subrr scale0r addr0.
+rewrite (@MVT R (f \o g) (fun t => d f (g t) (b - a))).
+Search "MVT".
+End MVI.
+ *)
+Section ndiff.
+Variables (R : realType) (U : normedModType R).
+(* TODO: decide notations*)
+
+Fixpoint nlin (V : normedModType R) n :=
+  match n with
+  | 0 => V
+  | n.+1 => c0linType U (nlin V n)
+  end.
+
+Definition ndiff (V : normedModType R) n (f : U -> V) : U -> nlin V n :=
+  (fix F V f n :=
+    match n as m return (forall (V : normedModType R), (U -> V) -> (U -> nlin V m)) with
+    | 0 => fun V f => f
+    | n.+1 => fun V f => F (c0linType U V) (fun x => 'd f x) n
+    end) V f.
+
+Definition ndifferentiable n := forall k, (k < n)%N -> forall x, differentiable (ndiff k) x.
+Definition ncontinuous n := ndifferentiable n /\ continuous (ndiff n).
+
+Definition smooth := forall k x, differentiable (ndiff k) x.
+
+Lemma ndiff0 : ndiff 0 = f. Proof. by []. Qed.
+Lemma ndiff1 : ndiff 1 = fun x => 'd f x. Proof. by []. Qed.
+Lemma ndiffS n : ndiff n.+1 = fun x => 'd (ndiff n) x. Proof. by []. Qed.
+
+Lemma ndifferentiableW n m : (n <= m)%N -> ndifferentiable m -> ndifferentiable n.
+Proof. by move=> nm d k /leq_trans/(_ nm) /d. Qed.
+
+Lemma ncontinuousW n m : (n <= m)%N -> ncontinuous m -> ncontinuous n.
+Proof.
+move=> nm [] d c.
+split; first exact: (ndifferentiableW nm).
+move: nm; rewrite leq_eqVlt => /orP[/eqP -> //|] /d dd x.
+exact: differentiable_continuous.
+Qed.
+
+Lemma ndifferentiable_smooth n : smooth -> ndifferentiable n.
+Proof. by move=> s k _. Qed.
+
+Lemma ncontinuous_smooth n : smooth -> ncontinuous n.
+Proof.
+move=> s; split=> [|x]; first exact: ndifferentiable_smooth.
+exact/differentiable_continuous/ndifferentiable_smooth.
+Qed.
+
+Lemma eqo_c0lin (V' W : normedModType R) (F : filter_on U) (g : U -> c0linType V' W) (v : V') :
+  (fun t : U => [o_F id of g] t v) =o_F id.
+Proof.
+apply/eqoP => _/posnumP[e].
+case: (ltP 0 `|v|) => [v0|]; last first.
+  rewrite normr_le0 => /eqP ->.
+  by near=> x; rewrite linear0 normr0.
+near=> x.  
+apply: (le_trans (norm_c0lin_le _ _)).
+rewrite -ler_pdivlMr// mulrAC.
+by near: x; apply: littleoP; apply: divr_gt0.
+Unshelve. all: end_near.
+Qed.
+
+Fact dderive (u x : U) : ndifferentiable 2 ->
+  continuous (fun h : U => 'D_h (fun x => 'd f x) x u) /\ ('D_u f) \o shift x = cst ('D_u f x) + (fun h : U => 'D_h (fun x => 'd f x) x u) +o_ 0 id.
+Proof.
+move=> /[dup] /(_ 0 erefl) fd /(_ 1 erefl) dfd.
+split=> [h|].
+  under [X in _ _ X]funext do rewrite deriveE//.
+  (* TODO: Why does this fail?
+  rewrite -[forall t, _]/(@continuous_at _ _). *)
+  set g := 'd _ x.
+  case: (ltP 0 `|u|) => [u0|]; last first.
+    rewrite normr_le0 => /eqP ->.
+    rewrite linear0.
+    under [X in fmap X]funext do rewrite linear0.
+    exact: cvg_cst.
+  case: (ltP 0 `|g|) => [g0|]; last first.
+    rewrite normr_le0 => /eqP ->; apply: cvg_cst.
+  apply/cvg_ballP => e e0.
+  near=> b; rewrite -ball_normE/=.
+  apply: (le_lt_trans (norm_c0lin_le (g h - g b) u)).
+  rewrite -ltr_pdivlMr// -raddfB.
+  apply: (le_lt_trans (norm_c0lin_le g _)).
+  rewrite -ltr_pdivlMl//. 
+  suff: ball h (`|g|^-1 * (e / `|u|)) b by rewrite -ball_normE.
+  near: b; apply: near_ball.
+  rewrite mulrC !divr_gt0//.
+apply/eqaddoE; rewrite funeqE => h /=.
+rewrite !addrfctE !deriveE//.
+move: dfd; rewrite /ndiff/= => /(_ x)/diff_locallyx/(_ h) ->.
+rewrite /= /cst/=; congr (_ + _ + _).
+rewrite -[LHS]/((fun t : U => (ContinuousLinear.sort (the_littleo _ _ _ _ _ t)) u) h).
+by rewrite eqo_c0lin.
+Unshelve. all: end_near.
+Qed.
+
+Lemma diff_derive u x : ndifferentiable 2 ->
+  'd ('D_u f) x = (fun h : U => 'D_h (fun x => 'd f x) x u) :> (U -> V).
+Proof.
+move=> /[dup] df2 /(_ 1 erefl) dfd.
+pose d h := ('D_h (fun x0 : U => 'd f x0) x) u.
+have lind : linear d by move=> ???; rewrite /d !deriveE// linearPZ.
+pose dlM := GRing.isLinear.Build _ _ _ _ _ lind.
+have [dC0 dd] := dderive u x df2.
+pose dC := isContinuous.Build _ _ _ dC0.
+pose dL : c0linType _ _ := HB.pack d dlM dC.
+by rewrite -/d -[d]/(dL : _ -> _); apply: diff_unique.
+Qed.
+
+Lemma differentiable_derive u x : ndifferentiable 2 ->
+  differentiable ('D_u f) x.
+Proof.
+move=> df2; apply/diff_locallyP; rewrite diff_derive//.
+by have [_] := dderive u x df2.
+Qed.
+
+Global Instance is_diff_derive (u x : U) : ndifferentiable 2 -> is_diff x ('D_u f) (fun h : U => ('D_h (fun x0 : U => 'd f x0) x) u).
+Proof.
+move=> df2; apply: DiffDef; first exact: differentiable_derive.
+by rewrite diff_derive.
+Qed.
+
+End ndiff.
+
+Lemma ndiffSn [R : realType] [U V : normedModType R] (f : U -> V) (n : nat) :
+  ndiff f n.+1 = ndiff (fun x => 'd f x) n.
+
+Lemma ndifferentiable_derive [R : realType] [U V : normedModType R] (f : U -> V)(u : U) (n : nat) : ndifferentiable f n.+1 ->
+  ndifferentiable ('D_u f) n.
+Proof.
+elim: n f => // n IHn f.
+
+(* With this definition of `ndiff` this lemma is very ugly and probably unusable,
+  things will be better when we have tensor products. *)
+Lemma derive1nE [R : realType] [V : normedModType R] (f : R -> V) (n : nat) :
+  f^`(n) = (fix F n : nlin R V n -> V :=
+    match n as m return nlin R V m -> V with
+    | 0 => id
+    | n.+1 => fun f : nlin R V n.+1 => F n (f 1%R : nlin R V n)
+    end) n \o (ndiff f n).
+Proof.
+elim: n f => // n IHn f.
+rewrite derive1Sn/=.
+IHn.
+
+Lemma ncontinuous1_derivP :
+  ncontinuous 1 <-> forall a, (forall x, derivable f a x) /\ continuous ('D_a f).
+Proof.
+split=> [[] /(_ 0 erefl) d c a|].
+  split=> x; first exact: diff_derivable.
+  case: (ltP 0 `|a|) => [a0|]; last first.
+    rewrite normr_le0 => /eqP ->.
+    suff ->: 'D_0 f = cst 0 by apply: cts_fun.
+    by apply: funext => y; rewrite deriveE// linear0.
+  apply/cvg_ballP => e e0.
+  set e' := e / `|a|.
+  have e'0 : 0 < e' by apply: divr_gt0.
+  move: c => /(_ x)/cvg_ballP/(_ e' e'0) c.
+  near=> y.
+  rewrite -ball_normE/= deriveE// deriveE//.
+  have: ball (ndiff 1 x) e' (ndiff 1 y).
+    near: y; exact: c.
+  rewrite /ndiff/= -ball_normE/= ltr_pdivlMr//.
+  by move=> /(le_lt_trans (norm_c0lin_le _ _)).
+move=> c.
+split.
+  move=> k; rewrite [(_ < _)%N]leqn0 => /eqP -> {k} x.
+  Search (differentiable _ _) derivable.
+
+admit.
+Unshelve. all: end_near.
+    Search (\forall _ \near _, _).
+  Search cvg_to Order.lt.
+  Search lipschitz_on .
+Check lipschitz_on. _).
+
+
+
+Lemma ndifferentiable_deriv n a : ndifferentiable n.+1 -> ndifferentiable n ('D_a f).
+
+
+  
+
+End ndiff.

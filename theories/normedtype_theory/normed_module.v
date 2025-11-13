@@ -2142,4 +2142,14 @@ Qed.
 HB.instance Definition _ := Lmodule_isNormed.Build R (c0linType M N)
   ler_normD normrZ normr0_eq0.
 
+Lemma norm_c0lin_le (f : c0linType M N) (x : M) : `|f x| <= `|f| * `|x|.
+Proof.
+case: (ltP 0 `|x|) => [x0|]; last first.
+  by rewrite normr_le0 => /eqP ->; rewrite linear0 !normr0 mulr0.
+have x0': 0 <= `|x|^-1 by rewrite invr_ge0; apply: ltW.
+rewrite -ler_pdivrMr// mulrC -[_^-1]ger0_norm// -normed_module.normrZ -linearZ.
+apply: (sup_upper_bound (normP f)); exists (`|x|^-1 *: x) => //=.
+by rewrite normed_module.normrZ ger0_norm// mulVf// lt0r_neq0.
+Qed.
+
 End LinearContinuous.
