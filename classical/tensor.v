@@ -1,7 +1,8 @@
 From HB Require Import structures.
 From elpi Require Import elpi.
-From mathcomp Require Import all_ssreflect ssralg vector ring_quotient finmap.
-From mathcomp Require Import boolp functions classical_sets.
+From mathcomp Require Import all_ssreflect ssralg vector ring_quotient.
+From mathcomp Require Import sesquilinear.
+From mathcomp Require Import finmap boolp functions classical_sets.
 
 Import GRing.Theory.
 
@@ -27,6 +28,7 @@ Section lmodType.
 (* This is the unit of the monad *)
 Elpi lock Definition free_lmod_unit (x : T) : free_lmod :=
   [fsfun [fsfun] with x |-> 1].
+Local Notation "x %:lmod" := (free_lmod_unit x).
 
 Elpi lock Definition zero_subdef : free_lmod := [fsfun].
 Local Notation zero := zero_subdef.
@@ -119,7 +121,9 @@ Proof.
 by rewrite [free_lmod_unit]unlock fsfunE/= !inE/= orbF; case: eqVneq.
 Qed.
 
+
 End lmodType.
+Notation "x %:lmod" := (free_lmod_unit x).
 
 Section eval.
 Context {U : lmodType R} (f : T -> U).
@@ -145,9 +149,35 @@ HB.instance Definition _ := GRing.isLinear.Build _ _ _ _ free_lmod_eval free_lmo
 End eval.
 
 End FreeLmod.
-Arguments free_lmod : clear implicits.
+Arguments free_lmod R T%_type : clear implicits.
 Notation "x %:lmod" := (free_lmod_unit x).
 
+Lemma finsupp_free_lmod_unit {R : nzRingType} {T : choiceType} (t : T) :
+  finsupp (t%:lmod : free_lmod R T) = [fset t].
+Proof.
+apply/fsetP=> i; rewrite inE mem_finsupp free_lmod_unitE.
+by case: (eqVneq i t); rewrite ?eqxx// oner_eq0.
+Qed.
+
+Lemma free_lmod_eval_unit {R : nzRingType} {T : choiceType}
+  {U : lmodType R} (f : T -> U) (t : T) : free_lmod_eval f t%:lmod = f t.
+Proof.
+rewrite [free_lmod_eval _]unlock finsupp_free_lmod_unit.
+by rewrite big_seq_fset1 free_lmod_unitE eqxx scale1r.
+Qed.
+
+Section general_kernel.
+Context {R : nzRingType} {U V : lmodType R}.
+Definition ker_set  (f : U -> V) : set U :=
+  [set u | f u = 0].
+
+Lemma ker_submod_closed (f : {linear U -> V}) : submod_closed [pred x in ker_set f].
+Proof.
+split => [|x u v] /[!inE]; rewrite /ker_set/=; first exact: linear0.
+by move=> + + /[!linearP] => -> ->; rewrite scaler0 addr0.
+Qed.
+
+End general_kernel.
 
 Section free_lmod_map.
 Context {R : comRingType}.
@@ -276,7 +306,7 @@ Export Quotient.Exports.
 
 
 Module Tensor.
-Section fintensor.
+Section fiptensor.
 Variables (R : fieldType) (U V : vectType R).
 
 Let nU := \dim (@fullv _ U).
@@ -284,49 +314,48 @@ Let nV := \dim (@fullv _ V).
 Let bU := vbasis (@fullv _ U).
 Let bV := vbasis (@fullv _ V).
 
-Definition fintensor := free_lmod R ('I_nU * 'I_nV)%type.
+Definition fiptensor := free_lmod R ('I_nU * 'I_nV).
 
-Elpi lock Definition fintensor_proj (x : U * V) : fintensor :=
+Elpi lock Definition fiptensor_proj (x : U * V) : fiptensor :=
   [fsfun i in [fset i in 'I_nU] `*` [fset i in 'I_nV]
    => coord bU i.1 x.1 * coord bV i.2 x.2].
 
-End fintensor.
+End fiptensor.
 
 Section span.
 Variables (R : comRingType) (U : lmodType R) (X : {fset U}).
 
 Definition span_ideal : {pred free_lmod R X} :=
-  [pred x | free_lmod_eval (val : X -> U) x == 0].
+  [pred x in ker_set (free_lmod_eval (val : X -> U))].
 
 Lemma span_ideal_submod_closed : submod_closed span_ideal.
-Proof.
-split=> [|a x y]; rewrite !unfold_in; first by rewrite linear0.
-by rewrite linearPZ/= => /eqP -> /eqP ->; rewrite scaler0 addr0.
-Qed.
+Proof. exact: ker_submod_closed. Qed.
 
-HB.instance Definition _ := GRing.isSubmodClosed.Build _ _ span_ideal span_ideal_submod_closed.
+HB.instance Definition _ :=
+  GRing.isSubmodClosed.Build _ _ span_ideal span_ideal_submod_closed.
 
 Definition span := Quotient.zmodquot span_ideal.
 
 End span.
+End Tensor.
 
-Section tensor.
-Variables (R : fieldType) (U V : lmodType R).
+Section Biptensor.
+Variables (R : comRingType) (U V : lmodType R).
 
-Let tensor_ideal_left_generators : set (free_lmod R (U * V)%type) :=
+Let tensor_ideal_left_generators : set (free_lmod R (U * V)) :=
   [set (x.1.1 *: x.1.2 + x.2.1, x.2.2)%:lmod
-   - x.1.1 *: (x.1.2, x.2.2)%:lmod - (x.2.1, x.2.2)%:lmod
+   - (x.1.1 *: (x.1.2, x.2.2)%:lmod + (x.2.1, x.2.2)%:lmod)
   | x in @setT ((R * U) * (U * V))%type].
 
-Let tensor_ideal_right_generators : set (free_lmod R (U * V)%type) :=
+Let tensor_ideal_right_generators : set (free_lmod R (U * V)) :=
   [set (x.2.2, x.1.1 *: x.1.2 + x.2.1)%:lmod
-   - x.1.1 *: (x.2.2, x.1.2)%:lmod - (x.2.2, x.2.1)%:lmod
+   - (x.1.1 *: (x.2.2, x.1.2)%:lmod + (x.2.2, x.2.1)%:lmod)
   | x in @setT ((R * V) * (V * U))%type].
 
 Let tensor_ideal_generators :=
   (tensor_ideal_left_generators `|` tensor_ideal_right_generators)%classic.
 
-Definition tensor_ideal_set : set (free_lmod R (U * V)%type) :=
+Definition tensor_ideal_set : set (free_lmod R _) :=
   smallest (fun X => submod_closed [pred x in X]) tensor_ideal_generators.
 Definition tensor_ideal := [pred x in tensor_ideal_set].
 
@@ -345,5 +374,91 @@ HB.instance Definition _ :=
 Definition tensor := Quotient.zmodquot tensor_ideal.
 HB.instance Definition _ := LmodQuotient.on tensor.
 
-End tensor.
-End Tensor.
+Definition to_tensor (u : U) (v : V) := \pi_tensor ((u, v)%:lmod).
+Notation "u *t v" := (to_tensor u v) (at level 40) : ring_scope.
+
+Variable (W : lmodType R).
+
+Definition tensor_umap (f : U -> V -> W) (t : tensor) : W :=
+  free_lmod_eval (uncurry f) (repr t).
+
+Lemma eq_free_lmod_eval (f : {bilinear U -> V -> W}) (a b : free_lmod R (U * V)) :
+  a = b %[mod tensor] -> free_lmod_eval (uncurry f) a = free_lmod_eval (uncurry f) b.
+Proof.
+move=> /eqquotP; rewrite Quotient.equivE !inE /= => ab0.
+(* rewrite [free_lmod_eval _]unlock. *)
+apply/eqP; rewrite -subr_eq0 -raddfB/=; apply/eqP.
+suff: ker_set (free_lmod_eval (uncurry f)) (a - b) by [].
+apply: ab0; split; first exact: ker_submod_closed.
+by move=> g [[x _ <-]|[x _ <-]]; rewrite /ker_set/= !(linearZ, linearB, linearD)/=;
+   rewrite !free_lmod_eval_unit/= ?linearPr ?linearPl ?scalerN;
+   rewrite addrACA !subrr addr0.
+Qed.
+
+Lemma tensor_umap_is_linear (f : {bilinear U -> V -> W}) : linear (tensor_umap f).
+Proof.
+move=> x t1 t2; rewrite /tensor_umap/=.
+have: repr (x *: t1 + t2) = x *: repr t1 + repr t2 %[mod tensor].
+   by rewrite linearP/= !reprK.
+move=> /eq_free_lmod_eval ->.
+rewrite [free_lmod_eval _]unlock.
+set A := finsupp _; set B := finsupp _; set C := finsupp _.
+rewrite (big_fset_incl _ (fsubsetUl _ (B `|` C)%fset))/=; last first.
+  by move=> uv _ /fsfun_dflt->; rewrite scale0r.
+rewrite [in RHS](big_fset_incl _ (fsubsetUl _ (A `|` C)%fset))/=; last first.
+  by move=> uv _ /fsfun_dflt->; rewrite scale0r.
+rewrite [in X in _ = _ + X](big_fset_incl _ (fsubsetUr (A `|` B)%fset _))/=; last first.
+  by move=> uv _ /fsfun_dflt->; rewrite scale0r.
+rewrite [in RHS]fsetUCA !fsetUA.
+rewrite scaler_sumr -big_split/=; apply/eq_bigr => -[u v] _ /=.
+rewrite scalerA -scalerDl; apply/eqP; rewrite -subr_eq0 -scalerBl.
+by rewrite free_lmodDE/= free_lmodZE/= subrr scale0r.
+Qed.
+HB.instance Definition _ (f : {bilinear U -> V -> W}) :=
+  GRing.isLinear.Build _ _ _ _ (tensor_umap f) (tensor_umap_is_linear f).
+
+Definition tensor_universal_mapP (f : {bilinear U -> V -> W}) (u : U) (v : V) :
+  tensor_umap f (u *t v) = f u v.
+Proof.
+rewrite /tensor_umap /to_tensor.
+have : repr (\pi_tensor (u, v)%:lmod) = (u, v)%:lmod %[mod tensor].
+  by rewrite reprK.
+move=> /eq_free_lmod_eval->.
+rewrite [free_lmod_eval _]unlock/= finsupp_free_lmod_unit.
+by rewrite big_seq_fset1 free_lmod_unitE eqxx scale1r.
+Qed.
+
+End Biptensor.
+
+Section ProdTensor.
+Variables (R : fieldType) (I : eqType) (U_ : I -> lmodType R).
+
+Let ptensor_ideal_generators : set (free_lmod R (forall i, U_ i)) :=
+  [set
+     (fun i => (if tag (x.1.1) =P i is ReflectT xi then x.1.2 *: etagged xi else 0) + x.2 i)%:lmod
+     - (x.1.2 *: (fun i => if tag (x.1.1) =P i is ReflectT xi then etagged xi else x.2 i)%:lmod + x.2%:lmod)
+  | x in @setT (({i : I & U_ i} * R) * (forall i, U_ i))%type].
+
+Definition ptensor_ideal_set : set (free_lmod R _) :=
+  smallest (fun X => submod_closed [pred x in X]) ptensor_ideal_generators.
+Definition ptensor_ideal : {pred _} := [pred x in ptensor_ideal_set].
+
+Lemma ptensor_ideal_submod_closed : submod_closed ptensor_ideal.
+Proof.
+constructor; first by rewrite inE/=; move => /= A [[/[!inE]]].
+move=> /= x u v /[!inE] ut vt.
+move=> /= A [/[dup] Asubmod [_ /(_ x u v)] /[!inE] /[swap] inA]; apply.
+  by apply: ut; split.
+by apply: vt; split.
+Qed.
+
+HB.instance Definition _ :=
+  GRing.isSubmodClosed.Build _ _ ptensor_ideal ptensor_ideal_submod_closed.
+
+Definition ptensor := Quotient.zmodquot ptensor_ideal.
+HB.instance Definition _ := LmodQuotient.on ptensor.
+
+Definition to_ptensor (u_ : forall i, U_ i) := \pi_ptensor (u_%:lmod).
+Notation "u %:tensor" := (to_ptensor u) : ring_scope.
+
+End ProdTensor.
