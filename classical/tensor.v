@@ -1,5 +1,7 @@
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg vector ring_quotient finmap boolp.
+From elpi Require Import elpi.
+From mathcomp Require Import all_ssreflect ssralg vector ring_quotient finmap.
+From mathcomp Require Import boolp functions classical_sets.
 
 Import GRing.Theory.
 
@@ -7,40 +9,48 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
+Local Open Scope fset_scope.
 Local Open Scope ring_scope.
 Local Open Scope quotient_scope.
 
 (** Free module *)
 
 Section FreeLmod.
-Variables (R : pzRingType) (T : choiceType).
+Context {R : pzRingType} {T : choiceType}.
 
 Definition free_lmod := {fsfun T -> R with 0}.
 
 HB.instance Definition _ := Choice.on free_lmod.
 
-Fact free_lmod_key : unit. Proof. exact: tt. Qed.
+Section lmodType.
 
-Let zero : free_lmod := fsfun_of_fun free_lmod_key fset0 (fun=> 0) (fun=> 0).
+(* This is the unit of the monad *)
+Elpi lock Definition free_lmod_unit (x : T) : free_lmod :=
+  [fsfun [fsfun] with x |-> 1].
+
+Elpi lock Definition zero_subdef : free_lmod := [fsfun].
+Local Notation zero := zero_subdef.
 
 Let zeroE x : zero x = 0.
-Proof. by rewrite fsfunE in_fset0. Qed.
+Proof. by rewrite [zero]unlock fsfunE. Qed.
 
-Let opp (f : free_lmod) := fsfun_of_fun free_lmod_key (finsupp f) (GRing.opp \o f) (fun=> 0).
+Elpi lock Definition opp_subdef (f : free_lmod) : free_lmod :=
+   [fsfun x in finsupp f => - (f x)].
+Local Notation opp := opp_subdef.
 
-Let oppE (f : free_lmod) x : opp f x = - (f x).
+Lemma oppE (f : free_lmod) x : opp f x = - (f x).
 Proof.
-rewrite fsfunE mem_finsupp; case: ifPn => //; rewrite negbK => /eqP ->.
-by rewrite oppr0.
+by rewrite [opp]unlock fsfunE mem_finsupp; case: eqP => //= ->; rewrite oppr0.
 Qed.
 
-Let add (f g : free_lmod) := fsfun_of_fun free_lmod_key (finsupp f `|` finsupp g)%fset (f \+ g) (fun=> 0).
+Elpi lock Definition add_subdef (f g : free_lmod) : free_lmod :=
+  [fsfun x in finsupp f `|` finsupp g => f x + g x].
+Local Notation add := add_subdef.
 
 Let addE (f g : free_lmod) x : add f g x = f x + g x.
 Proof.
-rewrite fsfunE in_fsetU !mem_finsupp.
-case: ifPn => //; rewrite negb_or !negbK => /andP[] /eqP -> /eqP ->.
-by rewrite addr0.
+rewrite [add]unlock fsfunE in_fsetU !mem_finsupp.
+by do 2!case: eqP => //= ->; rewrite addr0.
 Qed.
 
 Let addrA : associative add.
@@ -58,13 +68,14 @@ Proof. by move=> f; apply/fsfunP => x; rewrite addE oppE addNr. Qed.
 HB.instance Definition _ :=
   GRing.isZmodule.Build free_lmod addrA addrC add0r addNr.
 
-Let scale (a : R) (f : free_lmod) : free_lmod :=
-  fsfun_of_fun free_lmod_key (finsupp f)%fset (fun x => a * f x) (fun=> 0).
+Elpi lock Definition scale_subdef (a : R) (f : free_lmod) : free_lmod :=
+  [fsfun x in finsupp f => a * f x].
+Local Notation scale := scale_subdef.
 
 Let scaleE a f x : scale a f x = a * f x.
 Proof.
-rewrite fsfunE mem_finsupp.
-by case: ifPn => //; rewrite negbK => /eqP ->; rewrite mulr0.
+rewrite [scale]unlock fsfunE mem_finsupp.
+by case: eqP => //= ->; rewrite mulr0.
 Qed.
 
 Let scalerA a b f : scale a (scale b f) = scale (a * b) f.
@@ -93,10 +104,81 @@ Proof. exact/funext/oppE. Qed.
 Lemma free_lmodDE (f g : free_lmod) : f + g = f \+ g :> (_ -> _).
 Proof. exact/funext/addE. Qed.
 
+Lemma free_lmod_sumE I r P (F : I -> free_lmod) :
+  \sum_(i <- r | P i) F i = (fun x => \sum_(i <- r | P i) F i x) :> (_ -> _).
+Proof.
+apply/funext => t; elim/big_ind2: _ => //= x u y v.
+by rewrite free_lmodDE/= => -> ->.
+Qed.
+
 Lemma free_lmodZE a (f : free_lmod) : a *: f = (fun x => a * f x) :> (_ -> _).
 Proof. exact/funext/scaleE. Qed.
 
+Lemma free_lmod_unitE t t' : free_lmod_unit t t' = (t == t')%:R.
+Proof.
+by rewrite [free_lmod_unit]unlock fsfunE/= !inE/= orbF; case: eqVneq.
+Qed.
+
+End lmodType.
+
+Section eval.
+Context {U : lmodType R} (f : T -> U).
+
+Elpi lock Definition free_lmod_eval (x : free_lmod) : U :=
+   \sum_(t <- finsupp x) x t *: f t.
+
+Lemma free_lmod_eval_linear : linear free_lmod_eval.
+Proof.
+move=> a x y; rewrite [free_lmod_eval]unlock scaler_sumr.
+rewrite (big_fset_incl _ (fsubsetUr (finsupp x `|` finsupp y)%fset _))/=; last first.
+  by move=> i _; rewrite mem_finsupp negbK => /eqP ->; rewrite scale0r.
+apply: esym; rewrite (big_fset_incl _ (fsubsetUr (finsupp (a *: x + y)%R `|` (finsupp y))%fset _))/=; last first.
+  by move=> i _; rewrite mem_finsupp negbK => /eqP ->; rewrite scale0r scaler0.
+rewrite [X in _ + X](big_fset_incl _ (fsubsetUr (finsupp (a *: x + y)%R `|` (finsupp x))%fset _))/=; last first.
+  by move=> i _; rewrite mem_finsupp negbK => /eqP ->; rewrite scale0r.
+rewrite fsetUAC -big_split/= -fsetUA fsetUC.
+by apply: eq_bigr => i _; rewrite free_lmodDE/= scalerDl free_lmodZE scalerA.
+Qed.
+
+HB.instance Definition _ := GRing.isLinear.Build _ _ _ _ free_lmod_eval free_lmod_eval_linear.
+
+End eval.
+
 End FreeLmod.
+Arguments free_lmod : clear implicits.
+Notation "x %:lmod" := (free_lmod_unit x).
+
+
+Section free_lmod_map.
+Context {R : comRingType}.
+Implicit Types X Y Z : choiceType.
+
+Definition free_lmod_map {X Y}
+    (f : X -> Y) (u : free_lmod R X) : free_lmod R Y :=
+  free_lmod_eval (free_lmod_unit \o f) u.
+
+Definition free_lmod_map_id {X} : free_lmod_map (@id X) =1 id.
+Proof.
+move=> u /=; rewrite /free_lmod_map; apply/fsfunP => x /=.
+rewrite unlock /= free_lmod_sumE.
+case: (finsuppP u x) => [xNu|xu].
+  rewrite big1// => i _; rewrite free_lmodZE free_lmod_unitE.
+  by case: eqVneq; rewrite (mulr1,mulr0)// => ->; rewrite fsfun_dflt.
+rewrite (bigD1_seq x)//= free_lmodZE ?free_lmod_unitE eqxx mulr1 big1 ?addr0//.
+by move=> y nyx; rewrite free_lmodZE free_lmod_unitE (negPf nyx) mulr0.
+Qed.
+
+
+Definition free_lmod_map_comp {X Y Z} (f : X -> Y) (g : Y -> Z) :
+  free_lmod_map (g \o f) =1 free_lmod_map g \o free_lmod_map f.
+Proof.
+move=> u /=; rewrite /free_lmod_map/=.
+rewrite ![@free_lmod_eval _ _ _ _]unlock.
+Admitted.
+
+End free_lmod_map.
+
+
 
 HB.mixin Record ZmodQuotient_isLmodQuotient (R : pzRingType) T eqT
   (zeroT : T) (oppT : T -> T) (addT : T -> T -> T) (scaleT : R -> T -> T)
@@ -153,9 +235,9 @@ Definition Pzmod : {pred _} := P.
 HB.instance Definition _ := GRing.SubmodClosed.on Pzmod.
 HB.instance Definition _ := @SubmodClosed_isZmodClosed.Build R L Pzmod.
 
-Notation quot := (quot Pzmod).
+Definition zmodquot := (quot Pzmod).
 
-Definition scale a := lift_op1 quot ( *:%R a).
+Definition scale a := lift_op1 zmodquot ( *:%R a).
 
 Lemma pi_scale a : {morph \pi : x / a *: x >-> scale a x}.
 Proof.
@@ -178,11 +260,13 @@ Let scalerDl f : {morph scale^~ f: a b / a + b}.
 Proof. by move=> a b; rewrite -[f]reprK !piE scalerDl. Qed.
 
 #[export]
-HB.instance Definition _ :=
-  GRing.Zmodule_isLmodule.Build R quot scalerA scale1r scalerDr scalerDl.
+HB.instance Definition _ := ZmodQuotient.on zmodquot.
 #[export]
 HB.instance Definition _ :=
-  ZmodQuotient_isLmodQuotient.Build R L (equiv Pzmod) 0 -%R +%R *:%R quot pi_scale.
+  GRing.Zmodule_isLmodule.Build R zmodquot scalerA scale1r scalerDr scalerDl.
+#[export]
+HB.instance Definition _ :=
+  ZmodQuotient_isLmodQuotient.Build R L (equiv Pzmod) 0 -%R +%R *:%R zmodquot pi_scale.
 
 End LmodQuotient.
 Module Exports. HB.reexport. End Exports.
@@ -202,52 +286,64 @@ Let bV := vbasis (@fullv _ V).
 
 Definition fintensor := free_lmod R ('I_nU * 'I_nV)%type.
 
-Definition fintensor_proj (x : U * V) : fintensor :=
-  fsfun_of_fun free_lmod_key (unpickle setT) (fun i => coord bU i.1 x.1 * coord bV i.2 x.2) (fun=> 0).
+Elpi lock Definition fintensor_proj (x : U * V) : fintensor :=
+  [fsfun i in [fset i in 'I_nU] `*` [fset i in 'I_nV]
+   => coord bU i.1 x.1 * coord bV i.2 x.2].
 
 End fintensor.
 
 Section span.
-Variables (R : fieldType) (U : lmodType R) (X : {fset U}).
+Variables (R : comRingType) (U : lmodType R) (X : {fset U}).
 
-Definition of_span_subdef (x : free_lmod R X) :=
-  \sum_(i <- finsupp x) x i *: val i.
+Definition span_ideal : {pred free_lmod R X} :=
+  [pred x | free_lmod_eval (val : X -> U) x == 0].
 
-Lemma of_span_subdef_linear : linear of_span_subdef.
-Proof.
-move=> a x y; rewrite /of_span_subdef scaler_sumr.
-rewrite (big_fset_incl _ (fsubsetUr (finsupp x `|` finsupp y)%fset _))/=; last first.
-  by move=> i _; rewrite mem_finsupp negbK => /eqP ->; rewrite scale0r.
-apply: esym; rewrite (big_fset_incl _ (fsubsetUr (finsupp (a *: x + y)%R `|` (finsupp y))%fset _))/=; last first.
-  by move=> i _; rewrite mem_finsupp negbK => /eqP ->; rewrite scale0r scaler0.
-rewrite [X in _ + X](big_fset_incl _ (fsubsetUr (finsupp (a *: x + y)%R `|` (finsupp x))%fset _))/=; last first.
-  by move=> i _; rewrite mem_finsupp negbK => /eqP ->; rewrite scale0r.
-rewrite fsetUAC -big_split/= -fsetUA fsetUC.
-by apply: eq_bigr => i _; rewrite free_lmodDE/= scalerDl free_lmodZE scalerA.
-Qed.
-
-HB.instance Definition _ := GRing.isLinear.Build _ _ _ _ of_span_subdef of_span_subdef_linear.
-
-Definition spanI0 (x : free_lmod R X) := of_span_subdef x == 0.
-
-Lemma spanI0_submod_closed : submod_closed spanI0.
+Lemma span_ideal_submod_closed : submod_closed span_ideal.
 Proof.
 split=> [|a x y]; rewrite !unfold_in; first by rewrite linear0.
 by rewrite linearPZ/= => /eqP -> /eqP ->; rewrite scaler0 addr0.
 Qed.
 
-HB.instance Definition _ := GRing.isSubmodClosed.Build _ _ spanI0 spanI0_submod_closed.
+HB.instance Definition _ := GRing.isSubmodClosed.Build _ _ span_ideal span_ideal_submod_closed.
 
-(* TODO: Why does the reverse coercion fail to apply? *)
-Definition span := Quotient.quot Tensor_spanI0__canonical__GRing_SubmodClosed.
-
-Check span : zmodType .
+Definition span := Quotient.zmodquot span_ideal.
 
 End span.
 
 Section tensor.
 Variables (R : fieldType) (U V : lmodType R).
 
-Definition equiv (x y : free_lmod R (U * V)%type) := true.
+Let tensor_ideal_left_generators : set (free_lmod R (U * V)%type) :=
+  [set (x.1.1 *: x.1.2 + x.2.1, x.2.2)%:lmod
+   - x.1.1 *: (x.1.2, x.2.2)%:lmod - (x.2.1, x.2.2)%:lmod
+  | x in @setT ((R * U) * (U * V))%type].
+
+Let tensor_ideal_right_generators : set (free_lmod R (U * V)%type) :=
+  [set (x.2.2, x.1.1 *: x.1.2 + x.2.1)%:lmod
+   - x.1.1 *: (x.2.2, x.1.2)%:lmod - (x.2.2, x.2.1)%:lmod
+  | x in @setT ((R * V) * (V * U))%type].
+
+Let tensor_ideal_generators :=
+  (tensor_ideal_left_generators `|` tensor_ideal_right_generators)%classic.
+
+Definition tensor_ideal_set : set (free_lmod R (U * V)%type) :=
+  smallest (fun X => submod_closed [pred x in X]) tensor_ideal_generators.
+Definition tensor_ideal := [pred x in tensor_ideal_set].
+
+Lemma tensor_ideal_submod_closed : submod_closed tensor_ideal.
+Proof.
+constructor; first by rewrite inE/=; move => /= A [[/[!inE]]].
+move=> /= x u v /[!inE] ut vt.
+move=> /= A [/[dup] Asubmod [_ /(_ x u v)] /[!inE] /[swap] inA]; apply.
+  by apply: ut; split.
+by apply: vt; split.
+Qed.
+
+HB.instance Definition _ :=
+  GRing.isSubmodClosed.Build _ _ tensor_ideal tensor_ideal_submod_closed.
+
+Definition tensor := Quotient.zmodquot tensor_ideal.
+HB.instance Definition _ := LmodQuotient.on tensor.
+
 End tensor.
 End Tensor.
