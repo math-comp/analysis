@@ -204,7 +204,20 @@ Definition free_lmod_map_comp {X Y Z} (f : X -> Y) (g : Y -> Z) :
 Proof.
 move=> u /=; rewrite /free_lmod_map/=.
 rewrite ![@free_lmod_eval _ _ _ _]unlock.
-Admitted.
+rewrite (@big_fset_incl _ _ _ _ _ [fset f x | x in finsupp u])/=; first last.
+- move=> _ /imfsetP[] x/= xu ->; rewrite mem_finsupp negbK => /eqP ->.
+  exact: scale0r.
+- apply/fsubsetP => y; rewrite mem_finsupp => /eqP; apply: contra_notT => yf.
+  rewrite free_lmod_sumE big_seq; apply: big1 => x xu.
+  rewrite free_lmodZE/= free_lmod_unitE.
+  case: eqP => yE; last by rewrite mulr0.
+  by elim: (negP yf); apply/imfsetP; exists x.
+rewrite (partition_big_imfset _ f)/=; apply: eq_bigr => y _.
+rewrite big_mkcond/= free_lmod_sumE scaler_suml; apply: eq_bigr => x _.
+rewrite free_lmodZE free_lmod_unitE.
+case: eqP => [<-|]; first by rewrite mulr1.
+by rewrite mulr0 scale0r.
+Qed.
 
 End free_lmod_map.
 
