@@ -889,9 +889,8 @@ Let FGaoo :
 Proof.
 apply: cvg_EFin; first exact: nearW; apply: cvgB; last exact: cvg_cst.
 rewrite -cvg_shiftS/=.
-apply: (@cvg_comp _ _ _ _ (F \* G)%R _ +oo%R); last exact: cvgFG; apply/cvgeryP.
-apply: (@cvge_pinftyP R (fun x => (a + x)%:E) +oo).1; last exact: cvgr_idn.
-by apply/cvgeryP; exact: cvg_addrl.
+apply: (@cvg_comp _ _ _ _ (F \* G)%R _ +oo%R); last exact: cvgFG.
+by apply: cvg_comp; [apply: cvgr_idn|apply: cvg_addrl].
 Qed.
 
 Let sumN_Nsum_fG n :
