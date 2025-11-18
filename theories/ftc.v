@@ -1008,7 +1008,7 @@ have mMfG : measurable_fun `]a, +oo[ (fun x => (- (f x * G x))%R).
 rewrite -integral_itv_obnd_cbnd// -[in RHS]integral_itv_obnd_cbnd//.
 rewrite itv_bndy_bigcup_BRight seqDU_bigcup_eq.
 rewrite 2?ge0_integral_bigcup//= -?seqDU_bigcup_eq -?itv_bndy_bigcup_BRight.
-- rewrite sum_integral_limn; apply/cvg_lim => //.
+- rewrite [LHS]sum_integral_limn; apply: cvg_lim => //.
   apply: cvgeD; first exact: fin_num_adde_defr; first exact: FGaoo.
   under eq_cvg do rewrite sumNint_sumintN_fG.
   apply: is_cvg_nneseries_cond => n _ _; apply: integral_ge0 => x.
