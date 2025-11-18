@@ -28,7 +28,7 @@ From mathcomp Require Import measurable_structure measure_function.
 (*                              forall x, P x does not stand alone.           *)
 (*      f = g %[ae mu in D ] == f is equal to g almost everywhere in D        *)
 (*            f = g %[ae mu] == f is equal to g almost everywhere             *)
-(*              mu-.null_set == *)
+(*              mu-.null_set == (measure-theoretic) null sets                 *)
 (*                 m1 `<< m2 == m1 is absolutely continuous w.r.t. m2 or      *)
 (*                              m2 dominates m1                               *)
 (* ```                                                                        *)

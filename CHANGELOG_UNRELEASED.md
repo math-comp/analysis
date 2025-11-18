@@ -17,9 +17,10 @@
   + lemma `subset_null_set`
   + lemma `negligible_null_set`
   + lemma `measure_null_setP`
+  + lemma `null_setU`
   + definition `null_set_dominates`
   + lemma `null_dominates_trans`
-  + lemma `null_dominatesP`
+  + lemma `measure_null_dominatesP`
 
 - in `charge.v`:
   + lemma `charge_null_dominatesP`
@@ -87,7 +88,7 @@
   + notation `eq_bigsetU_seqD`
     (deprecated since 1.2.0)
 - in `measurable_structure.v`:
-  + definition `measure_dominates`
+  + definition `measure_dominates` (use `null_set_dominates` instead)
   + lemma `measure_dominates_trans`
 
 ### Infrastructure
