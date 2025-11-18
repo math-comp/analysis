@@ -940,10 +940,9 @@ Let sum_integral_limn :
                       - \int[mu]_(x in seqDU (fun k => `]a, (a + k%:R)]) i)
                           (f x * G x)%:E).
 Proof.
-apply: congr_lim; apply/funext => n.
-case: n.
+apply/congr_lim/funext; case.
   by rewrite big_nat_cond [in RHS]big_nat_cond 2?big_pred0//= 2!addr0 subrr.
-case => [|n].
+case=> [|n].
   rewrite 2!big_nat1 seqDUE -pred_Sn addr0 subrr add0r.
   by rewrite set_itvoc0 2!integral_set0 oppe0.
 rewrite big_nat_recl// [in RHS]big_nat_recl//=.
