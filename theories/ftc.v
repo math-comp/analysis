@@ -1063,8 +1063,7 @@ rewrite integralN/=; last first.
   apply/eqe_oppLRP; rewrite oppe0.
   apply: integral0_eq => /= x ax.
   apply: (@ge0_funenegE _ _ `]a, +oo[); last by rewrite inE/=.
-  move=> ?/= ?; rewrite mulNr EFinN oppe_ge0 Fg0//=.
-  by rewrite inE.
+  by move=> ?/= ?; rewrite mulNr EFinN oppe_ge0 Fg0//= inE.
 rewrite integral_itv_obnd_cbnd//.
 under [X in _ _ X]eq_fun do rewrite mulNr; exact: measurableT_comp.
 Qed.
