@@ -929,8 +929,7 @@ rewrite 2?integral_itv_obnd_cbnd; last 2 first.
   by apply/subset_itv; rewrite bnd_simp// lerDl.
 rewrite -integralN ?integrable_add_def ?continuous_compact_integrable//.
   exact: segment_compact.
-apply: continuous_subspaceW cfG.
-by apply/subset_itv; rewrite bnd_simp// lerDl.
+by apply: continuous_subspaceW cfG; apply/subset_itv; rewrite bnd_simp// lerDl.
 Qed.
 
 Let sum_integral_limn :
