@@ -966,7 +966,7 @@ under eq_bigr => i _.
   over.
 rewrite big_split/=.
 under eq_bigr do rewrite EFinB.
-rewrite telescope_sume// addr0; congr +%E.
+rewrite telescope_sume => [|//|//]; rewrite addr0; congr +%E.
 apply: eq_bigr => k _; rewrite seqDUE/= integral_itv_obnd_cbnd//.
 apply: measurable_funS mfG => //.
 by apply/subset_itv => //; rewrite bnd_simp lerDl.
