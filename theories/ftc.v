@@ -1016,7 +1016,7 @@ rewrite 2?ge0_integral_bigcup//= -?seqDU_bigcup_eq -?itv_bndy_bigcup_BRight.
   apply: fG0; rewrite inE/=.
   by apply: subset_itv anx; rewrite bnd_simp// lerDl.
 - by move=> k; apply: measurableD => //; apply: bigsetU_measurable.
-- by apply/measurable_EFinP; exact: measurableT_comp.
+- exact/measurable_EFinP/measurableT_comp.
 - by move=> ? ?; rewrite EFinN oppe_ge0 fG0// inE.
 - by move=> k; apply: measurableD => //; apply: bigsetU_measurable.
 - exact/measurable_EFinP.
