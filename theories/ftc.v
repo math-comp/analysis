@@ -1081,7 +1081,7 @@ rewrite (@integration_by_partsy_ge0_ge0 R (- F)%R G (- f)%R g a (- FGoo)).
   by under eq_integral do rewrite mulNr EFinN.
 - by move=> ?; apply: cvgN; exact: cf.
 - exact: derivable_oy_continuous_bndN.
-- by move=> ? ?; rewrite fctE derive1N ?Ff//; move: Foy => [+ _]; apply.
+- by move=> ? ?; rewrite fctE derive1N ?Ff => [//|//|]; apply: Foy.1.
 - by [].
 - by [].
 - by [].
