@@ -28,7 +28,7 @@ Reserved Notation "\esum_ ( i 'in' P ) F"
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.

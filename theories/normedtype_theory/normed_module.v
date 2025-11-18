@@ -1,12 +1,11 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
-From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
-From mathcomp Require Import archimedean.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import filter functions cardinality set_interval.
-From mathcomp Require Import interval_inference ereal reals topology.
-From mathcomp Require Import function_spaces real_interval.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
+From mathcomp Require Import archimedean rat interval zmodp vector.
+From mathcomp Require Import fieldext falgebra.
+From mathcomp Require Import boolp classical_sets filter functions cardinality.
+From mathcomp Require Import set_interval interval_inference ereal reals.
+From mathcomp Require Import topology function_spaces real_interval.
 From mathcomp Require Import prodnormedzmodule tvs num_normedtype.
 From mathcomp Require Import ereal_normedtype pseudometric_normed_Zmodule.
 
@@ -123,9 +122,7 @@ exists [set B | exists x r, B = ball x r].
   rewrite (@le_lt_trans _ _ (`|l| * `|x - z| + `|1 - l| * `|x - y|))//.
     by rewrite -!normrZ ler_normD.
   rewrite (@lt_le_trans _ _ (`|l| * r + `|1 - l| * r ))//.
-    rewrite ltr_leD//.
-      by rewrite -ltr_pdivlMl ?mulrA ?mulVf ?mul1r // ?normrE ?gt_eqF.
-    by rewrite -ler_pdivlMl ?mulrA ?mulVf ?mul1r ?ltW // ?normrE ?gt_eqF.
+    by rewrite ltr_leD// lter_pM2l// ?normrE ?gt_eqF// ltW.
   by rewrite !gtr0_norm// -mulrDl addrC subrK mul1r.
 split.
   move=> B [x] [r] ->.
@@ -353,12 +350,8 @@ Proof. by move=> nxu; rewrite normrZ normrV// normr_id mulVr. Qed.
 Lemma near_shift (y x : V) (P : set V) :
    (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
 Proof.
-(* rewrite propeqE nbhs0P [X in _ <-> X]nbhs0P/= -propeqE. *)
-(* by apply: eq_near => e; rewrite ![_ + e]addrC addrACA subrr addr0. *)
-rewrite propeqE; split=> /= /nbhs_normP [_/posnumP[e] ye];
-apply/nbhs_normP; exists e%:num => //= t et.
-  by apply: ye; rewrite /= distrC addrCA [x + _]addrC addrK distrC.
-by have /= := ye (t - (x - y)); rewrite opprB addrCA subrKA addrNK; exact.
+rewrite propeqE nbhs0P [X in _ <-> X]nbhs0P/= -propeqE.
+by apply: eq_near => e; rewrite [_ + _ + _]addrC subrKA.
 Qed.
 
 Lemma cvg_comp_shift {T : Type} (x y : V) (f : V -> T) :
@@ -1979,9 +1972,8 @@ exists (y + (s / 2) *: (`|x - y|^-1 *: (x - y))); split; [apply: Be|apply: B0y].
   rewrite -mulrBl -scalerA normrZ normfZV ?subr_eq0// mulr1.
   rewrite gtr0_norm; first by rewrite ltrBlDl xye ltrDr mulr_gt0.
   by rewrite subr_gt0 xye ltr_pdivrMr // mulr_natr mulr2n ltr_pwDl.
-rewrite -ball_normE /ball_ /= opprD addrA addrN add0r normrN normrZ.
-rewrite normfZV ?subr_eq0// mulr1 normrM (gtr0_norm s0) gtr0_norm //.
-by rewrite ltr_pdivrMr // ltr_pMr // ltr1n.
+rewrite -ball_normE /ball_ /= opprD addNKr normrN normrZ normfZV ?subr_eq0//.
+by rewrite mulr1 normf_div !gtr0_norm// ltr_pdivrMr// ltr_pMr //ltr1n.
 Qed.
 
 Lemma closed_ball_itv (R : realFieldType) (x r : R) : 0 < r ->
@@ -2058,7 +2050,7 @@ move=> /= t; rewrite closed_ballE // /interior /= -nbhs_ballE => [[]] s s0.
 have [-> _|nxt] := eqVneq t x; first exact: ballxx.
 near ((0 : R^o)^') => e; rewrite -ball_normE /closed_ball_ => tsxr.
 pose z := t + `|e| *: (t - x); have /tsxr /= : `|t - z| < s.
-  rewrite distrC addrAC subrr add0r normrZ normr_id.
+  rewrite opprD addNKr normrN normrZ normr_id.
   rewrite -ltr_pdivlMr ?(normr_gt0,subr_eq0) //.
   by near: e; apply/dnbhs0_lt; rewrite divr_gt0 // normr_gt0 subr_eq0.
 rewrite /z opprD addrA -scalerN -{1}(scale1r (x - t)) opprB -scalerDl normrZ.

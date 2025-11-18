@@ -1,11 +1,9 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
-From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions cardinality set_interval.
-From mathcomp Require Import interval_inference ereal reals real_interval.
+From mathcomp Require Import boolp classical_sets functions cardinality.
+From mathcomp Require Import set_interval interval_inference ereal reals.
 From mathcomp Require Import topology function_spaces tvs num_normedtype.
 From mathcomp Require Import pseudometric_normed_Zmodule normed_module.
 
@@ -38,7 +36,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldNormedType.Exports.
 
 Local Open Scope classical_set_scope.
@@ -106,16 +104,14 @@ move=> {}xy; have [rs|sr] := ltP r s.
 - suff : ~ ball x r (y + r).
     by apply; rewrite xrys /ball/= ltr_distlC !ltrD2l -ltr_norml gtr0_norm.
   by rewrite /ball/= ltr_distlC ltrD2r (ltNge y) (ltW xy) andbF.
-- suff : ~ ball y s (x - r + minr ((y - x) / 2) r).
+- suff : ~ ball y s (x - r + Num.min ((y - x) / 2) r).
     apply; rewrite -xrys /ball/= ltr_distlC ltrDl lt_min r0 andbT.
-    rewrite divr_gt0 ?subr_gt0//= addrAC ltrBlDl addrCA ler_ltD//.
+    rewrite divr_gt0 ?subr_gt0//= addrAC -addrA ltrD2l ltrBlDl.
     by rewrite gt_min ltrDl r0 orbT.
   have [yx2r|ryx2] := ltP ((y - x) / 2) r.
-    rewrite /ball/= ltr_distlC => /andP[+ _]; rewrite -(@ltr_pM2l _ 2)//.
-    rewrite !mulrDr mulrCA divff// mulr1 ltNge => /negP; apply.
-    rewrite addrAC !addrA (addrC _ y) mulr_natl mulr2n addrA addrK.
-    rewrite (mulr_natl y) mulr2n -!addrA lerD2l (lerD (ltW _))//.
-    by rewrite ler_wpM2l// lerNl opprK.
+    rewrite /ball/= ltr_distlC ltNge => /andP[/negP + _]; apply.
+    rewrite -(@ler_pM2r _ 2)// !(mulrBl, mulrDl) !divfK// addrAC.
+    by rewrite lerB ?ler_pM2r// addrC !mulr_natr subrKA lerD2l ltW.
   rewrite subrK /ball/= ltr_distlC => /andP[].
   rewrite ltrBlDl addrC -ltrBlDl -(@ltr_pM2r _ (2^-1))//.
   move=> /le_lt_trans => /(_ _ ryx2) /le_lt_trans => /(_ _ sr).
@@ -297,11 +293,9 @@ move=> _ /[1!inE] /predU1P[->|/H//]; exists k; split; [exact: ku| | |].
     exact: lexx.
   by have /allP := order_path_min LE_trans jt; apply; exact: kt.
 - case: ki0 => x [Bkx Bix] y => iy.
-  rewrite (ballE (is_ballB k)) scale_ballE// /ball/=.
-  rewrite -(subrK x y) -(addrC x) opprD addrA opprB.
+  rewrite (ballE (is_ballB k)) scale_ballE// /ball/= -(subrKA x).
   rewrite (le_lt_trans (ler_normD _ _))// -nat1r mulrDl mul1r mulr_natl.
-  rewrite (ltrD (is_ballP (is_ballB k) _))// -(subrK (cpoint (B i)) y).
-  rewrite -(addrC (cpoint (B i))) opprD addrA opprB.
+  rewrite (ltrD (is_ballP (is_ballB k) _))// -(subrKA (cpoint (B i))).
   rewrite (le_lt_trans (ler_normD _ _))//.
   apply (@lt_le_trans _ _ ((radius (B j))%:num *+ 2)); last first.
     apply: ler_wMn2r; move/ujt : ku; rewrite inE => /predU1P[<-|kt].
@@ -343,7 +337,7 @@ Notation r_gt0 := vitali_collection_partition_ub_gt0.
 Lemma ex_vitali_collection_partition i :
   V i -> exists n, vitali_collection_partition n i.
 Proof.
-move=> Vi; pose f := truncn (r / (radius (B i))%:num).
+move=> Vi; pose f := Num.truncn (r / (radius (B i))%:num).
 have f_ge0 : (0 <= f)%N.
   by rewrite truncn_ge_nat// divr_ge0// (le_trans _ (VBr Vi)).
 have [m /andP[mf fm]] := leq_ltn_expn f.-1.

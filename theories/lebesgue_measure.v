@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp Require Import finmap fingroup perm rat archimedean.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
+From mathcomp Require Import archimedean rat.
+From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop reals.
 From mathcomp Require Import interval_inference ereal topology numfun tvs.
 From mathcomp Require Import normedtype function_spaces sequences esum measure.
@@ -636,7 +636,7 @@ rewrite (_ : _ \o _ = (fun n => (1 - n.+1%:R^-1)%:E)); last first.
   by rewrite !(EFinB,EFinN) fin_num_oppeB// addeAC addeA subee// add0e.
 apply/cvg_lim => //=; apply/fine_cvgP; split => /=; first exact: nearW.
 apply/(@cvgrPdist_lt _ R^o) => _/posnumP[e].
-near=> n; rewrite opprB addrCA subrr addr0 ger0_norm//.
+near=> n; rewrite opprB subrKC ger0_norm//.
 by near: n; exact: near_infty_natSinv_lt.
 Unshelve. all: by end_near. Qed.
 
@@ -781,8 +781,8 @@ Lemma lebesgue_measure_ball (x r : R) : (0 <= r)%R ->
 Proof.
 rewrite le_eqVlt => /predU1P[ <-|r0].
   by rewrite (ball0 _ _).2// measure0 mul0rn.
-rewrite ball_itv lebesgue_measure_itv/= lte_fin ltrBlDr -addrA ltrDl.
-by rewrite addr_gt0 // -EFinD addrAC opprD opprK addrA subrr add0r -mulr2n.
+rewrite ball_itv lebesgue_measure_itv/= lte_fin.
+by rewrite ltrD2l gtrN// -EFinD opprB addrC subrKA.
 Qed.
 
 Lemma lebesgue_measure_closed_ball (x r : R) : 0 <= r ->
@@ -790,9 +790,8 @@ Lemma lebesgue_measure_closed_ball (x r : R) : 0 <= r ->
 Proof.
 rewrite le_eqVlt => /predU1P[<-|r0].
   by rewrite mul0rn closed_ball0// measure0.
-rewrite closed_ball_itv// lebesgue_measure_itv/= lte_fin -ltrBlDl addrAC.
-rewrite subrr add0r gtrN// ?mulr_gt0// -EFinD; congr (_%:E).
-by rewrite opprB addrAC addrCA subrr addr0 -mulr2n.
+  rewrite closed_ball_itv// lebesgue_measure_itv/= lte_fin.
+by rewrite ltrD2l gtrN// -EFinD opprB addrC subrKA.
 Qed.
 
 End lebesgue_measure_itv.
@@ -1144,8 +1143,8 @@ have EBr2 n : E n -> closure (B n) `<=` (ball (0:R) (r%:num + 2))%R.
   move=> [Dn] [x] => -[Bnx rx] y /= Bny.
   move: rx; rewrite /ball /= !sub0r !normrN => rx.
   rewrite -(subrK x y) (le_lt_trans (ler_normD _ _))//.
-  rewrite addrC ltr_leD// -(subrK (cpoint (B n)) y) -(addrA (y - _)%R).
-  rewrite (le_trans (ler_normD _ _))// (_ : 2 = 1 + 1)%R// lerD//.
+  rewrite addrC ltr_leD// -(subrKA (cpoint (B n))).
+  rewrite (le_trans (ler_normD _ _))// mulr2n lerD//.
     rewrite distrC; have := is_ball_closureP (ABV.1 n) Bny.
     by move=> /le_trans; apply; rewrite VB1//; exact: DV.
   have := is_ball_closureP (ABV.1 n) Bnx.

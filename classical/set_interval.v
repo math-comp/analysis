@@ -569,13 +569,10 @@ Lemma line_path_id : line_path 0 1 = id.
 Proof. by apply/funext => t; rewrite /line_path mulr0 add0r mulr1. Qed.
 
 Lemma line_pathEl a b t : line_path a b t = t * (b - a) + a.
-Proof. by rewrite /line_path mulrBl mul1r mulrBr addrAC [RHS]addrC addrA. Qed.
+Proof. by rewrite /line_path mulrBl addrAC -addrA -mulrBr mul1r addrC. Qed.
 
 Lemma line_pathEr a b t : line_path a b t = (1 - t) * (a - b) + b.
-Proof.
-rewrite /line_path mulrBr -addrA; congr (_ + _).
-by rewrite mulrBl opprB mul1r addrNK.
-Qed.
+Proof. by rewrite mulrBl mul1r addrAC subrK -mulrN opprB addrC line_pathEl. Qed.
 
 Lemma line_path10 t : line_path 1 0 t = 1 - t.
 Proof. by rewrite /line_path mulr0 addr0 mulr1. Qed.

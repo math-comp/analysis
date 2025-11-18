@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import all_ssreflect all_algebra finmap.
+From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop reals.
 From mathcomp Require Import interval_inference ereal topology normedtype.
 From mathcomp Require Import sequences esum numfun.
@@ -22,7 +22,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import ProperNotations.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -101,9 +101,9 @@ Lemma infinite_card_dirac (A : set T) : infinite_set A ->
   \esum_(i in A) \d_ i A = +oo :> \bar R.
 Proof.
 move=> infA; apply/eqyP => r r0.
-have [B BA Br] := infinite_set_fset (truncn r).+1 infA.
+have [B BA Br] := infinite_set_fset (Num.truncn r).+1 infA.
 apply: esum_ge; exists [set` B] => //.
-apply: (@le_trans _ _ (truncn r).+1%:R%:E).
+apply: (@le_trans _ _ (Num.truncn r).+1%:R%:E).
   by rewrite lee_fin ltW// truncnS_gt.
 move: Br; rewrite -(@ler_nat R) -lee_fin => /le_trans; apply.
 rewrite (eq_fsbigr (cst 1))/=; last first.

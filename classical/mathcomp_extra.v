@@ -1,6 +1,5 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
-From mathcomp Require Import archimedean rat finset interval.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum.
 
 (**md**************************************************************************)
 (* # MathComp extra                                                           *)

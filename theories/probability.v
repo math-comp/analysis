@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg.
 From mathcomp Require Import poly ssrnum ssrint interval archimedean finmap.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop.
 From mathcomp Require Import exp numfun lebesgue_measure lebesgue_integral.
 From mathcomp Require Import reals interval_inference ereal topology normedtype.
@@ -599,7 +599,7 @@ Lemma covariance_cst_l c (X : T -> R) : covariance P (cst c) X = 0.
 Proof.
 rewrite unlock expectation_cst/=.
 rewrite [X in 'E_P[X]](_ : _ = cst 0%R) ?expectation_cst//.
-by apply/funeqP => x; rewrite /GRing.mul/= subrr mul0r.
+by apply/funeqP => x; rewrite !fctE/= subrr mul0r.
 Qed.
 
 Lemma covariance_cst_r (X : T -> R) c : covariance P X (cst c) = 0.
@@ -729,7 +729,7 @@ Lemma variance_cst r : 'V_P[cst r] = 0%E.
 Proof.
 rewrite /variance unlock expectation_cst/=.
 rewrite [X in 'E_P[X]](_ : _ = cst 0%R) ?expectation_cst//.
-by apply/funext => x; rewrite /GRing.exp/GRing.mul/= subrr mulr0.
+by apply/funext => x; rewrite !fctE/= subrr mulr0.
 Qed.
 
 Lemma varianceZ a (X : T -> R) : X \in Lfun P 2%:E ->
@@ -963,8 +963,7 @@ apply: le_trans (le _ u0ge0) _; rewrite lee_fin le_eqVlt; apply/orP; left.
 rewrite eqr_div; [|apply: lt0r_neq0..]; last 2 first.
 - by rewrite exprz_gt0 -1?[ltLHS]addr0 ?ltr_leD.
 - by rewrite ltr_wpDl ?fine_ge0 ?variance_ge0 ?exprz_gt0.
-apply/eqP; have -> : fine 'V_P[X] = (u0 * lambda)%R.
-  by rewrite /u0 -mulrA mulVf ?mulr1 ?gt_eqF.
+apply/eqP; have -> : fine 'V_P[X] = (u0 * lambda)%R by rewrite divfK ?gt_eqF.
 by rewrite -mulrDl -mulrDr (addrC u0) [in RHS](mulrAC u0) -exprnP expr2 !mulrA.
 Qed.
 
@@ -1151,7 +1150,7 @@ Lemma bernoulli_pmf1 (p01 : 0 <= p <= 1) :
   \sum_(i \in [set: bool]) (bernoulli_pmf i)%:E = 1%E.
 Proof.
 rewrite setT_bool fsbigU//=; last by move=> x [/= ->].
-by rewrite !fsbig_set1/= -EFinD addrCA subrr addr0.
+by rewrite !fsbig_set1/= -EFinD subrKC.
 Qed.
 
 End bernoulli_pmf.
@@ -1451,7 +1450,7 @@ Lemma integral_binomial_prob (R : realType) n p U : (0 <= p <= 1)%R ->
 Proof.
 move=> /andP[p0 p1]; rewrite bernoulli_probE//=; last first.
   rewrite subr_ge0 exprn_ile1//=; [|exact/onem_ge0|exact/onem_le1].
-  by rewrite lerBlDr addrC -lerBlDr subrr; exact/exprn_ge0/onem_ge0.
+  by rewrite -subr_ge0 opprB subrKC; exact/exprn_ge0/onem_ge0.
 rewrite (@integral_binomial _ n p _ _ (fun y => \d_(1 <= y)%N U))//.
 rewrite !big_ord_recl/=.
 rewrite expr0 mul1r subn0 bin0 ltnn mulr1n addrC.
@@ -1813,8 +1812,7 @@ Let integral_normal_fun : sigma != 0 ->
   (\int[mu]_x (normal_fun x)%:E)%E = normal_peak^-1%:E.
 Proof.
 move=> s0; rewrite -integral_gaussFF'//; apply: eq_integral => /= x _.
-rewrite F'E !fctE/= EFinM -muleA -EFinM mulVf ?mulr1 ?mule1.
-  by rewrite normal_gauss_fun.
+rewrite F'E !fctE/= -EFinM divfK// ?normal_gauss_fun//.
 by rewrite gt_eqF// sqrtr_gt0 pmulrn_lgt0// exprn_even_gt0.
 Qed.
 
@@ -2262,7 +2260,7 @@ Lemma XMonemX00 x : XMonemX 0 0 x = 1.
 Proof. by rewrite XMonemX0n expr0. Qed.
 
 Lemma XMonemXC a b x : XMonemX a b (1 - x) = XMonemX b a x.
-Proof. by rewrite /XMonemX [in LHS]/onem opprB addrCA subrr addr0 mulrC. Qed.
+Proof. by rewrite /XMonemX [in LHS]/onem opprB subrKC mulrC. Qed.
 
 Lemma XMonemXM a b a' b' x :
   XMonemX a' b' x * XMonemX a b x = XMonemX (a + a') (b + b') x.
@@ -2296,7 +2294,7 @@ move: y01; rewrite in_itv/= => /andP[? ?].
 rewrite (le_trans _ (ltW x1))// mulr_ile1 ?exprn_ge0//.
 - by rewrite subr_ge0.
 - by rewrite exprn_ile1.
-- by rewrite exprn_ile1 ?subr_ge0// lerBlDl addrC -lerBlDl subrr.
+- by rewrite exprn_ile1 ?subr_ge0// -subr_ge0 opprB subrKC.
 Qed.
 
 Local Notation mu := lebesgue_measure.
@@ -2718,8 +2716,7 @@ apply: integral_beta_prob_bernoulli_prob_lty => //=.
   apply: measurable_funB => //.
   by apply: measurable_funX => //; exact: measurable_funB.
 move=> x; rewrite in_itv/= => /andP[x0 x1].
-rewrite -lerBlDr opprK add0r.
-rewrite andbC lerBlDl -lerBlDr subrr.
+rewrite -[_ <= 1]subr_ge0 opprB subrKC subr_ge0 andbC.
 rewrite exprn_ge0 ?subr_ge0//= exprn_ile1// ?subr_ge0//.
 by rewrite lerBlDl -lerBlDr subrr.
 Qed.

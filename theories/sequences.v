@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
-From mathcomp Require Import interval rat archimedean.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint.
+From mathcomp Require Import interval archimedean.
+From mathcomp Require Import boolp classical_sets.
 From mathcomp Require Import functions set_interval reals interval_inference.
 From mathcomp Require Import ereal topology tvs normedtype landau.
 
@@ -841,8 +841,8 @@ case => [|n].
 rewrite /arithmetic_mean /= seriesEnat /= big_nat_recl //=.
 under eq_bigr do rewrite [u_ _]eq_sum_telescope.
 rewrite big_split /= big_const_nat iter_addr addr0 addrA -mulrS mulrDr.
-rewrite -(mulr_natl (u_ O)) mulrA mulVf ?pnatr_eq0// mul1r opprD addrA.
-rewrite eq_sum_telescope (addrC (u_ O)) addrK.
+rewrite -(mulr_natl (u_ O)) mulKf ?pnatr_eq0//.
+rewrite eq_sum_telescope (addrC (u_ O)) addrKA.
 rewrite [X in _ - _ * X](_ : _ =
     \sum_(0 <= i < n.+1) \sum_(0 <= k < n.+1 | (k < i.+1)%N) a_ k); last first.
   rewrite !big_mkord; apply: eq_bigr => i _.
@@ -2936,8 +2936,8 @@ have majball g x : F g -> (ball x0 r%:num) x -> `|g (x - x0)| <= n%:R + n%:R.
   by apply: majballi => //; exact/ball_center.
 have ballprop : ball x0 r%:num (2^-1 * (r%:num / `|y|) *: y  + x0).
   rewrite -ball_normE /ball_ /= opprD addrC subrK normrN normrZ.
-  rewrite 2!normrM -2!mulrA (@normfV _ `|y|) normr_id mulVf ?mulr1 ?normr_eq0//.
-  by rewrite gtr0_norm // gtr0_norm // gtr_pMl // invf_lt1 // ltr1n.
+  rewrite 2!normrM 2!normfV normr_id !mulrA divfK ?normr_eq0//.
+  by rewrite !gtr0_norm// gtr_pMl// invf_lt1// ltr1n.
 have := majball f (2^-1 * (r%:num / `|y|) *: y + x0) Ff ballprop.
 rewrite -addrA addrN linf.
 move: (linear0 (pack_linear linf)) => /= ->.

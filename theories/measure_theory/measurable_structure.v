@@ -1,10 +1,8 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions cardinality fsbigop reals.
-From mathcomp Require Import interval_inference ereal topology normedtype.
-From mathcomp Require Import sequences esum numfun.
+From mathcomp Require Import all_ssreflect all_algebra finmap.
+From mathcomp Require Import boolp classical_sets functions cardinality reals.
+From mathcomp Require Import ereal topology normedtype sequences.
 
 (**md**************************************************************************)
 (* # Measure Theory                                                           *)
@@ -128,7 +126,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import ProperNotations.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Reserved Notation "'s<|' D , G '|>'" (at level 40, G, D at next level).
 Reserved Notation "'s<<' A '>>'".

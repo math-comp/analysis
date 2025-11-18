@@ -1,9 +1,8 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp Require Import fingroup perm rat archimedean finmap.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
+From mathcomp Require Import archimedean.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Export set_interval.
-From HB Require Import structures.
 From mathcomp Require Import reals interval_inference constructive_ereal.
 
 (**md**************************************************************************)
@@ -14,7 +13,6 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
-From mathcomp Require Import mathcomp_extra unstable.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.

@@ -122,7 +122,7 @@ have gt0_e: 0 < e by rewrite subr_gt0.
 move=> x y; rewrite !inE/= /eclamp pmulr_rle0 // invr_le0.
 rewrite lern0 /= !ltr_distl => /andP[_ lt1] /andP[lt2 _].
 apply/(lt_trans lt1)/(le_lt_trans _ lt2).
-by rewrite lerBrDl addrCA -splitr /e addrC subrK.
+by rewrite lerBrDr -addrA -splitr subrKC.
 Qed.
 
 Lemma separable {R : realType} (l1 l2 : \bar R) :
@@ -303,8 +303,7 @@ Lemma ncvgM u v lu lv : ncvg u lu%:E -> ncvg v lv%:E ->
 Proof.
 move=> cu cv; pose a := u \- lu%:S; pose b := v \- lv%:S.
 have eq: (u \* v) =1 (lu * lv)%:S \+ ((lu%:S \* b) \+ (a \* v)).
-  move=> n; rewrite {}/a {}/b /=.
-  by rewrite addrC mulrBr addrAC subrK addrC mulrBl subrK.
+  by move=> n; rewrite /= addrA mulrBr mulrBl 2!subrKC.
 apply/(ncvg_eq eq); rewrite -[X in X%:E]addr0; apply/ncvgD.
   by apply/ncvgC. rewrite -[X in X%:E]addr0; apply/ncvgD.
 + apply/ncvgMr; first rewrite -[X in X%:E](subrr lv).

@@ -265,8 +265,7 @@ rewrite /= opprD -![(_ + _ : _ -> _) _]/(_ + _) -![(- _ : _ -> _) _]/(- _).
 rewrite /cst /= [`|1|]normr1 mulr1 => dfv.
 rewrite addrA -[X in X + _]scale1r -(@mulVf _ h) //.
 rewrite mulrC -scalerA -scalerBr normrZ.
-rewrite -ler_pdivlMl; last by rewrite normr_gt0.
-by rewrite mulrCA mulVf ?mulr1; last by rewrite normr_eq0.
+by rewrite -ler_pdivlMl ?normr_gt0// mulrC mulfK ?normr_eq0.
 Unshelve. all: by end_near. Qed.
 
 Lemma derivable_nbhsP (f : V -> W) a v :
@@ -317,8 +316,8 @@ Lemma deriveE (f : V -> W) (a v : V) :
 Proof.
 rewrite /derive => /diff_locally -> /=; set k := 'o _.
 evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
-  rewrite funeqE=> h; rewrite !scalerDr scalerN /cst /=.
-  by rewrite addrC !addrA addNr add0r linearZ /= scalerA /g.
+  rewrite funeqE=> h.
+  by rewrite -[_ - _]addrA addrC subrKA scalerDr addrC linearZ scalerA /g.
 apply: cvg_lim => //.
 pose g1 : R -> W := fun h => (h^-1 * h) *: 'd f a v.
 pose g2 : R -> W := fun h : R => h^-1 *: k (h *: v ).
@@ -340,9 +339,9 @@ move=> /= j; rewrite /ball /= /ball_ add0r normrN.
 rewrite ltr_pdivlMr ?normr_gt0 // => jvi j0.
 rewrite add0r normrN normrZ -ltr_pdivlMl ?normr_gt0 ?invr_neq0 //.
 have /Hi/le_lt_trans -> // : ball 0 i (j *: v).
-   by rewrite -ball_normE/= add0r normrN (le_lt_trans _ jvi) // normrZ.
-rewrite -(mulrC e) -mulrA -ltr_pdivlMl // mulrA mulVf ?gt_eqF//.
-rewrite normfV div1r invrK ltr_pdivrMl; last by rewrite pmulr_rgt0 // normr_gt0.
+  by rewrite -ball_normE/= add0r normrN (le_lt_trans _ jvi) // normrZ.
+rewrite -(mulrC e) -mulrA -ltr_pdivlMl // mulKf ?gt_eqF// normfV invrK.
+rewrite ltr_pdivrMl; last by rewrite pmulr_rgt0 // normr_gt0.
 rewrite normrZ mulrC -mulrA.
 by rewrite ltr_pMl ?ltr1n // pmulr_rgt0 ?normm_gt0 // normr_gt0.
 Qed.
@@ -414,8 +413,8 @@ Fact dadd (f g : V -> W) x :
   (f + g) \o shift x = cst ((f + g) x) + ('d f x \+ 'd g x) +o_ 0 id.
 Proof.
 move=> df dg; split => [?|]; do ?exact: continuousD.
-apply/(@eqaddoE R); rewrite funeqE => y /=; rewrite -[(f + g) _]/(_ + _).
-by rewrite ![_ (_ + x)]diff_locallyx// addrACA addox addrACA.
+apply/(@eqaddoE R); rewrite funeqE => y /=.
+by rewrite !fctE ![_ (_ + x)]diff_locallyx// addrACA addox addrACA.
 Qed.
 
 Fact dopp (f : V -> W) x :
@@ -471,8 +470,7 @@ have /bigO_exP [_ /posnumP[k]] := bigOP [bigO of [O_ 0 id of f]].
 have := littleoP [littleo of [o_ 0 id of g]].
 move=>  /(_ (e%:num / k%:num)) /(_ _) /nbhs_ballP [//|_ /posnumP[d] hd].
 apply: filter_app; near=> x => leOxkx; apply: le_trans (hd _ _) _; last first.
-  rewrite -ler_pdivlMl //; apply: le_trans leOxkx _.
-  by rewrite invf_div mulrA -[_ / _ * _]mulrA mulVf // mulr1.
+  by rewrite -ler_pdivlMl // invf_div mulrA divfK.
 by rewrite -ball_normE /= distrC subr0 (le_lt_trans leOxkx) // -ltr_pdivlMl.
 Unshelve. all: by end_near. Qed.
 
@@ -516,7 +514,7 @@ rewrite mulrCA (@le_trans _ _ (e%:num * `|k^-1 *: x|)) //; last first.
   by rewrite ler_pM // normrZ normfV.
 apply: dfe; rewrite -ball_normE /= sub0r normrN normrZ.
 rewrite invrK -ltr_pdivlMr // ger0_norm // ltr_pdivrMr //.
-by rewrite -mulrA mulVf ?lt0r_neq0 // mulr1 [ltRHS]splitr ltrDl.
+by rewrite divfK ?lt0r_neq0// [ltRHS]splitr ltrDl.
 Qed.
 
 Lemma diff_unique (V W : normedModType R) (f : V -> W)
@@ -534,7 +532,7 @@ have hdf h : (f \o shift x = cst (f x) + h +o_ 0 id) ->
   by apply/eqP; rewrite eq_sym addrC addr_eq0 oppo.
 rewrite (hdf _ dxf).
 suff /diff_locally /hdf -> : differentiable f x.
-  by rewrite opprD addrCA -(addrA (_ - _)) addKr oppox addox.
+  by rewrite [_ - _ + _]addrC addrKA oppox addox.
 apply/diffP => /=.
 apply: (@getPex _ (fun (df : {linear V -> W}) => continuous df /\
   forall y, f y = f (lim (nbhs x)) + df (y - lim (nbhs x))
@@ -710,8 +708,8 @@ suff /he : ball 0 e%:num (k^-1 *: x).
   rewrite -ball_normE /= distrC subr0 => /ltW /le_trans; apply.
   by rewrite ger0_norm /k // mulVf.
 rewrite -ball_normE /= distrC subr0 normrZ.
-rewrite normfV ger0_norm /k // invfM/= -mulrA mulVf ?gt_eqF//.
-by rewrite mulr1 invf_div gtr_pMr// invf_lt1// ltr1n.
+rewrite normfV ger0_norm /k // invfM/= divfK ?gt_eqF//.
+by rewrite invf_div gtr_pMr// invf_lt1// ltr1n.
 Qed.
 
 Lemma linear_eqO (V' W' : normedModType R) (f : {linear V' -> W'}) :
@@ -815,8 +813,7 @@ move=> fc; split=> [q|].
     move=> A /(fc (_.1, _.2)) /= /nbhs_ballP [_ /posnumP[e] fpqe_A];
     apply/nbhs_ballP; exists e%:num => //= r [? ?]; exact: (fpqe_A (_.1, _.2)).
 apply/eqaddoE; rewrite funeqE => q /=.
-rewrite linearDl !linearDr addrA addrC.
-rewrite -[f q.1 _ + _ + _]addrA [f q.1 _ + _]addrC addrA [f q.1 _ + _]addrC.
+rewrite linearDr !linearDl -addrA addrC addrA [_ + f p.1 p.2]addrC.
 by congr (_ + _); rewrite -[LHS]/((fun p => f p.1 p.2) q) bilinear_eqo.
 Qed.
 
@@ -938,21 +935,8 @@ Fact dinv (x : R) :
   (fun x => x^-1)%R \o shift x = cst (x^-1)%R +
   (fun h : R => - x ^- 2 *: h) +o_ 0 id.
 Proof.
-move=> xn0; suff: continuous (fun h : R => - (1 / x) ^+ 2 *: h) /\
-  (fun x => 1 / x ) \o shift x = cst (1 / x) +
-  (fun h : R => - (1 / x) ^+ 2 *: h) +o_ 0 id.
-  rewrite !mul1r !GRing.exprVn.
-  rewrite (_ : (fun x => x^-1) =  (fun x => 1 / x ))//.
-  by rewrite funeqE => y; rewrite mul1r.
-split; first by move=> ?; exact: continuousZl_tmp.
+move=> xn0; split; first by move=> ?; exact: continuousZl_tmp.
 apply/eqaddoP => _ /posnumP[e]; near=> h.
-rewrite -[(_ + _ : R -> R) h]/(_ + _) -[(- _ : R -> R) h]/(- _) /=.
-rewrite opprD scaleNr opprK /cst /=.
-rewrite -[- _]mulr1 -[X in - _ * X](mulfVK xn0) mulrA mulNr -expr2 mulNr.
-rewrite [- _ + _]addrC -mulrBr.
-rewrite -[X in X + _]mulr1 -[X in 1 / _ * X](@mulfVK _ (x ^+ 2)); last first.
-  by rewrite sqrf_eq0.
-rewrite mulrA mulf_div mulr1.
 have hDx_neq0 : h + x != 0.
   near: h; rewrite !nbhs_simpl; apply/nbhs_normP.
   exists `|x|; first by rewrite /= normr_gt0.
@@ -960,13 +944,14 @@ have hDx_neq0 : h + x != 0.
   rewrite -(normr_gt0 (h + x)) addrC -[h]opprK.
   apply: lt_le_trans (ler_dist_dist _ _).
   by rewrite ger0_norm normrN //; apply: ltW.
-rewrite addrC -[X in X * _]mulr1 -{2}[1](@mulfVK _ (h + x)) //.
-rewrite mulrA expr_div_n expr1n mulf_div mulr1 [_ ^+ 2 * _]mulrC -mulrA.
-rewrite -mulrDr mulrBr [1 / _ * _]mulrC normrM.
-rewrite mulrDl mulrDl opprD addrACA addrA [x * _]mulrC expr2 2!subrK.
-rewrite div1r normfV [X in _ / X]normrM invfM [X in _ * X]mulrC.
-rewrite mulrA mulrAC ler_pdivrMr ?normr_gt0 ?mulf_neq0 //.
-rewrite mulrAC ler_pdivrMr ?normr_gt0 //.
+rewrite !fctE/= opprD scaleNr opprK.
+suff: `|h * h| / `|h + x| / `|x * x| <= e%:num * `|h|.
+  rewrite -2!normf_div -mulrA -invfM; congr (`|_| <= _).
+  apply/(canLR (mulfK _)); rewrite ?mulf_neq0//.
+  rewrite mulrDl mulKf// [(_ + _) * _]mulrC mulrDr mulrN.
+  rewrite -mulrA mulfK// -mulrA mulVKf ?mulf_neq0//.
+  by rewrite [- _ + _]addrC !mulrDl [x * h]mulrC addrKA subrKC.
+rewrite ler_pdivrMr ?normr_gt0 ?mulf_neq0 // mulrAC ler_pdivrMr ?normr_gt0 //.
 have : `|h * h| <= `|x / 2| * (e%:num * `|x * x| * `|h|).
   rewrite !mulrA; near: h; exists (`|x / 2| * e%:num * `|x * x|).
     by rewrite /= !pmulr_rgt0 // normr_gt0 mulf_neq0.
@@ -979,7 +964,7 @@ rewrite normrN [leRHS]ger0_norm; last first.
   rewrite subr_ge0; apply: ltW; apply: lt_le_trans lthhx _.
   by rewrite ler_pdivrMr // -{1}(mulr1 `|x|) ler_pM // ler1n.
 rewrite lerBrDr -lerBrDl (splitr `|x|).
-by rewrite normrM normfV (@ger0_norm _ 2) // addrK; apply/ltW.
+rewrite normf_div (@ger0_norm _ 2) // addrK; apply/ltW.
 Unshelve. all: by end_near. Qed.
 
 Lemma diff_Rinv (x : R) : x != 0 ->
@@ -1592,8 +1577,7 @@ have [c cab dgc0] := Rolle altb gdrvbl gcont gaegb.
 exists c; first exact: cab.
 have /fdrvbl dfc := cab; move/@derive_val: dgc0; rewrite deriveB //.
 move/eqP; rewrite [X in _ - X]deriveE // derive_val diff_val scale1r subr_eq0.
-move/eqP->; rewrite -mulrA mulVf ?mulr1 //; apply: lt0r_neq0.
-by rewrite subr_gt0.
+by move/eqP->; rewrite divfK// subr_eq0 gt_eqF.
 Qed.
 
 (* Weakens MVT to work when the interval is a single point. *)

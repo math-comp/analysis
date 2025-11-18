@@ -1,9 +1,8 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp Require Import finmap fingroup perm rat archimedean.
 From HB Require Import structures.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions fsbigop cardinality.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
+From mathcomp Require Import archimedean.
+From mathcomp Require Import boolp classical_sets functions fsbigop cardinality.
 From mathcomp Require Import reals ereal interval_inference topology numfun.
 From mathcomp Require Import normedtype sequences esum real_interval measure.
 From mathcomp Require Import realfun.
@@ -84,12 +83,11 @@ move=> e0; move: (cumulative_is_right_continuous f).
 move=> /(_ a) /(@cvgr_dist_lt _ R^o) /(_ _ e0)[] _ /posnumP[d] => h.
 exists (PosNum [gt0 of (d%:num / 2)]) => //=.
 move: h => /(_ (a + d%:num / 2)) /=.
-rewrite opprD addrA subrr distrC subr0 ger0_norm //.
-rewrite ltr_pdivrMr// ltr_pMr// ltr1n => /(_ erefl).
-rewrite ltrDl divr_gt0// => /(_ erefl).
+rewrite opprD addNKr normrN ger0_norm// ltr_pdivrMr// ltr_pMr// 2!ltrDl.
+rewrite ltr01 divr_gt0// => /(_ erefl erefl).
 rewrite ler0_norm; last first.
   by rewrite subr_le0 (cumulative_is_nondecreasing f)// lerDl.
-by rewrite opprB ltrBlDl => fa; exact: ltW.
+by rewrite opprB ltrBlDl; exact: ltW.
 Qed.
 
 Section id_is_cumulative.

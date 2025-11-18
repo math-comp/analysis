@@ -1,9 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
-From mathcomp Require Import archimedean.
+From mathcomp Require Import all_ssreflect all_algebra finmap.
 From mathcomp Require Import boolp classical_sets functions wochoice.
-From mathcomp Require Import cardinality mathcomp_extra unstable fsbigop.
+From mathcomp Require Import cardinality fsbigop.
 From mathcomp Require Import set_interval filter reals interval_inference.
 From mathcomp Require Import topology_structure compact subspace_topology.
 From mathcomp Require Import discrete_topology order_topology.
@@ -874,24 +873,19 @@ move: e1 e2 x z; elim: n.
     - exact: n_step_ball_center.
     - apply: n_step_ball_le; last exact: Oxy.
       by rewrite -deE lerDl; apply: ltW.
-    - apply: (@n_step_ball_le _ _ d2); last by split.
-      rewrite -[e2]addr0 -(subrr e1) addrA -lerBlDr opprK [leLHS]addrC.
-      by rewrite [e2 + _]addrC -deE; exact: lerD.
+    - by apply: (@n_step_ball_le _ _ d2); rewrite // -(lerD2l e1) -deE lerD.
     - by rewrite addn0.
   move=> /negP; rewrite -ltNge//.
   move=> e1d1; exists y, z, 0%N, 0%N; split.
   - by apply: n_step_ball_le; last (exact: Oxy); exact: ltW.
-  - rewrite -deE; apply: (@n_step_ball_le _ _ d2) => //.
-    by rewrite lerDr; apply: ltW.
+  - by apply: (@n_step_ball_le _ _ d2); rewrite // -deE lerDr ltW.
   - exact: n_step_ball_center.
   - by rewrite addn0.
 move=> n IH e1 e2 x z e1pos e2pos [y] [d1] [d2] [] Od1xy d1pos d2pos gd2yz deE.
 case: (pselect (e2 <= d2)).
   move=> e2d2; exists y, z, n.+1, 0%N; split.
-  - apply: (@n_step_ball_le _ _ d1); rewrite // -[e1]addr0 -(subrr e2) addrA.
-    by rewrite -deE -lerBlDr opprK lerD.
-  - apply: (@n_step_ball_le _ _ d2); last by split.
-    by rewrite -deE lerDr; exact: ltW.
+  - by apply: (@n_step_ball_le _ _ d1); rewrite // -(lerD2r e2) -deE lerD.
+  - by apply: (@n_step_ball_le _ _ d2); rewrite // -deE lerDr; exact: ltW.
   - exact: n_step_ball_center.
   - by rewrite addn0.
 have d1E' : d1 = e1 + (e2 - d2) by rewrite addrA -deE addrK.
@@ -900,7 +894,7 @@ move=> /negP; rewrite -ltNge// => d2lee2.
   move=> t1 [t2] [c1] [c2] [] Oxy1 gt1t2 t2y <-.
   exists t1, t2, c1, c2.+1; split => //.
   - by apply: (@n_step_ball_le _ _ d1); rewrite -?deE // ?lerDl; exact: ltW.
-  - by exists y, (e2 - d2), d2; split; rewrite // ?subr_gt0// subrK.
+  - by exists y, (e2 - d2), d2; rewrite // ?subr_gt0// subrK.
   - by rewrite addnS.
 Qed.
 

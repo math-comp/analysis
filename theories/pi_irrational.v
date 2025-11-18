@@ -1,5 +1,5 @@
-From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop interval_inference.
 From mathcomp Require Import reals ereal topology normedtype sequences.
 From mathcomp Require Import real_interval esum measure lebesgue_measure numfun.
@@ -81,7 +81,7 @@ Qed.
 
 Let f_int i : n`!%:R * f`_i \is a Num.int.
 Proof.
-rewrite /f coefZ mulrA divff ?mul1r ?pnatr_eq0 ?gtn_eqF ?fact_gt0//.
+rewrite /f coefZ mulVKf ?pnatr_eq0 ?gtn_eqF ?fact_gt0//.
 apply/polyOverP => /=; rewrite rpredM ?rpredX ?polyOverX//=.
 by rewrite rpredB ?polyOverC ?polyOverZ ?polyOverX//= natr_int.
 Qed.
@@ -109,16 +109,8 @@ Let pf_sym : f \Po (pirat%:P - 'X) = f.
 Proof.
 rewrite /f comp_polyZ; congr *:%R.
 rewrite comp_polyM !comp_poly_exprn comp_polyB comp_polyC !comp_polyZ.
-rewrite !comp_polyX scalerBr.
-have bap : b%:P * pirat%:P = a%:P.
-  by rewrite polyCM mulrC -mulrA -polyCM mulVf ?b0 // mulr1.
-suff -> : a%:P - (b *: pirat%:P - b *: 'X) = b%:P * 'X.
-  rewrite exprMn mulrA mulrC; congr *%R.
-  rewrite -exprMn; congr (_ ^+ _).
-  rewrite mulrBl /pirat mul_polyC -bap (mulrC b%:P); congr (_ - _)%R.
-    by rewrite mul_polyC.
-  by rewrite mulrC mul_polyC.
-by rewrite -mul_polyC bap opprB addrCA subrr addr0 mul_polyC.
+rewrite !comp_polyX scalerBr -!exprMn scale_polyC [b * _]mulrC divfK// opprB.
+by rewrite subrKC -mul_polyC mulrA mulrC mulrBl -polyCM divfK// [_ * 'X]mulrC.
 Qed.
 
 Let derivn_fpix i : f^`(i) \Po (pirat%:P - 'X) = (-1) ^+ i *: f^`(i).
@@ -208,13 +200,10 @@ Let fsin_antiderivative n :
   'D_1 (fun x => (F n)^`().[x] * sin x - (F n).[x] * cos x) =
   fsin n.
 Proof.
-apply/funext => x/=.
-rewrite deriveB//= !deriveM// !derive_val.
-rewrite opprD scalerN opprK.
-rewrite -addrA addrC -!addrA [X in - X]mulrC !addrA subrK [X in X + _]mulrC.
-rewrite -derivn1 -derivSn.
+apply/funext => x/=; rewrite deriveB//= !deriveM// !derive_val.
+rewrite opprD scalerN opprK [X in - X]mulrC addrC subrKA -derivn1 -derivSn.
 (* ((F n)^`(2)).[x] * sin x + (F n).[x] * sin x *)
-by rewrite -mulrDl -hornerD (@D2FDF R na _ n nb0).
+by rewrite [X in _ + X]mulrC -mulrDl -hornerD addrC (@D2FDF R na _ n nb0).
 Qed.
 
 Definition intfsin n := \int[mu]_(x in `[0, pi]) (fsin n x).
