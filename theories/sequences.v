@@ -2931,18 +2931,13 @@ have /= [? ?]:= funf 0 Logic.I.
 by split => //.
 Unshelve. all: by end_near. Qed.
 
+(* PR in progress *)
 Lemma infinite_setD {T} (A B : set T) :
-  infinite_set A -> finite_set B ->
-  infinite_set (A `\` B).
+  infinite_set A -> finite_set B -> infinite_set (A `\` B).
 Proof.
-move=> infA finB finAB.
-apply: infA.
-rewrite setDE in finAB.
-have : finite_set ((A `&` ~` B) `|` B).
-  by rewrite finite_setU.
-rewrite setUIl.
-rewrite setUCl setIT.
-by rewrite finite_setU => -[].
+move=> + finB finAB; apply.
+have : finite_set ((A `&` ~` B) `|` B) by rewrite finite_setU.
+by rewrite setUIl setUCl setIT finite_setU => -[].
 Qed.
 
 Theorem bolzano_weierstrass (E : set R) :
