@@ -900,7 +900,7 @@ Let sumN_Nsum_fG n :
        (\int[mu]_(x in seqDU (fun k : nat => `]a, (a + k%:R)%R]%classic) i)
            (f x * G x)%:E)%E)%R.
 Proof.
-rewrite big_nat_cond fin_num_sumeN; rewrite -?big_nat_cond//; move=> m _.
+rewrite big_nat_cond fin_num_sumeN -?big_nat_cond//; move=> m _.
 rewrite seqDUE integral_itvob_itvcb.
   apply/measurable_EFinP; apply: measurable_funS mfG => //.
   by apply/subset_itv => //; rewrite bnd_simp// lerDl.
