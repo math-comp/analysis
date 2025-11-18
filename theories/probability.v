@@ -2941,3 +2941,284 @@ by rewrite -!EFin_beta_fun -EFinM divff// gt_eqF// beta_fun_gt0.
 Qed.
 
 End beta_prob_bernoulliE.
+
+
+Section expR_properties.
+Context {R : realType}.
+
+Let f n (x : R) (i : nat) : R := ((i == 0%nat)%:R + x ^+ n / n`!%:R *+ (i == n)).
+
+Local Lemma F n x m : (n.+1 < m)%nat ->
+  \sum_(0 <= i < m) (f n.+1 x i) = 1 + x ^+ n.+1 / n.+1`!%:R.
+Proof.
+move=> n1m.
+rewrite (@big_cat_nat _ _ _ n.+2)//=.
+rewrite big_nat_recr// big_nat_recl//=.
+rewrite big_nat_cond big1 ?addr0; last first.
+  move=> i; rewrite /f andbT => /andP[_ iltn].
+  by rewrite add0r lt_eqF.
+rewrite big_nat_cond big1 ?addr0; last first.
+  move=> i; rewrite /f andbT => /andP[Sngti iltm].
+  rewrite 2?gt_eqF ?add0r//.
+  exact: ltn_trans Sngti.
+by rewrite /f/= add0r mulr0n addr0 eq_refl 2!mulr1n.
+Qed.
+
+Lemma expR_ge1Dxn' (x : R) (n : nat) : 0 <= x ->
+   1 + x ^+ n.+1 / n.+1`!%:R <= expR x.
+Proof.
+move=> x_ge0; rewrite /expR.
+have -> : 1 + x ^+ n.+1 / n.+1`!%:R = limn (series (f n.+1 x)).
+  by apply/esym/(@lim_near_cst R^o) => //; near=> k; apply: F; near:k.
+apply: ler_lim; first by apply: is_cvg_near_cst; near=> k; apply: F; near: k.
+  exact: is_cvg_series_exp_coeff.
+near=> k; apply: ler_sum => -[|[|i]] _; rewrite /f/exp_coeff/=.
+- by rewrite !(mulr0n, expr0, addr0, divr1).
+- case: n; first by rewrite !(mulr0n, mulr1n, expr0, addr0, add0r, divr1).
+  by move=> n; rewrite addr0 mulr0n expr1 divr1.
+- rewrite add0r.
+  case H : (i.+2 == n.+1); move: H; [move/eqP ->| move=> _].
+    by rewrite mulr1n.
+  rewrite mulr0n.
+  rewrite divr_ge0//.
+  by rewrite exprn_ge0.
+Unshelve. all: by end_near. Qed.
+
+Lemma expR_gt1Dxn (x : R) n : 0 < x ->
+  1 + x ^+ n.+1 / n.+1`!%:R < expR x.
+Proof.
+move=> x0.
+(*
+have [] := @MVT R expR expR _ _ x0 (fun x _ => is_derive_expR x).
+  exact/continuous_subspaceT/continuous_expR.
+move=> c; rewrite in_itv/= => /andP[c0 cx].
+rewrite subr0 expR0 => /eqP /[!subr_eq] /eqP.
+rewrite addrC ltrD2r.
+rewrite exprSr mulrAC.
+rewrite ltr_pM2r//.
+apply: le_lt_trans (IH _ c0).
+
+
+rewrite (@le_trans _ _ (c ^+ n.+1 / (n.+1)`!%:R))//.
+  rewrite factS mulnC natrM invfM mulrA -[leRHS]mulr1.
+  rewrite ler_pM//.
+  - by rewrite mulr_ge0// exprn_ge0// ltW.
+  - rewrite ler_pM2r; last by rewrite invr_gt0 -(mulr0n 1) ltr_nat fact_gt0.
+    rewrite ler_pXn2r//.
+-expR0 ltr_expR.
+Qed.
+*)
+Abort.
+
+End expR_properties.
+
+Section Gamma.
+Context {R : realType}.
+
+Notation mu := lebesgue_measure.
+
+Definition Gamma (a : R) : \bar R :=
+  (\int[mu]_(x in `[0%R, +oo[) (x`^  (a - 1) * expR (- x))%:E)%E.
+
+Lemma Gamma1 : Gamma 1 = 1%E.
+Proof.
+transitivity (@exponential_prob R 1 `[0, +oo[).
+  apply: eq_integral => x; rewrite inE/= in_itv/= => /andP[x0 _].
+  by rewrite subrr powRr0 exponential_pdfE// mulN1r.
+transitivity (@exponential_prob R 1 setT).
+  rewrite -[LHS]addr0.
+  rewrite -(setUv `[0, +oo[).
+  rewrite measureU//; last 2 first.
+  - exact: measurableC.
+  - exact: setICr.
+  congr +%E; apply/esym.
+  rewrite /=/exponential_prob integral0_eq// => x/=; rewrite in_itv/= andbT.
+  by move/negP; rewrite -ltNge => x0; congr EFin; apply: exponential_pdfNE.
+exact: probability_setT.
+Qed.
+
+Lemma Gamma_add1 a : 1 <= a -> (Gamma (a + 1) = a%:E * Gamma a)%E.
+Proof.
+move=> a1.
+have dxa1 : {in `]0, +oo[%R,
+  (fun x : R => x `^ a : R^o) ^`()%classic =1 (fun x => a * x `^ (a - 1))}.
+  exact: powR_derive1.
+have dexp : {in `]0, +oo[%R,
+  (fun x => - expR (- x) : R^o) ^`()%classic =1 (fun x => expR (- x))}.
+  by move=> x _; rewrite derive1E derive_val mulrN mulr1 opprK.
+rewrite/Gamma addrK.
+set f := (fun x => (x `^ a * - expR (- x))) : R^o -> R^o.
+have fcvg0 : f x @[x --> +oo%R] --> @GRing.zero R.
+  apply/cvgrPdistC_lep.
+  near=> e; near=> x.
+  rewrite subr0.
+  rewrite /f/= mulrN normrN.
+  have /normr_idP -> : 0 <= (x `^ a * expR (- x)).
+    by rewrite mulr_ge0 1?expR_ge0 1?powR_ge0.
+  rewrite expRN.
+  set A := `|archimedean.Num.Def.ceil a|.+1%N.
+  have H1DxAgt0 : 0 < (1%R + x `^ A%:R / A`!%:R)%E.
+    rewrite addr_gt0 ?powR_gt0 ?divr_gt0 ?powR_gt0//.
+    by rewrite -(mulr0n 1) ltr_nat fact_gt0.
+  apply: (@le_trans _ _ (x `^ a / (1 + x `^ A%:R / A`!%:R))).
+    rewrite ler_pM2l; last exact: powR_gt0.
+    rewrite ler_pV2//; last 2 first.
+    - rewrite inE/=; apply/andP; split; last by rewrite expR_gt0.
+      rewrite unitfE gt_eqF ?expR_gt0//.
+      rewrite inE/=; apply/andP; split => //.
+      by rewrite unitfE gt_eqF//.
+    rewrite powR_mulrn//.
+    exact: expR_ge1Dxn'.
+  apply: (@le_trans _ _ (x `^ a / (x `^ A%:R / A`!%:R))).
+    rewrite ler_pM2l; last first.
+      exact: powR_gt0.
+    rewrite ler_pV2; last 2 first.
+    - rewrite inE/=; apply/andP; split => //.
+      by rewrite unitfE gt_eqF ?expR_gt0//.
+    - have HxAgt0 : 0 < x `^ A%:R / A`!%:R.
+        rewrite mulr_gt0 ?powR_gt0 ?invr_gt0//.
+        by rewrite -(mulr0n 1) ltr_nat fact_gt0.
+      rewrite inE/=; apply/andP; split => //.
+      by rewrite unitfE gt_eqF//.
+    by rewrite lerDr.
+  rewrite invfM mulrA.
+  rewrite ler_pdivrMr; last by rewrite invr_gt0 -(mulr0n 1) ltr_nat fact_gt0.
+  rewrite -powRB ?(@gt_eqF _ _ x) ?implybT//.
+  rewrite -(@opprK _ (a - A%:R)).
+  rewrite powRN.
+  rewrite invf_ple//; last 2 first.
+  - rewrite posrE.
+    by rewrite powR_gt0.
+  - rewrite posrE.
+    rewrite divr_gt0//.
+    rewrite -(mulr0n 1).
+    rewrite ltr_nat.
+    by rewrite fact_gt0.
+  rewrite (@le_trans _ _ x)//.
+    near: x.
+    apply: nbhs_pinfty_ge.
+    rewrite realV.
+    rewrite ger0_real//.
+    by rewrite divr_ge0.
+  apply: le1r_powR.
+    near: x.
+    exact: nbhs_pinfty_ge.
+  rewrite lerNr.
+  rewrite lerBlDl.
+  rewrite /A.
+  rewrite -natr1 addrK.
+  rewrite natr_absz.
+  rewrite intr_norm.
+  rewrite -RceilE.
+  have /normr_idP -> : 0 <= Rceil a.
+    by rewrite Rceil_ge0// (le_trans _ a1).
+  exact: Rceil_ge.
+have powRMexpR_ge0 b : {in `]0, +oo[,
+     forall x, (0 <= (x `^ b * expR (- x))%:E)%E}.
+  move=> x; rewrite in_itv/= andbT => x0.
+  by rewrite lee_fin mulr_ge0// ltW// ?powR_gt0// expR_gt0.
+rewrite (integration_by_partsy_npsfG_nngFg _ _ dxa1 _ _ dexp fcvg0); last 6 first.
+- move: a1.
+  rewrite le_eqVlt => /predU1P[<- |a1].
+    apply: continuous_subspaceT => x.
+    under [X in continuous_at _ X]eq_fun do rewrite mul1r subrr powRr0.
+    exact: cvg_cst.
+  apply/continuous_within_itvcyP; split.
+    move=> x; rewrite in_itv/= andbT => x0.
+    rewrite /continuous_at/=.
+    rewrite /powR gt_eqF//=; last by rewrite subr_gt0.
+    apply: (@cvg_trans _ ((a * expR ((a - 1) * ln x1)) @[x1 --> x])).
+      apply: near_eq_cvg.
+      near=> z.
+      rewrite gt_eqF//.
+      near: z.
+      exact: lt_nbhsr.
+    apply: (@cvgM _ _ (nbhs x)); first exact: cvg_cst.
+    apply: (@cvg_comp _ _ _ _ expR _ (nbhs ((a - 1) * ln x))).
+      apply: cvgM; first exact: cvg_cst.
+      exact: continuous_ln.
+    rewrite ifF; last by rewrite gt_eqF.
+    exact: continuous_expR.
+  apply: cvgM; first exact: cvg_cst.
+  rewrite powR0; last by rewrite gt_eqF// subr_gt0.
+  by apply: (@powR_cvg0 _ (a - 1)); rewrite subr_gt0.
+- move: a1; rewrite le_eqVlt => /predU1P[<- |a1].
+    split.
+      move=> x; rewrite in_itv/= andbT => x0.
+      apply: (@near_eq_derivable _ _ _ id).
+        - by rewrite gt_eqF.
+        - near=> z.
+          rewrite powRr1// ltW//.
+          near: z.
+          exact: lt_nbhsr.
+        - exact: derivable_id.
+      rewrite powR0.
+      apply: (@cvg_trans _ (id x @[x --> 0^'+])).
+        apply: near_eq_cvg.
+        near=> x.
+        by rewrite powRr1.
+      apply: cvg_at_right_filter.
+      exact: cvg_id.
+    by rewrite gt_eqF.
+  split; last first.
+    rewrite powR0; last first.
+      rewrite gt_eqF//.
+      exact: lt_trans a1.
+    apply: powR_cvg0.
+    exact: lt_trans a1.
+- exact: derivable_powR.
+- apply: continuous_subspaceT.
+  move=> x.
+  apply: continuous_comp.
+    apply: (@opp_continuous _ R^o).
+  exact: continuous_expR.
+- split.
+    move=> x _.
+    apply: derivableN.
+    apply: diff_derivable.
+    apply: (@differentiable_comp _ _ R^o) => //.
+    apply/derivable1_diffP.
+    exact: derivable_expR.
+  apply: cvgN.
+  apply: cvg_at_right_filter.
+  apply/(cvg_compNP (expR : R^o -> R^o)).
+  exact: continuous_expR.
+- move=> ? ?; rewrite mulrN EFinN oppe_le0.
+  rewrite -mulrA EFinM mule_ge0//; last exact: powRMexpR_ge0.
+  by rewrite lee_fin (le_trans _ a1).
+- exact: powRMexpR_ge0.
+rewrite sub0r.
+move: a1; rewrite le_eqVlt => /orP[/eqP<- |a1].
+  rewrite powRr1// mul0r oppr0 add0r mul1e.
+  by under eq_integral do rewrite mulrN EFinN oppeK mul1r.
+rewrite powR0 ?mul0r ?oppr0 ?add0r; last first.
+  by rewrite gt_eqF// (lt_trans _ a1).
+under eq_integral do rewrite -EFinN mulrN opprK -mulrA EFinM.
+rewrite ge0_integralZl//=.
+- apply/measurable_EFinP.
+  apply: measurable_funTS.
+  apply: measurable_funM; first exact: measurable_powR.
+  exact: measurableT_comp.
+- move=> x; rewrite in_itv/= andbT => x0.
+  by rewrite lee_fin mulr_ge0// ?powR_ge0 ?expR_ge0.
+- by rewrite lee_fin ltW// (lt_trans _ a1).
+Unshelve. all: end_near. Qed.
+
+Let I n : \bar R := \int[mu]_(x in `[0%R, +oo[) (x ^+ n * expR (- x))%:E.
+(* wip *)
+
+End Gamma.
+
+Definition Rfact {R : realType} (x : R) := Gamma (x + 1)%R.
+
+Lemma RfactE {R : realType} (n : nat) : @Rfact R n%:R = n`!%:R%:E.
+Proof.
+rewrite /Rfact.
+elim: n.
+  rewrite /Rfact add0r.
+  exact: Gamma1.
+move=> n IH.
+rewrite Gamma_add1; last first.
+  by rewrite -[leLHS](mulr1n 1) ler_nat.
+by rewrite -{2}natr1 IH factS natrM EFinM.
+Qed.
