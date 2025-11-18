@@ -1048,7 +1048,7 @@ apply: subspace_continuous_measurable_fun => //.
 rewrite continuous_open_subspace// => x ax.
 apply: cvgM.
   have [/derivable_within_continuous + _] := Foy.
-  by rewrite continuous_open_subspace => [|//]; apply.
+  by rewrite continuous_open_subspace => [//|]; apply.
 have /continuous_within_itvcyP[+ _] := cg.
 by apply; rewrite inE/= in ax.
 Qed.
@@ -1061,8 +1061,7 @@ move=> Fg0.
 rewrite -integral_itvob_itvcb; first exact/measurable_EFinP.
 under eq_integral => x do rewrite -(opprK (F x)) mulNr EFinN.
 rewrite integralN/=.
-  apply: fin_num_adde_defl.
-  apply/EFin_fin_numP; exists 0%R.
+  apply/fin_num_adde_defl/EFin_fin_numP; exists 0%R.
   apply/eqe_oppLRP; rewrite oppe0.
   apply: integral0_eq => /= x ax.
   apply: (@ge0_funenegE _ _ `]a, +oo[); last by rewrite inE/=.
