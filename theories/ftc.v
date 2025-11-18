@@ -1065,11 +1065,10 @@ rewrite integralN/=.
   apply/eqe_oppLRP; rewrite oppe0.
   apply: integral0_eq => /= x ax.
   apply: (@ge0_funenegE _ _ `]a, +oo[); last by rewrite inE/=.
-  move=> ?/= ?; rewrite mulNr EFinN oppe_ge0 Fg0//=.
-  by rewrite inE.
+  by move=> ?/= ?; rewrite mulNr EFinN oppe_ge0 Fg0//= inE.
 rewrite integral_itvob_itvcb//.
 under [X in _ _ X]eq_fun do rewrite mulNr.
-apply/measurable_EFinP; exact: measurableT_comp.
+exact/measurable_EFinP/measurableT_comp.
 Qed.
 
 Lemma integration_by_partsy_le0_le0 :
