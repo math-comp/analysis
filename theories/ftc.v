@@ -1081,7 +1081,7 @@ move=> fG0 Fg0; rewrite NintNFg//.
 rewrite (@integration_by_partsy_ge0_ge0 R (- F)%R G (- f)%R g a (- FGoo))//.
 - by move=> ?; apply: cvgN; exact: cf.
 - exact: derivable_oy_continuous_bndN.
-- by move=> ? ?; rewrite fctE derive1N ?Ff//; move: Foy => [+ _]; apply.
+- by move=> ? ?; rewrite fctE derive1N ?Ff => [|//|//]; apply: Foy.1.
 - by under eq_cvg do rewrite fctE/= mulNr; apply: cvgN.
 - by move=> ? ?; rewrite mulNr EFinN oppe_ge0; apply: fG0.
 - by move=> ? ?; rewrite mulNr EFinN oppe_ge0; apply: Fg0.
