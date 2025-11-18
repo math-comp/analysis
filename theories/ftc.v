@@ -1059,8 +1059,7 @@ move=> Fg0.
 rewrite -integral_itv_obnd_cbnd//.
 under eq_integral => x do rewrite -(opprK (F x)) mulNr EFinN.
 rewrite integralN/=; last first.
-  apply: fin_num_adde_defl.
-  apply/EFin_fin_numP; exists 0%R.
+  apply/fin_num_adde_defl/EFin_fin_numP; exists 0%R.
   apply/eqe_oppLRP; rewrite oppe0.
   apply: integral0_eq => /= x ax.
   apply: (@ge0_funenegE _ _ `]a, +oo[); last by rewrite inE/=.
