@@ -923,10 +923,9 @@ rewrite big_nat_cond [RHS]big_nat_cond.
 apply: eq_bigr => i.
 rewrite seqDUE andbT => i0n.
 rewrite 2?integral_itv_obnd_cbnd; last 2 first.
-  apply: measurableT_comp => //.
-  apply: measurable_funS mfG => //.
+- apply: measurableT_comp => //; apply: measurable_funS mfG => //.
   by apply/subset_itv; rewrite bnd_simp// lerDl.
-  apply: measurable_funS mfG => //.
+- apply: measurable_funS mfG => //.
   by apply/subset_itv; rewrite bnd_simp// lerDl.
 rewrite -integralN ?integrable_add_def ?continuous_compact_integrable//.
   exact: segment_compact.
