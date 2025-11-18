@@ -1002,6 +1002,14 @@ move=> /finite_setP[m Am]; rewrite (card_fset_set Am).
 by rewrite (card_le_eqr Am) card_le_II.
 Qed.
 
+Lemma infinite_setD {T} (A B : set T) :
+  infinite_set A -> finite_set B -> infinite_set (A `\` B).
+Proof.
+move=> + finB finAB; apply.
+have : finite_set ((A `&` ~` B) `|` B) by rewrite finite_setU.
+by rewrite setUIl setUCl setIT finite_setU => -[].
+Qed.
+
 Lemma infinite_set_fset {T : choiceType} (A : set T) n :
   infinite_set A ->
     exists2 B : {fset T}, [set` B] `<=` A & (#|` B| >= n)%N.
