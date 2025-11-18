@@ -1959,6 +1959,21 @@ Unshelve. end_near. Qed.
 
 End exponential_pdf.
 
+Section exponential_pdf_properties.
+Context {R : realType}.
+Notation mu := lebesgue_measure.
+Variable (mean : R).
+Hypothesis mean0 : (0 < mean)%R.
+
+Lemma exponential_pdfNE (x : R) : x < 0 ->
+  exponential_pdf mean x = 0.
+Proof.
+rewrite ltNge=> /negP x0; rewrite /exponential_pdf patchE ifF//.
+by apply/memNset; rewrite /= in_itv/= andbT.
+Qed.
+
+End exponential_pdf_properties.
+
 Definition exponential_prob {R : realType} (rate : R) :=
   fun V => (\int[lebesgue_measure]_(x in V) (exponential_pdf rate x)%:E)%E.
 
