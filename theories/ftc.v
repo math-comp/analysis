@@ -1045,8 +1045,8 @@ Proof.
 apply: subspace_continuous_measurable_fun => //.
 rewrite continuous_open_subspace// => x ax.
 apply: cvgM.
-  have [+ _]:= Foy; move/derivable_within_continuous.
-  by rewrite continuous_open_subspace//; apply.
+  have [/derivable_within_continuous + _] := Foy.
+  by rewrite continuous_open_subspace => [|//]; apply.
 have /continuous_within_itvcyP[+ _] := cg.
 by apply; rewrite inE/= in ax.
 Qed.
