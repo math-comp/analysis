@@ -908,7 +908,7 @@ rewrite seqDUE integral_itv_obnd_cbnd; last first.
 apply: integrable_fin_num => //=.
 apply: continuous_compact_integrable; first exact: segment_compact.
 apply: continuous_subspaceW cfG.
-by apply/subset_itv => //; rewrite bnd_simp// lerDl.
+by apply: subset_itv; rewrite // bnd_simp// lerDl.
 Qed.
 
 Let sumNint_sumintN_fG n :
