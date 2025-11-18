@@ -982,7 +982,7 @@ move=> fG0 Fg0.
 rewrite -integral_itv_obnd_cbnd// -[in RHS]integral_itv_obnd_cbnd//.
 rewrite itv_bndy_bigcup_BRight seqDU_bigcup_eq.
 rewrite 2?ge0_integral_bigcup//= -?seqDU_bigcup_eq -?itv_bndy_bigcup_BRight.
-- rewrite sum_integral_limn; apply/cvg_lim => //.
+- rewrite [LHS]sum_integral_limn; apply: cvg_lim => //.
   apply: cvgeD; first exact: fin_num_adde_defr; first exact: FGaoo.
   under eq_cvg do rewrite sumN_Nsum_fG; apply: cvgeN.
   apply: is_cvg_nneseries_cond => n _ _; apply: integral_ge0 => x.
