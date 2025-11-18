@@ -1128,7 +1128,7 @@ Definition derivable_oy_Rcontinuous (f : R -> V) (x : R) :=
 Lemma derivable_oy_continuous_bndN (f : R -> V) (x : R) :
   derivable_oy_Rcontinuous f x -> derivable_oy_Rcontinuous (- f) x.
 Proof.
-move=> [/= derF Fa]; split; last exact: cvgN.
+case=> /= derF Fa; split; last exact: cvgN.
 by move=> /= ? ?; exact/derivableN/derF.
 Qed.
 
