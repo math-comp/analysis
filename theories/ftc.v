@@ -1096,8 +1096,7 @@ Lemma integration_by_partsy_ge0_le0 :
   \int[mu]_(x in `[a, +oo[) (F x * g x)%:E = (FGoo - F a * G a)%:E -
   \int[mu]_(x in `[a, +oo[) (f x * G x)%:E.
 Proof.
-move=> fG0 Fg0.
-rewrite NintNFg//.
+move=> fG0 Fg0; rewrite NintNFg//.
 rewrite (@integration_by_partsy_le0_ge0 R (- F)%R G (- f)%R g a (- FGoo))//.
 - by move=> ?; apply: cvgN; exact: cf.
 - exact: derivable_oy_continuous_bndN.
