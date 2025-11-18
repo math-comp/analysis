@@ -114,12 +114,6 @@ From mathcomp Require Import ereal topology normedtype sequences.
 (*                                   and the tnth projections.                *)
 (* ```                                                                        *)
 (*                                                                            *)
-(* ## More measure-theoretic definitions                                      *)
-(*                                                                            *)
-(* ```                                                                        *)
-(*  m1 `<< m2 == m1 is absolutely continuous w.r.t. m2 or m2 dominates m1     *)
-(* ```                                                                        *)
-(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -144,7 +138,6 @@ Reserved Notation "'<<sr' G '>>'" (format "'<<sr'  G '>>'").
 Reserved Notation "'<<M' G '>>'" (format "'<<M'  G '>>'").
 Reserved Notation "p .-prod" (format "p .-prod").
 Reserved Notation "p .-prod.-measurable" (format "p .-prod.-measurable").
-Reserved Notation "m1 `<< m2" (at level 51).
 
 Inductive measure_display := default_measure_display.
 Declare Scope measure_display_scope.
