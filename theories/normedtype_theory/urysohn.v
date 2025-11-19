@@ -842,7 +842,7 @@ split.
 - by apply: bigcup_open => ? ?; exact: open_interior.
 - by move=> x ?; exists x => //; exact: nbhsx_ballx.
 - by move=> y ?; exists y => //; exact: nbhsx_ballx.
-- apply/eqP/negPn/negP/set0P => -[z [[x Ax /interior_subset Axe]]].
+- apply/not_nonemptyP => -[z [[x Ax /interior_subset Axe]]].
   case=> y By /interior_subset Bye; have nAy : ~ A y.
     by move: AB0; rewrite setIC => /disjoints_subset; exact.
   have nBx : ~ B x by move/disjoints_subset: AB0; exact.
