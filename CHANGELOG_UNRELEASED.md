@@ -160,7 +160,7 @@
       `bounded_variationN`, `bounded_variationl`, `bounded_variationr`,
       `variations_opp`, `nondecreasing_bounded_variation`
 - new file `metric_structure.v`:
-  + mixin `isMetric`, structure `Metric`, type `metricType`
+  + mixin `PseudoMetric_isMetric`, structure `Metric`, type `metricType`
     * with fields `mdist`, `mdist_ge0`, `mdist_positivity`, `ballEmdist`
   + lemmas `metric_sym`, `mdistxx`, `mdist_gt0`, `metric_triangle`,
     `metric_hausdorff`
@@ -169,6 +169,7 @@
     * lemmas `ball_mdistE`, `nbhs_nbhs_mdist`, `nbhs_mdistP`,
       `filter_from_mdist_nbhs`, `fcvgrPdist_lt`, `cvgrPdist_lt`,
       `cvgr_dist_lt`, `cvgr_dist_le`, `nbhsr0P`, `cvgrPdist_le`
+  + factory `isMetric`
 
 - in `pseudometric_normed_Zmodule.v`:
   + factory `NormedZmoduleMetric` with field `mdist_norm`
