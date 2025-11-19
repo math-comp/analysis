@@ -620,7 +620,7 @@ have ? : f @` closure (AfE b) `<=` closure (E b).
     have /(@preimage_subset _ _ f) A0cA0 := @subset_closure _ (E b).
     by apply: subset_trans A0cA0; apply: subIset; right.
   by move/subset_trans; apply; exact: image_preimage_subset.
-apply/eqP/negPn/negP/set0P => -[t [? ?]].
+apply/not_nonemptyP => -[t [AfEb AfENb]].
 have : f @` closure (AfE b) `&` f @` AfE (~~ b) = set0.
   by rewrite fAfE; exact: subsetI_eq0 cEIE.
 by rewrite predeqE => /(_ (f t)) [fcAfEb] _; apply: fcAfEb; split; exists t.
