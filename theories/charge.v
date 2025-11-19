@@ -1171,6 +1171,26 @@ have /(_ _ _)/cvg_lim <-// := lim_sup_set_cvg (charge_variation nuPN) F.
 by rewrite -ge0_fin_numE// fin_num_measure//; exact: bigcup_measurable.
 Qed.
 
+Lemma measure_charge_dominatesP (mu : {measure set T -> \bar R}) :
+  (forall A, measurable A -> mu A = 0 -> nu A = 0)
+  <->
+  (forall A, measurable A -> mu A = 0 -> charge_variation nuPN A = 0).
+Proof.
+split.
+  move/measure_null_dominatesP => numu.
+  move=> A mA muA0.
+  apply/eqP; rewrite eq_le measure_ge0 andbT.
+  rewrite /charge_variation.
+  rewrite adde_le0//.
+    by have /measure_null_dominatesP->// := jordan_pos_dominates nuPN numu.
+  by have /measure_null_dominatesP->// := jordan_neg_dominates nuPN numu.
+move=> H A mA muA0.
+apply/eqP.
+rewrite -abse_eq0 eq_le abse_ge0 andbT.
+have <- := H _ mA muA0.
+exact: abse_charge_variation.
+Qed.
+
 End charge_variation_continuous.
 
 Definition induced_charge d (T : measurableType d) {R : realType}
