@@ -1,0 +1,2555 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Module mathcomp._opam.lib.coq.user-contrib.Stdlib.micromega.RingMicromega</title>
+<meta name="description" content="Documentation of Coq module mathcomp._opam.lib.coq.user-contrib.Stdlib.micromega.RingMicromega" />
+<link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+<link href="rocqnavi.css" rel="stylesheet" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="rocqnavi.js"> </script>
+</head>
+
+<body onload="init()">
+
+  <main>
+    <div class="sidebar">
+      <h2>Files</h2>
+      <li><details id="Corelib"><summary>Corelib</summary>
+          <ul>
+          <li><details id="Corelib.Array"><summary>Array</summary>
+          <ul>
+          <li><a href="Corelib.Array.ArrayAxioms.html">ArrayAxioms</a></li>
+<li><a href="Corelib.Array.PrimArray.html">PrimArray</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.BinNums"><summary>BinNums</summary>
+          <ul>
+          <li><a href="Corelib.BinNums.IntDef.html">IntDef</a></li>
+<li><a href="Corelib.BinNums.NatDef.html">NatDef</a></li>
+<li><a href="Corelib.BinNums.PosDef.html">PosDef</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Classes"><summary>Classes</summary>
+          <ul>
+          <li><a href="Corelib.Classes.CMorphisms.html">CMorphisms</a></li>
+<li><a href="Corelib.Classes.CRelationClasses.html">CRelationClasses</a></li>
+<li><a href="Corelib.Classes.Equivalence.html">Equivalence</a></li>
+<li><a href="Corelib.Classes.Init.html">Init</a></li>
+<li><a href="Corelib.Classes.Morphisms.html">Morphisms</a></li>
+<li><a href="Corelib.Classes.Morphisms_Prop.html">Morphisms_Prop</a></li>
+<li><a href="Corelib.Classes.RelationClasses.html">RelationClasses</a></li>
+<li><a href="Corelib.Classes.SetoidTactics.html">SetoidTactics</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Compat"><summary>Compat</summary>
+          <ul>
+          <li><a href="Corelib.Compat.Coq818.html">Coq818</a></li>
+<li><a href="Corelib.Compat.Coq819.html">Coq819</a></li>
+<li><a href="Corelib.Compat.Coq820.html">Coq820</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Floats"><summary>Floats</summary>
+          <ul>
+          <li><a href="Corelib.Floats.FloatAxioms.html">FloatAxioms</a></li>
+<li><a href="Corelib.Floats.FloatClass.html">FloatClass</a></li>
+<li><a href="Corelib.Floats.FloatOps.html">FloatOps</a></li>
+<li><a href="Corelib.Floats.PrimFloat.html">PrimFloat</a></li>
+<li><a href="Corelib.Floats.SpecFloat.html">SpecFloat</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Init"><summary>Init</summary>
+          <ul>
+          <li><a href="Corelib.Init.Byte.html">Byte</a></li>
+<li><a href="Corelib.Init.Datatypes.html">Datatypes</a></li>
+<li><a href="Corelib.Init.Decimal.html">Decimal</a></li>
+<li><a href="Corelib.Init.Hexadecimal.html">Hexadecimal</a></li>
+<li><a href="Corelib.Init.Logic.html">Logic</a></li>
+<li><a href="Corelib.Init.Ltac.html">Ltac</a></li>
+<li><a href="Corelib.Init.Nat.html">Nat</a></li>
+<li><a href="Corelib.Init.Notations.html">Notations</a></li>
+<li><a href="Corelib.Init.Number.html">Number</a></li>
+<li><a href="Corelib.Init.Peano.html">Peano</a></li>
+<li><a href="Corelib.Init.Prelude.html">Prelude</a></li>
+<li><a href="Corelib.Init.Specif.html">Specif</a></li>
+<li><a href="Corelib.Init.Sumbool.html">Sumbool</a></li>
+<li><a href="Corelib.Init.Tactics.html">Tactics</a></li>
+<li><a href="Corelib.Init.Tauto.html">Tauto</a></li>
+<li><a href="Corelib.Init.Wf.html">Wf</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Lists"><summary>Lists</summary>
+          <ul>
+          <li><a href="Corelib.Lists.ListDef.html">ListDef</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Numbers"><summary>Numbers</summary>
+          <ul>
+          <li><details id="Corelib.Numbers.Cyclic"><summary>Cyclic</summary>
+          <ul>
+          <li><details id="Corelib.Numbers.Cyclic.Int63"><summary>Int63</summary>
+          <ul>
+          <li><a href="Corelib.Numbers.Cyclic.Int63.CarryType.html">CarryType</a></li>
+<li><a href="Corelib.Numbers.Cyclic.Int63.PrimInt63.html">PrimInt63</a></li>
+<li><a href="Corelib.Numbers.Cyclic.Int63.Sint63Axioms.html">Sint63Axioms</a></li>
+<li><a href="Corelib.Numbers.Cyclic.Int63.Uint63Axioms.html">Uint63Axioms</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+<li><a href="Corelib.Numbers.BinNums.html">BinNums</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Program"><summary>Program</summary>
+          <ul>
+          <li><a href="Corelib.Program.Basics.html">Basics</a></li>
+<li><a href="Corelib.Program.Tactics.html">Tactics</a></li>
+<li><a href="Corelib.Program.Utils.html">Utils</a></li>
+<li><a href="Corelib.Program.Wf.html">Wf</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Relations"><summary>Relations</summary>
+          <ul>
+          <li><a href="Corelib.Relations.Relation_Definitions.html">Relation_Definitions</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Setoids"><summary>Setoids</summary>
+          <ul>
+          <li><a href="Corelib.Setoids.Setoid.html">Setoid</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Strings"><summary>Strings</summary>
+          <ul>
+          <li><a href="Corelib.Strings.PrimString.html">PrimString</a></li>
+<li><a href="Corelib.Strings.PrimStringAxioms.html">PrimStringAxioms</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.derive"><summary>derive</summary>
+          <ul>
+          <li><a href="Corelib.derive.Derive.html">Derive</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.extraction"><summary>extraction</summary>
+          <ul>
+          <li><a href="Corelib.extraction.ExtrHaskellBasic.html">ExtrHaskellBasic</a></li>
+<li><a href="Corelib.extraction.ExtrOcamlBasic.html">ExtrOcamlBasic</a></li>
+<li><a href="Corelib.extraction.Extraction.html">Extraction</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.ssr"><summary>ssr</summary>
+          <ul>
+          <li><a href="Corelib.ssr.ssrbool.html">ssrbool</a></li>
+<li><a href="Corelib.ssr.ssrclasses.html">ssrclasses</a></li>
+<li><a href="Corelib.ssr.ssreflect.html">ssreflect</a></li>
+<li><a href="Corelib.ssr.ssrfun.html">ssrfun</a></li>
+<li><a href="Corelib.ssr.ssrsetoid.html">ssrsetoid</a></li>
+<li><a href="Corelib.ssr.ssrunder.html">ssrunder</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.ssrmatching"><summary>ssrmatching</summary>
+          <ul>
+          <li><a href="Corelib.ssrmatching.ssrmatching.html">ssrmatching</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+<li><details id="HB"><summary>HB</summary>
+          <ul>
+          <li><a href="HB.structures.html">structures</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Ltac2"><summary>Ltac2</summary>
+          <ul>
+          <li><details id="Ltac2.Compat"><summary>Compat</summary>
+          <ul>
+          <li><a href="Ltac2.Compat.Coq818.html">Coq818</a></li>
+<li><a href="Ltac2.Compat.Coq819.html">Coq819</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="Ltac2.Array.html">Array</a></li>
+<li><a href="Ltac2.Bool.html">Bool</a></li>
+<li><a href="Ltac2.Char.html">Char</a></li>
+<li><a href="Ltac2.Constant.html">Constant</a></li>
+<li><a href="Ltac2.Constr.html">Constr</a></li>
+<li><a href="Ltac2.Constructor.html">Constructor</a></li>
+<li><a href="Ltac2.Control.html">Control</a></li>
+<li><a href="Ltac2.Env.html">Env</a></li>
+<li><a href="Ltac2.Evar.html">Evar</a></li>
+<li><a href="Ltac2.FMap.html">FMap</a></li>
+<li><a href="Ltac2.FSet.html">FSet</a></li>
+<li><a href="Ltac2.Float.html">Float</a></li>
+<li><a href="Ltac2.Fresh.html">Fresh</a></li>
+<li><a href="Ltac2.Ident.html">Ident</a></li>
+<li><a href="Ltac2.Ind.html">Ind</a></li>
+<li><a href="Ltac2.Init.html">Init</a></li>
+<li><a href="Ltac2.Int.html">Int</a></li>
+<li><a href="Ltac2.Lazy.html">Lazy</a></li>
+<li><a href="Ltac2.List.html">List</a></li>
+<li><a href="Ltac2.Ltac1.html">Ltac1</a></li>
+<li><a href="Ltac2.Ltac2.html">Ltac2</a></li>
+<li><a href="Ltac2.Message.html">Message</a></li>
+<li><a href="Ltac2.Meta.html">Meta</a></li>
+<li><a href="Ltac2.Notations.html">Notations</a></li>
+<li><a href="Ltac2.Option.html">Option</a></li>
+<li><a href="Ltac2.Pattern.html">Pattern</a></li>
+<li><a href="Ltac2.Printf.html">Printf</a></li>
+<li><a href="Ltac2.Proj.html">Proj</a></li>
+<li><a href="Ltac2.Pstring.html">Pstring</a></li>
+<li><a href="Ltac2.RedFlags.html">RedFlags</a></li>
+<li><a href="Ltac2.Ref.html">Ref</a></li>
+<li><a href="Ltac2.Std.html">Std</a></li>
+<li><a href="Ltac2.String.html">String</a></li>
+<li><a href="Ltac2.TransparentState.html">TransparentState</a></li>
+<li><a href="Ltac2.Uint63.html">Uint63</a></li>
+<li><a href="Ltac2.Unification.html">Unification</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib"><summary>Stdlib</summary>
+          <ul>
+          <li><details id="Stdlib.All"><summary>All</summary>
+          <ul>
+          <li><a href="Stdlib.All.All.html">All</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Arith"><summary>Arith</summary>
+          <ul>
+          <li><a href="Stdlib.Arith.Arith.html">Arith</a></li>
+<li><a href="Stdlib.Arith.Arith_base.html">Arith_base</a></li>
+<li><a href="Stdlib.Arith.Between.html">Between</a></li>
+<li><a href="Stdlib.Arith.Bool_nat.html">Bool_nat</a></li>
+<li><a href="Stdlib.Arith.Cantor.html">Cantor</a></li>
+<li><a href="Stdlib.Arith.Compare.html">Compare</a></li>
+<li><a href="Stdlib.Arith.Compare_dec.html">Compare_dec</a></li>
+<li><a href="Stdlib.Arith.EqNat.html">EqNat</a></li>
+<li><a href="Stdlib.Arith.Euclid.html">Euclid</a></li>
+<li><a href="Stdlib.Arith.Factorial.html">Factorial</a></li>
+<li><a href="Stdlib.Arith.PeanoNat.html">PeanoNat</a></li>
+<li><a href="Stdlib.Arith.Peano_dec.html">Peano_dec</a></li>
+<li><a href="Stdlib.Arith.Wf_nat.html">Wf_nat</a></li>
+<li><a href="Stdlib.Arith.Zerob.html">Zerob</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Array"><summary>Array</summary>
+          <ul>
+          <li><a href="Stdlib.Array.ArrayAxioms.html">ArrayAxioms</a></li>
+<li><a href="Stdlib.Array.PArray.html">PArray</a></li>
+<li><a href="Stdlib.Array.PrimArray.html">PrimArray</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.BinNums"><summary>BinNums</summary>
+          <ul>
+          <li><a href="Stdlib.BinNums.IntDef.html">IntDef</a></li>
+<li><a href="Stdlib.BinNums.NatDef.html">NatDef</a></li>
+<li><a href="Stdlib.BinNums.PosDef.html">PosDef</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Bool"><summary>Bool</summary>
+          <ul>
+          <li><a href="Stdlib.Bool.Bool.html">Bool</a></li>
+<li><a href="Stdlib.Bool.BoolEq.html">BoolEq</a></li>
+<li><a href="Stdlib.Bool.DecBool.html">DecBool</a></li>
+<li><a href="Stdlib.Bool.IfProp.html">IfProp</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Classes"><summary>Classes</summary>
+          <ul>
+          <li><a href="Stdlib.Classes.CEquivalence.html">CEquivalence</a></li>
+<li><a href="Stdlib.Classes.CMorphisms.html">CMorphisms</a></li>
+<li><a href="Stdlib.Classes.CRelationClasses.html">CRelationClasses</a></li>
+<li><a href="Stdlib.Classes.DecidableClass.html">DecidableClass</a></li>
+<li><a href="Stdlib.Classes.EquivDec.html">EquivDec</a></li>
+<li><a href="Stdlib.Classes.Equivalence.html">Equivalence</a></li>
+<li><a href="Stdlib.Classes.Init.html">Init</a></li>
+<li><a href="Stdlib.Classes.Morphisms.html">Morphisms</a></li>
+<li><a href="Stdlib.Classes.Morphisms_Prop.html">Morphisms_Prop</a></li>
+<li><a href="Stdlib.Classes.Morphisms_Relations.html">Morphisms_Relations</a></li>
+<li><a href="Stdlib.Classes.RelationClasses.html">RelationClasses</a></li>
+<li><a href="Stdlib.Classes.RelationPairs.html">RelationPairs</a></li>
+<li><a href="Stdlib.Classes.SetoidClass.html">SetoidClass</a></li>
+<li><a href="Stdlib.Classes.SetoidDec.html">SetoidDec</a></li>
+<li><a href="Stdlib.Classes.SetoidTactics.html">SetoidTactics</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Compat"><summary>Compat</summary>
+          <ul>
+          <li><a href="Stdlib.Compat.AdmitAxiom.html">AdmitAxiom</a></li>
+<li><a href="Stdlib.Compat.Coq818.html">Coq818</a></li>
+<li><a href="Stdlib.Compat.Coq819.html">Coq819</a></li>
+<li><a href="Stdlib.Compat.Coq820.html">Coq820</a></li>
+<li><a href="Stdlib.Compat.Stdlib818.html">Stdlib818</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.FSets"><summary>FSets</summary>
+          <ul>
+          <li><a href="Stdlib.FSets.FMapAVL.html">FMapAVL</a></li>
+<li><a href="Stdlib.FSets.FMapFacts.html">FMapFacts</a></li>
+<li><a href="Stdlib.FSets.FMapFullAVL.html">FMapFullAVL</a></li>
+<li><a href="Stdlib.FSets.FMapInterface.html">FMapInterface</a></li>
+<li><a href="Stdlib.FSets.FMapList.html">FMapList</a></li>
+<li><a href="Stdlib.FSets.FMapPositive.html">FMapPositive</a></li>
+<li><a href="Stdlib.FSets.FMapWeakList.html">FMapWeakList</a></li>
+<li><a href="Stdlib.FSets.FMaps.html">FMaps</a></li>
+<li><a href="Stdlib.FSets.FSetAVL.html">FSetAVL</a></li>
+<li><a href="Stdlib.FSets.FSetBridge.html">FSetBridge</a></li>
+<li><a href="Stdlib.FSets.FSetCompat.html">FSetCompat</a></li>
+<li><a href="Stdlib.FSets.FSetDecide.html">FSetDecide</a></li>
+<li><a href="Stdlib.FSets.FSetEqProperties.html">FSetEqProperties</a></li>
+<li><a href="Stdlib.FSets.FSetFacts.html">FSetFacts</a></li>
+<li><a href="Stdlib.FSets.FSetInterface.html">FSetInterface</a></li>
+<li><a href="Stdlib.FSets.FSetList.html">FSetList</a></li>
+<li><a href="Stdlib.FSets.FSetPositive.html">FSetPositive</a></li>
+<li><a href="Stdlib.FSets.FSetProperties.html">FSetProperties</a></li>
+<li><a href="Stdlib.FSets.FSetToFiniteSet.html">FSetToFiniteSet</a></li>
+<li><a href="Stdlib.FSets.FSetWeakList.html">FSetWeakList</a></li>
+<li><a href="Stdlib.FSets.FSets.html">FSets</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Floats"><summary>Floats</summary>
+          <ul>
+          <li><a href="Stdlib.Floats.FloatAxioms.html">FloatAxioms</a></li>
+<li><a href="Stdlib.Floats.FloatClass.html">FloatClass</a></li>
+<li><a href="Stdlib.Floats.FloatLemmas.html">FloatLemmas</a></li>
+<li><a href="Stdlib.Floats.FloatOps.html">FloatOps</a></li>
+<li><a href="Stdlib.Floats.Floats.html">Floats</a></li>
+<li><a href="Stdlib.Floats.PrimFloat.html">PrimFloat</a></li>
+<li><a href="Stdlib.Floats.SpecFloat.html">SpecFloat</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Init"><summary>Init</summary>
+          <ul>
+          <li><a href="Stdlib.Init.Byte.html">Byte</a></li>
+<li><a href="Stdlib.Init.Datatypes.html">Datatypes</a></li>
+<li><a href="Stdlib.Init.Decimal.html">Decimal</a></li>
+<li><a href="Stdlib.Init.Hexadecimal.html">Hexadecimal</a></li>
+<li><a href="Stdlib.Init.Logic.html">Logic</a></li>
+<li><a href="Stdlib.Init.Ltac.html">Ltac</a></li>
+<li><a href="Stdlib.Init.Nat.html">Nat</a></li>
+<li><a href="Stdlib.Init.Notations.html">Notations</a></li>
+<li><a href="Stdlib.Init.Number.html">Number</a></li>
+<li><a href="Stdlib.Init.Peano.html">Peano</a></li>
+<li><a href="Stdlib.Init.Prelude.html">Prelude</a></li>
+<li><a href="Stdlib.Init.Specif.html">Specif</a></li>
+<li><a href="Stdlib.Init.Sumbool.html">Sumbool</a></li>
+<li><a href="Stdlib.Init.Tactics.html">Tactics</a></li>
+<li><a href="Stdlib.Init.Tauto.html">Tauto</a></li>
+<li><a href="Stdlib.Init.Wf.html">Wf</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Lists"><summary>Lists</summary>
+          <ul>
+          <li><a href="Stdlib.Lists.List.html">List</a></li>
+<li><a href="Stdlib.Lists.ListDec.html">ListDec</a></li>
+<li><a href="Stdlib.Lists.ListDef.html">ListDef</a></li>
+<li><a href="Stdlib.Lists.ListSet.html">ListSet</a></li>
+<li><a href="Stdlib.Lists.ListTactics.html">ListTactics</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Logic"><summary>Logic</summary>
+          <ul>
+          <li><a href="Stdlib.Logic.Adjointification.html">Adjointification</a></li>
+<li><a href="Stdlib.Logic.Berardi.html">Berardi</a></li>
+<li><a href="Stdlib.Logic.ChoiceFacts.html">ChoiceFacts</a></li>
+<li><a href="Stdlib.Logic.Classical.html">Classical</a></li>
+<li><a href="Stdlib.Logic.ClassicalChoice.html">ClassicalChoice</a></li>
+<li><a href="Stdlib.Logic.ClassicalDescription.html">ClassicalDescription</a></li>
+<li><a href="Stdlib.Logic.ClassicalEpsilon.html">ClassicalEpsilon</a></li>
+<li><a href="Stdlib.Logic.ClassicalFacts.html">ClassicalFacts</a></li>
+<li><a href="Stdlib.Logic.ClassicalUniqueChoice.html">ClassicalUniqueChoice</a></li>
+<li><a href="Stdlib.Logic.Classical_Pred_Type.html">Classical_Pred_Type</a></li>
+<li><a href="Stdlib.Logic.Classical_Prop.html">Classical_Prop</a></li>
+<li><a href="Stdlib.Logic.ConstructiveEpsilon.html">ConstructiveEpsilon</a></li>
+<li><a href="Stdlib.Logic.Decidable.html">Decidable</a></li>
+<li><a href="Stdlib.Logic.Description.html">Description</a></li>
+<li><a href="Stdlib.Logic.Diaconescu.html">Diaconescu</a></li>
+<li><a href="Stdlib.Logic.Epsilon.html">Epsilon</a></li>
+<li><a href="Stdlib.Logic.Eqdep.html">Eqdep</a></li>
+<li><a href="Stdlib.Logic.EqdepFacts.html">EqdepFacts</a></li>
+<li><a href="Stdlib.Logic.Eqdep_dec.html">Eqdep_dec</a></li>
+<li><a href="Stdlib.Logic.ExtensionalFunctionRepresentative.html">ExtensionalFunctionRepresentative</a></li>
+<li><a href="Stdlib.Logic.ExtensionalityFacts.html">ExtensionalityFacts</a></li>
+<li><a href="Stdlib.Logic.FunctionalExtensionality.html">FunctionalExtensionality</a></li>
+<li><a href="Stdlib.Logic.HLevels.html">HLevels</a></li>
+<li><a href="Stdlib.Logic.Hurkens.html">Hurkens</a></li>
+<li><a href="Stdlib.Logic.IndefiniteDescription.html">IndefiniteDescription</a></li>
+<li><a href="Stdlib.Logic.JMeq.html">JMeq</a></li>
+<li><a href="Stdlib.Logic.ProofIrrelevance.html">ProofIrrelevance</a></li>
+<li><a href="Stdlib.Logic.ProofIrrelevanceFacts.html">ProofIrrelevanceFacts</a></li>
+<li><a href="Stdlib.Logic.PropExtensionality.html">PropExtensionality</a></li>
+<li><a href="Stdlib.Logic.PropExtensionalityFacts.html">PropExtensionalityFacts</a></li>
+<li><a href="Stdlib.Logic.PropFacts.html">PropFacts</a></li>
+<li><a href="Stdlib.Logic.RelationalChoice.html">RelationalChoice</a></li>
+<li><a href="Stdlib.Logic.SetIsType.html">SetIsType</a></li>
+<li><a href="Stdlib.Logic.SetoidChoice.html">SetoidChoice</a></li>
+<li><a href="Stdlib.Logic.StrictProp.html">StrictProp</a></li>
+<li><a href="Stdlib.Logic.WKL.html">WKL</a></li>
+<li><a href="Stdlib.Logic.WeakFan.html">WeakFan</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.MSets"><summary>MSets</summary>
+          <ul>
+          <li><a href="Stdlib.MSets.MSetAVL.html">MSetAVL</a></li>
+<li><a href="Stdlib.MSets.MSetDecide.html">MSetDecide</a></li>
+<li><a href="Stdlib.MSets.MSetEqProperties.html">MSetEqProperties</a></li>
+<li><a href="Stdlib.MSets.MSetFacts.html">MSetFacts</a></li>
+<li><a href="Stdlib.MSets.MSetGenTree.html">MSetGenTree</a></li>
+<li><a href="Stdlib.MSets.MSetInterface.html">MSetInterface</a></li>
+<li><a href="Stdlib.MSets.MSetList.html">MSetList</a></li>
+<li><a href="Stdlib.MSets.MSetPositive.html">MSetPositive</a></li>
+<li><a href="Stdlib.MSets.MSetProperties.html">MSetProperties</a></li>
+<li><a href="Stdlib.MSets.MSetRBT.html">MSetRBT</a></li>
+<li><a href="Stdlib.MSets.MSetToFiniteSet.html">MSetToFiniteSet</a></li>
+<li><a href="Stdlib.MSets.MSetWeakList.html">MSetWeakList</a></li>
+<li><a href="Stdlib.MSets.MSets.html">MSets</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.NArith"><summary>NArith</summary>
+          <ul>
+          <li><a href="Stdlib.NArith.BinNat.html">BinNat</a></li>
+<li><a href="Stdlib.NArith.BinNatDef.html">BinNatDef</a></li>
+<li><a href="Stdlib.NArith.NArith.html">NArith</a></li>
+<li><a href="Stdlib.NArith.NArith_base.html">NArith_base</a></li>
+<li><a href="Stdlib.NArith.Ndec.html">Ndec</a></li>
+<li><a href="Stdlib.NArith.Ndiv_def.html">Ndiv_def</a></li>
+<li><a href="Stdlib.NArith.Ngcd_def.html">Ngcd_def</a></li>
+<li><a href="Stdlib.NArith.Nnat.html">Nnat</a></li>
+<li><a href="Stdlib.NArith.Nsqrt_def.html">Nsqrt_def</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers"><summary>Numbers</summary>
+          <ul>
+          <li><details id="Stdlib.Numbers.Cyclic"><summary>Cyclic</summary>
+          <ul>
+          <li><details id="Stdlib.Numbers.Cyclic.Abstract"><summary>Abstract</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.Cyclic.Abstract.CyclicAxioms.html">CyclicAxioms</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Abstract.DoubleType.html">DoubleType</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Abstract.NZCyclic.html">NZCyclic</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers.Cyclic.Int63"><summary>Int63</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.Cyclic.Int63.CarryType.html">CarryType</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Int63.Cyclic63.html">Cyclic63</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Int63.PrimInt63.html">PrimInt63</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Int63.Ring63.html">Ring63</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Int63.Sint63.html">Sint63</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Int63.Sint63Axioms.html">Sint63Axioms</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Int63.Uint63.html">Uint63</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Int63.Uint63Axioms.html">Uint63Axioms</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers.Integer"><summary>Integer</summary>
+          <ul>
+          <li><details id="Stdlib.Numbers.Integer.Abstract"><summary>Abstract</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.Integer.Abstract.ZAdd.html">ZAdd</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZAddOrder.html">ZAddOrder</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZAxioms.html">ZAxioms</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZBase.html">ZBase</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZBits.html">ZBits</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZDivEucl.html">ZDivEucl</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZDivFloor.html">ZDivFloor</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZDivTrunc.html">ZDivTrunc</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZGcd.html">ZGcd</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZLcm.html">ZLcm</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZLt.html">ZLt</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZMaxMin.html">ZMaxMin</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZMul.html">ZMul</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZMulOrder.html">ZMulOrder</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZParity.html">ZParity</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZPow.html">ZPow</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZProperties.html">ZProperties</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZSgnAbs.html">ZSgnAbs</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers.Integer.Binary"><summary>Binary</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.Integer.Binary.ZBinary.html">ZBinary</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers.Integer.NatPairs"><summary>NatPairs</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.Integer.NatPairs.ZNatPairs.html">ZNatPairs</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers.NatInt"><summary>NatInt</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.NatInt.NZAdd.html">NZAdd</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZAddOrder.html">NZAddOrder</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZAxioms.html">NZAxioms</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZBase.html">NZBase</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZBits.html">NZBits</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZDiv.html">NZDiv</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZDomain.html">NZDomain</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZGcd.html">NZGcd</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZLog.html">NZLog</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZMul.html">NZMul</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZMulOrder.html">NZMulOrder</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZOrder.html">NZOrder</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZParity.html">NZParity</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZPow.html">NZPow</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZProperties.html">NZProperties</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZSqrt.html">NZSqrt</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers.Natural"><summary>Natural</summary>
+          <ul>
+          <li><details id="Stdlib.Numbers.Natural.Abstract"><summary>Abstract</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.Natural.Abstract.NAdd.html">NAdd</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NAddOrder.html">NAddOrder</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NAxioms.html">NAxioms</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NBase.html">NBase</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NBits.html">NBits</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NDefOps.html">NDefOps</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NDiv.html">NDiv</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NDiv0.html">NDiv0</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NGcd.html">NGcd</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NIso.html">NIso</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NLcm.html">NLcm</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NLcm0.html">NLcm0</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NLog.html">NLog</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NMaxMin.html">NMaxMin</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NMulOrder.html">NMulOrder</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NOrder.html">NOrder</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NParity.html">NParity</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NPow.html">NPow</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NProperties.html">NProperties</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NSqrt.html">NSqrt</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NStrongRec.html">NStrongRec</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NSub.html">NSub</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers.Natural.Binary"><summary>Binary</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.Natural.Binary.NBinary.html">NBinary</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+<li><a href="Stdlib.Numbers.AltBinNotations.html">AltBinNotations</a></li>
+<li><a href="Stdlib.Numbers.BinNums.html">BinNums</a></li>
+<li><a href="Stdlib.Numbers.DecimalFacts.html">DecimalFacts</a></li>
+<li><a href="Stdlib.Numbers.DecimalN.html">DecimalN</a></li>
+<li><a href="Stdlib.Numbers.DecimalNat.html">DecimalNat</a></li>
+<li><a href="Stdlib.Numbers.DecimalPos.html">DecimalPos</a></li>
+<li><a href="Stdlib.Numbers.DecimalQ.html">DecimalQ</a></li>
+<li><a href="Stdlib.Numbers.DecimalR.html">DecimalR</a></li>
+<li><a href="Stdlib.Numbers.DecimalString.html">DecimalString</a></li>
+<li><a href="Stdlib.Numbers.DecimalZ.html">DecimalZ</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalFacts.html">HexadecimalFacts</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalN.html">HexadecimalN</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalNat.html">HexadecimalNat</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalPos.html">HexadecimalPos</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalQ.html">HexadecimalQ</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalR.html">HexadecimalR</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalString.html">HexadecimalString</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalZ.html">HexadecimalZ</a></li>
+<li><a href="Stdlib.Numbers.NaryFunctions.html">NaryFunctions</a></li>
+<li><a href="Stdlib.Numbers.NumPrelude.html">NumPrelude</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.PArith"><summary>PArith</summary>
+          <ul>
+          <li><a href="Stdlib.PArith.BinPos.html">BinPos</a></li>
+<li><a href="Stdlib.PArith.BinPosDef.html">BinPosDef</a></li>
+<li><a href="Stdlib.PArith.PArith.html">PArith</a></li>
+<li><a href="Stdlib.PArith.POrderedType.html">POrderedType</a></li>
+<li><a href="Stdlib.PArith.Pnat.html">Pnat</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Program"><summary>Program</summary>
+          <ul>
+          <li><a href="Stdlib.Program.Basics.html">Basics</a></li>
+<li><a href="Stdlib.Program.Combinators.html">Combinators</a></li>
+<li><a href="Stdlib.Program.Equality.html">Equality</a></li>
+<li><a href="Stdlib.Program.Program.html">Program</a></li>
+<li><a href="Stdlib.Program.Subset.html">Subset</a></li>
+<li><a href="Stdlib.Program.Syntax.html">Syntax</a></li>
+<li><a href="Stdlib.Program.Tactics.html">Tactics</a></li>
+<li><a href="Stdlib.Program.Utils.html">Utils</a></li>
+<li><a href="Stdlib.Program.Wf.html">Wf</a></li>
+<li><a href="Stdlib.Program.WfExtensionality.html">WfExtensionality</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.QArith"><summary>QArith</summary>
+          <ul>
+          <li><a href="Stdlib.QArith.QArith.html">QArith</a></li>
+<li><a href="Stdlib.QArith.QArith_base.html">QArith_base</a></li>
+<li><a href="Stdlib.QArith.QOrderedType.html">QOrderedType</a></li>
+<li><a href="Stdlib.QArith.Qabs.html">Qabs</a></li>
+<li><a href="Stdlib.QArith.Qcabs.html">Qcabs</a></li>
+<li><a href="Stdlib.QArith.Qcanon.html">Qcanon</a></li>
+<li><a href="Stdlib.QArith.Qfield.html">Qfield</a></li>
+<li><a href="Stdlib.QArith.Qminmax.html">Qminmax</a></li>
+<li><a href="Stdlib.QArith.Qpower.html">Qpower</a></li>
+<li><a href="Stdlib.QArith.Qreduction.html">Qreduction</a></li>
+<li><a href="Stdlib.QArith.Qring.html">Qring</a></li>
+<li><a href="Stdlib.QArith.Qround.html">Qround</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Reals"><summary>Reals</summary>
+          <ul>
+          <li><details id="Stdlib.Reals.Abstract"><summary>Abstract</summary>
+          <ul>
+          <li><a href="Stdlib.Reals.Abstract.ConstructiveAbs.html">ConstructiveAbs</a></li>
+<li><a href="Stdlib.Reals.Abstract.ConstructiveLUB.html">ConstructiveLUB</a></li>
+<li><a href="Stdlib.Reals.Abstract.ConstructiveLimits.html">ConstructiveLimits</a></li>
+<li><a href="Stdlib.Reals.Abstract.ConstructiveMinMax.html">ConstructiveMinMax</a></li>
+<li><a href="Stdlib.Reals.Abstract.ConstructivePower.html">ConstructivePower</a></li>
+<li><a href="Stdlib.Reals.Abstract.ConstructiveReals.html">ConstructiveReals</a></li>
+<li><a href="Stdlib.Reals.Abstract.ConstructiveRealsMorphisms.html">ConstructiveRealsMorphisms</a></li>
+<li><a href="Stdlib.Reals.Abstract.ConstructiveSum.html">ConstructiveSum</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Reals.Cauchy"><summary>Cauchy</summary>
+          <ul>
+          <li><a href="Stdlib.Reals.Cauchy.ConstructiveCauchyAbs.html">ConstructiveCauchyAbs</a></li>
+<li><a href="Stdlib.Reals.Cauchy.ConstructiveCauchyReals.html">ConstructiveCauchyReals</a></li>
+<li><a href="Stdlib.Reals.Cauchy.ConstructiveCauchyRealsMult.html">ConstructiveCauchyRealsMult</a></li>
+<li><a href="Stdlib.Reals.Cauchy.ConstructiveExtra.html">ConstructiveExtra</a></li>
+<li><a href="Stdlib.Reals.Cauchy.ConstructiveRcomplete.html">ConstructiveRcomplete</a></li>
+<li><a href="Stdlib.Reals.Cauchy.PosExtra.html">PosExtra</a></li>
+<li><a href="Stdlib.Reals.Cauchy.QExtra.html">QExtra</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="Stdlib.Reals.Alembert.html">Alembert</a></li>
+<li><a href="Stdlib.Reals.AltSeries.html">AltSeries</a></li>
+<li><a href="Stdlib.Reals.ArithProp.html">ArithProp</a></li>
+<li><a href="Stdlib.Reals.Binomial.html">Binomial</a></li>
+<li><a href="Stdlib.Reals.Cauchy_prod.html">Cauchy_prod</a></li>
+<li><a href="Stdlib.Reals.ClassicalConstructiveReals.html">ClassicalConstructiveReals</a></li>
+<li><a href="Stdlib.Reals.ClassicalDedekindReals.html">ClassicalDedekindReals</a></li>
+<li><a href="Stdlib.Reals.Cos_plus.html">Cos_plus</a></li>
+<li><a href="Stdlib.Reals.Cos_rel.html">Cos_rel</a></li>
+<li><a href="Stdlib.Reals.DiscrR.html">DiscrR</a></li>
+<li><a href="Stdlib.Reals.Exp_prop.html">Exp_prop</a></li>
+<li><a href="Stdlib.Reals.Integration.html">Integration</a></li>
+<li><a href="Stdlib.Reals.MVT.html">MVT</a></li>
+<li><a href="Stdlib.Reals.Machin.html">Machin</a></li>
+<li><a href="Stdlib.Reals.NewtonInt.html">NewtonInt</a></li>
+<li><a href="Stdlib.Reals.Nsatz.html">Nsatz</a></li>
+<li><a href="Stdlib.Reals.PSeries_reg.html">PSeries_reg</a></li>
+<li><a href="Stdlib.Reals.PartSum.html">PartSum</a></li>
+<li><a href="Stdlib.Reals.Qreals.html">Qreals</a></li>
+<li><a href="Stdlib.Reals.RIneq.html">RIneq</a></li>
+<li><a href="Stdlib.Reals.RList.html">RList</a></li>
+<li><a href="Stdlib.Reals.ROrderedType.html">ROrderedType</a></li>
+<li><a href="Stdlib.Reals.R_Ifp.html">R_Ifp</a></li>
+<li><a href="Stdlib.Reals.R_sqr.html">R_sqr</a></li>
+<li><a href="Stdlib.Reals.R_sqrt.html">R_sqrt</a></li>
+<li><a href="Stdlib.Reals.Ranalysis.html">Ranalysis</a></li>
+<li><a href="Stdlib.Reals.Ranalysis1.html">Ranalysis1</a></li>
+<li><a href="Stdlib.Reals.Ranalysis2.html">Ranalysis2</a></li>
+<li><a href="Stdlib.Reals.Ranalysis3.html">Ranalysis3</a></li>
+<li><a href="Stdlib.Reals.Ranalysis4.html">Ranalysis4</a></li>
+<li><a href="Stdlib.Reals.Ranalysis5.html">Ranalysis5</a></li>
+<li><a href="Stdlib.Reals.Ranalysis_reg.html">Ranalysis_reg</a></li>
+<li><a href="Stdlib.Reals.Ratan.html">Ratan</a></li>
+<li><a href="Stdlib.Reals.Raxioms.html">Raxioms</a></li>
+<li><a href="Stdlib.Reals.Rbase.html">Rbase</a></li>
+<li><a href="Stdlib.Reals.Rbasic_fun.html">Rbasic_fun</a></li>
+<li><a href="Stdlib.Reals.Rcomplete.html">Rcomplete</a></li>
+<li><a href="Stdlib.Reals.Rdefinitions.html">Rdefinitions</a></li>
+<li><a href="Stdlib.Reals.Rderiv.html">Rderiv</a></li>
+<li><a href="Stdlib.Reals.Reals.html">Reals</a></li>
+<li><a href="Stdlib.Reals.Rfunctions.html">Rfunctions</a></li>
+<li><a href="Stdlib.Reals.Rgeom.html">Rgeom</a></li>
+<li><a href="Stdlib.Reals.RiemannInt.html">RiemannInt</a></li>
+<li><a href="Stdlib.Reals.RiemannInt_SF.html">RiemannInt_SF</a></li>
+<li><a href="Stdlib.Reals.Rlimit.html">Rlimit</a></li>
+<li><a href="Stdlib.Reals.Rlogic.html">Rlogic</a></li>
+<li><a href="Stdlib.Reals.Rminmax.html">Rminmax</a></li>
+<li><a href="Stdlib.Reals.Rpow_def.html">Rpow_def</a></li>
+<li><a href="Stdlib.Reals.Rpower.html">Rpower</a></li>
+<li><a href="Stdlib.Reals.Rprod.html">Rprod</a></li>
+<li><a href="Stdlib.Reals.Rregisternames.html">Rregisternames</a></li>
+<li><a href="Stdlib.Reals.Rseries.html">Rseries</a></li>
+<li><a href="Stdlib.Reals.Rsigma.html">Rsigma</a></li>
+<li><a href="Stdlib.Reals.Rsqrt_def.html">Rsqrt_def</a></li>
+<li><a href="Stdlib.Reals.Rtopology.html">Rtopology</a></li>
+<li><a href="Stdlib.Reals.Rtrigo.html">Rtrigo</a></li>
+<li><a href="Stdlib.Reals.Rtrigo1.html">Rtrigo1</a></li>
+<li><a href="Stdlib.Reals.Rtrigo_alt.html">Rtrigo_alt</a></li>
+<li><a href="Stdlib.Reals.Rtrigo_calc.html">Rtrigo_calc</a></li>
+<li><a href="Stdlib.Reals.Rtrigo_def.html">Rtrigo_def</a></li>
+<li><a href="Stdlib.Reals.Rtrigo_facts.html">Rtrigo_facts</a></li>
+<li><a href="Stdlib.Reals.Rtrigo_fun.html">Rtrigo_fun</a></li>
+<li><a href="Stdlib.Reals.Rtrigo_reg.html">Rtrigo_reg</a></li>
+<li><a href="Stdlib.Reals.Runcountable.html">Runcountable</a></li>
+<li><a href="Stdlib.Reals.SeqProp.html">SeqProp</a></li>
+<li><a href="Stdlib.Reals.SeqSeries.html">SeqSeries</a></li>
+<li><a href="Stdlib.Reals.SplitAbsolu.html">SplitAbsolu</a></li>
+<li><a href="Stdlib.Reals.SplitRmult.html">SplitRmult</a></li>
+<li><a href="Stdlib.Reals.Sqrt_reg.html">Sqrt_reg</a></li>
+<li><a href="Stdlib.Reals.Zfloor.html">Zfloor</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Relations"><summary>Relations</summary>
+          <ul>
+          <li><a href="Stdlib.Relations.Operators_Properties.html">Operators_Properties</a></li>
+<li><a href="Stdlib.Relations.Relation_Definitions.html">Relation_Definitions</a></li>
+<li><a href="Stdlib.Relations.Relation_Operators.html">Relation_Operators</a></li>
+<li><a href="Stdlib.Relations.Relations.html">Relations</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Setoids"><summary>Setoids</summary>
+          <ul>
+          <li><a href="Stdlib.Setoids.Setoid.html">Setoid</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Sets"><summary>Sets</summary>
+          <ul>
+          <li><a href="Stdlib.Sets.Classical_sets.html">Classical_sets</a></li>
+<li><a href="Stdlib.Sets.Constructive_sets.html">Constructive_sets</a></li>
+<li><a href="Stdlib.Sets.Cpo.html">Cpo</a></li>
+<li><a href="Stdlib.Sets.Ensembles.html">Ensembles</a></li>
+<li><a href="Stdlib.Sets.Finite_sets.html">Finite_sets</a></li>
+<li><a href="Stdlib.Sets.Finite_sets_facts.html">Finite_sets_facts</a></li>
+<li><a href="Stdlib.Sets.Image.html">Image</a></li>
+<li><a href="Stdlib.Sets.Infinite_sets.html">Infinite_sets</a></li>
+<li><a href="Stdlib.Sets.Integers.html">Integers</a></li>
+<li><a href="Stdlib.Sets.Multiset.html">Multiset</a></li>
+<li><a href="Stdlib.Sets.Partial_Order.html">Partial_Order</a></li>
+<li><a href="Stdlib.Sets.Permut.html">Permut</a></li>
+<li><a href="Stdlib.Sets.Powerset.html">Powerset</a></li>
+<li><a href="Stdlib.Sets.Powerset_Classical_facts.html">Powerset_Classical_facts</a></li>
+<li><a href="Stdlib.Sets.Powerset_facts.html">Powerset_facts</a></li>
+<li><a href="Stdlib.Sets.Relations_1.html">Relations_1</a></li>
+<li><a href="Stdlib.Sets.Relations_1_facts.html">Relations_1_facts</a></li>
+<li><a href="Stdlib.Sets.Relations_2.html">Relations_2</a></li>
+<li><a href="Stdlib.Sets.Relations_2_facts.html">Relations_2_facts</a></li>
+<li><a href="Stdlib.Sets.Relations_3.html">Relations_3</a></li>
+<li><a href="Stdlib.Sets.Relations_3_facts.html">Relations_3_facts</a></li>
+<li><a href="Stdlib.Sets.Uniset.html">Uniset</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Sorting"><summary>Sorting</summary>
+          <ul>
+          <li><a href="Stdlib.Sorting.CPermutation.html">CPermutation</a></li>
+<li><a href="Stdlib.Sorting.Heap.html">Heap</a></li>
+<li><a href="Stdlib.Sorting.Mergesort.html">Mergesort</a></li>
+<li><a href="Stdlib.Sorting.PermutEq.html">PermutEq</a></li>
+<li><a href="Stdlib.Sorting.PermutSetoid.html">PermutSetoid</a></li>
+<li><a href="Stdlib.Sorting.Permutation.html">Permutation</a></li>
+<li><a href="Stdlib.Sorting.SetoidList.html">SetoidList</a></li>
+<li><a href="Stdlib.Sorting.SetoidPermutation.html">SetoidPermutation</a></li>
+<li><a href="Stdlib.Sorting.Sorted.html">Sorted</a></li>
+<li><a href="Stdlib.Sorting.Sorting.html">Sorting</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Streams"><summary>Streams</summary>
+          <ul>
+          <li><a href="Stdlib.Streams.StreamMemo.html">StreamMemo</a></li>
+<li><a href="Stdlib.Streams.Streams.html">Streams</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Strings"><summary>Strings</summary>
+          <ul>
+          <li><a href="Stdlib.Strings.Ascii.html">Ascii</a></li>
+<li><a href="Stdlib.Strings.BinaryString.html">BinaryString</a></li>
+<li><a href="Stdlib.Strings.Byte.html">Byte</a></li>
+<li><a href="Stdlib.Strings.HexString.html">HexString</a></li>
+<li><a href="Stdlib.Strings.OctalString.html">OctalString</a></li>
+<li><a href="Stdlib.Strings.PString.html">PString</a></li>
+<li><a href="Stdlib.Strings.PrimString.html">PrimString</a></li>
+<li><a href="Stdlib.Strings.PrimStringAxioms.html">PrimStringAxioms</a></li>
+<li><a href="Stdlib.Strings.String.html">String</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Structures"><summary>Structures</summary>
+          <ul>
+          <li><a href="Stdlib.Structures.BoolOrder.html">BoolOrder</a></li>
+<li><a href="Stdlib.Structures.DecidableType.html">DecidableType</a></li>
+<li><a href="Stdlib.Structures.DecidableTypeEx.html">DecidableTypeEx</a></li>
+<li><a href="Stdlib.Structures.Equalities.html">Equalities</a></li>
+<li><a href="Stdlib.Structures.EqualitiesFacts.html">EqualitiesFacts</a></li>
+<li><a href="Stdlib.Structures.GenericMinMax.html">GenericMinMax</a></li>
+<li><a href="Stdlib.Structures.OrderedType.html">OrderedType</a></li>
+<li><a href="Stdlib.Structures.OrderedTypeAlt.html">OrderedTypeAlt</a></li>
+<li><a href="Stdlib.Structures.OrderedTypeEx.html">OrderedTypeEx</a></li>
+<li><a href="Stdlib.Structures.Orders.html">Orders</a></li>
+<li><a href="Stdlib.Structures.OrdersAlt.html">OrdersAlt</a></li>
+<li><a href="Stdlib.Structures.OrdersEx.html">OrdersEx</a></li>
+<li><a href="Stdlib.Structures.OrdersFacts.html">OrdersFacts</a></li>
+<li><a href="Stdlib.Structures.OrdersLists.html">OrdersLists</a></li>
+<li><a href="Stdlib.Structures.OrdersTac.html">OrdersTac</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Unicode"><summary>Unicode</summary>
+          <ul>
+          <li><a href="Stdlib.Unicode.Utf8.html">Utf8</a></li>
+<li><a href="Stdlib.Unicode.Utf8_core.html">Utf8_core</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Vectors"><summary>Vectors</summary>
+          <ul>
+          <li><a href="Stdlib.Vectors.Bvector.html">Bvector</a></li>
+<li><a href="Stdlib.Vectors.Fin.html">Fin</a></li>
+<li><a href="Stdlib.Vectors.FinFun.html">FinFun</a></li>
+<li><a href="Stdlib.Vectors.Vector.html">Vector</a></li>
+<li><a href="Stdlib.Vectors.VectorDef.html">VectorDef</a></li>
+<li><a href="Stdlib.Vectors.VectorEq.html">VectorEq</a></li>
+<li><a href="Stdlib.Vectors.VectorSpec.html">VectorSpec</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Wellfounded"><summary>Wellfounded</summary>
+          <ul>
+          <li><a href="Stdlib.Wellfounded.Disjoint_Union.html">Disjoint_Union</a></li>
+<li><a href="Stdlib.Wellfounded.Inclusion.html">Inclusion</a></li>
+<li><a href="Stdlib.Wellfounded.Inverse_Image.html">Inverse_Image</a></li>
+<li><a href="Stdlib.Wellfounded.Lexicographic_Exponentiation.html">Lexicographic_Exponentiation</a></li>
+<li><a href="Stdlib.Wellfounded.Lexicographic_Product.html">Lexicographic_Product</a></li>
+<li><a href="Stdlib.Wellfounded.List_Extension.html">List_Extension</a></li>
+<li><a href="Stdlib.Wellfounded.Transitive_Closure.html">Transitive_Closure</a></li>
+<li><a href="Stdlib.Wellfounded.Union.html">Union</a></li>
+<li><a href="Stdlib.Wellfounded.Well_Ordering.html">Well_Ordering</a></li>
+<li><a href="Stdlib.Wellfounded.Wellfounded.html">Wellfounded</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.ZArith"><summary>ZArith</summary>
+          <ul>
+          <li><a href="Stdlib.ZArith.BinInt.html">BinInt</a></li>
+<li><a href="Stdlib.ZArith.BinIntDef.html">BinIntDef</a></li>
+<li><a href="Stdlib.ZArith.Int.html">Int</a></li>
+<li><a href="Stdlib.ZArith.Wf_Z.html">Wf_Z</a></li>
+<li><a href="Stdlib.ZArith.ZArith.html">ZArith</a></li>
+<li><a href="Stdlib.ZArith.ZArith_base.html">ZArith_base</a></li>
+<li><a href="Stdlib.ZArith.ZArith_dec.html">ZArith_dec</a></li>
+<li><a href="Stdlib.ZArith.Zabs.html">Zabs</a></li>
+<li><a href="Stdlib.ZArith.Zbitwise.html">Zbitwise</a></li>
+<li><a href="Stdlib.ZArith.Zbool.html">Zbool</a></li>
+<li><a href="Stdlib.ZArith.Zcompare.html">Zcompare</a></li>
+<li><a href="Stdlib.ZArith.Zcomplements.html">Zcomplements</a></li>
+<li><a href="Stdlib.ZArith.Zdiv.html">Zdiv</a></li>
+<li><a href="Stdlib.ZArith.Zdiv_facts.html">Zdiv_facts</a></li>
+<li><a href="Stdlib.ZArith.Zeuclid.html">Zeuclid</a></li>
+<li><a href="Stdlib.ZArith.Zeven.html">Zeven</a></li>
+<li><a href="Stdlib.ZArith.Zgcd_alt.html">Zgcd_alt</a></li>
+<li><a href="Stdlib.ZArith.Zhints.html">Zhints</a></li>
+<li><a href="Stdlib.ZArith.Zmax.html">Zmax</a></li>
+<li><a href="Stdlib.ZArith.Zmin.html">Zmin</a></li>
+<li><a href="Stdlib.ZArith.Zminmax.html">Zminmax</a></li>
+<li><a href="Stdlib.ZArith.Zmisc.html">Zmisc</a></li>
+<li><a href="Stdlib.ZArith.Znat.html">Znat</a></li>
+<li><a href="Stdlib.ZArith.Znumtheory.html">Znumtheory</a></li>
+<li><a href="Stdlib.ZArith.Zorder.html">Zorder</a></li>
+<li><a href="Stdlib.ZArith.Zpow_alt.html">Zpow_alt</a></li>
+<li><a href="Stdlib.ZArith.Zpow_def.html">Zpow_def</a></li>
+<li><a href="Stdlib.ZArith.Zpow_facts.html">Zpow_facts</a></li>
+<li><a href="Stdlib.ZArith.Zpower.html">Zpower</a></li>
+<li><a href="Stdlib.ZArith.Zquot.html">Zquot</a></li>
+<li><a href="Stdlib.ZArith.Zwf.html">Zwf</a></li>
+<li><a href="Stdlib.ZArith.auxiliary.html">auxiliary</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.btauto"><summary>btauto</summary>
+          <ul>
+          <li><a href="Stdlib.btauto.Algebra.html">Algebra</a></li>
+<li><a href="Stdlib.btauto.Btauto.html">Btauto</a></li>
+<li><a href="Stdlib.btauto.Reflect.html">Reflect</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.derive"><summary>derive</summary>
+          <ul>
+          <li><a href="Stdlib.derive.Derive.html">Derive</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.extraction"><summary>extraction</summary>
+          <ul>
+          <li><a href="Stdlib.extraction.ExtrHaskellBasic.html">ExtrHaskellBasic</a></li>
+<li><a href="Stdlib.extraction.ExtrHaskellNatInt.html">ExtrHaskellNatInt</a></li>
+<li><a href="Stdlib.extraction.ExtrHaskellNatInteger.html">ExtrHaskellNatInteger</a></li>
+<li><a href="Stdlib.extraction.ExtrHaskellNatNum.html">ExtrHaskellNatNum</a></li>
+<li><a href="Stdlib.extraction.ExtrHaskellString.html">ExtrHaskellString</a></li>
+<li><a href="Stdlib.extraction.ExtrHaskellZInt.html">ExtrHaskellZInt</a></li>
+<li><a href="Stdlib.extraction.ExtrHaskellZInteger.html">ExtrHaskellZInteger</a></li>
+<li><a href="Stdlib.extraction.ExtrHaskellZNum.html">ExtrHaskellZNum</a></li>
+<li><a href="Stdlib.extraction.ExtrOCamlFloats.html">ExtrOCamlFloats</a></li>
+<li><a href="Stdlib.extraction.ExtrOCamlInt63.html">ExtrOCamlInt63</a></li>
+<li><a href="Stdlib.extraction.ExtrOCamlPArray.html">ExtrOCamlPArray</a></li>
+<li><a href="Stdlib.extraction.ExtrOCamlPString.html">ExtrOCamlPString</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlBasic.html">ExtrOcamlBasic</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlChar.html">ExtrOcamlChar</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlIntConv.html">ExtrOcamlIntConv</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlNatBigInt.html">ExtrOcamlNatBigInt</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlNatInt.html">ExtrOcamlNatInt</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlNativeString.html">ExtrOcamlNativeString</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlString.html">ExtrOcamlString</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlZBigInt.html">ExtrOcamlZBigInt</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlZInt.html">ExtrOcamlZInt</a></li>
+<li><a href="Stdlib.extraction.Extraction.html">Extraction</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.funind"><summary>funind</summary>
+          <ul>
+          <li><a href="Stdlib.funind.FunInd.html">FunInd</a></li>
+<li><a href="Stdlib.funind.Recdef.html">Recdef</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.micromega"><summary>micromega</summary>
+          <ul>
+          <li><a href="Stdlib.micromega.DeclConstant.html">DeclConstant</a></li>
+<li><a href="Stdlib.micromega.DeclConstantZ.html">DeclConstantZ</a></li>
+<li><a href="Stdlib.micromega.Env.html">Env</a></li>
+<li><a href="Stdlib.micromega.EnvRing.html">EnvRing</a></li>
+<li><a href="Stdlib.micromega.Fourier.html">Fourier</a></li>
+<li><a href="Stdlib.micromega.Fourier_util.html">Fourier_util</a></li>
+<li><a href="Stdlib.micromega.Lia.html">Lia</a></li>
+<li><a href="Stdlib.micromega.Lqa.html">Lqa</a></li>
+<li><a href="Stdlib.micromega.Lra.html">Lra</a></li>
+<li><a href="Stdlib.micromega.OrderedRing.html">OrderedRing</a></li>
+<li><a href="Stdlib.micromega.Psatz.html">Psatz</a></li>
+<li><a href="Stdlib.micromega.QMicromega.html">QMicromega</a></li>
+<li><a href="Stdlib.micromega.RMicromega.html">RMicromega</a></li>
+<li><a href="Stdlib.micromega.Refl.html">Refl</a></li>
+<li><a href="Stdlib.micromega.RingMicromega.html">RingMicromega</a></li>
+<li><a href="Stdlib.micromega.Tauto.html">Tauto</a></li>
+<li><a href="Stdlib.micromega.VarMap.html">VarMap</a></li>
+<li><a href="Stdlib.micromega.ZArith_hints.html">ZArith_hints</a></li>
+<li><a href="Stdlib.micromega.ZCoeff.html">ZCoeff</a></li>
+<li><a href="Stdlib.micromega.ZMicromega.html">ZMicromega</a></li>
+<li><a href="Stdlib.micromega.Zify.html">Zify</a></li>
+<li><a href="Stdlib.micromega.ZifyBool.html">ZifyBool</a></li>
+<li><a href="Stdlib.micromega.ZifyClasses.html">ZifyClasses</a></li>
+<li><a href="Stdlib.micromega.ZifyComparison.html">ZifyComparison</a></li>
+<li><a href="Stdlib.micromega.ZifyInst.html">ZifyInst</a></li>
+<li><a href="Stdlib.micromega.ZifyN.html">ZifyN</a></li>
+<li><a href="Stdlib.micromega.ZifyNat.html">ZifyNat</a></li>
+<li><a href="Stdlib.micromega.ZifyPow.html">ZifyPow</a></li>
+<li><a href="Stdlib.micromega.ZifySint63.html">ZifySint63</a></li>
+<li><a href="Stdlib.micromega.ZifyUint63.html">ZifyUint63</a></li>
+<li><a href="Stdlib.micromega.Ztac.html">Ztac</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.nsatz"><summary>nsatz</summary>
+          <ul>
+          <li><a href="Stdlib.nsatz.NsatzTactic.html">NsatzTactic</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.omega"><summary>omega</summary>
+          <ul>
+          <li><a href="Stdlib.omega.OmegaLemmas.html">OmegaLemmas</a></li>
+<li><a href="Stdlib.omega.PreOmega.html">PreOmega</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.rtauto"><summary>rtauto</summary>
+          <ul>
+          <li><a href="Stdlib.rtauto.Bintree.html">Bintree</a></li>
+<li><a href="Stdlib.rtauto.Rtauto.html">Rtauto</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.setoid_ring"><summary>setoid_ring</summary>
+          <ul>
+          <li><a href="Stdlib.setoid_ring.Algebra_syntax.html">Algebra_syntax</a></li>
+<li><a href="Stdlib.setoid_ring.ArithRing.html">ArithRing</a></li>
+<li><a href="Stdlib.setoid_ring.BinList.html">BinList</a></li>
+<li><a href="Stdlib.setoid_ring.Cring.html">Cring</a></li>
+<li><a href="Stdlib.setoid_ring.Field.html">Field</a></li>
+<li><a href="Stdlib.setoid_ring.Field_tac.html">Field_tac</a></li>
+<li><a href="Stdlib.setoid_ring.Field_theory.html">Field_theory</a></li>
+<li><a href="Stdlib.setoid_ring.InitialRing.html">InitialRing</a></li>
+<li><a href="Stdlib.setoid_ring.Integral_domain.html">Integral_domain</a></li>
+<li><a href="Stdlib.setoid_ring.NArithRing.html">NArithRing</a></li>
+<li><a href="Stdlib.setoid_ring.Ncring.html">Ncring</a></li>
+<li><a href="Stdlib.setoid_ring.Ncring_initial.html">Ncring_initial</a></li>
+<li><a href="Stdlib.setoid_ring.Ncring_polynom.html">Ncring_polynom</a></li>
+<li><a href="Stdlib.setoid_ring.Ncring_tac.html">Ncring_tac</a></li>
+<li><a href="Stdlib.setoid_ring.RealField.html">RealField</a></li>
+<li><a href="Stdlib.setoid_ring.Ring.html">Ring</a></li>
+<li><a href="Stdlib.setoid_ring.Ring_base.html">Ring_base</a></li>
+<li><a href="Stdlib.setoid_ring.Ring_polynom.html">Ring_polynom</a></li>
+<li><a href="Stdlib.setoid_ring.Ring_tac.html">Ring_tac</a></li>
+<li><a href="Stdlib.setoid_ring.Ring_theory.html">Ring_theory</a></li>
+<li><a href="Stdlib.setoid_ring.Rings_Q.html">Rings_Q</a></li>
+<li><a href="Stdlib.setoid_ring.Rings_R.html">Rings_R</a></li>
+<li><a href="Stdlib.setoid_ring.Rings_Z.html">Rings_Z</a></li>
+<li><a href="Stdlib.setoid_ring.ZArithRing.html">ZArithRing</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.ssr"><summary>ssr</summary>
+          <ul>
+          <li><a href="Stdlib.ssr.ssrbool.html">ssrbool</a></li>
+<li><a href="Stdlib.ssr.ssrclasses.html">ssrclasses</a></li>
+<li><a href="Stdlib.ssr.ssreflect.html">ssreflect</a></li>
+<li><a href="Stdlib.ssr.ssrfun.html">ssrfun</a></li>
+<li><a href="Stdlib.ssr.ssrsetoid.html">ssrsetoid</a></li>
+<li><a href="Stdlib.ssr.ssrunder.html">ssrunder</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.ssrmatching"><summary>ssrmatching</summary>
+          <ul>
+          <li><a href="Stdlib.ssrmatching.ssrmatching.html">ssrmatching</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi"><summary>elpi</summary>
+          <ul>
+          <li><details id="elpi.apps"><summary>apps</summary>
+          <ul>
+          <li><details id="elpi.apps.NES"><summary>NES</summary>
+          <ul>
+          <li><details id="elpi.apps.NES.elpi"><summary>elpi</summary>
+          <ul>
+          <li><a href="elpi.apps.NES.elpi.dummy.html">dummy</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="elpi.apps.NES.NES.html">NES</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.coercion"><summary>coercion</summary>
+          <ul>
+          <li><a href="elpi.apps.coercion.coercion.html">coercion</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.cs"><summary>cs</summary>
+          <ul>
+          <li><a href="elpi.apps.cs.cs.html">cs</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.derive"><summary>derive</summary>
+          <ul>
+          <li><details id="elpi.apps.derive.derive"><summary>derive</summary>
+          <ul>
+          <li><a href="elpi.apps.derive.derive.EqdepFacts.html">EqdepFacts</a></li>
+<li><a href="elpi.apps.derive.derive.bcongr.html">bcongr</a></li>
+<li><a href="elpi.apps.derive.derive.cast.html">cast</a></li>
+<li><a href="elpi.apps.derive.derive.eq.html">eq</a></li>
+<li><a href="elpi.apps.derive.derive.eqK.html">eqK</a></li>
+<li><a href="elpi.apps.derive.derive.eqOK.html">eqOK</a></li>
+<li><a href="elpi.apps.derive.derive.eqType_ast.html">eqType_ast</a></li>
+<li><a href="elpi.apps.derive.derive.eqb.html">eqb</a></li>
+<li><a href="elpi.apps.derive.derive.eqbOK.html">eqbOK</a></li>
+<li><a href="elpi.apps.derive.derive.eqb_core_defs.html">eqb_core_defs</a></li>
+<li><a href="elpi.apps.derive.derive.eqbcorrect.html">eqbcorrect</a></li>
+<li><a href="elpi.apps.derive.derive.eqcorrect.html">eqcorrect</a></li>
+<li><a href="elpi.apps.derive.derive.experimental.html">experimental</a></li>
+<li><a href="elpi.apps.derive.derive.fields.html">fields</a></li>
+<li><a href="elpi.apps.derive.derive.idx2inv.html">idx2inv</a></li>
+<li><a href="elpi.apps.derive.derive.induction.html">induction</a></li>
+<li><a href="elpi.apps.derive.derive.invert.html">invert</a></li>
+<li><a href="elpi.apps.derive.derive.isK.html">isK</a></li>
+<li><a href="elpi.apps.derive.derive.legacy.html">legacy</a></li>
+<li><a href="elpi.apps.derive.derive.lens.html">lens</a></li>
+<li><a href="elpi.apps.derive.derive.lens_laws.html">lens_laws</a></li>
+<li><a href="elpi.apps.derive.derive.map.html">map</a></li>
+<li><a href="elpi.apps.derive.derive.param1.html">param1</a></li>
+<li><a href="elpi.apps.derive.derive.param1_congr.html">param1_congr</a></li>
+<li><a href="elpi.apps.derive.derive.param1_functor.html">param1_functor</a></li>
+<li><a href="elpi.apps.derive.derive.param1_trivial.html">param1_trivial</a></li>
+<li><a href="elpi.apps.derive.derive.param2.html">param2</a></li>
+<li><a href="elpi.apps.derive.derive.projK.html">projK</a></li>
+<li><a href="elpi.apps.derive.derive.std.html">std</a></li>
+<li><a href="elpi.apps.derive.derive.tag.html">tag</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.derive.elpi"><summary>elpi</summary>
+          <ul>
+          <li><a href="elpi.apps.derive.elpi.dummy.html">dummy</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="elpi.apps.derive.derive.html">derive</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.eltac"><summary>eltac</summary>
+          <ul>
+          <li><a href="elpi.apps.eltac.apply.html">apply</a></li>
+<li><a href="elpi.apps.eltac.assumption.html">assumption</a></li>
+<li><a href="elpi.apps.eltac.case.html">case</a></li>
+<li><a href="elpi.apps.eltac.clear.html">clear</a></li>
+<li><a href="elpi.apps.eltac.constructor.html">constructor</a></li>
+<li><a href="elpi.apps.eltac.cycle.html">cycle</a></li>
+<li><a href="elpi.apps.eltac.discriminate.html">discriminate</a></li>
+<li><a href="elpi.apps.eltac.fail.html">fail</a></li>
+<li><a href="elpi.apps.eltac.generalize.html">generalize</a></li>
+<li><a href="elpi.apps.eltac.injection.html">injection</a></li>
+<li><a href="elpi.apps.eltac.intro.html">intro</a></li>
+<li><a href="elpi.apps.eltac.rewrite.html">rewrite</a></li>
+<li><a href="elpi.apps.eltac.tactics.html">tactics</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.locker"><summary>locker</summary>
+          <ul>
+          <li><details id="elpi.apps.locker.elpi"><summary>elpi</summary>
+          <ul>
+          <li><a href="elpi.apps.locker.elpi.dummy.html">dummy</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="elpi.apps.locker.locker.html">locker</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.rbuild"><summary>rbuild</summary>
+          <ul>
+          <li><details id="elpi.apps.rbuild.elpi"><summary>elpi</summary>
+          <ul>
+          <li><a href="elpi.apps.rbuild.elpi.dummy.html">dummy</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="elpi.apps.rbuild.rbuild.html">rbuild</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.tc"><summary>tc</summary>
+          <ul>
+          <li><details id="elpi.apps.tc.elpi"><summary>elpi</summary>
+          <ul>
+          <li><a href="elpi.apps.tc.elpi.dummy.html">dummy</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="elpi.apps.tc.add_commands.html">add_commands</a></li>
+<li><a href="elpi.apps.tc.db.html">db</a></li>
+<li><a href="elpi.apps.tc.tc.html">tc</a></li>
+<li><a href="elpi.apps.tc.wip.html">wip</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.core"><summary>core</summary>
+          <ul>
+          <li><a href="elpi.core.Bool.html">Bool</a></li>
+<li><a href="elpi.core.ListDef.html">ListDef</a></li>
+<li><a href="elpi.core.Morphisms.html">Morphisms</a></li>
+<li><a href="elpi.core.PosDef.html">PosDef</a></li>
+<li><a href="elpi.core.PrimFloat.html">PrimFloat</a></li>
+<li><a href="elpi.core.PrimInt63.html">PrimInt63</a></li>
+<li><a href="elpi.core.PrimString.html">PrimString</a></li>
+<li><a href="elpi.core.PrimStringAxioms.html">PrimStringAxioms</a></li>
+<li><a href="elpi.core.RelationClasses.html">RelationClasses</a></li>
+<li><a href="elpi.core.Setoid.html">Setoid</a></li>
+<li><a href="elpi.core.Uint63Axioms.html">Uint63Axioms</a></li>
+<li><a href="elpi.core.ssrbool.html">ssrbool</a></li>
+<li><a href="elpi.core.ssreflect.html">ssreflect</a></li>
+<li><a href="elpi.core.ssrfun.html">ssrfun</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="elpi.elpi.html">elpi</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi_elpi"><summary>elpi_elpi</summary>
+          <ul>
+          <li><a href="elpi_elpi.dummy.html">dummy</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi_examples"><summary>elpi_examples</summary>
+          <ul>
+          <li><a href="elpi_examples.example_abs_evars.html">example_abs_evars</a></li>
+<li><a href="elpi_examples.example_curry_howard_tactics.html">example_curry_howard_tactics</a></li>
+<li><a href="elpi_examples.example_data_base.html">example_data_base</a></li>
+<li><a href="elpi_examples.example_fuzzer.html">example_fuzzer</a></li>
+<li><a href="elpi_examples.example_generalize.html">example_generalize</a></li>
+<li><a href="elpi_examples.example_import_projections.html">example_import_projections</a></li>
+<li><a href="elpi_examples.example_record_expansion.html">example_record_expansion</a></li>
+<li><a href="elpi_examples.example_record_to_sigma.html">example_record_to_sigma</a></li>
+<li><a href="elpi_examples.example_reduction_surgery.html">example_reduction_surgery</a></li>
+<li><a href="elpi_examples.tutorial_coq_elpi_HOAS.html">tutorial_coq_elpi_HOAS</a></li>
+<li><a href="elpi_examples.tutorial_coq_elpi_command.html">tutorial_coq_elpi_command</a></li>
+<li><a href="elpi_examples.tutorial_coq_elpi_tactic.html">tutorial_coq_elpi_tactic</a></li>
+<li><a href="elpi_examples.tutorial_elpi_lang.html">tutorial_elpi_lang</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp"><summary>mathcomp</summary>
+          <ul>
+          <li><details id="mathcomp.algebra"><summary>algebra</summary>
+          <ul>
+          <li><details id="mathcomp.algebra.num_theory"><summary>num_theory</summary>
+          <ul>
+          <li><a href="mathcomp.algebra.num_theory.numdomain.html">numdomain</a></li>
+<li><a href="mathcomp.algebra.num_theory.numfield.html">numfield</a></li>
+<li><a href="mathcomp.algebra.num_theory.orderedzmod.html">orderedzmod</a></li>
+<li><a href="mathcomp.algebra.num_theory.ssrnum.html">ssrnum</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.algebra.all_algebra.html">all_algebra</a></li>
+<li><a href="mathcomp.algebra.archimedean.html">archimedean</a></li>
+<li><a href="mathcomp.algebra.countalg.html">countalg</a></li>
+<li><a href="mathcomp.algebra.finalg.html">finalg</a></li>
+<li><a href="mathcomp.algebra.fraction.html">fraction</a></li>
+<li><a href="mathcomp.algebra.intdiv.html">intdiv</a></li>
+<li><a href="mathcomp.algebra.interval.html">interval</a></li>
+<li><a href="mathcomp.algebra.interval_inference.html">interval_inference</a></li>
+<li><a href="mathcomp.algebra.matrix.html">matrix</a></li>
+<li><a href="mathcomp.algebra.mxalgebra.html">mxalgebra</a></li>
+<li><a href="mathcomp.algebra.mxpoly.html">mxpoly</a></li>
+<li><a href="mathcomp.algebra.mxred.html">mxred</a></li>
+<li><a href="mathcomp.algebra.poly.html">poly</a></li>
+<li><a href="mathcomp.algebra.polyXY.html">polyXY</a></li>
+<li><a href="mathcomp.algebra.polydiv.html">polydiv</a></li>
+<li><a href="mathcomp.algebra.qpoly.html">qpoly</a></li>
+<li><a href="mathcomp.algebra.rat.html">rat</a></li>
+<li><a href="mathcomp.algebra.ring_quotient.html">ring_quotient</a></li>
+<li><a href="mathcomp.algebra.sesquilinear.html">sesquilinear</a></li>
+<li><a href="mathcomp.algebra.spectral.html">spectral</a></li>
+<li><a href="mathcomp.algebra.ssralg.html">ssralg</a></li>
+<li><a href="mathcomp.algebra.ssrint.html">ssrint</a></li>
+<li><a href="mathcomp.algebra.vector.html">vector</a></li>
+<li><a href="mathcomp.algebra.zmodp.html">zmodp</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis"><summary>analysis</summary>
+          <ul>
+          <li><details id="mathcomp.analysis.homotopy_theory"><summary>homotopy_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.homotopy_theory.continuous_path.html">continuous_path</a></li>
+<li><a href="mathcomp.analysis.homotopy_theory.homotopy.html">homotopy</a></li>
+<li><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html">wedge_sigT</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.lebesgue_integral_theory"><summary>lebesgue_integral_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html">lebesgue_Rintegral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html">lebesgue_integrable</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral.html">lebesgue_integral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html">lebesgue_integral_definition</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.html">lebesgue_integral_differentiation</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_dominated_convergence.html">lebesgue_integral_dominated_convergence</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.html">lebesgue_integral_fubini</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_monotone_convergence.html">lebesgue_integral_monotone_convergence</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html">lebesgue_integral_nonneg</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html">lebesgue_integral_under</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.html">measurable_fun_approximation</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html">simple_functions</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.measure_theory"><summary>measure_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.measure_theory.counting_measure.html">counting_measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.dirac_measure.html">dirac_measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measurable_function.html">measurable_function</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measurable_structure.html">measurable_structure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure.html">measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_extension.html">measure_extension</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_function.html">measure_function</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_negligible.html">measure_negligible</a></li>
+<li><a href="mathcomp.analysis.measure_theory.probability_measure.html">probability_measure</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.normedtype_theory"><summary>normedtype_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.normedtype_theory.complete_normed_module.html">complete_normed_module</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.ereal_normedtype.html">ereal_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.matrix_normedtype.html">matrix_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.normed_module.html">normed_module</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.normedtype.html">normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html">num_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html">pseudometric_normed_Zmodule</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.urysohn.html">urysohn</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.vitali_lemma.html">vitali_lemma</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.showcase"><summary>showcase</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.showcase.pnt.html">pnt</a></li>
+<li><a href="mathcomp.analysis.showcase.summability.html">summability</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.topology_theory"><summary>topology_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.topology_theory.bool_topology.html">bool_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.compact.html">compact</a></li>
+<li><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></li>
+<li><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.nat_topology.html">nat_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.num_topology.html">num_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.one_point_compactification.html">one_point_compactification</a></li>
+<li><a href="mathcomp.analysis.topology_theory.order_topology.html">order_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.product_topology.html">product_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html">pseudometric_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.quotient_topology.html">quotient_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.separation_axioms.html">separation_axioms</a></li>
+<li><a href="mathcomp.analysis.topology_theory.sigT_topology.html">sigT_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.subspace_topology.html">subspace_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.subtype_topology.html">subtype_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.supremum_topology.html">supremum_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.topology.html">topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.topology_structure.html">topology_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.uniform_structure.html">uniform_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.weak_topology.html">weak_topology</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.analysis.all_analysis.html">all_analysis</a></li>
+<li><a href="mathcomp.analysis.borel_hierarchy.html">borel_hierarchy</a></li>
+<li><a href="mathcomp.analysis.cantor.html">cantor</a></li>
+<li><a href="mathcomp.analysis.charge.html">charge</a></li>
+<li><a href="mathcomp.analysis.convex.html">convex</a></li>
+<li><a href="mathcomp.analysis.derive.html">derive</a></li>
+<li><a href="mathcomp.analysis.ereal.html">ereal</a></li>
+<li><a href="mathcomp.analysis.ess_sup_inf.html">ess_sup_inf</a></li>
+<li><a href="mathcomp.analysis.esum.html">esum</a></li>
+<li><a href="mathcomp.analysis.exp.html">exp</a></li>
+<li><a href="mathcomp.analysis.ftc.html">ftc</a></li>
+<li><a href="mathcomp.analysis.function_spaces.html">function_spaces</a></li>
+<li><a href="mathcomp.analysis.gauss_integral.html">gauss_integral</a></li>
+<li><a href="mathcomp.analysis.hoelder.html">hoelder</a></li>
+<li><a href="mathcomp.analysis.kernel.html">kernel</a></li>
+<li><a href="mathcomp.analysis.landau.html">landau</a></li>
+<li><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></li>
+<li><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html">lebesgue_stieltjes_measure</a></li>
+<li><a href="mathcomp.analysis.measurable_realfun.html">measurable_realfun</a></li>
+<li><a href="mathcomp.analysis.numfun.html">numfun</a></li>
+<li><a href="mathcomp.analysis.pi_irrational.html">pi_irrational</a></li>
+<li><a href="mathcomp.analysis.probability.html">probability</a></li>
+<li><a href="mathcomp.analysis.realfun.html">realfun</a></li>
+<li><a href="mathcomp.analysis.sequences.html">sequences</a></li>
+<li><a href="mathcomp.analysis.trigo.html">trigo</a></li>
+<li><a href="mathcomp.analysis.tvs.html">tvs</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis_stdlib"><summary>analysis_stdlib</summary>
+          <ul>
+          <li><details id="mathcomp.analysis_stdlib.showcase"><summary>showcase</summary>
+          <ul>
+          <li><a href="mathcomp.analysis_stdlib.showcase.uniform_bigO.html">uniform_bigO</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.analysis_stdlib.Rstruct_topology.html">Rstruct_topology</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.bigenough"><summary>bigenough</summary>
+          <ul>
+          <li><a href="mathcomp.bigenough.bigenough.html">bigenough</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.boot"><summary>boot</summary>
+          <ul>
+          <li><a href="mathcomp.boot.all_boot.html">all_boot</a></li>
+<li><a href="mathcomp.boot.bigop.html">bigop</a></li>
+<li><a href="mathcomp.boot.binomial.html">binomial</a></li>
+<li><a href="mathcomp.boot.choice.html">choice</a></li>
+<li><a href="mathcomp.boot.div.html">div</a></li>
+<li><a href="mathcomp.boot.eqtype.html">eqtype</a></li>
+<li><a href="mathcomp.boot.finfun.html">finfun</a></li>
+<li><a href="mathcomp.boot.fingraph.html">fingraph</a></li>
+<li><a href="mathcomp.boot.finset.html">finset</a></li>
+<li><a href="mathcomp.boot.fintype.html">fintype</a></li>
+<li><a href="mathcomp.boot.generic_quotient.html">generic_quotient</a></li>
+<li><a href="mathcomp.boot.monoid.html">monoid</a></li>
+<li><a href="mathcomp.boot.nmodule.html">nmodule</a></li>
+<li><a href="mathcomp.boot.path.html">path</a></li>
+<li><a href="mathcomp.boot.prime.html">prime</a></li>
+<li><a href="mathcomp.boot.seq.html">seq</a></li>
+<li><a href="mathcomp.boot.ssrAC.html">ssrAC</a></li>
+<li><a href="mathcomp.boot.ssrbool.html">ssrbool</a></li>
+<li><a href="mathcomp.boot.ssreflect.html">ssreflect</a></li>
+<li><a href="mathcomp.boot.ssrfun.html">ssrfun</a></li>
+<li><a href="mathcomp.boot.ssrmatching.html">ssrmatching</a></li>
+<li><a href="mathcomp.boot.ssrnat.html">ssrnat</a></li>
+<li><a href="mathcomp.boot.ssrnotations.html">ssrnotations</a></li>
+<li><a href="mathcomp.boot.tuple.html">tuple</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.classical"><summary>classical</summary>
+          <ul>
+          <li><a href="mathcomp.classical.all_classical.html">all_classical</a></li>
+<li><a href="mathcomp.classical.boolp.html">boolp</a></li>
+<li><a href="mathcomp.classical.cardinality.html">cardinality</a></li>
+<li><a href="mathcomp.classical.classical_orders.html">classical_orders</a></li>
+<li><a href="mathcomp.classical.classical_sets.html">classical_sets</a></li>
+<li><a href="mathcomp.classical.contra.html">contra</a></li>
+<li><a href="mathcomp.classical.filter.html">filter</a></li>
+<li><a href="mathcomp.classical.fsbigop.html">fsbigop</a></li>
+<li><a href="mathcomp.classical.functions.html">functions</a></li>
+<li><a href="mathcomp.classical.internal_Eqdep_dec.html">internal_Eqdep_dec</a></li>
+<li><a href="mathcomp.classical.mathcomp_extra.html">mathcomp_extra</a></li>
+<li><a href="mathcomp.classical.set_interval.html">set_interval</a></li>
+<li><a href="mathcomp.classical.unstable.html">unstable</a></li>
+<li><a href="mathcomp.classical.wochoice.html">wochoice</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.experimental_reals"><summary>experimental_reals</summary>
+          <ul>
+          <li><a href="mathcomp.experimental_reals.discrete.html">discrete</a></li>
+<li><a href="mathcomp.experimental_reals.distr.html">distr</a></li>
+<li><a href="mathcomp.experimental_reals.realseq.html">realseq</a></li>
+<li><a href="mathcomp.experimental_reals.realsum.html">realsum</a></li>
+<li><a href="mathcomp.experimental_reals.xfinmap.html">xfinmap</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.field"><summary>field</summary>
+          <ul>
+          <li><a href="mathcomp.field.algC.html">algC</a></li>
+<li><a href="mathcomp.field.algebraics_fundamentals.html">algebraics_fundamentals</a></li>
+<li><a href="mathcomp.field.algnum.html">algnum</a></li>
+<li><a href="mathcomp.field.all_field.html">all_field</a></li>
+<li><a href="mathcomp.field.closed_field.html">closed_field</a></li>
+<li><a href="mathcomp.field.cyclotomic.html">cyclotomic</a></li>
+<li><a href="mathcomp.field.falgebra.html">falgebra</a></li>
+<li><a href="mathcomp.field.fieldext.html">fieldext</a></li>
+<li><a href="mathcomp.field.finfield.html">finfield</a></li>
+<li><a href="mathcomp.field.galois.html">galois</a></li>
+<li><a href="mathcomp.field.qfpoly.html">qfpoly</a></li>
+<li><a href="mathcomp.field.separable.html">separable</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.fingroup"><summary>fingroup</summary>
+          <ul>
+          <li><a href="mathcomp.fingroup.action.html">action</a></li>
+<li><a href="mathcomp.fingroup.all_fingroup.html">all_fingroup</a></li>
+<li><a href="mathcomp.fingroup.automorphism.html">automorphism</a></li>
+<li><a href="mathcomp.fingroup.fingroup.html">fingroup</a></li>
+<li><a href="mathcomp.fingroup.gproduct.html">gproduct</a></li>
+<li><a href="mathcomp.fingroup.morphism.html">morphism</a></li>
+<li><a href="mathcomp.fingroup.perm.html">perm</a></li>
+<li><a href="mathcomp.fingroup.presentation.html">presentation</a></li>
+<li><a href="mathcomp.fingroup.quotient.html">quotient</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.finmap"><summary>finmap</summary>
+          <ul>
+          <li><a href="mathcomp.finmap.finmap.html">finmap</a></li>
+<li><a href="mathcomp.finmap.multiset.html">multiset</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.order"><summary>order</summary>
+          <ul>
+          <li><a href="mathcomp.order.all_order.html">all_order</a></li>
+<li><a href="mathcomp.order.order.html">order</a></li>
+<li><a href="mathcomp.order.preorder.html">preorder</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.reals"><summary>reals</summary>
+          <ul>
+          <li><a href="mathcomp.reals.all_reals.html">all_reals</a></li>
+<li><a href="mathcomp.reals.constructive_ereal.html">constructive_ereal</a></li>
+<li><a href="mathcomp.reals.prodnormedzmodule.html">prodnormedzmodule</a></li>
+<li><a href="mathcomp.reals.real_interval.html">real_interval</a></li>
+<li><a href="mathcomp.reals.reals.html">reals</a></li>
+<li><a href="mathcomp.reals.signed.html">signed</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.reals_stdlib"><summary>reals_stdlib</summary>
+          <ul>
+          <li><a href="mathcomp.reals_stdlib.Rstruct.html">Rstruct</a></li>
+<li><a href="mathcomp.reals_stdlib.nsatz_realtype.html">nsatz_realtype</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.solvable"><summary>solvable</summary>
+          <ul>
+          <li><a href="mathcomp.solvable.abelian.html">abelian</a></li>
+<li><a href="mathcomp.solvable.all_solvable.html">all_solvable</a></li>
+<li><a href="mathcomp.solvable.alt.html">alt</a></li>
+<li><a href="mathcomp.solvable.burnside_app.html">burnside_app</a></li>
+<li><a href="mathcomp.solvable.center.html">center</a></li>
+<li><a href="mathcomp.solvable.commutator.html">commutator</a></li>
+<li><a href="mathcomp.solvable.cyclic.html">cyclic</a></li>
+<li><a href="mathcomp.solvable.extraspecial.html">extraspecial</a></li>
+<li><a href="mathcomp.solvable.extremal.html">extremal</a></li>
+<li><a href="mathcomp.solvable.finmodule.html">finmodule</a></li>
+<li><a href="mathcomp.solvable.frobenius.html">frobenius</a></li>
+<li><a href="mathcomp.solvable.gfunctor.html">gfunctor</a></li>
+<li><a href="mathcomp.solvable.gseries.html">gseries</a></li>
+<li><a href="mathcomp.solvable.hall.html">hall</a></li>
+<li><a href="mathcomp.solvable.jordanholder.html">jordanholder</a></li>
+<li><a href="mathcomp.solvable.maximal.html">maximal</a></li>
+<li><a href="mathcomp.solvable.nilpotent.html">nilpotent</a></li>
+<li><a href="mathcomp.solvable.pgroup.html">pgroup</a></li>
+<li><a href="mathcomp.solvable.primitive_action.html">primitive_action</a></li>
+<li><a href="mathcomp.solvable.sylow.html">sylow</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.ssreflect"><summary>ssreflect</summary>
+          <ul>
+          <li><a href="mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+    </div>
+
+  <div class="coq">
+
+    <div class="content">
+      <p><a href="./index.html">Top</a></p>
+      <h1 class="title">Module mathcomp._opam.lib.coq.user-contrib.Stdlib.micromega.RingMicromega</h1>
+<pre class="ssrdoc">
+        *      The Rocq Prover / The Rocq Development Team
+ v      *         Copyright INRIA, CNRS and contributors
+&lt;O___,, * (see version control and CREDITS file for authors &amp; dates)
+  \VV/  *************************************************************
+   //   *    This file is distributed under the terms of the
+        *     GNU Lesser General Public License Version 2.1
+        *     (see LICENSE file for the text of the license)
+</pre>
+<pre class="ssrdoc">
+From Stdlib Require Import PeanoNat.
+From Stdlib Require Import NArith NArithRing.
+From Stdlib Require Import Relation_Definitions.
+From Stdlib Require Import Setoid.
+From Stdlib Require Import Ring.
+(****
+From Stdlib Require Import Env.
+From Stdlib Require Import EnvRing.
+(****
+From Stdlib Require Import List.
+From Stdlib Require Import Bool.
+From Stdlib Require Import OrderedRing.
+From Stdlib Require Import Refl.
+From Stdlib.micromega Require Tauto.
+Set Implicit Arguments.
+Import OrderedRingSyntax.
+Section Micromega.
+Assume we have a strict(ly?) ordered ring
+Variable R : Type.
+Variables rO rI : R.
+Variables rplus rtimes rminus: R -&gt; R -&gt; R.
+Variable ropp : R -&gt; R.
+Variables req rle rlt : R -&gt; R -&gt; Prop.
+Variable sor : SOR rO rI rplus rtimes rminus ropp req rle rlt.
+Notation "0" := rO.
+Notation "1" := rI.
+Notation "x + y" := (rplus x y).
+Notation "x * y " := (rtimes x y).
+Notation "x - y " := (rminus x y).
+Notation "- x" := (ropp x).
+Notation "x == y" := (req x y).
+Notation "x ~= y" := (~ req x y).
+Notation "x &lt;= y" := (rle x y).
+Notation "x &lt; y" := (rlt x y).
+Assume we have a type of coefficients C and a morphism from C to R
+Variable C : Type.
+Variables cO cI : C.
+Variables cplus ctimes cminus: C -&gt; C -&gt; C.
+Variable copp : C -&gt; C.
+Variables ceqb cleb : C -&gt; C -&gt; bool.
+Variable phi : C -&gt; R.
+Power coefficients
+Variable E : Type. (* the type of exponents
+Variable pow_phi : N -&gt; E.
+Variable rpow : R -&gt; E -&gt; R.
+Notation "[ x ]" := (phi x).
+Notation "x [=] y" := (ceqb x y).
+Notation "x [&lt;=] y" := (cleb x y).
+Let's collect all hypotheses in addition to the ordered ring axioms into
+one structure
+Record SORaddon := mk_SOR_addon {
+  SORrm : ring_morph 0 1 rplus rtimes rminus ropp req cO cI cplus ctimes cminus copp ceqb phi;
+  SORpower : power_theory rI rtimes req pow_phi rpow;
+  SORcneqb_morph : forall x y : C, x [=] y = false -&gt; [x] ~= [y];
+  SORcleb_morph : forall x y : C, x [&lt;=] y = true -&gt; [x] &lt;= [y]
+}.
+Variable addon : SORaddon.
+Add Relation R req
+  reflexivity proved by (@Equivalence_Reflexive _ _ (SORsetoid sor))
+  symmetry proved by (@Equivalence_Symmetric _ _ (SORsetoid sor))
+  transitivity proved by (@Equivalence_Transitive _ _ (SORsetoid sor))
+as micomega_sor_setoid.
+Add Morphism rplus with signature req ==&gt; req ==&gt; req as rplus_morph.
+Proof.
+exact (SORplus_wd sor).
+Qed.
+Add Morphism rtimes with signature req ==&gt; req ==&gt; req as rtimes_morph.
+Proof.
+exact (SORtimes_wd sor).
+Qed.
+Add Morphism ropp with signature req ==&gt; req as ropp_morph.
+Proof.
+exact (SORopp_wd sor).
+Qed.
+Add Morphism rle with signature req ==&gt; req ==&gt; iff as rle_morph.
+Proof.
+  exact (SORle_wd sor).
+Qed.
+Add Morphism rlt with signature req ==&gt; req ==&gt; iff as rlt_morph.
+Proof.
+  exact (SORlt_wd sor).
+Qed.
+Add Morphism rminus with signature req ==&gt; req ==&gt; req as rminus_morph.
+Proof.
+  exact (rminus_morph sor). (* We already proved that minus is a morphism in OrderedRing.v
+Qed.
+Definition cneqb (x y : C) := negb (ceqb x y).
+Definition cltb (x y : C) := (cleb x y) &amp;&amp; (cneqb x y).
+Notation "x [~=] y" := (cneqb x y).
+Notation "x [&lt;] y" := (cltb x y).
+Ltac le_less := rewrite (Rle_lt_eq sor); left; try assumption.
+Ltac le_equal := rewrite (Rle_lt_eq sor); right; try reflexivity; try assumption.
+Ltac le_elim H := rewrite (Rle_lt_eq sor) in H; destruct H as [H | H].
+Lemma cleb_sound : forall x y : C, x [&lt;=] y = true -&gt; [x] &lt;= [y].
+Proof.
+  exact (SORcleb_morph addon).
+Qed.
+Lemma cneqb_sound : forall x y : C, x [~=] y = true -&gt; [x] ~= [y].
+Proof.
+intros x y H1. apply (SORcneqb_morph addon). unfold cneqb, negb in H1.
+destruct (ceqb x y); now try discriminate.
+Qed.
+Lemma cltb_sound : forall x y : C, x [&lt;] y = true -&gt; [x] &lt; [y].
+Proof.
+intros x y H. unfold cltb in H. apply andb_prop in H. destruct H as [H1 H2].
+apply cleb_sound in H1. apply cneqb_sound in H2. apply &lt;- (Rlt_le_neq sor). now split.
+Qed.
+Begin Micromega
+Definition PolC := Pol C. (* polynomials in generalized Horner form, defined in Ring_polynom or EnvRing
+Definition PolEnv := Env R. (* For interpreting PolC
+Definition eval_pol : PolEnv -&gt; PolC -&gt; R :=
+   Pphi rplus rtimes phi.
+Inductive Op1 : Set := (* relations with 0
+| Equal (* == 0
+| NonEqual (* ~= 0
+| Strict (* &gt; 0
+| NonStrict (* &gt;= 0.
+Definition NFormula := (PolC * Op1)%type. (* normalized formula
+Definition eval_op1 (o : Op1) : R -&gt; Prop :=
+match o with
+| Equal =&gt; fun x =&gt; x == 0
+| NonEqual =&gt; fun x : R =&gt; x ~= 0
+| Strict =&gt; fun x : R =&gt; 0 &lt; x
+| NonStrict =&gt; fun x : R =&gt; 0 &lt;= x
+end.
+Definition eval_nformula (env : PolEnv) (f : NFormula) : Prop :=
+let (p, op) := f in eval_op1 op (eval_pol env p).
+(** Rule of "signs" for addition and multiplication.
+   An arbitrary result is coded buy None.
+Definition OpMult (o o' : Op1) : option Op1 :=
+match o with
+| Equal =&gt; Some Equal
+| NonStrict =&gt;
+  match o' with
+    | Equal =&gt; Some Equal
+    | NonEqual  =&gt; None
+    | Strict    =&gt; Some NonStrict
+    | NonStrict =&gt; Some NonStrict
+  end
+| Strict =&gt; match o' with
+              | NonEqual =&gt; None
+              |  _       =&gt; Some o'
+            end
+| NonEqual =&gt; match o' with
+                | Equal =&gt; Some Equal
+                | NonEqual =&gt; Some NonEqual
+                | _        =&gt; None
+              end
+end.
+Definition OpAdd (o o': Op1) : option Op1 :=
+  match o with
+    | Equal =&gt; Some o'
+    | NonStrict =&gt;
+      match o' with
+        | Strict =&gt; Some Strict
+        | NonEqual =&gt; None
+        | _ =&gt; Some NonStrict
+      end
+    | Strict =&gt; match o' with
+                  | NonEqual =&gt; None
+                  |  _        =&gt; Some Strict
+                end
+    | NonEqual =&gt; match o' with
+                    | Equal  =&gt; Some NonEqual
+                    | _      =&gt; None
+                  end
+  end.
+Lemma OpMult_sound :
+  forall (o o' om: Op1) (x y : R),
+    eval_op1 o x -&gt; eval_op1 o' y -&gt; OpMult o o' = Some om -&gt; eval_op1 om (x * y).
+Proof.
+unfold eval_op1; intros o; destruct o; simpl; intros o' om x y H1 H2 H3.
+- (* x == 0
+  inversion H3. rewrite H1. now rewrite (Rtimes_0_l sor).
+- (* x ~= 0
+  destruct o' ; inversion H3.
+  + (* y == 0
+    rewrite H2. now rewrite (Rtimes_0_r sor).
+  + (* y ~= 0
+    apply (Rtimes_neq_0 sor) ; auto.
+- (* 0 &lt; x
+  destruct o' ; inversion H3.
+  + (* y == 0
+    rewrite H2; now rewrite (Rtimes_0_r sor).
+  + (* 0 &lt; y
+    now apply (Rtimes_pos_pos sor).
+  + (* 0 &lt;= y
+    apply (Rtimes_nonneg_nonneg sor); [le_less | assumption].
+- (* 0 &lt;= x
+  destruct o' ; inversion H3.
+  + (* y == 0
+    rewrite H2; now rewrite (Rtimes_0_r sor).
+  + (* 0 &lt; y
+    apply (Rtimes_nonneg_nonneg sor); [assumption | le_less ].
+  + (* 0 &lt;= y
+    now apply (Rtimes_nonneg_nonneg sor).
+Qed.
+Lemma OpAdd_sound :
+  forall (o o' oa : Op1) (e e' : R),
+    eval_op1 o e -&gt; eval_op1 o' e' -&gt; OpAdd o o' = Some oa -&gt; eval_op1 oa (e + e').
+Proof.
+unfold eval_op1; intros o; destruct o; simpl; intros o' oa e e' H1 H2 Hoa.
+- (* e == 0
+  inversion Hoa as [H0]. rewrite &lt;- H0.
+  destruct o' ; rewrite H1 ; now rewrite  (Rplus_0_l sor).
+- (* e ~= 0
+  destruct o'.
+  + (* e' == 0
+    inversion Hoa.
+    rewrite H2. now rewrite (Rplus_0_r sor).
+  + (* e' ~= 0
+    discriminate.
+  + (* 0 &lt; e'
+    discriminate.
+  + (* 0 &lt;= e'
+    discriminate.
+- (* 0 &lt; e
+  destruct o'.
+  + (* e' == 0
+    inversion Hoa.
+    rewrite H2.  now rewrite (Rplus_0_r sor).
+  + (* e' ~= 0
+    discriminate.
+  + (* 0 &lt; e'
+    inversion Hoa.
+    now apply (Rplus_pos_pos sor).
+  + (* 0 &lt;= e'
+    inversion Hoa.
+    now apply (Rplus_pos_nonneg sor).
+- (* 0 &lt;= e
+  destruct o'.
+  + (* e' == 0
+    inversion Hoa.
+    now rewrite H2, (Rplus_0_r sor).
+  + (* e' ~= 0
+    discriminate.
+    (* 0 &lt; e'
+  + inversion Hoa.
+    now apply (Rplus_nonneg_pos sor).
+  + (* 0 &lt;= e'
+    inversion Hoa.
+    now apply (Rplus_nonneg_nonneg sor).
+Qed.
+Inductive Psatz : Type :=
+| PsatzLet: Psatz -&gt; Psatz -&gt; Psatz
+| PsatzIn : nat -&gt; Psatz
+| PsatzSquare : PolC -&gt; Psatz
+| PsatzMulC : PolC -&gt; Psatz -&gt; Psatz
+| PsatzMulE : Psatz -&gt; Psatz -&gt; Psatz
+| PsatzAdd  : Psatz -&gt; Psatz -&gt; Psatz
+| PsatzC    : C -&gt; Psatz
+| PsatzZ    : Psatz.
+Register PsatzLet    as micromega.Psatz.PsatzLet.
+Register PsatzIn     as micromega.Psatz.PsatzIn.
+Register PsatzSquare as micromega.Psatz.PsatzSquare.
+Register PsatzMulC   as micromega.Psatz.PsatzMulC.
+Register PsatzMulE   as micromega.Psatz.PsatzMulE.
+Register PsatzAdd    as micromega.Psatz.PsatzAdd.
+Register PsatzC      as micromega.Psatz.PsatzC.
+Register PsatzZ      as micromega.Psatz.PsatzZ.
+(** Given a list [l] of NFormula and an extended polynomial expression
+   [e], if [eval_Psatz l e] succeeds (= Some f) then [f] is a
+   logic consequence of the conjunction of the formulae in l.
+   Moreover, the polynomial expression is obtained by replacing the (PsatzIn n)
+   by the nth polynomial expression in [l] and the sign is computed by the "rule of sign"
+Might be defined elsewhere
+Definition map_option (A B:Type) (f : A -&gt; option B) (o : option A) : option B :=
+  match o with
+    | None =&gt; None
+    | Some x =&gt; f x
+  end.
+Arguments map_option [A B] f o.
+Definition map_option2 (A B C : Type) (f : A -&gt; B -&gt; option C)
+  (o: option A) (o': option B) : option C :=
+  match o , o' with
+    | None , _ =&gt; None
+    | _ , None =&gt; None
+    | Some x , Some x' =&gt; f x x'
+  end.
+Arguments map_option2 [A B C] f o o'.
+Definition Rops_wd := mk_reqe (*rplus rtimes ropp req
+                       (SORplus_wd sor)
+                       (SORtimes_wd sor)
+                       (SORopp_wd sor).
+Definition pexpr_times_nformula (e: PolC) (f : NFormula) : option NFormula :=
+  let (ef,o) := f in
+    match o with
+      | Equal =&gt; Some (Pmul cO cI cplus ctimes ceqb e ef , Equal)
+      |   _   =&gt; None
+    end.
+Definition nformula_times_nformula (f1 f2 : NFormula) : option NFormula :=
+  let (e1,o1) := f1 in
+    let (e2,o2) := f2 in
+      map_option  (fun x =&gt; (Some (Pmul cO cI cplus ctimes ceqb e1 e2,x)))    (OpMult o1 o2).
+ Definition nformula_plus_nformula (f1 f2 : NFormula) : option NFormula :=
+  let (e1,o1) := f1 in
+    let (e2,o2) := f2 in
+      map_option  (fun x =&gt; (Some (Padd cO cplus ceqb e1 e2,x)))    (OpAdd o1 o2).
+Fixpoint eval_Psatz (l : list NFormula) (e : Psatz) {struct e} : option NFormula :=
+  match e with
+    | PsatzLet p1 p2 =&gt; match eval_Psatz l p1 with
+                        | None =&gt; None
+                        | Some f =&gt; eval_Psatz (f::l) p2
+                        end
+    | PsatzIn n =&gt; Some (nth n l (Pc cO, Equal))
+    | PsatzSquare e =&gt; Some (Psquare cO cI cplus ctimes ceqb e  , NonStrict)
+    | PsatzMulC re e =&gt; map_option (pexpr_times_nformula re) (eval_Psatz l e)
+    | PsatzMulE f1 f2 =&gt; map_option2 nformula_times_nformula  (eval_Psatz l f1) (eval_Psatz l f2)
+    | PsatzAdd f1 f2  =&gt; map_option2 nformula_plus_nformula  (eval_Psatz l f1) (eval_Psatz l f2)
+    | PsatzC  c  =&gt; if cltb cO c then Some (Pc c, Strict) else None
+This could be 0, or &lt;&gt; 0 -- but these cases are useless
+    | PsatzZ     =&gt; Some (Pc cO, Equal) (* Just to make life easier
+  end.
+Lemma pexpr_times_nformula_correct : forall (env: PolEnv) (e: PolC) (f f' : NFormula),
+  eval_nformula env f -&gt; pexpr_times_nformula e f = Some f' -&gt;
+   eval_nformula env f'.
+Proof.
+  unfold pexpr_times_nformula.
+  intros env e f; destruct f as [? o].
+  intros f' H H0. destruct o ; inversion H0 ; try discriminate.
+  simpl in *.    unfold eval_pol in *.
+  rewrite (Pmul_ok (SORsetoid sor) Rops_wd
+    (Rth_ARth (SORsetoid sor) Rops_wd (SORrt sor))  (SORrm addon)).
+  rewrite H. apply (Rtimes_0_r sor).
+Qed.
+Lemma nformula_times_nformula_correct : forall (env:PolEnv)
+  (f1 f2 f : NFormula),
+  eval_nformula env f1 -&gt; eval_nformula env f2 -&gt;
+  nformula_times_nformula f1 f2 = Some f  -&gt;
+   eval_nformula env f.
+Proof.
+  unfold nformula_times_nformula.
+  intros env f1 f2; destruct f1 as [? o]; destruct f2 as [? o0].
+  case_eq (OpMult o o0) ; simpl ; try discriminate.
+  intros o1 H ? H0 H1 H2. inversion H2 ; simpl.
+  unfold eval_pol.
+  destruct o1; simpl;
+  rewrite (Pmul_ok (SORsetoid sor) Rops_wd
+    (Rth_ARth (SORsetoid sor) Rops_wd (SORrt sor))  (SORrm addon));
+  apply OpMult_sound with (3:= H);assumption.
+Qed.
+Lemma nformula_plus_nformula_correct : forall (env:PolEnv)
+  (f1 f2 f : NFormula),
+  eval_nformula env f1 -&gt; eval_nformula env f2 -&gt;
+  nformula_plus_nformula f1 f2 = Some f  -&gt;
+   eval_nformula env f.
+Proof.
+  unfold nformula_plus_nformula.
+  intros env f1 f2; destruct f1 as [? o] ; destruct f2 as [? o0].
+  case_eq (OpAdd o o0) ; simpl ; try discriminate.
+  intros o1 H ? H0 H1 H2. inversion H2 ; simpl.
+  unfold eval_pol.
+  destruct o1; simpl;
+  rewrite (Padd_ok (SORsetoid sor) Rops_wd
+    (Rth_ARth (SORsetoid sor) Rops_wd (SORrt sor))  (SORrm addon));
+  apply OpAdd_sound with (3:= H);assumption.
+Qed.
+Lemma eval_Psatz_Sound :
+  forall (l : list NFormula) (env : PolEnv),
+    (forall (f : NFormula), In f l -&gt; eval_nformula env f) -&gt;
+      forall (e : Psatz) (f : NFormula), eval_Psatz l e = Some f -&gt;
+        eval_nformula env f.
+Proof.
+  intros l env H e.
+  revert l H.
+  induction e as [e1 IHe1 e2 IHe2 | n|?|? e IHe|e1 IHe1 e2 IHe2|e1 IHe1 e2 IHe2|c|];
+    simpl ; intros l IN f.
+  - (* PsatzLet
+    destruct (eval_Psatz l e1) as [f'|] eqn:EP; [|discriminate].
+    apply IHe2. intros f2 [EQ |IN'].
+    + subst.
+      eapply IHe1; eauto.
+    + eauto.
+  - (* PsatzIn
+  simpl ; intros H0.
+  destruct (nth_in_or_default n l (Pc cO, Equal)) as [Hin|Heq].
+  + (* index is in bounds
+    apply IN. congruence.
+  + (* index is out-of-bounds
+    inversion H0.
+    rewrite Heq. simpl.
+    now apply  (morph0 (SORrm addon)).
+  - (* PsatzSquare
+    intros H0. inversion H0.
+    simpl. unfold eval_pol.
+    rewrite (Psquare_ok (SORsetoid sor) Rops_wd
+                        (Rth_ARth (SORsetoid sor) Rops_wd (SORrt sor))  (SORrm addon));
+      now apply (Rtimes_square_nonneg sor).
+  - (* PsatzMulC
+    case_eq  (eval_Psatz l e) ; simpl ; intros ? H0; [intros H1|].
+    + apply IHe in H0.
+      * apply pexpr_times_nformula_correct with (1:=H0) (2:= H1).
+      * apply IN.
+    + discriminate.
+  - (* PsatzMulC
+    simpl.
+    case_eq (eval_Psatz l e1) ; simpl ; try discriminate.
+    case_eq (eval_Psatz l e2) ; simpl ; try discriminate.
+    intros n H0 n0 H1.
+    apply IHe1 in H1; auto. apply IHe2 in H0; auto.
+    apply (nformula_times_nformula_correct env n0 n); auto.
+  - (* PsatzAdd
+    simpl.
+    case_eq (eval_Psatz l e1) ; simpl ; try discriminate.
+    case_eq (eval_Psatz l e2) ; simpl ; try discriminate.
+    intros n H0 n0 H1.
+    apply IHe1 in H1; auto. apply IHe2 in H0; auto.
+    apply (nformula_plus_nformula_correct env n0 n) ; assumption.
+  - (* PsatzC
+    simpl.
+    case_eq (cO [&lt;] c).
+    + intros H0 H1.  inversion H1. simpl.
+      rewrite &lt;- (morph0 (SORrm addon)). now apply cltb_sound.
+    + discriminate.
+  - (* PsatzZ
+    simpl. intros H0. inversion H0.
+    simpl. apply  (morph0 (SORrm addon)).
+Qed.
+Fixpoint ge_bool (n m  : nat) : bool :=
+ match n with
+   | O   =&gt; match m with
+            |  O =&gt; true
+            | S _ =&gt; false
+          end
+   | S n  =&gt; match m with
+               | O =&gt; true
+               | S m =&gt; ge_bool n m
+             end
+   end.
+Lemma ge_bool_cases : forall n m,
+ (if ge_bool n m then n &gt;= m else n &lt; m)%nat.
+Proof.
+  intros n; induction n as [|n IHn];
+   intros m; destruct m as [|m]; simpl; auto using Nat.le_add_r, Nat.le_0_l.
+  specialize (IHn m). destruct (ge_bool); auto using le_n_S.
+Qed.
+Fixpoint xhyps_of_psatz (base:nat) (acc : list nat) (prf : Psatz)  : list nat :=
+  match prf with
+    | PsatzC _ | PsatzZ | PsatzSquare _ =&gt; acc
+    | PsatzMulC _ prf =&gt; xhyps_of_psatz base acc prf
+    | PsatzAdd e1 e2 | PsatzMulE e1 e2 =&gt; xhyps_of_psatz base (xhyps_of_psatz base acc e2) e1
+    | PsatzIn n =&gt; if ge_bool n base then (n::acc) else acc
+    | PsatzLet e1 e2 =&gt; xhyps_of_psatz base (xhyps_of_psatz (S base) acc e2) e1
+  end.
+Fixpoint nhyps_of_psatz (base:nat) (prf : Psatz) : list nat :=
+  match prf with
+    | PsatzC _ | PsatzZ | PsatzSquare _ =&gt; nil
+    | PsatzMulC _ prf =&gt; nhyps_of_psatz base prf
+    | PsatzAdd e1 e2 | PsatzMulE e1 e2 =&gt; nhyps_of_psatz base e1 ++ nhyps_of_psatz base e2
+    | PsatzIn n =&gt; if ge_bool n base then (n::nil) else nil
+    | PsatzLet e1 e2 =&gt; nhyps_of_psatz base e1 ++ nhyps_of_psatz (S base) e2
+  end.
+Fixpoint extract_hyps (l: list NFormula) (ln : list nat) : list NFormula  :=
+  match ln with
+    | nil =&gt; nil
+    | n::ln =&gt; nth n l (Pc cO, Equal) :: extract_hyps l ln
+  end.
+Lemma extract_hyps_app : forall l ln1 ln2,
+  extract_hyps l (ln1 ++ ln2) = (extract_hyps l ln1) ++ (extract_hyps l ln2).
+Proof.
+  intros l ln1; induction ln1 as [|? ln1 IHln1].
+  - reflexivity.
+  - simpl.
+    intros.
+    rewrite IHln1. reflexivity.
+Qed.
+Ltac inv H := inversion H ; try subst ; clear H.
+roughly speaking, normalise_pexpr_correct is a proof of
+  forall env p, eval_pexpr env p == eval_pol env (normalise_pexpr p)
+(****
+Definition paddC := PaddC cplus.
+Definition psubC := PsubC cminus.
+Definition PsubC_ok : forall c P env, eval_pol env (psubC  P c) == eval_pol env P - [c] :=
+  let Rops_wd := mk_reqe (*rplus rtimes ropp req
+                       (SORplus_wd sor)
+                       (SORtimes_wd sor)
+                       (SORopp_wd sor) in
+                       PsubC_ok (SORsetoid sor) Rops_wd (Rth_ARth (SORsetoid sor) Rops_wd (SORrt sor))
+                (SORrm addon).
+Definition PaddC_ok : forall c P env, eval_pol env (paddC  P c) == eval_pol env P + [c] :=
+  let Rops_wd := mk_reqe (*rplus rtimes ropp req
+                       (SORplus_wd sor)
+                       (SORtimes_wd sor)
+                       (SORopp_wd sor) in
+                       PaddC_ok (SORsetoid sor) Rops_wd (Rth_ARth (SORsetoid sor) Rops_wd (SORrt sor))
+                (SORrm addon).
+Check that a formula f is inconsistent by normalizing and comparing the
+resulting constant with 0
+Definition check_inconsistent (f : NFormula) : bool :=
+let (e, op) := f in
+  match  e with
+  | Pc c =&gt;
+    match op with
+    | Equal =&gt; cneqb c cO
+    | NonStrict =&gt; c [&lt;] cO
+    | Strict =&gt; c [&lt;=] cO
+    | NonEqual =&gt; c [=] cO
+    end
+  | _ =&gt; false (* not a constant
+  end.
+Lemma check_inconsistent_sound :
+  forall (p : PolC) (op : Op1),
+    check_inconsistent (p, op) = true -&gt; forall env, ~ eval_op1 op (eval_pol env p).
+Proof.
+intros p op H1 env. unfold check_inconsistent in H1.
+destruct op; simpl ;
+(****
+destruct p ; simpl; try discriminate H1;
+try rewrite &lt;- (morph0 (SORrm addon)); trivial.
+- now apply cneqb_sound.
+- apply (morph_eq (SORrm addon)) in H1. congruence.
+- apply cleb_sound in H1. now apply -&gt; (Rle_ngt sor).
+- apply cltb_sound in H1. now apply -&gt; (Rlt_nge sor).
+Qed.
+Definition check_normalised_formulas : list NFormula -&gt; Psatz -&gt; bool :=
+  fun l cm =&gt;
+    match eval_Psatz l cm with
+      | None =&gt; false
+      | Some f =&gt; check_inconsistent f
+    end.
+Lemma checker_nf_sound :
+  forall (l : list NFormula) (cm : Psatz),
+    check_normalised_formulas l cm = true -&gt;
+      forall env : PolEnv, make_impl (eval_nformula env) l False.
+Proof.
+intros l cm H env.
+unfold check_normalised_formulas in H.
+revert H.
+case_eq (eval_Psatz l cm) ; [|discriminate].
+intros nf. intros H H0.
+rewrite &lt;- make_conj_impl. intro H1.
+assert (H1' := make_conj_in _ _ H1).
+assert (Hnf :=  @eval_Psatz_Sound  _ _  H1' _ _ H).
+destruct nf.
+apply (@check_inconsistent_sound _ _ H0 env Hnf).
+Qed.
+(** Normalisation of formulae *
+Inductive Op2 : Set := (* binary relations
+| OpEq
+| OpNEq
+| OpLe
+| OpGe
+| OpLt
+| OpGt.
+Register OpEq  as micromega.Op2.OpEq.
+Register OpNEq as micromega.Op2.OpNEq.
+Register OpLe  as micromega.Op2.OpLe.
+Register OpGe  as micromega.Op2.OpGe.
+Register OpLt  as micromega.Op2.OpLt.
+Register OpGt  as micromega.Op2.OpGt.
+Definition eval_op2 (o : Op2) : R -&gt; R -&gt; Prop :=
+match o with
+| OpEq =&gt; req
+| OpNEq =&gt; fun x y : R =&gt; x ~= y
+| OpLe =&gt; rle
+| OpGe =&gt; fun x y : R =&gt; y &lt;= x
+| OpLt =&gt; fun x y : R =&gt; x &lt; y
+| OpGt =&gt; fun x y : R =&gt; y &lt; x
+end.
+Definition  eval_pexpr : PolEnv -&gt; PExpr C -&gt; R :=
+ PEeval rplus rtimes rminus ropp phi pow_phi rpow.
+#[universes(template)]
+Record Formula (T:Type) : Type := Build_Formula{
+  Flhs : PExpr T;
+  Fop : Op2;
+  Frhs : PExpr T
+}.
+Register Formula as micromega.Formula.type.
+Register Build_Formula as micromega.Formula.Build_Formula.
+Definition eval_formula (env : PolEnv) (f : Formula C) : Prop :=
+  let (lhs, op, rhs) := f in
+    (eval_op2 op) (eval_pexpr env lhs) (eval_pexpr env rhs).
+We normalize Formulas by moving terms to one side
+Definition norm := norm_aux cO cI cplus ctimes cminus copp ceqb.
+Definition psub := Psub cO  cplus cminus copp ceqb.
+Definition padd  := Padd cO  cplus ceqb.
+Definition pmul := Pmul cO cI cplus ctimes ceqb.
+Definition popp := Popp copp.
+Definition normalise (f : Formula C) : NFormula :=
+let (lhs, op, rhs) := f in
+  let lhs := norm lhs in
+    let rhs := norm rhs in
+  match op with
+  | OpEq =&gt;  (psub  lhs rhs, Equal)
+  | OpNEq =&gt; (psub lhs rhs, NonEqual)
+  | OpLe =&gt;  (psub rhs lhs, NonStrict)
+  | OpGe =&gt;  (psub lhs rhs, NonStrict)
+  | OpGt =&gt; (psub  lhs rhs, Strict)
+  | OpLt =&gt; (psub  rhs lhs, Strict)
+  end.
+Definition negate (f : Formula C) : NFormula :=
+let (lhs, op, rhs) := f in
+  let lhs := norm lhs in
+    let rhs := norm rhs in
+      match op with
+        | OpEq =&gt; (psub rhs lhs, NonEqual)
+        | OpNEq =&gt; (psub rhs lhs, Equal)
+        | OpLe =&gt; (psub lhs rhs, Strict) (* e &lt;= e' == ~ e &gt; e'
+        | OpGe =&gt; (psub rhs lhs, Strict)
+        | OpGt =&gt; (psub rhs lhs, NonStrict)
+        | OpLt =&gt; (psub lhs rhs, NonStrict)
+      end.
+Lemma eval_pol_sub : forall env lhs rhs, eval_pol env (psub  lhs rhs) == eval_pol env lhs - eval_pol env rhs.
+Proof.
+  intros.
+  apply (Psub_ok  (SORsetoid sor) Rops_wd
+    (Rth_ARth (SORsetoid sor) Rops_wd (SORrt sor)) (SORrm addon)).
+Qed.
+Lemma eval_pol_add : forall env lhs rhs, eval_pol env (padd  lhs rhs) == eval_pol env lhs + eval_pol env rhs.
+Proof.
+  intros.
+  apply (Padd_ok  (SORsetoid sor) Rops_wd
+    (Rth_ARth (SORsetoid sor) Rops_wd (SORrt sor)) (SORrm addon)).
+Qed.
+Lemma eval_pol_mul : forall env lhs rhs, eval_pol env (pmul  lhs rhs) == eval_pol env lhs * eval_pol env rhs.
+Proof.
+  intros.
+  apply (Pmul_ok  sor.(SORsetoid) Rops_wd
+    (Rth_ARth (SORsetoid sor) Rops_wd sor.(SORrt)) addon.(SORrm)).
+Qed.
+Lemma eval_pol_opp : forall env e, eval_pol env (popp e) ==  - eval_pol env e.
+Proof.
+  intros.
+  apply (Popp_ok  (SORsetoid sor) Rops_wd
+    (Rth_ARth (SORsetoid sor) Rops_wd (SORrt sor)) (SORrm addon)).
+Qed.
+Lemma eval_pol_norm : forall env lhs, eval_pexpr env lhs == eval_pol env  (norm lhs).
+Proof.
+  intros.
+  apply  (norm_aux_spec (SORsetoid sor) Rops_wd   (Rth_ARth (SORsetoid sor) Rops_wd (SORrt sor)) (SORrm addon) (SORpower addon) ).
+Qed.
+Theorem normalise_sound :
+  forall (env : PolEnv) (f : Formula C),
+    eval_formula env f &lt;-&gt; eval_nformula env (normalise f).
+Proof.
+intros env f; destruct f as [lhs op rhs]; simpl in *.
+destruct op; simpl in *; rewrite eval_pol_sub ; rewrite &lt;- eval_pol_norm ; rewrite &lt;- eval_pol_norm.
+- symmetry.
+  now apply (Rminus_eq_0 sor).
+- rewrite (Rminus_eq_0 sor).
+  tauto.
+- now apply (Rle_le_minus sor).
+- now apply (Rle_le_minus sor).
+- now apply (Rlt_lt_minus sor).
+- now apply (Rlt_lt_minus sor).
+Qed.
+Theorem negate_correct :
+  forall (env : PolEnv) (f : Formula C),
+    eval_formula env f &lt;-&gt; ~ (eval_nformula env (negate f)).
+Proof.
+intros env f; destruct f as [lhs op rhs]; simpl.
+destruct op; simpl in *; rewrite eval_pol_sub ; rewrite &lt;- eval_pol_norm ; rewrite &lt;- eval_pol_norm.
+- symmetry. rewrite (Rminus_eq_0 sor).
+split; intro H; [symmetry; now apply -&gt; (Req_dne sor) | symmetry in H; now apply &lt;- (Req_dne sor)].
+- rewrite (Rminus_eq_0 sor). split; intro; now apply (Rneq_symm sor).
+- rewrite &lt;- (Rlt_lt_minus sor). now rewrite &lt;- (Rle_ngt sor).
+- rewrite &lt;- (Rlt_lt_minus sor). now rewrite &lt;- (Rle_ngt sor).
+- rewrite &lt;- (Rle_le_minus sor). now rewrite &lt;- (Rlt_nge sor).
+- rewrite &lt;- (Rle_le_minus sor). now rewrite &lt;- (Rlt_nge sor).
+Qed.
+(** Another normalisation - this is used for cnf conversion *
+Definition xnormalise (f:NFormula) : list (NFormula)  :=
+  let (e,o) := f in
+  match o with
+  | Equal     =&gt; (e , Strict) :: (popp e, Strict) :: nil
+  | NonEqual  =&gt; (e , Equal) :: nil
+  | Strict    =&gt; (popp e, NonStrict) :: nil
+  | NonStrict =&gt; (popp e, Strict) :: nil
+  end.
+Definition xnegate (t:NFormula) : list (NFormula)  :=
+  let (e,o) := t in
+    match o with
+      | Equal  =&gt; (e,Equal) :: nil
+      | NonEqual =&gt; (e,Strict)::(popp e,Strict)::nil
+      | Strict  =&gt; (e,Strict) :: nil
+      | NonStrict  =&gt; (e,NonStrict) :: nil
+    end.
+Import Stdlib.micromega.Tauto.
+Definition cnf_of_list {T : Type} (l:list NFormula) (tg : T) : cnf NFormula T :=
+  List.fold_right (fun x acc =&gt;
+                     if check_inconsistent x then acc else ((x,tg)::nil)::acc)
+                  (cnf_tt _ _)  l.
+Add Ring SORRing : (SORrt sor).
+Lemma cnf_of_list_correct :
+  forall (T : Type) env l tg,
+    eval_cnf (Annot:=T) eval_nformula env (cnf_of_list l tg) &lt;-&gt;
+    make_conj (fun x : NFormula =&gt; eval_nformula env x -&gt; False) l.
+Proof.
+  unfold cnf_of_list.
+  intros T env l tg.
+  set (F := (fun (x : NFormula) (acc : list (list (NFormula * T))) =&gt;
+        if check_inconsistent x then acc else ((x, tg) :: nil) :: acc)).
+  set (G := ((fun x : NFormula =&gt; eval_nformula env x -&gt; False))).
+  induction l as [|a l IHl].
+  - compute.
+    tauto.
+  - rewrite make_conj_cons.
+    simpl.
+    unfold F at 1.
+    destruct (check_inconsistent a) eqn:EQ.
+    + rewrite IHl.
+      unfold G.
+      destruct a.
+      specialize (check_inconsistent_sound _ _ EQ env).
+      simpl.
+      tauto.
+    +
+      rewrite &lt;- eval_cnf_cons_iff.
+      simpl.
+      unfold eval_tt. simpl.
+      rewrite IHl.
+      unfold G at 2.
+      tauto.
+Qed.
+Definition cnf_normalise {T: Type} (t: Formula C) (tg: T) : cnf NFormula T :=
+  let f := normalise t in
+  if check_inconsistent f then cnf_ff _ _
+  else cnf_of_list (xnormalise f) tg.
+Definition cnf_negate {T: Type} (t: Formula C) (tg: T) : cnf NFormula T :=
+  let f := normalise t in
+  if check_inconsistent f then cnf_tt _ _
+  else cnf_of_list (xnegate f) tg.
+Lemma eq0_cnf : forall x,
+    (0 &lt; x -&gt; False) /\ (0 &lt; - x -&gt; False) &lt;-&gt; x == 0.
+Proof.
+  intros x; split ; intros H.
+  +  apply (SORle_antisymm sor).
+     * now rewrite (Rle_ngt sor).
+     * rewrite (Rle_ngt sor).  rewrite (Rlt_lt_minus sor).
+       setoid_replace (0 - x) with (-x) by ring.
+       tauto.
+  + split; intro H0.
+      * rewrite (SORlt_le_neq sor) in H0.
+        apply (proj2 H0).
+        now rewrite H.
+      * rewrite (SORlt_le_neq sor) in H0.
+        apply (proj2 H0).
+        rewrite H. ring.
+Qed.
+Lemma xnormalise_correct : forall env f,
+    (make_conj (fun x =&gt; eval_nformula env x -&gt; False) (xnormalise f)) &lt;-&gt; eval_nformula env f.
+Proof.
+  intros env f.
+  destruct f as [e o]; destruct o eqn:Op; cbn - [psub];
+    repeat rewrite eval_pol_sub; fold eval_pol; repeat rewrite eval_pol_Pc;
+      repeat rewrite eval_pol_opp;
+      generalize (eval_pol env e) as x; intro x.
+  - apply eq0_cnf.
+  - unfold not. tauto.
+  - symmetry. rewrite (Rlt_nge sor).
+    rewrite (Rle_le_minus sor).
+    setoid_replace (0 - x) with (-x) by ring.
+    tauto.
+  - rewrite (Rle_ngt sor).
+    symmetry.
+    rewrite (Rlt_lt_minus sor).
+    setoid_replace (0 - x) with (-x) by ring.
+    tauto.
+Qed.
+Lemma xnegate_correct : forall env f,
+    (make_conj (fun x =&gt; eval_nformula env x -&gt; False) (xnegate f)) &lt;-&gt; ~ eval_nformula env f.
+Proof.
+  intros env f.
+  destruct f as [e o]; destruct o eqn:Op; cbn - [psub];
+    repeat rewrite eval_pol_sub; fold eval_pol; repeat rewrite eval_pol_Pc;
+      repeat rewrite eval_pol_opp;
+      generalize (eval_pol env e) as x; intro.
+  - tauto.
+  - rewrite eq0_cnf.
+    rewrite (Req_dne sor).
+    tauto.
+  - tauto.
+  - tauto.
+Qed.
+Lemma cnf_normalise_correct : forall (T : Type) env t tg, eval_cnf (Annot:=T) eval_nformula env (cnf_normalise t tg) &lt;-&gt; eval_formula env t.
+Proof.
+  intros T env t tg.
+  unfold cnf_normalise.
+  rewrite normalise_sound.
+  generalize (normalise t) as f;intro f.
+  destruct (check_inconsistent f) eqn:U.
+  - destruct f as [e op].
+    assert (US := check_inconsistent_sound _ _ U env).
+    rewrite eval_cnf_ff.
+    tauto.
+  - intros. rewrite cnf_of_list_correct.
+    now apply xnormalise_correct.
+Qed.
+Lemma cnf_negate_correct : forall (T : Type) env t (tg:T), eval_cnf eval_nformula env (cnf_negate t tg) &lt;-&gt; ~ eval_formula env t.
+Proof.
+  intros T env t tg.
+  rewrite normalise_sound.
+  unfold cnf_negate.
+  generalize (normalise t) as f;intro f.
+  destruct (check_inconsistent f) eqn:U.
+  -
+    destruct f as [e o].
+    assert (US := check_inconsistent_sound _  _ U env).
+    rewrite eval_cnf_tt.
+    tauto.
+  - rewrite cnf_of_list_correct.
+    apply xnegate_correct.
+Qed.
+Lemma eval_nformula_dec : forall env d, (eval_nformula env d) \/ ~ (eval_nformula env d).
+Proof.
+  intros env d.
+  destruct d as [p o]; simpl.
+  generalize (eval_pol env p); intros r.
+  destruct o ; simpl.
+  - apply (Req_em sor r 0).
+  - destruct (Req_em sor r 0) ; tauto.
+  - rewrite &lt;- (Rle_ngt sor r 0). generalize (Rle_gt_cases sor r 0). tauto.
+  - rewrite &lt;- (Rlt_nge sor r 0). generalize (Rle_gt_cases sor 0 r). tauto.
+Qed.
+(** Reverse transformation
+Fixpoint xdenorm (jmp : positive) (p: Pol C) : PExpr C :=
+  match p with
+    | Pc c =&gt; PEc c
+    | Pinj j p =&gt; xdenorm  (Pos.add j jmp ) p
+    | PX p j q   =&gt; PEadd
+      (PEmul (xdenorm jmp p) (PEpow (PEX jmp) (Npos j)))
+      (xdenorm (Pos.succ jmp) q)
+  end.
+Lemma xdenorm_correct : forall p i env,
+  eval_pol (jump i env) p == eval_pexpr env (xdenorm (Pos.succ i) p).
+Proof.
+  unfold eval_pol.
+  intros p; induction p as [|? p IHp|p2 IHp1 ? p3 IHp2].
+  - simpl. reflexivity.
+  - (* Pinj
+    simpl.
+    intros.
+    rewrite Pos.add_succ_r.
+    rewrite &lt;- IHp.
+    symmetry.
+    rewrite Pos.add_comm.
+    rewrite Pjump_add. reflexivity.
+  - (* PX
+    simpl.
+    intros.
+    rewrite &lt;- IHp1, &lt;- IHp2.
+    unfold Env.tail , Env.hd.
+    rewrite &lt;- Pjump_add.
+    rewrite Pos.add_1_r.
+    unfold Env.nth.
+    unfold jump at 2.
+    rewrite &lt;- Pos.add_1_l.
+    rewrite (rpow_pow_N (SORpower addon)).
+    unfold pow_N. ring.
+Qed.
+Definition denorm := xdenorm xH.
+Lemma denorm_correct : forall p env, eval_pol env p == eval_pexpr env (denorm p).
+Proof.
+  unfold denorm.
+  intros p; induction p as [| |? IHp1 ? ? IHp2].
+  - reflexivity.
+  - simpl.
+    rewrite Pos.add_1_r.
+    apply xdenorm_correct.
+  - simpl.
+    intros.
+    rewrite IHp1.
+    unfold Env.tail.
+    rewrite xdenorm_correct.
+    change (Pos.succ xH) with 2%positive.
+    rewrite (rpow_pow_N (SORpower addon)).
+    simpl. reflexivity.
+Qed.
+(** Sometimes it is convenient to make a distinction between "syntactic" coefficients and "real"
+coefficients that are used to actually compute
+Variable S : Type.
+Variable C_of_S : S -&gt; C.
+Variable phiS : S -&gt; R.
+Variable phi_C_of_S :   forall c,  phiS c =  phi (C_of_S c).
+Fixpoint map_PExpr (e : PExpr S) : PExpr C :=
+  match e with
+    | PEc c =&gt; PEc (C_of_S c)
+    | PEX p =&gt; PEX p
+    | PEadd e1 e2 =&gt; PEadd (map_PExpr e1) (map_PExpr e2)
+    | PEsub e1 e2 =&gt; PEsub (map_PExpr e1) (map_PExpr e2)
+    | PEmul e1 e2 =&gt; PEmul (map_PExpr e1) (map_PExpr e2)
+    | PEopp e     =&gt; PEopp (map_PExpr e)
+    | PEpow e n   =&gt; PEpow (map_PExpr e) n
+  end.
+Definition map_Formula (f : Formula S)  : Formula C :=
+  let (l,o,r) := f in
+    Build_Formula (map_PExpr l) o (map_PExpr r).
+Definition eval_sexpr : PolEnv -&gt; PExpr S -&gt; R :=
+  PEeval rplus rtimes rminus ropp phiS pow_phi rpow.
+Definition eval_sformula (env : PolEnv) (f : Formula S) : Prop :=
+  let (lhs, op, rhs) := f in
+    (eval_op2 op) (eval_sexpr env lhs) (eval_sexpr env rhs).
+Lemma eval_pexprSC : forall env s, eval_sexpr env s = eval_pexpr env (map_PExpr s).
+Proof.
+  unfold eval_pexpr, eval_sexpr.
+  intros env s;
+   induction s as [| |? IHs1 ? IHs2|? IHs1 ? IHs2|? IHs1 ? IHs2|? IHs|? IHs ?];
+   simpl ; try (rewrite IHs1 ; rewrite IHs2) ; try reflexivity.
+  - apply phi_C_of_S.
+  - rewrite IHs. reflexivity.
+  - rewrite IHs. reflexivity.
+Qed.
+(** equality might be (too) strong
+Lemma eval_formulaSC : forall env f, eval_sformula env f = eval_formula env (map_Formula f).
+Proof.
+  intros env f; destruct f.
+  simpl.
+  repeat rewrite eval_pexprSC.
+  reflexivity.
+Qed.
+(** Some syntactic simplifications of expressions
+Definition simpl_cone (e:Psatz) : Psatz :=
+  match e with
+    | PsatzSquare t =&gt;
+                    match t with
+                      | Pc c   =&gt; if ceqb cO c then PsatzZ else PsatzC (ctimes c c)
+                      | _ =&gt; PsatzSquare t
+                    end
+    | PsatzMulE t1 t2 =&gt;
+      match t1 , t2 with
+        | PsatzZ      , _        =&gt; PsatzZ
+        |    _     , PsatzZ      =&gt; PsatzZ
+        | PsatzC c ,  PsatzC c' =&gt; PsatzC (ctimes c c')
+        | PsatzC p1 , PsatzMulE (PsatzC p2)  x =&gt; PsatzMulE (PsatzC (ctimes p1 p2)) x
+        | PsatzC p1 , PsatzMulE x (PsatzC p2)  =&gt; PsatzMulE (PsatzC (ctimes p1 p2)) x
+        | PsatzMulE (PsatzC p2)  x  , PsatzC p1   =&gt; PsatzMulE (PsatzC (ctimes p1 p2)) x
+        | PsatzMulE x (PsatzC p2)   , PsatzC p1   =&gt; PsatzMulE (PsatzC (ctimes p1 p2)) x
+        | PsatzC x   , PsatzAdd y z   =&gt; PsatzAdd (PsatzMulE (PsatzC x) y) (PsatzMulE (PsatzC x) z)
+        | PsatzC c ,  _        =&gt; if ceqb cI c then t2 else PsatzMulE t1 t2
+        | _ ,  PsatzC c        =&gt; if ceqb cI c then t1 else PsatzMulE t1 t2
+        |     _     , _   =&gt; e
+      end
+    | PsatzAdd t1 t2 =&gt;
+      match t1 ,  t2 with
+        | PsatzZ     , x =&gt; x
+        |   x     , PsatzZ =&gt; x
+        |   x     , y   =&gt; PsatzAdd x y
+      end
+    |   _     =&gt; e
+  end.
+End Micromega.
+Local Variables:
+coding: utf-8
+End:
+</pre>
+
+      <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>
+    </div>
+  </div>
+    </main>
+</body>
+</html>

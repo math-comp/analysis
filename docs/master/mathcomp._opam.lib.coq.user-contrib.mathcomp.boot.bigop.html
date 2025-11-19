@@ -1,0 +1,3883 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Module mathcomp._opam.lib.coq.user-contrib.mathcomp.boot.bigop</title>
+<meta name="description" content="Documentation of Coq module mathcomp._opam.lib.coq.user-contrib.mathcomp.boot.bigop" />
+<link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+<link href="rocqnavi.css" rel="stylesheet" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="rocqnavi.js"> </script>
+</head>
+
+<body onload="init()">
+
+  <main>
+    <div class="sidebar">
+      <h2>Files</h2>
+      <li><details id="Corelib"><summary>Corelib</summary>
+          <ul>
+          <li><details id="Corelib.Array"><summary>Array</summary>
+          <ul>
+          <li><a href="Corelib.Array.ArrayAxioms.html">ArrayAxioms</a></li>
+<li><a href="Corelib.Array.PrimArray.html">PrimArray</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.BinNums"><summary>BinNums</summary>
+          <ul>
+          <li><a href="Corelib.BinNums.IntDef.html">IntDef</a></li>
+<li><a href="Corelib.BinNums.NatDef.html">NatDef</a></li>
+<li><a href="Corelib.BinNums.PosDef.html">PosDef</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Classes"><summary>Classes</summary>
+          <ul>
+          <li><a href="Corelib.Classes.CMorphisms.html">CMorphisms</a></li>
+<li><a href="Corelib.Classes.CRelationClasses.html">CRelationClasses</a></li>
+<li><a href="Corelib.Classes.Equivalence.html">Equivalence</a></li>
+<li><a href="Corelib.Classes.Init.html">Init</a></li>
+<li><a href="Corelib.Classes.Morphisms.html">Morphisms</a></li>
+<li><a href="Corelib.Classes.Morphisms_Prop.html">Morphisms_Prop</a></li>
+<li><a href="Corelib.Classes.RelationClasses.html">RelationClasses</a></li>
+<li><a href="Corelib.Classes.SetoidTactics.html">SetoidTactics</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Compat"><summary>Compat</summary>
+          <ul>
+          <li><a href="Corelib.Compat.Coq818.html">Coq818</a></li>
+<li><a href="Corelib.Compat.Coq819.html">Coq819</a></li>
+<li><a href="Corelib.Compat.Coq820.html">Coq820</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Floats"><summary>Floats</summary>
+          <ul>
+          <li><a href="Corelib.Floats.FloatAxioms.html">FloatAxioms</a></li>
+<li><a href="Corelib.Floats.FloatClass.html">FloatClass</a></li>
+<li><a href="Corelib.Floats.FloatOps.html">FloatOps</a></li>
+<li><a href="Corelib.Floats.PrimFloat.html">PrimFloat</a></li>
+<li><a href="Corelib.Floats.SpecFloat.html">SpecFloat</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Init"><summary>Init</summary>
+          <ul>
+          <li><a href="Corelib.Init.Byte.html">Byte</a></li>
+<li><a href="Corelib.Init.Datatypes.html">Datatypes</a></li>
+<li><a href="Corelib.Init.Decimal.html">Decimal</a></li>
+<li><a href="Corelib.Init.Hexadecimal.html">Hexadecimal</a></li>
+<li><a href="Corelib.Init.Logic.html">Logic</a></li>
+<li><a href="Corelib.Init.Ltac.html">Ltac</a></li>
+<li><a href="Corelib.Init.Nat.html">Nat</a></li>
+<li><a href="Corelib.Init.Notations.html">Notations</a></li>
+<li><a href="Corelib.Init.Number.html">Number</a></li>
+<li><a href="Corelib.Init.Peano.html">Peano</a></li>
+<li><a href="Corelib.Init.Prelude.html">Prelude</a></li>
+<li><a href="Corelib.Init.Specif.html">Specif</a></li>
+<li><a href="Corelib.Init.Sumbool.html">Sumbool</a></li>
+<li><a href="Corelib.Init.Tactics.html">Tactics</a></li>
+<li><a href="Corelib.Init.Tauto.html">Tauto</a></li>
+<li><a href="Corelib.Init.Wf.html">Wf</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Lists"><summary>Lists</summary>
+          <ul>
+          <li><a href="Corelib.Lists.ListDef.html">ListDef</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Numbers"><summary>Numbers</summary>
+          <ul>
+          <li><details id="Corelib.Numbers.Cyclic"><summary>Cyclic</summary>
+          <ul>
+          <li><details id="Corelib.Numbers.Cyclic.Int63"><summary>Int63</summary>
+          <ul>
+          <li><a href="Corelib.Numbers.Cyclic.Int63.CarryType.html">CarryType</a></li>
+<li><a href="Corelib.Numbers.Cyclic.Int63.PrimInt63.html">PrimInt63</a></li>
+<li><a href="Corelib.Numbers.Cyclic.Int63.Sint63Axioms.html">Sint63Axioms</a></li>
+<li><a href="Corelib.Numbers.Cyclic.Int63.Uint63Axioms.html">Uint63Axioms</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+<li><a href="Corelib.Numbers.BinNums.html">BinNums</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Program"><summary>Program</summary>
+          <ul>
+          <li><a href="Corelib.Program.Basics.html">Basics</a></li>
+<li><a href="Corelib.Program.Tactics.html">Tactics</a></li>
+<li><a href="Corelib.Program.Utils.html">Utils</a></li>
+<li><a href="Corelib.Program.Wf.html">Wf</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Relations"><summary>Relations</summary>
+          <ul>
+          <li><a href="Corelib.Relations.Relation_Definitions.html">Relation_Definitions</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Setoids"><summary>Setoids</summary>
+          <ul>
+          <li><a href="Corelib.Setoids.Setoid.html">Setoid</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.Strings"><summary>Strings</summary>
+          <ul>
+          <li><a href="Corelib.Strings.PrimString.html">PrimString</a></li>
+<li><a href="Corelib.Strings.PrimStringAxioms.html">PrimStringAxioms</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.derive"><summary>derive</summary>
+          <ul>
+          <li><a href="Corelib.derive.Derive.html">Derive</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.extraction"><summary>extraction</summary>
+          <ul>
+          <li><a href="Corelib.extraction.ExtrHaskellBasic.html">ExtrHaskellBasic</a></li>
+<li><a href="Corelib.extraction.ExtrOcamlBasic.html">ExtrOcamlBasic</a></li>
+<li><a href="Corelib.extraction.Extraction.html">Extraction</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.ssr"><summary>ssr</summary>
+          <ul>
+          <li><a href="Corelib.ssr.ssrbool.html">ssrbool</a></li>
+<li><a href="Corelib.ssr.ssrclasses.html">ssrclasses</a></li>
+<li><a href="Corelib.ssr.ssreflect.html">ssreflect</a></li>
+<li><a href="Corelib.ssr.ssrfun.html">ssrfun</a></li>
+<li><a href="Corelib.ssr.ssrsetoid.html">ssrsetoid</a></li>
+<li><a href="Corelib.ssr.ssrunder.html">ssrunder</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Corelib.ssrmatching"><summary>ssrmatching</summary>
+          <ul>
+          <li><a href="Corelib.ssrmatching.ssrmatching.html">ssrmatching</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+<li><details id="HB"><summary>HB</summary>
+          <ul>
+          <li><a href="HB.structures.html">structures</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Ltac2"><summary>Ltac2</summary>
+          <ul>
+          <li><details id="Ltac2.Compat"><summary>Compat</summary>
+          <ul>
+          <li><a href="Ltac2.Compat.Coq818.html">Coq818</a></li>
+<li><a href="Ltac2.Compat.Coq819.html">Coq819</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="Ltac2.Array.html">Array</a></li>
+<li><a href="Ltac2.Bool.html">Bool</a></li>
+<li><a href="Ltac2.Char.html">Char</a></li>
+<li><a href="Ltac2.Constant.html">Constant</a></li>
+<li><a href="Ltac2.Constr.html">Constr</a></li>
+<li><a href="Ltac2.Constructor.html">Constructor</a></li>
+<li><a href="Ltac2.Control.html">Control</a></li>
+<li><a href="Ltac2.Env.html">Env</a></li>
+<li><a href="Ltac2.Evar.html">Evar</a></li>
+<li><a href="Ltac2.FMap.html">FMap</a></li>
+<li><a href="Ltac2.FSet.html">FSet</a></li>
+<li><a href="Ltac2.Float.html">Float</a></li>
+<li><a href="Ltac2.Fresh.html">Fresh</a></li>
+<li><a href="Ltac2.Ident.html">Ident</a></li>
+<li><a href="Ltac2.Ind.html">Ind</a></li>
+<li><a href="Ltac2.Init.html">Init</a></li>
+<li><a href="Ltac2.Int.html">Int</a></li>
+<li><a href="Ltac2.Lazy.html">Lazy</a></li>
+<li><a href="Ltac2.List.html">List</a></li>
+<li><a href="Ltac2.Ltac1.html">Ltac1</a></li>
+<li><a href="Ltac2.Ltac2.html">Ltac2</a></li>
+<li><a href="Ltac2.Message.html">Message</a></li>
+<li><a href="Ltac2.Meta.html">Meta</a></li>
+<li><a href="Ltac2.Notations.html">Notations</a></li>
+<li><a href="Ltac2.Option.html">Option</a></li>
+<li><a href="Ltac2.Pattern.html">Pattern</a></li>
+<li><a href="Ltac2.Printf.html">Printf</a></li>
+<li><a href="Ltac2.Proj.html">Proj</a></li>
+<li><a href="Ltac2.Pstring.html">Pstring</a></li>
+<li><a href="Ltac2.RedFlags.html">RedFlags</a></li>
+<li><a href="Ltac2.Ref.html">Ref</a></li>
+<li><a href="Ltac2.Std.html">Std</a></li>
+<li><a href="Ltac2.String.html">String</a></li>
+<li><a href="Ltac2.TransparentState.html">TransparentState</a></li>
+<li><a href="Ltac2.Uint63.html">Uint63</a></li>
+<li><a href="Ltac2.Unification.html">Unification</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib"><summary>Stdlib</summary>
+          <ul>
+          <li><details id="Stdlib.All"><summary>All</summary>
+          <ul>
+          <li><a href="Stdlib.All.All.html">All</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Arith"><summary>Arith</summary>
+          <ul>
+          <li><a href="Stdlib.Arith.Arith.html">Arith</a></li>
+<li><a href="Stdlib.Arith.Arith_base.html">Arith_base</a></li>
+<li><a href="Stdlib.Arith.Between.html">Between</a></li>
+<li><a href="Stdlib.Arith.Bool_nat.html">Bool_nat</a></li>
+<li><a href="Stdlib.Arith.Cantor.html">Cantor</a></li>
+<li><a href="Stdlib.Arith.Compare.html">Compare</a></li>
+<li><a href="Stdlib.Arith.Compare_dec.html">Compare_dec</a></li>
+<li><a href="Stdlib.Arith.EqNat.html">EqNat</a></li>
+<li><a href="Stdlib.Arith.Euclid.html">Euclid</a></li>
+<li><a href="Stdlib.Arith.Factorial.html">Factorial</a></li>
+<li><a href="Stdlib.Arith.PeanoNat.html">PeanoNat</a></li>
+<li><a href="Stdlib.Arith.Peano_dec.html">Peano_dec</a></li>
+<li><a href="Stdlib.Arith.Wf_nat.html">Wf_nat</a></li>
+<li><a href="Stdlib.Arith.Zerob.html">Zerob</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Array"><summary>Array</summary>
+          <ul>
+          <li><a href="Stdlib.Array.ArrayAxioms.html">ArrayAxioms</a></li>
+<li><a href="Stdlib.Array.PArray.html">PArray</a></li>
+<li><a href="Stdlib.Array.PrimArray.html">PrimArray</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.BinNums"><summary>BinNums</summary>
+          <ul>
+          <li><a href="Stdlib.BinNums.IntDef.html">IntDef</a></li>
+<li><a href="Stdlib.BinNums.NatDef.html">NatDef</a></li>
+<li><a href="Stdlib.BinNums.PosDef.html">PosDef</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Bool"><summary>Bool</summary>
+          <ul>
+          <li><a href="Stdlib.Bool.Bool.html">Bool</a></li>
+<li><a href="Stdlib.Bool.BoolEq.html">BoolEq</a></li>
+<li><a href="Stdlib.Bool.DecBool.html">DecBool</a></li>
+<li><a href="Stdlib.Bool.IfProp.html">IfProp</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Classes"><summary>Classes</summary>
+          <ul>
+          <li><a href="Stdlib.Classes.CEquivalence.html">CEquivalence</a></li>
+<li><a href="Stdlib.Classes.CMorphisms.html">CMorphisms</a></li>
+<li><a href="Stdlib.Classes.CRelationClasses.html">CRelationClasses</a></li>
+<li><a href="Stdlib.Classes.DecidableClass.html">DecidableClass</a></li>
+<li><a href="Stdlib.Classes.EquivDec.html">EquivDec</a></li>
+<li><a href="Stdlib.Classes.Equivalence.html">Equivalence</a></li>
+<li><a href="Stdlib.Classes.Init.html">Init</a></li>
+<li><a href="Stdlib.Classes.Morphisms.html">Morphisms</a></li>
+<li><a href="Stdlib.Classes.Morphisms_Prop.html">Morphisms_Prop</a></li>
+<li><a href="Stdlib.Classes.Morphisms_Relations.html">Morphisms_Relations</a></li>
+<li><a href="Stdlib.Classes.RelationClasses.html">RelationClasses</a></li>
+<li><a href="Stdlib.Classes.RelationPairs.html">RelationPairs</a></li>
+<li><a href="Stdlib.Classes.SetoidClass.html">SetoidClass</a></li>
+<li><a href="Stdlib.Classes.SetoidDec.html">SetoidDec</a></li>
+<li><a href="Stdlib.Classes.SetoidTactics.html">SetoidTactics</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Compat"><summary>Compat</summary>
+          <ul>
+          <li><a href="Stdlib.Compat.AdmitAxiom.html">AdmitAxiom</a></li>
+<li><a href="Stdlib.Compat.Coq818.html">Coq818</a></li>
+<li><a href="Stdlib.Compat.Coq819.html">Coq819</a></li>
+<li><a href="Stdlib.Compat.Coq820.html">Coq820</a></li>
+<li><a href="Stdlib.Compat.Stdlib818.html">Stdlib818</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.FSets"><summary>FSets</summary>
+          <ul>
+          <li><a href="Stdlib.FSets.FMapAVL.html">FMapAVL</a></li>
+<li><a href="Stdlib.FSets.FMapFacts.html">FMapFacts</a></li>
+<li><a href="Stdlib.FSets.FMapFullAVL.html">FMapFullAVL</a></li>
+<li><a href="Stdlib.FSets.FMapInterface.html">FMapInterface</a></li>
+<li><a href="Stdlib.FSets.FMapList.html">FMapList</a></li>
+<li><a href="Stdlib.FSets.FMapPositive.html">FMapPositive</a></li>
+<li><a href="Stdlib.FSets.FMapWeakList.html">FMapWeakList</a></li>
+<li><a href="Stdlib.FSets.FMaps.html">FMaps</a></li>
+<li><a href="Stdlib.FSets.FSetAVL.html">FSetAVL</a></li>
+<li><a href="Stdlib.FSets.FSetBridge.html">FSetBridge</a></li>
+<li><a href="Stdlib.FSets.FSetCompat.html">FSetCompat</a></li>
+<li><a href="Stdlib.FSets.FSetDecide.html">FSetDecide</a></li>
+<li><a href="Stdlib.FSets.FSetEqProperties.html">FSetEqProperties</a></li>
+<li><a href="Stdlib.FSets.FSetFacts.html">FSetFacts</a></li>
+<li><a href="Stdlib.FSets.FSetInterface.html">FSetInterface</a></li>
+<li><a href="Stdlib.FSets.FSetList.html">FSetList</a></li>
+<li><a href="Stdlib.FSets.FSetPositive.html">FSetPositive</a></li>
+<li><a href="Stdlib.FSets.FSetProperties.html">FSetProperties</a></li>
+<li><a href="Stdlib.FSets.FSetToFiniteSet.html">FSetToFiniteSet</a></li>
+<li><a href="Stdlib.FSets.FSetWeakList.html">FSetWeakList</a></li>
+<li><a href="Stdlib.FSets.FSets.html">FSets</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Floats"><summary>Floats</summary>
+          <ul>
+          <li><a href="Stdlib.Floats.FloatAxioms.html">FloatAxioms</a></li>
+<li><a href="Stdlib.Floats.FloatClass.html">FloatClass</a></li>
+<li><a href="Stdlib.Floats.FloatLemmas.html">FloatLemmas</a></li>
+<li><a href="Stdlib.Floats.FloatOps.html">FloatOps</a></li>
+<li><a href="Stdlib.Floats.Floats.html">Floats</a></li>
+<li><a href="Stdlib.Floats.PrimFloat.html">PrimFloat</a></li>
+<li><a href="Stdlib.Floats.SpecFloat.html">SpecFloat</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Init"><summary>Init</summary>
+          <ul>
+          <li><a href="Stdlib.Init.Byte.html">Byte</a></li>
+<li><a href="Stdlib.Init.Datatypes.html">Datatypes</a></li>
+<li><a href="Stdlib.Init.Decimal.html">Decimal</a></li>
+<li><a href="Stdlib.Init.Hexadecimal.html">Hexadecimal</a></li>
+<li><a href="Stdlib.Init.Logic.html">Logic</a></li>
+<li><a href="Stdlib.Init.Ltac.html">Ltac</a></li>
+<li><a href="Stdlib.Init.Nat.html">Nat</a></li>
+<li><a href="Stdlib.Init.Notations.html">Notations</a></li>
+<li><a href="Stdlib.Init.Number.html">Number</a></li>
+<li><a href="Stdlib.Init.Peano.html">Peano</a></li>
+<li><a href="Stdlib.Init.Prelude.html">Prelude</a></li>
+<li><a href="Stdlib.Init.Specif.html">Specif</a></li>
+<li><a href="Stdlib.Init.Sumbool.html">Sumbool</a></li>
+<li><a href="Stdlib.Init.Tactics.html">Tactics</a></li>
+<li><a href="Stdlib.Init.Tauto.html">Tauto</a></li>
+<li><a href="Stdlib.Init.Wf.html">Wf</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Lists"><summary>Lists</summary>
+          <ul>
+          <li><a href="Stdlib.Lists.List.html">List</a></li>
+<li><a href="Stdlib.Lists.ListDec.html">ListDec</a></li>
+<li><a href="Stdlib.Lists.ListDef.html">ListDef</a></li>
+<li><a href="Stdlib.Lists.ListSet.html">ListSet</a></li>
+<li><a href="Stdlib.Lists.ListTactics.html">ListTactics</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Logic"><summary>Logic</summary>
+          <ul>
+          <li><a href="Stdlib.Logic.Adjointification.html">Adjointification</a></li>
+<li><a href="Stdlib.Logic.Berardi.html">Berardi</a></li>
+<li><a href="Stdlib.Logic.ChoiceFacts.html">ChoiceFacts</a></li>
+<li><a href="Stdlib.Logic.Classical.html">Classical</a></li>
+<li><a href="Stdlib.Logic.ClassicalChoice.html">ClassicalChoice</a></li>
+<li><a href="Stdlib.Logic.ClassicalDescription.html">ClassicalDescription</a></li>
+<li><a href="Stdlib.Logic.ClassicalEpsilon.html">ClassicalEpsilon</a></li>
+<li><a href="Stdlib.Logic.ClassicalFacts.html">ClassicalFacts</a></li>
+<li><a href="Stdlib.Logic.ClassicalUniqueChoice.html">ClassicalUniqueChoice</a></li>
+<li><a href="Stdlib.Logic.Classical_Pred_Type.html">Classical_Pred_Type</a></li>
+<li><a href="Stdlib.Logic.Classical_Prop.html">Classical_Prop</a></li>
+<li><a href="Stdlib.Logic.ConstructiveEpsilon.html">ConstructiveEpsilon</a></li>
+<li><a href="Stdlib.Logic.Decidable.html">Decidable</a></li>
+<li><a href="Stdlib.Logic.Description.html">Description</a></li>
+<li><a href="Stdlib.Logic.Diaconescu.html">Diaconescu</a></li>
+<li><a href="Stdlib.Logic.Epsilon.html">Epsilon</a></li>
+<li><a href="Stdlib.Logic.Eqdep.html">Eqdep</a></li>
+<li><a href="Stdlib.Logic.EqdepFacts.html">EqdepFacts</a></li>
+<li><a href="Stdlib.Logic.Eqdep_dec.html">Eqdep_dec</a></li>
+<li><a href="Stdlib.Logic.ExtensionalFunctionRepresentative.html">ExtensionalFunctionRepresentative</a></li>
+<li><a href="Stdlib.Logic.ExtensionalityFacts.html">ExtensionalityFacts</a></li>
+<li><a href="Stdlib.Logic.FunctionalExtensionality.html">FunctionalExtensionality</a></li>
+<li><a href="Stdlib.Logic.HLevels.html">HLevels</a></li>
+<li><a href="Stdlib.Logic.Hurkens.html">Hurkens</a></li>
+<li><a href="Stdlib.Logic.IndefiniteDescription.html">IndefiniteDescription</a></li>
+<li><a href="Stdlib.Logic.JMeq.html">JMeq</a></li>
+<li><a href="Stdlib.Logic.ProofIrrelevance.html">ProofIrrelevance</a></li>
+<li><a href="Stdlib.Logic.ProofIrrelevanceFacts.html">ProofIrrelevanceFacts</a></li>
+<li><a href="Stdlib.Logic.PropExtensionality.html">PropExtensionality</a></li>
+<li><a href="Stdlib.Logic.PropExtensionalityFacts.html">PropExtensionalityFacts</a></li>
+<li><a href="Stdlib.Logic.PropFacts.html">PropFacts</a></li>
+<li><a href="Stdlib.Logic.RelationalChoice.html">RelationalChoice</a></li>
+<li><a href="Stdlib.Logic.SetIsType.html">SetIsType</a></li>
+<li><a href="Stdlib.Logic.SetoidChoice.html">SetoidChoice</a></li>
+<li><a href="Stdlib.Logic.StrictProp.html">StrictProp</a></li>
+<li><a href="Stdlib.Logic.WKL.html">WKL</a></li>
+<li><a href="Stdlib.Logic.WeakFan.html">WeakFan</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.MSets"><summary>MSets</summary>
+          <ul>
+          <li><a href="Stdlib.MSets.MSetAVL.html">MSetAVL</a></li>
+<li><a href="Stdlib.MSets.MSetDecide.html">MSetDecide</a></li>
+<li><a href="Stdlib.MSets.MSetEqProperties.html">MSetEqProperties</a></li>
+<li><a href="Stdlib.MSets.MSetFacts.html">MSetFacts</a></li>
+<li><a href="Stdlib.MSets.MSetGenTree.html">MSetGenTree</a></li>
+<li><a href="Stdlib.MSets.MSetInterface.html">MSetInterface</a></li>
+<li><a href="Stdlib.MSets.MSetList.html">MSetList</a></li>
+<li><a href="Stdlib.MSets.MSetPositive.html">MSetPositive</a></li>
+<li><a href="Stdlib.MSets.MSetProperties.html">MSetProperties</a></li>
+<li><a href="Stdlib.MSets.MSetRBT.html">MSetRBT</a></li>
+<li><a href="Stdlib.MSets.MSetToFiniteSet.html">MSetToFiniteSet</a></li>
+<li><a href="Stdlib.MSets.MSetWeakList.html">MSetWeakList</a></li>
+<li><a href="Stdlib.MSets.MSets.html">MSets</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.NArith"><summary>NArith</summary>
+          <ul>
+          <li><a href="Stdlib.NArith.BinNat.html">BinNat</a></li>
+<li><a href="Stdlib.NArith.BinNatDef.html">BinNatDef</a></li>
+<li><a href="Stdlib.NArith.NArith.html">NArith</a></li>
+<li><a href="Stdlib.NArith.NArith_base.html">NArith_base</a></li>
+<li><a href="Stdlib.NArith.Ndec.html">Ndec</a></li>
+<li><a href="Stdlib.NArith.Ndiv_def.html">Ndiv_def</a></li>
+<li><a href="Stdlib.NArith.Ngcd_def.html">Ngcd_def</a></li>
+<li><a href="Stdlib.NArith.Nnat.html">Nnat</a></li>
+<li><a href="Stdlib.NArith.Nsqrt_def.html">Nsqrt_def</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers"><summary>Numbers</summary>
+          <ul>
+          <li><details id="Stdlib.Numbers.Cyclic"><summary>Cyclic</summary>
+          <ul>
+          <li><details id="Stdlib.Numbers.Cyclic.Abstract"><summary>Abstract</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.Cyclic.Abstract.CyclicAxioms.html">CyclicAxioms</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Abstract.DoubleType.html">DoubleType</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Abstract.NZCyclic.html">NZCyclic</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers.Cyclic.Int63"><summary>Int63</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.Cyclic.Int63.CarryType.html">CarryType</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Int63.Cyclic63.html">Cyclic63</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Int63.PrimInt63.html">PrimInt63</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Int63.Ring63.html">Ring63</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Int63.Sint63.html">Sint63</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Int63.Sint63Axioms.html">Sint63Axioms</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Int63.Uint63.html">Uint63</a></li>
+<li><a href="Stdlib.Numbers.Cyclic.Int63.Uint63Axioms.html">Uint63Axioms</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers.Integer"><summary>Integer</summary>
+          <ul>
+          <li><details id="Stdlib.Numbers.Integer.Abstract"><summary>Abstract</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.Integer.Abstract.ZAdd.html">ZAdd</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZAddOrder.html">ZAddOrder</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZAxioms.html">ZAxioms</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZBase.html">ZBase</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZBits.html">ZBits</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZDivEucl.html">ZDivEucl</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZDivFloor.html">ZDivFloor</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZDivTrunc.html">ZDivTrunc</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZGcd.html">ZGcd</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZLcm.html">ZLcm</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZLt.html">ZLt</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZMaxMin.html">ZMaxMin</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZMul.html">ZMul</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZMulOrder.html">ZMulOrder</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZParity.html">ZParity</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZPow.html">ZPow</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZProperties.html">ZProperties</a></li>
+<li><a href="Stdlib.Numbers.Integer.Abstract.ZSgnAbs.html">ZSgnAbs</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers.Integer.Binary"><summary>Binary</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.Integer.Binary.ZBinary.html">ZBinary</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers.Integer.NatPairs"><summary>NatPairs</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.Integer.NatPairs.ZNatPairs.html">ZNatPairs</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers.NatInt"><summary>NatInt</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.NatInt.NZAdd.html">NZAdd</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZAddOrder.html">NZAddOrder</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZAxioms.html">NZAxioms</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZBase.html">NZBase</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZBits.html">NZBits</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZDiv.html">NZDiv</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZDomain.html">NZDomain</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZGcd.html">NZGcd</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZLog.html">NZLog</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZMul.html">NZMul</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZMulOrder.html">NZMulOrder</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZOrder.html">NZOrder</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZParity.html">NZParity</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZPow.html">NZPow</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZProperties.html">NZProperties</a></li>
+<li><a href="Stdlib.Numbers.NatInt.NZSqrt.html">NZSqrt</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers.Natural"><summary>Natural</summary>
+          <ul>
+          <li><details id="Stdlib.Numbers.Natural.Abstract"><summary>Abstract</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.Natural.Abstract.NAdd.html">NAdd</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NAddOrder.html">NAddOrder</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NAxioms.html">NAxioms</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NBase.html">NBase</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NBits.html">NBits</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NDefOps.html">NDefOps</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NDiv.html">NDiv</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NDiv0.html">NDiv0</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NGcd.html">NGcd</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NIso.html">NIso</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NLcm.html">NLcm</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NLcm0.html">NLcm0</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NLog.html">NLog</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NMaxMin.html">NMaxMin</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NMulOrder.html">NMulOrder</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NOrder.html">NOrder</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NParity.html">NParity</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NPow.html">NPow</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NProperties.html">NProperties</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NSqrt.html">NSqrt</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NStrongRec.html">NStrongRec</a></li>
+<li><a href="Stdlib.Numbers.Natural.Abstract.NSub.html">NSub</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Numbers.Natural.Binary"><summary>Binary</summary>
+          <ul>
+          <li><a href="Stdlib.Numbers.Natural.Binary.NBinary.html">NBinary</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+<li><a href="Stdlib.Numbers.AltBinNotations.html">AltBinNotations</a></li>
+<li><a href="Stdlib.Numbers.BinNums.html">BinNums</a></li>
+<li><a href="Stdlib.Numbers.DecimalFacts.html">DecimalFacts</a></li>
+<li><a href="Stdlib.Numbers.DecimalN.html">DecimalN</a></li>
+<li><a href="Stdlib.Numbers.DecimalNat.html">DecimalNat</a></li>
+<li><a href="Stdlib.Numbers.DecimalPos.html">DecimalPos</a></li>
+<li><a href="Stdlib.Numbers.DecimalQ.html">DecimalQ</a></li>
+<li><a href="Stdlib.Numbers.DecimalR.html">DecimalR</a></li>
+<li><a href="Stdlib.Numbers.DecimalString.html">DecimalString</a></li>
+<li><a href="Stdlib.Numbers.DecimalZ.html">DecimalZ</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalFacts.html">HexadecimalFacts</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalN.html">HexadecimalN</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalNat.html">HexadecimalNat</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalPos.html">HexadecimalPos</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalQ.html">HexadecimalQ</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalR.html">HexadecimalR</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalString.html">HexadecimalString</a></li>
+<li><a href="Stdlib.Numbers.HexadecimalZ.html">HexadecimalZ</a></li>
+<li><a href="Stdlib.Numbers.NaryFunctions.html">NaryFunctions</a></li>
+<li><a href="Stdlib.Numbers.NumPrelude.html">NumPrelude</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.PArith"><summary>PArith</summary>
+          <ul>
+          <li><a href="Stdlib.PArith.BinPos.html">BinPos</a></li>
+<li><a href="Stdlib.PArith.BinPosDef.html">BinPosDef</a></li>
+<li><a href="Stdlib.PArith.PArith.html">PArith</a></li>
+<li><a href="Stdlib.PArith.POrderedType.html">POrderedType</a></li>
+<li><a href="Stdlib.PArith.Pnat.html">Pnat</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Program"><summary>Program</summary>
+          <ul>
+          <li><a href="Stdlib.Program.Basics.html">Basics</a></li>
+<li><a href="Stdlib.Program.Combinators.html">Combinators</a></li>
+<li><a href="Stdlib.Program.Equality.html">Equality</a></li>
+<li><a href="Stdlib.Program.Program.html">Program</a></li>
+<li><a href="Stdlib.Program.Subset.html">Subset</a></li>
+<li><a href="Stdlib.Program.Syntax.html">Syntax</a></li>
+<li><a href="Stdlib.Program.Tactics.html">Tactics</a></li>
+<li><a href="Stdlib.Program.Utils.html">Utils</a></li>
+<li><a href="Stdlib.Program.Wf.html">Wf</a></li>
+<li><a href="Stdlib.Program.WfExtensionality.html">WfExtensionality</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.QArith"><summary>QArith</summary>
+          <ul>
+          <li><a href="Stdlib.QArith.QArith.html">QArith</a></li>
+<li><a href="Stdlib.QArith.QArith_base.html">QArith_base</a></li>
+<li><a href="Stdlib.QArith.QOrderedType.html">QOrderedType</a></li>
+<li><a href="Stdlib.QArith.Qabs.html">Qabs</a></li>
+<li><a href="Stdlib.QArith.Qcabs.html">Qcabs</a></li>
+<li><a href="Stdlib.QArith.Qcanon.html">Qcanon</a></li>
+<li><a href="Stdlib.QArith.Qfield.html">Qfield</a></li>
+<li><a href="Stdlib.QArith.Qminmax.html">Qminmax</a></li>
+<li><a href="Stdlib.QArith.Qpower.html">Qpower</a></li>
+<li><a href="Stdlib.QArith.Qreduction.html">Qreduction</a></li>
+<li><a href="Stdlib.QArith.Qring.html">Qring</a></li>
+<li><a href="Stdlib.QArith.Qround.html">Qround</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Reals"><summary>Reals</summary>
+          <ul>
+          <li><details id="Stdlib.Reals.Abstract"><summary>Abstract</summary>
+          <ul>
+          <li><a href="Stdlib.Reals.Abstract.ConstructiveAbs.html">ConstructiveAbs</a></li>
+<li><a href="Stdlib.Reals.Abstract.ConstructiveLUB.html">ConstructiveLUB</a></li>
+<li><a href="Stdlib.Reals.Abstract.ConstructiveLimits.html">ConstructiveLimits</a></li>
+<li><a href="Stdlib.Reals.Abstract.ConstructiveMinMax.html">ConstructiveMinMax</a></li>
+<li><a href="Stdlib.Reals.Abstract.ConstructivePower.html">ConstructivePower</a></li>
+<li><a href="Stdlib.Reals.Abstract.ConstructiveReals.html">ConstructiveReals</a></li>
+<li><a href="Stdlib.Reals.Abstract.ConstructiveRealsMorphisms.html">ConstructiveRealsMorphisms</a></li>
+<li><a href="Stdlib.Reals.Abstract.ConstructiveSum.html">ConstructiveSum</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Reals.Cauchy"><summary>Cauchy</summary>
+          <ul>
+          <li><a href="Stdlib.Reals.Cauchy.ConstructiveCauchyAbs.html">ConstructiveCauchyAbs</a></li>
+<li><a href="Stdlib.Reals.Cauchy.ConstructiveCauchyReals.html">ConstructiveCauchyReals</a></li>
+<li><a href="Stdlib.Reals.Cauchy.ConstructiveCauchyRealsMult.html">ConstructiveCauchyRealsMult</a></li>
+<li><a href="Stdlib.Reals.Cauchy.ConstructiveExtra.html">ConstructiveExtra</a></li>
+<li><a href="Stdlib.Reals.Cauchy.ConstructiveRcomplete.html">ConstructiveRcomplete</a></li>
+<li><a href="Stdlib.Reals.Cauchy.PosExtra.html">PosExtra</a></li>
+<li><a href="Stdlib.Reals.Cauchy.QExtra.html">QExtra</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="Stdlib.Reals.Alembert.html">Alembert</a></li>
+<li><a href="Stdlib.Reals.AltSeries.html">AltSeries</a></li>
+<li><a href="Stdlib.Reals.ArithProp.html">ArithProp</a></li>
+<li><a href="Stdlib.Reals.Binomial.html">Binomial</a></li>
+<li><a href="Stdlib.Reals.Cauchy_prod.html">Cauchy_prod</a></li>
+<li><a href="Stdlib.Reals.ClassicalConstructiveReals.html">ClassicalConstructiveReals</a></li>
+<li><a href="Stdlib.Reals.ClassicalDedekindReals.html">ClassicalDedekindReals</a></li>
+<li><a href="Stdlib.Reals.Cos_plus.html">Cos_plus</a></li>
+<li><a href="Stdlib.Reals.Cos_rel.html">Cos_rel</a></li>
+<li><a href="Stdlib.Reals.DiscrR.html">DiscrR</a></li>
+<li><a href="Stdlib.Reals.Exp_prop.html">Exp_prop</a></li>
+<li><a href="Stdlib.Reals.Integration.html">Integration</a></li>
+<li><a href="Stdlib.Reals.MVT.html">MVT</a></li>
+<li><a href="Stdlib.Reals.Machin.html">Machin</a></li>
+<li><a href="Stdlib.Reals.NewtonInt.html">NewtonInt</a></li>
+<li><a href="Stdlib.Reals.Nsatz.html">Nsatz</a></li>
+<li><a href="Stdlib.Reals.PSeries_reg.html">PSeries_reg</a></li>
+<li><a href="Stdlib.Reals.PartSum.html">PartSum</a></li>
+<li><a href="Stdlib.Reals.Qreals.html">Qreals</a></li>
+<li><a href="Stdlib.Reals.RIneq.html">RIneq</a></li>
+<li><a href="Stdlib.Reals.RList.html">RList</a></li>
+<li><a href="Stdlib.Reals.ROrderedType.html">ROrderedType</a></li>
+<li><a href="Stdlib.Reals.R_Ifp.html">R_Ifp</a></li>
+<li><a href="Stdlib.Reals.R_sqr.html">R_sqr</a></li>
+<li><a href="Stdlib.Reals.R_sqrt.html">R_sqrt</a></li>
+<li><a href="Stdlib.Reals.Ranalysis.html">Ranalysis</a></li>
+<li><a href="Stdlib.Reals.Ranalysis1.html">Ranalysis1</a></li>
+<li><a href="Stdlib.Reals.Ranalysis2.html">Ranalysis2</a></li>
+<li><a href="Stdlib.Reals.Ranalysis3.html">Ranalysis3</a></li>
+<li><a href="Stdlib.Reals.Ranalysis4.html">Ranalysis4</a></li>
+<li><a href="Stdlib.Reals.Ranalysis5.html">Ranalysis5</a></li>
+<li><a href="Stdlib.Reals.Ranalysis_reg.html">Ranalysis_reg</a></li>
+<li><a href="Stdlib.Reals.Ratan.html">Ratan</a></li>
+<li><a href="Stdlib.Reals.Raxioms.html">Raxioms</a></li>
+<li><a href="Stdlib.Reals.Rbase.html">Rbase</a></li>
+<li><a href="Stdlib.Reals.Rbasic_fun.html">Rbasic_fun</a></li>
+<li><a href="Stdlib.Reals.Rcomplete.html">Rcomplete</a></li>
+<li><a href="Stdlib.Reals.Rdefinitions.html">Rdefinitions</a></li>
+<li><a href="Stdlib.Reals.Rderiv.html">Rderiv</a></li>
+<li><a href="Stdlib.Reals.Reals.html">Reals</a></li>
+<li><a href="Stdlib.Reals.Rfunctions.html">Rfunctions</a></li>
+<li><a href="Stdlib.Reals.Rgeom.html">Rgeom</a></li>
+<li><a href="Stdlib.Reals.RiemannInt.html">RiemannInt</a></li>
+<li><a href="Stdlib.Reals.RiemannInt_SF.html">RiemannInt_SF</a></li>
+<li><a href="Stdlib.Reals.Rlimit.html">Rlimit</a></li>
+<li><a href="Stdlib.Reals.Rlogic.html">Rlogic</a></li>
+<li><a href="Stdlib.Reals.Rminmax.html">Rminmax</a></li>
+<li><a href="Stdlib.Reals.Rpow_def.html">Rpow_def</a></li>
+<li><a href="Stdlib.Reals.Rpower.html">Rpower</a></li>
+<li><a href="Stdlib.Reals.Rprod.html">Rprod</a></li>
+<li><a href="Stdlib.Reals.Rregisternames.html">Rregisternames</a></li>
+<li><a href="Stdlib.Reals.Rseries.html">Rseries</a></li>
+<li><a href="Stdlib.Reals.Rsigma.html">Rsigma</a></li>
+<li><a href="Stdlib.Reals.Rsqrt_def.html">Rsqrt_def</a></li>
+<li><a href="Stdlib.Reals.Rtopology.html">Rtopology</a></li>
+<li><a href="Stdlib.Reals.Rtrigo.html">Rtrigo</a></li>
+<li><a href="Stdlib.Reals.Rtrigo1.html">Rtrigo1</a></li>
+<li><a href="Stdlib.Reals.Rtrigo_alt.html">Rtrigo_alt</a></li>
+<li><a href="Stdlib.Reals.Rtrigo_calc.html">Rtrigo_calc</a></li>
+<li><a href="Stdlib.Reals.Rtrigo_def.html">Rtrigo_def</a></li>
+<li><a href="Stdlib.Reals.Rtrigo_facts.html">Rtrigo_facts</a></li>
+<li><a href="Stdlib.Reals.Rtrigo_fun.html">Rtrigo_fun</a></li>
+<li><a href="Stdlib.Reals.Rtrigo_reg.html">Rtrigo_reg</a></li>
+<li><a href="Stdlib.Reals.Runcountable.html">Runcountable</a></li>
+<li><a href="Stdlib.Reals.SeqProp.html">SeqProp</a></li>
+<li><a href="Stdlib.Reals.SeqSeries.html">SeqSeries</a></li>
+<li><a href="Stdlib.Reals.SplitAbsolu.html">SplitAbsolu</a></li>
+<li><a href="Stdlib.Reals.SplitRmult.html">SplitRmult</a></li>
+<li><a href="Stdlib.Reals.Sqrt_reg.html">Sqrt_reg</a></li>
+<li><a href="Stdlib.Reals.Zfloor.html">Zfloor</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Relations"><summary>Relations</summary>
+          <ul>
+          <li><a href="Stdlib.Relations.Operators_Properties.html">Operators_Properties</a></li>
+<li><a href="Stdlib.Relations.Relation_Definitions.html">Relation_Definitions</a></li>
+<li><a href="Stdlib.Relations.Relation_Operators.html">Relation_Operators</a></li>
+<li><a href="Stdlib.Relations.Relations.html">Relations</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Setoids"><summary>Setoids</summary>
+          <ul>
+          <li><a href="Stdlib.Setoids.Setoid.html">Setoid</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Sets"><summary>Sets</summary>
+          <ul>
+          <li><a href="Stdlib.Sets.Classical_sets.html">Classical_sets</a></li>
+<li><a href="Stdlib.Sets.Constructive_sets.html">Constructive_sets</a></li>
+<li><a href="Stdlib.Sets.Cpo.html">Cpo</a></li>
+<li><a href="Stdlib.Sets.Ensembles.html">Ensembles</a></li>
+<li><a href="Stdlib.Sets.Finite_sets.html">Finite_sets</a></li>
+<li><a href="Stdlib.Sets.Finite_sets_facts.html">Finite_sets_facts</a></li>
+<li><a href="Stdlib.Sets.Image.html">Image</a></li>
+<li><a href="Stdlib.Sets.Infinite_sets.html">Infinite_sets</a></li>
+<li><a href="Stdlib.Sets.Integers.html">Integers</a></li>
+<li><a href="Stdlib.Sets.Multiset.html">Multiset</a></li>
+<li><a href="Stdlib.Sets.Partial_Order.html">Partial_Order</a></li>
+<li><a href="Stdlib.Sets.Permut.html">Permut</a></li>
+<li><a href="Stdlib.Sets.Powerset.html">Powerset</a></li>
+<li><a href="Stdlib.Sets.Powerset_Classical_facts.html">Powerset_Classical_facts</a></li>
+<li><a href="Stdlib.Sets.Powerset_facts.html">Powerset_facts</a></li>
+<li><a href="Stdlib.Sets.Relations_1.html">Relations_1</a></li>
+<li><a href="Stdlib.Sets.Relations_1_facts.html">Relations_1_facts</a></li>
+<li><a href="Stdlib.Sets.Relations_2.html">Relations_2</a></li>
+<li><a href="Stdlib.Sets.Relations_2_facts.html">Relations_2_facts</a></li>
+<li><a href="Stdlib.Sets.Relations_3.html">Relations_3</a></li>
+<li><a href="Stdlib.Sets.Relations_3_facts.html">Relations_3_facts</a></li>
+<li><a href="Stdlib.Sets.Uniset.html">Uniset</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Sorting"><summary>Sorting</summary>
+          <ul>
+          <li><a href="Stdlib.Sorting.CPermutation.html">CPermutation</a></li>
+<li><a href="Stdlib.Sorting.Heap.html">Heap</a></li>
+<li><a href="Stdlib.Sorting.Mergesort.html">Mergesort</a></li>
+<li><a href="Stdlib.Sorting.PermutEq.html">PermutEq</a></li>
+<li><a href="Stdlib.Sorting.PermutSetoid.html">PermutSetoid</a></li>
+<li><a href="Stdlib.Sorting.Permutation.html">Permutation</a></li>
+<li><a href="Stdlib.Sorting.SetoidList.html">SetoidList</a></li>
+<li><a href="Stdlib.Sorting.SetoidPermutation.html">SetoidPermutation</a></li>
+<li><a href="Stdlib.Sorting.Sorted.html">Sorted</a></li>
+<li><a href="Stdlib.Sorting.Sorting.html">Sorting</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Streams"><summary>Streams</summary>
+          <ul>
+          <li><a href="Stdlib.Streams.StreamMemo.html">StreamMemo</a></li>
+<li><a href="Stdlib.Streams.Streams.html">Streams</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Strings"><summary>Strings</summary>
+          <ul>
+          <li><a href="Stdlib.Strings.Ascii.html">Ascii</a></li>
+<li><a href="Stdlib.Strings.BinaryString.html">BinaryString</a></li>
+<li><a href="Stdlib.Strings.Byte.html">Byte</a></li>
+<li><a href="Stdlib.Strings.HexString.html">HexString</a></li>
+<li><a href="Stdlib.Strings.OctalString.html">OctalString</a></li>
+<li><a href="Stdlib.Strings.PString.html">PString</a></li>
+<li><a href="Stdlib.Strings.PrimString.html">PrimString</a></li>
+<li><a href="Stdlib.Strings.PrimStringAxioms.html">PrimStringAxioms</a></li>
+<li><a href="Stdlib.Strings.String.html">String</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Structures"><summary>Structures</summary>
+          <ul>
+          <li><a href="Stdlib.Structures.BoolOrder.html">BoolOrder</a></li>
+<li><a href="Stdlib.Structures.DecidableType.html">DecidableType</a></li>
+<li><a href="Stdlib.Structures.DecidableTypeEx.html">DecidableTypeEx</a></li>
+<li><a href="Stdlib.Structures.Equalities.html">Equalities</a></li>
+<li><a href="Stdlib.Structures.EqualitiesFacts.html">EqualitiesFacts</a></li>
+<li><a href="Stdlib.Structures.GenericMinMax.html">GenericMinMax</a></li>
+<li><a href="Stdlib.Structures.OrderedType.html">OrderedType</a></li>
+<li><a href="Stdlib.Structures.OrderedTypeAlt.html">OrderedTypeAlt</a></li>
+<li><a href="Stdlib.Structures.OrderedTypeEx.html">OrderedTypeEx</a></li>
+<li><a href="Stdlib.Structures.Orders.html">Orders</a></li>
+<li><a href="Stdlib.Structures.OrdersAlt.html">OrdersAlt</a></li>
+<li><a href="Stdlib.Structures.OrdersEx.html">OrdersEx</a></li>
+<li><a href="Stdlib.Structures.OrdersFacts.html">OrdersFacts</a></li>
+<li><a href="Stdlib.Structures.OrdersLists.html">OrdersLists</a></li>
+<li><a href="Stdlib.Structures.OrdersTac.html">OrdersTac</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Unicode"><summary>Unicode</summary>
+          <ul>
+          <li><a href="Stdlib.Unicode.Utf8.html">Utf8</a></li>
+<li><a href="Stdlib.Unicode.Utf8_core.html">Utf8_core</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Vectors"><summary>Vectors</summary>
+          <ul>
+          <li><a href="Stdlib.Vectors.Bvector.html">Bvector</a></li>
+<li><a href="Stdlib.Vectors.Fin.html">Fin</a></li>
+<li><a href="Stdlib.Vectors.FinFun.html">FinFun</a></li>
+<li><a href="Stdlib.Vectors.Vector.html">Vector</a></li>
+<li><a href="Stdlib.Vectors.VectorDef.html">VectorDef</a></li>
+<li><a href="Stdlib.Vectors.VectorEq.html">VectorEq</a></li>
+<li><a href="Stdlib.Vectors.VectorSpec.html">VectorSpec</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.Wellfounded"><summary>Wellfounded</summary>
+          <ul>
+          <li><a href="Stdlib.Wellfounded.Disjoint_Union.html">Disjoint_Union</a></li>
+<li><a href="Stdlib.Wellfounded.Inclusion.html">Inclusion</a></li>
+<li><a href="Stdlib.Wellfounded.Inverse_Image.html">Inverse_Image</a></li>
+<li><a href="Stdlib.Wellfounded.Lexicographic_Exponentiation.html">Lexicographic_Exponentiation</a></li>
+<li><a href="Stdlib.Wellfounded.Lexicographic_Product.html">Lexicographic_Product</a></li>
+<li><a href="Stdlib.Wellfounded.List_Extension.html">List_Extension</a></li>
+<li><a href="Stdlib.Wellfounded.Transitive_Closure.html">Transitive_Closure</a></li>
+<li><a href="Stdlib.Wellfounded.Union.html">Union</a></li>
+<li><a href="Stdlib.Wellfounded.Well_Ordering.html">Well_Ordering</a></li>
+<li><a href="Stdlib.Wellfounded.Wellfounded.html">Wellfounded</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.ZArith"><summary>ZArith</summary>
+          <ul>
+          <li><a href="Stdlib.ZArith.BinInt.html">BinInt</a></li>
+<li><a href="Stdlib.ZArith.BinIntDef.html">BinIntDef</a></li>
+<li><a href="Stdlib.ZArith.Int.html">Int</a></li>
+<li><a href="Stdlib.ZArith.Wf_Z.html">Wf_Z</a></li>
+<li><a href="Stdlib.ZArith.ZArith.html">ZArith</a></li>
+<li><a href="Stdlib.ZArith.ZArith_base.html">ZArith_base</a></li>
+<li><a href="Stdlib.ZArith.ZArith_dec.html">ZArith_dec</a></li>
+<li><a href="Stdlib.ZArith.Zabs.html">Zabs</a></li>
+<li><a href="Stdlib.ZArith.Zbitwise.html">Zbitwise</a></li>
+<li><a href="Stdlib.ZArith.Zbool.html">Zbool</a></li>
+<li><a href="Stdlib.ZArith.Zcompare.html">Zcompare</a></li>
+<li><a href="Stdlib.ZArith.Zcomplements.html">Zcomplements</a></li>
+<li><a href="Stdlib.ZArith.Zdiv.html">Zdiv</a></li>
+<li><a href="Stdlib.ZArith.Zdiv_facts.html">Zdiv_facts</a></li>
+<li><a href="Stdlib.ZArith.Zeuclid.html">Zeuclid</a></li>
+<li><a href="Stdlib.ZArith.Zeven.html">Zeven</a></li>
+<li><a href="Stdlib.ZArith.Zgcd_alt.html">Zgcd_alt</a></li>
+<li><a href="Stdlib.ZArith.Zhints.html">Zhints</a></li>
+<li><a href="Stdlib.ZArith.Zmax.html">Zmax</a></li>
+<li><a href="Stdlib.ZArith.Zmin.html">Zmin</a></li>
+<li><a href="Stdlib.ZArith.Zminmax.html">Zminmax</a></li>
+<li><a href="Stdlib.ZArith.Zmisc.html">Zmisc</a></li>
+<li><a href="Stdlib.ZArith.Znat.html">Znat</a></li>
+<li><a href="Stdlib.ZArith.Znumtheory.html">Znumtheory</a></li>
+<li><a href="Stdlib.ZArith.Zorder.html">Zorder</a></li>
+<li><a href="Stdlib.ZArith.Zpow_alt.html">Zpow_alt</a></li>
+<li><a href="Stdlib.ZArith.Zpow_def.html">Zpow_def</a></li>
+<li><a href="Stdlib.ZArith.Zpow_facts.html">Zpow_facts</a></li>
+<li><a href="Stdlib.ZArith.Zpower.html">Zpower</a></li>
+<li><a href="Stdlib.ZArith.Zquot.html">Zquot</a></li>
+<li><a href="Stdlib.ZArith.Zwf.html">Zwf</a></li>
+<li><a href="Stdlib.ZArith.auxiliary.html">auxiliary</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.btauto"><summary>btauto</summary>
+          <ul>
+          <li><a href="Stdlib.btauto.Algebra.html">Algebra</a></li>
+<li><a href="Stdlib.btauto.Btauto.html">Btauto</a></li>
+<li><a href="Stdlib.btauto.Reflect.html">Reflect</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.derive"><summary>derive</summary>
+          <ul>
+          <li><a href="Stdlib.derive.Derive.html">Derive</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.extraction"><summary>extraction</summary>
+          <ul>
+          <li><a href="Stdlib.extraction.ExtrHaskellBasic.html">ExtrHaskellBasic</a></li>
+<li><a href="Stdlib.extraction.ExtrHaskellNatInt.html">ExtrHaskellNatInt</a></li>
+<li><a href="Stdlib.extraction.ExtrHaskellNatInteger.html">ExtrHaskellNatInteger</a></li>
+<li><a href="Stdlib.extraction.ExtrHaskellNatNum.html">ExtrHaskellNatNum</a></li>
+<li><a href="Stdlib.extraction.ExtrHaskellString.html">ExtrHaskellString</a></li>
+<li><a href="Stdlib.extraction.ExtrHaskellZInt.html">ExtrHaskellZInt</a></li>
+<li><a href="Stdlib.extraction.ExtrHaskellZInteger.html">ExtrHaskellZInteger</a></li>
+<li><a href="Stdlib.extraction.ExtrHaskellZNum.html">ExtrHaskellZNum</a></li>
+<li><a href="Stdlib.extraction.ExtrOCamlFloats.html">ExtrOCamlFloats</a></li>
+<li><a href="Stdlib.extraction.ExtrOCamlInt63.html">ExtrOCamlInt63</a></li>
+<li><a href="Stdlib.extraction.ExtrOCamlPArray.html">ExtrOCamlPArray</a></li>
+<li><a href="Stdlib.extraction.ExtrOCamlPString.html">ExtrOCamlPString</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlBasic.html">ExtrOcamlBasic</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlChar.html">ExtrOcamlChar</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlIntConv.html">ExtrOcamlIntConv</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlNatBigInt.html">ExtrOcamlNatBigInt</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlNatInt.html">ExtrOcamlNatInt</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlNativeString.html">ExtrOcamlNativeString</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlString.html">ExtrOcamlString</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlZBigInt.html">ExtrOcamlZBigInt</a></li>
+<li><a href="Stdlib.extraction.ExtrOcamlZInt.html">ExtrOcamlZInt</a></li>
+<li><a href="Stdlib.extraction.Extraction.html">Extraction</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.funind"><summary>funind</summary>
+          <ul>
+          <li><a href="Stdlib.funind.FunInd.html">FunInd</a></li>
+<li><a href="Stdlib.funind.Recdef.html">Recdef</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.micromega"><summary>micromega</summary>
+          <ul>
+          <li><a href="Stdlib.micromega.DeclConstant.html">DeclConstant</a></li>
+<li><a href="Stdlib.micromega.DeclConstantZ.html">DeclConstantZ</a></li>
+<li><a href="Stdlib.micromega.Env.html">Env</a></li>
+<li><a href="Stdlib.micromega.EnvRing.html">EnvRing</a></li>
+<li><a href="Stdlib.micromega.Fourier.html">Fourier</a></li>
+<li><a href="Stdlib.micromega.Fourier_util.html">Fourier_util</a></li>
+<li><a href="Stdlib.micromega.Lia.html">Lia</a></li>
+<li><a href="Stdlib.micromega.Lqa.html">Lqa</a></li>
+<li><a href="Stdlib.micromega.Lra.html">Lra</a></li>
+<li><a href="Stdlib.micromega.OrderedRing.html">OrderedRing</a></li>
+<li><a href="Stdlib.micromega.Psatz.html">Psatz</a></li>
+<li><a href="Stdlib.micromega.QMicromega.html">QMicromega</a></li>
+<li><a href="Stdlib.micromega.RMicromega.html">RMicromega</a></li>
+<li><a href="Stdlib.micromega.Refl.html">Refl</a></li>
+<li><a href="Stdlib.micromega.RingMicromega.html">RingMicromega</a></li>
+<li><a href="Stdlib.micromega.Tauto.html">Tauto</a></li>
+<li><a href="Stdlib.micromega.VarMap.html">VarMap</a></li>
+<li><a href="Stdlib.micromega.ZArith_hints.html">ZArith_hints</a></li>
+<li><a href="Stdlib.micromega.ZCoeff.html">ZCoeff</a></li>
+<li><a href="Stdlib.micromega.ZMicromega.html">ZMicromega</a></li>
+<li><a href="Stdlib.micromega.Zify.html">Zify</a></li>
+<li><a href="Stdlib.micromega.ZifyBool.html">ZifyBool</a></li>
+<li><a href="Stdlib.micromega.ZifyClasses.html">ZifyClasses</a></li>
+<li><a href="Stdlib.micromega.ZifyComparison.html">ZifyComparison</a></li>
+<li><a href="Stdlib.micromega.ZifyInst.html">ZifyInst</a></li>
+<li><a href="Stdlib.micromega.ZifyN.html">ZifyN</a></li>
+<li><a href="Stdlib.micromega.ZifyNat.html">ZifyNat</a></li>
+<li><a href="Stdlib.micromega.ZifyPow.html">ZifyPow</a></li>
+<li><a href="Stdlib.micromega.ZifySint63.html">ZifySint63</a></li>
+<li><a href="Stdlib.micromega.ZifyUint63.html">ZifyUint63</a></li>
+<li><a href="Stdlib.micromega.Ztac.html">Ztac</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.nsatz"><summary>nsatz</summary>
+          <ul>
+          <li><a href="Stdlib.nsatz.NsatzTactic.html">NsatzTactic</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.omega"><summary>omega</summary>
+          <ul>
+          <li><a href="Stdlib.omega.OmegaLemmas.html">OmegaLemmas</a></li>
+<li><a href="Stdlib.omega.PreOmega.html">PreOmega</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.rtauto"><summary>rtauto</summary>
+          <ul>
+          <li><a href="Stdlib.rtauto.Bintree.html">Bintree</a></li>
+<li><a href="Stdlib.rtauto.Rtauto.html">Rtauto</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.setoid_ring"><summary>setoid_ring</summary>
+          <ul>
+          <li><a href="Stdlib.setoid_ring.Algebra_syntax.html">Algebra_syntax</a></li>
+<li><a href="Stdlib.setoid_ring.ArithRing.html">ArithRing</a></li>
+<li><a href="Stdlib.setoid_ring.BinList.html">BinList</a></li>
+<li><a href="Stdlib.setoid_ring.Cring.html">Cring</a></li>
+<li><a href="Stdlib.setoid_ring.Field.html">Field</a></li>
+<li><a href="Stdlib.setoid_ring.Field_tac.html">Field_tac</a></li>
+<li><a href="Stdlib.setoid_ring.Field_theory.html">Field_theory</a></li>
+<li><a href="Stdlib.setoid_ring.InitialRing.html">InitialRing</a></li>
+<li><a href="Stdlib.setoid_ring.Integral_domain.html">Integral_domain</a></li>
+<li><a href="Stdlib.setoid_ring.NArithRing.html">NArithRing</a></li>
+<li><a href="Stdlib.setoid_ring.Ncring.html">Ncring</a></li>
+<li><a href="Stdlib.setoid_ring.Ncring_initial.html">Ncring_initial</a></li>
+<li><a href="Stdlib.setoid_ring.Ncring_polynom.html">Ncring_polynom</a></li>
+<li><a href="Stdlib.setoid_ring.Ncring_tac.html">Ncring_tac</a></li>
+<li><a href="Stdlib.setoid_ring.RealField.html">RealField</a></li>
+<li><a href="Stdlib.setoid_ring.Ring.html">Ring</a></li>
+<li><a href="Stdlib.setoid_ring.Ring_base.html">Ring_base</a></li>
+<li><a href="Stdlib.setoid_ring.Ring_polynom.html">Ring_polynom</a></li>
+<li><a href="Stdlib.setoid_ring.Ring_tac.html">Ring_tac</a></li>
+<li><a href="Stdlib.setoid_ring.Ring_theory.html">Ring_theory</a></li>
+<li><a href="Stdlib.setoid_ring.Rings_Q.html">Rings_Q</a></li>
+<li><a href="Stdlib.setoid_ring.Rings_R.html">Rings_R</a></li>
+<li><a href="Stdlib.setoid_ring.Rings_Z.html">Rings_Z</a></li>
+<li><a href="Stdlib.setoid_ring.ZArithRing.html">ZArithRing</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.ssr"><summary>ssr</summary>
+          <ul>
+          <li><a href="Stdlib.ssr.ssrbool.html">ssrbool</a></li>
+<li><a href="Stdlib.ssr.ssrclasses.html">ssrclasses</a></li>
+<li><a href="Stdlib.ssr.ssreflect.html">ssreflect</a></li>
+<li><a href="Stdlib.ssr.ssrfun.html">ssrfun</a></li>
+<li><a href="Stdlib.ssr.ssrsetoid.html">ssrsetoid</a></li>
+<li><a href="Stdlib.ssr.ssrunder.html">ssrunder</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="Stdlib.ssrmatching"><summary>ssrmatching</summary>
+          <ul>
+          <li><a href="Stdlib.ssrmatching.ssrmatching.html">ssrmatching</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi"><summary>elpi</summary>
+          <ul>
+          <li><details id="elpi.apps"><summary>apps</summary>
+          <ul>
+          <li><details id="elpi.apps.NES"><summary>NES</summary>
+          <ul>
+          <li><details id="elpi.apps.NES.elpi"><summary>elpi</summary>
+          <ul>
+          <li><a href="elpi.apps.NES.elpi.dummy.html">dummy</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="elpi.apps.NES.NES.html">NES</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.coercion"><summary>coercion</summary>
+          <ul>
+          <li><a href="elpi.apps.coercion.coercion.html">coercion</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.cs"><summary>cs</summary>
+          <ul>
+          <li><a href="elpi.apps.cs.cs.html">cs</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.derive"><summary>derive</summary>
+          <ul>
+          <li><details id="elpi.apps.derive.derive"><summary>derive</summary>
+          <ul>
+          <li><a href="elpi.apps.derive.derive.EqdepFacts.html">EqdepFacts</a></li>
+<li><a href="elpi.apps.derive.derive.bcongr.html">bcongr</a></li>
+<li><a href="elpi.apps.derive.derive.cast.html">cast</a></li>
+<li><a href="elpi.apps.derive.derive.eq.html">eq</a></li>
+<li><a href="elpi.apps.derive.derive.eqK.html">eqK</a></li>
+<li><a href="elpi.apps.derive.derive.eqOK.html">eqOK</a></li>
+<li><a href="elpi.apps.derive.derive.eqType_ast.html">eqType_ast</a></li>
+<li><a href="elpi.apps.derive.derive.eqb.html">eqb</a></li>
+<li><a href="elpi.apps.derive.derive.eqbOK.html">eqbOK</a></li>
+<li><a href="elpi.apps.derive.derive.eqb_core_defs.html">eqb_core_defs</a></li>
+<li><a href="elpi.apps.derive.derive.eqbcorrect.html">eqbcorrect</a></li>
+<li><a href="elpi.apps.derive.derive.eqcorrect.html">eqcorrect</a></li>
+<li><a href="elpi.apps.derive.derive.experimental.html">experimental</a></li>
+<li><a href="elpi.apps.derive.derive.fields.html">fields</a></li>
+<li><a href="elpi.apps.derive.derive.idx2inv.html">idx2inv</a></li>
+<li><a href="elpi.apps.derive.derive.induction.html">induction</a></li>
+<li><a href="elpi.apps.derive.derive.invert.html">invert</a></li>
+<li><a href="elpi.apps.derive.derive.isK.html">isK</a></li>
+<li><a href="elpi.apps.derive.derive.legacy.html">legacy</a></li>
+<li><a href="elpi.apps.derive.derive.lens.html">lens</a></li>
+<li><a href="elpi.apps.derive.derive.lens_laws.html">lens_laws</a></li>
+<li><a href="elpi.apps.derive.derive.map.html">map</a></li>
+<li><a href="elpi.apps.derive.derive.param1.html">param1</a></li>
+<li><a href="elpi.apps.derive.derive.param1_congr.html">param1_congr</a></li>
+<li><a href="elpi.apps.derive.derive.param1_functor.html">param1_functor</a></li>
+<li><a href="elpi.apps.derive.derive.param1_trivial.html">param1_trivial</a></li>
+<li><a href="elpi.apps.derive.derive.param2.html">param2</a></li>
+<li><a href="elpi.apps.derive.derive.projK.html">projK</a></li>
+<li><a href="elpi.apps.derive.derive.std.html">std</a></li>
+<li><a href="elpi.apps.derive.derive.tag.html">tag</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.derive.elpi"><summary>elpi</summary>
+          <ul>
+          <li><a href="elpi.apps.derive.elpi.dummy.html">dummy</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="elpi.apps.derive.derive.html">derive</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.eltac"><summary>eltac</summary>
+          <ul>
+          <li><a href="elpi.apps.eltac.apply.html">apply</a></li>
+<li><a href="elpi.apps.eltac.assumption.html">assumption</a></li>
+<li><a href="elpi.apps.eltac.case.html">case</a></li>
+<li><a href="elpi.apps.eltac.clear.html">clear</a></li>
+<li><a href="elpi.apps.eltac.constructor.html">constructor</a></li>
+<li><a href="elpi.apps.eltac.cycle.html">cycle</a></li>
+<li><a href="elpi.apps.eltac.discriminate.html">discriminate</a></li>
+<li><a href="elpi.apps.eltac.fail.html">fail</a></li>
+<li><a href="elpi.apps.eltac.generalize.html">generalize</a></li>
+<li><a href="elpi.apps.eltac.injection.html">injection</a></li>
+<li><a href="elpi.apps.eltac.intro.html">intro</a></li>
+<li><a href="elpi.apps.eltac.rewrite.html">rewrite</a></li>
+<li><a href="elpi.apps.eltac.tactics.html">tactics</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.locker"><summary>locker</summary>
+          <ul>
+          <li><details id="elpi.apps.locker.elpi"><summary>elpi</summary>
+          <ul>
+          <li><a href="elpi.apps.locker.elpi.dummy.html">dummy</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="elpi.apps.locker.locker.html">locker</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.rbuild"><summary>rbuild</summary>
+          <ul>
+          <li><details id="elpi.apps.rbuild.elpi"><summary>elpi</summary>
+          <ul>
+          <li><a href="elpi.apps.rbuild.elpi.dummy.html">dummy</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="elpi.apps.rbuild.rbuild.html">rbuild</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.apps.tc"><summary>tc</summary>
+          <ul>
+          <li><details id="elpi.apps.tc.elpi"><summary>elpi</summary>
+          <ul>
+          <li><a href="elpi.apps.tc.elpi.dummy.html">dummy</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="elpi.apps.tc.add_commands.html">add_commands</a></li>
+<li><a href="elpi.apps.tc.db.html">db</a></li>
+<li><a href="elpi.apps.tc.tc.html">tc</a></li>
+<li><a href="elpi.apps.tc.wip.html">wip</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi.core"><summary>core</summary>
+          <ul>
+          <li><a href="elpi.core.Bool.html">Bool</a></li>
+<li><a href="elpi.core.ListDef.html">ListDef</a></li>
+<li><a href="elpi.core.Morphisms.html">Morphisms</a></li>
+<li><a href="elpi.core.PosDef.html">PosDef</a></li>
+<li><a href="elpi.core.PrimFloat.html">PrimFloat</a></li>
+<li><a href="elpi.core.PrimInt63.html">PrimInt63</a></li>
+<li><a href="elpi.core.PrimString.html">PrimString</a></li>
+<li><a href="elpi.core.PrimStringAxioms.html">PrimStringAxioms</a></li>
+<li><a href="elpi.core.RelationClasses.html">RelationClasses</a></li>
+<li><a href="elpi.core.Setoid.html">Setoid</a></li>
+<li><a href="elpi.core.Uint63Axioms.html">Uint63Axioms</a></li>
+<li><a href="elpi.core.ssrbool.html">ssrbool</a></li>
+<li><a href="elpi.core.ssreflect.html">ssreflect</a></li>
+<li><a href="elpi.core.ssrfun.html">ssrfun</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="elpi.elpi.html">elpi</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi_elpi"><summary>elpi_elpi</summary>
+          <ul>
+          <li><a href="elpi_elpi.dummy.html">dummy</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="elpi_examples"><summary>elpi_examples</summary>
+          <ul>
+          <li><a href="elpi_examples.example_abs_evars.html">example_abs_evars</a></li>
+<li><a href="elpi_examples.example_curry_howard_tactics.html">example_curry_howard_tactics</a></li>
+<li><a href="elpi_examples.example_data_base.html">example_data_base</a></li>
+<li><a href="elpi_examples.example_fuzzer.html">example_fuzzer</a></li>
+<li><a href="elpi_examples.example_generalize.html">example_generalize</a></li>
+<li><a href="elpi_examples.example_import_projections.html">example_import_projections</a></li>
+<li><a href="elpi_examples.example_record_expansion.html">example_record_expansion</a></li>
+<li><a href="elpi_examples.example_record_to_sigma.html">example_record_to_sigma</a></li>
+<li><a href="elpi_examples.example_reduction_surgery.html">example_reduction_surgery</a></li>
+<li><a href="elpi_examples.tutorial_coq_elpi_HOAS.html">tutorial_coq_elpi_HOAS</a></li>
+<li><a href="elpi_examples.tutorial_coq_elpi_command.html">tutorial_coq_elpi_command</a></li>
+<li><a href="elpi_examples.tutorial_coq_elpi_tactic.html">tutorial_coq_elpi_tactic</a></li>
+<li><a href="elpi_examples.tutorial_elpi_lang.html">tutorial_elpi_lang</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp"><summary>mathcomp</summary>
+          <ul>
+          <li><details id="mathcomp.algebra"><summary>algebra</summary>
+          <ul>
+          <li><details id="mathcomp.algebra.num_theory"><summary>num_theory</summary>
+          <ul>
+          <li><a href="mathcomp.algebra.num_theory.numdomain.html">numdomain</a></li>
+<li><a href="mathcomp.algebra.num_theory.numfield.html">numfield</a></li>
+<li><a href="mathcomp.algebra.num_theory.orderedzmod.html">orderedzmod</a></li>
+<li><a href="mathcomp.algebra.num_theory.ssrnum.html">ssrnum</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.algebra.all_algebra.html">all_algebra</a></li>
+<li><a href="mathcomp.algebra.archimedean.html">archimedean</a></li>
+<li><a href="mathcomp.algebra.countalg.html">countalg</a></li>
+<li><a href="mathcomp.algebra.finalg.html">finalg</a></li>
+<li><a href="mathcomp.algebra.fraction.html">fraction</a></li>
+<li><a href="mathcomp.algebra.intdiv.html">intdiv</a></li>
+<li><a href="mathcomp.algebra.interval.html">interval</a></li>
+<li><a href="mathcomp.algebra.interval_inference.html">interval_inference</a></li>
+<li><a href="mathcomp.algebra.matrix.html">matrix</a></li>
+<li><a href="mathcomp.algebra.mxalgebra.html">mxalgebra</a></li>
+<li><a href="mathcomp.algebra.mxpoly.html">mxpoly</a></li>
+<li><a href="mathcomp.algebra.mxred.html">mxred</a></li>
+<li><a href="mathcomp.algebra.poly.html">poly</a></li>
+<li><a href="mathcomp.algebra.polyXY.html">polyXY</a></li>
+<li><a href="mathcomp.algebra.polydiv.html">polydiv</a></li>
+<li><a href="mathcomp.algebra.qpoly.html">qpoly</a></li>
+<li><a href="mathcomp.algebra.rat.html">rat</a></li>
+<li><a href="mathcomp.algebra.ring_quotient.html">ring_quotient</a></li>
+<li><a href="mathcomp.algebra.sesquilinear.html">sesquilinear</a></li>
+<li><a href="mathcomp.algebra.spectral.html">spectral</a></li>
+<li><a href="mathcomp.algebra.ssralg.html">ssralg</a></li>
+<li><a href="mathcomp.algebra.ssrint.html">ssrint</a></li>
+<li><a href="mathcomp.algebra.vector.html">vector</a></li>
+<li><a href="mathcomp.algebra.zmodp.html">zmodp</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis"><summary>analysis</summary>
+          <ul>
+          <li><details id="mathcomp.analysis.homotopy_theory"><summary>homotopy_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.homotopy_theory.continuous_path.html">continuous_path</a></li>
+<li><a href="mathcomp.analysis.homotopy_theory.homotopy.html">homotopy</a></li>
+<li><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html">wedge_sigT</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.lebesgue_integral_theory"><summary>lebesgue_integral_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html">lebesgue_Rintegral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html">lebesgue_integrable</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral.html">lebesgue_integral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html">lebesgue_integral_definition</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.html">lebesgue_integral_differentiation</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_dominated_convergence.html">lebesgue_integral_dominated_convergence</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.html">lebesgue_integral_fubini</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_monotone_convergence.html">lebesgue_integral_monotone_convergence</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html">lebesgue_integral_nonneg</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html">lebesgue_integral_under</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.html">measurable_fun_approximation</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html">simple_functions</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.measure_theory"><summary>measure_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.measure_theory.counting_measure.html">counting_measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.dirac_measure.html">dirac_measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measurable_function.html">measurable_function</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measurable_structure.html">measurable_structure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure.html">measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_extension.html">measure_extension</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_function.html">measure_function</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_negligible.html">measure_negligible</a></li>
+<li><a href="mathcomp.analysis.measure_theory.probability_measure.html">probability_measure</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.normedtype_theory"><summary>normedtype_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.normedtype_theory.complete_normed_module.html">complete_normed_module</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.ereal_normedtype.html">ereal_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.matrix_normedtype.html">matrix_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.normed_module.html">normed_module</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.normedtype.html">normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html">num_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html">pseudometric_normed_Zmodule</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.urysohn.html">urysohn</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.vitali_lemma.html">vitali_lemma</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.showcase"><summary>showcase</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.showcase.pnt.html">pnt</a></li>
+<li><a href="mathcomp.analysis.showcase.summability.html">summability</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.topology_theory"><summary>topology_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.topology_theory.bool_topology.html">bool_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.compact.html">compact</a></li>
+<li><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></li>
+<li><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.nat_topology.html">nat_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.num_topology.html">num_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.one_point_compactification.html">one_point_compactification</a></li>
+<li><a href="mathcomp.analysis.topology_theory.order_topology.html">order_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.product_topology.html">product_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html">pseudometric_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.quotient_topology.html">quotient_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.separation_axioms.html">separation_axioms</a></li>
+<li><a href="mathcomp.analysis.topology_theory.sigT_topology.html">sigT_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.subspace_topology.html">subspace_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.subtype_topology.html">subtype_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.supremum_topology.html">supremum_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.topology.html">topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.topology_structure.html">topology_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.uniform_structure.html">uniform_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.weak_topology.html">weak_topology</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.analysis.all_analysis.html">all_analysis</a></li>
+<li><a href="mathcomp.analysis.borel_hierarchy.html">borel_hierarchy</a></li>
+<li><a href="mathcomp.analysis.cantor.html">cantor</a></li>
+<li><a href="mathcomp.analysis.charge.html">charge</a></li>
+<li><a href="mathcomp.analysis.convex.html">convex</a></li>
+<li><a href="mathcomp.analysis.derive.html">derive</a></li>
+<li><a href="mathcomp.analysis.ereal.html">ereal</a></li>
+<li><a href="mathcomp.analysis.ess_sup_inf.html">ess_sup_inf</a></li>
+<li><a href="mathcomp.analysis.esum.html">esum</a></li>
+<li><a href="mathcomp.analysis.exp.html">exp</a></li>
+<li><a href="mathcomp.analysis.ftc.html">ftc</a></li>
+<li><a href="mathcomp.analysis.function_spaces.html">function_spaces</a></li>
+<li><a href="mathcomp.analysis.gauss_integral.html">gauss_integral</a></li>
+<li><a href="mathcomp.analysis.hoelder.html">hoelder</a></li>
+<li><a href="mathcomp.analysis.kernel.html">kernel</a></li>
+<li><a href="mathcomp.analysis.landau.html">landau</a></li>
+<li><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></li>
+<li><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html">lebesgue_stieltjes_measure</a></li>
+<li><a href="mathcomp.analysis.measurable_realfun.html">measurable_realfun</a></li>
+<li><a href="mathcomp.analysis.numfun.html">numfun</a></li>
+<li><a href="mathcomp.analysis.pi_irrational.html">pi_irrational</a></li>
+<li><a href="mathcomp.analysis.probability.html">probability</a></li>
+<li><a href="mathcomp.analysis.realfun.html">realfun</a></li>
+<li><a href="mathcomp.analysis.sequences.html">sequences</a></li>
+<li><a href="mathcomp.analysis.trigo.html">trigo</a></li>
+<li><a href="mathcomp.analysis.tvs.html">tvs</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis_stdlib"><summary>analysis_stdlib</summary>
+          <ul>
+          <li><details id="mathcomp.analysis_stdlib.showcase"><summary>showcase</summary>
+          <ul>
+          <li><a href="mathcomp.analysis_stdlib.showcase.uniform_bigO.html">uniform_bigO</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.analysis_stdlib.Rstruct_topology.html">Rstruct_topology</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.bigenough"><summary>bigenough</summary>
+          <ul>
+          <li><a href="mathcomp.bigenough.bigenough.html">bigenough</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.boot"><summary>boot</summary>
+          <ul>
+          <li><a href="mathcomp.boot.all_boot.html">all_boot</a></li>
+<li><a href="mathcomp.boot.bigop.html">bigop</a></li>
+<li><a href="mathcomp.boot.binomial.html">binomial</a></li>
+<li><a href="mathcomp.boot.choice.html">choice</a></li>
+<li><a href="mathcomp.boot.div.html">div</a></li>
+<li><a href="mathcomp.boot.eqtype.html">eqtype</a></li>
+<li><a href="mathcomp.boot.finfun.html">finfun</a></li>
+<li><a href="mathcomp.boot.fingraph.html">fingraph</a></li>
+<li><a href="mathcomp.boot.finset.html">finset</a></li>
+<li><a href="mathcomp.boot.fintype.html">fintype</a></li>
+<li><a href="mathcomp.boot.generic_quotient.html">generic_quotient</a></li>
+<li><a href="mathcomp.boot.monoid.html">monoid</a></li>
+<li><a href="mathcomp.boot.nmodule.html">nmodule</a></li>
+<li><a href="mathcomp.boot.path.html">path</a></li>
+<li><a href="mathcomp.boot.prime.html">prime</a></li>
+<li><a href="mathcomp.boot.seq.html">seq</a></li>
+<li><a href="mathcomp.boot.ssrAC.html">ssrAC</a></li>
+<li><a href="mathcomp.boot.ssrbool.html">ssrbool</a></li>
+<li><a href="mathcomp.boot.ssreflect.html">ssreflect</a></li>
+<li><a href="mathcomp.boot.ssrfun.html">ssrfun</a></li>
+<li><a href="mathcomp.boot.ssrmatching.html">ssrmatching</a></li>
+<li><a href="mathcomp.boot.ssrnat.html">ssrnat</a></li>
+<li><a href="mathcomp.boot.ssrnotations.html">ssrnotations</a></li>
+<li><a href="mathcomp.boot.tuple.html">tuple</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.classical"><summary>classical</summary>
+          <ul>
+          <li><a href="mathcomp.classical.all_classical.html">all_classical</a></li>
+<li><a href="mathcomp.classical.boolp.html">boolp</a></li>
+<li><a href="mathcomp.classical.cardinality.html">cardinality</a></li>
+<li><a href="mathcomp.classical.classical_orders.html">classical_orders</a></li>
+<li><a href="mathcomp.classical.classical_sets.html">classical_sets</a></li>
+<li><a href="mathcomp.classical.contra.html">contra</a></li>
+<li><a href="mathcomp.classical.filter.html">filter</a></li>
+<li><a href="mathcomp.classical.fsbigop.html">fsbigop</a></li>
+<li><a href="mathcomp.classical.functions.html">functions</a></li>
+<li><a href="mathcomp.classical.internal_Eqdep_dec.html">internal_Eqdep_dec</a></li>
+<li><a href="mathcomp.classical.mathcomp_extra.html">mathcomp_extra</a></li>
+<li><a href="mathcomp.classical.set_interval.html">set_interval</a></li>
+<li><a href="mathcomp.classical.unstable.html">unstable</a></li>
+<li><a href="mathcomp.classical.wochoice.html">wochoice</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.experimental_reals"><summary>experimental_reals</summary>
+          <ul>
+          <li><a href="mathcomp.experimental_reals.discrete.html">discrete</a></li>
+<li><a href="mathcomp.experimental_reals.distr.html">distr</a></li>
+<li><a href="mathcomp.experimental_reals.realseq.html">realseq</a></li>
+<li><a href="mathcomp.experimental_reals.realsum.html">realsum</a></li>
+<li><a href="mathcomp.experimental_reals.xfinmap.html">xfinmap</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.field"><summary>field</summary>
+          <ul>
+          <li><a href="mathcomp.field.algC.html">algC</a></li>
+<li><a href="mathcomp.field.algebraics_fundamentals.html">algebraics_fundamentals</a></li>
+<li><a href="mathcomp.field.algnum.html">algnum</a></li>
+<li><a href="mathcomp.field.all_field.html">all_field</a></li>
+<li><a href="mathcomp.field.closed_field.html">closed_field</a></li>
+<li><a href="mathcomp.field.cyclotomic.html">cyclotomic</a></li>
+<li><a href="mathcomp.field.falgebra.html">falgebra</a></li>
+<li><a href="mathcomp.field.fieldext.html">fieldext</a></li>
+<li><a href="mathcomp.field.finfield.html">finfield</a></li>
+<li><a href="mathcomp.field.galois.html">galois</a></li>
+<li><a href="mathcomp.field.qfpoly.html">qfpoly</a></li>
+<li><a href="mathcomp.field.separable.html">separable</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.fingroup"><summary>fingroup</summary>
+          <ul>
+          <li><a href="mathcomp.fingroup.action.html">action</a></li>
+<li><a href="mathcomp.fingroup.all_fingroup.html">all_fingroup</a></li>
+<li><a href="mathcomp.fingroup.automorphism.html">automorphism</a></li>
+<li><a href="mathcomp.fingroup.fingroup.html">fingroup</a></li>
+<li><a href="mathcomp.fingroup.gproduct.html">gproduct</a></li>
+<li><a href="mathcomp.fingroup.morphism.html">morphism</a></li>
+<li><a href="mathcomp.fingroup.perm.html">perm</a></li>
+<li><a href="mathcomp.fingroup.presentation.html">presentation</a></li>
+<li><a href="mathcomp.fingroup.quotient.html">quotient</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.finmap"><summary>finmap</summary>
+          <ul>
+          <li><a href="mathcomp.finmap.finmap.html">finmap</a></li>
+<li><a href="mathcomp.finmap.multiset.html">multiset</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.order"><summary>order</summary>
+          <ul>
+          <li><a href="mathcomp.order.all_order.html">all_order</a></li>
+<li><a href="mathcomp.order.order.html">order</a></li>
+<li><a href="mathcomp.order.preorder.html">preorder</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.reals"><summary>reals</summary>
+          <ul>
+          <li><a href="mathcomp.reals.all_reals.html">all_reals</a></li>
+<li><a href="mathcomp.reals.constructive_ereal.html">constructive_ereal</a></li>
+<li><a href="mathcomp.reals.prodnormedzmodule.html">prodnormedzmodule</a></li>
+<li><a href="mathcomp.reals.real_interval.html">real_interval</a></li>
+<li><a href="mathcomp.reals.reals.html">reals</a></li>
+<li><a href="mathcomp.reals.signed.html">signed</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.reals_stdlib"><summary>reals_stdlib</summary>
+          <ul>
+          <li><a href="mathcomp.reals_stdlib.Rstruct.html">Rstruct</a></li>
+<li><a href="mathcomp.reals_stdlib.nsatz_realtype.html">nsatz_realtype</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.solvable"><summary>solvable</summary>
+          <ul>
+          <li><a href="mathcomp.solvable.abelian.html">abelian</a></li>
+<li><a href="mathcomp.solvable.all_solvable.html">all_solvable</a></li>
+<li><a href="mathcomp.solvable.alt.html">alt</a></li>
+<li><a href="mathcomp.solvable.burnside_app.html">burnside_app</a></li>
+<li><a href="mathcomp.solvable.center.html">center</a></li>
+<li><a href="mathcomp.solvable.commutator.html">commutator</a></li>
+<li><a href="mathcomp.solvable.cyclic.html">cyclic</a></li>
+<li><a href="mathcomp.solvable.extraspecial.html">extraspecial</a></li>
+<li><a href="mathcomp.solvable.extremal.html">extremal</a></li>
+<li><a href="mathcomp.solvable.finmodule.html">finmodule</a></li>
+<li><a href="mathcomp.solvable.frobenius.html">frobenius</a></li>
+<li><a href="mathcomp.solvable.gfunctor.html">gfunctor</a></li>
+<li><a href="mathcomp.solvable.gseries.html">gseries</a></li>
+<li><a href="mathcomp.solvable.hall.html">hall</a></li>
+<li><a href="mathcomp.solvable.jordanholder.html">jordanholder</a></li>
+<li><a href="mathcomp.solvable.maximal.html">maximal</a></li>
+<li><a href="mathcomp.solvable.nilpotent.html">nilpotent</a></li>
+<li><a href="mathcomp.solvable.pgroup.html">pgroup</a></li>
+<li><a href="mathcomp.solvable.primitive_action.html">primitive_action</a></li>
+<li><a href="mathcomp.solvable.sylow.html">sylow</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.ssreflect"><summary>ssreflect</summary>
+          <ul>
+          <li><a href="mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+    </div>
+
+  <div class="coq">
+
+    <div class="content">
+      <p><a href="./index.html">Top</a></p>
+      <h1 class="title">Module mathcomp._opam.lib.coq.user-contrib.mathcomp.boot.bigop</h1>
+<span class="vernacular">From</span><span class="id"> HB</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> structures</span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> ssreflect</span><span class="id"> ssrbool</span><span class="id"> ssrfun</span><span class="id"> eqtype</span><span class="id"> ssrnat</span><span class="id"> seq</span><span class="id"> path</span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> div</span><span class="id"> fintype</span><span class="id"> tuple</span><span class="id"> finfun</span>.<br/>
+<br/>
+<pre class="ssrdoc">
+                     Finitely iterated operators
+
+NB: See CONTRIBUTING.md for an introduction to HB concepts and commands.
+
+This file provides a generic definition for iterating an operator over a
+set of indices (bigop); this big operator is parameterized by the return
+type (R), the type of indices (I), the operator (op), the default value on
+empty lists (idx), the range of indices (r), the filter applied on this
+range (P) and the expression we are iterating (F). The definition is not
+to be used directly, but via the wide range of notations provided and
+which support a natural use of big operators.
+  To improve performance of the Coq typechecker on large expressions, the
+bigop constant is OPAQUE. It can however be unlocked to reveal the
+transparent constant reducebig, to let Coq expand summation on an explicit
+sequence with an explicit test.
+  The lemmas can be classified according to the operator being iterated:
+ 1. Results independent of the operator: extensionality with respect to
+    the range of indices, to the filtering predicate or to the expression
+    being iterated; reindexing, widening or narrowing of the range of
+    indices; we provide lemmas for the special cases where indices are
+    natural numbers or bounded natural numbers ("ordinals"). We supply
+    several "functional" induction principles that can be used with the
+    ssreflect 1.3 "elim" tactic to do induction over the index range for
+    up to 3 bigops simultaneously.
+ 2. Results depending on the properties of the operator:
+    We distinguish:
+    - semigroup laws (op is associative)
+    - commutative semigroup laws (semigroup laws, op is commutative)
+    - monoid laws (semigroup laws, idx is an identity element)
+    - abelian monoid laws (op is also commutative)
+    - laws with a distributive operation (semirings)
+    Examples of such results are splitting, permuting, and exchanging
+    bigops.
+A special section is dedicated to big operators on natural numbers.
+</pre>
+<pre class="ssrdoc">
+Tips for using lemmas in this file:
+To apply a lemma for a specific operator: if no special property is
+required for the operator, simply apply the lemma; if the lemma needs
+certain properties for the operator, make sure the appropriate instances
+are declared using, e.g., Check addn : Monoid.law _. to check that addn
+is equipped with the monoid laws.
+</pre>
+<pre class="ssrdoc">
+Reference: Y. Bertot, G. Gonthier, S. Ould Biha, I. Pasca, Canonical Big
+Operators, TPHOLs 2008, LNCS vol. 5170, Springer, available at:
+http://hal.inria.fr/docs/00/33/11/93/PDF/main.pdf
+</pre>
+<pre class="ssrdoc">
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+Declare Scope big_scope.
+Reserved Notation "\big [ op / idx ]_ i F"
+  (at level 36, F at level 36, op, idx at level 10, i at level 0,
+     right associativity,
+           format "'[' \big [ op / idx ]_ i '/  '  F ']'").
+Reserved Notation "\big [ op / idx ]_ ( i &lt;- r | P ) F"
+  (F at level 36, i, r at level 60,
+           format "'[' \big [ op / idx ]_ ( i  &lt;-  r  |  P ) '/  '  F ']'").
+Reserved Notation "\big [ op / idx ]_ ( i &lt;- r ) F"
+  (F at level 36,
+           format "'[' \big [ op / idx ]_ ( i  &lt;-  r ) '/  '  F ']'").
+Reserved Notation "\big [ op / idx ]_ ( m &lt;= i &lt; n | P ) F"
+  (F at level 36, i, n at level 60,
+           format "'[' \big [ op / idx ]_ ( m  &lt;=  i  &lt;  n  |  P )  F ']'").
+Reserved Notation "\big [ op / idx ]_ ( m &lt;= i &lt; n ) F"
+  (at level 36, F at level 36,
+           format "'[' \big [ op / idx ]_ ( m  &lt;=  i  &lt;  n ) '/  '  F ']'").
+Reserved Notation "\big [ op / idx ]_ ( i | P ) F"
+  (F at level 36,
+           format "'[' \big [ op / idx ]_ ( i  |  P ) '/  '  F ']'").
+Reserved Notation "\big [ op / idx ]_ ( i : t | P ) F"
+  (F at level 36,
+           format "'[' \big [ op / idx ]_ ( i   :  t   |  P ) '/  '  F ']'").
+Reserved Notation "\big [ op / idx ]_ ( i : t ) F"
+  (F at level 36,
+           format "'[' \big [ op / idx ]_ ( i   :  t ) '/  '  F ']'").
+Reserved Notation "\big [ op / idx ]_ ( i &lt; n | P ) F"
+  (F at level 36, n at level 60,
+           format "'[' \big [ op / idx ]_ ( i  &lt;  n  |  P ) '/  '  F ']'").
+Reserved Notation "\big [ op / idx ]_ ( i &lt; n ) F"
+  (F at level 36,
+           format "'[' \big [ op / idx ]_ ( i  &lt;  n )  F ']'").
+Reserved Notation "\big [ op / idx ]_ ( i 'in' A | P ) F"
+  (F at level 36, A at level 60,
+           format "'[' \big [ op / idx ]_ ( i  'in'  A  |  P ) '/  '  F ']'").
+Reserved Notation "\big [ op / idx ]_ ( i 'in' A ) F"
+  (F at level 36,
+           format "'[' \big [ op / idx ]_ ( i  'in'  A ) '/  '  F ']'").
+Reserved Notation "\sum_ i F"
+  (at level 34, F at level 41, i at level 0,
+           right associativity,
+           format "'[' \sum_ i '/  '  F ']'").
+Reserved Notation "\sum_ ( i &lt;- r | P ) F"
+  (F at level 41, i, r at level 60,
+           format "'[' \sum_ ( i  &lt;-  r  |  P ) '/  '  F ']'").
+Reserved Notation "\sum_ ( i &lt;- r ) F"
+  (F at level 41,
+           format "'[' \sum_ ( i  &lt;-  r ) '/  '  F ']'").
+Reserved Notation "\sum_ ( m &lt;= i &lt; n | P ) F"
+  (F at level 41, i, n at level 60,
+           format "'[' \sum_ ( m  &lt;=  i  &lt;  n  |  P ) '/  '  F ']'").
+Reserved Notation "\sum_ ( m &lt;= i &lt; n ) F"
+  (F at level 41,
+           format "'[' \sum_ ( m  &lt;=  i  &lt;  n ) '/  '  F ']'").
+Reserved Notation "\sum_ ( i | P ) F"
+  (F at level 41,
+           format "'[' \sum_ ( i  |  P ) '/  '  F ']'").
+Reserved Notation "\sum_ ( i : t | P ) F" (F at level 41). (* only parsing
+Reserved Notation "\sum_ ( i : t ) F" (F at level 41). (* only parsing
+Reserved Notation "\sum_ ( i &lt; n | P ) F"
+  (F at level 41, n at level 60,
+           format "'[' \sum_ ( i  &lt;  n  |  P ) '/  '  F ']'").
+Reserved Notation "\sum_ ( i &lt; n ) F"
+  (F at level 41,
+           format "'[' \sum_ ( i  &lt;  n ) '/  '  F ']'").
+Reserved Notation "\sum_ ( i 'in' A | P ) F"
+  (F at level 41, A at level 60,
+           format "'[' \sum_ ( i  'in'  A  |  P ) '/  '  F ']'").
+Reserved Notation "\sum_ ( i 'in' A ) F"
+  (F at level 41,
+           format "'[' \sum_ ( i  'in'  A ) '/  '  F ']'").
+Reserved Notation "\max_ i F"
+  (at level 34, F at level 41, i at level 0,
+           format "'[' \max_ i '/  '  F ']'").
+Reserved Notation "\max_ ( i &lt;- r | P ) F"
+  (F at level 41, i, r at level 60,
+           format "'[' \max_ ( i  &lt;-  r  |  P ) '/  '  F ']'").
+Reserved Notation "\max_ ( i &lt;- r ) F"
+  (F at level 41,
+           format "'[' \max_ ( i  &lt;-  r ) '/  '  F ']'").
+Reserved Notation "\max_ ( m &lt;= i &lt; n | P ) F"
+  (F at level 41, i, n at level 60,
+           format "'[' \max_ ( m  &lt;=  i  &lt;  n  |  P ) '/  '  F ']'").
+Reserved Notation "\max_ ( m &lt;= i &lt; n ) F"
+  (F at level 41,
+           format "'[' \max_ ( m  &lt;=  i  &lt;  n ) '/  '  F ']'").
+Reserved Notation "\max_ ( i | P ) F"
+  (F at level 41,
+           format "'[' \max_ ( i  |  P ) '/  '  F ']'").
+Reserved Notation "\max_ ( i : t | P ) F" (F at level 41). (* only parsing
+Reserved Notation "\max_ ( i : t ) F" (F at level 41). (* only parsing
+Reserved Notation "\max_ ( i &lt; n | P ) F"
+  (F at level 41, n at level 60,
+           format "'[' \max_ ( i  &lt;  n  |  P ) '/  '  F ']'").
+Reserved Notation "\max_ ( i &lt; n ) F"
+  (F at level 41, n at level 60,
+           format "'[' \max_ ( i  &lt;  n )  F ']'").
+Reserved Notation "\max_ ( i 'in' A | P ) F"
+  (F at level 41, A at level 60,
+           format "'[' \max_ ( i  'in'  A  |  P ) '/  '  F ']'").
+Reserved Notation "\max_ ( i 'in' A ) F"
+  (F at level 41,
+           format "'[' \max_ ( i  'in'  A ) '/  '  F ']'").
+Reserved Notation "\prod_ i F"
+  (at level 34, F at level 36, i at level 0,
+           format "'[' \prod_ i '/  '  F ']'").
+Reserved Notation "\prod_ ( i &lt;- r | P ) F"
+  (F at level 36, i, r at level 60,
+           format "'[' \prod_ ( i  &lt;-  r  |  P ) '/  '  F ']'").
+Reserved Notation "\prod_ ( i &lt;- r ) F"
+  (F at level 36,
+           format "'[' \prod_ ( i  &lt;-  r ) '/  '  F ']'").
+Reserved Notation "\prod_ ( m &lt;= i &lt; n | P ) F"
+  (F at level 36, i, n at level 60,
+           format "'[' \prod_ ( m  &lt;=  i  &lt;  n  |  P ) '/  '  F ']'").
+Reserved Notation "\prod_ ( m &lt;= i &lt; n ) F"
+  (F at level 36,
+           format "'[' \prod_ ( m  &lt;=  i  &lt;  n ) '/  '  F ']'").
+Reserved Notation "\prod_ ( i | P ) F"
+  (F at level 36,
+           format "'[' \prod_ ( i  |  P ) '/  '  F ']'").
+Reserved Notation "\prod_ ( i : t | P ) F" (F at level 36). (* only parsing
+Reserved Notation "\prod_ ( i : t ) F" (F at level 36). (* only parsing
+Reserved Notation "\prod_ ( i &lt; n | P ) F"
+  (F at level 36, n at level 60,
+           format "'[' \prod_ ( i  &lt;  n  |  P ) '/  '  F ']'").
+Reserved Notation "\prod_ ( i &lt; n ) F"
+  (F at level 36,
+           format "'[' \prod_ ( i  &lt;  n ) '/  '  F ']'").
+Reserved Notation "\prod_ ( i 'in' A | P ) F"
+  (F at level 36, A at level 60,
+           format "'[' \prod_ ( i  'in'  A  |  P )  F ']'").
+Reserved Notation "\prod_ ( i 'in' A ) F"
+  (F at level 36,
+           format "'[' \prod_ ( i  'in'  A ) '/  '  F ']'").
+Reserved Notation "\bigcup_ i F"
+  (at level 41, F at level 41, i at level 0,
+           format "'[' \bigcup_ i '/  '  F ']'").
+Reserved Notation "\bigcup_ ( i &lt;- r | P ) F"
+  (F at level 41, i, r at level 60,
+           format "'[' \bigcup_ ( i  &lt;-  r  |  P ) '/  '  F ']'").
+Reserved Notation "\bigcup_ ( i &lt;- r ) F"
+  (F at level 41,
+           format "'[' \bigcup_ ( i  &lt;-  r ) '/  '  F ']'").
+Reserved Notation "\bigcup_ ( m &lt;= i &lt; n | P ) F"
+  (F at level 41, i, n at level 60,
+           format "'[' \bigcup_ ( m  &lt;=  i  &lt;  n  |  P ) '/  '  F ']'").
+Reserved Notation "\bigcup_ ( m &lt;= i &lt; n ) F"
+  (F at level 41,
+           format "'[' \bigcup_ ( m  &lt;=  i  &lt;  n ) '/  '  F ']'").
+Reserved Notation "\bigcup_ ( i | P ) F"
+  (F at level 41,
+           format "'[' \bigcup_ ( i  |  P ) '/  '  F ']'").
+Reserved Notation "\bigcup_ ( i : t | P ) F"
+  (F at level 41,
+           format "'[' \bigcup_ ( i   :  t   |  P ) '/  '  F ']'").
+Reserved Notation "\bigcup_ ( i : t ) F"
+  (F at level 41,
+           format "'[' \bigcup_ ( i   :  t ) '/  '  F ']'").
+Reserved Notation "\bigcup_ ( i &lt; n | P ) F"
+  (F at level 41, n at level 60,
+           format "'[' \bigcup_ ( i  &lt;  n  |  P ) '/  '  F ']'").
+Reserved Notation "\bigcup_ ( i &lt; n ) F"
+  (F at level 41,
+           format "'[' \bigcup_ ( i  &lt;  n ) '/  '  F ']'").
+Reserved Notation "\bigcup_ ( i 'in' A | P ) F"
+  (F at level 41, A at level 60,
+           format "'[' \bigcup_ ( i  'in'  A  |  P ) '/  '  F ']'").
+Reserved Notation "\bigcup_ ( i 'in' A ) F"
+  (F at level 41,
+           format "'[' \bigcup_ ( i  'in'  A ) '/  '  F ']'").
+Reserved Notation "\bigcap_ i F"
+  (at level 41, F at level 41, i at level 0,
+           format "'[' \bigcap_ i '/  '  F ']'").
+Reserved Notation "\bigcap_ ( i &lt;- r | P ) F"
+  (F at level 41, i, r at level 60,
+           format "'[' \bigcap_ ( i  &lt;-  r  |  P )  F ']'").
+Reserved Notation "\bigcap_ ( i &lt;- r ) F"
+  (F at level 41,
+           format "'[' \bigcap_ ( i  &lt;-  r ) '/  '  F ']'").
+Reserved Notation "\bigcap_ ( m &lt;= i &lt; n | P ) F"
+  (F at level 41, i, n at level 60,
+           format "'[' \bigcap_ ( m  &lt;=  i  &lt;  n  |  P ) '/  '  F ']'").
+Reserved Notation "\bigcap_ ( m &lt;= i &lt; n ) F"
+  (F at level 41,
+           format "'[' \bigcap_ ( m  &lt;=  i  &lt;  n ) '/  '  F ']'").
+Reserved Notation "\bigcap_ ( i | P ) F"
+  (F at level 41,
+           format "'[' \bigcap_ ( i  |  P ) '/  '  F ']'").
+Reserved Notation "\bigcap_ ( i : t | P ) F"
+  (F at level 41,
+           format "'[' \bigcap_ ( i   :  t   |  P ) '/  '  F ']'").
+Reserved Notation "\bigcap_ ( i : t ) F"
+  (F at level 41,
+           format "'[' \bigcap_ ( i   :  t ) '/  '  F ']'").
+Reserved Notation "\bigcap_ ( i &lt; n | P ) F"
+  (F at level 41, n at level 60,
+           format "'[' \bigcap_ ( i  &lt;  n  |  P ) '/  '  F ']'").
+Reserved Notation "\bigcap_ ( i &lt; n ) F"
+  (F at level 41,
+           format "'[' \bigcap_ ( i  &lt;  n ) '/  '  F ']'").
+Reserved Notation "\bigcap_ ( i 'in' A | P ) F"
+  (F at level 41, A at level 60,
+           format "'[' \bigcap_ ( i  'in'  A  |  P ) '/  '  F ']'").
+Reserved Notation "\bigcap_ ( i 'in' A ) F"
+  (F at level 41,
+           format "'[' \bigcap_ ( i  'in'  A ) '/  '  F ']'").
+Module SemiGroup.
+HB.mixin Record isLaw T (op : T -&gt; T -&gt; T) := {
+  opA : associative op;
+}.
+#[export]
+HB.structure Definition Law T := {op of isLaw T op}.
+Notation law := Law.type.
+HB.mixin Record isCommutativeLaw T (op : T -&gt; T -&gt; T) := {
+  opC : commutative op;
+}.
+#[export]
+HB.structure Definition ComLaw T := {op of Law T op &amp; isCommutativeLaw T op}.
+Notation com_law := ComLaw.type.
+HB.factory Record isComLaw T (op : T -&gt; T -&gt; T) := {
+  opA : associative op;
+  opC : commutative op;
+}.
+HB.builders Context T op of isComLaw T op.
+HB.instance Definition _ := isLaw.Build T op opA.
+HB.instance Definition _ := isCommutativeLaw.Build T op opC.
+HB.end.
+Module Import Exports. HB.reexport. End Exports.
+Module Theory.
+Section Theory.
+Variables (T : Type).
+Section Plain.
+Variable mul : law T.
+Lemma mulmA : associative mul. Proof. exact: opA. Qed.
+End Plain.
+Section Commutative.
+Variable mul : com_law T.
+Lemma mulmC : commutative mul. Proof. exact: opC. Qed.
+Lemma mulmCA : left_commutative mul.
+Proof. by move=&gt; x y z; rewrite !mulmA [_ x _]mulmC. Qed.
+Lemma mulmAC : right_commutative mul.
+Proof. by move=&gt; x y z; rewrite -!mulmA [_ y _]mulmC. Qed.
+Lemma mulmACA : interchange mul mul.
+Proof. by move=&gt; x y z t; rewrite -!mulmA [_ y _]mulmCA. Qed.
+End Commutative.
+End Theory.
+End Theory.
+Include Theory.
+End SemiGroup.
+Export SemiGroup.Exports.
+Module Monoid.
+Export SemiGroup.
+HB.mixin Record isMonoidLaw T (idm : T) (op : T -&gt; T -&gt; T) := {
+  op1m : left_id idm op;
+  opm1 : right_id idm op;
+}.
+#[export]
+HB.structure Definition Law T idm :=
+  {op of SemiGroup.Law T op &amp; isMonoidLaw T idm op}.
+Notation law := Law.type.
+HB.factory Record isLaw T (idm : T) (op : T -&gt; T -&gt; T) := {
+  opA : associative op;
+  op1m : left_id idm op;
+  opm1 : right_id idm op;
+}.
+HB.builders Context T idm op of isLaw T idm op.
+HB.instance Definition _ := SemiGroup.isLaw.Build T op opA.
+HB.instance Definition _ := isMonoidLaw.Build T idm op op1m opm1.
+HB.end.
+#[export]
+HB.structure Definition ComLaw T idm :=
+  {op of Law T idm op &amp; isCommutativeLaw T op}.
+Notation com_law := ComLaw.type.
+HB.factory Record isComLaw T (idm : T) (op : T -&gt; T -&gt; T) := {
+  opA : associative op;
+  opC : commutative op;
+  op1m : left_id idm op;
+}.
+HB.builders Context T idm op of isComLaw T idm op.
+Lemma opm1 : right_id idm op. Proof. by move=&gt; x; rewrite opC op1m. Qed.
+HB.instance Definition _ := isLaw.Build T idm op opA op1m opm1.
+HB.instance Definition _ := isCommutativeLaw.Build T op opC.
+HB.end.
+HB.mixin Record isMulLaw T (zero : T) (mul : T -&gt; T -&gt; T) := {
+  mul_zerol : left_zero zero mul;
+  mul_zeror : right_zero zero mul;
+}.
+#[export]
+HB.structure Definition MulLaw T zero := {mul of isMulLaw T zero mul}.
+Notation mul_law := MulLaw.type.
+HB.mixin Record isAddLaw T (mul : T -&gt; T -&gt; T) (op : T -&gt; T -&gt; T) := {
+  mul_op_Dl : left_distributive mul op;
+  mul_op_Dr : right_distributive mul op;
+}.
+#[export]
+HB.structure Definition AddLaw T zero mul :=
+  {add of ComLaw T zero add &amp; isAddLaw T mul add}.
+Notation add_law := AddLaw.type.
+Module Import Exports. HB.reexport. End Exports.
+Section CommutativeAxioms.
+Variable (T : Type) (zero one : T) (mul add : T -&gt; T -&gt; T).
+Hypothesis mulC : commutative mul.
+Lemma mulC_id : left_id one mul -&gt; right_id one mul.
+Proof. by move=&gt; mul1x x; rewrite mulC. Qed.
+Lemma mulC_zero : left_zero zero mul -&gt; right_zero zero mul.
+Proof. by move=&gt; mul0x x; rewrite mulC. Qed.
+Lemma mulC_dist : left_distributive mul add -&gt; right_distributive mul add.
+Proof. by move=&gt; mul_addl x y z; rewrite !(mulC x). Qed.
+End CommutativeAxioms.
+Module Theory.
+Export SemiGroup.Theory.
+Section Theory.
+Variables (T : Type) (idm : T).
+Section Plain.
+Variable mul : law idm.
+Lemma mul1m : left_id idm mul. Proof. exact: op1m. Qed.
+Lemma mulm1 : right_id idm mul. Proof. exact: opm1. Qed.
+Lemma iteropE n x : iterop n mul x idm = iter n (mul x) idm.
+Proof. by case: n =&gt; // n; rewrite iterSr mulm1 iteropS. Qed.
+End Plain.
+Section Mul.
+Variable mul : mul_law idm.
+Lemma mul0m : left_zero idm mul. Proof. exact: mul_zerol. Qed.
+Lemma mulm0 : right_zero idm mul. Proof. exact: mul_zeror. Qed.
+End Mul.
+Section Add.
+Variables (mul : T -&gt; T -&gt; T) (add : add_law idm mul).
+Lemma addmA : associative add. Proof. exact: mulmA. Qed.
+Lemma addmC : commutative add. Proof. exact: mulmC. Qed.
+Lemma addmCA : left_commutative add. Proof. exact: mulmCA. Qed.
+Lemma addmAC : right_commutative add. Proof. exact: mulmAC. Qed.
+Lemma add0m : left_id idm add. Proof. exact: mul1m. Qed.
+Lemma addm0 : right_id idm add. Proof. exact: mulm1. Qed.
+Lemma mulmDl : left_distributive mul add. Proof. exact: mul_op_Dl. Qed.
+Lemma mulmDr : right_distributive mul add. Proof. exact: mul_op_Dr. Qed.
+End Add.
+Definition simpm := (mulm1, mulm0, mul1m, mul0m, mulmA).
+End Theory.
+End Theory.
+Include SemiGroup.Theory.
+Include Theory.
+End Monoid.
+Export Monoid.Exports.
+Section PervasiveMonoids.
+Import Monoid.
+HB.instance Definition _ := isComLaw.Build bool true andb andbA andbC andTb.
+HB.instance Definition _ := isMulLaw.Build bool false andb andFb andbF.
+HB.instance Definition _ := isComLaw.Build bool false orb orbA orbC orFb.
+HB.instance Definition _ := isMulLaw.Build bool true orb orTb orbT.
+HB.instance Definition _ := isComLaw.Build bool false addb addbA addbC addFb.
+HB.instance Definition _ := isAddLaw.Build bool andb orb andb_orl andb_orr.
+HB.instance Definition _ := isAddLaw.Build bool orb andb orb_andl orb_andr.
+HB.instance Definition _ := isAddLaw.Build bool andb addb andb_addl andb_addr.
+HB.instance Definition _ := isComLaw.Build nat 0 addn addnA addnC add0n.
+HB.instance Definition _ := isComLaw.Build nat 1 muln mulnA mulnC mul1n.
+HB.instance Definition _ := isMulLaw.Build nat 0 muln mul0n muln0.
+HB.instance Definition _ := isAddLaw.Build nat muln addn mulnDl mulnDr.
+HB.instance Definition _ := isComLaw.Build nat 0 maxn maxnA maxnC max0n.
+HB.instance Definition _ := isAddLaw.Build nat muln maxn maxnMl maxnMr.
+HB.instance Definition _ := isComLaw.Build nat 0 gcdn gcdnA gcdnC gcd0n.
+HB.instance Definition _ := isAddLaw.Build nat muln gcdn muln_gcdl muln_gcdr.
+HB.instance Definition _ := isComLaw.Build nat 1 lcmn lcmnA lcmnC lcm1n.
+HB.instance Definition _ := isAddLaw.Build nat muln lcmn muln_lcml muln_lcmr.
+HB.instance Definition _ T := isLaw.Build (seq T) nil cat
+  (@catA T) (@cat0s T) (@cats0 T).
+End PervasiveMonoids.
+Unit test for the [...law of ...] Notations
+Definition myp := addn. Definition mym := muln.
+Canonical myp_mon := [law of myp].
+Canonical myp_cmon := [com_law of myp].
+Canonical mym_mul := [mul_law of mym].
+Canonical myp_add := [add_law _ of myp].
+Print myp_add.
+Print Canonical Projections.
+
+Delimit Scope big_scope with BIG.
+Open Scope big_scope.
+The bigbody wrapper is a workaround for a quirk of the Coq pretty-printer,
+which would fail to redisplay the \big notation when the &lt;general_term&gt; or
+&lt;condition&gt; do not depend on the bound index. The BigBody constructor
+packages both in in a term in which i occurs; it also depends on the
+iterated &lt;op&gt;, as this can give more information on the expected type of
+the &lt;general_term&gt;, thus allowing for the insertion of coercions.
+Variant bigbody R I := BigBody of I &amp; (R -&gt; R -&gt; R) &amp; bool &amp; R.
+Definition applybig {R I} (body : bigbody R I) x :=
+  let: BigBody _ op b v := body in if b then op v x else x.
+Definition reducebig R I idx r (body : I -&gt; bigbody R I) :=
+  foldr (applybig \o body) idx r.
+HB.lock Definition bigop := reducebig.
+Canonical bigop_unlock := Unlockable bigop.unlock.
+Definition index_iota m n := iota m (n - m).
+Lemma mem_index_iota m n i : i \in index_iota m n = (m &lt;= i &lt; n).
+Proof.
+rewrite mem_iota; case le_m_i: (m &lt;= i) =&gt; //=.
+by rewrite -leq_subLR subSn // -subn_gt0 -subnDA subnKC // subn_gt0.
+Qed.
+Legacy mathcomp scripts have been relying on the fact that enum A and
+filter A (index_enum T) are convertible. This is likely to change in the
+next mathcomp release when enum, pick, subset and card are generalised to
+predicates with finite support in a choiceType - in fact the two will only
+be equal up to permutation in this new theory.
+ It is therefore advisable to stop relying on this, and use the new
+facilities provided in this library: lemmas big_enumP, big_enum, big_image
+and such. Users wishing to test compliance should change the Defined in
+index_enum_key to Qed, and comment out the filter_index_enum compatibility
+definition below.
+Fact index_enum_key : unit. Proof. split. Defined. (* Qed.
+Definition index_enum (T : finType) :=
+  locked_with index_enum_key (Finite.enum T).
+Lemma deprecated_filter_index_enum T P : filter P (index_enum T) = enum P.
+Proof. by rewrite [index_enum T]unlock. Qed.
+Lemma mem_index_enum T i : i \in index_enum T.
+Proof. by rewrite [index_enum T]unlock -enumT mem_enum. Qed.
+#[global] Hint Resolve mem_index_enum : core.
+Lemma index_enum_uniq T : uniq (index_enum T).
+Proof. by rewrite [index_enum T]unlock -enumT enum_uniq. Qed.
+Notation "\big [ op / idx ]_ ( i &lt;- r | P ) F" :=
+  (bigop idx r (fun i =&gt; BigBody i op P%B F)) : big_scope.
+Notation "\big [ op / idx ]_ ( i &lt;- r ) F" :=
+  (bigop idx r (fun i =&gt; BigBody i op true F)) : big_scope.
+Notation "\big [ op / idx ]_ ( m &lt;= i &lt; n | P ) F" :=
+  (bigop idx (index_iota m n) (fun i : nat =&gt; BigBody i op P%B F))
+     : big_scope.
+Notation "\big [ op / idx ]_ ( m &lt;= i &lt; n ) F" :=
+  (bigop idx (index_iota m n) (fun i : nat =&gt; BigBody i op true F))
+     : big_scope.
+Notation "\big [ op / idx ]_ ( i | P ) F" :=
+  (bigop idx (index_enum _) (fun i =&gt; BigBody i op P%B F)) : big_scope.
+Notation "\big [ op / idx ]_ i F" :=
+  (bigop idx (index_enum _) (fun i =&gt; BigBody i op true F)) : big_scope.
+Notation "\big [ op / idx ]_ ( i : t | P ) F" :=
+  (bigop idx (index_enum _) (fun i : t =&gt; BigBody i op P%B F))
+     (only parsing) : big_scope.
+Notation "\big [ op / idx ]_ ( i : t ) F" :=
+  (bigop idx (index_enum _) (fun i : t =&gt; BigBody i op true F))
+     (only parsing) : big_scope.
+Notation "\big [ op / idx ]_ ( i &lt; n | P ) F" :=
+  (\big[op/idx]_(i : ordinal n | P%B) F) : big_scope.
+Notation "\big [ op / idx ]_ ( i &lt; n ) F" :=
+  (\big[op/idx]_(i : ordinal n) F) : big_scope.
+Notation "\big [ op / idx ]_ ( i 'in' A | P ) F" :=
+  (\big[op/idx]_(i | (i \in A) &amp;&amp; P) F) : big_scope.
+Notation "\big [ op / idx ]_ ( i 'in' A ) F" :=
+  (\big[op/idx]_(i | i \in A) F) : big_scope.
+Notation BIG_F := (F in \big[_/_]_(i &lt;- _ | _) F i)%pattern.
+Notation BIG_P := (P in \big[_/_]_(i &lt;- _ | P i) _)%pattern.
+Local Notation "+%N" := addn (only parsing).
+Notation "\sum_ ( i &lt;- r | P ) F" :=
+  (\big[+%N/0%N]_(i &lt;- r | P%B) F%N) : nat_scope.
+Notation "\sum_ ( i &lt;- r ) F" :=
+  (\big[+%N/0%N]_(i &lt;- r) F%N) : nat_scope.
+Notation "\sum_ ( m &lt;= i &lt; n | P ) F" :=
+  (\big[+%N/0%N]_(m &lt;= i &lt; n | P%B) F%N) : nat_scope.
+Notation "\sum_ ( m &lt;= i &lt; n ) F" :=
+  (\big[+%N/0%N]_(m &lt;= i &lt; n) F%N) : nat_scope.
+Notation "\sum_ ( i | P ) F" :=
+  (\big[+%N/0%N]_(i | P%B) F%N) : nat_scope.
+Notation "\sum_ i F" :=
+  (\big[+%N/0%N]_i F%N) : nat_scope.
+Notation "\sum_ ( i : t | P ) F" :=
+  (\big[+%N/0%N]_(i : t | P%B) F%N) (only parsing) : nat_scope.
+Notation "\sum_ ( i : t ) F" :=
+  (\big[+%N/0%N]_(i : t) F%N) (only parsing) : nat_scope.
+Notation "\sum_ ( i &lt; n | P ) F" :=
+  (\big[+%N/0%N]_(i &lt; n | P%B) F%N) : nat_scope.
+Notation "\sum_ ( i &lt; n ) F" :=
+  (\big[+%N/0%N]_(i &lt; n) F%N) : nat_scope.
+Notation "\sum_ ( i 'in' A | P ) F" :=
+  (\big[+%N/0%N]_(i in A | P%B) F%N) : nat_scope.
+Notation "\sum_ ( i 'in' A ) F" :=
+  (\big[+%N/0%N]_(i in A) F%N) : nat_scope.
+Local Notation "*%N" := muln (only parsing).
+Notation "\prod_ ( i &lt;- r | P ) F" :=
+  (\big[*%N/1%N]_(i &lt;- r | P%B) F%N) : nat_scope.
+Notation "\prod_ ( i &lt;- r ) F" :=
+  (\big[*%N/1%N]_(i &lt;- r) F%N) : nat_scope.
+Notation "\prod_ ( m &lt;= i &lt; n | P ) F" :=
+  (\big[*%N/1%N]_(m &lt;= i &lt; n | P%B) F%N) : nat_scope.
+Notation "\prod_ ( m &lt;= i &lt; n ) F" :=
+  (\big[*%N/1%N]_(m &lt;= i &lt; n) F%N) : nat_scope.
+Notation "\prod_ ( i | P ) F" :=
+  (\big[*%N/1%N]_(i | P%B) F%N) : nat_scope.
+Notation "\prod_ i F" :=
+  (\big[*%N/1%N]_i F%N) : nat_scope.
+Notation "\prod_ ( i : t | P ) F" :=
+  (\big[*%N/1%N]_(i : t | P%B) F%N) (only parsing) : nat_scope.
+Notation "\prod_ ( i : t ) F" :=
+  (\big[*%N/1%N]_(i : t) F%N) (only parsing) : nat_scope.
+Notation "\prod_ ( i &lt; n | P ) F" :=
+  (\big[*%N/1%N]_(i &lt; n | P%B) F%N) : nat_scope.
+Notation "\prod_ ( i &lt; n ) F" :=
+  (\big[*%N/1%N]_(i &lt; n) F%N) : nat_scope.
+Notation "\prod_ ( i 'in' A | P ) F" :=
+  (\big[*%N/1%N]_(i in A | P%B) F%N) : nat_scope.
+Notation "\prod_ ( i 'in' A ) F" :=
+  (\big[*%N/1%N]_(i in A) F%N) : nat_scope.
+Notation "\max_ ( i &lt;- r | P ) F" :=
+  (\big[maxn/0%N]_(i &lt;- r | P%B) F%N) : nat_scope.
+Notation "\max_ ( i &lt;- r ) F" :=
+  (\big[maxn/0%N]_(i &lt;- r) F%N) : nat_scope.
+Notation "\max_ ( i | P ) F" :=
+  (\big[maxn/0%N]_(i | P%B) F%N) : nat_scope.
+Notation "\max_ i F" :=
+  (\big[maxn/0%N]_i F%N) : nat_scope.
+Notation "\max_ ( i : I | P ) F" :=
+  (\big[maxn/0%N]_(i : I | P%B) F%N) (only parsing) : nat_scope.
+Notation "\max_ ( i : I ) F" :=
+  (\big[maxn/0%N]_(i : I) F%N) (only parsing) : nat_scope.
+Notation "\max_ ( m &lt;= i &lt; n | P ) F" :=
+ (\big[maxn/0%N]_(m &lt;= i &lt; n | P%B) F%N) : nat_scope.
+Notation "\max_ ( m &lt;= i &lt; n ) F" :=
+ (\big[maxn/0%N]_(m &lt;= i &lt; n) F%N) : nat_scope.
+Notation "\max_ ( i &lt; n | P ) F" :=
+ (\big[maxn/0%N]_(i &lt; n | P%B) F%N) : nat_scope.
+Notation "\max_ ( i &lt; n ) F" :=
+ (\big[maxn/0%N]_(i &lt; n) F%N) : nat_scope.
+Notation "\max_ ( i 'in' A | P ) F" :=
+ (\big[maxn/0%N]_(i in A | P%B) F%N) : nat_scope.
+Notation "\max_ ( i 'in' A ) F" :=
+ (\big[maxn/0%N]_(i in A) F%N) : nat_scope.
+Induction loading
+Lemma big_load R (K K' : R -&gt; Type) idx op I r (P : pred I) F :
+  K (\big[op/idx]_(i &lt;- r | P i) F i) * K' (\big[op/idx]_(i &lt;- r | P i) F i)
+  -&gt; K' (\big[op/idx]_(i &lt;- r | P i) F i).
+Proof. by case. Qed.
+Arguments big_load [R] K [K'] idx op [I].
+Section Elim3.
+Variables (R1 R2 R3 : Type) (K : R1 -&gt; R2 -&gt; R3 -&gt; Type).
+Variables (id1 : R1) (op1 : R1 -&gt; R1 -&gt; R1).
+Variables (id2 : R2) (op2 : R2 -&gt; R2 -&gt; R2).
+Variables (id3 : R3) (op3 : R3 -&gt; R3 -&gt; R3).
+Hypothesis Kid : K id1 id2 id3.
+Lemma big_rec3 I r (P : pred I) F1 F2 F3
+    (K_F : forall i y1 y2 y3, P i -&gt; K y1 y2 y3 -&gt;
+       K (op1 (F1 i) y1) (op2 (F2 i) y2) (op3 (F3 i) y3)) :
+  K (\big[op1/id1]_(i &lt;- r | P i) F1 i)
+    (\big[op2/id2]_(i &lt;- r | P i) F2 i)
+    (\big[op3/id3]_(i &lt;- r | P i) F3 i).
+Proof. by rewrite unlock; elim: r =&gt; //= i r; case: ifP =&gt; //; apply: K_F. Qed.
+Hypothesis Kop : forall x1 x2 x3 y1 y2 y3,
+  K x1 x2 x3 -&gt; K y1 y2 y3-&gt; K (op1 x1 y1) (op2 x2 y2) (op3 x3 y3).
+Lemma big_ind3 I r (P : pred I) F1 F2 F3
+   (K_F : forall i, P i -&gt; K (F1 i) (F2 i) (F3 i)) :
+  K (\big[op1/id1]_(i &lt;- r | P i) F1 i)
+    (\big[op2/id2]_(i &lt;- r | P i) F2 i)
+    (\big[op3/id3]_(i &lt;- r | P i) F3 i).
+Proof. by apply: big_rec3 =&gt; i x1 x2 x3 /K_F; apply: Kop. Qed.
+End Elim3.
+Arguments big_rec3 [R1 R2 R3] K [id1 op1 id2 op2 id3 op3] _ [I r P F1 F2 F3].
+Arguments big_ind3 [R1 R2 R3] K [id1 op1 id2 op2 id3 op3] _ _ [I r P F1 F2 F3].
+Section Elim2.
+Variables (R1 R2 : Type) (K : R1 -&gt; R2 -&gt; Type) (f : R2 -&gt; R1).
+Variables (id1 : R1) (op1 : R1 -&gt; R1 -&gt; R1).
+Variables (id2 : R2) (op2 : R2 -&gt; R2 -&gt; R2).
+Hypothesis Kid : K id1 id2.
+Lemma big_rec2 I r (P : pred I) F1 F2
+    (K_F : forall i y1 y2, P i -&gt; K y1 y2 -&gt;
+       K (op1 (F1 i) y1) (op2 (F2 i) y2)) :
+  K (\big[op1/id1]_(i &lt;- r | P i) F1 i) (\big[op2/id2]_(i &lt;- r | P i) F2 i).
+Proof. by rewrite unlock; elim: r =&gt; //= i r; case: ifP =&gt; //; apply: K_F. Qed.
+Hypothesis Kop : forall x1 x2 y1 y2,
+  K x1 x2 -&gt; K y1 y2 -&gt; K (op1 x1 y1) (op2 x2 y2).
+Lemma big_ind2 I r (P : pred I) F1 F2 (K_F : forall i, P i -&gt; K (F1 i) (F2 i)) :
+  K (\big[op1/id1]_(i &lt;- r | P i) F1 i) (\big[op2/id2]_(i &lt;- r | P i) F2 i).
+Proof. by apply: big_rec2 =&gt; i x1 x2 /K_F; apply: Kop. Qed.
+Hypotheses (f_op : {morph f : x y / op2 x y &gt;-&gt; op1 x y}) (f_id : f id2 = id1).
+Lemma big_morph I r (P : pred I) F :
+  f (\big[op2/id2]_(i &lt;- r | P i) F i) = \big[op1/id1]_(i &lt;- r | P i) f (F i).
+Proof. by rewrite unlock; elim: r =&gt; //= i r &lt;-; rewrite -f_op -fun_if. Qed.
+End Elim2.
+Arguments big_rec2 [R1 R2] K [id1 op1 id2 op2] _ [I r P F1 F2].
+Arguments big_ind2 [R1 R2] K [id1 op1 id2 op2] _ _ [I r P F1 F2].
+Arguments big_morph [R1 R2] f [id1 op1 id2 op2] _ _ [I].
+Section Elim1.
+Variables (R : Type) (K : R -&gt; Type) (f : R -&gt; R).
+Variables (idx : R) (op op' : R -&gt; R -&gt; R).
+Hypothesis Kid : K idx.
+Lemma big_rec I r (P : pred I) F
+    (Kop : forall i x, P i -&gt; K x -&gt; K (op (F i) x)) :
+  K (\big[op/idx]_(i &lt;- r | P i) F i).
+Proof. by rewrite unlock; elim: r =&gt; //= i r; case: ifP =&gt; //; apply: Kop. Qed.
+Hypothesis Kop : forall x y, K x -&gt; K y -&gt; K (op x y).
+Lemma big_ind I r (P : pred I) F (K_F : forall i, P i -&gt; K (F i)) :
+  K (\big[op/idx]_(i &lt;- r | P i) F i).
+Proof. by apply: big_rec =&gt; // i x /K_F /Kop; apply. Qed.
+Hypothesis Kop' : forall x y, K x -&gt; K y -&gt; op x y = op' x y.
+Lemma eq_big_op I r (P : pred I) F (K_F : forall i, P i -&gt; K (F i)) :
+  \big[op/idx]_(i &lt;- r | P i) F i = \big[op'/idx]_(i &lt;- r | P i) F i.
+Proof.
+by elim/(big_load K): _; elim/big_rec2: _ =&gt; // i _ y Pi [Ky &lt;-]; auto.
+Qed.
+Hypotheses (fM : {morph f : x y / op x y}) (f_id : f idx = idx).
+Lemma big_endo I r (P : pred I) F :
+  f (\big[op/idx]_(i &lt;- r | P i) F i) = \big[op/idx]_(i &lt;- r | P i) f (F i).
+Proof. exact: big_morph. Qed.
+End Elim1.
+Arguments big_rec [R] K [idx op] _ [I r P F].
+Arguments big_ind [R] K [idx op] _ _ [I r P F].
+Arguments eq_big_op [R] K [idx op] op' _ _ _ [I].
+Arguments big_endo [R] f [idx op] _ _ [I].
+Lemma big_morph_in (R1 R2 : Type) (Q : {pred R2}) (f : R2 -&gt; R1)
+    (id1 : R1) (op1 : R1 -&gt; R1 -&gt; R1)
+    (id2 : R2) (op2 : R2 -&gt; R2 -&gt; R2) :
+    {in Q &amp;, forall x y, op2 x y \in Q} -&gt;
+    id2 \in Q -&gt;
+    {in Q &amp;, {morph f : x y / op2 x y &gt;-&gt; op1 x y}} -&gt;
+    f id2 = id1 -&gt;
+    forall [I : Type] (r : seq I) (P : pred I) (F : I -&gt; R2),
+      (forall i, P i -&gt; F i \in Q) -&gt;
+  f (\big[op2/id2]_(i &lt;- r | P i) F i) = \big[op1/id1]_(i &lt;- r | P i) f (F i).
+Proof.
+move=&gt; Qop Qid fop fid I r P F QF; elim/(big_load Q): _.
+by elim/big_rec2: _ =&gt; // j x y Pj [Qx &lt;-]; rewrite [Q _]Qop ?fop ?QF.
+Qed.
+Arguments big_morph_in [R1 R2] Q f [id1 op1 id2 op2].
+Section oAC.
+Variables (T : Type) (op : T -&gt; T -&gt; T).
+Definition oAC of associative op &amp; commutative op :=
+  fun x =&gt; oapp (fun y =&gt; Some (oapp (op^~ y) y x)) x.
+Arguments oAC : simpl never.
+Hypothesis (opA : associative op) (opC : commutative op).
+Local Notation oop := (oAC opA opC).
+Lemma oACE x y : oop (Some x) (Some y) = some (op x y). Proof. by []. Qed.
+Lemma oopA_subdef : associative oop.
+Proof. by move=&gt; [x|] [y|] [z|]//; rewrite /oAC/= opA. Qed.
+Lemma oopx1_subdef : left_id None oop. Proof. by case. Qed.
+Lemma oop1x_subdef : right_id None oop. Proof. by []. Qed.
+Lemma oopC_subdef : commutative oop.
+Proof. by move=&gt; [x|] [y|]//; rewrite /oAC/= opC. Qed.
+HB.instance Definition _ := Monoid.isComLaw.Build (option T) None oop
+  oopA_subdef oopC_subdef oopx1_subdef.
+Context [x : T].
+Lemma some_big_AC_mk_monoid [I : Type] r P (F : I -&gt; T) :
+  Some (\big[op/x]_(i &lt;- r | P i) F i) =
+    oop (\big[oop/None]_(i &lt;- r | P i) Some (F i)) (Some x).
+Proof. by elim/big_rec2 : _ =&gt; //= i [y|] _ Pi [] -&gt; //=; rewrite opA. Qed.
+Lemma big_AC_mk_monoid [I : Type] r P (F : I -&gt; T) :
+  \big[op/x]_(i &lt;- r | P i) F i =
+    odflt x (oop (\big[oop/None]_(i &lt;- r | P i) Some (F i)) (Some x)).
+Proof. by apply: Some_inj; rewrite some_big_AC_mk_monoid. Qed.
+End oAC.
+Arguments oAC : simpl never.
+Section Extensionality.
+Variables (R : Type) (idx : R) (op : R -&gt; R -&gt; R).
+Section SeqExtension.
+Variable I : Type.
+Lemma foldrE r : foldr op idx r = \big[op/idx]_(x &lt;- r) x.
+Proof. by rewrite unlock. Qed.
+Lemma big_filter r (P : pred I) F :
+  \big[op/idx]_(i &lt;- filter P r) F i = \big[op/idx]_(i &lt;- r | P i) F i.
+Proof. by rewrite unlock; elim: r =&gt; //= i r &lt;-; case (P i). Qed.
+Lemma big_filter_cond r (P1 P2 : pred I) F :
+  \big[op/idx]_(i &lt;- filter P1 r | P2 i) F i
+     = \big[op/idx]_(i &lt;- r | P1 i &amp;&amp; P2 i) F i.
+Proof.
+rewrite -big_filter -(big_filter r); congr bigop.
+by rewrite -filter_predI; apply: eq_filter =&gt; i; apply: andbC.
+Qed.
+Lemma eq_bigl r (P1 P2 : pred I) F :
+    P1 =1 P2 -&gt;
+  \big[op/idx]_(i &lt;- r | P1 i) F i = \big[op/idx]_(i &lt;- r | P2 i) F i.
+Proof. by move=&gt; eqP12; rewrite -!(big_filter r) (eq_filter eqP12). Qed.
+A lemma to permute aggregate conditions.
+Lemma big_andbC r (P Q : pred I) F :
+  \big[op/idx]_(i &lt;- r | P i &amp;&amp; Q i) F i
+    = \big[op/idx]_(i &lt;- r | Q i &amp;&amp; P i) F i.
+Proof. by apply: eq_bigl =&gt; i; apply: andbC. Qed.
+Lemma eq_bigr r (P : pred I) F1 F2 : (forall i, P i -&gt; F1 i = F2 i) -&gt;
+  \big[op/idx]_(i &lt;- r | P i) F1 i = \big[op/idx]_(i &lt;- r | P i) F2 i.
+Proof. by move=&gt; eqF12; elim/big_rec2: _ =&gt; // i x _ /eqF12-&gt; -&gt;. Qed.
+Lemma eq_big r (P1 P2 : pred I) F1 F2 :
+    P1 =1 P2 -&gt; (forall i, P1 i -&gt; F1 i = F2 i) -&gt;
+  \big[op/idx]_(i &lt;- r | P1 i) F1 i = \big[op/idx]_(i &lt;- r | P2 i) F2 i.
+Proof. by move/eq_bigl &lt;-; move/eq_bigr-&gt;. Qed.
+Lemma congr_big r1 r2 (P1 P2 : pred I) F1 F2 :
+    r1 = r2 -&gt; P1 =1 P2 -&gt; (forall i, P1 i -&gt; F1 i = F2 i) -&gt;
+  \big[op/idx]_(i &lt;- r1 | P1 i) F1 i = \big[op/idx]_(i &lt;- r2 | P2 i) F2 i.
+Proof. by move=&gt; &lt;-{r2}; apply: eq_big. Qed.
+Lemma big_nil (P : pred I) F : \big[op/idx]_(i &lt;- [::] | P i) F i = idx.
+Proof. by rewrite unlock. Qed.
+Lemma big_cons i r (P : pred I) F :
+    let x := \big[op/idx]_(j &lt;- r | P j) F j in
+  \big[op/idx]_(j &lt;- i :: r | P j) F j = if P i then op (F i) x else x.
+Proof. by rewrite unlock. Qed.
+Lemma big_rcons_op i r (P : pred I) F :
+    let idx' := if P i then op (F i) idx else idx in
+  \big[op/idx]_(j &lt;- rcons r i | P j) F j = \big[op/idx']_(j &lt;- r | P j) F j.
+Proof.
+by elim: r =&gt; /= [|j r]; rewrite !(big_nil, big_cons, unlock)// =&gt; -&gt;.
+Qed.
+Lemma big_map J (h : J -&gt; I) r (P : pred I) F :
+  \big[op/idx]_(i &lt;- map h r | P i) F i
+     = \big[op/idx]_(j &lt;- r | P (h j)) F (h j).
+Proof. by rewrite unlock; elim: r =&gt; //= j r -&gt;. Qed.
+Lemma big_nth x0 r (P : pred I) F :
+  \big[op/idx]_(i &lt;- r | P i) F i
+     = \big[op/idx]_(0 &lt;= i &lt; size r | P (nth x0 r i)) (F (nth x0 r i)).
+Proof. by rewrite -[r in LHS](mkseq_nth x0) big_map /index_iota subn0. Qed.
+Lemma big_hasC r (P : pred I) F :
+  ~~ has P r -&gt; \big[op/idx]_(i &lt;- r | P i) F i = idx.
+Proof.
+by rewrite -big_filter has_count -size_filter -eqn0Ngt unlock =&gt; /nilP-&gt;.
+Qed.
+Lemma big_pred0_eq (r : seq I) F : \big[op/idx]_(i &lt;- r | false) F i = idx.
+Proof. by rewrite big_hasC // has_pred0. Qed.
+Lemma big_pred0 r (P : pred I) F :
+  P =1 xpred0 -&gt; \big[op/idx]_(i &lt;- r | P i) F i = idx.
+Proof. by move/eq_bigl-&gt;; apply: big_pred0_eq. Qed.
+Lemma big_cat_nested r1 r2 (P : pred I) F :
+    let x := \big[op/idx]_(i &lt;- r2 | P i) F i in
+  \big[op/idx]_(i &lt;- r1 ++ r2 | P i) F i = \big[op/x]_(i &lt;- r1 | P i) F i.
+Proof. by rewrite unlock /reducebig foldr_cat. Qed.
+Lemma big_catl r1 r2 (P : pred I) F :
+    ~~ has P r2 -&gt;
+  \big[op/idx]_(i &lt;- r1 ++ r2 | P i) F i = \big[op/idx]_(i &lt;- r1 | P i) F i.
+Proof. by rewrite big_cat_nested =&gt; /big_hasC-&gt;. Qed.
+Lemma big_catr r1 r2 (P : pred I) F :
+     ~~ has P r1 -&gt;
+  \big[op/idx]_(i &lt;- r1 ++ r2 | P i) F i = \big[op/idx]_(i &lt;- r2 | P i) F i.
+Proof.
+rewrite -big_filter -(big_filter r2) filter_cat.
+by rewrite has_count -size_filter; case: filter.
+Qed.
+End SeqExtension.
+Lemma big_map_id J (h : J -&gt; R) r (P : pred R) :
+  \big[op/idx]_(i &lt;- map h r | P i) i
+     = \big[op/idx]_(j &lt;- r | P (h j)) h j.
+Proof. exact: big_map. Qed.
+Lemma big_condT (J : finType) (A : {pred J}) F :
+  \big[op/idx]_(i in A | true) F i = \big[op/idx]_(i in A) F i.
+Proof. by apply: eq_bigl =&gt; i; exact: andbT. Qed.
+The following lemmas can be used to localise extensionality to a specific
+index sequence. This is done by ssreflect rewriting, before applying
+congruence or induction lemmas.
+Lemma big_seq_cond (I : eqType) r (P : pred I) F :
+  \big[op/idx]_(i &lt;- r | P i) F i
+    = \big[op/idx]_(i &lt;- r | (i \in r) &amp;&amp; P i) F i.
+Proof.
+by rewrite -!(big_filter r); congr bigop; apply: eq_in_filter =&gt; i -&gt;.
+Qed.
+Lemma big_seq (I : eqType) (r : seq I) F :
+  \big[op/idx]_(i &lt;- r) F i = \big[op/idx]_(i &lt;- r | i \in r) F i.
+Proof. by rewrite big_seq_cond big_andbC. Qed.
+Lemma eq_big_seq (I : eqType) (r : seq I) F1 F2 :
+  {in r, F1 =1 F2} -&gt; \big[op/idx]_(i &lt;- r) F1 i = \big[op/idx]_(i &lt;- r) F2 i.
+Proof. by move=&gt; eqF; rewrite !big_seq (eq_bigr _ eqF). Qed.
+Similar lemmas for exposing integer indexing in the predicate.
+Lemma big_nat_cond m n (P : pred nat) F :
+  \big[op/idx]_(m &lt;= i &lt; n | P i) F i
+    = \big[op/idx]_(m &lt;= i &lt; n | (m &lt;= i &lt; n) &amp;&amp; P i) F i.
+Proof.
+by rewrite big_seq_cond; apply: eq_bigl =&gt; i; rewrite mem_index_iota.
+Qed.
+Lemma big_nat m n F :
+  \big[op/idx]_(m &lt;= i &lt; n) F i = \big[op/idx]_(m &lt;= i &lt; n | m &lt;= i &lt; n) F i.
+Proof. by rewrite big_nat_cond big_andbC. Qed.
+Lemma congr_big_nat m1 n1 m2 n2 P1 P2 F1 F2 :
+    m1 = m2 -&gt; n1 = n2 -&gt;
+    (forall i, m1 &lt;= i &lt; n2 -&gt; P1 i = P2 i) -&gt;
+    (forall i, P1 i &amp;&amp; (m1 &lt;= i &lt; n2) -&gt; F1 i = F2 i) -&gt;
+  \big[op/idx]_(m1 &lt;= i &lt; n1 | P1 i) F1 i
+    = \big[op/idx]_(m2 &lt;= i &lt; n2 | P2 i) F2 i.
+Proof.
+move=&gt; &lt;- &lt;- eqP12 eqF12; rewrite big_seq_cond (big_seq_cond _ P2).
+apply: eq_big =&gt; i; rewrite ?inE /= !mem_index_iota.
+  by apply: andb_id2l; apply: eqP12.
+by rewrite andbC; apply: eqF12.
+Qed.
+Lemma eq_big_nat m n F1 F2 :
+    (forall i, m &lt;= i &lt; n -&gt; F1 i = F2 i) -&gt;
+  \big[op/idx]_(m &lt;= i &lt; n) F1 i = \big[op/idx]_(m &lt;= i &lt; n) F2 i.
+Proof. by move=&gt; eqF; apply: congr_big_nat. Qed.
+Lemma big_geq m n (P : pred nat) F :
+  m &gt;= n -&gt; \big[op/idx]_(m &lt;= i &lt; n | P i) F i = idx.
+Proof. by move=&gt; ge_m_n; rewrite /index_iota (eqnP ge_m_n) big_nil. Qed.
+Lemma big_ltn_cond m n (P : pred nat) F :
+    m &lt; n -&gt; let x := \big[op/idx]_(m.+1 &lt;= i &lt; n | P i) F i in
+  \big[op/idx]_(m &lt;= i &lt; n | P i) F i = if P m then op (F m) x else x.
+Proof. by case: n =&gt; [//|n] le_m_n; rewrite /index_iota subSn // big_cons. Qed.
+Lemma big_ltn m n F :
+     m &lt; n -&gt;
+  \big[op/idx]_(m &lt;= i &lt; n) F i = op (F m) (\big[op/idx]_(m.+1 &lt;= i &lt; n) F i).
+Proof. by move=&gt; lt_mn; apply: big_ltn_cond. Qed.
+Lemma big_addn m n a (P : pred nat) F :
+  \big[op/idx]_(m + a &lt;= i &lt; n | P i) F i =
+     \big[op/idx]_(m &lt;= i &lt; n - a | P (i + a)) F (i + a).
+Proof.
+rewrite /index_iota -subnDA addnC iotaDl big_map.
+by apply: eq_big =&gt; ? *; rewrite addnC.
+Qed.
+Lemma big_add1 m n (P : pred nat) F :
+  \big[op/idx]_(m.+1 &lt;= i &lt; n | P i) F i =
+     \big[op/idx]_(m &lt;= i &lt; n.-1 | P (i.+1)) F (i.+1).
+Proof.
+by rewrite -addn1 big_addn subn1; apply: eq_big =&gt; ? *; rewrite addn1.
+Qed.
+Lemma big_nat_recl n m F : m &lt;= n -&gt;
+  \big[op/idx]_(m &lt;= i &lt; n.+1) F i =
+     op (F m) (\big[op/idx]_(m &lt;= i &lt; n) F i.+1).
+Proof. by move=&gt; lemn; rewrite big_ltn // big_add1. Qed.
+Lemma big_mkord n (P : pred nat) F :
+  \big[op/idx]_(0 &lt;= i &lt; n | P i) F i = \big[op/idx]_(i &lt; n | P i) F i.
+Proof.
+rewrite /index_iota subn0 -(big_map (@nat_of_ord n)).
+by congr bigop; rewrite /index_enum 2!unlock val_ord_enum.
+Qed.
+Lemma big_mknat n (P : pred 'I_n.+1) F :
+  \big[op/idx]_(i &lt; n.+1 | P i) F i
+  = \big[op/idx]_(0 &lt;= i &lt; n.+1 | P (inord i)) F (inord i).
+Proof. by rewrite big_mkord; apply: eq_big =&gt; ?; rewrite inord_val. Qed.
+Lemma big_nat_widen m n1 n2 (P : pred nat) F :
+     n1 &lt;= n2 -&gt;
+  \big[op/idx]_(m &lt;= i &lt; n1 | P i) F i
+      = \big[op/idx]_(m &lt;= i &lt; n2 | P i &amp;&amp; (i &lt; n1)) F i.
+Proof.
+move=&gt; len12; symmetry; rewrite -big_filter filter_predI big_filter.
+have [ltn_trans eq_by_mem] := (ltn_trans, irr_sorted_eq ltn_trans ltnn).
+congr bigop; apply: eq_by_mem; rewrite ?sorted_filter ?iota_ltn_sorted // =&gt; i.
+rewrite mem_filter !mem_index_iota andbCA andbA andb_idr =&gt; // /andP[_].
+by move/leq_trans-&gt;.
+Qed.
+Lemma big_ord_widen_cond n1 n2 (P : pred nat) (F : nat -&gt; R) :
+     n1 &lt;= n2 -&gt;
+  \big[op/idx]_(i &lt; n1 | P i) F i
+      = \big[op/idx]_(i &lt; n2 | P i &amp;&amp; (i &lt; n1)) F i.
+Proof. by move/big_nat_widen=&gt; len12; rewrite -big_mkord len12 big_mkord. Qed.
+Lemma big_ord_widen n1 n2 (F : nat -&gt; R) :
+    n1 &lt;= n2 -&gt;
+  \big[op/idx]_(i &lt; n1) F i = \big[op/idx]_(i &lt; n2 | i &lt; n1) F i.
+Proof. by move=&gt; le_n12; apply: (big_ord_widen_cond (predT)). Qed.
+Lemma big_ord_widen_leq n1 n2 (P : pred 'I_(n1.+1)) F :
+    n1 &lt; n2 -&gt;
+  \big[op/idx]_(i &lt; n1.+1 | P i) F i
+      = \big[op/idx]_(i &lt; n2 | P (inord i) &amp;&amp; (i &lt;= n1)) F (inord i).
+Proof.
+move=&gt; len12; pose g G i := G (inord i : 'I_(n1.+1)).
+rewrite -(big_ord_widen_cond (g _ P) (g _ F) len12) {}/g.
+by apply: eq_big =&gt; i *; rewrite inord_val.
+Qed.
+Lemma big_ord0 P F : \big[op/idx]_(i &lt; 0 | P i) F i = idx.
+Proof. by rewrite big_pred0 =&gt; [|[]]. Qed.
+Lemma big_mask_tuple I n m (t : n.-tuple I) (P : pred I) F :
+  \big[op/idx]_(i &lt;- mask m t | P i) F i
+    = \big[op/idx]_(i &lt; n | nth false m i &amp;&amp; P (tnth t i)) F (tnth t i).
+Proof.
+rewrite [t in LHS]tuple_map_ord/= -map_mask big_map.
+by rewrite mask_enum_ord big_filter_cond/= enumT.
+Qed.
+Lemma big_mask I r m (P : pred I) (F : I -&gt; R) (r_ := tnth (in_tuple r)) :
+  \big[op/idx]_(i &lt;- mask m r | P i) F i
+    = \big[op/idx]_(i &lt; size r | nth false m i &amp;&amp; P (r_ i)) F (r_ i).
+Proof. exact: (big_mask_tuple _ (in_tuple r)). Qed.
+Lemma big_tnth I r (P : pred I) F (r_ := tnth (in_tuple r)) :
+  \big[op/idx]_(i &lt;- r | P i) F i
+    = \big[op/idx]_(i &lt; size r | P (r_ i)) (F (r_ i)).
+Proof.
+rewrite /= -[r in LHS](mask_true (leqnn (size r))) big_mask//.
+by apply: eq_bigl =&gt; i /=; rewrite nth_nseq ltn_ord.
+Qed.
+Lemma big_index_uniq (I : eqType) (r : seq I) (E : 'I_(size r) -&gt; R) :
+    uniq r -&gt;
+  \big[op/idx]_i E i = \big[op/idx]_(x &lt;- r) oapp E idx (insub (index x r)).
+Proof.
+move=&gt; Ur; apply/esym; rewrite big_tnth.
+by under [LHS]eq_bigr do rewrite index_uniq// valK.
+Qed.
+Lemma big_tuple I n (t : n.-tuple I) (P : pred I) F :
+  \big[op/idx]_(i &lt;- t | P i) F i
+     = \big[op/idx]_(i &lt; n | P (tnth t i)) F (tnth t i).
+Proof. by rewrite big_tnth tvalK; case: _ / (esym _). Qed.
+Lemma big_ord_narrow_cond n1 n2 (P : pred 'I_n2) F (le_n12 : n1 &lt;= n2) :
+    let w := widen_ord le_n12 in
+  \big[op/idx]_(i &lt; n2 | P i &amp;&amp; (i &lt; n1)) F i
+    = \big[op/idx]_(i &lt; n1 | P (w i)) F (w i).
+Proof.
+case: n1 =&gt; [|n1] /= in le_n12 *.
+  by rewrite big_ord0 big_pred0 // =&gt; i; rewrite andbF.
+rewrite (big_ord_widen_leq _ _ le_n12); apply: eq_big =&gt; i.
+  by apply: andb_id2r =&gt; le_i_n1; congr P; apply: val_inj; rewrite /= inordK.
+by case/andP=&gt; _ le_i_n1; congr F; apply: val_inj; rewrite /= inordK.
+Qed.
+Lemma big_ord_narrow_cond_leq n1 n2 (P : pred _) F (le_n12 : n1 &lt;= n2) :
+    let w := @widen_ord n1.+1 n2.+1 le_n12 in
+  \big[op/idx]_(i &lt; n2.+1 | P i &amp;&amp; (i &lt;= n1)) F i
+  = \big[op/idx]_(i &lt; n1.+1 | P (w i)) F (w i).
+Proof. exact: (@big_ord_narrow_cond n1.+1 n2.+1). Qed.
+Lemma big_ord_narrow n1 n2 F (le_n12 : n1 &lt;= n2) :
+    let w := widen_ord le_n12 in
+  \big[op/idx]_(i &lt; n2 | i &lt; n1) F i = \big[op/idx]_(i &lt; n1) F (w i).
+Proof. exact: (big_ord_narrow_cond (predT)). Qed.
+Lemma big_ord_narrow_leq n1 n2 F (le_n12 : n1 &lt;= n2) :
+    let w := @widen_ord n1.+1 n2.+1 le_n12 in
+  \big[op/idx]_(i &lt; n2.+1 | i &lt;= n1) F i = \big[op/idx]_(i &lt; n1.+1) F (w i).
+Proof. exact: (big_ord_narrow_cond_leq (predT)). Qed.
+Lemma big_ord_recl n F :
+  \big[op/idx]_(i &lt; n.+1) F i =
+     op (F ord0) (\big[op/idx]_(i &lt; n) F (@lift n.+1 ord0 i)).
+Proof.
+pose G i := F (inord i); have eqFG i: F i = G i by rewrite /G inord_val.
+under eq_bigr do rewrite eqFG; under [in RHS]eq_bigr do rewrite eqFG.
+by rewrite -(big_mkord _ (fun _ =&gt; _) G) eqFG big_ltn // big_add1 /= big_mkord.
+Qed.
+Lemma big_nseq_cond I n a (P : pred I) F :
+  \big[op/idx]_(i &lt;- nseq n a | P i) F i
+    = if P a then iter n (op (F a)) idx else idx.
+Proof. by rewrite unlock; elim: n =&gt; /= [|n -&gt;]; case: (P a). Qed.
+Lemma big_nseq I n a (F : I -&gt; R):
+  \big[op/idx]_(i &lt;- nseq n a) F i = iter n (op (F a)) idx.
+Proof. exact: big_nseq_cond. Qed.
+End Extensionality.
+Variant big_enum_spec (I : finType) (P : pred I) : seq I -&gt; Type :=
+  BigEnumSpec e of
+    forall R idx op (F : I -&gt; R),
+      \big[op/idx]_(i &lt;- e) F i = \big[op/idx]_(i | P i) F i
+  &amp; uniq e /\ (forall i, i \in e = P i)
+  &amp; (let cP := [pred i | P i] in perm_eq e (enum cP) /\ size e = #|cP|)
+  : big_enum_spec P e.
+  This lemma can be used to introduce an enumeration into a non-abelian
+bigop, in one of three ways:
+  have [e big_e [Ue mem_e] [e_enum size_e]] := big_enumP P.
+gives a permutation e of enum P alongside a equation big_e for converting
+between bigops iterating on (i &lt;- e) and ones on (i | P i). Usually not
+all properties of e are needed, but see below the big_distr_big_dep proof
+where most are.
+  rewrite -big_filter; have [e ...] := big_enumP.
+uses big_filter to do this conversion first, and then abstracts the
+resulting filter P (index_enum T) enumeration as an e with the same
+properties (see big_enum_cond below for an example of this usage).
+  Finally
+  rewrite -big_filter; case def_e: _ / big_enumP =&gt; [e ...]
+does the same while remembering the definition of e.
+Lemma big_enumP I P : big_enum_spec P (filter P (index_enum I)).
+Proof.
+set e := filter P _; have Ue: uniq e by apply/filter_uniq/index_enum_uniq.
+have mem_e i: i \in e = P i by rewrite mem_filter mem_index_enum andbT.
+split=&gt; // [R idx op F | cP]; first by rewrite big_filter.
+suffices De: perm_eq e (enum cP) by rewrite (perm_size De) cardE.
+by apply/uniq_perm=&gt; // [|i]; rewrite ?enum_uniq ?mem_enum ?mem_e.
+Qed.
+Section BigConst.
+Variables (R : Type) (idx : R) (op : R -&gt; R -&gt; R).
+Lemma big_const_seq I r (P : pred I) x :
+  \big[op/idx]_(i &lt;- r | P i) x = iter (count P r) (op x) idx.
+Proof. by rewrite unlock; elim: r =&gt; //= i r -&gt;; case: (P i). Qed.
+Lemma big_const (I : finType) (A : {pred I}) x :
+  \big[op/idx]_(i in A) x = iter #|A| (op x) idx.
+Proof.
+by have [e &lt;- _ [_ &lt;-]] := big_enumP A; rewrite big_const_seq count_predT.
+Qed.
+Lemma big_const_nat m n x :
+  \big[op/idx]_(m &lt;= i &lt; n) x = iter (n - m) (op x) idx.
+Proof. by rewrite big_const_seq count_predT size_iota. Qed.
+Lemma big_const_ord n x :
+  \big[op/idx]_(i &lt; n) x = iter n (op x) idx.
+Proof. by rewrite big_const card_ord. Qed.
+End BigConst.
+Section Plain.
+Variable R : Type.
+Variable op : R -&gt; R -&gt; R.
+Variable x : R.
+Lemma big_seq1_id I (i : I) (F : I -&gt; R) :
+  \big[op/x]_(j &lt;- [:: i]) F j = op (F i) x.
+Proof. by rewrite big_cons big_nil. Qed.
+Lemma big_nat1_id n F : \big[op/x]_(n &lt;= i &lt; n.+1) F i = op (F n) x.
+Proof. by rewrite big_ltn // big_geq // mulm1. Qed.
+Lemma big_pred1_eq_id (I : finType) (i : I) F :
+  \big[op/x]_(j | j == i) F j = op (F i) x.
+Proof.
+have [e1 &lt;- _ [e_enum _]] := big_enumP (pred1 i).
+by rewrite (perm_small_eq _ e_enum) enum1 ?big_seq1_id.
+Qed.
+Lemma big_pred1_id (I : finType) i (P : pred I) F :
+  P =1 pred1 i -&gt; \big[op/x]_(j | P j) F j = op (F i) x.
+Proof. by move/(eq_bigl _ _)-&gt;; apply: big_pred1_eq_id. Qed.
+End Plain.
+Section SemiGroupProperties.
+Variable R : Type.
+#[local] Notation opA := SemiGroup.opA.
+#[local] Notation opC := SemiGroup.opC.
+Section Id.
+Variable op : SemiGroup.law R.
+Variable x : R.
+Hypothesis opxx : op x x = x.
+Lemma big_const_idem I (r : seq I) P : \big[op/x]_(i &lt;- r | P i) x = x.
+Proof. by elim/big_ind : _ =&gt; // _ _ -&gt; -&gt;. Qed.
+Lemma big1_idem I r (P : pred I) F :
+  (forall i, P i -&gt; F i = x) -&gt; \big[op/x]_(i &lt;- r | P i) F i = x.
+Proof.
+move=&gt; Fix; under eq_bigr =&gt; ? ? do rewrite Fix//; exact: big_const_idem.
+Qed.
+Lemma big_id_idem I (r : seq I) P F :
+  op (\big[op/x]_(i &lt;- r | P i) F i) x = \big[op/x]_(i &lt;- r | P i) F i.
+Proof. by elim/big_rec : _ =&gt; // ? ? ?; rewrite -opA =&gt; -&gt;. Qed.
+End Id.
+Section Abelian.
+Variable op : SemiGroup.com_law R.
+Let opCA : left_commutative op.
+Proof. by move=&gt; x *; rewrite !opA /= (opC x). Qed.
+Variable x : R.
+Lemma big_rem_AC (I : eqType) (r : seq I) z (P : pred I) F : z \in r -&gt;
+  \big[op/x]_(y &lt;- r | P y) F y
+    = if P z then op (F z) (\big[op/x]_(y &lt;- rem z r | P y) F y)
+      else \big[op/x]_(y &lt;- rem z r | P y) F y.
+Proof.
+elim: r =&gt;// i r ih; rewrite big_cons rem_cons inE =&gt;/predU1P[-&gt; /[!eqxx]//|zr].
+by case: eqP =&gt; [-&gt; //|]; rewrite ih// big_cons; case: ifPn; case: ifPn.
+Qed.
+Lemma big_undup (I : eqType) (r : seq I) (P : pred I) F :
+    idempotent_op op -&gt;
+  \big[op/x]_(i &lt;- undup r | P i) F i = \big[op/x]_(i &lt;- r | P i) F i.
+Proof.
+move=&gt; opxx; rewrite -!(big_filter _ _ _ P) filter_undup.
+elim: {P r}(filter P r) =&gt; //= i r IHr.
+case: ifP =&gt; [r_i | _]; rewrite !big_cons {}IHr //.
+by rewrite (big_rem_AC _ _ r_i) opA /= opxx.
+Qed.
+Lemma perm_big (I : eqType) r1 r2 (P : pred I) F :
+    perm_eq r1 r2 -&gt;
+  \big[op/x]_(i &lt;- r1 | P i) F i = \big[op/x]_(i &lt;- r2 | P i) F i.
+Proof.
+elim: r1 r2 =&gt; [|i r1 IHr1] r2 eq_r12.
+  by case: r2 eq_r12 =&gt; [//|i r2] /[1!perm_sym] /perm_nilP.
+have r2i: i \in r2 by rewrite -has_pred1 has_count -(permP eq_r12) /= eqxx.
+rewrite big_cons (IHr1 (rem i r2)) -?big_rem_AC// -(perm_cons i).
+exact: perm_trans (perm_to_rem _).
+Qed.
+Lemma big_enum_cond (I : finType) (A : {pred I}) (P : pred I) F :
+  \big[op/x]_(i &lt;- enum A | P i) F i = \big[op/x]_(i in A | P i) F i.
+Proof.
+by rewrite -big_filter_cond; have [e _ _ [/perm_big-&gt;]] := big_enumP.
+Qed.
+Lemma big_enum (I : finType) (A : {pred I}) F :
+  \big[op/x]_(i &lt;- enum A) F i = \big[op/x]_(i in A) F i.
+Proof. by rewrite big_enum_cond big_andbC. Qed.
+Lemma big_uniq (I : finType) (r : seq I) F :
+  uniq r -&gt; \big[op/x]_(i &lt;- r) F i = \big[op/x]_(i in r) F i.
+Proof.
+move=&gt; uniq_r; rewrite -big_enum; apply: perm_big.
+by rewrite uniq_perm ?enum_uniq // =&gt; i; rewrite mem_enum.
+Qed.
+Lemma bigD1 (I : finType) j (P : pred I) F :
+  P j -&gt; \big[op/x]_(i | P i) F i
+    = op (F j) (\big[op/x]_(i | P i &amp;&amp; (i != j)) F i).
+Proof.
+rewrite (big_rem_AC _ _ (mem_index_enum j)) =&gt; -&gt;.
+by rewrite rem_filter ?index_enum_uniq// big_filter_cond big_andbC.
+Qed.
+Arguments bigD1 [I] j [P F].
+Lemma bigD1_seq (I : eqType) (r : seq I) j F :
+    j \in r -&gt; uniq r -&gt;
+  \big[op/x]_(i &lt;- r) F i = op (F j) (\big[op/x]_(i &lt;- r | i != j) F i).
+Proof. by move=&gt; /big_rem_AC-&gt; /rem_filter-&gt;; rewrite big_filter. Qed.
+Lemma big_image_cond I (J : finType) (h : J -&gt; I) (A : pred J) (P : pred I) F :
+  \big[op/x]_(i &lt;- [seq h j | j in A] | P i) F i
+     = \big[op/x]_(j in A | P (h j)) F (h j).
+Proof. by rewrite big_map big_enum_cond. Qed.
+Lemma big_image I (J : finType) (h : J -&gt; I) (A : pred J) F :
+  \big[op/x]_(i &lt;- [seq h j | j in A]) F i = \big[op/x]_(j in A) F (h j).
+Proof. by rewrite big_map big_enum. Qed.
+Lemma cardD1x (I : finType) (A : pred I) j :
+  A j -&gt; #|SimplPred A| = 1 + #|[pred i | A i &amp; i != j]|.
+Proof.
+move=&gt; Aj; rewrite (cardD1 j) [j \in A]Aj; congr (_ + _).
+by apply: eq_card =&gt; i; rewrite inE /= andbC.
+Qed.
+Arguments cardD1x [I A].
+Lemma reindex_omap (I J : finType) (h : J -&gt; I) h' (P : pred I) F :
+    (forall i, P i -&gt; omap h (h' i) = some i) -&gt;
+  \big[op/x]_(i | P i) F i =
+    \big[op/x]_(j | P (h j) &amp;&amp; (h' (h j) == some j)) F (h j).
+Proof.
+move=&gt; h'K; have [n lePn] := ubnP #|P|; elim: n =&gt; // n IHn in P h'K lePn *.
+case: (pickP P) =&gt; [i Pi | P0]; last first.
+  by rewrite !big_pred0 // =&gt; j; rewrite P0.
+have := h'K i Pi; case h'i_eq : (h' i) =&gt; [/= j|//] [hj_eq].
+rewrite (bigD1 i Pi) (bigD1 j) hj_eq ?Pi ?h'i_eq ?eqxx //=; congr (op : _ -&gt; _).
+rewrite {}IHn =&gt; [|k /andP[]|]; [|by auto | by rewrite (cardD1x i) in lePn].
+apply: eq_bigl =&gt; k; rewrite andbC -andbA (andbCA (P _)); case: eqP =&gt; //= hK.
+congr (_ &amp;&amp; ~~ _); apply/eqP/eqP =&gt; [|-&gt;//].
+by move=&gt; /(congr1 h'); rewrite h'i_eq hK =&gt; -[].
+Qed.
+Arguments reindex_omap [I J] h h' [P F].
+Lemma reindex_onto (I J : finType) (h : J -&gt; I) h' (P : pred I) F :
+    (forall i, P i -&gt; h (h' i) = i) -&gt;
+  \big[op/x]_(i | P i) F i =
+    \big[op/x]_(j | P (h j) &amp;&amp; (h' (h j) == j)) F (h j).
+Proof.
+by move=&gt; h'K; rewrite (reindex_omap h (some \o h'))//= =&gt; i Pi; rewrite h'K.
+Qed.
+Arguments reindex_onto [I J] h h' [P F].
+Lemma reindex (I J : finType) (h : J -&gt; I) (P : pred I) F :
+    {on [pred i | P i], bijective h} -&gt;
+  \big[op/x]_(i | P i) F i = \big[op/x]_(j | P (h j)) F (h j).
+Proof.
+case=&gt; h' hK h'K; rewrite (reindex_onto h h' h'K).
+by apply: eq_bigl =&gt; j /[!inE]; case Pi: (P _); rewrite //= hK ?eqxx.
+Qed.
+Arguments reindex [I J] h [P F].
+Lemma reindex_inj (I : finType) (h : I -&gt; I) (P : pred I) F :
+  injective h -&gt; \big[op/x]_(i | P i) F i = \big[op/x]_(j | P (h j)) F (h j).
+Proof. by move=&gt; injh; apply: reindex (onW_bij _ (injF_bij injh)). Qed.
+Arguments reindex_inj [I h P F].
+Lemma bigD1_ord n j (P : pred 'I_n) F :
+  P j -&gt; \big[op/x]_(i &lt; n | P i) F i
+    = op (F j) (\big[op/x]_(i &lt; n.-1 | P (lift j i)) F (lift j i)).
+Proof.
+move=&gt; Pj; rewrite (bigD1 j Pj) (reindex_omap (lift j) (unlift j))/=.
+  by under eq_bigl do rewrite liftK eq_sym eqxx neq_lift ?andbT.
+by move=&gt; i; case: unliftP =&gt; [k -&gt;|-&gt;]; rewrite ?eqxx ?andbF.
+Qed.
+Lemma big_enum_val_cond (I : finType) (A : pred I) (P : pred I) F :
+  \big[op/x]_(x in A | P x) F x =
+  \big[op/x]_(i &lt; #|A| | P (enum_val i)) F (enum_val i).
+Proof.
+have [A_eq0|/card_gt0P[x0 x0A]] := posnP #|A|.
+  rewrite !big_pred0 // =&gt; i; last by rewrite card0_eq.
+  by have: false by move: i =&gt; []; rewrite A_eq0.
+rewrite (reindex (enum_val : 'I_#|A| -&gt; I)).
+  by apply: eq_big =&gt; [y|y Py]; rewrite ?enum_valP.
+by apply: subon_bij (enum_val_bij_in x0A) =&gt; y /andP[].
+Qed.
+Arguments big_enum_val_cond [I A] P F.
+Lemma big_enum_rank_cond (I : finType) (A : pred I) z (zA : z \in A) P F
+  (h := enum_rank_in zA) :
+  \big[op/x]_(i &lt; #|A| | P i) F i = \big[op/x]_(s in A | P (h s)) F (h s).
+Proof.
+rewrite big_enum_val_cond {}/h.
+by apply: eq_big =&gt; [i|i Pi]; rewrite ?enum_valK_in.
+Qed.
+Arguments big_enum_rank_cond [I A z] zA P F.
+Lemma big_nat_rev m n P F :
+  \big[op/x]_(m &lt;= i &lt; n | P i) F i
+     = \big[op/x]_(m &lt;= i &lt; n | P (m + n - i.+1)) F (m + n - i.+1).
+Proof.
+case: (ltnP m n) =&gt; ltmn; last by rewrite !big_geq.
+rewrite -{3 4}(subnK (ltnW ltmn)) addnA.
+do 2!rewrite (big_addn _ _ 0) big_mkord; rewrite (reindex_inj rev_ord_inj)/=.
+by apply: eq_big =&gt; [i | i _]; rewrite /= -addSn subnDr addnC addnBA.
+Qed.
+Lemma big_rev_mkord m n P F :
+ \big[op/x]_(m &lt;= k &lt; n | P k) F k
+    = \big[op/x]_(k &lt; n - m | P (n - k.+1)) F (n - k.+1).
+Proof.
+rewrite big_nat_rev (big_addn _ _ 0) big_mkord.
+by apply: eq_big =&gt; [i|i _]; rewrite -addSn addnC subnDr.
+Qed.
+Section Id.
+Hypothesis opxx : op x x = x.
+Lemma big_mkcond_idem I r (P : pred I) F :
+  \big[op/x]_(i &lt;- r | P i) F i = \big[op/x]_(i &lt;- r) (if P i then F i else x).
+Proof.
+elim: r =&gt; [|i r]; rewrite ?(big_nil, big_cons)//.
+by case: ifPn =&gt; Pi -&gt;//; rewrite -[in LHS]big_id_idem // opC.
+Qed.
+Lemma big_mkcondr_idem I r (P Q : pred I) F :
+  \big[op/x]_(i &lt;- r | P i &amp;&amp; Q i) F i =
+    \big[op/x]_(i &lt;- r | P i) (if Q i then F i else x).
+Proof. by rewrite -big_filter_cond big_mkcond_idem big_filter. Qed.
+Lemma big_mkcondl_idem I r (P Q : pred I) F :
+  \big[op/x]_(i &lt;- r | P i &amp;&amp; Q i) F i =
+    \big[op/x]_(i &lt;- r | Q i) (if P i then F i else x).
+Proof. by rewrite big_andbC big_mkcondr_idem. Qed.
+Lemma big_rmcond_idem I (r : seq I) (P : pred I) F :
+  (forall i, ~~ P i -&gt; F i = x) -&gt;
+  \big[op/x]_(i &lt;- r | P i) F i = \big[op/x]_(i &lt;- r) F i.
+Proof.
+move=&gt; F_eq1; rewrite big_mkcond_idem; apply: eq_bigr =&gt; i.
+by case: (P i) (F_eq1 i) =&gt; // -&gt;.
+Qed.
+Lemma big_rmcond_in_idem (I : eqType) (r : seq I) (P : pred I) F :
+  (forall i, i \in r -&gt; ~~ P i -&gt; F i = x) -&gt;
+  \big[op/x]_(i &lt;- r | P i) F i = \big[op/x]_(i &lt;- r) F i.
+Proof.
+move=&gt; F_eq1; rewrite big_seq_cond [RHS]big_seq_cond !big_mkcondl_idem.
+by rewrite big_rmcond_idem =&gt; // i /F_eq1; case: ifP =&gt; // _ -&gt;.
+Qed.
+Lemma big_cat_idem I r1 r2 (P : pred I) F :
+  \big[op/x]_(i &lt;- r1 ++ r2 | P i) F i =
+    op (\big[op/x]_(i &lt;- r1 | P i) F i) (\big[op/x]_(i &lt;- r2 | P i) F i).
+Proof.
+elim: r1 =&gt; [/=|i r1 IHr1]; first by rewrite big_nil opC big_id_idem.
+by rewrite /= big_cons IHr1 big_cons; case: (P i); rewrite // opA.
+Qed.
+Lemma big_allpairs_dep_idem I1 (I2 : I1 -&gt; Type) J (h : forall i1, I2 i1 -&gt; J)
+    (r1 : seq I1) (r2 : forall i1, seq (I2 i1)) (F : J -&gt; R) :
+  \big[op/x]_(i &lt;- [seq h i1 i2 | i1 &lt;- r1, i2 &lt;- r2 i1]) F i =
+    \big[op/x]_(i1 &lt;- r1) \big[op/x]_(i2 &lt;- r2 i1) F (h i1 i2).
+Proof.
+elim: r1 =&gt; [|i1 r1 IHr1]; first by rewrite !big_nil.
+by rewrite big_cat_idem IHr1 big_cons big_map.
+Qed.
+Lemma big_allpairs_idem I1 I2 (r1 : seq I1) (r2 : seq I2) F :
+  \big[op/x]_(i &lt;- [seq (i1, i2) | i1 &lt;- r1, i2 &lt;- r2]) F i =
+    \big[op/x]_(i1 &lt;- r1) \big[op/x]_(i2 &lt;- r2) F (i1, i2).
+Proof. exact: big_allpairs_dep_idem. Qed.
+Lemma big_cat_nat_idem n m p (P : pred nat) F : m &lt;= n -&gt; n &lt;= p -&gt;
+  \big[op/x]_(m &lt;= i &lt; p | P i) F i =
+    op (\big[op/x]_(m &lt;= i &lt; n | P i) F i) (\big[op/x]_(n &lt;= i &lt; p | P i) F i).
+Proof.
+move=&gt; le_mn le_np; rewrite -big_cat_idem -{2}(subnKC le_mn) -iotaD subnDA.
+by rewrite subnKC // leq_sub.
+Qed.
+Lemma big_split_idem I r (P : pred I) F1 F2 :
+  \big[op/x]_(i &lt;- r | P i) op (F1 i) (F2 i) =
+    op (\big[op/x]_(i &lt;- r | P i) F1 i) (\big[op/x]_(i &lt;- r | P i) F2 i).
+Proof.
+by elim/big_rec3: _ =&gt; [|i x' y _ _ -&gt;]; rewrite ?opxx// opCA -!opA opCA.
+Qed.
+Lemma big_id_idem_AC I (r : seq I) P F :
+  \big[op/x]_(i &lt;- r | P i) op (F i) x = \big[op/x]_(i &lt;- r | P i) F i.
+Proof. by rewrite big_split_idem big_const_idem ?big_id_idem. Qed.
+Lemma bigID_idem I r (a P : pred I) F :
+  \big[op/x]_(i &lt;- r | P i) F i =
+    op (\big[op/x]_(i &lt;- r | P i &amp;&amp; a i) F i)
+       (\big[op/x]_(i &lt;- r | P i &amp;&amp; ~~ a i) F i).
+Proof.
+rewrite -big_id_idem_AC big_mkcond_idem !(big_mkcond_idem _ _ F) -big_split_idem.
+by apply: eq_bigr =&gt; i; case: ifPn =&gt; //=; case: ifPn; rewrite // opC.
+Qed.
+Arguments bigID_idem [I r].
+Lemma bigU_idem (I : finType) (A B : pred I) F :
+    [disjoint A &amp; B] -&gt;
+  \big[op/x]_(i in [predU A &amp; B]) F i =
+    op (\big[op/x]_(i in A) F i) (\big[op/x]_(i in B) F i).
+Proof.
+move=&gt; dAB; rewrite (bigID_idem (mem A)).
+congr (op : _ -&gt; _); apply: eq_bigl =&gt; i; first by rewrite orbK.
+by have:= pred0P dAB i; rewrite andbC /= !inE; case: (i \in A).
+Qed.
+Lemma partition_big_idem I (s : seq I)
+      (J : finType) (P : pred I) (p : I -&gt; J) (Q : pred J) F :
+  (forall i, P i -&gt; Q (p i)) -&gt;
+  \big[op/x]_(i &lt;- s | P i) F i =
+  \big[op/x]_(j : J | Q j) \big[op/x]_(i &lt;- s | (P i) &amp;&amp; (p i == j)) F i.
+Proof.
+move=&gt; Qp; transitivity (\big[op/x]_(i &lt;- s | P i &amp;&amp; Q (p i)) F i).
+  by apply: eq_bigl =&gt; i; case Pi: (P i); rewrite // Qp.
+have [n leQn] := ubnP #|Q|; elim: n =&gt; // n IHn in Q {Qp} leQn *.
+case: (pickP Q) =&gt; [j Qj | Q0]; last first.
+  by rewrite !big_pred0 // =&gt; i; rewrite Q0 andbF.
+rewrite (bigD1 j) // -IHn; last by rewrite ltnS (cardD1x j Qj) in leQn.
+rewrite (bigID_idem (fun i =&gt; p i == j)).
+congr (op : _ -&gt; _); apply: eq_bigl =&gt; i; last by rewrite andbA.
+by case: eqP =&gt; [-&gt;|_]; rewrite !(Qj, andbT, andbF).
+Qed.
+Arguments partition_big_idem [I s J P] p Q [F].
+Lemma sig_big_dep_idem (I : finType) (J : I -&gt; finType)
+    (P : pred I) (Q : forall {i}, pred (J i)) (F : forall {i}, J i -&gt; R) :
+  \big[op/x]_(i | P i) \big[op/x]_(j : J i | Q j) F j =
+  \big[op/x]_(p : {i : I &amp; J i} | P (tag p) &amp;&amp; Q (tagged p)) F (tagged p).
+Proof.
+pose s := [seq Tagged J j | i &lt;- index_enum I, j &lt;- index_enum (J i)].
+rewrite [LHS]big_mkcond_idem big_mkcondl_idem.
+rewrite [RHS]big_mkcond_idem -[RHS](@perm_big _ s).
+  rewrite big_allpairs_dep_idem/=; apply: eq_bigr =&gt; i _.
+  by rewrite -big_mkcond_idem/=; case: P; rewrite // big1_idem.
+rewrite uniq_perm ?index_enum_uniq//.
+  by rewrite allpairs_uniq_dep// =&gt; [|i|[i j] []]; rewrite ?index_enum_uniq.
+by move=&gt; [i j]; rewrite ?mem_index_enum; apply/allpairsPdep; exists i, j.
+Qed.
+Lemma pair_big_dep_idem (I J : finType) (P : pred I) (Q : I -&gt; pred J) F :
+  \big[op/x]_(i | P i) \big[op/x]_(j | Q i j) F i j =
+    \big[op/x]_(p | P p.1 &amp;&amp; Q p.1 p.2) F p.1 p.2.
+Proof.
+rewrite sig_big_dep_idem; apply: (reindex (fun x =&gt; Tagged (fun=&gt; J) x.2)).
+by exists (fun x =&gt; (projT1 x, projT2 x)) =&gt; -[].
+Qed.
+Lemma pair_big_idem (I J : finType) (P : pred I) (Q : pred J) F :
+  \big[op/x]_(i | P i) \big[op/x]_(j | Q j) F i j =
+    \big[op/x]_(p | P p.1 &amp;&amp; Q p.2) F p.1 p.2.
+Proof. exact: pair_big_dep_idem. Qed.
+Lemma pair_bigA_idem (I J : finType) (F : I -&gt; J -&gt; R) :
+  \big[op/x]_i \big[op/x]_j F i j = \big[op/x]_p F p.1 p.2.
+Proof. exact: pair_big_dep_idem. Qed.
+Lemma exchange_big_dep_idem I J rI rJ (P : pred I) (Q : I -&gt; pred J)
+                       (xQ : pred J) F :
+    (forall i j, P i -&gt; Q i j -&gt; xQ j) -&gt;
+  \big[op/x]_(i &lt;- rI | P i) \big[op/x]_(j &lt;- rJ | Q i j) F i j =
+    \big[op/x]_(j &lt;- rJ | xQ j) \big[op/x]_(i &lt;- rI | P i &amp;&amp; Q i j) F i j.
+Proof.
+move=&gt; PQxQ; pose p u := (u.2, u.1).
+under [LHS]eq_bigr do rewrite big_tnth; rewrite [LHS]big_tnth.
+under [RHS]eq_bigr do rewrite big_tnth; rewrite [RHS]big_tnth.
+rewrite !pair_big_dep_idem (reindex_onto (p _ _) (p _ _)) =&gt; [|[]] //=.
+apply: eq_big =&gt; [] [j i] //=; symmetry; rewrite eqxx andbT andb_idl //.
+by case/andP; apply: PQxQ.
+Qed.
+Arguments exchange_big_dep_idem [I J rI rJ P Q] xQ [F].
+Lemma exchange_big_idem I J rI rJ (P : pred I) (Q : pred J) F :
+  \big[op/x]_(i &lt;- rI | P i) \big[op/x]_(j &lt;- rJ | Q j) F i j =
+    \big[op/x]_(j &lt;- rJ | Q j) \big[op/x]_(i &lt;- rI | P i) F i j.
+Proof.
+rewrite (exchange_big_dep_idem Q) //.
+by under eq_bigr =&gt; i Qi do under eq_bigl do rewrite Qi andbT.
+Qed.
+Lemma exchange_big_dep_nat_idem m1 n1 m2 n2 (P : pred nat) (Q : rel nat)
+                           (xQ : pred nat) F :
+    (forall i j, m1 &lt;= i &lt; n1 -&gt; m2 &lt;= j &lt; n2 -&gt; P i -&gt; Q i j -&gt; xQ j) -&gt;
+  \big[op/x]_(m1 &lt;= i &lt; n1 | P i) \big[op/x]_(m2 &lt;= j &lt; n2 | Q i j) F i j =
+    \big[op/x]_(m2 &lt;= j &lt; n2 | xQ j)
+       \big[op/x]_(m1 &lt;= i &lt; n1 | P i &amp;&amp; Q i j) F i j.
+Proof.
+move=&gt; PQxQ; under eq_bigr do rewrite big_seq_cond.
+rewrite big_seq_cond /= (exchange_big_dep_idem xQ) =&gt; [|i j]; last first.
+  by rewrite !mem_index_iota =&gt; /andP[mn_i Pi] /andP[mn_j /PQxQ-&gt;].
+rewrite 2!(big_seq_cond _ _ _ xQ); apply: eq_bigr =&gt; j /andP[-&gt; _] /=.
+by rewrite [rhs in _ = rhs]big_seq_cond; apply: eq_bigl =&gt; i; rewrite -andbA.
+Qed.
+Arguments exchange_big_dep_nat_idem [m1 n1 m2 n2 P Q] xQ [F].
+Lemma exchange_big_nat_idem m1 n1 m2 n2 (P Q : pred nat) F :
+  \big[op/x]_(m1 &lt;= i &lt; n1 | P i) \big[op/x]_(m2 &lt;= j &lt; n2 | Q j) F i j =
+    \big[op/x]_(m2 &lt;= j &lt; n2 | Q j) \big[op/x]_(m1 &lt;= i &lt; n1 | P i) F i j.
+Proof.
+rewrite (exchange_big_dep_nat_idem Q) //.
+by under eq_bigr =&gt; i Qi do under eq_bigl do rewrite Qi andbT.
+Qed.
+End Id.
+End Abelian.
+End SemiGroupProperties.
+Arguments big_undup [R op x I].
+Arguments perm_big [R op x I r1 r2].
+Arguments bigD1 [R op x I] j [P F].
+Arguments reindex_omap [R op x I J] h h' [P F].
+Arguments reindex_onto [R op x I J] h h' [P F].
+Arguments reindex [R op x I J] h [P F].
+Arguments reindex_inj [R op x I h P F].
+Arguments big_enum_val_cond [R op x I A] P F.
+Arguments big_enum_rank_cond [R op x I A z] zA P F.
+Section MonoidProperties.
+Import Monoid.Theory.
+Variable R : Type.
+Variable idx : R.
+Local Notation "1" := idx.
+Section Plain.
+Variable op : Monoid.law 1.
+Local Notation "*%M" := op.
+Local Notation "x * y" := (op x y).
+Lemma foldlE x r : foldl *%M x r = \big[*%M/1]_(y &lt;- x :: r) y.
+Proof.
+by rewrite -foldrE; elim: r =&gt; [|y r IHr]/= in x *; rewrite ?mulm1 ?mulmA ?IHr.
+Qed.
+Lemma foldl_idx r : foldl *%M 1 r = \big[*%M/1]_(x &lt;- r) x.
+Proof. by rewrite foldlE big_cons mul1m. Qed.
+Lemma eq_big_idx_seq idx' I r (P : pred I) F :
+     right_id idx' *%M -&gt; has P r -&gt;
+   \big[*%M/idx']_(i &lt;- r | P i) F i = \big[*%M/1]_(i &lt;- r | P i) F i.
+Proof.
+move=&gt; op_idx'; rewrite -!(big_filter _ _ r) has_count -size_filter.
+case/lastP: (filter P r) =&gt; {r}// r i _.
+by rewrite -cats1 !(big_cat_nested, big_cons, big_nil) op_idx' mulm1.
+Qed.
+Lemma eq_big_idx idx' (I : finType) i0 (P : pred I) F :
+     P i0 -&gt; right_id idx' *%M -&gt;
+  \big[*%M/idx']_(i | P i) F i = \big[*%M/1]_(i | P i) F i.
+Proof.
+by move=&gt; Pi0 op_idx'; apply: eq_big_idx_seq =&gt; //; apply/hasP; exists i0.
+Qed.
+Lemma big_change_idx I x r (P : pred I) F :
+  \big[*%M/x]_(j &lt;- r | P j) F j = (\big[*%M/1]_(j &lt;- r | P j) F j) * x.
+Proof.
+elim: r =&gt; [|i r]; rewrite ?(big_nil, big_cons, mul1m)// =&gt; -&gt;.
+by case: ifP =&gt; // Pi; rewrite mulmA.
+Qed.
+Lemma big1_eq I r (P : pred I) : \big[*%M/1]_(i &lt;- r | P i) 1 = 1.
+Proof. by rewrite big1_idem //= mul1m. Qed.
+Lemma big1 I r (P : pred I) F :
+  (forall i, P i -&gt; F i = 1) -&gt; \big[*%M/1]_(i &lt;- r | P i) F i = 1.
+Proof. by move/(eq_bigr _)-&gt;; apply: big1_eq. Qed.
+Lemma big1_seq (I : eqType) r (P : pred I) F :
+    (forall i, P i &amp;&amp; (i \in r) -&gt; F i = 1) -&gt;
+  \big[*%M/1]_(i &lt;- r | P i) F i = 1.
+Proof. by move=&gt; eqF1; rewrite big_seq_cond big_andbC big1. Qed.
+Lemma big_seq1 I (i : I) F : \big[*%M/1]_(j &lt;- [:: i]) F j = F i.
+Proof. by rewrite big_seq1_id mulm1. Qed.
+Lemma big_rcons I i r (P : pred I) F :
+  \big[*%M/1]_(j &lt;- rcons r i | P j) F j =
+  (\big[*%M/1]_(j &lt;- r | P j) F j) * (if P i then F i else idx).
+Proof. by rewrite big_rcons_op big_change_idx mulm1. Qed.
+Lemma big_mkcond I r (P : pred I) F :
+  \big[*%M/1]_(i &lt;- r | P i) F i =
+     \big[*%M/1]_(i &lt;- r) (if P i then F i else 1).
+Proof. by rewrite unlock; elim: r =&gt; //= i r -&gt;; case P; rewrite ?mul1m. Qed.
+Lemma big_mkcondr I r (P Q : pred I) F :
+  \big[*%M/1]_(i &lt;- r | P i &amp;&amp; Q i) F i =
+     \big[*%M/1]_(i &lt;- r | P i) (if Q i then F i else 1).
+Proof. by rewrite -big_filter_cond big_mkcond big_filter. Qed.
+Lemma big_mkcondl I r (P Q : pred I) F :
+  \big[*%M/1]_(i &lt;- r | P i &amp;&amp; Q i) F i =
+     \big[*%M/1]_(i &lt;- r | Q i) (if P i then F i else 1).
+Proof. by rewrite big_andbC big_mkcondr. Qed.
+Lemma big_rmcond I (r : seq I) (P : pred I) F :
+  (forall i, ~~ P i -&gt; F i = 1) -&gt;
+  \big[*%M/1]_(i &lt;- r | P i) F i = \big[*%M/1]_(i &lt;- r) F i.
+Proof.
+move=&gt; F_eq1; rewrite big_mkcond; apply: eq_bigr =&gt; i.
+by case: (P i) (F_eq1 i) =&gt; // -&gt;.
+Qed.
+Lemma big_rmcond_in (I : eqType) (r : seq I) (P : pred I) F :
+  (forall i, i \in r -&gt; ~~ P i -&gt; F i = 1) -&gt;
+  \big[*%M/1]_(i &lt;- r | P i) F i = \big[*%M/1]_(i &lt;- r) F i.
+Proof.
+move=&gt; F_eq1; rewrite big_seq_cond [RHS]big_seq_cond !big_mkcondl big_rmcond//.
+by move=&gt; i /F_eq1; case: ifP =&gt; // _ -&gt;.
+Qed.
+Lemma big_cat I r1 r2 (P : pred I) F :
+  \big[*%M/1]_(i &lt;- r1 ++ r2 | P i) F i =
+     \big[*%M/1]_(i &lt;- r1 | P i) F i * \big[*%M/1]_(i &lt;- r2 | P i) F i.
+Proof.
+rewrite !(big_mkcond _ P) unlock.
+by elim: r1 =&gt; /= [|i r1 -&gt;]; rewrite (mul1m, mulmA).
+Qed.
+Lemma big_allpairs_dep I1 (I2 : I1 -&gt; Type) J (h : forall i1, I2 i1 -&gt; J)
+    (r1 : seq I1) (r2 : forall i1, seq (I2 i1)) (F : J -&gt; R) :
+  \big[*%M/1]_(i &lt;- [seq h i1 i2 | i1 &lt;- r1, i2 &lt;- r2 i1]) F i =
+    \big[*%M/1]_(i1 &lt;- r1) \big[*%M/1]_(i2 &lt;- r2 i1) F (h i1 i2).
+Proof.
+elim: r1 =&gt; [|i1 r1 IHr1]; first by rewrite !big_nil.
+by rewrite big_cat IHr1 big_cons big_map.
+Qed.
+Lemma big_allpairs I1 I2 (r1 : seq I1) (r2 : seq I2) F :
+  \big[*%M/1]_(i &lt;- [seq (i1, i2) | i1 &lt;- r1, i2 &lt;- r2]) F i =
+    \big[*%M/1]_(i1 &lt;- r1) \big[op/idx]_(i2 &lt;- r2) F (i1, i2).
+Proof. exact: big_allpairs_dep. Qed.
+Lemma rev_big_rev I (r : seq I) P F :
+  \big[*%M/1]_(i &lt;- rev r | P i) F i =
+  \big[(fun x y =&gt; y * x)/1]_(i &lt;- r | P i) F i.
+Proof.
+elim: r =&gt; [|i r IHr]; rewrite ?big_nil// big_cons rev_cons big_rcons IHr.
+by case: (P i); rewrite ?mulm1.
+Qed.
+Lemma big_only1 (I : finType) (i : I) (P : pred I) (F : I -&gt; R) : P i -&gt;
+    (forall j, j != i -&gt; P j -&gt; F j = idx) -&gt;
+  \big[op/idx]_(j | P j) F j = F i.
+Proof.
+move=&gt; Pi Fisx; have := index_enum_uniq I.
+have : i \in index_enum I by rewrite mem_index_enum.
+elim: index_enum =&gt; //= j r IHr /[!inE]; case: eqVneq =&gt; [&lt;-|nij]//=.
+  move=&gt; _ /andP[iNr runiq]; rewrite big_cons/= Pi big1_seq ?Monoid.mulm1//.
+  by move=&gt; {}j /andP[/Fisx + jr] =&gt; -&gt;//; apply: contraNneq iNr =&gt; &lt;-.
+move=&gt; ir /andP[jNr runiq]; rewrite big_cons IHr//.
+by case: ifPn =&gt; // /Fisx-&gt;; rewrite 1?eq_sym// Monoid.mul1m.
+Qed.
+Lemma big_pred1_eq (I : finType) (i : I) F : \big[*%M/1]_(j | j == i) F j = F i.
+Proof. by rewrite (@big_only1 _ i)// =&gt; j /negPf-&gt;. Qed.
+Lemma big_pred1 (I : finType) i (P : pred I) F :
+  P =1 pred1 i -&gt; \big[*%M/1]_(j | P j) F j = F i.
+Proof. by move/(eq_bigl _ _)-&gt;; apply: big_pred1_eq. Qed.
+Lemma big_ord1 F : \big[op/idx]_(i &lt; 1) F i = F ord0.
+Proof. by rewrite big_ord_recl big_ord0 Monoid.mulm1. Qed.
+Lemma big_ord1_cond P F :
+  \big[op/idx]_(i &lt; 1 | P i) F i = if P ord0 then F ord0 else idx.
+Proof. by rewrite big_mkcond big_ord1. Qed.
+Lemma big_ord1_eq (F : nat -&gt; R) i n :
+  \big[op/idx]_(j &lt; n | j == i :&gt; nat) F j = if i &lt; n then F i else idx.
+Proof.
+case: ltnP =&gt; [i_lt|i_ge]; first by rewrite (big_pred1_eq (Ordinal _)).
+by rewrite big_pred0// =&gt; j; apply: contra_leqF i_ge =&gt; /eqP &lt;-.
+Qed.
+Lemma big_ord1_cond_eq (F : nat -&gt; R) (P : pred nat) i n :
+  \big[op/idx]_(j &lt; n | P j &amp;&amp; (j == i :&gt; nat)) F j =
+    if (i &lt; n) &amp;&amp; P i then F i else idx.
+Proof.
+by rewrite big_mkcondl if_and (big_ord1_eq (fun j =&gt; if P j then F j else _)).
+Qed.
+Lemma big_cat_nat n m p (P : pred nat) F : m &lt;= n -&gt; n &lt;= p -&gt;
+  \big[*%M/1]_(m &lt;= i &lt; p | P i) F i =
+   (\big[*%M/1]_(m &lt;= i &lt; n | P i) F i) * (\big[*%M/1]_(n &lt;= i &lt; p | P i) F i).
+Proof.
+move=&gt; le_mn le_np; rewrite -big_cat -{2}(subnKC le_mn) -iotaD subnDA.
+by rewrite subnKC // leq_sub.
+Qed.
+Lemma big_nat_widenl (m1 m2 n : nat) (P : pred nat) F :
+  m2 &lt;= m1 -&gt;
+  \big[op/idx]_(m1 &lt;= i &lt; n | P i) F i =
+  \big[op/idx]_(m2 &lt;= i &lt; n | P i &amp;&amp; (m1 &lt;= i)) F i.
+Proof.
+move=&gt; le_m21; have [le_nm1|lt_m1n] := leqP n m1.
+  rewrite big_geq// big_nat_cond big1//.
+  by move=&gt; i /and3P[/andP[_ /leq_trans/(_ le_nm1)/ltn_geF-&gt;]].
+rewrite big_mkcond big_mkcondl (big_cat_nat _ _ le_m21) 1?ltnW//.
+rewrite [X in op X]big_nat_cond [X in op X]big_pred0; last first.
+  by move=&gt; k; case: ltnP; rewrite andbF.
+by rewrite Monoid.mul1m; apply: congr_big_nat =&gt; // k /andP[].
+Qed.
+Lemma big_geq_mkord (m n : nat) (P : pred nat) F :
+  \big[op/idx]_(m &lt;= i &lt; n | P i) F i =
+  \big[op/idx]_(i &lt; n | P i &amp;&amp; (m &lt;= i)) F i.
+Proof. by rewrite (@big_nat_widenl _ 0)// big_mkord. Qed.
+Lemma big_nat1_eq (F : nat -&gt; R) i m n :
+  \big[op/idx]_(m &lt;= j &lt; n | j == i) F j = if m &lt;= i &lt; n then F i else idx.
+Proof. by rewrite big_geq_mkord big_andbC big_ord1_cond_eq andbC. Qed.
+Lemma big_nat1_cond_eq (F : nat -&gt; R) (P : pred nat) i m n :
+  \big[op/idx]_(m &lt;= j &lt; n | P j &amp;&amp; (j == i)) F j =
+    if (m &lt;= i &lt; n) &amp;&amp; P i then F i else idx.
+Proof. by rewrite big_mkcondl big_nat1_eq -if_and. Qed.
+Lemma big_nat1 n F : \big[*%M/1]_(n &lt;= i &lt; n.+1) F i = F n.
+Proof. by rewrite big_ltn // big_geq // mulm1. Qed.
+Lemma big_nat_recr n m F : m &lt;= n -&gt;
+  \big[*%M/1]_(m &lt;= i &lt; n.+1) F i = (\big[*%M/1]_(m &lt;= i &lt; n) F i) * F n.
+Proof. by move=&gt; lemn; rewrite (@big_cat_nat n) ?leqnSn // big_nat1. Qed.
+Lemma big_nat_mul n k F :
+  \big[*%M/1]_(0 &lt;= i &lt; n * k) F i =
+  \big[*%M/1]_(0 &lt;= i &lt; n) \big[*%M/1]_(i * k &lt;= j &lt; i.+1 * k) F j.
+Proof.
+elim: n =&gt; [|n ih]; first by rewrite mul0n 2!big_nil.
+rewrite [in RHS]big_nat_recr//= -ih mulSn addnC [in LHS]/index_iota subn0 iotaD.
+rewrite big_cat /= [in X in _ = X * _]/index_iota subn0; congr (_ * _).
+by rewrite add0n /index_iota (addnC _ k) addnK.
+Qed.
+Lemma big_ord_recr n F :
+  \big[*%M/1]_(i &lt; n.+1) F i =
+     (\big[*%M/1]_(i &lt; n) F (widen_ord (leqnSn n) i)) * F ord_max.
+Proof.
+transitivity (\big[*%M/1]_(0 &lt;= i &lt; n.+1) F (inord i)).
+  by rewrite big_mkord; apply: eq_bigr=&gt; i _; rewrite inord_val.
+rewrite big_nat_recr // big_mkord; congr (_ * F _); last first.
+  by apply: val_inj; rewrite /= inordK.
+by apply: eq_bigr =&gt; [] i _; congr F; apply: ord_inj; rewrite inordK //= leqW.
+Qed.
+Lemma big_sumType (I1 I2 : finType) (P : pred (I1 + I2)) F :
+  \big[*%M/1]_(i | P i) F i =
+        (\big[*%M/1]_(i | P (inl _ i)) F (inl _ i))
+      * (\big[*%M/1]_(i | P (inr _ i)) F (inr _ i)).
+Proof.
+by rewrite ![index_enum _]unlock [@Finite.enum in LHS]unlock/= big_cat !big_map.
+Qed.
+Lemma big_split_ord m n (P : pred 'I_(m + n)) F :
+  \big[*%M/1]_(i | P i) F i =
+        (\big[*%M/1]_(i | P (lshift n i)) F (lshift n i))
+      * (\big[*%M/1]_(i | P (rshift m i)) F (rshift m i)).
+Proof.
+rewrite -(big_map _ _ (lshift n) _ P F) -(big_map _ _ (@rshift m _) _ P F).
+rewrite -big_cat; congr bigop; apply: (inj_map val_inj).
+rewrite map_cat -!map_comp (map_comp (addn m)) /=.
+by rewrite ![index_enum _]unlock unlock !val_ord_enum -iotaDl addn0 iotaD.
+Qed.
+Lemma big_flatten I rr (P : pred I) F :
+  \big[*%M/1]_(i &lt;- flatten rr | P i) F i
+    = \big[*%M/1]_(r &lt;- rr) \big[*%M/1]_(i &lt;- r | P i) F i.
+Proof.
+by elim: rr =&gt; [|r rr IHrr]; rewrite ?big_nil //= big_cat big_cons -IHrr.
+Qed.
+Lemma big_pmap J I (h : J -&gt; option I) (r : seq J) F :
+  \big[op/idx]_(i &lt;- pmap h r) F i = \big[op/idx]_(j &lt;- r) oapp F idx (h j).
+Proof.
+elim: r =&gt; [| r0 r IHr]/=; first by rewrite !big_nil.
+rewrite /= big_cons; case: (h r0) =&gt; [i|] /=; last by rewrite mul1m.
+by rewrite big_cons IHr.
+Qed.
+Lemma telescope_big (f : nat -&gt; nat -&gt; R) (n m : nat) :
+  (forall k, n &lt; k &lt; m -&gt; op (f n k) (f k k.+1) = f n k.+1) -&gt;
+  \big[op/idx]_(n &lt;= i &lt; m) f i i.+1 = if n &lt; m then f n m else idx.
+Proof.
+elim: m =&gt; [//| m IHm]; first by rewrite ltn0 big_geq.
+move=&gt; tm; rewrite ltnS; case: ltnP=&gt; // mn; first by rewrite big_geq.
+rewrite big_nat_recr// IHm//; last first.
+  by move=&gt; k /andP[nk /ltnW nm]; rewrite tm// nk.
+by case: ltngtP mn=&gt; //= [nm|&lt;-]; rewrite ?mul1m// tm// nm leqnn.
+Qed.
+End Plain.
+Section Abelian.
+Variable op : Monoid.com_law 1.
+Local Notation "'*%M'" := op.
+Local Notation "x * y" := (op x y).
+Lemma big_rem (I : eqType) r x (P : pred I) F :
+    x \in r -&gt;
+  \big[*%M/1]_(y &lt;- r | P y) F y
+    = (if P x then F x else 1) * \big[*%M/1]_(y &lt;- rem x r | P y) F y.
+Proof.
+by move/perm_to_rem/(perm_big _)-&gt;; rewrite !(big_mkcond _ _ P) big_cons.
+Qed.
+Lemma big_rev I (r : seq I) P F :
+  \big[*%M/1]_(i &lt;- rev r | P i) F i = \big[*%M/1]_(i &lt;- r | P i) F i.
+Proof.
+by rewrite rev_big_rev; apply: (eq_big_op (fun=&gt; True)) =&gt; // *; apply: mulmC.
+Qed.
+Lemma eq_big_idem (I : eqType) (r1 r2 : seq I) (P : pred I) F :
+    idempotent_op *%M -&gt; r1 =i r2 -&gt;
+  \big[*%M/1]_(i &lt;- r1 | P i) F i = \big[*%M/1]_(i &lt;- r2 | P i) F i.
+Proof.
+move=&gt; idM eq_r; rewrite -big_undup // -(big_undup r2) //; apply/perm_big.
+by rewrite uniq_perm ?undup_uniq // =&gt; i; rewrite !mem_undup eq_r.
+Qed.
+Lemma big_undup_iterop_count (I : eqType) (r : seq I) (P : pred I) F :
+  \big[*%M/1]_(i &lt;- undup r | P i) iterop (count_mem i r) *%M (F i) 1
+    = \big[*%M/1]_(i &lt;- r | P i) F i.
+Proof.
+rewrite -[RHS](perm_big _ F (perm_count_undup _)) big_flatten big_map.
+by rewrite [LHS]big_mkcond; apply: eq_bigr=&gt; i _; rewrite big_nseq_cond iteropE.
+Qed.
+Lemma big_split I r (P : pred I) F1 F2 :
+  \big[*%M/1]_(i &lt;- r | P i) (F1 i * F2 i) =
+    \big[*%M/1]_(i &lt;- r | P i) F1 i * \big[*%M/1]_(i &lt;- r | P i) F2 i.
+Proof. exact/big_split_idem/mul1m. Qed.
+Lemma bigID I r (a P : pred I) F :
+  \big[*%M/1]_(i &lt;- r | P i) F i =
+    \big[*%M/1]_(i &lt;- r | P i &amp;&amp; a i) F i *
+    \big[*%M/1]_(i &lt;- r | P i &amp;&amp; ~~ a i) F i.
+Proof. exact/bigID_idem/mul1m. Qed.
+Arguments bigID [I r].
+Lemma big_if I r (P Q : pred I) F G :
+  \big[*%M/1]_(i &lt;- r | P i) (if Q i then F i else G i) =
+    \big[*%M/1]_(i &lt;- r | P i &amp;&amp; Q i) F i *
+    \big[*%M/1]_(i &lt;- r | P i &amp;&amp; ~~ Q i) G i.
+Proof.
+rewrite (bigID Q); congr (_ * _); apply: eq_bigr =&gt; i /andP[_].
+  by move=&gt; -&gt;.
+by move=&gt; /negPf -&gt;.
+Qed.
+Lemma bigU (I : finType) (A B : pred I) F :
+    [disjoint A &amp; B] -&gt;
+  \big[*%M/1]_(i in [predU A &amp; B]) F i =
+    (\big[*%M/1]_(i in A) F i) * (\big[*%M/1]_(i in B) F i).
+Proof. exact/bigU_idem/mul1m. Qed.
+Lemma partition_big I (s : seq I)
+      (J : finType) (P : pred I) (p : I -&gt; J) (Q : pred J) F :
+  (forall i, P i -&gt; Q (p i)) -&gt;
+  \big[*%M/1]_(i &lt;- s | P i) F i =
+  \big[*%M/1]_(j : J | Q j) \big[*%M/1]_(i &lt;- s | (P i) &amp;&amp; (p i == j)) F i.
+Proof.
+move=&gt; Qp; transitivity (\big[*%M/1]_(i &lt;- s | P i &amp;&amp; Q (p i)) F i).
+  by apply: eq_bigl =&gt; i; case Pi: (P i); rewrite // Qp.
+have [n leQn] := ubnP #|Q|; elim: n =&gt; // n IHn in Q {Qp} leQn *.
+case: (pickP Q) =&gt; [j Qj | Q0]; last first.
+  by rewrite !big_pred0 // =&gt; i; rewrite Q0 andbF.
+rewrite (bigD1 j) // -IHn; last by rewrite ltnS (cardD1x Qj) in leQn.
+rewrite (bigID (fun i =&gt; p i == j)); congr (_ * _); apply: eq_bigl =&gt; i.
+  by case: eqP =&gt; [-&gt; | _]; rewrite !(Qj, simpm).
+by rewrite andbA.
+Qed.
+Arguments partition_big [I s J P] p Q [F].
+Lemma big_enum_val (I : finType) (A : pred I) F :
+  \big[op/idx]_(x in A) F x = \big[op/idx]_(i &lt; #|A|) F (enum_val i).
+Proof. by rewrite -(big_enum_val_cond predT) big_mkcondr. Qed.
+Arguments big_enum_val [I A] F.
+Lemma big_enum_rank (I : finType) (A : pred I) x (xA : x \in A) F
+  (h := enum_rank_in xA) :
+  \big[op/idx]_(i &lt; #|A|) F i = \big[op/idx]_(s in A) F (h s).
+Proof. by rewrite (big_enum_rank_cond xA) big_mkcondr. Qed.
+Arguments big_enum_rank [I A x] xA F.
+Lemma big_sub_cond (I : finType) (A P : {pred I}) (F : I -&gt; R) :
+  \big[*%M/1]_(i in A | P i) F i =
+  \big[*%M/1]_(x : {x in A} | P (val x)) F (val x).
+Proof.
+rewrite (reindex_omap (val : {x in A} -&gt; I) insub); last first.
+  by move=&gt; i /andP[iA Pi]; rewrite insubT.
+by apply: eq_bigl=&gt; -[i iA]/=; rewrite insubT ?iA /= eqxx andbT.
+Qed.
+Lemma big_sub (I : finType) (A : {pred I}) (F : I -&gt; R) :
+  \big[*%M/1]_(i in A) F i = \big[*%M/1]_(x : {x in A}) F (val x).
+Proof. by rewrite -(big_sub_cond A xpredT) big_mkcondr. Qed.
+Lemma sig_big_dep (I : finType) (J : I -&gt; finType)
+    (P : pred I) (Q : forall {i}, pred (J i)) (F : forall {i}, J i -&gt; R) :
+  \big[op/idx]_(i | P i) \big[op/idx]_(j : J i | Q j) F j =
+  \big[op/idx]_(p : {i : I &amp; J i} | P (tag p) &amp;&amp; Q (tagged p)) F (tagged p).
+Proof. exact/sig_big_dep_idem/mul1m. Qed.
+Lemma pair_big_dep (I J : finType) (P : pred I) (Q : I -&gt; pred J) F :
+  \big[*%M/1]_(i | P i) \big[*%M/1]_(j | Q i j) F i j =
+    \big[*%M/1]_(p | P p.1 &amp;&amp; Q p.1 p.2) F p.1 p.2.
+Proof. exact/pair_big_dep_idem/mul1m. Qed.
+Lemma pair_big (I J : finType) (P : pred I) (Q : pred J) F :
+  \big[*%M/1]_(i | P i) \big[*%M/1]_(j | Q j) F i j =
+    \big[*%M/1]_(p | P p.1 &amp;&amp; Q p.2) F p.1 p.2.
+Proof. exact/pair_big_idem/mul1m. Qed.
+Lemma pair_bigA (I J : finType) (F : I -&gt; J -&gt; R) :
+  \big[*%M/1]_i \big[*%M/1]_j F i j = \big[*%M/1]_p F p.1 p.2.
+Proof. exact/pair_bigA_idem/mul1m. Qed.
+Lemma exchange_big_dep I J rI rJ (P : pred I) (Q : I -&gt; pred J)
+                       (xQ : pred J) F :
+    (forall i j, P i -&gt; Q i j -&gt; xQ j) -&gt;
+  \big[*%M/1]_(i &lt;- rI | P i) \big[*%M/1]_(j &lt;- rJ | Q i j) F i j =
+    \big[*%M/1]_(j &lt;- rJ | xQ j) \big[*%M/1]_(i &lt;- rI | P i &amp;&amp; Q i j) F i j.
+Proof. exact/exchange_big_dep_idem/mul1m. Qed.
+Arguments exchange_big_dep [I J rI rJ P Q] xQ [F].
+Lemma exchange_big I J rI rJ (P : pred I) (Q : pred J) F :
+  \big[*%M/1]_(i &lt;- rI | P i) \big[*%M/1]_(j &lt;- rJ | Q j) F i j =
+    \big[*%M/1]_(j &lt;- rJ | Q j) \big[*%M/1]_(i &lt;- rI | P i) F i j.
+Proof. exact/exchange_big_idem/mul1m. Qed.
+Lemma exchange_big_dep_nat m1 n1 m2 n2 (P : pred nat) (Q : rel nat)
+                           (xQ : pred nat) F :
+    (forall i j, m1 &lt;= i &lt; n1 -&gt; m2 &lt;= j &lt; n2 -&gt; P i -&gt; Q i j -&gt; xQ j) -&gt;
+  \big[*%M/1]_(m1 &lt;= i &lt; n1 | P i) \big[*%M/1]_(m2 &lt;= j &lt; n2 | Q i j) F i j =
+    \big[*%M/1]_(m2 &lt;= j &lt; n2 | xQ j)
+       \big[*%M/1]_(m1 &lt;= i &lt; n1 | P i &amp;&amp; Q i j) F i j.
+Proof. exact/exchange_big_dep_nat_idem/mul1m. Qed.
+Arguments exchange_big_dep_nat [m1 n1 m2 n2 P Q] xQ [F].
+Lemma exchange_big_nat m1 n1 m2 n2 (P Q : pred nat) F :
+  \big[*%M/1]_(m1 &lt;= i &lt; n1 | P i) \big[*%M/1]_(m2 &lt;= j &lt; n2 | Q j) F i j =
+    \big[*%M/1]_(m2 &lt;= j &lt; n2 | Q j) \big[*%M/1]_(m1 &lt;= i &lt; n1 | P i) F i j.
+Proof. exact/exchange_big_nat_idem/mul1m. Qed.
+End Abelian.
+End MonoidProperties.
+Arguments big_filter [R idx op I].
+Arguments big_filter_cond [R idx op I].
+Arguments congr_big [R idx op I r1] r2 [P1] P2 [F1] F2.
+Arguments eq_big [R idx op I r P1] P2 [F1] F2.
+Arguments eq_bigl [R idx op I r P1] P2.
+Arguments eq_bigr [R idx op I r P F1] F2.
+Arguments eq_big_idx [R idx op idx' I] i0 [P F].
+Arguments big_seq_cond [R idx op I r].
+Arguments eq_big_seq [R idx op I r F1] F2.
+Arguments congr_big_nat [R idx op m1 n1] m2 n2 [P1] P2 [F1] F2.
+Arguments big_map [R idx op I J] h [r].
+Arguments big_nth [R idx op I] x0 [r].
+Arguments big_catl [R idx op I r1 r2 P F].
+Arguments big_catr [R idx op I r1 r2 P F].
+Arguments big_geq [R idx op m n P F].
+Arguments big_ltn_cond [R idx op m n P F].
+Arguments big_ltn [R idx op m n F].
+Arguments big_addn [R idx op].
+Arguments big_mkord [R idx op n].
+Arguments big_nat_widen [R idx op].
+Arguments big_nat_widenl [R idx op].
+Arguments big_geq_mkord [R idx op].
+Arguments big_ord_widen_cond [R idx op n1].
+Arguments big_ord_widen [R idx op n1].
+Arguments big_ord_widen_leq [R idx op n1].
+Arguments big_ord_narrow_cond [R idx op n1 n2 P F].
+Arguments big_ord_narrow_cond_leq [R idx op n1 n2 P F].
+Arguments big_ord_narrow [R idx op n1 n2 F].
+Arguments big_ord_narrow_leq [R idx op n1 n2 F].
+Arguments big_mkcond [R idx op I r].
+Arguments big1_eq [R idx op I].
+Arguments big1_seq [R idx op I].
+Arguments big1 [R idx op I].
+Arguments big_only1 {R idx op I} i [P F].
+Arguments big_pred1 [R idx op I] i [P F].
+Arguments perm_big [R op x I r1] r2 [P F].
+Arguments big_uniq [R op x I] r [F].
+Arguments big_rem [R idx op I r] x [P F].
+Arguments bigID [R idx op I r].
+Arguments bigU [R idx op I].
+Arguments bigD1 [R op x I] j [P F].
+Arguments bigD1_seq [R op x I r] j [F].
+Arguments bigD1_ord [R op x n] j [P F].
+Arguments partition_big [R idx op I s J P] p Q [F].
+Arguments reindex_omap [R op x I J] h h' [P F].
+Arguments reindex_onto [R op x I J] h h' [P F].
+Arguments reindex [R op x I J] h [P F].
+Arguments reindex_inj [R op x I h P F].
+Arguments big_enum_val_cond [R op x I A] P F.
+Arguments big_enum_rank_cond [R op x I A z] zA P F.
+Arguments big_enum_val [R idx op I A] F.
+Arguments big_enum_rank [R idx op I A x] xA F.
+Arguments big_sub_cond [R idx op I].
+Arguments big_sub [R idx op I].
+Arguments sig_big_dep [R idx op I J].
+Arguments pair_big_dep [R idx op I J].
+Arguments pair_big [R idx op I J].
+Arguments big_allpairs_dep {R idx op I1 I2 J h r1 r2 F}.
+Arguments big_allpairs {R idx op I1 I2 r1 r2 F}.
+Arguments exchange_big_dep [R idx op I J rI rJ P Q] xQ [F].
+Arguments exchange_big_dep_nat [R idx op m1 n1 m2 n2 P Q] xQ [F].
+Arguments big_ord_recl [R idx op].
+Arguments big_ord_recr [R idx op].
+Arguments big_nat_recl [R idx op].
+Arguments big_nat_recr [R idx op].
+Arguments big_cat_nat_idem [R op x] opxx [n m p P F].
+Arguments big_cat_nat [R idx op n m p P F].
+Arguments big_pmap [R idx op J I] h [r].
+Arguments telescope_big [R idx op] f [n m].
+Section IncreasingSemiGroup.
+Variables (R : Type) (op : SemiGroup.com_law R).
+Variable le : rel R.
+Hypothesis le_refl : reflexive le.
+Hypothesis op_incr : forall x y, le x (op x y).
+Context [x : R].
+Local Notation opA := SemiGroup.opA.
+Local Notation opC := SemiGroup.opC.
+Lemma sub_le_big I [s] (P P' : {pred I}) (F : I -&gt; R) :
+    (forall i, P i -&gt; P' i) -&gt;
+  le (\big[op/x]_(i &lt;- s | P i) F i) (\big[op/x]_(i &lt;- s | P' i) F i).
+Proof.
+move=&gt; PP'; rewrite [X in le _ X](big_AC_mk_monoid opA opC) (bigID P P') /=.
+under [in X in le _ X]eq_bigl do rewrite (andb_idl (PP' _)).
+rewrite [X in le X _](big_AC_mk_monoid opA opC).
+case: (bigop _ _ _) (bigop _ _ _) =&gt; [y|] [z|]//=.
+  by rewrite -opA [_ y x]opC opA op_incr.
+by rewrite opC op_incr.
+Qed.
+Lemma sub_le_big_seq (I : eqType) s s' P (F : I -&gt; R) :
+    (forall i, count_mem i s &lt;= count_mem i s')%N -&gt;
+  le (\big[op/x]_(i &lt;- s | P i) F i) (\big[op/x]_(i &lt;- s' | P i) F i).
+Proof.
+rewrite (big_AC_mk_monoid opA opC) =&gt; /count_subseqP[_ /subseqP[m sm -&gt;]].
+move/(perm_big _)-&gt;; rewrite big_mask [X in le _ X]big_tnth.
+by rewrite -!(big_AC_mk_monoid opA opC) sub_le_big // =&gt; j /andP[].
+Qed.
+Lemma sub_le_big_seq_cond (I : eqType) s s' P P' (F : I -&gt; R) :
+    (forall i, count_mem i (filter P s) &lt;= count_mem i (filter P' s'))%N -&gt;
+  le (\big[op/x]_(i &lt;- s | P i) F i) (\big[op/x]_(i &lt;- s' | P' i) F i).
+Proof. by  move=&gt; /(sub_le_big_seq xpredT F); rewrite !big_filter. Qed.
+Lemma uniq_sub_le_big (I : eqType) s s' P (F : I -&gt; R) : uniq s -&gt; uniq s' -&gt;
+    {subset s &lt;= s'} -&gt;
+  le (\big[op/x]_(i &lt;- s | P i) F i) (\big[op/x]_(i &lt;- s' | P i) F i).
+Proof.
+move=&gt; us us' ss'; rewrite sub_le_big_seq =&gt; // i; rewrite !count_uniq_mem//.
+by have /implyP := ss' i; case: (_ \in s) (_ \in s') =&gt; [] [].
+Qed.
+Lemma uniq_sub_le_big_cond (I : eqType) s s' P P' (F : I -&gt; R) :
+    uniq (filter P s) -&gt; uniq (filter P' s') -&gt;
+    {subset [seq i &lt;- s | P i] &lt;= [seq i &lt;- s' | P' i]} -&gt;
+  le (\big[op/x]_(i &lt;- s | P i) F i) (\big[op/x]_(i &lt;- s' | P' i) F i).
+Proof. by move=&gt; u v /(uniq_sub_le_big xpredT F u v); rewrite !big_filter. Qed.
+Section Id.
+Hypothesis opK : idempotent_op op.
+Lemma idem_sub_le_big (I : eqType) s s' P (F : I -&gt; R) :
+    {subset s &lt;= s'} -&gt;
+  le (\big[op/x]_(i &lt;- s | P i) F i) (\big[op/x]_(i &lt;- s' | P i) F i).
+Proof.
+move=&gt; ss'; rewrite -big_undup// -[X in le _ X]big_undup//.
+by rewrite uniq_sub_le_big ?undup_uniq// =&gt; i; rewrite !mem_undup; apply: ss'.
+Qed.
+Lemma idem_sub_le_big_cond (I : eqType) s s' P P' (F : I -&gt; R) :
+  {subset [seq i &lt;- s | P i] &lt;= [seq i &lt;- s' | P' i]} -&gt;
+  le (\big[op/x]_(i &lt;- s | P i) F i) (\big[op/x]_(i &lt;- s' | P' i) F i).
+Proof. by  move=&gt; /(idem_sub_le_big xpredT F); rewrite !big_filter. Qed.
+End Id.
+Lemma sub_in_le_big [I : eqType] (s : seq I) (P P' : {pred I}) (F : I -&gt; R) :
+    {in s, forall i, P i -&gt; P' i} -&gt;
+  le (\big[op/x]_(i &lt;- s | P i) F i) (\big[op/x]_(i &lt;- s | P' i) F i).
+Proof.
+move=&gt; PP'; apply: sub_le_big_seq_cond =&gt; i; rewrite leq_count_subseq//.
+rewrite subseq_filter filter_subseq andbT; apply/allP =&gt; j.
+by rewrite !mem_filter =&gt; /andP[/PP'/[apply]-&gt;].
+Qed.
+Lemma le_big_ord n m [P : {pred nat}] [F : nat -&gt; R] : (n &lt;= m)%N -&gt;
+  le (\big[op/x]_(i &lt; n | P i) F i) (\big[op/x]_(i &lt; m | P i) F i).
+Proof.
+by move=&gt; nm; rewrite (big_ord_widen_cond m)// sub_le_big =&gt; //= ? /andP[].
+Qed.
+Lemma subset_le_big [I : finType] [A A' P : {pred I}] (F : I -&gt; R) :
+    A \subset A' -&gt;
+  le (\big[op/x]_(i in A | P i) F i) (\big[op/x]_(i in A' | P i) F i).
+Proof.
+move=&gt; AA'; apply: sub_le_big =&gt; y /andP[yA yP]; apply/andP; split =&gt; //.
+exact: subsetP yA.
+Qed.
+Lemma le_big_nat_cond n m n' m' (P P' : {pred nat}) (F : nat -&gt; R) :
+    (n' &lt;= n)%N -&gt; (m &lt;= m')%N -&gt; (forall i, (n &lt;= i &lt; m)%N -&gt; P i -&gt; P' i) -&gt;
+  le (\big[op/x]_(n &lt;= i &lt; m | P i) F i) (\big[op/x]_(n' &lt;= i &lt; m' | P' i) F i).
+Proof.
+move=&gt; len'n lemm' PP'i; rewrite uniq_sub_le_big_cond ?filter_uniq ?iota_uniq//.
+move=&gt; i; rewrite !mem_filter !mem_index_iota =&gt; /and3P[Pi ni im].
+by rewrite PP'i ?ni//= (leq_trans _ ni)// (leq_trans im).
+Qed.
+Lemma le_big_nat n m n' m' [P] [F : nat -&gt; R] : (n' &lt;= n)%N -&gt; (m &lt;= m')%N -&gt;
+  le (\big[op/x]_(n &lt;= i &lt; m | P i) F i) (\big[op/x]_(n' &lt;= i &lt; m' | P i) F i).
+Proof. by move=&gt; len'n lemm'; rewrite le_big_nat_cond. Qed.
+Lemma le_big_ord_cond n m (P P' : {pred nat}) (F : nat -&gt; R) :
+    (n &lt;= m)%N -&gt; (forall i : 'I_n, P i -&gt; P' i) -&gt;
+  le (\big[op/x]_(i &lt; n | P i) F i) (\big[op/x]_(i &lt; m | P' i) F i).
+Proof.
+move=&gt; nm PP'; rewrite -!big_mkord le_big_nat_cond//= =&gt; i ni.
+by have := PP' (Ordinal ni).
+Qed.
+End IncreasingSemiGroup.
+Section EqSupport.
+Variables (R : eqType) (idx : R).
+Section MonoidSupport.
+Variables (op : Monoid.law idx) (I : Type).
+Lemma eq_bigl_supp (r : seq I) (P1 : pred I) (P2 : pred I) (F : I -&gt; R) :
+  {in [pred x | F x != idx], P1 =1 P2} -&gt;
+  \big[op/idx]_(i &lt;- r | P1 i) F i = \big[op/idx]_(i &lt;- r | P2 i) F i.
+Proof.
+move=&gt; P12; rewrite big_mkcond [RHS]big_mkcond; apply: eq_bigr =&gt; i _.
+by case: (eqVneq (F i) idx) =&gt; [-&gt;|/P12-&gt;]; rewrite ?if_same.
+Qed.
+End MonoidSupport.
+Section ComoidSupport.
+Variables (op : Monoid.com_law idx) (I : eqType).
+Lemma perm_big_supp_cond [r s : seq I] [P : pred I] (F : I -&gt; R) :
+  perm_eq
+    [seq i &lt;- r | P i &amp;&amp; (F i != idx)]
+    [seq i &lt;- s | P i &amp;&amp; (F i != idx)] -&gt;
+  \big[op/idx]_(i &lt;- r | P i) F i = \big[op/idx]_(i &lt;- s | P i) F i.
+Proof.
+move=&gt; prs; rewrite !(bigID [pred i | F i == idx] P F)/=.
+rewrite big1 ?Monoid.mul1m; last by move=&gt; i /andP[_ /eqP-&gt;].
+rewrite [in RHS]big1 ?Monoid.mul1m; last by move=&gt; i /andP[_ /eqP-&gt;].
+by rewrite -[in LHS]big_filter -[in RHS]big_filter; apply perm_big.
+Qed.
+Lemma perm_big_supp [r s : seq I] [P : pred I] (F : I -&gt; R) :
+  perm_eq [seq i &lt;- r | F i != idx] [seq i &lt;- s | F i != idx] -&gt;
+  \big[op/idx]_(i &lt;- r | P i) F i = \big[op/idx]_(i &lt;- s | P i) F i.
+Proof.
+by move=&gt; ?; apply: perm_big_supp_cond; rewrite !filter_predI perm_filter.
+Qed.
+End ComoidSupport.
+End EqSupport.
+Arguments eq_bigl_supp [R idx op I r P1].
+Arguments perm_big_supp_cond [R idx op I r s P].
+Arguments perm_big_supp [R idx op I r s P].
+Section Distributivity.
+Import Monoid.Theory.
+Variable R : Type.
+Variables zero one : R.
+Local Notation "0" := zero.
+Local Notation "1" := one.
+Variable times : Monoid.mul_law 0.
+Local Notation "*%M" := times.
+Local Notation "x * y" := (times x y).
+Variable plus : Monoid.add_law 0 *%M.
+Local Notation "+%M" := plus.
+Local Notation "x + y" := (plus x y).
+Lemma big_distrl I r a (P : pred I) F :
+  \big[+%M/0]_(i &lt;- r | P i) F i * a = \big[+%M/0]_(i &lt;- r | P i) (F i * a).
+Proof. by rewrite (big_endo ( *%M^~ a)) ?mul0m // =&gt; x y; apply: mulmDl. Qed.
+Lemma big_distrr I r a (P : pred I) F :
+  a * \big[+%M/0]_(i &lt;- r | P i) F i = \big[+%M/0]_(i &lt;- r | P i) (a * F i).
+Proof. by rewrite big_endo ?mulm0 // =&gt; x y; apply: mulmDr. Qed.
+Lemma big_distrlr I J rI rJ (pI : pred I) (pJ : pred J) F G :
+  (\big[+%M/0]_(i &lt;- rI | pI i) F i) * (\big[+%M/0]_(j &lt;- rJ | pJ j) G j)
+   = \big[+%M/0]_(i &lt;- rI | pI i) \big[+%M/0]_(j &lt;- rJ | pJ j) (F i * G j).
+Proof. by rewrite big_distrl; under eq_bigr do rewrite big_distrr. Qed.
+Lemma big_distr_big_dep (I J : finType) j0 (P : pred I) (Q : I -&gt; pred J) F :
+  \big[*%M/1]_(i | P i) \big[+%M/0]_(j | Q i j) F i j =
+     \big[+%M/0]_(f in pfamily j0 P Q) \big[*%M/1]_(i | P i) F i (f i).
+Proof.
+pose fIJ := {ffun I -&gt; J}; pose Pf := pfamily j0 (_ : seq I) Q.
+have [r big_r [Ur mem_r] _] := big_enumP P.
+symmetry; transitivity (\big[+%M/0]_(f in Pf r) \big[*%M/1]_(i &lt;- r) F i (f i)).
+  by apply: eq_big =&gt; // f; apply: eq_forallb =&gt; i; rewrite /= mem_r.
+rewrite -{P mem_r}big_r; elim: r Ur =&gt; /= [_ | i r IHr].
+  rewrite (big_pred1 [ffun=&gt; j0]) ?big_nil //= =&gt; f.
+  apply/familyP/eqP=&gt; /= [Df |-&gt;{f} i]; last by rewrite ffunE !inE.
+  by apply/ffunP=&gt; i; rewrite ffunE; apply/eqP/Df.
+case/andP=&gt; /negbTE nri; rewrite big_cons big_distrl =&gt; {}/IHr&lt;-.
+rewrite (partition_big (fun f : fIJ =&gt; f i) (Q i)) =&gt; [|f]; last first.
+  by move/familyP/(_ i); rewrite /= inE /= eqxx.
+pose seti j (f : fIJ) := [ffun k =&gt; if k == i then j else f k].
+apply: eq_bigr =&gt; j Qij.
+rewrite (reindex_onto (seti j) (seti j0)) =&gt; [|f /andP[_ /eqP fi]]; last first.
+  by apply/ffunP=&gt; k; rewrite !ffunE; case: eqP =&gt; // -&gt;.
+rewrite big_distrr; apply: eq_big =&gt; [f | f eq_f]; last first.
+  rewrite big_cons ffunE eqxx !big_seq; congr (_ * _).
+  by apply: eq_bigr =&gt; k; rewrite ffunE; case: eqP nri =&gt; // -&gt; -&gt;.
+rewrite !ffunE !eqxx andbT; apply/andP/familyP=&gt; /= [[Pjf fij0] k | Pff].
+  have /[!(ffunE, inE)] := familyP Pjf k; case: eqP =&gt; // -&gt; _.
+  by rewrite nri -(eqP fij0) !ffunE !inE !eqxx.
+(split; [apply/familyP | apply/eqP/ffunP]) =&gt; k; have /[!(ffunE, inE)]:= Pff k.
+  by case: eqP =&gt; // -&gt;.
+by case: eqP =&gt; // -&gt;; rewrite nri /= =&gt; /eqP.
+Qed.
+Lemma big_distr_big (I J : finType) j0 (P : pred I) (Q : pred J) F :
+  \big[*%M/1]_(i | P i) \big[+%M/0]_(j | Q j) F i j =
+     \big[+%M/0]_(f in pffun_on j0 P Q) \big[*%M/1]_(i | P i) F i (f i).
+Proof.
+rewrite (big_distr_big_dep j0); apply: eq_bigl =&gt; f.
+by apply/familyP/familyP=&gt; Pf i; case: ifP (Pf i).
+Qed.
+Lemma bigA_distr_big_dep (I J : finType) (Q : I -&gt; pred J) F :
+  \big[*%M/1]_i \big[+%M/0]_(j | Q i j) F i j
+    = \big[+%M/0]_(f in family Q) \big[*%M/1]_i F i (f i).
+Proof.
+have [j _ | J0] := pickP J; first by rewrite (big_distr_big_dep j).
+have Q0 i: Q i =i pred0 by move=&gt; /J0/esym/notF[].
+transitivity (iter #|I| ( *%M 0) 1).
+  by rewrite -big_const; apply/eq_bigr=&gt; i; have /(big_pred0 _)-&gt; := Q0 i.
+have [i _ | I0] := pickP I.
+  rewrite (cardD1 i) //= mul0m big_pred0 // =&gt; f.
+  by apply/familyP=&gt; /(_ i); rewrite Q0.
+have f: I -&gt; J by move=&gt; /I0/esym/notF[].
+rewrite eq_card0 // (big_pred1 (finfun f)) ?big_pred0 // =&gt; g.
+by apply/familyP/eqP=&gt; _; first apply/ffunP; move=&gt; /I0/esym/notF[].
+Qed.
+Lemma bigA_distr_big (I J : finType) (Q : pred J) (F : I -&gt; J -&gt; R) :
+  \big[*%M/1]_i \big[+%M/0]_(j | Q j) F i j
+    = \big[+%M/0]_(f in ffun_on Q) \big[*%M/1]_i F i (f i).
+Proof. exact: bigA_distr_big_dep. Qed.
+Lemma bigA_distr_bigA (I J : finType) F :
+  \big[*%M/1]_(i : I) \big[+%M/0]_(j : J) F i j
+    = \big[+%M/0]_(f : {ffun I -&gt; J}) \big[*%M/1]_i F i (f i).
+Proof. by rewrite bigA_distr_big; apply: eq_bigl =&gt; ?; apply/familyP. Qed.
+End Distributivity.
+Arguments big_distrl [R zero times plus I r].
+Arguments big_distrr [R zero times plus I r].
+Arguments big_distr_big_dep [R zero one times plus I J].
+Arguments big_distr_big [R zero one times plus I J].
+Arguments bigA_distr_big_dep [R zero one times plus I J].
+Arguments bigA_distr_big [R zero one times plus I J].
+Arguments bigA_distr_bigA [R zero one times plus I J].
+Section BigBool.
+Section Seq.
+Variables (I : Type) (r : seq I) (P B : pred I).
+Lemma big_has : \big[orb/false]_(i &lt;- r) B i = has B r.
+Proof. by rewrite unlock. Qed.
+Lemma big_all : \big[andb/true]_(i &lt;- r) B i = all B r.
+Proof. by rewrite unlock. Qed.
+Lemma big_has_cond : \big[orb/false]_(i &lt;- r | P i) B i = has (predI P B) r.
+Proof. by rewrite big_mkcond unlock. Qed.
+Lemma big_all_cond :
+  \big[andb/true]_(i &lt;- r | P i) B i = all [pred i | P i ==&gt; B i] r.
+Proof. by rewrite big_mkcond unlock. Qed.
+Lemma big_bool R (idx : R) (op : Monoid.com_law idx) (F : bool -&gt; R):
+  \big[op/idx]_(i : bool) F i = op (F true) (F false).
+Proof. by rewrite /index_enum !unlock /= Monoid.mulm1. Qed.
+End Seq.
+Section FinType.
+Variables (I : finType) (P B : pred I).
+Lemma big_orE : \big[orb/false]_(i | P i) B i = [exists (i | P i), B i].
+Proof. by rewrite big_has_cond; apply/hasP/existsP=&gt; [] [i]; exists i. Qed.
+Lemma big_andE : \big[andb/true]_(i | P i) B i = [forall (i | P i), B i].
+Proof.
+rewrite big_all_cond; apply/allP/forallP=&gt; /= allB i; rewrite allB //.
+exact: mem_index_enum.
+Qed.
+End FinType.
+End BigBool.
+Section NatConst.
+Variables (I : finType) (A : pred I).
+Lemma sum_nat_const n : \sum_(i in A) n = #|A| * n.
+Proof. by rewrite big_const iter_addn_0 mulnC. Qed.
+Lemma sum1_card : \sum_(i in A) 1 = #|A|.
+Proof. by rewrite sum_nat_const muln1. Qed.
+Lemma sum1_count J (r : seq J) (a : pred J) : \sum_(j &lt;- r | a j) 1 = count a r.
+Proof. by rewrite big_const_seq iter_addn_0 mul1n. Qed.
+Lemma sum1_size J (r : seq J) : \sum_(j &lt;- r) 1 = size r.
+Proof. by rewrite sum1_count count_predT. Qed.
+Lemma prod_nat_const n : \prod_(i in A) n = n ^ #|A|.
+Proof. by rewrite big_const -Monoid.iteropE. Qed.
+Lemma sum_nat_const_nat n1 n2 n : \sum_(n1 &lt;= i &lt; n2) n = (n2 - n1) * n.
+Proof. by rewrite big_const_nat iter_addn_0 mulnC. Qed.
+Lemma prod_nat_const_nat n1 n2 n : \prod_(n1 &lt;= i &lt; n2) n = n ^ (n2 - n1).
+Proof. by rewrite big_const_nat -Monoid.iteropE. Qed.
+End NatConst.
+Lemma telescope_sumn_in n m f : n &lt;= m -&gt;
+    (forall i, n &lt;= i &lt; m -&gt; f i &lt;= f i.+1) -&gt;
+  \sum_(n &lt;= k &lt; m) (f k.+1 - f k) = f m - f n.
+Proof.
+move=&gt; nm fle; rewrite (telescope_big (fun i j =&gt; f j - f i)).
+  by case: ltngtP nm =&gt; // -&gt;; rewrite subnn.
+move=&gt; k /andP[nk km]; rewrite /= addnBAC ?subnKC ?fle ?(ltnW nk)//.
+elim: k nk km =&gt; [//| k IHk /[!ltnS]/[1!leq_eqVlt]+ km].
+  move=&gt; /predU1P[/[dup]nk -&gt; | nk]; first by rewrite fle ?nk ?leqnn 1?ltnW.
+by rewrite (leq_trans (IHk _ _) (fle _ _))// ltnW// ltnW.
+Qed.
+Lemma telescope_sumn n m f : {homo f : x y / x &lt;= y} -&gt;
+  \sum_(n &lt;= k &lt; m) (f k.+1 - f k) = f m - f n.
+Proof.
+move=&gt; fle; case: (ltnP n m) =&gt; nm.
+  by apply: (telescope_sumn_in (ltnW nm)) =&gt; ? ?; apply: fle.
+by apply/esym/eqP; rewrite big_geq// subn_eq0 fle.
+Qed.
+Lemma sumnE r : sumn r = \sum_(i &lt;- r) i. Proof. exact: foldrE. Qed.
+Lemma card_bseq n (T : finType) : #|{bseq n of T}| = \sum_(i &lt; n.+1) #|T| ^ i.
+Proof.
+rewrite (bij_eq_card bseq_tagged_tuple_bij) card_tagged sumnE big_map big_enum.
+by under eq_bigr do rewrite card_tuple.
+Qed.
+Lemma leqif_sum (I : finType) (P C : pred I) (E1 E2 : I -&gt; nat) :
+    (forall i, P i -&gt; E1 i &lt;= E2 i ?= iff C i) -&gt;
+  \sum_(i | P i) E1 i &lt;= \sum_(i | P i) E2 i ?= iff [forall (i | P i), C i].
+Proof.
+move=&gt; leE12; rewrite -big_andE.
+by elim/big_rec3: _ =&gt; // i Ci m1 m2 /leE12; apply: leqif_add.
+Qed.
+Lemma leq_sum I r (P : pred I) (E1 E2 : I -&gt; nat) :
+    (forall i, P i -&gt; E1 i &lt;= E2 i) -&gt;
+  \sum_(i &lt;- r | P i) E1 i &lt;= \sum_(i &lt;- r | P i) E2 i.
+Proof. by move=&gt; leE12; elim/big_ind2: _ =&gt; // m1 m2 n1 n2; apply: leq_add. Qed.
+Lemma sumnB I r (P : pred I) (E1 E2 : I -&gt; nat) :
+     (forall i, P i -&gt; E1 i &lt;= E2 i) -&gt;
+  \sum_(i &lt;- r | P i) (E2 i - E1 i) =
+  \sum_(i &lt;- r | P i) E2 i - \sum_(i &lt;- r | P i) E1 i.
+Proof. by move=&gt; /(_ _ _)/subnK-/(eq_bigr _)&lt;-; rewrite big_split addnK. Qed.
+Lemma sum_nat_eq0 (I : finType) (P : pred I) (E : I -&gt; nat) :
+  (\sum_(i | P i) E i == 0)%N = [forall (i | P i), E i == 0%N].
+Proof. by rewrite eq_sym -(@leqif_sum I P _ (fun _ =&gt; 0%N) E) ?big1_eq. Qed.
+Lemma sum_nat_seq_eq0 I r (P : pred I) F :
+  (\sum_(i &lt;- r | P i) F i == 0)%N = all (fun i =&gt; P i ==&gt; (F i == 0%N)) r.
+Proof. by rewrite (big_morph _ (id1:=true) addn_eq0)// big_all_cond. Qed.
+Lemma sum_nat_seq_neq0 I r (P : pred I) F :
+  (\sum_(i &lt;- r | P i) F i != 0)%N = has (fun i =&gt; P i &amp;&amp; (F i != 0)%N) r.
+Proof.
+by rewrite sum_nat_seq_eq0// -has_predC; apply: eq_has =&gt; x /=; case Px: (P x).
+Qed.
+Lemma sum_nat_eq1 (I : finType) (P : pred I) (F : I -&gt; nat) :
+  reflect
+    (exists i : I, [/\ P i, F i = 1 &amp; forall j, j != i -&gt; P j -&gt; F j = 0]%N)
+    (\sum_(i | P i) F i == 1)%N.
+Proof.
+apply/(iffP idP) =&gt; [sumF_eq1 | [i [Pi Fi1 zFj]]]; last first.
+  rewrite (bigD1 i)//= Fi1 addn_eq1//= orbF sum_nat_eq0.
+  by apply/forall_inP =&gt; j /andP[Pj ji]; apply/eqP/zFj.
+have /forall_inPn [i Pi FiN0]: ~~ [forall i in P, F i == 0].
+  by apply: contraTN sumF_eq1 =&gt; /'forall_in_eqP F0; rewrite big1.
+move: sumF_eq1; rewrite (bigD1 i)//= addn_eq1 (negPf FiN0)/= orbF.
+move=&gt; /andP[/eqP Fi1]; rewrite sum_nat_eq0 =&gt; /'forall_in_eqP FNi0.
+by exists i; split; rewrite // =&gt; j /[swap] Nij /(conj Nij)/andP/FNi0.
+Qed.
+Lemma sum_nat_seq_eq1 (I : eqType) r (P : pred I) (F : I -&gt; nat) :
+    (\sum_(i &lt;- r | P i) F i = 1)%N -&gt;
+  exists i, [/\ i \in r, P i, F i = 1
+            &amp; forall j, j != i -&gt; j \in r -&gt; P j -&gt; F j = 0]%N.
+Proof.
+rewrite big_tnth/= =&gt; /eqP/sum_nat_eq1[/= i [Pi Fi FNi]].
+exists (tnth (in_tuple r) i); split;  rewrite //= ?mem_tnth// =&gt; j.
+move=&gt; /[swap] /(tnthP (in_tuple r))[{} j -&gt; Nij /FNi-&gt;//].
+by apply: contra_neq Nij =&gt; -&gt;.
+Qed.
+Lemma prod_nat_seq_eq0 I r (P : pred I) F :
+  (\prod_(i &lt;- r | P i) F i == 0)%N = has (fun i =&gt; P i &amp;&amp; (F i == 0%N)) r.
+Proof. by rewrite (big_morph _ (id1 := false) muln_eq0)// big_has_cond. Qed.
+Lemma prod_nat_seq_neq0 I r (P : pred I) F :
+  (\prod_(i &lt;- r | P i) F i != 0)%N = all (fun i =&gt; P i ==&gt; (F i != 0%N)) r.
+Proof.
+by rewrite prod_nat_seq_eq0 -all_predC; apply: eq_all =&gt; i /=; case: (P i).
+Qed.
+Lemma prod_nat_seq_eq1 I r (P : pred I) F :
+  (\prod_(i &lt;- r | P i) F i == 1)%N = all (fun i =&gt; P i ==&gt; (F i == 1%N)) r.
+Proof. by rewrite (big_morph _ (id1:=true) muln_eq1)// big_all_cond. Qed.
+Lemma prod_nat_seq_neq1 I r (P : pred I) F :
+  (\prod_(i &lt;- r | P i) F i != 1)%N = has (fun i =&gt; P i &amp;&amp; (F i != 1%N)) r.
+Proof.
+by rewrite prod_nat_seq_eq1 -has_predC; apply: eq_has =&gt; i /=; case: (P i).
+Qed.
+Lemma leq_prod I r (P : pred I) (E1 E2 : I -&gt; nat) :
+    (forall i, P i -&gt; E1 i &lt;= E2 i) -&gt;
+  \prod_(i &lt;- r | P i) E1 i &lt;= \prod_(i &lt;- r | P i) E2 i.
+Proof. by move=&gt; leE12; elim/big_ind2: _ =&gt; // m1 m2 n1 n2; apply: leq_mul. Qed.
+Arguments leq_prod [I r P E1 E2].
+Lemma prodn_cond_gt0 I r (P : pred I) F :
+  (forall i, P i -&gt; 0 &lt; F i) -&gt; 0 &lt; \prod_(i &lt;- r | P i) F i.
+Proof. by move=&gt; Fpos; elim/big_ind: _ =&gt; // n1 n2; rewrite muln_gt0 =&gt; -&gt;. Qed.
+Arguments prodn_cond_gt0 [I r P F].
+Lemma prodn_gt0 I r (P : pred I) F :
+  (forall i, 0 &lt; F i) -&gt; 0 &lt; \prod_(i &lt;- r | P i) F i.
+Proof. by move=&gt; Fpos; apply: prodn_cond_gt0. Qed.
+Arguments prodn_gt0 [I r P F].
+Lemma gt0_prodn_seq (I : eqType) r (P : pred I) F :
+  0 &lt; \prod_(i &lt;- r | P i) F i -&gt; forall i, i \in r -&gt; P i -&gt; 0 &lt; F i.
+Proof.
+move=&gt; + i ri Pi; rewrite !lt0n; apply: contra_neq =&gt; Fi_eq0.
+by case: (path.splitP ri) =&gt; *; rewrite big_cat big_rcons Pi Fi_eq0/= muln0.
+Qed.
+Arguments gt0_prodn_seq [I r P F].
+Lemma gt0_prodn (I : finType) (P : pred I) F :
+  0 &lt; \prod_(i | P i) F i -&gt; forall i, P i -&gt; 0 &lt; F i.
+Proof. by move=&gt; /gt0_prodn_seq + i =&gt; /[apply]; apply. Qed.
+Arguments gt0_prodn [I P F].
+Lemma leq_bigmax_seq (I : eqType) r (P : pred I) F i0 :
+  i0 \in r -&gt; P i0 -&gt; F i0 &lt;= \max_(i &lt;- r | P i) F i.
+Proof.
+move=&gt; + Pi0; elim: r =&gt; // h t ih; rewrite inE big_cons.
+move=&gt; /predU1P[&lt;-|i0t]; first by rewrite Pi0 leq_maxl.
+by case: ifPn =&gt; Ph; [rewrite leq_max ih// orbT|rewrite ih].
+Qed.
+Arguments leq_bigmax_seq [I r P F].
+Lemma leq_bigmax_cond (I : finType) (P : pred I) F i0 :
+  P i0 -&gt; F i0 &lt;= \max_(i | P i) F i.
+Proof. exact: leq_bigmax_seq. Qed.
+Arguments leq_bigmax_cond [I P F].
+Lemma leq_bigmax (I : finType) F (i0 : I) : F i0 &lt;= \max_i F i.
+Proof. exact: leq_bigmax_cond. Qed.
+Arguments leq_bigmax [I F].
+Lemma bigmax_leqP (I : finType) (P : pred I) m F :
+  reflect (forall i, P i -&gt; F i &lt;= m) (\max_(i | P i) F i &lt;= m).
+Proof.
+apply: (iffP idP) =&gt; leFm =&gt; [i Pi|].
+  by apply: leq_trans leFm; apply: leq_bigmax_cond.
+by elim/big_ind: _ =&gt; // m1 m2; rewrite geq_max =&gt; -&gt;.
+Qed.
+Lemma bigmax_leqP_seq (I : eqType) r (P : pred I) m F :
+  reflect (forall i, i \in r -&gt; P i -&gt; F i &lt;= m) (\max_(i &lt;- r | P i) F i &lt;= m).
+Proof.
+apply: (iffP idP) =&gt; leFm =&gt; [i ri Pi|].
+  exact/(leq_trans _ leFm)/leq_bigmax_seq.
+rewrite big_seq_cond; elim/big_ind: _ =&gt; // [m1 m2|i /andP[ri]].
+  by rewrite geq_max =&gt; -&gt;.
+exact: leFm.
+Qed.
+Lemma bigmax_sup (I : finType) i0 (P : pred I) m F :
+  P i0 -&gt; m &lt;= F i0 -&gt; m &lt;= \max_(i | P i) F i.
+Proof. by move=&gt; Pi0 le_m_Fi0; apply: leq_trans (leq_bigmax_cond i0 Pi0). Qed.
+Arguments bigmax_sup [I] i0 [P m F].
+Lemma bigmaxn_sup_seq (I : eqType) r i0 (P : pred I) m F :
+  i0 \in r -&gt; P i0 -&gt; m &lt;= F i0 -&gt; m &lt;= \max_(i &lt;- r | P i) F i.
+Proof. by move=&gt; i0r Pi0 ?; apply: leq_trans (leq_bigmax_seq i0 _ _). Qed.
+Arguments bigmaxn_sup_seq [I r] i0 [P m F].
+#[deprecated(since="mathcomp 2.5.0", note="Use bigmaxn_sup_seq instead.")]
+Notation bigmax_sup_seq := bigmaxn_sup_seq.
+Lemma bigmax_eq_arg (I : finType) i0 (P : pred I) F :
+  P i0 -&gt; \max_(i | P i) F i = F [arg max_(i &gt; i0 | P i) F i].
+Proof.
+move=&gt; Pi0; case: arg_maxnP =&gt; //= i Pi maxFi.
+by apply/eqP; rewrite eqn_leq leq_bigmax_cond // andbT; apply/bigmax_leqP.
+Qed.
+Arguments bigmax_eq_arg [I] i0 [P F].
+Lemma eq_bigmax_cond (I : finType) (A : pred I) F :
+  #|A| &gt; 0 -&gt; {i0 | i0 \in A &amp; \max_(i in A) F i = F i0}.
+Proof.
+case: (pickP A) =&gt; [i0 Ai0 _ | ]; last by move/eq_card0-&gt;.
+by exists [arg max_(i &gt; i0 in A) F i]; [case: arg_maxnP | apply: bigmax_eq_arg].
+Qed.
+Lemma eq_bigmax (I : finType) F : #|I| &gt; 0 -&gt; {i0 : I | \max_i F i = F i0}.
+Proof. by case/(eq_bigmax_cond F) =&gt; x _ -&gt;; exists x. Qed.
+Lemma expn_sum m I r (P : pred I) F :
+  (m ^ (\sum_(i &lt;- r | P i) F i) = \prod_(i &lt;- r | P i) m ^ F i)%N.
+Proof. exact: (big_morph _ (expnD m)). Qed.
+Lemma dvdn_biglcmP (I : finType) (P : pred I) F m :
+  reflect (forall i, P i -&gt; F i %| m) (\big[lcmn/1%N]_(i | P i) F i %| m).
+Proof.
+apply: (iffP idP) =&gt; [dvFm i Pi | dvFm].
+  by rewrite (bigD1 i) // dvdn_lcm in dvFm; case/andP: dvFm.
+by elim/big_ind: _ =&gt; // p q p_m; rewrite dvdn_lcm p_m.
+Qed.
+Lemma biglcmn_sup (I : finType) i0 (P : pred I) F m :
+  P i0 -&gt; m %| F i0 -&gt; m %| \big[lcmn/1%N]_(i | P i) F i.
+Proof.
+by move=&gt; Pi0 m_Fi0; rewrite (dvdn_trans m_Fi0) // (bigD1 i0) ?dvdn_lcml.
+Qed.
+Arguments biglcmn_sup [I] i0 [P F m].
+Lemma dvdn_biggcdP (I : finType) (P : pred I) F m :
+  reflect (forall i, P i -&gt; m %| F i) (m %| \big[gcdn/0]_(i | P i) F i).
+Proof.
+apply: (iffP idP) =&gt; [dvmF i Pi | dvmF].
+  by rewrite (bigD1 i) // dvdn_gcd in dvmF; case/andP: dvmF.
+by elim/big_ind: _ =&gt; // p q m_p; rewrite dvdn_gcd m_p.
+Qed.
+Lemma biggcdn_inf (I : finType) i0 (P : pred I) F m :
+  P i0 -&gt; F i0 %| m -&gt; \big[gcdn/0]_(i | P i) F i %| m.
+Proof. by move=&gt; Pi0; apply: dvdn_trans; rewrite (bigD1 i0) ?dvdn_gcdl. Qed.
+Arguments biggcdn_inf [I] i0 [P F m].
+</pre>
+
+      <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>
+    </div>
+  </div>
+    </main>
+</body>
+</html>
