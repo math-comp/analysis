@@ -21,6 +21,7 @@
   + definition `null_set_dominates`
   + lemma `null_dominates_trans`
   + lemma `measure_null_dominatesP`
+  + lemma `measure_charge_dominatesP`
 
 - in `charge.v`:
   + lemma `charge_null_dominatesP`
