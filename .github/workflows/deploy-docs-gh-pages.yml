@@ -1,0 +1,49 @@
+name: Publish master GitHub Pages
+
+on:
+  push:
+  schedule:
+    - cron: '0 0 * * *' # This cron expression means "at 00:00 (midnight) UTC, every day"
+
+permissions:
+  contents: write
+
+jobs:
+  publish-gh-pages:
+    runs-on:
+      - ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Graphviz
+        uses: ts-graphviz/setup-graphviz@v2
+
+      - name: Set-up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: 4.14
+          opam-repositories: |
+            coq-released: https://coq.inria.fr/opam/released
+            default: https://github.com/ocaml/opam-repository.git
+
+      - name: Build Mathcomp Analysis
+        run: opam install -y --deps-only . && opam exec -- make -j 4
+
+      - name: Install Rocqnavi
+        run: opam install -y rocq-navi.0.3.1
+
+      - name: Generate Documents
+        run: opam exec -- make html
+
+      # Publish GitHub Pages
+      # Push `gh-pages` branch
+      - name: Push gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./html
+          destination_dir: docs/master
+          # keep_files: true
+          user_name: github-actions
+          user_email: github-actions@github.com
