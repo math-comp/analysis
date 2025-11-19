@@ -548,8 +548,7 @@ pose q := p / (p - 1).
 have q1 : 1 <= q by rewrite /q ler_pdivlMr// ?mul1r ?gerBl// subr_gt0.
 have q0 : 0 < q by rewrite (lt_le_trans _ q1).
 have pq1 : p^-1 + q^-1 = 1.
-  rewrite /q invf_div -{1}(div1r p) -mulrDl addrCA subrr addr0.
-  by rewrite mulfV// gt_eqF.
+  by rewrite /q invf_div -{1}(div1r p) -mulrDl subrKC mulfV// gt_eqF.
 rewrite -(@powRr1 _ (w1 * x `^ p + w2 * y `^ p)); last first.
   by rewrite addr_ge0// mulr_ge0// ?powR_ge0// /w1 ?onem_ge0// itv_ge0.
 have -> : 1 = p^-1 * p by rewrite mulVf ?gt_eqF.
@@ -711,12 +710,11 @@ rewrite [leRHS](_ : _ = ('N_p%:E[f] + 'N_p%:E[g]) *
       rewrite unlock.
       rewrite onemV ?gt_eqF// invf_div; apply: congr2; last by [].
       apply: eq_integral => x _; congr EFin.
-      rewrite norm_powR// normr_id -powRrM mulrCA divff ?mulr1//.
-      by rewrite subr_eq0 gt_eqF.
+      by rewrite norm_powR// normr_id -powRrM mulrC divfK// subr_eq0 gt_eqF.
     apply: (@hoelder _ _ _ _ _ _ p (p / (p - 1))) => //.
     + exact/measurableT_comp_powR/measurableT_comp/measurable_funD.
     + by rewrite divr_gt0// subr_gt0.
-    + by rewrite invf_div -onemV ?gt_eqF// addrCA subrr addr0.
+    + by rewrite invf_div -onemV ?gt_eqF// subrKC.
   - pose h := (fun x => `|f x + g x| `^ (p - 1))%R; pose i := (g \* h)%R.
     rewrite [leLHS](_ : _ = 'N_1[i]); last first.
       rewrite Lnorm1; apply: eq_integral => x _ /=.
@@ -726,11 +724,11 @@ rewrite [leRHS](_ : _ = ('N_p%:E[f] + 'N_p%:E[g]) *
       apply: congr2; last by rewrite invrK.
       apply: eq_integral => x _; congr EFin.
       rewrite -/(onem p^-1) onemV ?gt_eqF// norm_powR// normr_id -powRrM.
-      by rewrite invf_div mulrCA divff ?subr_eq0 ?gt_eqF// ?mulr1.
+      by rewrite divKf// ?subr_eq0 ?gt_eqF.
     apply: (le_trans (@hoelder _ _ _ _ _ _ p (1 - p^-1)^-1 _ _ _ _ _)) => //.
     + exact/measurableT_comp_powR/measurableT_comp/measurable_funD.
     + by rewrite invr_gt0 onem_gt0// invf_lt1.
-    + by rewrite invrK addrCA subrr addr0.
+    + by rewrite invrK subrKC.
 rewrite -muleA; congr (_ * _).
 under [X in X * _]eq_integral=> x _ do rewrite mulr_powRB1 ?subr_gt0//.
 rewrite poweRD; last by rewrite poweRD_defE gt_eqF ?implyFb// subr_gt0 invf_lt1.
@@ -746,10 +744,7 @@ Lemma lerB_DLnorm f g p :
   'N_p%:E[f] <= 'N_p%:E[f \+ g] + 'N_p%:E[g].
 Proof.
 move=> mf mg p1.
-rewrite (_ : f = ((f \+ g) \+ (-%R \o g))%R); last first.
-  by apply: funext => x /=; rewrite -addrA subrr addr0.
-rewrite [X in _ <= 'N__[X] + _](_ : _ = (f \+ g)%R); last first.
-  by apply: funext => x /=; rewrite -addrA [X in _ + _ + X]addrC subrr addr0.
+rewrite [in leLHS](_ : f = ((f + g) + (-%R \o g))%R); last by rewrite addrK.
 rewrite (_ : 'N__[g] = 'N_p%:E[-%R \o g]); last first.
   rewrite (_ : EFin \o (-%R \o g) = \- (EFin \o g))//.
   apply: esym.
@@ -1240,8 +1235,7 @@ move: p q => [p| |//] [q| |]// p1 q1.
   have r'0 : (0 < r')%R.
     by rewrite /r' invr_gt0 subr_gt0 invf_lt1 ?(lt_trans ltr01)//;
       rewrite /r ltr_pdivlMr// mul1r.
-  have rr'1 : (r^-1 + r'^-1 = 1)%R.
-    by rewrite /r' /r invf_div invrK addrCA subrr addr0.
+  have rr'1 : (r^-1 + r'^-1 = 1)%R by rewrite /r' /r invf_div invrK subrKC.
   move=> /(_ mfp m1 r0 r'0 rr'1).
   under [in leLHS] eq_integral do rewrite /= powRr1// norm_powR// normrE.
   under [in leRHS] eq_integral do

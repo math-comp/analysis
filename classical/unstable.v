@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
-From mathcomp Require Import archimedean finset interval mathcomp_extra.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
+From mathcomp Require Import archimedean interval mathcomp_extra.
 
 (**md**************************************************************************)
 (* # MathComp extra                                                           *)
@@ -277,16 +277,13 @@ Lemma onemK r : `1-(`1-r) = r. Proof. exact: subKr. Qed.
 Lemma add_onemK r : r + `1- r = 1. Proof. by rewrite /onem addrC subrK. Qed.
 
 Lemma onemD r s : `1-(r + s) = `1-r - s.
-Proof. by rewrite /onem addrAC opprD addrA addrAC. Qed.
+Proof. by rewrite /onem opprD addrA. Qed.
 
 Lemma onemMr r s : s * `1-r = s - s * r.
 Proof. by rewrite /onem mulrBr mulr1. Qed.
 
 Lemma onemM r s : `1-(r * s) = `1-r + `1-s - `1-r * `1-s.
-Proof.
-rewrite /onem mulrBr mulr1 mulrBl mul1r opprB -addrA.
-by rewrite (addrC (1 - r)) !addrA subrK opprB addrA subrK addrK.
-Qed.
+Proof. by rewrite /onem mulrBl 2!mulrBr !mul1r mulr1 addrKA opprK subrKA. Qed.
 
 End onem_ring.
 

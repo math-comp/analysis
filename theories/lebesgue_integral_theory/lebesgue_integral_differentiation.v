@@ -205,8 +205,7 @@ have ball_itv2 r : 0 < r -> ball x r = `[x - r, x + r] `\` [set x + r; x - r].
   by rewrite ballE set_itvcc => ?/=; rewrite in_itv => /andP [/ltW -> /ltW ->].
 have ritv r : 0 < r -> mu `[x - r, x + r]%classic = (r *+ 2)%:E.
   move=> /gt0_cp rE; rewrite /= lebesgue_measure_itv/= lte_fin.
-  rewrite ler_ltD // ?rE // -EFinD; congr (_ _).
-  by rewrite opprD opprK addrACA subrr add0r.
+  by rewrite ler_ltD// ?rE// -EFinD opprB addrC subrKA.
 move=> oA intf ctsfx Ax.
 apply: cvg_zero.
 apply/cvgrPdist_le => eps epos; apply: filter_app (@nbhs_right_gt rT 0).
@@ -223,8 +222,7 @@ have -> : \int[mu]_(z in ball x r) f z = \int[mu]_(z in `[x - r, x + r]) f z.
   - by rewrite measureU0//; exact: lebesgue_measure_set1.
 have r20 : 0 <= (r *+ 2)^-1 by rewrite invr_ge0 mulrn_wge0.
 have -> : f x = (r *+ 2)^-1 * \int[mu]_(z in `[x - r, x + r]) cst (f x) z.
-  rewrite Rintegral_cst// ritv//= mulrA mulrAC mulVf ?mul1r//.
-  by apply: lt0r_neq0; rewrite mulrn_wgt0.
+  by rewrite Rintegral_cst// ritv//= mulrC mulfK// mulrn_eq0/=.
 have intRf : mu.-integrable `[x - r, x + r] (EFin \o f).
   exact: (@integrableS _ _ _ mu _ _ _ _ _ xrA intf).
 rewrite /= -mulrBr -fineB; first last.
@@ -837,8 +835,8 @@ rewrite leeD//.
 under eq_integral do rewrite -(mule1 `| _ |).
 rewrite ge0_integralZl//; last exact: measurable_ball.
 rewrite integral_cst//=; last exact: measurable_ball.
-rewrite mul1e muleCA (lebesgue_measure_ball _ (ltW r0)).
-by rewrite inver mulrn_eq0 ?gt_eqF// -EFinM mulVf ?mulr1// mulrn_eq0/= gt_eqF.
+rewrite mul1e (lebesgue_measure_ball _ (ltW r0)).
+by rewrite inver mulrn_eq0 ?gt_eqF//= -!EFinM mulrC mulfK// mulrn_eq0/= gt_eqF.
 Unshelve. all: by end_near. Qed.
 
 End lim_sup_davg.

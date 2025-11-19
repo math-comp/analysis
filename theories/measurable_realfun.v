@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp Require Import finmap fingroup perm rat archimedean.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
+From mathcomp Require Import archimedean rat.
+From mathcomp Require Import boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop reals ereal.
 From mathcomp Require Import interval_inference topology numfun tvs normedtype.
 From mathcomp Require Import function_spaces sequences esum measure.
@@ -935,18 +935,18 @@ Proof. by move=> ? ?; apply: measurable_funD =>//; exact: measurableT_comp. Qed.
 Lemma measurable_funM D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \* g).
 Proof.
-move=> mf mg; rewrite (_ : (_ \* _) = (fun x => 2%:R^-1 * (f x + g x) ^+ 2)
-  \- (fun x => 2%:R^-1 * (f x ^+ 2)) \- (fun x => 2%:R^-1 * (g x ^+ 2))).
-  apply: measurable_funB; first apply: measurable_funB.
-  - apply: measurableT_comp => //.
-    by apply: measurableT_comp (exprn_measurable _) _; exact: measurable_funD.
-  - apply: measurableT_comp => //.
-    exact: measurableT_comp (exprn_measurable _) _.
-  - apply: measurableT_comp => //.
-    exact: measurableT_comp (exprn_measurable _) _.
-rewrite funeqE => x /=; rewrite -2!mulrBr sqrrD (addrC (f x ^+ 2)) -addrA.
-rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
-by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVf ?mul1r.
+move=> mf mg.
+have ->: f \* g = (fun x => 2%:R^-1 * (f x + g x) ^+ 2)
+  \- (fun x => 2%:R^-1 * (f x ^+ 2)) \- (fun x => 2%:R^-1 * (g x ^+ 2)).
+  rewrite funeqE => x /=; rewrite -2!mulrBr -addrA -opprD sqrrD.
+  by rewrite -[_ + (_ ^+ 2)]addrA addrCA addrK [RHS]mulrC -mulr_natr mulfK.
+apply: measurable_funB; first apply: measurable_funB.
+- apply: measurableT_comp => //.
+  by apply: measurableT_comp (exprn_measurable _) _; exact: measurable_funD.
+- apply: measurableT_comp => //.
+  exact: measurableT_comp (exprn_measurable _) _.
+apply: measurableT_comp => //.
+exact: measurableT_comp (exprn_measurable _) _.
 Qed.
 
 Lemma measurable_fun_ltr D f g : measurable_fun D f -> measurable_fun D g ->

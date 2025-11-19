@@ -28,10 +28,8 @@ liability. See the COPYING file for more details.
 From Coq Require Import ZArith Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
 From Coq Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
 From Coq Require Import Rtrigo1 Reals.
-From mathcomp Require Import all_ssreflect ssralg poly mxpoly ssrnum.
-From mathcomp Require Import archimedean.
 From HB Require Import structures.
-From mathcomp Require Import mathcomp_extra.
+From mathcomp Require Import all_ssreflect ssralg poly ssrnum archimedean.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

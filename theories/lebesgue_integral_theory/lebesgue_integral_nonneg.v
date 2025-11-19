@@ -1486,7 +1486,7 @@ rewrite closed_ball_ball//= ge0_integral_setU//=; last 4 first.
   by move: mf; rewrite closed_ball_ball.
   by move=> x xcr; rewrite f0// closed_ball_ball// inE.
   apply/disj_setPLR => x [->|]/=; rewrite /ball/=.
-    by apply/eqP; rewrite (addrC _ r) -subr_eq -addrA addrC subrK eqNr gt_eqF.
+    by move/addrI; apply/eqP; rewrite eqNr gt_eqF.
   by move=> /[swap] ->; rewrite opprD addNKr normrN gtr0_norm// ltxx.
 rewrite ge0_integral_setU//=.
 - by rewrite !integral_set1//= add0e adde0.

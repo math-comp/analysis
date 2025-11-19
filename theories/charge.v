@@ -92,7 +92,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldNormedType.Exports.
 
 Local Open Scope ring_scope.
@@ -909,7 +909,7 @@ apply/fine_cvgP; split.
     by apply: contra maxe_lt1 => /eqP ->; rewrite max_r ?leNye//= normrN1 lexx.
   by rewrite lt_eqF// (@le_lt_trans _ _ 0)// mule_le0_ge0.
 apply/cvgrPdist_lt => _ /posnumP[e].
-have : (0 < minr e%:num 1)%R by rewrite lt_min// ltr01 andbT.
+have : (0 < Num.min e%:num 1)%R by rewrite lt_min// ltr01 andbT.
 move/cvgrPdist_lt : maxe_cvg_0 => /[apply] -[M _ hM].
 near=> n; rewrite sub0r normrN.
 have /hM : (M <= n)%N by near: n; exists M.
@@ -1621,7 +1621,7 @@ exists (PosNum e_gt0); rewrite ge0_integralD//; last 2 first.
 rewrite integral_cst// -lteBrDr//; last first.
   by rewrite fin_numM// fin_num_measure.
 rewrite -[X in _ * X](@fineK _ (mu A)) ?fin_num_measure//.
-rewrite -EFinM -mulrA mulVf ?mulr1; last first.
+rewrite -EFinM divfK; last first.
   by rewrite gt_eqF// fine_gt0// muA_gt0/= ltey_eq fin_num_measure.
 rewrite lteBrDl// addeC -lteBrDl//; last first.
 rewrite -(@fineK _ (nu A))// ?fin_num_measure// -[X in _ - X](@fineK _)//.

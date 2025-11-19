@@ -1,13 +1,11 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
-From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions cardinality set_interval.
-From mathcomp Require Import interval_inference ereal reals topology.
-From mathcomp Require Import function_spaces real_interval prodnormedzmodule.
-From mathcomp Require Import tvs num_normedtype.
+From mathcomp Require Import boolp classical_sets functions cardinality.
+From mathcomp Require Import set_interval interval_inference ereal reals.
+From mathcomp Require Import topology function_spaces prodnormedzmodule tvs.
+From mathcomp Require Import num_normedtype.
 
 (**md**************************************************************************)
 (* # Normed topological abelian groups                                        *)
@@ -70,7 +68,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldTopology.Exports.
 
 Local Open Scope classical_set_scope.
@@ -231,7 +229,7 @@ Section pseudoMetricNormedZmod_numDomainType.
 Context {K : numDomainType} {V : pseudoMetricNormedZmodType K}.
 
 (**md Balls defined by the norm: *)
-Local Notation ball_norm := (ball_ (@normr K V)).
+Local Notation ball_norm := (ball_ (@Num.norm K V)).
 
 Lemma ball_normE : ball_norm = ball.
 Proof. by rewrite pseudo_metric_ball_norm. Qed.
@@ -547,7 +545,7 @@ apply/cvgrPdist_lt=> _/posnumP[e]; near=> a.
 by rewrite -mulrnBl normrMn -mulr_natr -ltr_pdivlMr.
 Unshelve. all: by end_near. Qed.
 
-Lemma norm_continuous : continuous (normr : V -> K).
+Lemma norm_continuous : continuous (Num.norm : V -> K).
 Proof.
 move=> x; apply/(@cvgrPdist_lt K K^o) => e e0; apply/nbhs_normP.
 by exists e => //= y; exact/le_lt_trans/ler_dist_dist.
@@ -1030,7 +1028,7 @@ Implicit Type f : R -> R.
 
 Let near_at_left (a : itv_bound R) b f eps : (a < BLeft b)%O -> 0 < eps ->
   {within [set` Interval a (BRight b)], continuous f} ->
-  \forall t \near b^'-, normr (f b - f t) < eps.
+  \forall t \near b^'-, `|f b - f t| < eps.
 Proof.
 move=> ab eps_gt0 cf.
 move/continuous_withinNx/(@cvgrPdist_lt _ R^o)/(_ _ eps_gt0) : (cf b).
@@ -1049,7 +1047,7 @@ Qed.
 
 Let near_at_right a (b : itv_bound R) f eps : (BRight a < b)%O -> 0 < eps ->
   {within [set` Interval (BLeft a) b], continuous f} ->
-  \forall t \near a^'+, normr (f a - f t) < eps.
+  \forall t \near a^'+, `|f a - f t| < eps.
 Proof.
 move=> ab eps_gt0 cf.
 move/continuous_withinNx/(@cvgrPdist_lt _ R^o)/(_ _ eps_gt0) : (cf a).

@@ -43,9 +43,8 @@
 (*                                                                            *)
 (******************************************************************************)
 
-From Corelib Require Import Setoid.
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra archimedean.
+From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp Require Import boolp classical_sets set_interval.
 
 Declare Scope real_scope.
@@ -54,10 +53,9 @@ Declare Scope real_scope.
 Set   Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Unset SsrOldRewriteGoalsOrder.
 
-Import Order.TTheory Order.Syntax GRing.Theory Num.Def Num.Theory.
-From mathcomp Require Import mathcomp_extra unstable.
+Import Order.TTheory GRing.Theory Num.Theory.
+From mathcomp Require Import unstable.
 
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.
@@ -95,7 +93,7 @@ Variable R : realDomainType.
 Implicit Types E : set R.
 Implicit Types x : R.
 
-Lemma has_ub_image_norm E : has_ubound (normr @` E) -> has_ubound E.
+Lemma has_ub_image_norm E : has_ubound (Num.norm @` E) -> has_ubound E.
 Proof.
 case => M /ubP uM; exists `|M|; apply/ubP => r rS.
 by rewrite (le_trans (ler_norm _))// (le_trans (uM _ _))//; exact: ler_norm.
@@ -240,11 +238,11 @@ Variable R : realType.
 Implicit Types x y : R.
 Definition floor_set x := [set y : R | (y \is a Rint) && (y <= x)].
 
-Definition Rfloor x : R := (floor x)%:~R.
+Definition Rfloor x : R := (Num.floor x)%:~R.
 
 Definition range1 (x : R) := [set y | x <= y < x + 1].
 
-Definition Rceil x : R := (ceil x)%:~R.
+Definition Rceil x : R := (Num.ceil x)%:~R.
 
 End RealDerivedOps.
 
@@ -350,12 +348,12 @@ Proof.
 move/has_inf_supN => ? /has_inf_supN ?; rewrite /inf.
 rewrite [X in - sup X = _](_ : _ =
     [set x + y | x in [set - x | x in A ] & y in [set - x | x in B]]).
-  rewrite eqEsubset; split => /= t [] /= x []a Aa.
-    case => b Bb <- <-; exists (- a); first by exists a.
-    by exists (- b); [exists b|rewrite opprD].
-  move=> <- [y] [b Bb] <- <-; exists (a + b); last by rewrite opprD.
-  by exists a => //; exists b.
-by rewrite sup_sumE // -opprD.
+  by rewrite sup_sumE // -opprD.
+rewrite eqEsubset; split => /= t [] /= x []a Aa.
+  case => b Bb <- <-; exists (- a); first by exists a.
+  by exists (- b); [exists b|rewrite opprD].
+move=> <- [y] [b Bb] <- <-; exists (a + b); last by rewrite opprD.
+by exists a => //; exists b.
 Qed.
 
 End sup_sum.
@@ -465,12 +463,12 @@ by rewrite absz_eq0 subr_eq0 eq_sym (negbTE ne_yz).
 Qed.
 
 Lemma isint_Rfloor x : Rfloor x \is a Rint.
-Proof. by rewrite inE; exists (floor x). Qed.
+Proof. by rewrite inE; exists (Num.floor x). Qed.
 
-Lemma RfloorE x : Rfloor x = (floor x)%:~R.
+Lemma RfloorE x : Rfloor x = (Num.floor x)%:~R.
 Proof. by []. Qed.
 
-Lemma mem_rg1_floor x : (range1 (floor x)%:~R) x.
+Lemma mem_rg1_floor x : (range1 (Num.floor x)%:~R) x.
 Proof. by rewrite /range1 /mkset intrD1 floor_le_tmp floorD1_gt. Qed.
 
 Lemma mem_rg1_Rfloor x : (range1 (Rfloor x)) x.
@@ -525,7 +523,7 @@ Proof. by move=> x0; rewrite (le_lt_trans _ x0) // Rfloor_le. Qed.
 
 Lemma ltr_add_invr (y x : R) : y < x -> exists k, y + k.+1%:R^-1 < x.
 Proof.
-move=> yx; exists (truncn (x - y)^-1).
+move=> yx; exists (Num.truncn (x - y)^-1).
 by rewrite -ltrBrDl invf_plt 1?posrE 1?subr_gt0// truncnS_gt.
 Qed.
 
@@ -551,7 +549,7 @@ Proof. by move=> x y ?; rewrite /Rceil ler_int le_ceil_tmp. Qed.
 Lemma Rceil_ge0 x : 0 <= x -> 0 <= Rceil x.
 Proof. by move=> x0; rewrite /Rceil ler0z -(ceil0 R) le_ceil_tmp. Qed.
 
-Lemma RceilE x : Rceil x = (ceil x)%:~R.
+Lemma RceilE x : Rceil x = (Num.ceil x)%:~R.
 Proof. by []. Qed.
 
 #[deprecated(since="mathcomp-analysis 1.3.0", note="use `Num.Theory.ceil_le` instead")]
@@ -613,9 +611,9 @@ have [supA|supNA] := pselect (has_sup A); last first.
   by rewrite !sup_out // => /has_sup_down.
 have supDA : has_sup (down A) by apply/has_sup_down.
 apply/eqP; rewrite eq_le !sup_le //.
-- by case: supA => -[x xA] _; exists x; apply/le_down.
 - by rewrite downK; exact: le_down.
 - by case: supA.
+- by case: supA => -[x xA] _; exists x; apply/le_down.
 Qed.
 
 Lemma lt_sup_imfset {T : Type} (F : T -> R) l :
@@ -709,13 +707,9 @@ have [/andP[a b] c] : x *+ n < m%:~R <= 1 + x *+ n /\ 1 + x *+ n < y *+ n.
   split; [apply/andP; split|] => //; first by rewrite -lerBlDl.
   by move: nyx; rewrite mulrnDl -ltrBrDr mulNrn.
 have n_gt0 : n != 0%N by apply: contraTN nyx => /eqP ->; rewrite mulr0n ltr10.
-exists (m%:Q / n%:Q); rewrite in_itv /=; apply/andP; split.
-  rewrite rmorphM/= (@rmorphV _ _ _ n%:~R); first by rewrite unitfE // intr_eq0.
-  rewrite ltr_pdivlMr /=; first by rewrite ltr0q ltr0z ltz_nat lt0n.
-  by rewrite mulrC // !ratr_int mulr_natl.
-rewrite rmorphM /= (@rmorphV _ _ _ n%:~R); first by rewrite unitfE // intr_eq0.
-rewrite ltr_pdivrMr /=; first by rewrite ltr0q ltr0z ltz_nat lt0n.
-by rewrite 2!ratr_int mulr_natr (le_lt_trans _ c).
+exists (m%:Q / n%:Q); rewrite in_itv /= fmorph_div/= ratr_nat ratr_int.
+rewrite ltr_pdivlMr ?ltr_pdivrMr ?ltr0n ?lt0n// !mulr_natr nxm/=.
+apply: (le_lt_trans b c).
 Qed.
 
 End rat_in_itvoo.
@@ -729,14 +723,9 @@ Lemma rationalP (r : R) :
   rational r <-> exists (a : int) (b : nat), r = a%:~R / b%:R.
 Proof.
 split=> [[q _ <-{r}]|[a [b ->]]]; last first.
-  exists (a%:~R / b%:R) => //.
-  by rewrite ratr_is_multiplicative ratr_int fmorphV//= ratr_nat.
-have [n d nd] := ratP q.
-have [n0|n0] := leP 0 n.
-  exists n, d.+1.
-  by rewrite ratr_is_multiplicative ratr_int fmorphV/= ratr_nat.
-exists (- `|n|), d.+1.
-by rewrite ratr_is_multiplicative ltr0_norm// opprK fmorphV//= !ratr_int.
+  by exists (a%:~R / b%:R); rewrite // fmorph_div/= ratr_nat ratr_int.
+have [n d nd] := ratP q; exists n, d.+1.
+by rewrite fmorph_div/= ratr_nat ratr_int.
 Qed.
 
 Definition irrational : set R := ~` rational.

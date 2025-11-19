@@ -1,11 +1,9 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
-From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions cardinality set_interval.
-From mathcomp Require Import interval_inference ereal reals real_interval.
+From mathcomp Require Import boolp classical_sets functions cardinality.
+From mathcomp Require Import set_interval interval_inference ereal reals.
 From mathcomp Require Import topology function_spaces tvs num_normedtype.
 From mathcomp Require Import pseudometric_normed_Zmodule normed_module.
 
@@ -36,7 +34,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldNormedType.Exports.
 
 Local Open Scope classical_set_scope.
@@ -278,7 +276,7 @@ have ztfin : edist (z, t) \is a fin_num by apply/edist_finP; exists eps%:num.
 move=> /(@edist_fin _ _ _ (z, t)) - /(_ trivial).
 rewrite -[edist (z, t)]fineK ?lee_fin //; apply: le_trans.
 rewrite ler_norml; apply/andP; split.
-  rewrite lerBrDr addrC lerBlDr  addrC -fineD //.
+  rewrite lerBrDr addrC lerBlDr addrC -fineD //.
   rewrite -lee_fin ?fineK // ?fin_numD ?ztfin ?fz_fin // edist_sym.
   exact: edist_inf_triangle.
 rewrite lerBlDr -fineD // -lee_fin ?fineK // ?fin_numD ?tfin ?ztfin //.
@@ -339,12 +337,11 @@ pose f z := (f' z)/eps%:num; exists f; split.
   rewrite fineK //; first exact: edist_inf_continuous.
 - move=> _ [x _ <-]; rewrite set_itvE /=; apply/andP; split.
     by rewrite /f divr_ge0 // /f' /= le_min fine_ge0//= edist_inf_ge0.
-  by rewrite /f ler_pdivrMr // mul1r /f' /= /minr; case: ltP => // /ltW.
-- by move=> ? [z Az] <-; rewrite /f/f' /= edist_inf0 // /minr fine0 ifT ?mul0r.
-- move=> ? [b Bb] <-; rewrite /f /f'/= /minr/=.
-  case: ltP => //; rewrite ?divrr // ?unitf_gt0 // -lte_fin fineK//.
-  move => /ereal_inf_lt [_ [z Az <-]] ebz; have [] := exy _ _ Az Bb.
-  exact/ball_sym/(@edist_lt_ball R T' _ (b, z)).
+  by rewrite /f ler_pdivrMr // mul1r /f' /= ge_min lexx orbT.
+- by move=> ? [z Az] <-; rewrite /f/f' /= edist_inf0 // fine0 min_l// mul0r.
+- move=> ? [b Bb] <-; rewrite /f /f'/=; case: ltP; rewrite ?divff//.
+  rewrite -lte_fin fineK// => /ereal_inf_lt [_ [z Az <-]] ebz.
+  by have [] := exy _ _ Az Bb; exact/ball_sym/(@edist_lt_ball R T' _ (b, z)).
 Qed.
 
 End urysohn_separator.

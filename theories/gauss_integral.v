@@ -15,7 +15,7 @@ From mathcomp Require Import exp trigo lebesgue_integral derive charge ftc.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldNormedType.Exports.
 
 Local Open Scope classical_set_scope.
@@ -156,7 +156,7 @@ rewrite (@le_trans _ _ (2 * `|x * gauss_fun x|))//.
   do 2 rewrite ger0_norm ?expR_ge0//.
   by rewrite ler_expR// lerN2 ler_peMl ?sqr_ge0// lerDl sqr_ge0.
 rewrite normrM (ger0_norm (expR_ge0 _)).
-have ? : `|x| <= maxr `|c + e| `|c - e|.
+have ? : `|x| <= Num.max `|c + e| `|c - e|.
   rewrite le_max.
   have [x0|x0] := lerP 0 x.
     by rewrite ger0_norm// ler_normr (ltW xce).
@@ -164,7 +164,7 @@ have ? : `|x| <= maxr `|c + e| `|c - e|.
   move/ltW : cex.
   rewrite -lerN2 => /le_trans; apply.
   by rewrite -normrN ler_norm.
-rewrite (@le_trans _ _ (2 * ((maxr `|c + e| `|c - e|) * expR (- 0 ^+ 2))))//.
+rewrite (@le_trans _ _ (2 * ((Num.max `|c + e| `|c - e|) * expR (- 0 ^+ 2))))//.
 rewrite ler_pM2l// ler_pM ?expR_ge0//.
 by rewrite expr0n/= oppr0 expR0 gauss_fun_le1.
 Unshelve. all: end_near. Qed.

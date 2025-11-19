@@ -35,7 +35,7 @@ From mathcomp Require Import landau sequences derive realfun convex.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldNormedType.Exports.
 
 Local Open Scope classical_set_scope.
@@ -95,8 +95,7 @@ Proof. by apply/funext => i; rewrite /pseries_diffs /= -mulrN. Qed.
 Lemma pseries_diffs_inv_fact :
   pseries_diffs (fun n => (n`!%:R)^-1) = (fun n => (n`!%:R)^-1 : R).
 Proof.
-apply/funext => i.
-by rewrite /pseries_diffs factS natrM invfM mulrA mulfV ?mul1r.
+by apply/funext => i; rewrite /pseries_diffs factS natrM invfM mulVKf.
 Qed.
 
 Lemma pseries_diffs_sumE n f x :
@@ -144,12 +143,10 @@ Let pseries_diffs_P2 n (z h : R) :
 Proof.
 move=> hNZ; apply: (mulfI hNZ).
 rewrite mulrBr mulrC divfK //.
-case: n => [|n].
-  by rewrite !expr0 !(mul0r, mulr0, subr0, subrr, big_geq).
+case: n => [|n]; first by rewrite !expr0 !(mul0r, mulr0, subrr, big_geq).
 rewrite subrXX addrK -mulrBr; congr (_ * _).
 rewrite -(big_mkord xpredT (fun i => (h + z) ^+ (n - i) * z ^+ i)).
-rewrite big_nat_recr //= subnn expr0 -addrA -mulrBl.
-rewrite -nat1r opprD addrA subrr sub0r mulNr.
+rewrite big_nat_recr //= subnn expr0 -addrA -mulrBl -nat1r opprD addNKr mulNr.
 rewrite mulr_natl -[in X in _ *+ X](subn0 n) -sumr_const_nat -sumrB.
 rewrite pseries_diffs_P1 mulr_sumr !big_mkord; apply: eq_bigr => i _.
 rewrite mulrCA; congr (_ * _).
@@ -289,14 +286,12 @@ apply: (@lim_cvg_to_0_linear _
     apply/funext => n.
     rewrite /pseries_diffs /= mulrA.
     case: n => [|n /=]; first by rewrite !(mul0r, mulr0).
-    rewrite [_%:R *_]mulrC !mulrA -[RHS]mulrA exprS.
-    by rewrite [_^-1 * _]mulrA mulVf ?mul1r.
+    by rewrite [_%:R *_]mulrC !mulrA -[RHS]mulrA exprS mulKf.
   move/is_cvg_pseries_diffs_equiv.
   have ->// : (fun n => n%:R * (n.-1%:R * `|c n| / r) * r ^+ n.-1) =
               (fun n => `|c n| * n%:R * n.-1%:R * r ^+ n.-2).
   apply/funext => [] [|[|i]]; rewrite ?(mul0r, mulr0) //=.
-  rewrite mulrA -mulrA exprS [_^-1 * _]mulrA mulVf //.
-  rewrite mul1r !mulrA; congr (_ * _).
+  rewrite mulrA -mulrA exprS mulKf// !mulrA; congr (_ * _).
   by rewrite mulrC mulrA.
 - move=> h /andP[h_gt0 hLrBx] n.
   rewrite normrM -!mulrA ler_wpM2l //.
@@ -388,7 +383,7 @@ set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
 apply: etrans (_ : f x = f 0) _; last by rewrite /f add0r oppr0 expR0 mulr1.
 apply: is_derive_0_is_cst => x1.
 apply: trigger_derive.
-by rewrite /GRing.scale /= mulrN1 addr0 mulr1 mulrN addrC mulrC subrr.
+by rewrite /GRing.scale/= addr0 2!mulrN 2!mulr1 mulrC addNr.
 Qed.
 
 Lemma expRxMexpNx_1 x : expR x * expR (- x) = 1.
@@ -410,7 +405,7 @@ Qed.
 
 Lemma expR_ge0 x : 0 <= expR x. Proof. by rewrite ltW// expR_gt0. Qed.
 
-Lemma norm_expR : normr \o expR = (expR : R -> R).
+Lemma norm_expR : Num.norm \o expR = (expR : R -> R).
 Proof. by apply/funext => x /=; rewrite ger0_norm ?expR_ge0. Qed.
 
 Lemma expR_eq0 x : (expR x == 0) = false.
@@ -978,7 +973,7 @@ Qed.
 Lemma mulr_powRB1 x p : 0 <= x -> 0 < p -> x * x `^ (p - 1) = x `^ p.
 Proof.
 rewrite le_eqVlt => /predU1P[<- p0|x0 p0]; first by rewrite mul0r powR0 ?gt_eqF.
-by rewrite -{1}(powRr1 (ltW x0))// -powRD addrCA subrr addr0// gt_eqF.
+by rewrite -{1}(powRr1 (ltW x0))// -powRD subrKC// gt_eqF.
 Qed.
 
 Lemma powRN x r : x `^ (- r) = (x `^ r)^-1.
@@ -1020,7 +1015,7 @@ rewrite le_eqVlt => /predU1P[<-|a0].
   by rewrite powR0 ?invr_eq0 ?pnatr_eq0// sqrtr0.
 have /eqP : (a `^ (2^-1)) ^+ 2 = (Num.sqrt a) ^+ 2.
   rewrite sqr_sqrtr; last exact: ltW.
-  by rewrite /powR gt_eqF// -expRM_natl mulrA divff ?mul1r// lnK.
+  by rewrite /powR gt_eqF// -expRM_natl mulVKf// lnK.
 rewrite eqf_sqr => /predU1P[//|/eqP h].
 have : 0 < a `^ 2^-1 by exact: powR_gt0.
 by rewrite h oppr_gt0 ltNge sqrtr_ge0.
@@ -1051,16 +1046,12 @@ rewrite le_eqVlt => /predU1P[<-|b0] p0 q0 pq.
 have iq1 : q^-1 <= 1 by rewrite -pq ler_wpDl// invr_ge0 ltW.
 have ap0 : (0 < a `^ p)%R by rewrite powR_gt0.
 have bq0 : (0 < b `^ q)%R by rewrite powR_gt0.
-have := @concave_ln _ (Itv01 (eqbRL (invr_ge0 _) (ltW q0)) iq1) _ _ bq0 ap0.
-rewrite 2!(convC (Itv01 _ _)).
 have pq' : (p^-1 = 1 - q^-1)%R by rewrite -pq addrK.
-have qp' : (q^-1 = 1 - p^-1)%R by rewrite -pq addrAC subrr add0r.
-rewrite !convRE/= /onem -pq' -[_ <= ln _]ler_expR expRD (mulrC p^-1).
-rewrite ln_powR mulrAC divff ?mul1r ?gt_eqF//.
-rewrite ln_powR -qp' mulrA mulVf ?gt_eqF// ?mul1r.
-rewrite lnK ?posrE// lnK ?posrE// => /le_trans; apply.
-rewrite lnK//; last by rewrite posrE addr_gt0// mulr_gt0// ?invr_gt0.
-by rewrite (mulrC _ p^-1) (mulrC _ q^-1).
+have qp' : (q^-1 = 1 - p^-1)%R by rewrite -pq -addrA subrKC.
+have := @concave_ln _ (Itv01 (eqbRL (invr_ge0 _) (ltW q0)) iq1) _ _ bq0 ap0.
+rewrite 2!(convC (Itv01 _ _)) !convRE/= /onem -pq' -[_ <= ln _]ler_expR expRD.
+rewrite 2!ln_powR mulrCA mulVKf ?gt_eqF// -qp' mulrCA mulVKf ?gt_eqF//.
+by rewrite 2![_^-1 * _]mulrC 3?lnK ?posrE// addr_gt0// mulr_gt0// ?invr_gt0.
 Qed.
 
 Definition powR_itv i :=

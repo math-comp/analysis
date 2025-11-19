@@ -165,18 +165,17 @@ suff: forall x_, (forall n : nat, x_ n != a) ->
   move=> suf.
   apply/cvgrPdist_le => /= r r0.
   have [rho /= rho0 arhouv] := near_in_itvoo Ia.
-  move/cvgr_dist_lt : (t_cvg0) => /(_ _ rho0)[m _ t_cvg0'].
+  move/cvgr0_norm_lt: (t_cvg0) => /(_ _ rho0)[m _ t_cvg0'].
   near \oo => N.
   pose x k := a + t (N + k)%N.
   have x_a n : x n != a by rewrite /x addrC eq_sym -subr_eq subrr eq_sym t_neq0.
   have x_cvg_a : x n @[n --> \oo] --> a.
     apply: cvg_zero.
-    rewrite [X in X @ _ --> _](_ : _ = (fun n => t (n + N)%N)); last first.
-      by apply/funext => n; rewrite /x fctE addrAC subrr add0r addnC.
-    by rewrite cvg_shiftn.
+    suff ->: (x - cst a) = (fun n => t (n + N)%N) by rewrite cvg_shiftn.
+    by apply/funext => n; rewrite !fctE [x _]addrC addrK addnC.
   have Ix n : I (x n).
     apply: arhouv => /=.
-    rewrite /x opprD addrA subrr.
+    rewrite opprD addNKr normrN.
     apply: t_cvg0' => //=.
     by rewrite (@leq_trans N) ?leq_addr//; near: N; exists m.
   have /cvgrPdist_le/(_ _ r0)[n _ /=] := suf x x_a x_cvg_a Ix.
@@ -201,7 +200,7 @@ have intg_ m : mu.-integrable B (EFin \o g_ m).
     by apply: integrableB; [by []|exact:intf..].
   exact: bounded_cst.
 have Bg_G : {ae mu, forall y n, B y -> (`|(g_ n y)%:E| <= (EFin \o G) y)%E}.
-  apply/aeW => y n By; rewrite /g_.
+  apply/aeW => y n By; rewrite /g_ lee_fin normf_div.
   have [axn|axn|<-] := ltgtP a (x_ n).
   - have axnI : `[a, (x_ n)] `<=` I.
       apply: subset_itvSoo; rewrite bnd_simp.
@@ -212,11 +211,10 @@ have Bg_G : {ae mu, forall y n, B y -> (`|(g_ n y)%:E| <= (EFin \o G) y)%E}.
         by apply: derf1 => //; exact/axnI/subset_itv_oo_cc.
       by rewrite /partial1of2 derive1E.
     have cf : {within `[a, (x_ n)], continuous (f^~ y)}.
-      have : {within I, continuous (f^~ y)}.
-        by apply: derivable_within_continuous => /= r Ir; exact: derf1.
-      by apply: continuous_subspaceW; exact: axnI.
+      apply: continuous_subspaceW axnI _.
+      by apply: derivable_within_continuous => /= r Ir; exact: derf1.
     have [C caxn ->] := @MVT _ (f^~ y) (('d1 f) ^~ y) _ _ axn x_fd1f cf.
-    rewrite -mulrA divff// ?subr_eq0// mulr1 lee_fin G_ub//.
+    rewrite normrM mulfK ?normr_eq0 ?subr_eq0// G_ub//.
     by move/subset_itv_oo_cc : caxn => /axnI.
   - have xnaI : `[(x_ n), a] `<=` I.
       apply: subset_itvSoo; rewrite bnd_simp.
@@ -227,15 +225,13 @@ have Bg_G : {ae mu, forall y n, B y -> (`|(g_ n y)%:E| <= (EFin \o G) y)%E}.
         by apply: derf1 => //; exact/xnaI/subset_itv_oo_cc.
       by rewrite partial1of2E.
     have cf : {within `[(x_ n), a], continuous (f^~ y)}.
-      have : {within I, continuous (f^~ y)}.
-        by apply: derivable_within_continuous => /= r Ir; exact: derf1.
-      by apply: continuous_subspaceW; exact: xnaI.
+      apply: continuous_subspaceW xnaI _.
+      by apply: derivable_within_continuous => /= r Ir; exact: derf1.
     have [C caxn] := @MVT _ (f^~ y) (('d1 f) ^~ y) _ _ axn x_fd1f cf.
-    rewrite abse_EFin normrM distrC => ->.
-    rewrite normrM -mulrA distrC normfV divff// ?normr_eq0 ?subr_eq0//.
-    rewrite mulr1 lee_fin G_ub//.
+    rewrite distrC => ->.
+    rewrite normrM distrC mulfK ?normr_eq0 ?subr_eq0// G_ub//.
     by move/subset_itv_oo_cc : caxn => /xnaI.
-  - by rewrite subrr mul0r abse0 lee_fin.
+  - by rewrite !subrr normr0 mul0r.
 have g_cvg_d1f : forall y, B y -> (g_ n y)%:E @[n --> \oo] --> (('d1 f) a y)%:E.
   move=> y By; apply/fine_cvgP; split; first exact: nearW.
   rewrite /comp/=.

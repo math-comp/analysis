@@ -53,7 +53,7 @@ From mathcomp Require Import derive charge.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldNormedType.Exports.
 
 Local Open Scope classical_set_scope.
@@ -96,7 +96,7 @@ apply: cvg_at_right_left_dnbhs.
   pose E x n := `[x, x + d n[%classic%R.
   have muE y n : mu (E y n) = (d n)%:E.
     rewrite /E lebesgue_measure_itv/= lte_fin ltrDl d_gt0.
-    by rewrite -EFinD addrAC subrr add0r.
+    by rewrite -EFinD -addrA subrKC.
   have nice_E y : nicely_shrinking y (E y).
     split=> [n|]; first exact: measurable_itv.
     exists (2%R, fun n => PosNum (d_gt0 n)); split => //= [n z|n].
@@ -150,7 +150,7 @@ apply: cvg_at_right_left_dnbhs.
   pose E x n := `]x + d n, x]%classic%R.
   have muE y n : mu (E y n) = (- d n)%:E.
     rewrite /E lebesgue_measure_itv/= lte_fin -ltrBrDr.
-    by rewrite ltrDl Nd_gt0 -EFinD opprD addrA subrr add0r.
+    by rewrite ltrDl Nd_gt0 -EFinD opprD addNKr.
   have nice_E y : nicely_shrinking y (E y).
     split=> [n|]; first exact: measurable_itv.
     exists (2%R, (fun n => PosNum (Nd_gt0 n))); split => //=.
@@ -441,9 +441,9 @@ rewrite Rintegral_setU//=; last 2 first.
   by rewrite leNgt => /negbTE ->.
 have xbab : `]x, b] `<=` `[a, b].
   by apply: subset_itvr; rewrite bnd_simp; near: x; exact: nbhs_left_ge.
-rewrite -addrAC subrr add0r (le_trans (le_normr_Rintegral _ _))//.
+rewrite -addrA subrKC (le_trans (le_normr_Rintegral _ _))//.
   exact: integrableS intf.
-rewrite [leLHS](_ : _ = (\int[mu]_(t in `]x, b]) normr (fab t)))//; last first.
+rewrite [leLHS](_ : _ = (\int[mu]_(t in `]x, b]) `|fab t|))//; last first.
   apply: eq_Rintegral => //= z; rewrite inE/= in_itv/= => /andP[xz zb].
   rewrite /fab patchE ifT// inE/= in_itv/= zb andbT (le_trans _ (ltW xz))//.
   by near: x; exact: nbhs_left_ge.
@@ -481,8 +481,7 @@ have [xz|xz|->] := ltgtP x z; last by rewrite subrr normr0 ltW.
     exists `|z - a| => /=; first by rewrite gtr0_norm ?subr_gt0.
     move=> y /= + yz.
     do 2 rewrite gtr0_norm ?subr_gt0//.
-    rewrite ltrBlDr -ltrBlDl; apply: le_lt_trans.
-    by rewrite opprB addrCA subrr addr0.
+    by rewrite ltrBlDr -ltrBlDl opprB subrKC.
   rewrite Rintegral_itvB//; last 3 first.
     by apply: integrableS intf => //; apply: subset_itvl; exact: ltW.
     by rewrite bnd_simp ltW.
@@ -606,7 +605,7 @@ have GacFa : G x @[x --> a^'+] --> (- c + F a)%R.
   have GFac : (G x - F x)%R @[x --> a^'+] --> (- c)%R.
     apply/cvgrPdist_le => /= e e0; near=> t.
     rewrite opprB GFc; last by rewrite in_itv/=; apply/andP.
-    by rewrite addrC subrr normr0 ltW.
+    by rewrite addNr normr0 ltW.
   have := @cvgD _ _ _ _ Fap _ _ _ _ GFac Fa.
   rewrite (_ : (G \- F)%R + F = G)//.
   by apply/funext => x/=; rewrite subrK.
@@ -615,7 +614,7 @@ have GbcFb : G x @[x --> b^'-] --> (- c + F b)%R.
   have GFbc : (G x - F x)%R @[x --> b^'-] --> (- c)%R.
     apply/cvgrPdist_le => /= e e0; near=> t.
     rewrite opprB GFc; last by rewrite in_itv/=; apply/andP.
-    by rewrite addrC subrr normr0 ltW.
+    by rewrite addNr normr0 ltW.
   have := @cvgD _ _ _ _ Fbn _ _ _ _ GFbc Fb.
   rewrite (_ : (G \- F)%R + F = G)//.
   by apply/funext => x/=; rewrite subrK.
