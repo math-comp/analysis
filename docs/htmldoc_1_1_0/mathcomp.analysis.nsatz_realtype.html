@@ -1,0 +1,184 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Module mathcomp.analysis.nsatz_realtype</title>
+<meta name="description" content="Documentation of Coq module mathcomp.analysis.nsatz_realtype" />
+<link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+<link href="coq2html.css" rel="stylesheet" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="coq2html.js"> </script>
+</head>
+
+<body onload="init('proofscript')">
+
+  <main>
+    <div class="sidebar">
+      <h2>Files</h2>
+      <li><details id="mathcomp"><summary>mathcomp</summary>
+          <ul>
+          <li><details id="mathcomp.analysis"><summary>analysis</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.cantor.html">cantor</a></li>
+<li><a href="mathcomp.analysis.charge.html">charge</a></li>
+<li><a href="mathcomp.analysis.constructive_ereal.html">constructive_ereal</a></li>
+<li><a href="mathcomp.analysis.convex.html">convex</a></li>
+<li><a href="mathcomp.analysis.derive.html">derive</a></li>
+<li><a href="mathcomp.analysis.ereal.html">ereal</a></li>
+<li><a href="mathcomp.analysis.esum.html">esum</a></li>
+<li><a href="mathcomp.analysis.exp.html">exp</a></li>
+<li><a href="mathcomp.analysis.forms.html">forms</a></li>
+<li><a href="mathcomp.analysis.ftc.html">ftc</a></li>
+<li><a href="mathcomp.analysis.function_spaces.html">function_spaces</a></li>
+<li><a href="mathcomp.analysis.hoelder.html">hoelder</a></li>
+<li><a href="mathcomp.analysis.itv.html">itv</a></li>
+<li><a href="mathcomp.analysis.kernel.html">kernel</a></li>
+<li><a href="mathcomp.analysis.landau.html">landau</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral.html">lebesgue_integral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></li>
+<li><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html">lebesgue_stieltjes_measure</a></li>
+<li><a href="mathcomp.analysis.measure.html">measure</a></li>
+<li><a href="mathcomp.analysis.normedtype.html">normedtype</a></li>
+<li><a href="mathcomp.analysis.nsatz_realtype.html">nsatz_realtype</a></li>
+<li><a href="mathcomp.analysis.numfun.html">numfun</a></li>
+<li><a href="mathcomp.analysis.probability.html">probability</a></li>
+<li><a href="mathcomp.analysis.prodnormedzmodule.html">prodnormedzmodule</a></li>
+<li><a href="mathcomp.analysis.real_interval.html">real_interval</a></li>
+<li><a href="mathcomp.analysis.realfun.html">realfun</a></li>
+<li><a href="mathcomp.analysis.reals.html">reals</a></li>
+<li><a href="mathcomp.analysis.Rstruct.html">Rstruct</a></li>
+<li><a href="mathcomp.analysis.sequences.html">sequences</a></li>
+<li><a href="mathcomp.analysis.signed.html">signed</a></li>
+<li><a href="mathcomp.analysis.summability.html">summability</a></li>
+<li><a href="mathcomp.analysis.topology.html">topology</a></li>
+<li><a href="mathcomp.analysis.trigo.html">trigo</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.classical"><summary>classical</summary>
+          <ul>
+          <li><a href="mathcomp.classical.all_classical.html">all_classical</a></li>
+<li><a href="mathcomp.classical.boolp.html">boolp</a></li>
+<li><a href="mathcomp.classical.cardinality.html">cardinality</a></li>
+<li><a href="mathcomp.classical.classical_sets.html">classical_sets</a></li>
+<li><a href="mathcomp.classical.contra.html">contra</a></li>
+<li><a href="mathcomp.classical.fsbigop.html">fsbigop</a></li>
+<li><a href="mathcomp.classical.functions.html">functions</a></li>
+<li><a href="mathcomp.classical.mathcomp_extra.html">mathcomp_extra</a></li>
+<li><a href="mathcomp.classical.set_interval.html">set_interval</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+    </div>
+
+  <div class="coq">
+
+    <div class="content">
+      <p><a href="./index.html">Top</a></p>
+      <h1 class="title">Module mathcomp.analysis.nsatz_realtype</h1>
+<span class="vernacular">Require</span> <span class="vernacular">Import</span> <span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.nsatz.Nsatz.html">Nsatz</a></span>.<br/>
+<span class="vernacular">From</span> <span class="id">mathcomp</span> <span class="vernacular">Require</span> <span class="vernacular">Import</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html">ssralg</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrint.html">ssrint</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html">ssrnum</a></span>.<br/>
+<span class="vernacular">From</span> <span class="id">mathcomp</span> <span class="vernacular">Require</span> <span class="vernacular">Import</span> <span class="id"><a href="mathcomp.classical.boolp.html">boolp</a></span>.<br/>
+<span class="vernacular">Require</span> <span class="vernacular">Import</span> <span class="id"><a href="mathcomp.analysis.reals.html">reals</a></span> <span class="id"><a href="mathcomp.analysis.ereal.html">ereal</a></span>.<br/>
+<br/>
+<div class="ssrdoc md">
+# nsatz for realType                                                        
+                                                                            
+This file registers the ring corresponding to the MathComp-Analysis type    
+realType to the tactic nsatz of Coq. This enables some automation used for  
+example in the file trigo.v.                                                
+                                                                            
+Reference:                                                                  
+- https://coq.inria.fr/refman/addendum/nsatz.html                           
+                                                                            
+</div>
+<br/>
+<span class="vernacular">Import</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory">GRing.Theory</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.Theory">Num.Theory</a></span>.<br/>
+<br/>
+<span class="vernacular">Local</span> <span class="vernacular">Open</span> <span class="vernacular">Scope</span> <span class="id">ring_scope</span>.<br/>
+<br/>
+<span class="vernacular">Section</span> <span id="Nsatz_realType" class="id"><a name="Nsatz_realType" class="">Nsatz_realType</a></span>.<br/>
+<span class="vernacular">Variable</span> <span id="Nsatz_realType.T" class="id"><a name="Nsatz_realType.T" class="">T</a></span> <span class="id">:</span> <span class="id"><a href="mathcomp.analysis.reals.html#Real.Exports.realType">realType</a></span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span> <span id="Nsatz_realType_Setoid_Theory" class="id"><a name="Nsatz_realType_Setoid_Theory" class="">Nsatz_realType_Setoid_Theory</a></span> <span class="id">:</span> <span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.Setoids.Setoid.html#Setoid_Theory">Setoid.Setoid_Theory</a></span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T">T</a></span> (@<span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.Init.Logic.html#eq">eq</a></span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof1')">Proof.</span></div>
+<div class="proofscript" id="proof1">
+ <span class="gallina-kwd">by</span> <span class="id">constructor</span> <span class="id">=&gt;</span> <span class="id">[x</span> <span class="id">//|x</span> <span class="id">y</span> <span class="id">//|x</span> <span class="id">y</span> <span class="id">z</span> <span class="id">-&gt;]</span>. Qed.</div>
+<br/>
+<span class="vernacular">Definition</span> <span id="Nsatz_realType0" class="id"><a name="Nsatz_realType0" class="">Nsatz_realType0</a></span> <span class="id">:=</span> (<span class="id">0</span>%<span class="id">:R</span> <span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.ssr.ssreflect.html#::core_scope:x_':'_x">:</a></span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
+<span class="vernacular">Definition</span> <span id="Nsatz_realType1" class="id"><a name="Nsatz_realType1" class="">Nsatz_realType1</a></span> <span class="id">:=</span> (<span class="id">1</span>%<span class="id">:R</span> <span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.ssr.ssreflect.html#::core_scope:x_':'_x">:</a></span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
+<span class="vernacular">Definition</span> <span id="Nsatz_realType_add" class="id"><a name="Nsatz_realType_add" class="">Nsatz_realType_add</a></span> (<span id="x:2" class="id"><a name="x:2" class="">x</a></span> <span id="y:3" class="id"><a name="y:3" class="">y</a></span> <span class="id">:</span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T">T</a></span>) <span class="id">:=</span> (<span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#x:2">x</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752">+</a></span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#y:3">y</a></span>)%<span class="id">R</span>.<br/>
+<span class="vernacular">Definition</span> <span id="Nsatz_realType_mul" class="id"><a name="Nsatz_realType_mul" class="">Nsatz_realType_mul</a></span> (<span id="x:4" class="id"><a name="x:4" class="">x</a></span> <span id="y:5" class="id"><a name="y:5" class="">y</a></span> <span class="id">:</span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T">T</a></span>) <span class="id">:=</span> (<span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#x:4">x</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc">*</a></span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#y:5">y</a></span>)%<span class="id">R</span>.<br/>
+<span class="vernacular">Definition</span> <span id="Nsatz_realType_sub" class="id"><a name="Nsatz_realType_sub" class="">Nsatz_realType_sub</a></span> (<span id="x:6" class="id"><a name="x:6" class="">x</a></span> <span id="y:7" class="id"><a name="y:7" class="">y</a></span> <span class="id">:</span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T">T</a></span>) <span class="id">:=</span> (<span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#x:6">x</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x">-</a></span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#y:7">y</a></span>)%<span class="id">R</span>.<br/>
+<span class="vernacular">Definition</span> <span id="Nsatz_realType_opp" class="id"><a name="Nsatz_realType_opp" class="">Nsatz_realType_opp</a></span> (<span id="x:8" class="id"><a name="x:8" class="">x</a></span>  <span class="id">:</span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T">T</a></span>) <span class="id">:=</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x">-</a></span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#x:8">x</a></span>)%<span class="id">R</span>.<br/>
+<br/>
+<span class="id">#[global]</span><br/>
+<span class="vernacular">Instance</span> <span id="Nsatz_realType_Ring_ops" class="id"><a name="Nsatz_realType_Ring_ops" class="">Nsatz_realType_Ring_ops:</a></span><br/>
+&nbsp;&nbsp;&nbsp;(@<span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.setoid_ring.Ncring.html#Ring_ops">Ncring.Ring_ops</a></span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T">T</a></span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType0">Nsatz_realType0</a></span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType1">Nsatz_realType1</a></span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType_add">Nsatz_realType_add</a></span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType_mul">Nsatz_realType_mul</a></span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType_sub">Nsatz_realType_sub</a></span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType_opp">Nsatz_realType_opp</a></span> (@<span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.Init.Logic.html#eq">eq</a></span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)).<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof2')">Proof.</span></div>
+<div class="proofscript" id="proof2">
+Defined.</div>
+<br/>
+<span class="id">#[global]</span><br/>
+<span class="vernacular">Instance</span> <span id="Nsatz_realType_Ring" class="id"><a name="Nsatz_realType_Ring" class="">Nsatz_realType_Ring</a></span> <span class="id">:</span> (<span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.setoid_ring.Ncring.html#Ring">Ncring.Ring</a></span> (<span class="id">Ro:=Nsatz_realType_Ring_ops</span>)).<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof3')">Proof.</span></div>
+<div class="proofscript" id="proof3">
+<span class="id">constructor</span> <span class="id">=&gt;</span> <span class="id">//</span>.<br/>
+<span class="id">-</span> <span class="id">exact:</span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType_Setoid_Theory">Nsatz_realType_Setoid_Theory</a></span>.<br/>
+<span class="id">-</span> <span class="gallina-kwd">by</span> <span class="id">move=&gt;</span> <span class="id">x</span> <span class="id">y</span> <span class="id">-&gt;</span> <span class="id">x1</span> <span class="id">y1</span> <span class="id">-&gt;</span>.<br/>
+<span class="id">-</span> <span class="gallina-kwd">by</span> <span class="id">move=&gt;</span> <span class="id">x</span> <span class="id">y</span> <span class="id">-&gt;</span> <span class="id">x1</span> <span class="id">y1</span> <span class="id">-&gt;</span>.<br/>
+<span class="id">-</span> <span class="gallina-kwd">by</span> <span class="id">move=&gt;</span> <span class="id">x</span> <span class="id">y</span> <span class="id">-&gt;</span> <span class="id">x1</span> <span class="id">y1</span> <span class="id">-&gt;</span>.<br/>
+<span class="id">-</span> <span class="gallina-kwd">by</span> <span class="id">move=&gt;</span> <span class="id">x</span> <span class="id">y</span> <span class="id">-&gt;</span>.<br/>
+<span class="id">-</span> <span class="id">exact:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory.add0r">add0r</a></span>.<br/>
+<span class="id">-</span> <span class="id">exact:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory.addrC">addrC</a></span>.<br/>
+<span class="id">-</span> <span class="id">exact:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory.addrA">addrA</a></span>.<br/>
+<span class="id">-</span> <span class="id">exact:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory.mul1r">mul1r</a></span>.<br/>
+<span class="id">-</span> <span class="id">exact:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory.mulr1">mulr1</a></span>.<br/>
+<span class="id">-</span> <span class="id">exact:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory.mulrA">mulrA</a></span>.<br/>
+<span class="id">-</span> <span class="id">exact:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory.mulrDl">mulrDl</a></span>.<br/>
+<span class="id">-</span> <span class="id">move=&gt;</span> <span class="id">x</span> <span class="id">y</span> <span class="id">z;</span> <span class="id">exact:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory.mulrDr">mulrDr</a></span>.<br/>
+<span class="id">-</span> <span class="id">exact:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory.subrr">subrr</a></span>.<br/>
+Defined.</div>
+<br/>
+<span class="id">#[global]</span><br/>
+<span class="vernacular">Instance</span> <span id="Nsatz_realType_Cring" class="id"><a name="Nsatz_realType_Cring" class="">Nsatz_realType_Cring:</a></span> (<span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.setoid_ring.Cring.html#Cring">Cring.Cring</a></span> (<span class="id">Rr:=Nsatz_realType_Ring</span>)).<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof4')">Proof.</span></div>
+<div class="proofscript" id="proof4">
+ <span class="id">exact:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory.mulrC">mulrC</a></span>. Defined.</div>
+<br/>
+<span class="id">#[global]</span><br/>
+<span class="vernacular">Instance</span> <span id="Nsatz_realType_Integral_domain" class="id"><a name="Nsatz_realType_Integral_domain" class="">Nsatz_realType_Integral_domain</a></span> <span class="id">:</span><br/>
+&nbsp;&nbsp;&nbsp;(<span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.setoid_ring.Integral_domain.html#Integral_domain">Integral_domain.Integral_domain</a></span> (<span class="id">Rcr:=Nsatz_realType_Cring</span>)).<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof5')">Proof.</span></div>
+<div class="proofscript" id="proof5">
+<span class="id">constructor</span>.<br/>
+&nbsp;&nbsp;<span class="id">move=&gt;</span> <span class="id">x</span> <span class="id">y</span>.<br/>
+&nbsp;&nbsp;<span class="id">rewrite</span> <span class="id">-[_</span> <span class="id">_</span> <span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.setoid_ring.Algebra_syntax.html#zero">Algebra_syntax.zero</a></span><span class="id">]/</span>(<span class="id">x</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc">*</a></span> <span class="id">y</span> <span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a">=</a></span> <span class="id">0</span>)%<span class="id">R</span> <span class="id">=&gt;</span> <span class="id">/eqP</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span> <span class="id">rewrite</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory.mulf_eq0">mulf_eq0</a></span> <span class="id">=&gt;</span> <span class="id">/orP[]</span> <span class="id">/eqP-&gt;;</span> <span class="id">[left</span> <span class="id">|</span> <span class="id">right]</span>.<br/>
+<span class="id">rewrite</span> <span class="id">-[_</span> <span class="id">_</span> <span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.setoid_ring.Algebra_syntax.html#zero">Algebra_syntax.zero</a></span><span class="id">]/</span>(<span class="id">1</span> <span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a">=</a></span> <span class="id">0</span>)%<span class="id">R;</span> <span class="id">apply/eqP</span>.<br/>
+<span class="gallina-kwd">by</span> <span class="id">rewrite</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.Theory.eqr_nat">eqr_nat</a></span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T">T</a></span> <span class="id">1</span> <span class="id">0</span>).<br/>
+Defined.</div>
+<br/>
+<span class="vernacular">End</span> <span class="id"><a href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType">Nsatz_realType</a></span>.<br/>
+<br/>
+<span class="vernacular">Tactic</span> <span class="vernacular">Notation</span> <span class="id">&quot;nsatz&quot;</span> <span class="id">:=</span> <span class="id">nsatz_default</span>.<br/>
+
+      <div class="footer"><hr/>Generated by <a href="https://github.com/yoshihiro503/coq2html/">a fork of coq2html</a></div>
+    </div>
+  </div>
+    </main>
+</body>
+</html>

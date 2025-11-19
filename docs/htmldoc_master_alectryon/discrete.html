@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>discrete.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="c">(* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)</span>
+<span class="c">(* Copyright (c) - 2015--2018 - Inria                                   *)</span>
+<span class="c">(* Copyright (c) - 2016--2018 - Polytechnique                           *)</span>
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect all_algebra.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> boolp.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="kn">Require Import</span> xfinmap reals.
+<span class="c">(* ------- *)</span> <span class="kn">Require</span> <span class="c">(*--*)</span> Setoid.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kt">Set</span>   Implicit <span class="kn">Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+
+<span class="kn">Import</span> GRing.Theory Num.Theory.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> real_scope.
+
+<span class="kn">Section</span> <span class="nf">ProofIrrelevantChoice</span>.
+
+<span class="kn">Context</span> {<span class="nv">T</span> : choiceType}.
+
+<span class="kn">Lemma</span> <span class="nf">existsTP</span> (<span class="nv">P</span> : T -&gt; <span class="kt">Prop</span>) : { x : T | P x } + (<span class="kr">forall</span> <span class="nv">x</span>, ~ P x).
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: (boolP `[&lt;<span class="kr">exists</span> <span class="nv">x</span> : T, P x&gt;]) =&gt; [/exists_asboolP | /asboolPn] h.
+  <span class="bp">by</span> <span class="nb">case</span>/cid: h =&gt; w Pw; <span class="nb">left</span>; <span class="kr">exists</span> <span class="nv">w</span>; <span class="nb">apply</span>/asboolP.
+<span class="bp">by</span> <span class="nb">right</span>=&gt; x Px; <span class="nb">apply</span>/h; <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">ProofIrrelevantChoice</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">PredSubtype</span>.
+<span class="kn">Section</span> <span class="nf">Def</span>.
+<span class="kn">Variable</span> <span class="nv">T</span> : <span class="kt">Type</span>.
+<span class="kn">Variable</span> <span class="nv">E</span> : pred T.
+
+<span class="kn">Record</span> <span class="nf">pred_sub</span> : <span class="kt">Type</span> :=
+  PSubSub { rsval : T; rsvalP : rsval \<span class="kr">in</span> E }.
+
+<span class="kn">Coercion</span> <span class="nf">rsval</span> : pred_sub &gt;-&gt; T.
+
+<span class="kn">Canonical</span> <span class="nf">pred_sub_subType</span> := <span class="kn">Eval</span> <span class="nb">hnf</span> <span class="kr">in</span> [subType <span class="kr">for</span> rsval].
+<span class="kn">End</span> <span class="nf">Def</span>.
+
+<span class="kn">Definition</span> <span class="nf">pred_sub_eqMixin</span> (<span class="nv">T</span> : eqType) (<span class="nv">E</span> : pred T) :=
+  <span class="kn">Eval</span> <span class="nb">hnf</span> <span class="kr">in</span> [eqMixin of pred_sub E <span class="bp">by</span> &lt;:].
+<span class="kn">Canonical</span> <span class="nf">pred_sub_eqType</span> (T : eqType) (E : pred T) :=
+  <span class="kn">Eval</span> <span class="nb">hnf</span> <span class="kr">in</span> EqType (@pred_sub T E) (pred_sub_eqMixin E).
+
+<span class="kn">Definition</span> <span class="nf">pred_sub_choiceMixin</span> (<span class="nv">T</span> : choiceType) (<span class="nv">E</span> : pred T) :=
+  <span class="kn">Eval</span> <span class="nb">hnf</span> <span class="kr">in</span> [choiceMixin of pred_sub E <span class="bp">by</span> &lt;:].
+<span class="kn">Canonical</span> <span class="nf">pred_sub_choiceType</span> (T : choiceType) (E : pred T) :=
+  <span class="kn">Eval</span> <span class="nb">hnf</span> <span class="kr">in</span> ChoiceType (@pred_sub T E) (pred_sub_choiceMixin E).
+
+<span class="kn">Definition</span> <span class="nf">pred_sub_countMixin</span> (<span class="nv">T</span> : countType) (<span class="nv">E</span> : pred T) :=
+  <span class="kn">Eval</span> <span class="nb">hnf</span> <span class="kr">in</span> [countMixin of pred_sub E <span class="bp">by</span> &lt;:].
+<span class="kn">Canonical</span> <span class="nf">pred_sub_countType</span> (T : countType) (E : pred T) :=
+  <span class="kn">Eval</span> <span class="nb">hnf</span> <span class="kr">in</span> CountType (@pred_sub T E) (pred_sub_countMixin E).
+<span class="kn">End</span> <span class="nf">PredSubtype</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;[ &#39;psub&#39; E ]&quot;</span> := (@pred_sub _ E)
+  (<span class="kn">format</span> <span class="s2">&quot;[ &#39;psub&#39;  E ]&quot;</span>).
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">PIncl</span>.
+<span class="kn">Variables</span> (<span class="nv">T</span> : <span class="kt">Type</span>) (<span class="nv">E</span> <span class="nv">F</span> : pred T) (<span class="nv">le</span> : {subset E &lt;= F}).
+
+<span class="kn">Definition</span> <span class="nf">pincl</span> (<span class="nv">x</span> : [psub E]) : [psub F] :=
+  PSubSub (le (valP x)).
+<span class="kn">End</span> <span class="nf">PIncl</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">Countable</span>.
+<span class="kn">Variable</span> (<span class="nv">T</span> : <span class="kt">Type</span>) (<span class="nv">E</span> : pred T).
+
+<span class="kn">CoInductive</span> <span class="nf">countable</span> : <span class="kt">Type</span> :=
+  Countable
+    (rpickle : [psub E] -&gt; nat)
+    (runpickle : nat -&gt; option [psub E])
+    of pcancel rpickle runpickle.
+
+<span class="kn">Definition</span> <span class="nf">rpickle</span> (<span class="nv">c</span> : countable) :=
+  <span class="kr">let</span>: Countable p _ _ := c <span class="kr">in</span> p.
+
+<span class="kn">Definition</span> <span class="nf">runpickle</span> (<span class="nv">c</span> : countable) :=
+  <span class="kr">let</span>: Countable _ p _ := c <span class="kr">in</span> p.
+
+<span class="kn">Lemma</span> <span class="nf">rpickleK</span> <span class="nv">c</span>: pcancel (rpickle c) (runpickle c).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: c. <span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">Countable</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">CountableTheory</span>.
+<span class="kn">Lemma</span> <span class="nf">countable_countable</span> (<span class="nv">T</span> : countType) (<span class="nv">E</span> : pred T) : countable E.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">choice</span>.pickle choice.unpickle; <span class="nb">apply</span>/choice.pickleK. <span class="kn">Qed</span>.
+
+<span class="kn">Section</span> <span class="nf">CanCountable</span>.
+<span class="kn">Variables</span> (<span class="nv">T</span> : <span class="kt">Type</span>) (<span class="nv">U</span> : countType) (<span class="nv">E</span> : pred T).
+<span class="kn">Variables</span> (<span class="nv">f</span> : [psub E] -&gt; U) (<span class="nv">g</span> : U -&gt; [psub E]).
+
+<span class="kn">Lemma</span> <span class="nf">can_countable</span> : cancel f g -&gt; countable E.
+<span class="kn">Proof</span>.
+<span class="nb">pose</span> p := choice.pickle \o f; <span class="nb">pose</span> u n := omap g (choice.unpickle n).
+<span class="nb">move</span>=&gt; can_fg; <span class="nb">apply</span> (@Countable _ E p u) =&gt; x.
+<span class="bp">by</span> <span class="nb">rewrite</span> {}/u {}/p /= choice.pickleK /= can_fg.
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">CanCountable</span>.
+
+<span class="kn">Section</span> <span class="nf">CountType</span>.
+<span class="kn">Variables</span> (<span class="nv">T</span> : eqType) (<span class="nv">E</span> : pred T) (<span class="nv">c</span> : countable E).
+
+<span class="kn">Definition</span> <span class="nf">countable_countMixin</span>  := CountMixin (rpickleK c).
+<span class="kn">Definition</span> <span class="nf">countable_choiceMixin</span> := CountChoiceMixin countable_countMixin.
+
+<span class="kn">Definition</span> <span class="nf">countable_choiceType</span> :=
+  ChoiceType [psub E] countable_choiceMixin.
+
+<span class="kn">Definition</span> <span class="nf">countable_countType</span> :=
+  CountType countable_choiceType countable_countMixin.
+<span class="kn">End</span> <span class="nf">CountType</span>.
+<span class="kn">End</span> <span class="nf">CountableTheory</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;[ &#39;countable&#39; &#39;of&#39; c ]&quot;</span> := (countable_countType c)
+  (<span class="kn">format</span> <span class="s2">&quot;[ &#39;countable&#39;  &#39;of&#39;  c ]&quot;</span>).
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">Finite</span>.
+<span class="kn">Variables</span> (<span class="nv">T</span> : eqType).
+
+<span class="kn">CoInductive</span> <span class="nf">finite</span> (<span class="nv">E</span> : pred T) : <span class="kt">Type</span> :=
+| Finite s of uniq s &amp; {subset E &lt;= s}.
+<span class="kn">End</span> <span class="nf">Finite</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">FiniteTheory</span>.
+<span class="kn">Context</span> {<span class="nv">T</span> : choiceType}.
+
+
+<span class="kn">Lemma</span> <span class="nf">finiteP</span> (<span class="nv">E</span> : pred T) : (<span class="kr">exists</span> <span class="nv">s</span> : seq T, {subset E &lt;= s}) -&gt; finite E.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>/cid=&gt; s sEs; <span class="kr">exists</span> (<span class="nv">undup</span> <span class="nv">s</span>); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> undup_uniq.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> mem_undup; <span class="bp">exact</span>: sEs.
+<span class="kn">Qed</span>.
+
+
+<span class="kn">Lemma</span> <span class="nf">finiteNP</span> (<span class="nv">E</span> : pred T): (<span class="kr">forall</span> <span class="nv">s</span> : seq T, ~ {subset E &lt;= s}) -&gt;
+  <span class="kr">forall</span> <span class="nv">n</span>, <span class="kr">exists</span> <span class="nv">s</span> : seq T, [/\ size s = n, uniq s &amp; {subset s &lt;= E}].
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; finN; <span class="nb">elim</span>=&gt; [|n [s] [&lt;- uq_s sE]]; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> [::].
+<span class="nb">have</span> [x sxN xE]: <span class="kr">exists2</span> x, x \notin s &amp; x \<span class="kr">in</span> E.
+  <span class="nb">apply</span>: contra_notP (finN (filter (mem E) s)) =&gt; /forall2NP finE x Ex.
+  <span class="nb">move</span>/or_asboolP: (finE x).
+  <span class="bp">by</span> <span class="nb">rewrite</span> !asbool_neg !asboolb negbK Ex mem_filter orbF [(mem E) x]Ex.
+<span class="kr">exists</span> (<span class="nv">x</span> :: s) =&gt; /=; <span class="nb">rewrite</span> sxN; <span class="nb">split</span>=&gt; // y.
+<span class="bp">by</span> <span class="nb">rewrite</span> in_cons =&gt; /orP[/eqP-&gt;//|/sE].
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">FiniteTheory</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">FiniteCountable</span>.
+<span class="kn">Variables</span> (<span class="nv">T</span> : eqType) (<span class="nv">E</span> : pred T).
+
+<span class="kn">Lemma</span> <span class="nf">finite_countable</span> : finite E -&gt; countable E.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>=&gt; s uqs Es; <span class="nb">pose</span> t := pmap (<span class="kr">fun</span> <span class="nv">x</span> =&gt; (insub x : option [psub E])) s.
+<span class="nb">pose</span> f x := index x t; <span class="nb">pose</span> g i := nth None [seq Some x | x &lt;- t] i.
+<span class="nb">apply</span> (@Countable _ E f g) =&gt; x; <span class="nb">rewrite</span> {}/f {}/g /=.
+<span class="nb">have</span> x_in_t: x \<span class="kr">in</span> t; <span class="kp">first</span> <span class="nb">case</span>: x =&gt; x h.
+  <span class="bp">by</span> <span class="nb">rewrite</span> {}/t mem_pmap_sub /= Es.
+<span class="bp">by</span> <span class="nb">rewrite</span> (nth_map x) <span class="nl">?index_mem</span> <span class="nl">?nth_index</span>.
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">FiniteCountable</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">CountSub</span>.
+<span class="kn">Variables</span> (<span class="nv">T</span> : eqType) (<span class="nv">E</span> <span class="nv">F</span> : pred T).
+
+<span class="kn">Lemma</span> <span class="nf">countable_sub</span>: {subset E &lt;= F} -&gt; countable F -&gt; countable E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; le_EF [f g fgK]; <span class="nb">pose</span> f&#39; (x : [psub E]) := f (pincl le_EF x).
+<span class="nb">pose</span> g&#39; x := obind (insub (sT := [subType of [psub E]])) (omap val (g x)).
+<span class="bp">by</span> <span class="kr">exists</span> <span class="nv">f&#39;</span> <span class="nv">g&#39;</span> =&gt; x; <span class="nb">rewrite</span> /f&#39; /g&#39; fgK /= valK.
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">CountSub</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">CountableUnion</span>.
+<span class="kn">Variables</span> (<span class="nv">T</span> : eqType) (<span class="nv">E</span> : nat -&gt; pred T).
+
+<span class="kn">Hypothesis</span> <span class="nv">cE</span> : <span class="kr">forall</span> <span class="nv">i</span>, countable (E i).
+
+<span class="kn">Lemma</span> <span class="nf">cunion_countable</span> : countable [pred x | `[&lt; <span class="kr">exists</span> <span class="nv">i</span>, x \<span class="kr">in</span> E i &gt;]].
+<span class="kn">Proof</span>.
+<span class="nb">pose</span> S := { i : nat &amp; [countable of cE i] }; <span class="nb">set</span> F := [pred x | _].
+<span class="nb">have</span> H: <span class="kr">forall</span> (<span class="nv">x</span> : [psub F]), <span class="kr">exists</span> <span class="nv">i</span> : nat, val x \<span class="kr">in</span> E i.
+  <span class="bp">by</span> <span class="nb">case</span>=&gt; x /= /asboolP[i] Eix; <span class="kr">exists</span> <span class="nv">i</span>.
+<span class="nb">have</span> G: <span class="kr">forall</span> (<span class="nv">x</span> : S), val (tagged x) \<span class="kr">in</span> F.
+  <span class="bp">by</span> <span class="nb">case</span>=&gt; i [x /= Eix]; <span class="nb">apply</span>/asboolP; <span class="kr">exists</span> <span class="nv">i</span>.
+<span class="nb">pose</span> f (x : [psub F]) : S := Tagged (<span class="kr">fun</span> <span class="nv">i</span> =&gt; [psub E i])
+  (PSubSub (xchooseP (H x))).
+<span class="nb">pose</span> g (x : S) := PSubSub (G x).
+<span class="bp">by</span> <span class="nb">have</span> /can_countable: cancel f g <span class="bp">by</span> <span class="nb">case</span>=&gt; x hx; <span class="nb">apply</span>/val_inj.
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">CountableUnion</span>.</span></pre></article></body></html>

@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>distr.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="c">(* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)</span>
+<span class="c">(* Copyright (c) - 2015--2018 - Inria                                   *)</span>
+<span class="c">(* Copyright (c) - 2016--2018 - Polytechnique                           *)</span>
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect all_algebra.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> boolp classical_sets mathcomp_extra.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message">New coercion path [Empty.mixin; Empty.eqMixin] : Empty.class_of &gt;-&gt; Equality.mixin_of <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[Empty.base; Finite.base; Choice.base] : Empty.class_of &gt;-&gt; Equality.mixin_of.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [Empty.mixin; Empty.choiceMixin] : Empty.class_of &gt;-&gt; Choice.mixin_of <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[Empty.base; Finite.base; Choice.mixin] : Empty.class_of &gt;-&gt; Choice.mixin_of.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [Empty.mixin; Empty.countMixin] : Empty.class_of &gt;-&gt; Countable.mixin_of <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[Empty.base; Finite.mixin; Finite.mixin_base] : Empty.class_of &gt;-&gt; Countable.mixin_of.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ \* _&quot;</span> was already used <span class="kr">in</span> scope
+ring_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;\- _&quot;</span> was already used <span class="kr">in</span> scope ring_scope.
+[notation-overridden,parsing]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="kn">Require Import</span> xfinmap ereal reals discrete.
+<span class="kn">Require Import</span> topology realseq realsum.
+
+<span class="kn">Set Implicit Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+<span class="kn">Unset SsrOldRewriteGoalsOrder</span>.
+
+<span class="kn">Import</span> Order.TTheory GRing.Theory Num.Theory.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Local Notation</span> <span class="nf">simpm</span> := Monoid.simpm.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;\dlet_ ( i &lt;- d ) E&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">36</span>, E <span class="kn">at level</span> <span class="mi">36</span>, i, d <span class="kn">at level</span> <span class="mi">50</span>,
+     <span class="kn">format</span> <span class="s2">&quot;&#39;[&#39; \dlet_ ( i  &lt;-  d ) &#39;/  &#39;  E &#39;]&#39;&quot;</span>).
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;\dlim_ ( n ) E&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">36</span>, E <span class="kn">at level</span> <span class="mi">36</span>, n <span class="kn">at level</span> <span class="mi">50</span>,
+     <span class="kn">format</span> <span class="s2">&quot;&#39;[&#39; \dlim_ ( n ) &#39;/  &#39;  E &#39;]&#39;&quot;</span>).
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;\P_[ mu ] E&quot;</span> (<span class="kn">at level</span> <span class="mi">2</span>, <span class="kn">format</span> <span class="s2">&quot;\P_[ mu ]  E&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;\P_[ mu , A ] E&quot;</span> (<span class="kn">at level</span> <span class="mi">2</span>, <span class="kn">format</span> <span class="s2">&quot;\P_[ mu ,  A ]  E&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;\E?_[ mu ] f&quot;</span> (<span class="kn">at level</span> <span class="mi">2</span>, <span class="kn">format</span> <span class="s2">&quot;\E?_[ mu ]  f&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;\E_[ mu ] f&quot;</span> (<span class="kn">at level</span> <span class="mi">2</span>, <span class="kn">format</span> <span class="s2">&quot;\E_[ mu ]  f&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;\E_[ mu , A ] f&quot;</span> (<span class="kn">at level</span> <span class="mi">2</span>, <span class="kn">format</span> <span class="s2">&quot;\E_[ mu ,  A ]  f&quot;</span>).
+
+<span class="kn">Local</span> <span class="kn">Notation</span> <span class="s2">&quot;\`| f |&quot;</span> := (<span class="kr">fun</span> <span class="nv">x</span> =&gt; `|f x|) (<span class="kn">at level</span> <span class="mi">2</span>).
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">Distribution</span>.
+<span class="kn">Variables</span> (<span class="nv">R</span> : realType) (<span class="nv">T</span> : choiceType).
+
+<span class="kn">Structure</span> <span class="nf">distr</span> := Distr {
+  mu :&gt; T -&gt; R;
+  _  :  <span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= mu x;
+  _  :  summable mu;
+  _  :  psum mu &lt;= <span class="mi">1</span>
+}.
+
+<span class="kn">Definition</span> <span class="nf">distr_of</span> <span class="nv">of</span> <span class="nv">phant</span> <span class="nv">R</span> &amp; phant T := distr.
+<span class="kn">End</span> <span class="nf">Distribution</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;{ &#39;distr&#39; T / R }&quot;</span> := (distr_of (Phant R) (Phant T))
+  (<span class="kn">at level</span> <span class="mi">0</span>, T <span class="kn">at level</span> <span class="mi">2</span>, <span class="kn">format</span> <span class="s2">&quot;{ &#39;distr&#39;  T  /  R }&quot;</span>)
+  : type_scope.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">DistrCoreTh</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType} (<span class="nv">T</span> : choiceType) (<span class="nv">mu</span> : {distr T / R}).
+
+<span class="kn">Lemma</span> <span class="nf">ge0_mu</span> : <span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= mu x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: mu. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le1_mu</span> : psum mu &lt;= <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: mu. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summable_mu</span> : summable mu.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: mu. <span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">DistrCoreTh</span>.
+
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> ge0_mu le1_mu summable_mu : core.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">Clamp</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType}.
+
+<span class="kn">Definition</span> <span class="nf">clamp</span> (<span class="nv">x</span> : R) :=
+  Num.max (Num.min x <span class="mi">1</span>) <span class="mi">0</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ge0_clamp</span> <span class="nv">x</span> : <span class="mi">0</span> &lt;= clamp x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> le_maxr lexx orbT. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le1_clamp</span> <span class="nv">x</span> : clamp x &lt;= <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> le_maxl le_minl lexx ler01 orbT. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">cp01_clamp</span> := (ge0_clamp, le1_clamp).
+
+<span class="kn">Lemma</span> <span class="nf">clamp_in01</span> <span class="nv">x</span> : <span class="mi">0</span> &lt;= x &lt;= <span class="mi">1</span> -&gt; clamp x = x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>/andP=&gt; ge0_x le1_x; <span class="nb">rewrite</span> /clamp min_l <span class="nl">?max_l</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">clamp_id</span> <span class="nv">x</span> : clamp (clamp x) = clamp x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> clamp_in01 // !cp01_clamp. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">clamp0</span> : clamp <span class="mi">0</span> = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> clamp_in01 // lexx ler01. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">clamp1</span> : clamp <span class="mi">1</span> = <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> clamp_in01 // lexx ler01. <span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">Clamp</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">StdDefs</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType} (<span class="nv">T</span> : choiceType).
+
+<span class="kn">Implicit Types</span> (<span class="nv">mu</span> : {distr T / R}) (<span class="nv">A</span> <span class="nv">B</span> <span class="nv">E</span> : pred T) (<span class="nv">f</span> : T -&gt; R).
+
+<span class="kn">Definition</span> <span class="nf">dinsupp</span> <span class="nv">mu</span> := <span class="kr">fun</span> <span class="nv">x</span> =&gt; mu x != <span class="mi">0</span> :&gt; R.
+
+<span class="kn">Lemma</span> <span class="nf">in_dinsupp</span> <span class="nv">x</span> (<span class="nv">mu</span> : {distr T / R}) :
+  (x \<span class="kr">in</span> dinsupp mu) = (mu x != <span class="mi">0</span>).
+<span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dinsuppP</span> <span class="nv">mu</span> <span class="nv">x</span> : reflect (mu x &lt;&gt; <span class="mi">0</span>) (x \<span class="kr">in</span> dinsupp mu).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: (iffP idP) =&gt; /eqP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dinsuppPn</span> <span class="nv">mu</span> <span class="nv">x</span> : reflect (mu x = <span class="mi">0</span>) (x \notin dinsupp mu).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -topredE /dinsupp /= negbK; <span class="nb">apply</span>/eqP. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">pr</span>   <span class="nv">mu</span> <span class="nv">E</span>   := psum (<span class="kr">fun</span> <span class="nv">x</span> =&gt; (E x)%:R * mu x).
+<span class="kn">Definition</span> <span class="nf">prc</span>  <span class="nv">mu</span> <span class="nv">E</span> <span class="nv">A</span> := pr mu [predI E &amp; A] / pr mu A.
+<span class="kn">Definition</span> <span class="nf">esp</span>  <span class="nv">mu</span> <span class="nv">f</span>   := sum (<span class="kr">fun</span> <span class="nv">x</span> =&gt; f x * mu x).
+<span class="kn">Definition</span> <span class="nf">espc</span> <span class="nv">mu</span> <span class="nv">f</span> <span class="nv">A</span> := sum (<span class="kr">fun</span> <span class="nv">x</span> =&gt; f x * prc mu (pred1 x) A).
+
+<span class="kn">Definition</span> <span class="nf">has_esp</span> <span class="nv">mu</span> <span class="nv">f</span> := summable (<span class="kr">fun</span> <span class="nv">x</span> =&gt; f x * mu x).
+<span class="kn">End</span> <span class="nf">StdDefs</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;\P_[ mu ] E&quot;</span>     := (pr mu E).
+<span class="kn">Notation</span> <span class="s2">&quot;\P_[ mu , A ] E&quot;</span> := (prc mu E A).
+<span class="kn">Notation</span> <span class="s2">&quot;\E_[ mu ] f&quot;</span>     := (esp mu f).
+<span class="kn">Notation</span> <span class="s2">&quot;\E_[ mu , A ] f&quot;</span> := (espc mu f A).
+<span class="kn">Notation</span> <span class="s2">&quot;\E?_[ mu ] f&quot;</span>    := (has_esp mu f).
+<span class="kn">Notation</span> <span class="nf">dweight</span> mu        := (\P_[mu] predT).
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">DistrTheory</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType} {<span class="nv">T</span> : choiceType} (<span class="nv">mu</span> : T -&gt; R).
+
+<span class="kn">Definition</span> <span class="nf">isdistr</span> :=
+  (<span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= mu x) /\ (<span class="kr">forall</span> <span class="nv">J</span>, uniq J -&gt; \sum_(j &lt;- J) mu j &lt;= <span class="mi">1</span>).
+
+<span class="kn">Hypothesis</span> <span class="nv">isd</span> : isdistr.
+
+<span class="kn">Local Lemma</span> <span class="nf">isd1</span> : <span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= mu x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: isd. <span class="kn">Qed</span>.
+
+<span class="kn">Local Lemma</span> <span class="nf">isd2</span> : summable mu.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: isd=&gt; _ h; <span class="nb">apply</span>/summable_seqP; <span class="kr">exists</span> <span class="mi">1</span>=&gt; //.
+<span class="nb">move</span>=&gt; s /h /(le_trans _); <span class="nb">apply</span>; <span class="nb">rewrite</span> le_eqVlt; <span class="nb">apply</span>/orP.
+<span class="bp">by</span> <span class="nb">left</span>; <span class="nb">apply</span>/eqP/eq_bigr=&gt; i _; <span class="nb">rewrite</span> ger0_norm <span class="nl">?isd1</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Local Lemma</span> <span class="nf">isd3</span> : psum mu &lt;= <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> psumE; [<span class="nb">apply</span>/isd1 | <span class="nb">apply</span>/isd2 | <span class="nb">apply</span>/sup_le_ub].
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="mi">0</span>, fset0; <span class="nb">rewrite</span> big_fset0.
+<span class="nb">apply</span>/ubP=&gt; y [x -&gt;]; <span class="nb">rewrite</span> big_fset_seq /=.
+<span class="bp">by</span> <span class="nb">case</span>: isd =&gt; _; <span class="nb">apply</span>; <span class="nb">case</span>: x =&gt; x /= /canonical_uniq.
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">mkdistr</span> := @Distr R T mu isd1 isd2 isd3.
+
+<span class="kn">Lemma</span> <span class="nf">mkdistrE</span> : mkdistr =<span class="mi">1</span> mu.
+<span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">ispredistr</span> {<span class="nv">T</span> : choiceType} (<span class="nv">mu</span> : T -&gt; R) :=
+  [/\ <span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= mu x &amp; summable mu].
+<span class="kn">End</span> <span class="nf">DistrTheory</span>.
+
+<span class="kn">Lemma</span> <span class="nf">isdistr_finP</span> {<span class="nv">R</span> : realType} {<span class="nv">I</span> : finType} (<span class="nv">mu</span> : I -&gt; R) :
+  (isdistr mu) &lt;-&gt; (<span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= mu x) /\ (\sum_j mu j &lt;= <span class="mi">1</span>).
+<span class="kn">Proof</span>. <span class="nb">split</span>=&gt; -[ ge0_mu le1]; <span class="nb">split</span>=&gt; //.
++ <span class="bp">by</span> <span class="nb">apply</span>/le1; <span class="nb">rewrite</span> /index_enum -enumT enum_uniq.
++ <span class="nb">move</span>=&gt; J uqJ; <span class="nb">rewrite</span> big_uniq <span class="mi">1</span>?(le_trans _ le1) //=.
+  <span class="bp">by</span> <span class="nb">rewrite</span> [X <span class="kr">in</span> _&lt;=X](bigID (mem J)) /= ler_addl sumr_ge0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le1_mu1</span>
+  {<span class="nv">R</span> : realType} {<span class="nv">T</span> : choiceType} (<span class="nv">mu</span> : {distr T / R}) <span class="nv">x</span> : mu x &lt;= <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/(@le_trans _ _ (psum mu)) =&gt; //; <span class="nb">rewrite</span> -[mu x]ger0_norm //.
+<span class="bp">by</span> <span class="nb">apply</span>/ger1_psum.
+<span class="kn">Qed</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">DistrD</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType} {<span class="nv">T</span> : choiceType} (<span class="nv">mu</span> : T -&gt; R).
+
+<span class="kn">Definition</span> <span class="nf">mnull</span> := <span class="kr">fun</span> <span class="nv">x</span> : T =&gt; (<span class="mi">0</span> : R).
+
+<span class="kn">Lemma</span> <span class="nf">isd_mnull</span> : isdistr mnull.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>=&gt; // J _; <span class="nb">rewrite</span> big1 <span class="nl">?ler01</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">dnull</span> := locked (mkdistr isd_mnull).
+
+<span class="kn">Lemma</span> <span class="nf">dnullE</span> <span class="nv">x</span> : dnull x = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">unlock</span> dnull. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">mkdistrd</span> : {distr T / R} :=
+  <span class="kr">if</span> @idP `[&lt; isdistr mu &gt;] <span class="kr">is</span> ReflectT Px <span class="kr">then</span>
+    mkdistr (asboolW Px)
+  <span class="kr">else</span> dnull.
+<span class="kn">End</span> <span class="nf">DistrD</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Lemma</span> <span class="nf">lef_dnull</span> {<span class="nv">R</span> : realType} {<span class="nv">T</span> : choiceType} (<span class="nv">mu</span> : {distr T / R}) :
+  dnull &lt;=<span class="mi">1</span> mu.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> dnullE ge0_mu. <span class="kn">Qed</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">Restr</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType} {<span class="nv">T</span> : choiceType} (<span class="nv">p</span> : pred T).
+
+<span class="kn">Definition</span> <span class="nf">mrestr</span> (<span class="nv">mu</span> : {distr T / R}) :=
+  <span class="kr">fun</span> <span class="nv">x</span> =&gt; <span class="kr">if</span> p x <span class="kr">then</span> mu x <span class="kr">else</span> <span class="mi">0</span>.
+
+<span class="kn">Lemma</span> <span class="nf">isd_mrestr</span> (<span class="nv">mu</span> : {distr T / R}) : isdistr (mrestr mu).
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; [x|J]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> /mrestr; <span class="nb">case</span>: ifP.
+<span class="nb">move</span>=&gt; eqJ; <span class="nb">apply</span>/(@le_trans _ _ (\sum_(j &lt;- J) `|mu j|)).
++ <span class="nb">apply</span>/ler_sum=&gt; i _; <span class="nb">rewrite</span> /mrestr; <span class="nb">case</span>: ifPn=&gt; _.
+  <span class="bp">by</span> <span class="nb">apply</span>/ler_norm. <span class="bp">by</span> <span class="nb">apply</span>/normr_ge0.
++ <span class="bp">by</span> <span class="nb">apply</span>/(le_trans _ (le1_mu mu))/gerfinseq_psum.
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">drestr</span> (<span class="nv">mu</span> : {distr T / R}) := locked (mkdistr (isd_mrestr mu)).
+
+<span class="kn">Lemma</span> <span class="nf">drestrE</span> (<span class="nv">mu</span> : {distr T / R}) <span class="nv">x</span> :
+  drestr mu x = <span class="kr">if</span> p x <span class="kr">then</span> mu x <span class="kr">else</span> <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">unlock</span> drestr. <span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">Restr</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">RestrTheory</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType} {<span class="nv">T</span> : choiceType}.
+
+<span class="kn">Lemma</span> <span class="nf">drestrD</span> (<span class="nv">mu</span> : {distr T / R}) (<span class="nv">p</span> : pred T) <span class="nv">x</span> :
+  mu x = drestr p mu x + drestr (predC p) mu x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> !drestrE !inE; <span class="nb">case</span>: ifPn; <span class="nb">rewrite</span> /= (addr0, add0r). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dinsupp_restr</span> (<span class="nv">mu</span> : {distr T / R}) (<span class="nv">p</span> : pred T) <span class="nv">x</span> :
+  (x \<span class="kr">in</span> dinsupp (drestr p mu)) = (x \<span class="kr">in</span> dinsupp mu) &amp;&amp; p x.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/dinsuppP/idP.
+- <span class="bp">by</span> <span class="nb">rewrite</span> drestrE; <span class="nb">case</span>: ifP=&gt; // _ /dinsuppP -&gt;.
+- <span class="bp">by</span> <span class="nb">case</span>/andP; <span class="nb">rewrite</span> drestrE =&gt; /dinsuppP ? -&gt;.
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">RestrTheory</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">DRat</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType} (<span class="nv">T</span> : choiceType).
+
+<span class="kn">Local Notation</span> <span class="nf">distr</span> := {distr T / R}.
+
+<span class="kn">Implicit Types</span> (<span class="nv">s</span> : seq T).
+
+<span class="kn">Definition</span> <span class="nf">mrat</span> (<span class="nv">s</span> : seq T) : T -&gt; R :=
+  <span class="kr">fun</span> <span class="nv">x</span> : T =&gt; (count (pred1 x) s)%:R / (size s)%:R.
+
+<span class="kn">Lemma</span> <span class="nf">ge0_mrat</span> <span class="nv">s</span> : <span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= mrat s x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> mulr_ge0 <span class="nl">?invr_ge0</span> // ler0n. <span class="kn">Qed</span>.
+
+<span class="kn">Local Lemma</span> <span class="nf">has_sup_mrat</span> <span class="nv">s</span> <span class="nv">J</span> : uniq J -&gt; \sum_(i &lt;- J) mrat s i &lt;= <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; uqJ; <span class="nb">rewrite</span> -mulr_suml /= -natr_sum; <span class="nb">case</span>: (size s =P <span class="mi">0</span>%N).
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt;; <span class="nb">rewrite</span> invr0 mulr0 ler01.
+<span class="nb">move</span>=&gt; /eqP nz_s; <span class="nb">rewrite</span> ler_pdivr_mulr <span class="nl">?ltr0n</span> <span class="nl">?lt0n</span> // mul1r.
+<span class="nb">rewrite</span> ler_nat (bigID (mem s)) /= [X <span class="kr">in</span> (_+X)%N]big1 <span class="nl">?addn0</span>.
+   <span class="bp">by</span> <span class="nb">move</span>=&gt; i /count_memPn.
+<span class="nb">have</span> -&gt;: (size s = \sum_(i &lt;- undup s) count_mem i s)%N.
+  <span class="nb">rewrite</span> -sum1_size -big_undup_iterop_count; <span class="nb">apply</span>: eq_bigr =&gt; i _.
+  <span class="bp">by</span> <span class="nb">rewrite</span> Monoid.iteropE iter_addn addn0 mul1n.
+<span class="nb">rewrite</span> [X <span class="kr">in</span> (_&lt;=X)%N](bigID (mem J)) /= -ltnS -addSn.
+<span class="nb">rewrite</span> ltn_addr //= ltnS -big_filter -[X <span class="kr">in</span> (_&lt;=X)%N]big_filter.
+<span class="nb">rewrite</span> leq_eqVlt; <span class="nb">apply</span>/orP; <span class="nb">left</span>; <span class="nb">apply</span>/eqP/perm_big.
+<span class="nb">apply</span>/uniq_perm; <span class="nb">rewrite</span> <span class="nl">?filter_uniq</span> <span class="nl">?undup_uniq</span> //.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> !mem_filter mem_undup andbC.
+<span class="kn">Qed</span>.
+
+<span class="kn">Local Lemma</span> <span class="nf">mrat_sup</span> <span class="nv">s</span> : (<span class="mi">0</span> &lt; size s)%N -&gt;
+  \sum_(i &lt;- undup s) mrat s i = <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; gt0_s; <span class="nb">rewrite</span> -mulr_suml -natr_sum.
+<span class="nb">apply</span>/(mulIf (x := (size s)%:R)); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> pnatr_eq0 -lt0n.
+<span class="nb">rewrite</span> mul1r -mulrA mulVf <span class="nl">?mulr1</span> <span class="nl">?pnatr_eq0</span> -<span class="nl">?lt0n</span> //; <span class="nb">congr</span> (_%:R).
+<span class="nb">rewrite</span> -sum1_size -[<span class="kr">in</span> RHS]big_undup_iterop_count/=; <span class="nb">apply</span>: eq_bigr =&gt; i _.
+<span class="bp">by</span> <span class="nb">rewrite</span> Monoid.iteropE iter_addn addn0 mul1n.
+<span class="kn">Qed</span>.
+
+<span class="kn">Local Lemma</span> <span class="nf">summable_mrat</span> <span class="nv">s</span>: summable (mrat s).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/summable_seqP; <span class="kr">exists</span> <span class="mi">1</span>=&gt; // J uqJ; <span class="nb">rewrite</span> (eq_bigr (mrat s)).
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; j _; <span class="nb">rewrite</span> ger0_norm <span class="nl">?ge0_mrat</span>.
+<span class="bp">by</span> <span class="nb">apply</span>/has_sup_mrat.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">isd_mrat</span> <span class="nv">s</span> : isdistr (mrat s).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>; [<span class="nb">apply</span>/ge0_mrat | <span class="nb">apply</span>/has_sup_mrat]. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">drat</span> <span class="nv">s</span> := locked (mkdistr (isd_mrat s)).
+
+<span class="kn">Lemma</span> <span class="nf">drat1E</span> <span class="nv">s</span> <span class="nv">x</span> :
+  drat s x = (count_mem x s)%:R / (size s)%:R.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">unlock</span> drat; <span class="nb">rewrite</span> mkdistrE. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">dunit</span> <span class="nv">x</span> := locked (drat [:: x]).
+<span class="kn">Definition</span> <span class="nf">duni</span>  <span class="nv">s</span> := locked (drat (undup s)).
+
+<span class="kn">Lemma</span> <span class="nf">dunit1E</span> <span class="nv">x</span> <span class="nv">y</span> : (dunit x) y = (x == y)%:R.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">unlock</span> dunit; <span class="nb">rewrite</span> drat1E /= !(simpm, invr1). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">duni1E</span> <span class="nv">s</span> <span class="nv">x</span> : (duni s) x = (x \<span class="kr">in</span> s)%:R / (size (undup s))%:R.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">unlock</span> duni; <span class="nb">rewrite</span> drat1E count_uniq_mem ?(mem_undup, undup_uniq).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">in_dunit</span> <span class="nv">t</span> <span class="nv">t&#39;</span> :
+  t&#39; \<span class="kr">in</span> dinsupp (dunit t) -&gt; t&#39; = t :&gt; T.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> in_dinsupp dunit1E pnatr_eq0 eqb0 negbK =&gt; /eqP.
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">DRat</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">Flip</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType}.
+
+<span class="kn">Definition</span> <span class="nf">mflip</span> (<span class="nv">xt</span> : R) :=
+  <span class="kr">fun</span> <span class="nv">b</span> =&gt; <span class="kr">if</span> b <span class="kr">then</span> clamp xt <span class="kr">else</span> <span class="mi">1</span> - clamp xt.
+
+<span class="kn">Lemma</span> <span class="nf">isd_mflip</span> <span class="nv">xt</span> : isdistr (mflip xt).
+<span class="kn">Proof</span>. <span class="nb">apply</span>/isdistr_finP; <span class="nb">split</span>=&gt; [b|].
++ <span class="bp">by</span> <span class="nb">case</span>: b; <span class="nb">rewrite</span> <span class="nl">?subr_ge0</span> cp01_clamp.
++ <span class="bp">by</span> <span class="nb">rewrite</span> /index_enum !<span class="nb">unlock</span> /= addr0 addrCA subrr addr0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">dflip</span> (<span class="nv">xt</span> : R) := locked (mkdistr (isd_mflip xt)).
+
+<span class="kn">Lemma</span> <span class="nf">dflip1E</span> <span class="nv">xt</span> : dflip xt =<span class="mi">1</span> mflip xt.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">unlock</span> dflip; <span class="nb">apply</span>/mkdistrE. <span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">Flip</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">Std</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType}.
+
+<span class="kn">Local Notation</span> <span class="nf">distr</span> T := {distr T / R}.
+
+<span class="kn">Implicit Types</span> (<span class="nv">T</span> <span class="nv">U</span> : choiceType).
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">Bind</span>.
+<span class="kn">Context</span> {<span class="nv">T</span> <span class="nv">U</span> : choiceType} (<span class="nv">f</span> : T -&gt; distr U) (<span class="nv">mu</span> : distr T).
+
+<span class="kn">Definition</span> <span class="nf">mlet</span> := <span class="kr">fun</span> <span class="nv">y</span> : U =&gt; psum (<span class="kr">fun</span> <span class="nv">x</span> =&gt; mu x * f x y).
+
+<span class="kn">Lemma</span> <span class="nf">isd_mlet</span> : isdistr mlet.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; [x|J uqJ]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>/ge0_psum.
+<span class="nb">rewrite</span> /mlet psum_bigop; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; y x; <span class="nb">rewrite</span> mulr_ge0.
+  <span class="nb">move</span>=&gt; u; <span class="nb">apply</span>/(le_summable (F2 := mu)) =&gt; //.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> mulr_ge0 //= ler_pimulr <span class="nl">?le1_mu1</span>.
+<span class="nb">apply</span>/(le_trans _ (le1_mu mu))/le_psum =&gt; //.
+<span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> sumr_ge0 /= =&gt; [y _|]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> mulr_ge0.
+<span class="nb">rewrite</span> -mulr_sumr ler_pimulr //; <span class="nb">apply</span>/(le_trans _ (le1_mu (f x))).
+<span class="nb">have</span> := summable_mu (f x) =&gt; /gerfinseq_psum =&gt; /(_ _ uqJ).
+<span class="bp">by</span> <span class="nb">apply</span>/(le_trans _)/ler_sum=&gt; y _; <span class="nb">apply</span>/ler_norm.
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">dlet</span> := locked (mkdistr isd_mlet).
+
+<span class="kn">Lemma</span> <span class="nf">dletE</span> <span class="nv">y</span> : dlet y = psum (<span class="kr">fun</span> <span class="nv">x</span> =&gt; mu x * f x y).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">unlock</span> dlet. <span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">Bind</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;\dlet_ ( i &lt;- d ) E&quot;</span> := (dlet (<span class="kr">fun</span> <span class="nv">i</span> =&gt; E) d).
+
+<span class="kn">Definition</span> <span class="nf">dlift</span> {<span class="nv">A</span> : choiceType} (<span class="nv">f</span> : A -&gt; {distr A / R}) :=
+  <span class="kr">fun</span> <span class="nv">d</span> =&gt; \dlet_(x &lt;- d) f x.
+
+<span class="kn">Definition</span> <span class="nf">diter</span> {<span class="nv">A</span> : choiceType} <span class="nv">n</span> (<span class="nv">f</span> : A -&gt; {distr A / R}) :=
+  <span class="kr">fun</span> <span class="nv">a</span> =&gt; (iter n (dlift f) (dunit a)).
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">BindTheory</span>.
+<span class="kn">Variables</span> (<span class="nv">T</span> <span class="nv">U</span> : choiceType).
+
+<span class="kn">Implicit Types</span> (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; distr U) (<span class="nv">mu</span> <span class="nv">nu</span> : distr T).
+
+<span class="kn">Lemma</span> <span class="nf">dlet_null</span> <span class="nv">f</span> : dlet f dnull =<span class="mi">1</span> dnull.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> dletE dnullE /= /mlet psum_eq0 //.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; y; <span class="nb">rewrite</span> dnullE mul0r.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dlet_unit</span> <span class="nv">f</span> <span class="nv">v</span> : \dlet_(y &lt;- dunit v) f y =<span class="mi">1</span> f v.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; y; <span class="nb">rewrite</span> dletE (psum_finseq (r := [:: v])) //.
+  <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> !inE dunit1E mulf_eq0 =&gt; /norP[].
+  <span class="bp">by</span> <span class="nb">rewrite</span> pnatr_eq0 eqb0 negbK =&gt; /eqP-&gt;.
+<span class="bp">by</span> <span class="nb">rewrite</span> big_seq1 dunit1E eqxx mul1r ger0_norm.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dlet_dunit_id</span> <span class="nv">mu</span> : \dlet_(t &lt;- mu) (dunit t) =<span class="mi">1</span> mu.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> dletE (psum_finseq (r := [:: x])) //.
+  <span class="nb">move</span>=&gt; y; <span class="nb">rewrite</span> !inE dunit1E mulf_eq0 pnatr_eq0.
+  <span class="bp">by</span> <span class="nb">case</span>/norP; <span class="nb">rewrite</span> eqb0 negbK.
+<span class="bp">by</span> <span class="nb">rewrite</span> big_seq1 dunit1E eqxx mulr1 ger0_norm.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_in_dlet</span> <span class="nv">f</span> <span class="nv">g</span> <span class="nv">mu</span> <span class="nv">nu</span> : {<span class="kr">in</span> dinsupp mu, f =<span class="mi">2</span> g} -&gt; mu =<span class="mi">1</span> nu -&gt;
+  dlet f mu =<span class="mi">1</span> dlet g nu.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; eq_f eq_mu; <span class="nb">unlock</span> dlet=&gt; y /=; <span class="nb">apply</span>/eq_psum=&gt; x.
+<span class="nb">rewrite</span> -eq_mu; <span class="nb">case</span>/boolP: (x \<span class="kr">in</span> dinsupp mu) =&gt; [/eq_f -&gt;//|].
+<span class="bp">by</span> <span class="nb">move</span>/dinsuppPn=&gt; -&gt;; <span class="nb">rewrite</span> !mul0r.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summable_mu_wgtd</span> (<span class="nv">f</span> : T -&gt; R) <span class="nv">mu</span> :
+  (<span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= f x &lt;= <span class="mi">1</span>) -&gt; summable (<span class="kr">fun</span> <span class="nv">x</span> =&gt; mu x * f x).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; in01_f; <span class="nb">apply</span>/summableMr=&gt; //.
+<span class="kr">exists</span> <span class="mi">1</span> =&gt; x; <span class="nb">case</span>/andP: (in01_f x) =&gt; ge0_fx le1_fx.
+<span class="bp">by</span> <span class="nb">rewrite</span> ger0_norm.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summable_mlet</span> <span class="nv">f</span> <span class="nv">mu</span> <span class="nv">y</span> : summable (<span class="kr">fun</span> <span class="nv">x</span> : T =&gt; mu x * (f x) y).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/summable_mu_wgtd=&gt; x; <span class="nb">rewrite</span> ge0_mu le1_mu1. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_in_dlet</span> <span class="nv">f</span> <span class="nv">g</span> <span class="nv">mu</span> : {<span class="kr">in</span> dinsupp mu, f &lt;=<span class="mi">2</span> g} -&gt;
+  dlet f mu &lt;=<span class="mi">1</span> dlet g mu.
+<span class="kn">Proof</span>.                          <span class="c">(* summable -&gt; refactor *)</span>
+<span class="nb">move</span>=&gt; le_f; <span class="nb">unlock</span> dlet=&gt; y /=; <span class="nb">apply</span>/le_psum/summable_mlet.
+<span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> mulr_ge0 //=; <span class="nb">case</span>: (mu x =P <span class="mi">0</span>).
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt;; <span class="nb">rewrite</span> !mul0r.
+<span class="bp">by</span> <span class="nb">move</span>/dinsuppPn/le_f/(_ y) =&gt; h; <span class="nb">rewrite</span> ler_pmul.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_mu_dlet</span> <span class="nv">f</span> <span class="nv">mu</span> <span class="nv">nu</span> : mu &lt;=<span class="mi">1</span> nu -&gt; dlet f mu &lt;=<span class="mi">1</span> dlet f nu.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; le_mu x; <span class="nb">unlock</span> dlet; <span class="nb">rewrite</span> /= /mlet.
+<span class="nb">apply</span>/le_psum/summable_mlet =&gt; y; <span class="nb">rewrite</span> mulr_ge0 //=.
+<span class="nb">case</span>: (mu y =P <span class="mi">0</span>) =&gt; [-&gt;|]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> mul0r mulr_ge0.
+<span class="bp">by</span> <span class="nb">move</span>=&gt;/dinsuppPn=&gt; h; <span class="nb">rewrite</span> ler_pmul.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_dlet</span> <span class="nv">f</span> <span class="nv">g</span> <span class="nv">mu</span> <span class="nv">nu</span> :
+    mu &lt;=<span class="mi">1</span> nu
+  -&gt; {<span class="kr">in</span> dinsupp mu, <span class="kr">forall</span> <span class="nv">x</span>, f x &lt;=<span class="mi">1</span> g x}
+  -&gt; \dlet_(x &lt;- mu) f x &lt;=<span class="mi">1</span> \dlet_(x &lt;- nu) g x.
+<span class="kn">Proof</span>. <span class="nb">move</span>=&gt; le_mu le_fg x.
+<span class="bp">by</span> <span class="nb">apply</span>/(le_trans (le_in_dlet le_fg _))/le_mu_dlet.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dletC</span> (<span class="nv">mu</span> : {distr T / R}) (<span class="nv">nu</span> : {distr U / R}) <span class="nv">y</span> :
+  (\dlet_(_ &lt;- mu) nu) y = (dweight mu) * (nu y).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> dletE /pr [_ * nu y]mulrC -psumZ //=; <span class="nb">apply</span>/eq_psum.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /= x; <span class="nb">rewrite</span> mul1r mulrC.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dinsupp_dlet</span> <span class="nv">f</span> <span class="nv">mu</span> <span class="nv">y</span> :
+  y \<span class="kr">in</span> dinsupp (\dlet_(x &lt;- mu) f x) -&gt;
+    <span class="kr">exists2</span> x, x \<span class="kr">in</span> dinsupp mu &amp; f x y != <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>/dinsuppP; <span class="nb">rewrite</span> dletE =&gt; /neq0_psum [x /eqP]; <span class="nb">rewrite</span> mulf_eq0.
+<span class="bp">by</span> <span class="nb">case</span>/norP=&gt; /eqP/dinsuppPn mux nz_fxy; <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dlet_dinsupp</span> <span class="nv">f</span> <span class="nv">mu</span> <span class="nv">x</span> <span class="nv">y</span> :
+  x \<span class="kr">in</span> dinsupp mu -&gt; f x y != <span class="mi">0</span> -&gt; y \<span class="kr">in</span> dinsupp (dlet f mu).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /dinsuppP /eqP mux nz_fxy; <span class="nb">apply</span>/dinsuppP; <span class="nb">rewrite</span> dletE.
+<span class="nb">move</span>/eq0_psum =&gt; /(_ (summable_mlet _ _ _) x) =&gt; /eqP.
+<span class="bp">by</span> <span class="nb">rewrite</span> mulf_eq0 (negbTE mux) (negbTE nz_fxy).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dlet_eq0</span> (<span class="nv">f</span> : T -&gt; U) <span class="nv">mu</span> <span class="nv">y</span> :
+  {<span class="kr">in</span> dinsupp mu, <span class="kr">forall</span> <span class="nv">x</span>, f x != y} -&gt; (\dlet_(x &lt;- mu) dunit (f x)) y = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; h; <span class="nb">unlock</span> dlet =&gt; /=; <span class="nb">apply</span>/psum_eq0 =&gt; x.
+<span class="nb">case</span>/boolP: (x \<span class="kr">in</span> dinsupp mu) =&gt; [|/dinsuppPn-&gt;];
+  <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> mul0r.
+<span class="bp">by</span> <span class="nb">move</span>/h; <span class="nb">rewrite</span> dunit1E =&gt; /negbTE -&gt;; <span class="nb">rewrite</span> mulr0.
+<span class="kn">Qed</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Lemma</span> <span class="nf">eq0_dlet</span> (<span class="nv">mu</span> : {distr T / R}) (<span class="nv">F</span> : T -&gt; {distr U / R}) <span class="nv">y</span> :
+  (\dlet_(x &lt;- mu) F x) y = <span class="mi">0</span> -&gt; <span class="kr">forall</span> <span class="nv">x</span>, x \<span class="kr">in</span> dinsupp mu -&gt; F x y = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">unlock</span> dlet; <span class="nb">rewrite</span> /= /mlet =&gt; /eq0_psum h x /dinsuppP /eqP mu_x.
+<span class="nb">have</span> {}/h: summable (<span class="kr">fun</span> <span class="nv">x</span> =&gt; mu x * F x y).
+  <span class="nb">apply</span>/(le_summable (F2 := mu)) =&gt; // z.
+  <span class="bp">by</span> <span class="nb">rewrite</span> mulr_ge0 //= ler_pimulr // le1_mu1.
+<span class="bp">by</span> <span class="nb">move</span>/(_ x)/eqP; <span class="nb">rewrite</span> mulf_eq0 (negbTE mu_x) /= =&gt; /eqP.
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">BindTheory</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">DLetDLet</span>.
+<span class="kn">Context</span> {<span class="nv">T</span> <span class="nv">U</span> <span class="nv">V</span> : choiceType} (<span class="nv">f1</span> : T -&gt; distr U) (<span class="nv">f2</span> : U -&gt; distr V).
+
+<span class="kn">Lemma</span> <span class="nf">dlet_dlet</span> (<span class="nv">mu</span> : {distr T / R}) :
+     \dlet_(x &lt;- \dlet_(y &lt;- mu) f1 y) f2 x
+  =<span class="mi">1</span> \dlet_(y &lt;- mu) (\dlet_(x &lt;- f1 y) f2 x).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; z; <span class="nb">unlock</span> dlet =&gt; /=; <span class="nb">rewrite</span> /mlet /=.
+<span class="nb">pose</span> S y x := mu x * (f1 x y * f2 y z).
+<span class="nb">rewrite</span> (eq_psum (F2 := <span class="kr">fun</span> <span class="nv">y</span> =&gt; psum (S^~ y))) =&gt; [x|].
+  <span class="bp">by</span> <span class="nb">rewrite</span> -psumZ //; <span class="nb">apply</span>/eq_psum =&gt; y /=.
+<span class="nb">rewrite</span> interchange_psum.
++ <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">apply</span>/summableZ/summable_mlet.
++ <span class="nb">rewrite</span> {}/S; <span class="nb">apply</span>/(le_summable (F2 := mu)) =&gt; //.
+  <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> ge0_psum /= psumZ <span class="nl">?ler_pimulr</span> //.
+  <span class="nb">apply</span>/(le_trans _ (le1_mu (f1 x)))/le_psum =&gt; //.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; y; <span class="nb">rewrite</span> mulr_ge0 //= ler_pimulr <span class="nl">?le1_mu1</span>.
+<span class="nb">apply</span>/eq_psum=&gt; y /=; <span class="nb">rewrite</span> -psumZr //.
+<span class="bp">by</span> <span class="nb">apply</span>/eq_psum=&gt; x /=; <span class="nb">rewrite</span> {}/S mulrA.
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">DLetDLet</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">DLetAlg</span>.
+<span class="kn">Context</span> {<span class="nv">T</span> <span class="nv">U</span> : choiceType} (<span class="nv">mu</span> <span class="nv">mu1</span> <span class="nv">mu2</span> : {distr T / R}).
+
+<span class="kn">Lemma</span> <span class="nf">dlet_additive</span> (<span class="nv">f</span> : T -&gt; {distr U / R}) <span class="nv">z</span> :
+  (<span class="kr">forall</span> <span class="nv">x</span>, mu x = mu1 x + mu2 x) -&gt; (\dlet_(x &lt;- mu) f x) z =
+    (\dlet_(x &lt;- mu1) f x) z + (\dlet_(x &lt;- mu2) f x) z.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; muD; <span class="nb">rewrite</span> !dletE -psumD /=.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> mulr_ge0. <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> mulr_ge0.
+  <span class="bp">by</span> <span class="nb">apply</span>/summable_mlet. <span class="bp">by</span> <span class="nb">apply</span>/summable_mlet.
+<span class="bp">by</span> <span class="nb">apply</span>/eq_psum=&gt; x /=; <span class="nb">rewrite</span> -mulrDl -muD.
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">DLetAlg</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Definition</span> <span class="nf">mlim</span> <span class="nv">T</span> (<span class="nv">f</span> : nat -&gt; distr T) : T -&gt; R :=
+  <span class="kr">fun</span> <span class="nv">x</span> =&gt; fine (nlim (<span class="kr">fun</span> <span class="nv">n</span> =&gt; f n x)).
+
+<span class="kn">Lemma</span> <span class="nf">isd_mlim</span> <span class="nv">T</span> (<span class="nv">f</span> : nat -&gt; distr T) : isdistr (mlim f).
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; [x|J]; <span class="nb">rewrite</span> /mlim.
+  <span class="nb">case</span>: nlimP=&gt; // l cvSl; <span class="nb">apply</span>/fine_ge0/(ncvg_geC _ cvSl).
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; n; <span class="nb">apply</span>/ge0_mu.
+<span class="nb">move</span>=&gt; uqJ; <span class="nb">pose</span> F j :=
+  <span class="kr">if</span> `[&lt; iscvg (<span class="kr">fun</span> <span class="nv">n</span> =&gt; f n j) &gt;] <span class="kr">then</span> <span class="kr">fun</span> <span class="nv">n</span> =&gt; f n j <span class="kr">else</span> <span class="mi">0</span>%:S.
+<span class="nb">apply</span>/(@le_trans _ _ (\sum_(j &lt;- J) (fine (nlim (F j) <span class="c">(*: R*)</span>)))).
+  <span class="nb">apply</span>/ler_sum=&gt; j _; <span class="nb">rewrite</span> /F; <span class="nb">case</span>/boolP: `[&lt; _ &gt;] =&gt; //.
+  <span class="nb">move</span>/asboolPn=&gt; h; <span class="nb">rewrite</span> nlimC; <span class="nb">case</span>: nlimP=&gt; //.
+  <span class="bp">by</span> <span class="nb">case</span>=&gt; // l cf; <span class="nb">case</span>: h; <span class="kr">exists</span> <span class="nv">l</span>.
+<span class="nb">rewrite</span> -lee_fin -nlim_sumR =&gt; [i _|].
+  <span class="nb">rewrite</span> /F; <span class="nb">case</span>/boolP: `[&lt; _ &gt;] =&gt; [/asboolP //|].
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; _; <span class="nb">apply</span>/iscvgC.
+<span class="nb">rewrite</span> leNgt; <span class="nb">apply</span>/negP; <span class="nb">pose</span> s n := \sum_(j &lt;- J) F j n.
+<span class="nb">move</span>/ncvg_gt=&gt; -/(_ s (nlim_ncvg _)) [].
+  <span class="nb">suff</span>: iscvg s <span class="bp">by</span> <span class="nb">case</span>=&gt; l cs; <span class="kr">exists</span> <span class="nv">l</span>%:E.
+  <span class="nb">apply</span>/iscvg_sum=&gt; j _; <span class="nb">rewrite</span> /F; <span class="nb">case</span>/boolP: `[&lt; _ &gt;].
+    <span class="bp">by</span> <span class="nb">move</span>/asboolP. <span class="bp">by</span> <span class="nb">move</span>=&gt; _; <span class="nb">apply</span>/iscvgC.
+<span class="nb">move</span>=&gt; K /(_ _ (leqnn K)) /=; <span class="nb">apply</span>/negP; <span class="nb">rewrite</span> -leNgt.
+<span class="nb">apply</span>/(@le_trans _ _ (\sum_(j &lt;- J) f K j)); <span class="nb">last first</span>.
+  <span class="nb">have</span> /(gerfinseq_psum uqJ) := summable_mu (f K).
+  <span class="nb">move</span>/le_trans=&gt; -/(_ _ (le1_mu (f K)))=&gt; h.
+  <span class="bp">by</span> <span class="nb">apply</span>/(le_trans _ h)/ler_sum=&gt; i _; <span class="nb">apply</span>/ler_norm.
+<span class="nb">apply</span>/ler_sum=&gt; j _; <span class="nb">rewrite</span> /F; <span class="nb">case</span>/boolP: `[&lt; _ &gt;]; [<span class="bp">done</span>|].
+<span class="bp">by</span> <span class="nb">move</span>=&gt; _; <span class="nb">apply</span>/ge0_mu.
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">dlim</span> <span class="nv">T</span> (<span class="nv">f</span> : nat -&gt; distr T) :=
+  locked (mkdistr (isd_mlim f)).
+
+<span class="kn">Notation</span> <span class="s2">&quot;\dlim_ ( n ) E&quot;</span> := (dlim (<span class="kr">fun</span> <span class="nv">n</span> =&gt; E)).
+
+<span class="kn">Lemma</span> <span class="nf">dlimE</span> <span class="nv">T</span> (<span class="nv">f</span> : nat -&gt; distr T) <span class="nv">x</span> :
+  (\dlim_(n) f n) x = fine (nlim (<span class="kr">fun</span> <span class="nv">n</span> =&gt; f n x)).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">unlock</span> dlim. <span class="kn">Qed</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">DLimTheory</span>.
+<span class="kn">Variables</span> (<span class="nv">T</span> <span class="nv">U</span> : choiceType).
+
+<span class="kn">Implicit Types</span> (<span class="nv">f</span> <span class="nv">g</span> : nat -&gt; distr T) (<span class="nv">h</span> : T -&gt; {distr U / R}).
+<span class="kn">Implicit Types</span> (<span class="nv">mu</span> : {distr T / R}).
+
+<span class="kn">Lemma</span> <span class="nf">dlimC</span> <span class="nv">mu</span> : \dlim_(n) mu =<span class="mi">1</span> mu.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> !dlimE; <span class="nb">rewrite</span> nlimC. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_dlim</span> <span class="nv">f</span> <span class="nv">g</span> : f =<span class="mi">2</span> g -&gt; dlim f =<span class="mi">1</span> dlim g.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; eq_f; <span class="nb">unlock</span> dlim=&gt; x /=; <span class="nb">rewrite</span> /mlim; <span class="nb">congr</span> (_ _).
+<span class="bp">by</span> <span class="nb">apply</span>/eq_nlim =&gt; n; <span class="nb">rewrite</span> eq_f.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_from_dlim</span> <span class="nv">K</span> <span class="nv">f</span> <span class="nv">g</span> :
+  (<span class="kr">forall</span> <span class="nv">n</span>, (K &lt;= n)%N -&gt; f n =<span class="mi">1</span> g n) -&gt; dlim f =<span class="mi">1</span> dlim g.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; eq_fg x; <span class="nb">rewrite</span> !dlimE; <span class="nb">congr</span> (_ _).
+<span class="bp">by</span> <span class="nb">apply</span>/(eq_from_nlim (K := K)); <span class="nb">move</span>=&gt; n /eq_fg /(_ x).
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">dlim_bump</span> (<span class="nv">mu</span> : nat -&gt; {distr T / R}) :
+  dlim (<span class="kr">fun</span> <span class="nv">n</span> =&gt; mu n.+<span class="mi">1</span>) =<span class="mi">1</span> dlim mu.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> !dlimE -[<span class="kr">in</span> RHS]nlim_bump. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">dlim_lift</span> (<span class="nv">mu</span> : nat -&gt; {distr T / R}) <span class="nv">p</span> :
+  dlim (<span class="kr">fun</span> <span class="nv">n</span> =&gt; mu (n + p)%N) =<span class="mi">1</span> dlim mu.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> !dlimE (nlim_lift (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (mu n) x)). <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">dcvg</span> {<span class="nv">T</span> : choiceType} (<span class="nv">f</span> : nat -&gt; {distr T / R}) :=
+  <span class="kr">forall</span> <span class="nv">x</span>, <span class="kr">exists</span> <span class="nv">l</span>, ncvg (<span class="kr">fun</span> <span class="nv">n</span> =&gt; f n x) l.
+
+<span class="kn">Definition</span> <span class="nf">ducvg</span> {<span class="nv">T</span> : choiceType} (<span class="nv">f</span> : nat -&gt; {distr T / R}) :=
+  <span class="kr">exists</span> <span class="nv">l</span>, <span class="kr">forall</span> <span class="nv">x</span>, ncvg (<span class="kr">fun</span> <span class="nv">n</span> =&gt; f n x) l.
+
+<span class="kn">CoInductive</span> <span class="nf">dlim_spec</span> <span class="nv">f</span> (<span class="nv">x</span> : T) : R -&gt; <span class="kt">Type</span> :=
+| DLimCvg : <span class="kr">forall</span> <span class="nv">l</span> : R, <span class="mi">0</span> &lt;= l -&gt; l &lt;= <span class="mi">1</span> -&gt;
+    ncvg (<span class="kr">fun</span> <span class="nv">n</span> =&gt; f n x) l%:E -&gt; dlim_spec f x l
+
+| DLimOut : ~ (<span class="kr">exists</span> <span class="nv">l</span> : \bar R, ncvg (<span class="kr">fun</span> <span class="nv">n</span> =&gt; f n x) l) -&gt;
+    dlim_spec f x <span class="mi">0</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dlimP</span> <span class="nv">f</span> <span class="nv">x</span> : dlim_spec f x (dlim f x).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> dlimE; <span class="nb">case</span>: nlimP =&gt; [l h|?] /=; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">apply</span>/DLimOut.
+<span class="nb">have</span>: (<span class="mi">0</span>%:E &lt;= l)%E <span class="bp">by</span> <span class="nb">apply</span>/ncvg_geC: h =&gt; n; <span class="nb">apply</span>/ge0_mu.
+<span class="nb">have</span>: (l &lt;= <span class="mi">1</span>%:E)%E <span class="bp">by</span> <span class="nb">apply</span>/ncvg_leC: h =&gt; n; <span class="nb">apply</span>/le1_mu1.
+<span class="bp">by</span> <span class="nb">case</span>: l h =&gt; // l h /= ge0_l ge1_; <span class="nb">apply</span>/DLimCvg.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dcvgP</span> <span class="nv">f</span> : dcvg f -&gt; <span class="kr">forall</span> <span class="nv">x</span>,
+  <span class="kr">exists2</span> l, (<span class="mi">0</span> &lt;= l &lt;= <span class="mi">1</span>) &amp; ncvg (f^~ x) l%:E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; cv_f x; <span class="nb">case</span>: (dlimP f x) =&gt; [l ge0_l le1_l cv|].
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">l</span> =&gt; //; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+<span class="bp">by</span> <span class="nb">case</span>; <span class="nb">case</span>: (cv_f x).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dcvg_homo</span> <span class="nv">f</span> :
+  (<span class="kr">forall</span> <span class="nv">n</span> <span class="nv">m</span>, (n &lt;= m)%N -&gt; f n &lt;=<span class="mi">1</span> f m) -&gt; dcvg f.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; mn_f x; <span class="nb">have</span>: <span class="kr">forall</span> <span class="nv">n</span> <span class="nv">m</span>, (n &lt;= m)%N -&gt; f n x &lt;= f m x.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; n m /mn_f; <span class="nb">apply</span>.
+<span class="nb">case</span>/ncvg_mono_bnd =&gt; {mn_f}; <span class="kp">first</span> <span class="nb">apply</span>/asboolP/nboundedP.
+  <span class="kr">exists</span> <span class="mi">2</span>%:R =&gt; // n; <span class="nb">apply</span>/(@le_lt_trans _ _ <span class="mi">1</span>%:R)/ltr_nat.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ger0_norm // le1_mu1.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; y h; <span class="kr">exists</span> <span class="nv">y</span>%:E.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ge0_dlim</span> <span class="nv">f</span> : <span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= dlim f x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">case</span>: dlimP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le1_dlim</span> <span class="nv">f</span> : <span class="kr">forall</span> <span class="nv">x</span>, dlim f x &lt;= <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">case</span>: dlimP =&gt; // _; <span class="nb">apply</span>/ler01. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_dlim</span> <span class="nv">f</span> <span class="nv">g</span> :
+  (<span class="kr">forall</span> <span class="nv">n</span>, f n &lt;=<span class="mi">1</span> g n) -&gt; dcvg g -&gt; dlim f &lt;=<span class="mi">1</span> dlim g.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; le dcvg_g x; <span class="nb">case</span>: dlimP =&gt; [|_]; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">apply</span>/ge0_dlim.
+<span class="nb">move</span>=&gt; l _ _ h; <span class="nb">case</span>: dlimP =&gt; [l&#39; _ _ h&#39;|]; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">case</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> -lee_fin; <span class="nb">apply</span>/(ncvg_le _ h&#39; h).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">leub_dlim</span> <span class="nv">f</span> <span class="nv">mu</span> : (<span class="kr">forall</span> <span class="nv">n</span>, f n &lt;=<span class="mi">1</span> mu) -&gt; dlim f &lt;=<span class="mi">1</span> mu.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; le x; <span class="nb">apply</span>/(@le_trans _ _ ((\dlim_(n) mu) x)).
+  <span class="bp">by</span> <span class="nb">apply</span>/le_dlim =&gt; // y; <span class="kr">exists</span> (<span class="nv">mu</span> <span class="nv">y</span>)%:E; <span class="nb">apply</span>/ncvgC.
+<span class="bp">by</span> <span class="nb">rewrite</span> dlimE nlimC.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dlim_ub</span> <span class="nv">f</span> <span class="nv">k</span> :
+  (<span class="kr">forall</span> <span class="nv">n</span> <span class="nv">m</span>, (n &lt;= m)%N -&gt; f n &lt;=<span class="mi">1</span> f m) -&gt; f k &lt;=<span class="mi">1</span> dlim f.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; mn_f x; <span class="nb">rewrite</span> dlimE -lee_fin; <span class="nb">pose</span> u n := f n x.
+<span class="nb">apply</span>/(ncvg_homo_le (u := u))=&gt; [m n /mn_f|]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>.
+<span class="nb">move</span>/dcvg_homo: mn_f =&gt; /dcvgP /(_ x) [l _].
+<span class="bp">by</span> <span class="nb">move</span>=&gt; cv; <span class="nb">rewrite</span> (nlimE cv).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dlet_lim</span> <span class="nv">f</span> <span class="nv">h</span> : (<span class="kr">forall</span> <span class="nv">n</span> <span class="nv">m</span>, (n &lt;= m)%N -&gt; f n &lt;=<span class="mi">1</span> f m) -&gt;
+  \dlet_(x &lt;- dlim f) h x =<span class="mi">1</span> \dlim_(n) \dlet_(x &lt;- f n) h x.
+<span class="kn">Proof</span>. <span class="kn">Admitted</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dlim_let</span> (<span class="nv">f</span> : nat -&gt; T -&gt; {distr U / R}) (<span class="nv">mu</span> : {distr T / R}) :
+  (<span class="kr">forall</span> <span class="nv">x</span> <span class="nv">n</span> <span class="nv">m</span>, (n &lt;= m)%N -&gt; f n x &lt;=<span class="mi">1</span> f m x) -&gt;
+  \dlim_(n) \dlet_(x &lt;- mu) (f n x) =<span class="mi">1</span>
+    \dlet_(x &lt;- mu) \dlim_(n) (f n x).
+<span class="kn">Proof using</span> <span class="nf">Type</span>. <span class="kn">Admitted</span>.
+<span class="kn">End</span> <span class="nf">DLimTheory</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">Marginals</span>.
+<span class="kn">Variable</span> (<span class="nv">T</span> <span class="nv">U</span> : choiceType) (<span class="nv">h</span> : T -&gt; U) (<span class="nv">mu</span> : distr T).
+
+<span class="kn">Definition</span> <span class="nf">dmargin</span> := \dlet_(x &lt;- mu) (dunit (h x)).
+
+<span class="kn">Lemma</span> <span class="nf">dmarginE</span> : dmargin = \dlet_(y &lt;- mu) (dunit (h y)).
+<span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">Marginals</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">MarginalsTh</span>.
+<span class="kn">Variable</span> (<span class="nv">T</span> <span class="nv">U</span> <span class="nv">V</span> : choiceType).
+
+<span class="kn">Lemma</span> <span class="nf">dmargin_psumE</span> (<span class="nv">mu</span> : {distr T / R}) (<span class="nv">f</span> : T -&gt; U) <span class="nv">y</span> :
+  (dmargin f mu) y = psum (<span class="kr">fun</span> <span class="nv">x</span> =&gt; (f x == y)%:R * mu x).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> dmarginE dletE; <span class="nb">apply</span>/eq_psum =&gt; x //=.
+<span class="bp">by</span> <span class="nb">rewrite</span> mulrC dunit1E.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dlet_dmargin</span> (<span class="nv">mu</span> : {distr T / R}) (<span class="nv">f</span> : T -&gt; U) (<span class="nv">g</span> : U -&gt; {distr V / R}):
+  \dlet_(u &lt;- dmargin f mu) g u =<span class="mi">1</span> \dlet_(t &lt;- mu) (g (f t)).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> dlet_dlet; <span class="nb">apply</span>: eq_in_dlet=&gt; //.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; y _ z; <span class="nb">rewrite</span> dlet_unit.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dmargin_dlet</span> (<span class="nv">mu</span> : {distr T / R}) (<span class="nv">f</span> : U -&gt; V) (<span class="nv">g</span> : T -&gt; {distr U / R}):
+  dmargin f (\dlet_(t &lt;- mu) g t) =<span class="mi">1</span> \dlet_(t &lt;- mu) (dmargin f (g t)).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/dlet_dlet. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dmargin_dunit</span> (<span class="nv">t</span> : T) (<span class="nv">f</span> : T -&gt; U):
+  dmargin f (dunit t) =<span class="mi">1</span> dunit (f t) :&gt; {distr U / R}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/dlet_unit. <span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">MarginalsTh</span>.
+<span class="kn">End</span> <span class="nf">Std</span>.
+
+<span class="kn">Notation</span> <span class="nf">dfst</span> mu := (dmargin fst mu).
+<span class="kn">Notation</span> <span class="nf">dsnd</span> mu := (dmargin snd mu).
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;\dlet_ ( i &lt;- d ) E&quot;</span> := (dlet (<span class="kr">fun</span> <span class="nv">i</span> =&gt; E) d).
+<span class="kn">Notation</span> <span class="s2">&quot;\dlim_ ( n ) E&quot;</span> := (dlim (<span class="kr">fun</span> <span class="nv">n</span> =&gt; E)).
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">DSwap</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType} {<span class="nv">A</span> <span class="nv">B</span> : choiceType} (<span class="nv">mu</span> : {distr (A * B) / R}).
+
+<span class="kn">Definition</span> <span class="nf">dswap</span> : {distr (B * A) / R} :=
+  dmargin (<span class="kr">fun</span> <span class="nv">xy</span> =&gt; (xy.<span class="mi">2</span>, xy.<span class="mi">1</span>)) mu.
+<span class="kn">End</span> <span class="nf">DSwap</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">DSwapCoreTheory</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType} {<span class="nv">A</span> <span class="nv">B</span> : choiceType} (<span class="nv">mu</span> : {distr (A * B) / R}).
+
+<span class="kn">Lemma</span> <span class="nf">dswapE</span> <span class="nv">xy</span> : dswap mu xy = mu (xy.<span class="mi">2</span>, xy.<span class="mi">1</span>).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> dletE /= (psum_finseq (r := [:: (xy.<span class="mi">2</span>, xy.<span class="mi">1</span>)])) //.
+  <span class="nb">case</span>=&gt; a b; <span class="nb">rewrite</span> !inE dunit1E /= mulf_eq0.
+  <span class="bp">by</span> <span class="nb">case</span>/norP=&gt; _; <span class="nb">rewrite</span> pnatr_eq0 eqb0 negbK=&gt; /eqP &lt;-.
+<span class="bp">by</span> <span class="nb">case</span>: xy=&gt; x y; <span class="nb">rewrite</span> big_seq1 dunit1E /= eqxx mulr1 ger0_norm.
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">DSwapCoreTheory</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">DSwapTheory</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType} {<span class="nv">A</span> <span class="nv">B</span> : choiceType} (<span class="nv">mu</span> : {distr (A * B) / R}).
+
+<span class="kn">Lemma</span> <span class="nf">dswapK</span> : dswap (dswap mu) =<span class="mi">1</span> mu.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>=&gt; x y; <span class="nb">rewrite</span> !dswapE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dinsupp_swap</span> <span class="nv">xy</span> : (xy.<span class="mi">2</span>, xy.<span class="mi">1</span>) \<span class="kr">in</span> dinsupp mu -&gt;
+  xy \<span class="kr">in</span> dinsupp (dswap mu).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; h; <span class="nb">apply</span>/dinsuppP; <span class="nb">rewrite</span> dswapE; <span class="nb">apply</span>/dinsuppPn.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dfst_dswap</span> : dfst (dswap mu) =<span class="mi">1</span> dsnd mu.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; z; <span class="nb">rewrite</span> dlet_dlet; <span class="nb">apply</span>/eq_in_dlet =&gt; // -[x y].
+<span class="bp">by</span> <span class="nb">move</span>=&gt; _ t /=; <span class="nb">rewrite</span> dlet_unit /=.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dsnd_dswap</span> : dsnd (dswap mu) =<span class="mi">1</span> dfst mu.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; z; <span class="nb">rewrite</span> dlet_dlet; <span class="nb">apply</span>/eq_in_dlet =&gt; // -[x y].
+<span class="bp">by</span> <span class="nb">move</span>=&gt; _ t /=; <span class="nb">rewrite</span> dlet_unit /=.
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">DSwapTheory</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">DFst</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType} {<span class="nv">T</span> <span class="nv">U</span> : choiceType}.
+
+<span class="kn">Lemma</span> <span class="nf">dfstE</span> (<span class="nv">mu</span> : {distr (T * U) /  R}) <span class="nv">x</span> :
+  dfst mu x = psum (<span class="kr">fun</span> <span class="nv">y</span> =&gt; mu (x, y)).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> dmargin_psumE /=; <span class="nb">pose</span> h y : T * U := (x, y).
+<span class="nb">rewrite</span> (reindex_psum (P := [pred z | z.<span class="mi">1</span> == x]) (h := h)) /=.
++ <span class="nb">case</span>=&gt; a b; <span class="nb">rewrite</span> !inE/= mulf_eq0 =&gt; /norP[].
+  <span class="bp">by</span> <span class="nb">rewrite</span> pnatr_eq0 eqb0 negbK.
++ <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">snd</span> =&gt; [z|[z1 z2]]; <span class="nb">rewrite</span> !inE //= =&gt; /eqP -&gt;.
+<span class="bp">by</span> <span class="nb">apply</span>/eq_psum =&gt; y; <span class="nb">rewrite</span> eqxx mul1r.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summable_fst</span> (<span class="nv">mu</span> : {distr (T * U) / R}) <span class="nv">x</span> :
+  summable (<span class="kr">fun</span> <span class="nv">y</span> =&gt; mu (x, y)).
+<span class="kn">Proof</span>.
+<span class="nb">have</span> /summable_seqP /= := summable_mu mu =&gt; -[M ge0_M h].
+<span class="nb">apply</span>/summable_seqP; <span class="kr">exists</span> <span class="nv">M</span> =&gt; // J uqJ; <span class="nb">pose</span> X := [seq (x, y) | y &lt;- J].
+<span class="nb">apply</span>/(le_trans _ (h X _)); <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> map_inj_uniq // =&gt; y1 y2 [].
+<span class="bp">by</span> <span class="nb">rewrite</span> le_eqVlt big_map eqxx.
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">DFst</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">DSnd</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType} {<span class="nv">T</span> <span class="nv">U</span> : choiceType}.
+
+<span class="kn">Lemma</span> <span class="nf">dsndE</span> (<span class="nv">mu</span> : {distr (T * U) / R}) <span class="nv">y</span> :
+  dsnd mu y = psum (<span class="kr">fun</span> <span class="nv">x</span> =&gt; mu (x, y)).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -dfst_dswap dfstE; <span class="nb">apply</span>/eq_psum=&gt; x; <span class="nb">rewrite</span> dswapE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summable_snd</span> (<span class="nv">mu</span> : {distr (T * U) / R}) <span class="nv">y</span> :
+  summable (<span class="kr">fun</span> <span class="nv">x</span> =&gt; mu (x, y)).
+<span class="kn">Proof</span>.
+<span class="nb">have</span> := summable_fst (dswap mu) y; <span class="nb">apply</span>/eq_summable.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x /=; <span class="nb">rewrite</span> dswapE.
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">DSnd</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">PrCoreTheory</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType} {<span class="nv">T</span> : choiceType}.
+
+<span class="kn">Implicit Types</span> (<span class="nv">mu</span> : {distr T / R}) (<span class="nv">A</span> <span class="nv">B</span> <span class="nv">E</span> : pred T).
+
+<span class="kn">Lemma</span> <span class="nf">summable_pr</span> <span class="nv">E</span> <span class="nv">mu</span> : summable (<span class="kr">fun</span> <span class="nv">x</span> =&gt; (E x)%:R * mu x).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/(le_summable (F2 := mu)) =&gt; [x|]; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">apply</span>/summable_mu.
+  <span class="bp">by</span> <span class="nb">rewrite</span> mulr_ge0 <span class="nl">?ler0n</span> //= ler_pimull // lern1 leq_b1.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pr_pred0</span> <span class="nv">mu</span> : \P_[mu] pred0 = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /pr psum_eq0 // =&gt; x /=; <span class="nb">rewrite</span> mul0r. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pr_pred1</span> <span class="nv">mu</span> <span class="nv">x</span> : mu x = \P_[mu] (pred1 x).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /pr (psum_finseq (r := [:: x])) // =&gt; [y|].
+  <span class="bp">by</span> <span class="nb">rewrite</span> !inE; <span class="nb">case</span>: (y =P x); <span class="nb">rewrite</span> ?(mul0r, eqxx).
+<span class="bp">by</span> <span class="nb">rewrite</span> big_seq1 /= eqxx mul1r ger0_norm.
+<span class="kn">Qed</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Lemma</span> <span class="nf">pr_exp</span> <span class="nv">mu</span> (<span class="nv">E</span> : pred T) : \P_[mu] E = \E_[mu] (<span class="kr">fun</span> <span class="nv">m</span> =&gt; (E m)%:R).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /pr psum_sum // =&gt; x; <span class="nb">rewrite</span> mulr_ge0 // ler0n. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pr_predT</span> <span class="nv">mu</span> : \P_[mu] predT = psum mu.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/eq_psum=&gt; x; <span class="nb">rewrite</span> mul1r. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pr_dunit</span> <span class="nv">E</span> <span class="nv">x</span> : \P_[dunit x] E = (E x)%:R :&gt; R.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /pr (psum_finseq (r := [:: x])) //.
+  <span class="nb">move</span>=&gt; y; <span class="nb">rewrite</span> !inE dunit1E [x==_]eq_sym.
+  <span class="bp">by</span> <span class="nb">case</span>: (y =P x) =&gt; //; <span class="nb">rewrite</span> mulr0 eqxx.
+<span class="bp">by</span> <span class="nb">rewrite</span> big_seq1 dunit1E eqxx mulr1 ger0_norm <span class="nl">?ler0n</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">exp_dunit</span> (<span class="nv">f</span> : T -&gt; R) (<span class="nv">x</span> : T) : \E_[dunit x] f = f x.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /esp (sum_seq1 x) =&gt; [y|]; <span class="nb">rewrite</span> dunit1E.
+  <span class="bp">by</span> <span class="nb">case</span>: (x == y) =&gt; //; <span class="nb">rewrite</span> mulr0 eqxx.
+<span class="bp">by</span> <span class="nb">rewrite</span> eqxx mulr1.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">exp_cst</span> <span class="nv">mu</span> <span class="nv">r</span> : \E_[mu] (<span class="kr">fun</span> <span class="nv">_</span> =&gt; r) = \P_[mu] predT * r.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> pr_predT psum_sum // [RHS]mulrC -sumZ; <span class="nb">apply</span>/eq_sum.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">exp0</span> <span class="nv">mu</span> : \E_[mu] (<span class="kr">fun</span> <span class="nv">_</span> =&gt; <span class="mi">0</span>) = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> exp_cst mulr0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">has_expC</span> <span class="nv">mu</span> <span class="nv">c</span> : \E<span class="nl">?_</span>[mu] (<span class="kr">fun</span> <span class="nv">_</span> =&gt; c).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/summableMl =&gt; //; <span class="kr">exists</span> `|c|. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">has_exp0</span> <span class="nv">mu</span> : \E<span class="nl">?_</span>[mu] (<span class="kr">fun</span> <span class="nv">_</span> =&gt; <span class="mi">0</span>).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/(has_expC mu <span class="mi">0</span>). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">has_exp1</span> <span class="nv">mu</span> : \E<span class="nl">?_</span>[mu] (<span class="kr">fun</span> <span class="nv">_</span> =&gt; <span class="mi">1</span>).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/(has_expC mu <span class="mi">1</span>). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">has_expZ</span> <span class="nv">mu</span> <span class="nv">c</span> <span class="nv">F</span> : \E<span class="nl">?_</span>[mu] F -&gt; \E<span class="nl">?_</span>[mu] (c \*o F).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; heF; <span class="nb">have</span>: summable (c \*o (F \* mu)) <span class="bp">by</span> <span class="nb">apply</span>/summableZ.
+<span class="bp">by</span> <span class="nb">apply</span>/eq_summable =&gt; x /=; <span class="nb">rewrite</span> mulrA.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expZ</span> <span class="nv">mu</span> <span class="nv">F</span> <span class="nv">c</span> : \E_[mu] (c \*o F) = c * \E_[mu] F.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -sumZ; <span class="nb">apply</span>/eq_sum=&gt; x /=; <span class="nb">rewrite</span> mulrA. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ge0_pr</span> <span class="nv">A</span> <span class="nv">mu</span> : <span class="mi">0</span> &lt;= \P_[mu] A.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/ge0_psum. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ge0_prc</span> <span class="nv">A</span> <span class="nv">B</span> <span class="nv">mu</span> : <span class="mi">0</span> &lt;= \P_[mu, B] A.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /prc mulr_ge0 <span class="nl">?invr_ge0</span> // ge0_pr. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_in_pr</span> <span class="nv">A</span> <span class="nv">B</span> <span class="nv">mu</span> :
+  {<span class="kr">in</span> dinsupp mu, A =i B} -&gt; \P_[mu] A = \P_[mu] B.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; eq_AB; <span class="nb">apply</span>/eq_psum =&gt; x; <span class="nb">case</span>/boolP: (x \<span class="kr">in</span> dinsupp mu).
+  <span class="bp">by</span> <span class="nb">move</span>/eq_AB; <span class="nb">rewrite</span> -!topredE =&gt; /= -&gt;.
+<span class="bp">by</span> <span class="nb">move</span>/dinsuppPn=&gt; -&gt;; <span class="nb">rewrite</span> !mulr0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_pr</span> <span class="nv">A</span> <span class="nv">B</span> <span class="nv">mu</span> : A =i B -&gt; \P_[mu] A = \P_[mu] B.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; eq_AB; <span class="nb">apply</span>/eq_in_pr=&gt; x _; <span class="nb">apply</span>/eq_AB. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_exp</span> <span class="nv">mu</span> (<span class="nv">f1</span> <span class="nv">f2</span> : T -&gt; R):
+   {<span class="kr">in</span> dinsupp mu, f1 =<span class="mi">1</span> f2} -&gt; \E_[mu] f1 = \E_[mu] f2.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; eq_f; <span class="nb">apply</span>/eq_sum =&gt; x; <span class="nb">case</span>/boolP: (x \<span class="kr">in</span> dinsupp mu).
+  <span class="bp">by</span> <span class="nb">move</span>/eq_f=&gt; -&gt;. <span class="bp">by</span> <span class="nb">move</span>/dinsuppPn=&gt; -&gt;; <span class="nb">rewrite</span> !mulr0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pr_pred0_eq</span> (<span class="nv">mu</span> : {distr T / R}) (<span class="nv">E</span> : pred T) :
+  E =<span class="mi">1</span> pred0 -&gt; \P_[mu] E = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; eq; <span class="nb">rewrite</span> -(pr_pred0 mu); <span class="nb">apply</span>/eq_pr. <span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">PrCoreTheory</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">PrTheory</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType} {<span class="nv">T</span> <span class="nv">U</span> : choiceType} {<span class="nv">I</span> : eqType}.
+
+<span class="kn">Implicit Types</span> (<span class="nv">mu</span> : {distr T / R}) (<span class="nv">A</span> <span class="nv">B</span> <span class="nv">E</span> : pred T).
+
+<span class="kn">Lemma</span> <span class="nf">pr_dlet</span> <span class="nv">E</span> <span class="nv">f</span> (<span class="nv">mu</span> : {distr U / R}) :
+  \P_[dlet f mu] E = \E_[mu] (<span class="kr">fun</span> <span class="nv">x</span> =&gt; \P_[f x] E).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /esp -psum_sum =&gt; [x|]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> mulr_ge0 <span class="nl">?ge0_pr</span>.
+<span class="nb">rewrite</span> /pr; <span class="nb">unlock</span> dlet =&gt; /=; <span class="nb">rewrite</span> /mlet /=.
+<span class="nb">pose</span> F x y := (E x)%:R * (mu y * f y x).
+<span class="nb">transitivity</span> (psum (<span class="kr">fun</span> <span class="nv">x</span> =&gt; psum (<span class="kr">fun</span> <span class="nv">y</span> =&gt; F x y))); <span class="nb">rewrite</span> {}/F.
+  <span class="bp">by</span> <span class="nb">apply</span>/eq_psum =&gt; x; <span class="nb">rewrite</span> -psumZ <span class="nl">?ler0n</span>.
+<span class="nb">rewrite</span> interchange_psum /=; <span class="nb">last first</span>.
+  <span class="nb">apply</span>/eq_psum=&gt; y /=; <span class="nb">rewrite</span> mulrC -psumZ //.
+  <span class="bp">by</span> <span class="nb">apply</span>/eq_psum=&gt; x /=; <span class="nb">rewrite</span> mulrCA.
++ <span class="nb">have</span> := summable_pr E (dlet f mu); <span class="nb">apply</span>/eq_summable.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> dletE psumZ <span class="nl">?ler0n</span>.
++ <span class="bp">by</span> <span class="nb">move</span>=&gt; y; <span class="nb">apply</span>/summable_condl/summable_mlet.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pr_dmargin</span> <span class="nv">E</span> <span class="nv">f</span> (<span class="nv">mu</span> : {distr U / R}) :
+  \P_[dmargin f mu] E = \P_[mu] [pred x | f x \<span class="kr">in</span> E].
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> /dmargin pr_dlet pr_exp; <span class="nb">apply</span>/eq_exp=&gt; x _; <span class="nb">rewrite</span> pr_dunit.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq0_pr</span> <span class="nv">A</span> <span class="nv">mu</span> :
+  (<span class="kr">forall</span> <span class="nv">x</span>, x \<span class="kr">in</span> dinsupp mu -&gt; x \notin A) -&gt; \P_[mu] A = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; h; <span class="nb">apply</span>/psum_eq0=&gt; x; <span class="nb">apply</span>/eqP.
+<span class="nb">rewrite</span> mulf_eq0 orbC; <span class="nb">case</span>/boolP: (mu x == <span class="mi">0</span>) =&gt; //=.
+<span class="bp">by</span> <span class="nb">move</span>/h; <span class="nb">rewrite</span> -topredE /= =&gt; /negbTE-&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq0_prc</span> <span class="nv">A</span> <span class="nv">B</span> <span class="nv">mu</span> :
+    (<span class="kr">forall</span> <span class="nv">x</span>, x \<span class="kr">in</span> dinsupp mu -&gt; x \<span class="kr">in</span> B -&gt; x \notin A)
+  -&gt; \P_[mu, B] A = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; h; <span class="nb">rewrite</span> /prc eq0_pr <span class="nl">?mul0r</span> // =&gt; x /h {h} /orb_idl.
+<span class="bp">by</span> <span class="nb">rewrite</span> negb_and /= =&gt; &lt;-; <span class="nb">rewrite</span> orbAC orbN.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">subset_pr</span> <span class="nv">A</span> <span class="nv">B</span> <span class="nv">mu</span> : {subset B &lt;= A} -&gt; \P_[mu] B &lt;= \P_[mu] A.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; le_BA; <span class="nb">apply</span>/le_psum; <span class="nb">last first</span>.
+  <span class="nb">apply</span>/summableMl =&gt; //; <span class="kr">exists</span> <span class="mi">1</span>=&gt; // x.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ger0_norm ?(ler0n, lern1) <span class="nl">?leq_b1</span>.
+<span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> mulr_ge0 <span class="nl">?ler0n</span> <span class="nl">?ler_wpmul2r</span> //.
+<span class="nb">rewrite</span> ler_nat; <span class="nb">have</span> := le_BA x; <span class="nb">rewrite</span> -!topredE /=.
+<span class="bp">by</span> <span class="nb">case</span>: (B x) =&gt; // -&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le1_pr</span> <span class="nv">A</span> <span class="nv">mu</span> : \P_[mu] A &lt;= <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/(@le_trans _ _ \P_[mu] predT).
+  <span class="bp">by</span> <span class="nb">apply</span>/subset_pr. <span class="bp">by</span> <span class="nb">rewrite</span> pr_predT le1_mu.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_exp</span> <span class="nv">mu</span> <span class="nv">f1</span> <span class="nv">f2</span>: \E<span class="nl">?_</span>[mu] f1 -&gt; \E<span class="nl">?_</span>[mu] f2 -&gt;
+  f1 &lt;=<span class="mi">1</span> f2 -&gt; \E_[mu] f1 &lt;= \E_[mu] f2.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; sm1 sm2 le_f; <span class="nb">apply</span>/le_sum =&gt; //.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> ler_wpmul2r.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_in_pr</span> <span class="nv">E1</span> <span class="nv">E2</span> <span class="nv">mu</span> :
+  (<span class="kr">forall</span> <span class="nv">x</span>, x \<span class="kr">in</span> dinsupp mu -&gt; x \<span class="kr">in</span> E1 -&gt; x \<span class="kr">in</span> E2) -&gt;
+    \P_[mu] E1 &lt;= \P_[mu] E2.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; le; <span class="nb">rewrite</span> /pr; <span class="nb">apply</span>/le_psum; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">apply</span>/summable_pr.
+<span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> mulr_ge0 <span class="nl">?ler0n</span> //=; <span class="nb">case</span>/boolP: (x \<span class="kr">in</span> dinsupp mu).
+  <span class="nb">move</span>/le; <span class="nb">rewrite</span> -!topredE /= =&gt; E12; <span class="nb">rewrite</span> ler_wpmul2r //.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ler_nat; <span class="nb">case</span>: (E1 x) E12 =&gt; // -&gt;.
+<span class="bp">by</span> <span class="nb">move</span>/dinsuppPn=&gt; -&gt;; <span class="nb">rewrite</span> !mulr0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_mu_pr</span> <span class="nv">A</span> <span class="nv">mu</span> <span class="nv">nu</span> :
+    (<span class="kr">forall</span> <span class="nv">x</span>, x \<span class="kr">in</span> dinsupp nu -&gt; x \<span class="kr">in</span> A -&gt; nu x &lt;= mu x)
+  -&gt; \P_[nu] A &lt;= \P_[mu] A.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; h; <span class="nb">apply</span>/le_psum; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">apply</span>/summable_pr.
+<span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> mulr_ge0 <span class="nl">?ler0n</span> //=.
+<span class="nb">case</span>/boolP: (x \<span class="kr">in</span> dinsupp nu) =&gt; [/h {}h|]; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">move</span>/dinsuppPn=&gt; -&gt;; <span class="nb">rewrite</span> mulr0 mulr_ge0 <span class="nl">?ler0n</span>.
+<span class="bp">by</span> <span class="nb">case</span>/boolP: (A x) =&gt; [/h|]; <span class="nb">rewrite</span> ?(mul0r, mul1r).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le1_prc</span> <span class="nv">A</span> <span class="nv">B</span> <span class="nv">mu</span> : \P_[mu, B] A &lt;= <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> := ge0_pr B mu; <span class="nb">rewrite</span> /prc le_eqVlt.
+<span class="nb">case</span>/orP=&gt; [/eqP&lt;-|]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> invr0 mulr0 ler01.
+<span class="bp">by</span> <span class="nb">move</span>/ler_pdivr_mulr=&gt; -&gt;; <span class="nb">rewrite</span> mul1r le_in_pr // =&gt; x _ /andP[].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">prc_sum</span> <span class="nv">A</span> <span class="nv">mu</span> : <span class="mi">0</span> &lt; \P_[mu] A -&gt;
+  psum (<span class="kr">fun</span> <span class="nv">x</span> =&gt; \P_[mu, A] (pred1 x)) = <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; gt0_pE; <span class="nb">rewrite</span> psumZr ?(invr_ge0, ge0_pr) //.
+<span class="nb">rewrite</span> (eq_psum (F2 := (<span class="kr">fun</span> <span class="nv">x</span> =&gt; (A x)%:R * mu x))); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> divff // gt_eqF.
+<span class="nb">move</span>=&gt; x /=; <span class="nb">rewrite</span> /pr (psum_finseq (r := [:: x])) <span class="nl">?big_seq1</span> //=.
+  <span class="nb">move</span>=&gt; y; <span class="nb">rewrite</span> !inE; <span class="nb">case</span>: (y == x) =&gt; //=.
+  <span class="bp">by</span> <span class="nb">rewrite</span> mul0r eqxx.
+<span class="bp">by</span> <span class="nb">rewrite</span> !inE eqxx -topredE ger0_norm <span class="nl">?mulr_ge0</span> <span class="nl">?ler0n</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pr_eq0</span> <span class="nv">mu</span> <span class="nv">E</span> : \P_[mu] E = <span class="mi">0</span> -&gt; <span class="kr">forall</span> <span class="nv">x</span>, x \<span class="kr">in</span> E -&gt; mu x = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>/eq0_psum=&gt; /(_ (summable_pr _ _)) =&gt; h x xE; <span class="nb">move</span>/(_ x): h.
+<span class="bp">by</span> <span class="nb">move</span>: xE; <span class="nb">rewrite</span> -topredE /= =&gt; -&gt;; <span class="nb">rewrite</span> mul1r.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">prID</span> <span class="nv">A</span> <span class="nv">B</span> <span class="nv">mu</span> :
+  \P_[mu] A = \P_[mu] [predI A &amp; B] + \P_[mu] [predI A &amp; predC B].
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> {<span class="mi">1</span>}/pr (psumID B); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>/summable_pr.
+<span class="nb">congr</span> (_ + _); <span class="nb">apply</span>/eq_psum =&gt; x; <span class="nb">rewrite</span> !inE -!topredE /=;
+  <span class="bp">by</span> <span class="nb">rewrite</span> mulrA -natrM mulnb andbC.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pr_or_indep</span> (<span class="nv">A</span> <span class="nv">B</span> : pred T) (<span class="nv">mu</span> : {distr T / R}) :
+  (<span class="kr">forall</span> <span class="nv">x</span>, x \<span class="kr">in</span> A -&gt; x \notin B) -&gt;
+    \P_[mu] [predU A &amp; B] = \P_[mu] A + \P_[mu] B.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; dsj; <span class="nb">rewrite</span> /pr -psumD; <span class="kp">try</span> <span class="kp">solve</span> [
+  <span class="bp">by</span> <span class="nb">apply</span>/summable_pr | <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> mulr_ge0 <span class="nl">?ler0n</span>
+].
+<span class="nb">apply</span>/eq_psum=&gt; x /=; <span class="nb">rewrite</span> -mulrDl -!topredE /= -natrD.
+<span class="nb">case</span>/boolP: (A x) =&gt; Ax; <span class="nb">case</span>/boolP: (B x) =&gt; Bx //=.
+<span class="bp">by</span> <span class="nb">move</span>/dsj: Ax; <span class="nb">rewrite</span> -topredE /= Bx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pr_mem_map</span> <span class="nv">f</span> <span class="nv">mu</span> (<span class="nv">r</span> : seq U) : uniq r -&gt;
+    \P_[mu] [pred x | f x \<span class="kr">in</span> r]
+  = \sum_(y &lt;- r) \P_[mu] [pred x | f x == y].
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>: r =&gt; [_|y r ih]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> big_nil pr_pred0_eq //.
+<span class="nb">case</span>/andP=&gt; yNr /ih {ih}h; <span class="nb">rewrite</span> big_cons -h -pr_or_indep.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> !inE =&gt; /eqP-&gt;. <span class="bp">by</span> <span class="nb">apply</span>/eq_pr.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pr_mem</span> <span class="nv">mu</span> (<span class="nv">r</span> : seq T) : uniq r -&gt;
+  \P_[mu] [pred x | x \<span class="kr">in</span> r] = \sum_(x &lt;- r) mu x.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>: r =&gt; [_|y r ih]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> big_nil pr_pred0_eq //.
+<span class="nb">case</span>/andP=&gt; yNr /ih {ih}h; <span class="nb">rewrite</span> big_cons /= pr_pred1.
+<span class="bp">by</span> <span class="nb">rewrite</span> -h -pr_or_indep // =&gt; x /eqP -&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pr_bigor_indep</span> <span class="nv">mu</span> (<span class="nv">P</span> : I -&gt; pred T) (<span class="nv">r</span> : seq I) :
+    uniq r
+  -&gt; (<span class="kr">forall</span> <span class="nv">p1</span> <span class="nv">p2</span> <span class="nv">x</span>, p1 != p2 -&gt; p1 \<span class="kr">in</span> r -&gt; p2 \<span class="kr">in</span> r -&gt; x \<span class="kr">in</span> P p1 -&gt; x \notin P p2)
+  -&gt; \P_[mu] [pred x | has [pred p | x \<span class="kr">in</span> P p] r]
+  = \sum_(p &lt;- r) \P_[mu] (P p).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; uq_r dj; <span class="nb">pose</span> S x := \big[orb/false]_(p &lt;- r) (x \<span class="kr">in</span> P p).
+<span class="nb">rewrite</span> (eq_pr (B := S)) =&gt; [x|]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> !inE -big_has.
+<span class="nb">rewrite</span> {}/S; <span class="nb">elim</span>: r uq_r dj =&gt; [_|p r ih /andP[pNr /ih {ih}h]] dj.
+  <span class="bp">by</span> <span class="nb">rewrite</span> big_nil pr_pred0_eq // =&gt; x; <span class="nb">rewrite</span> big_nil.
+<span class="nb">rewrite</span> big_cons -h =&gt; [p1 p2 x ne_p p1r p2r|].
+  <span class="bp">by</span> <span class="nb">apply</span>/dj=&gt; //; <span class="nb">rewrite</span> in_cons (p1r, p2r) orbT.
+<span class="nb">rewrite</span> -pr_or_indep =&gt; [x xNPp|].
+  <span class="nb">rewrite</span> -topredE /= big_has; <span class="nb">apply</span>/hasPn =&gt; y y_in_r.
+  <span class="nb">apply</span>/(dj p); <span class="nb">rewrite</span> <span class="nl">?in_cons</span> ?(eqxx, y_in_r, orbT) //.
+  <span class="bp">by</span> <span class="nb">apply</span>/contra: pNr=&gt; /eqP-&gt;.
+<span class="bp">by</span> <span class="nb">apply</span>/eq_pr=&gt; x; <span class="nb">rewrite</span> -!topredE /= big_cons.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pr_or</span> <span class="nv">A</span> <span class="nv">B</span> <span class="nv">mu</span> : \P_[mu] [predU A &amp; B] =
+  \P_[mu] A + \P_[mu] B - \P_[mu] [predI A &amp; B].
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_sym subr_eq [<span class="kr">in</span> X <span class="kr">in</span> _==X]addrC; <span class="nb">apply</span>/eqP.
+<span class="nb">rewrite</span> (prID _ B) -addrA -pr_or_indep =&gt; [x|].
+  <span class="bp">by</span> <span class="nb">rewrite</span> !inE =&gt; /andP[].
+<span class="nb">congr</span> (_ + _); <span class="nb">apply</span>/eq_pr =&gt; x; <span class="nb">rewrite</span> !inE -!topredE /=.
+<span class="bp">by</span> <span class="nb">apply</span>/orb_id2r =&gt; /negbTE -&gt;; <span class="nb">rewrite</span> andbT.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pr_and</span> <span class="nv">A</span> <span class="nv">B</span> <span class="nv">mu</span> : \P_[mu] [predI A &amp; B] =
+  \P_[mu] A + \P_[mu] B - \P_[mu] [predU A &amp; B].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> pr_or opprB addrCA subrr addr0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ler_pr_or</span> <span class="nv">A</span> <span class="nv">B</span> <span class="nv">mu</span> :
+  \P_[mu] [predU A &amp; B] &lt;= \P_[mu] A + \P_[mu] B.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> pr_or ler_subl_addr ler_addl ge0_pr. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ler_pr_and</span> <span class="nv">A</span> <span class="nv">B</span> <span class="nv">mu</span> :
+  \P_[mu] [predI A &amp; B] &lt;= \P_[mu] A + \P_[mu] B.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> pr_and ler_subl_addr ler_addl ge0_pr. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pr_predC</span> <span class="nv">E</span> <span class="nv">mu</span>: \P_[mu](predC E) = \P_[mu] predT - \P_[mu] E.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/esym/eqP; <span class="nb">rewrite</span> subr_eq -pr_or_indep //.
+<span class="bp">by</span> <span class="nb">apply</span>/eqP/eq_pr=&gt; x; <span class="nb">rewrite</span> !inE orNb.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pr_split</span> <span class="nv">B</span> <span class="nv">A</span> <span class="nv">mu</span> : \P_[mu] A =
+    \P_[mu]        B  * \P_[mu,       B] A
+  + \P_[mu] (predC B) * \P_[mu, predC B] A.
+<span class="kn">Proof</span>.
+<span class="nb">suff</span> h A&#39; B&#39;: \P_[mu] [predI A&#39; &amp; B&#39;] = \P_[mu] B&#39; * \P_[mu, B&#39;] A&#39;.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (prID _ B); <span class="nb">congr</span> (_ + _); <span class="nb">apply</span>/h.
+<span class="nb">rewrite</span> /prc mulrCA; <span class="nb">have</span> [] := eqVneq (\P_[mu] B&#39;) <span class="mi">0</span>; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; nzPB&#39;; <span class="nb">rewrite</span> divff // mulr1.
+<span class="nb">move</span>=&gt; zPB&#39;; <span class="nb">rewrite</span> zPB&#39; invr0 !mulr0; <span class="nb">apply</span>/eq0_pr.
+<span class="nb">move</span>=&gt; x mux; <span class="nb">move</span>/pr_eq0: zPB&#39; =&gt; /(_ x) h; <span class="nb">rewrite</span> !inE.
+<span class="bp">by</span> <span class="nb">apply</span>/negP=&gt; /andP[_ /h] /dinsuppP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">exp_split</span> <span class="nv">A</span> <span class="nv">f</span> <span class="nv">mu</span> : \E<span class="nl">?_</span>[mu] f -&gt; \E_[mu] f =
+    \P_[mu]        A  * \E_[mu,       A] f
+  + \P_[mu] (predC A) * \E_[mu, predC A] f.
+<span class="kn">Proof using</span> <span class="nf">Type</span>. <span class="kn">Admitted</span>.
+
+<span class="kn">Lemma</span> <span class="nf">has_esp_bounded</span> <span class="nv">f</span> <span class="nv">mu</span> :
+  (<span class="kr">exists</span> <span class="nv">M</span>, <span class="kr">forall</span> <span class="nv">x</span>, `|f x| &lt; M) -&gt; \E<span class="nl">?_</span>[mu] f.
+<span class="kn">Proof</span>.                          <span class="c">(* TO BE REMOVED *)</span>
+<span class="nb">case</span>=&gt; M ltM; <span class="nb">rewrite</span> /has_esp; <span class="nb">apply</span>/summable_seqP.
+<span class="kr">exists</span> (<span class="nv">Num</span>.max M <span class="mi">0</span>); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> le_maxr lexx orbT.
+<span class="nb">move</span>=&gt; J uqJ; <span class="nb">apply</span>/(@le_trans _ _ (\sum_(j &lt;- J) M * mu j)).
+  <span class="nb">apply</span>/ler_sum=&gt; j _; <span class="nb">rewrite</span> normrM [X <span class="kr">in</span> _*X]ger0_norm //.
+  <span class="bp">by</span> <span class="nb">apply</span>/ler_wpmul2r=&gt; //; <span class="nb">apply</span>/ltW.
+<span class="nb">case</span>: (ltrP M <span class="mi">0</span>) =&gt; [lt0_M|ge0_M].
+  <span class="nb">rewrite</span> ?(ltW lt0_M) // -mulr_sumr.
+  <span class="bp">by</span> <span class="nb">rewrite</span> nmulr_rle0 //; <span class="nb">apply</span>/sumr_ge0.
+<span class="bp">by</span> <span class="nb">rewrite</span> -mulr_sumr ler_pimulr // -pr_mem <span class="nl">?le1_pr</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">bounded_has_exp</span> <span class="nv">mu</span> <span class="nv">F</span> :
+  (<span class="kr">exists</span> <span class="nv">M</span>, <span class="kr">forall</span> <span class="nv">x</span>, `|F x| &lt;= M) -&gt; \E<span class="nl">?_</span>[mu] F.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; leM; <span class="nb">apply</span>/summableMl. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summable_has_exp</span> <span class="nv">mu</span> <span class="nv">F</span> : summable F -&gt; \E<span class="nl">?_</span>[mu] F.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; smF; <span class="nb">apply</span>/summableMr =&gt; //; <span class="kr">exists</span> <span class="mi">1</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> ger0_norm // le1_mu1.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">exp_le_bd</span> <span class="nv">mu</span> <span class="nv">F</span> (<span class="nv">M</span> : R) :
+  <span class="mi">0</span> &lt;= M -&gt; (<span class="kr">forall</span> <span class="nv">x</span>, `|F x| &lt;= M) -&gt; \E_[mu] F &lt;= M.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; ge0M bd; <span class="nb">apply</span>/(@le_trans _ _ (\E_[mu] (<span class="kr">fun</span> <span class="nv">_</span> =&gt; M))).
++ <span class="nb">apply</span>/le_exp.
+  + <span class="bp">by</span> <span class="nb">apply</span>/bounded_has_exp; <span class="kr">exists</span> <span class="nv">M</span>.
+  + <span class="bp">by</span> <span class="nb">apply</span>/has_expC.
+  + <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">apply</span>/(le_trans _ (bd x))/ler_norm.
+<span class="bp">by</span> <span class="nb">rewrite</span> exp_cst ler_pimull // le1_pr.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">exp_dlet</span> <span class="nv">mu</span> (<span class="nv">nu</span> : T -&gt; {distr U / R}) <span class="nv">F</span> :
+  (<span class="kr">forall</span> <span class="nv">eta</span>, \E<span class="nl">?_</span>[eta] F) -&gt;
+    \E_[dlet nu mu] F = \E_[mu] (<span class="kr">fun</span> <span class="nv">x</span> =&gt; \E_[nu x] F).
+<span class="kn">Proof using</span> <span class="nf">Type</span>*. <span class="kn">Admitted</span>.
+<span class="kn">End</span> <span class="nf">PrTheory</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">Jensen</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType} {<span class="nv">I</span> : finType}.
+
+<span class="kn">Definition</span> <span class="nf">convexon</span> (<span class="nv">a</span> <span class="nv">b</span> : \bar R) (<span class="nv">f</span> : R -&gt; R) :=
+  <span class="kr">forall</span> <span class="nv">x</span> <span class="nv">y</span>, (a &lt;= x%:E &lt;= b)%E -&gt; (a &lt;= y%:E &lt;= b)%E -&gt;
+    <span class="kr">forall</span> <span class="nv">t</span>, <span class="mi">0</span> &lt;= t &lt;= <span class="mi">1</span> -&gt;
+      f (t * x + (<span class="mi">1</span> - t) * y) &lt;= t * (f x) + (<span class="mi">1</span> - t) * (f y).
+
+<span class="kn">Notation</span> <span class="nf">convex</span> f := (convexon -oo +oo f).
+
+<span class="kn">Section</span> <span class="nf">Jensen</span>.
+<span class="kn">Context</span> (<span class="nv">f</span> : R -&gt; R) (<span class="nv">x</span> <span class="nv">l</span> : I -&gt; R).
+
+<span class="kn">Hypothesis</span> <span class="nv">cvx_f</span> : convex f.
+<span class="kn">Hypothesis</span> <span class="nv">ge0_l</span> : <span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= l x.
+<span class="kn">Hypothesis</span> <span class="nv">eq1_l</span> : \sum_i (l i) = <span class="mi">1</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Jensen</span> : f (\sum_i (l i * x i)) &lt;= \sum_i (l i * f (x i)).
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: (index_enum I) eq1_l =&gt; [|i s]; <span class="nb">rewrite</span> ?(big_nil, big_cons).
+  <span class="bp">by</span> <span class="nb">move</span>/esym/eqP; <span class="nb">rewrite</span> oner_eq0.
+<span class="nb">elim</span>: {i} s (l i) (ge0_l i) (x i) =&gt; [|j s ih] li ge0_li xi.
+  <span class="bp">by</span> <span class="nb">rewrite</span> !big_nil !addr0 =&gt; -&gt;; <span class="nb">rewrite</span> !mul1r.
+<span class="nb">rewrite</span> !big_cons; <span class="nb">have</span> := ge0_l j; <span class="nb">rewrite</span> le_eqVlt.
+<span class="nb">case</span>/orP =&gt; [/eqP&lt;-|gt0_lj].
+  <span class="bp">by</span> <span class="nb">rewrite</span> !Monoid.simpm /=; <span class="nb">apply</span>/ih.
+<span class="nb">rewrite</span> !addrA =&gt; eq1; <span class="nb">pose</span> z := (li * xi + l j * x j) / (li + l j).
+<span class="nb">have</span> nz_lij: li + l j != <span class="mi">0</span> <span class="bp">by</span> <span class="nb">rewrite</span> gt_eqF <span class="nl">?ltr_paddl</span>.
+<span class="nb">have</span>/ih := eq1 =&gt; -/(_ _ z); <span class="nb">rewrite</span> [_ * (_ / _)]mulrC.
+<span class="nb">rewrite</span> mulfVK // =&gt; {}ih; <span class="nb">apply</span>/(le_trans (ih _)).
+  <span class="bp">by</span> <span class="nb">rewrite</span> addr_ge0 <span class="nl">?ge0_l</span>.
+<span class="nb">rewrite</span> ler_add2r {ih}/z mulrDl ![_*_/_]mulrAC.
+<span class="nb">set</span> c1 : R := _ / _; <span class="nb">set</span> c2 : R := _ / _; <span class="nb">have</span> eqc2: c2 = <span class="mi">1</span> - c1.
+  <span class="nb">apply</span>/(mulfI nz_lij); <span class="nb">rewrite</span> mulrBr mulr1 ![(li + l j)*_]mulrC.
+  <span class="bp">by</span> <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> !mulfVK // eq_sym subr_eq addrC.
+<span class="nb">set</span> c := (li + l j); <span class="nb">pose</span> z := (c * c1 * f xi + c * c2 * f (x j)).
+<span class="nb">apply</span>/(@le_trans _ _ z); <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> /z ![_*(_/_)]mulrC !mulfVK.
+<span class="nb">rewrite</span> {}/z -![c * _ * _]mulrA -mulrDr ler_wpmul2l <span class="nl">?addr_ge0</span> //.
+<span class="nb">rewrite</span> eqc2 cvx_f // <span class="nl">?leNye</span> <span class="nl">?leey</span> // divr_ge0 <span class="nl">?addr_ge0</span> //=.
+<span class="bp">by</span> <span class="nb">rewrite</span> ler_pdivr_mulr <span class="nl">?mul1r</span> <span class="nl">?ler_addl</span> <span class="nl">?ltr_paddl</span>.
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">Jensen</span>.
+<span class="kn">End</span> <span class="nf">Jensen</span>.
+
+<span class="kn">Notation</span> <span class="nf">convex</span> f := (convexon \-inf \+inf f).
+
+<span class="c">(* -------------------------------------------------------------------- *)</span></span></pre></article></body></html>

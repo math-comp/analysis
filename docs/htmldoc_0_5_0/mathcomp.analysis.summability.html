@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>mathcomp.analysis.summability</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library mathcomp.analysis.summability</h1>
+
+<div class="code">
+<span class="comment">(*&nbsp;mathcomp&nbsp;analysis&nbsp;(c)&nbsp;2017&nbsp;Inria&nbsp;and&nbsp;AIST.&nbsp;License:&nbsp;CeCILL-C.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*)</span><br/>
+<span class="id" title="keyword">Require</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.1/stdlib//Coq.Reals.Reals.html#"><span class="id" title="library">Reals</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">mathcomp</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">all_ssreflect</span> <span class="id" title="library">ssralg</span> <span class="id" title="library">ssrint</span> <span class="id" title="library">ssrnum</span> <span class="id" title="library">finmap</span> <span class="id" title="library">matrix</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">mathcomp</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">interval</span> <span class="id" title="library">zmodp</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="mathcomp.analysis.boolp.html#"><span class="id" title="library">boolp</span></a> <a class="idref" href="mathcomp.analysis.ereal.html#"><span class="id" title="library">ereal</span></a> <a class="idref" href="mathcomp.analysis.reals.html#"><span class="id" title="library">reals</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="mathcomp.analysis.Rstruct.html#"><span class="id" title="library">Rstruct</span></a> <a class="idref" href="mathcomp.analysis.classical_sets.html#"><span class="id" title="library">classical_sets</span></a> <a class="idref" href="mathcomp.analysis.signed.html#"><span class="id" title="library">signed</span></a> <a class="idref" href="mathcomp.analysis.topology.html#"><span class="id" title="library">topology</span></a> <a class="idref" href="mathcomp.analysis.normedtype.html#"><span class="id" title="library">normedtype</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="module">GRing.Theory</span> <span class="id" title="module">Num.Def</span> <span class="id" title="module">Num.Theory</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">classical_set_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+ For Pierre-Yves : definition of sums  
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">mathcomp</span> <span class="id" title="keyword">Require</span> <span class="id" title="library">fintype</span> <span class="id" title="library">bigop</span> <span class="id" title="library">finmap</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="totally" class="idref" href="#totally"><span class="id" title="section">totally</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="module">fintype</span> <span class="id" title="module">bigop</span> <span class="id" title="module">finmap</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">fset_scope</span>.<br/>
+</div>
+
+<div class="doc">
+ :TODO: when eventually is generalized to any lattice 
+ totally can just be replaced by eventually  
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="totally" class="idref" href="#totally"><span class="id" title="definition">totally</span></a> {<a id="I:1" class="idref" href="#I:1"><span class="id" title="binder">I</span></a> : <span class="id" title="abbreviation">choiceType</span>} : <a class="idref" href="mathcomp.analysis.classical_sets.html#set"><span class="id" title="definition">set</span></a> (<a class="idref" href="mathcomp.analysis.classical_sets.html#set"><span class="id" title="definition">set</span></a> <span class="id" title="notation">{</span><span class="id" title="notation">fset</span> <a class="idref" href="mathcomp.analysis.summability.html#I:1"><span class="id" title="variable">I</span></a><span class="id" title="notation">}</span>) :=<br/>
+&nbsp;&nbsp;<a class="idref" href="mathcomp.analysis.topology.html#filter_from"><span class="id" title="definition">filter_from</span></a> <a class="idref" href="mathcomp.analysis.classical_sets.html#setT"><span class="id" title="definition">setT</span></a> (<span class="id" title="keyword">fun</span> <a id="A:2" class="idref" href="#A:2"><span class="id" title="binder">A</span></a> ⇒ <a class="idref" href="mathcomp.analysis.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"><span class="id" title="notation">[</span></a><a class="idref" href="mathcomp.analysis.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"><span class="id" title="notation">set</span></a> <a id="B:3" class="idref" href="#B:3"><span class="id" title="binder">B</span></a> <a class="idref" href="mathcomp.analysis.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"><span class="id" title="notation">|</span></a> <a class="idref" href="mathcomp.analysis.summability.html#A:2"><span class="id" title="variable">A</span></a> <span class="id" title="notation">`&lt;=`</span> <a class="idref" href="mathcomp.analysis.summability.html#B:3"><span class="id" title="variable">B</span></a><a class="idref" href="mathcomp.analysis.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"><span class="id" title="notation">]</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Canonical</span> <a id="totally_filter_source" class="idref" href="#totally_filter_source"><span class="id" title="definition">totally_filter_source</span></a> {<a id="I:4" class="idref" href="#I:4"><span class="id" title="binder">I</span></a> : <span class="id" title="abbreviation">choiceType</span>} <a id="X:5" class="idref" href="#X:5"><span class="id" title="binder">X</span></a> :=<br/>
+&nbsp;&nbsp;@<a class="idref" href="mathcomp.analysis.topology.html#Filtered.Source"><span class="id" title="constructor">Filtered.Source</span></a> <a class="idref" href="mathcomp.analysis.summability.html#X:5"><span class="id" title="variable">X</span></a> <span class="id" title="var">_</span> <span class="id" title="notation">{</span><span class="id" title="notation">fset</span> <a class="idref" href="mathcomp.analysis.summability.html#I:4"><span class="id" title="variable">I</span></a><span class="id" title="notation">}</span> (<span class="id" title="keyword">fun</span> <a id="f:6" class="idref" href="#f:6"><span class="id" title="binder">f</span></a> ⇒ <a class="idref" href="mathcomp.analysis.summability.html#f:6"><span class="id" title="variable">f</span></a> <a class="idref" href="mathcomp.analysis.topology.html#cd15f258bbfe5f8dd5d2f871f9f5a736"><span class="id" title="notation">@</span></a> <a class="idref" href="mathcomp.analysis.summability.html#totally"><span class="id" title="definition">totally</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="totally_filter" class="idref" href="#totally_filter"><span class="id" title="instance">totally_filter</span></a> {<a id="I:7" class="idref" href="#I:7"><span class="id" title="binder">I</span></a> : <span class="id" title="abbreviation">choiceType</span>} : <a class="idref" href="mathcomp.analysis.topology.html#ProperFilter"><span class="id" title="abbreviation">ProperFilter</span></a> (@<a class="idref" href="mathcomp.analysis.summability.html#totally"><span class="id" title="definition">totally</span></a> <a class="idref" href="mathcomp.analysis.summability.html#I:7"><span class="id" title="variable">I</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="partial_sum" class="idref" href="#partial_sum"><span class="id" title="definition">partial_sum</span></a> {<a id="I:8" class="idref" href="#I:8"><span class="id" title="binder">I</span></a> : <span class="id" title="abbreviation">choiceType</span>} {<a id="R:9" class="idref" href="#R:9"><span class="id" title="binder">R</span></a> : <span class="id" title="abbreviation">zmodType</span>}<br/>
+&nbsp;&nbsp;(<a id="x:10" class="idref" href="#x:10"><span class="id" title="binder">x</span></a> : <a class="idref" href="mathcomp.analysis.summability.html#I:8"><span class="id" title="variable">I</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.1/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="mathcomp.analysis.summability.html#R:9"><span class="id" title="variable">R</span></a>) (<a id="A:11" class="idref" href="#A:11"><span class="id" title="binder">A</span></a> : <span class="id" title="notation">{</span><span class="id" title="notation">fset</span> <a class="idref" href="mathcomp.analysis.summability.html#I:8"><span class="id" title="variable">I</span></a><span class="id" title="notation">}</span>) : <a class="idref" href="mathcomp.analysis.summability.html#R:9"><span class="id" title="variable">R</span></a> := <span class="id" title="notation">\</span><span class="id" title="notation">sum_</span><span class="id" title="notation">(</span><a id="i:14" class="idref" href="#i:14"><span class="id" title="binder">i</span></a> <span class="id" title="notation">:</span> <a class="idref" href="mathcomp.analysis.summability.html#A:11"><span class="id" title="variable">A</span></a><span class="id" title="notation">)</span> <a class="idref" href="mathcomp.analysis.summability.html#x:10"><span class="id" title="variable">x</span></a> (<span class="id" title="projection">val</span> <a class="idref" href="mathcomp.analysis.summability.html#i:12"><span class="id" title="variable">i</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="sum" class="idref" href="#sum"><span class="id" title="definition">sum</span></a> (<a id="I:15" class="idref" href="#I:15"><span class="id" title="binder">I</span></a> : <span class="id" title="abbreviation">choiceType</span>) {<a id="K:16" class="idref" href="#K:16"><span class="id" title="binder">K</span></a> : <span class="id" title="abbreviation">numDomainType</span>} {<a id="R:17" class="idref" href="#R:17"><span class="id" title="binder">R</span></a> : <a class="idref" href="mathcomp.analysis.normedtype.html#NormedModule.Exports.normedModType"><span class="id" title="abbreviation">normedModType</span></a> <a class="idref" href="mathcomp.analysis.summability.html#K:16"><span class="id" title="variable">K</span></a>}<br/>
+&nbsp;&nbsp;&nbsp;(<a id="x:18" class="idref" href="#x:18"><span class="id" title="binder">x</span></a> : <a class="idref" href="mathcomp.analysis.summability.html#I:15"><span class="id" title="variable">I</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.1/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="mathcomp.analysis.summability.html#R:17"><span class="id" title="variable">R</span></a>) : <a class="idref" href="mathcomp.analysis.summability.html#R:17"><span class="id" title="variable">R</span></a> := <a class="idref" href="mathcomp.analysis.topology.html#lim"><span class="id" title="abbreviation">lim</span></a> (<a class="idref" href="mathcomp.analysis.summability.html#partial_sum"><span class="id" title="definition">partial_sum</span></a> <a class="idref" href="mathcomp.analysis.summability.html#x:18"><span class="id" title="variable">x</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="summable" class="idref" href="#summable"><span class="id" title="definition">summable</span></a> (<a id="I:19" class="idref" href="#I:19"><span class="id" title="binder">I</span></a> : <span class="id" title="abbreviation">choiceType</span>) {<a id="K:20" class="idref" href="#K:20"><span class="id" title="binder">K</span></a> : <a class="idref" href="mathcomp.analysis.reals.html#Real.Exports.realType"><span class="id" title="abbreviation">realType</span></a>} {<a id="R:21" class="idref" href="#R:21"><span class="id" title="binder">R</span></a> : <a class="idref" href="mathcomp.analysis.normedtype.html#NormedModule.Exports.normedModType"><span class="id" title="abbreviation">normedModType</span></a> <a class="idref" href="mathcomp.analysis.summability.html#K:20"><span class="id" title="variable">K</span></a>}<br/>
+&nbsp;&nbsp;&nbsp;(<a id="x:22" class="idref" href="#x:22"><span class="id" title="binder">x</span></a> : <a class="idref" href="mathcomp.analysis.summability.html#I:19"><span class="id" title="variable">I</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.1/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="mathcomp.analysis.summability.html#R:21"><span class="id" title="variable">R</span></a>) :=<br/>
+&nbsp;&nbsp;&nbsp;<a class="idref" href="mathcomp.analysis.topology.html#be9d045413b70f39126ce7af3de2a77f"><span class="id" title="notation">\</span></a><a class="idref" href="mathcomp.analysis.topology.html#be9d045413b70f39126ce7af3de2a77f"><span class="id" title="notation">∀</span></a> <a id="M:23" class="idref" href="#M:23"><span class="id" title="binder">M</span></a> <a class="idref" href="mathcomp.analysis.topology.html#be9d045413b70f39126ce7af3de2a77f"><span class="id" title="notation">\</span></a><a class="idref" href="mathcomp.analysis.topology.html#be9d045413b70f39126ce7af3de2a77f"><span class="id" title="notation">near</span></a> <a class="idref" href="mathcomp.analysis.normedtype.html#423d7544dbaa8438f698fe5437adc41f"><span class="id" title="notation">+</span></a><a class="idref" href="mathcomp.analysis.normedtype.html#423d7544dbaa8438f698fe5437adc41f"><span class="id" title="notation">oo</span></a>%<span class="id" title="var">R</span><a class="idref" href="mathcomp.analysis.topology.html#be9d045413b70f39126ce7af3de2a77f"><span class="id" title="notation">,</span></a> <a class="idref" href="mathcomp.analysis.topology.html#be9d045413b70f39126ce7af3de2a77f"><span class="id" title="notation">\</span></a><a class="idref" href="mathcomp.analysis.topology.html#be9d045413b70f39126ce7af3de2a77f"><span class="id" title="notation">∀</span></a> <a id="J:24" class="idref" href="#J:24"><span class="id" title="binder">J</span></a> <a class="idref" href="mathcomp.analysis.topology.html#be9d045413b70f39126ce7af3de2a77f"><span class="id" title="notation">\</span></a><a class="idref" href="mathcomp.analysis.topology.html#be9d045413b70f39126ce7af3de2a77f"><span class="id" title="notation">near</span></a> <a class="idref" href="mathcomp.analysis.summability.html#totally"><span class="id" title="definition">totally</span></a><a class="idref" href="mathcomp.analysis.topology.html#be9d045413b70f39126ce7af3de2a77f"><span class="id" title="notation">,</span></a><br/>
+&nbsp;&nbsp;&nbsp;(<a class="idref" href="mathcomp.analysis.summability.html#partial_sum"><span class="id" title="definition">partial_sum</span></a> (<span class="id" title="keyword">fun</span> <a id="i:25" class="idref" href="#i:25"><span class="id" title="binder">i</span></a> ⇒ <span class="id" title="notation">`|</span><a class="idref" href="mathcomp.analysis.summability.html#x:22"><span class="id" title="variable">x</span></a> <a class="idref" href="mathcomp.analysis.summability.html#i:25"><span class="id" title="variable">i</span></a><span class="id" title="notation">|</span>) <a class="idref" href="mathcomp.analysis.summability.html#J:24"><span class="id" title="variable">J</span></a> <span class="id" title="notation">≤</span> <a class="idref" href="mathcomp.analysis.summability.html#M:23"><span class="id" title="variable">M</span></a>)%<span class="id" title="var">R</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="mathcomp.analysis.summability.html#totally"><span class="id" title="section">totally</span></a>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

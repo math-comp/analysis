@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>trigo.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)</span>
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect ssralg ssrint ssrnum matrix.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> interval rat.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> boolp classical_sets functions.
+<span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> mathcomp_extra.
+<span class="kn">Require Import</span> reals ereal nsatz_realtype signed topology normedtype landau.
+<span class="kn">Require Import</span> sequences derive realfun exp.
+
+<span class="sd">(******************************************************************************)</span>
+<span class="c">(*                     Theory of trigonometric functions                      *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* This file provides the definitions of basic trigonometric functions and    *)</span>
+<span class="c">(* develops their theories.                                                   *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(*    periodic f T == f is a periodic function of period T                    *)</span>
+<span class="c">(* alternating f T == f is an alternating function of period T                *)</span>
+<span class="c">(*     sin_coeff x == the sequence of coefficients of sin x                   *)</span>
+<span class="c">(*           sin x == the sine function, i.e., lim (series (sin_coeff x))     *)</span>
+<span class="c">(*    sin_coeff&#39; x == the sequence of odd coefficients of sin x               *)</span>
+<span class="c">(*     cos_coeff x == the sequence of coefficients of cos x                   *)</span>
+<span class="c">(*           cos x == the cosine function, i.e., lim (series (cos_coeff x))   *)</span>
+<span class="c">(*    cos_coeff&#39; x == the sequence of even coefficients of cos x              *)</span>
+<span class="c">(*              pi == pi                                                      *)</span>
+<span class="c">(*           tan x == the tangent function                                    *)</span>
+<span class="c">(*          acos x == the arccos function                                     *)</span>
+<span class="c">(*          asin x == the arcsin function                                     *)</span>
+<span class="c">(*          atan x == the arctangent function                                 *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* Acknowledgments: the proof of cos 2 &lt; 0 is inspired from HOL-light, some   *)</span>
+<span class="c">(* proofs of trigonometric relations are taken from                           *)</span>
+<span class="c">(* https://github.com/affeldt-aist/coq-robot.                                 *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="sd">(******************************************************************************)</span>
+
+<span class="kn">Set Implicit Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+<span class="kn">Import</span> Order.TTheory GRing.Theory Num.Def Num.Theory.
+<span class="kn">Import</span> numFieldNormedType.Exports.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+
+<span class="c">(* NB: backport to mathcomp in progress *)</span>
+<span class="kn">Lemma</span> <span class="nf">sqrtrV</span> (<span class="nv">R</span> : rcfType) (<span class="nv">x</span> : R) : <span class="mi">0</span> &lt;= x -&gt; Num.sqrt (x^-<span class="mi">1</span>) = (Num.sqrt x)^-<span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x_ge0.
+<span class="nb">case</span>: (x =P <span class="mi">0</span>) =&gt; [-&gt;|/eqP xD0]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> invr0 sqrtr0 invr0.
+<span class="nb">rewrite</span> -[LHS]mul1r -(mulVf (_ : Num.sqrt x != <span class="mi">0</span>)); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> sqrtr_eq0 -ltNge; <span class="nb">case</span>: ltrgt0P x_ge0 xD0.
+<span class="bp">by</span> <span class="nb">rewrite</span> -mulrA -sqrtrM // divff // sqrtr1 mulr1.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqr_div</span> (<span class="nv">R</span> : numFieldType) (<span class="nv">x</span> <span class="nv">y</span> <span class="nv">z</span> <span class="nv">t</span> : R):
+  y != <span class="mi">0</span> -&gt; t != <span class="mi">0</span> -&gt; (x / y == z / t) = (x * t == z * y).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; yD0 tD0.
+<span class="nb">rewrite</span> -[x <span class="kr">in</span> RHS](divfK yD0) -[z <span class="kr">in</span> RHS](divfK tD0) mulrAC.
+<span class="bp">by</span> <span class="nb">apply</span>/eqP/eqP=&gt; [-&gt;//|xyty]; <span class="bp">exact</span>/(mulIf tD0)/(mulIf yD0).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">big_nat_mul</span> (<span class="nv">R</span> : zmodType) (<span class="nv">f</span> : R ^nat) (<span class="nv">n</span> <span class="nv">k</span> : nat) :
+  \sum_(<span class="mi">0</span> &lt;= i &lt; n * k) f i =
+  \sum_(<span class="mi">0</span> &lt;= i &lt; n) \sum_(i * k &lt;= j &lt; i.+<span class="mi">1</span> * k) f j.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>: n =&gt; [|n ih]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> mul0n <span class="mi">2</span>!big_nil.
+<span class="nb">rewrite</span> [<span class="kr">in</span> RHS]big_nat_recr//= -ih mulSn addnC [<span class="kr">in</span> LHS]/index_iota subn0 iotaD.
+<span class="nb">rewrite</span> big_cat /= [<span class="kr">in</span> X <span class="kr">in</span> _ = X  _]/index_iota subn0; <span class="nb">congr</span> (_ + _).
+<span class="bp">by</span> <span class="nb">rewrite</span> add0n /index_iota (addnC _ k) addnK.
+<span class="kn">Qed</span>.
+<span class="c">(* /NB: backport to mathcomp in progress *)</span>
+
+<span class="kn">Lemma</span> <span class="nf">cvg_series_cvg_series_group</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">f</span> : R ^nat) <span class="nv">k</span> :
+  cvg (series f) -&gt; (<span class="mi">0</span> &lt; k)%N -&gt;
+  [series \sum_(n * k &lt;= i &lt; n.+<span class="mi">1</span> * k) f i]_n --&gt; lim (series f).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /cvg_ballP cf k0; <span class="nb">apply</span>/cvg_ballP =&gt; _/posnumP[e].
+<span class="nb">have</span> := !! cf _ (gt0 e) =&gt; -[n _ nl]; near=&gt; m.
+<span class="nb">rewrite</span> /ball /= [<span class="kr">in</span> X <span class="kr">in</span> `|_ - X|]/series [<span class="kr">in</span> X <span class="kr">in</span> `|_ - X|]/= -big_nat_mul.
+<span class="nb">have</span> /nl : (n &lt;= m * k)%N.
+  <span class="bp">by</span> near: m; <span class="kr">exists</span> <span class="nv">n</span>.+<span class="mi">1</span> =&gt; //= p /ltnW /leq_trans /(_ (leq_pmulr _ k0)).
+<span class="bp">by</span> <span class="nb">rewrite</span> /ball /= distrC.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lt_sum_lim_series</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">f</span> : R ^nat) <span class="nv">n</span> : cvg (series f) -&gt;
+  (<span class="kr">forall</span> <span class="nv">d</span>, <span class="mi">0</span> &lt; f (n + d.*<span class="mi">2</span>)%N + f (n + d.*<span class="mi">2</span>.+<span class="mi">1</span>)%N) -&gt;
+  \sum_(<span class="mi">0</span> &lt;= i &lt; n) f i &lt; lim (series f).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /cvg_ballP cf fn.
+<span class="nb">have</span> fn0 : <span class="mi">0</span> &lt; f n + f n.+<span class="mi">1</span> <span class="bp">by</span> <span class="nb">have</span> := fn <span class="mi">0</span>%N; <span class="nb">rewrite</span> double0 addn0 addn1.
+<span class="nb">rewrite</span> ltNge; <span class="nb">apply</span>: contraPN cf =&gt; ffn /(_ _ fn0).
+<span class="nb">have</span> nf_ub N : \sum_(<span class="mi">0</span> &lt;= i &lt; n.+<span class="mi">2</span>) f i &lt;= \sum_(<span class="mi">0</span> &lt;= i &lt; N.+<span class="mi">1</span>.*<span class="mi">2</span> + n) f i.
+  <span class="nb">elim</span>: N =&gt; // N /le_trans -&gt;//; <span class="nb">rewrite</span> -(addn1 (N.+<span class="mi">1</span>)) doubleD addnAC.
+  <span class="nb">rewrite</span> [<span class="kr">in</span> leRHS]/index_iota subn0 iotaD big_cat.
+  <span class="nb">rewrite</span> -[<span class="kr">in</span> X <span class="kr">in</span> _ &lt;= X + _](subn0 (N.+<span class="mi">1</span>.*<span class="mi">2</span> + n)%N) ler_addl /= add0n.
+  <span class="bp">by</span> <span class="nb">rewrite</span> <span class="mi">2</span>!big_cons big_nil addr0 -(addnC n) ltW// -addnS fn.
+<span class="nb">case</span>=&gt; N _ Nfn; <span class="nb">have</span> /Nfn/ltr_distlC_addr : (N.+<span class="mi">1</span>.*<span class="mi">2</span> + n &gt;= N)%N.
+  <span class="bp">by</span> <span class="nb">rewrite</span> doubleS -addn2 -addnn -<span class="mi">2</span>!addnA leq_addr.
+<span class="nb">rewrite</span> addrA =&gt; ffnfn.
+<span class="nb">have</span> : lim (series f) + f n + f n.+<span class="mi">1</span> &lt;= \sum_(<span class="mi">0</span> &lt;= i &lt; N.+<span class="mi">1</span>.*<span class="mi">2</span> + n) f i.
+  <span class="nb">apply</span>: (le_trans _ (nf_ub N)).
+  <span class="bp">by</span> <span class="kp">do</span> <span class="mi">2</span> <span class="nb">rewrite</span> big_nat_recr //=; <span class="bp">by</span> <span class="nb">rewrite</span> -<span class="mi">2</span>!addrA ler_add2r.
+<span class="bp">by</span> <span class="nb">move</span>/(lt_le_trans ffnfn); <span class="nb">rewrite</span> ltxx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Section</span> <span class="nf">periodic</span>.
+<span class="kn">Variables</span> <span class="nv">U</span> <span class="nv">V</span> : zmodType.
+<span class="kn">Implicit Type</span> <span class="nf">f</span> : U -&gt; V.
+
+<span class="kn">Definition</span> <span class="nf">periodic</span> <span class="nv">f</span> (<span class="nv">T</span> : U) := <span class="kr">forall</span> <span class="nv">u</span>, f (u + T) = f u.
+
+<span class="kn">Lemma</span> <span class="nf">periodicn</span> <span class="nv">f</span> (<span class="nv">T</span> : U) : periodic f T -&gt; <span class="kr">forall</span> <span class="nv">n</span> <span class="nv">a</span>, f (a + T *+ n) = f a.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; fT; <span class="nb">elim</span>=&gt; [|n ih] a;[<span class="nb">rewrite</span> mulr0n addr0|<span class="nb">rewrite</span> mulrS addrA ih fT].
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">periodic</span>.
+
+<span class="kn">Section</span> <span class="nf">alternating</span>.
+<span class="kn">Variables</span> (<span class="nv">U</span> : zmodType) (<span class="nv">V</span> : ringType).
+<span class="kn">Implicit Type</span> <span class="nf">f</span> : U -&gt; V.
+
+<span class="kn">Definition</span> <span class="nf">alternating</span> <span class="nv">f</span> (<span class="nv">T</span> : U) := <span class="kr">forall</span> <span class="nv">x</span>, f (x + T) = - f x.
+
+<span class="kn">Lemma</span> <span class="nf">alternatingn</span> <span class="nv">f</span> (<span class="nv">T</span> : U) : alternating f T -&gt;
+  <span class="kr">forall</span> <span class="nv">n</span> <span class="nv">a</span>, f (a + T *+ n) = (- <span class="mi">1</span>) ^+ n * f a.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fT; <span class="nb">elim</span> =&gt; [a|n ih a]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> mulr0n expr0 addr0 mul1r.
+<span class="bp">by</span> <span class="nb">rewrite</span> mulrS addrA ih fT exprS mulrN mulN1r mulNr.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">alternating</span>.
+
+<span class="kn">Section</span> <span class="nf">CosSin</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+<span class="kn">Implicit Types</span> <span class="nv">x</span> <span class="nv">y</span> : R.
+
+<span class="kn">Definition</span> <span class="nf">sin_coeff</span> <span class="nv">x</span> :=
+  [sequence (odd n)%:R * (-<span class="mi">1</span>) ^+ n.-<span class="mi">1</span>./<span class="mi">2</span> * x ^+ n / n`!%:R]_n.
+
+<span class="kn">Lemma</span> <span class="nf">sin_coeffE</span> <span class="nv">x</span> : sin_coeff x =
+  (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (odd n)%:R * (-<span class="mi">1</span>) ^+ n.-<span class="mi">1</span>./<span class="mi">2</span> * (n`!%:R)^-<span class="mi">1</span>) n * x ^+ n).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> /sin_coeff /= -!mulrA [_ / _]mulrC. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin_coeff_even</span> <span class="nv">n</span> <span class="nv">x</span> : sin_coeff x n.*<span class="mi">2</span> = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /sin_coeff /= odd_double /= !mul0r. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">is_cvg_series_sin_coeff</span> <span class="nv">x</span> : cvg (series (sin_coeff x)).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: normed_cvg.
+<span class="nb">apply</span>: series_le_cvg; <span class="nb">last</span> <span class="bp">exact</span>: (@is_cvg_series_exp_coeff _ `|x|).
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; n; <span class="nb">rewrite</span> normr_ge0.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; n; <span class="nb">rewrite</span> divr_ge0.
+- <span class="nb">move</span>=&gt; n /=; <span class="nb">rewrite</span> /exp_coeff /sin_coeff /=.
+  <span class="nb">rewrite</span> !normrM normfV !normr_nat !normrX normrN normr1 expr1n mulr1.
+  <span class="bp">by</span> <span class="nb">case</span>: odd; [<span class="nb">rewrite</span> mul1r| <span class="nb">rewrite</span> !mul0r].
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">sin</span> <span class="nv">x</span> : R := lim (series (sin_coeff x)).
+
+<span class="kn">Lemma</span> <span class="nf">sinE</span> : sin = <span class="kr">fun</span> <span class="nv">x</span> =&gt;
+  lim (pseries (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (odd n)%:R * (-<span class="mi">1</span>) ^+ n.-<span class="mi">1</span>./<span class="mi">2</span> * (n`!%:R)^-<span class="mi">1</span>) x).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; x; <span class="nb">rewrite</span> /pseries -sin_coeffE. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">sin_coeff&#39;</span> <span class="nv">x</span> (<span class="nv">n</span> : nat) := (-<span class="mi">1</span>)^n * x ^+ n.*<span class="mi">2</span>.+<span class="mi">1</span> / n.*<span class="mi">2</span>.+<span class="mi">1</span>`!%:R.
+
+<span class="kn">Lemma</span> <span class="nf">sin_coeff&#39;E</span> <span class="nv">x</span> <span class="nv">n</span> : sin_coeff&#39; x n = sin_coeff x n.*<span class="mi">2</span>.+<span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> /sin_coeff&#39; /sin_coeff /= odd_double mul1r -<span class="mi">2</span>!mulrA doubleK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cvg_sin_coeff&#39;</span> <span class="nv">x</span> : series (sin_coeff&#39; x) --&gt; sin x.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> /(@cvg_series_cvg_series_group _ _ <span class="mi">2</span>) := @is_cvg_series_sin_coeff x.
+<span class="nb">move</span>=&gt; /(_ isT); <span class="nb">apply</span>: cvg_trans.
+<span class="nb">rewrite</span> [X <span class="kr">in</span> _ --&gt; series X](_ : _ = (<span class="kr">fun</span> <span class="nv">n</span> =&gt; sin_coeff x n.*<span class="mi">2</span>.+<span class="mi">1</span>)).
+  <span class="nb">rewrite</span> [X <span class="kr">in</span> series X --&gt; _](_ : _ = (<span class="kr">fun</span> <span class="nv">n</span> =&gt; sin_coeff x n.*<span class="mi">2</span>.+<span class="mi">1</span>)) //.
+  <span class="bp">by</span> <span class="nb">rewrite</span> funeqE =&gt; n; <span class="bp">exact</span>: sin_coeff&#39;E.
+<span class="nb">rewrite</span> funeqE=&gt; n; <span class="nb">rewrite</span> /= <span class="mi">2</span>!muln2 big_nat_recl //= sin_coeff_even add0r.
+<span class="bp">by</span> <span class="nb">rewrite</span> big_nat_recl // big_geq // addr0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diffs_sin</span> :
+  pseries_diffs (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (odd n)%:R * (-<span class="mi">1</span>) ^+ n.-<span class="mi">1</span>./<span class="mi">2</span> * (n`!%:R)^-<span class="mi">1</span>) =
+   (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (~~(odd n))%:R * (-<span class="mi">1</span>) ^+ n./<span class="mi">2</span> * (n`!%:R)^-<span class="mi">1</span> : R).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> /pseries_diffs /= factS natrM invfM.
+<span class="bp">by</span> <span class="nb">rewrite</span> [_.+<span class="mi">1</span>%:R * _]mulrC -!mulrA [_.+<span class="mi">1</span>%:R^-<span class="mi">1</span> * _]mulrC mulfK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">series_sin_coeff0</span> <span class="nv">n</span> : series (sin_coeff <span class="mi">0</span>) n.+<span class="mi">1</span> = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /series /= big_nat_recl //= /sin_coeff /= expr0n divr1 !mulr1.
+<span class="bp">by</span> <span class="nb">rewrite</span> big1 <span class="nl">?addr0</span> // =&gt; i _; <span class="nb">rewrite</span> expr0n !(mul0r, mulr0).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin0</span> : sin <span class="mi">0</span> = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: lim_near_cst =&gt; //; near=&gt; m; <span class="nb">rewrite</span> -[m]prednK; <span class="nb">last</span> <span class="bp">by</span> near: m.
+<span class="nb">rewrite</span> -addn1 series_addn series_sin_coeff0 big_add1 big1 <span class="nl">?addr0</span>//.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; i _; <span class="nb">rewrite</span> /sin_coeff /= expr0n !(mulr0, mul0r).
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">cos_coeff</span> <span class="nv">x</span> :=
+  [sequence (~~ odd n)%:R * (-<span class="mi">1</span>)^n./<span class="mi">2</span> * x ^+ n / n`!%:R]_n.
+
+<span class="kn">Lemma</span> <span class="nf">cos_coeff_odd</span> <span class="nv">n</span> <span class="nv">x</span> : cos_coeff x n.*<span class="mi">2</span>.+<span class="mi">1</span> = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /cos_coeff /= odd_double /= !mul0r. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_coeff_2_0</span> : cos_coeff <span class="mi">2</span> <span class="mi">0</span>%N = <span class="mi">1</span> :&gt; R.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /cos_coeff /= mul1r expr0 mulr1 expr0z divff. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_coeff_2_2</span> : cos_coeff <span class="mi">2</span> <span class="mi">2</span>%N = - <span class="mi">2</span>%:R :&gt; R.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> /cos_coeff /= mul1r expr1z mulN1r expr2 mulNr -mulrA divff// mulr1.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_coeff_2_4</span> : cos_coeff <span class="mi">2</span> <span class="mi">4</span>%N = <span class="mi">2</span>%:R / <span class="mi">3</span>%:R :&gt; R.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /cos_coeff /= mul1r -exprnP sqrrN expr1n mul1r <span class="mi">2</span>!factS mulnCA mulnC.
+<span class="bp">by</span> <span class="nb">rewrite</span> <span class="mi">3</span>!exprS expr1 <span class="mi">2</span>!mulrA natrM -mulf_div -<span class="mi">2</span>!natrM divff// mul1r.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_coeffE</span> <span class="nv">x</span> :
+  cos_coeff x = (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (~~(odd n))%:R * (-<span class="mi">1</span>) ^+ n./<span class="mi">2</span> *
+                                    (n`!%:R)^-<span class="mi">1</span>) n * x ^+ n).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> /cos_coeff /= -!mulrA [_ / _]mulrC.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">is_cvg_series_cos_coeff</span> <span class="nv">x</span> : cvg (series (cos_coeff x)).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: normed_cvg.
+<span class="nb">apply</span>: series_le_cvg; <span class="nb">last</span> <span class="bp">exact</span>: (@is_cvg_series_exp_coeff _ `|x|).
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; n; <span class="nb">rewrite</span> normr_ge0.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; n; <span class="nb">rewrite</span> divr_ge0.
+- <span class="nb">move</span>=&gt; n /=; <span class="nb">rewrite</span> /exp_coeff /cos_coeff /=.
+  <span class="nb">rewrite</span> !normrM normfV !normr_nat !normrX normrN normr1 expr1n mulr1.
+  <span class="bp">by</span> <span class="nb">case</span>: odd; [<span class="nb">rewrite</span> !mul0r | <span class="nb">rewrite</span> mul1r].
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">cos</span> <span class="nv">x</span> : R := lim (series (cos_coeff x)).
+
+<span class="kn">Lemma</span> <span class="nf">cosE</span> : cos = <span class="kr">fun</span> <span class="nv">x</span> =&gt;
+  lim (series (<span class="kr">fun</span> <span class="nv">n</span> =&gt;
+                (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (~~(odd n))%:R * (-<span class="mi">1</span>)^+ n./<span class="mi">2</span> * (n`!%:R)^-<span class="mi">1</span>) n
+                * x ^+ n)).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; x; <span class="nb">rewrite</span> -cos_coeffE. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">cos_coeff&#39;</span> <span class="nv">x</span> (<span class="nv">n</span> : nat) := (-<span class="mi">1</span>)^n * x ^+ n.*<span class="mi">2</span> / n.*<span class="mi">2</span>`!%:R.
+
+<span class="kn">Lemma</span> <span class="nf">cos_coeff&#39;E</span> <span class="nv">x</span> <span class="nv">n</span> : cos_coeff&#39; x n = cos_coeff x n.*<span class="mi">2</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /cos_coeff&#39; /cos_coeff /= odd_double /= mul1r -<span class="mi">2</span>!mulrA; <span class="nb">congr</span> (_ * _).
+<span class="bp">by</span> <span class="nb">rewrite</span> (half_bit_double n false).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cvg_cos_coeff&#39;</span> <span class="nv">x</span> : series (cos_coeff&#39; x) --&gt; cos x.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> /(@cvg_series_cvg_series_group _ _ <span class="mi">2</span>) := @is_cvg_series_cos_coeff x.
+<span class="nb">move</span>=&gt; /(_ isT); <span class="nb">apply</span>: cvg_trans.
+<span class="nb">rewrite</span> [X <span class="kr">in</span> _ --&gt; series X](_ : _ = (<span class="kr">fun</span> <span class="nv">n</span> =&gt; cos_coeff x n.*<span class="mi">2</span>)); <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> funeqE=&gt; n; <span class="nb">rewrite</span> /= <span class="mi">2</span>!muln2 big_nat_recr //= cos_coeff_odd addr0.
+  <span class="bp">by</span> <span class="nb">rewrite</span> big_nat_recl//= /index_iota subnn big_nil addr0.
+<span class="nb">rewrite</span> [X <span class="kr">in</span> series X --&gt; _](_ : _ = (<span class="kr">fun</span> <span class="nv">n</span> =&gt; cos_coeff x n.*<span class="mi">2</span>)) //.
+<span class="bp">by</span> <span class="nb">rewrite</span> funeqE =&gt; n; <span class="bp">exact</span>: cos_coeff&#39;E.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diffs_cos</span> :
+  pseries_diffs (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (~~(odd n))%:R * (-<span class="mi">1</span>) ^+ n./<span class="mi">2</span> * (n`!%:R)^-<span class="mi">1</span>) =
+  (<span class="kr">fun</span> <span class="nv">n</span> =&gt; - ((odd n)%:R * (-<span class="mi">1</span>) ^+ n.-<span class="mi">1</span>./<span class="mi">2</span> * (n`!%:R)^-<span class="mi">1</span>): R).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/funext =&gt; [] [|i] /=.
+  <span class="bp">by</span> <span class="nb">rewrite</span> /pseries_diffs /= !mul0r mulr0 oppr0.
+<span class="nb">rewrite</span> /pseries_diffs /= negbK exprS mulN1r !(mulNr, mulrN).
+<span class="nb">rewrite</span> factS natrM invfM.
+<span class="bp">by</span> <span class="nb">rewrite</span> [_.+<span class="mi">1</span>%:R * _]mulrC -!mulrA [_.+<span class="mi">1</span>%:R^-<span class="mi">1</span> * _]mulrC mulfK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">series_cos_coeff0</span> <span class="nv">n</span> : series (cos_coeff <span class="mi">0</span>) n.+<span class="mi">1</span> = <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /series /= big_nat_recl //= /cos_coeff /= expr0n divr1 !mulr1.
+<span class="bp">by</span> <span class="nb">rewrite</span> big1 <span class="nl">?addr0</span> // =&gt; i _; <span class="nb">rewrite</span> expr0n !(mul0r, mulr0).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos0</span> : cos <span class="mi">0</span> = <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: lim_near_cst =&gt; //; near=&gt; m; <span class="nb">rewrite</span> -[m]prednK; <span class="nb">last</span> <span class="bp">by</span> near: m.
+<span class="nb">rewrite</span> -addn1 series_addn series_cos_coeff0 big_add1 big1 <span class="nl">?addr0</span>//.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; i _; <span class="nb">rewrite</span> /cos_coeff /= expr0n !(mulr0, mul0r).
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_derive_sin</span> <span class="nv">x</span> : is_derive x <span class="mi">1</span> sin (cos x).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> sinE /=.
+<span class="nb">pose</span> s : R^nat := <span class="kr">fun</span> <span class="nv">n</span> =&gt; (odd n)%:R * (-<span class="mi">1</span>) ^+ (n.-<span class="mi">1</span>)./<span class="mi">2</span> / n`!%:R.
+<span class="nb">pose</span> s1 n := pseries_diffs s n * x ^+ n.
+<span class="nb">rewrite</span> cosE /= /pseries (_ : (<span class="kr">fun</span> <span class="nv">_</span> =&gt; _) = s1); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> /s1 diffs_sin.
+<span class="nb">apply</span>: (@pseries_snd_diffs _ _ (`|x| + <span class="mi">1</span>)); <span class="nb">rewrite</span> /pseries.
+- <span class="bp">by</span> <span class="nb">rewrite</span> -sin_coeffE; <span class="nb">apply</span>: is_cvg_series_sin_coeff.
+- <span class="nb">rewrite</span> (_ : (<span class="kr">fun</span> <span class="nv">_</span> =&gt; _) = cos_coeff (`|x| + <span class="mi">1</span>)).
+    <span class="bp">exact</span>: is_cvg_series_cos_coeff.
+  <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> diffs_sin cos_coeffE.
+- <span class="nb">rewrite</span> /pseries (_ : (<span class="kr">fun</span> <span class="nv">_</span> =&gt; _) = - sin_coeff (`|x| + <span class="mi">1</span>)).
+    <span class="bp">by</span> <span class="nb">rewrite</span> is_cvg_seriesN; <span class="bp">exact</span>: is_cvg_series_sin_coeff.
+  <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> diffs_sin diffs_cos sin_coeffE !fctE !mulNr.
+- <span class="bp">by</span> <span class="nb">rewrite</span> [ltRHS]ger0_norm// addrC -subr_gt0 addrK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivable_sin</span> <span class="nv">x</span> : derivable sin x <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: ex_derive; <span class="nb">apply</span>: is_derive_sin. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">continuous_sin</span> : continuous sin.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">apply</span>/differentiable_continuous/derivable1_diffP/derivable_sin.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_derive_cos</span> <span class="nv">x</span> : is_derive x <span class="mi">1</span> cos (- (sin x)).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> cosE /=.
+<span class="nb">pose</span> s : R^nat := <span class="kr">fun</span> <span class="nv">n</span> =&gt; (~~ odd n)%:R * (-<span class="mi">1</span>) ^+ n./<span class="mi">2</span> / n`!%:R.
+<span class="nb">pose</span> s1 n := pseries_diffs s n * x ^+ n.
+<span class="nb">rewrite</span> sinE /= /pseries.
+<span class="nb">rewrite</span> (_ : (<span class="kr">fun</span> <span class="nv">_</span> =&gt; _) = - s1); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> /s1 diffs_cos !fctE mulNr opprK.
+<span class="nb">rewrite</span> lim_seriesN <span class="nl">?opprK</span>; <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> (_ : s1 = - sin_coeff x).
+    <span class="bp">by</span> <span class="nb">rewrite</span> is_cvg_seriesN; <span class="bp">exact</span>: is_cvg_series_sin_coeff.
+  <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> /s1 diffs_cos sin_coeffE !fctE mulNr.
+<span class="nb">apply</span>: (@pseries_snd_diffs _ _ (`|x| + <span class="mi">1</span>)).
+- <span class="bp">by</span> <span class="nb">rewrite</span> /pseries -cos_coeffE; <span class="nb">apply</span>: is_cvg_series_cos_coeff.
+- <span class="nb">rewrite</span> /pseries (_ : (<span class="kr">fun</span> <span class="nv">_</span> =&gt; _) = - sin_coeff (`|x| + <span class="mi">1</span>)).
+    <span class="bp">by</span> <span class="nb">rewrite</span> is_cvg_seriesN; <span class="bp">exact</span>: is_cvg_series_sin_coeff.
+  <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> diffs_cos sin_coeffE !fctE mulNr.
+- <span class="nb">rewrite</span> /pseries (_ : (<span class="kr">fun</span> <span class="nv">_</span>=&gt; _) = - cos_coeff (`|x| + <span class="mi">1</span>)).
+    <span class="bp">by</span> <span class="nb">rewrite</span> is_cvg_seriesN; <span class="bp">exact</span>: is_cvg_series_cos_coeff.
+  <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> diffs_cos pseries_diffsN.
+  <span class="bp">by</span> <span class="nb">rewrite</span> diffs_sin cos_coeffE mulNr.
+- <span class="bp">by</span> <span class="nb">rewrite</span> [ltRHS]ger0_norm// addrC -subr_gt0 addrK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivable_cos</span> <span class="nv">x</span> : derivable cos x <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: ex_derive; <span class="nb">apply</span>: is_derive_cos. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">continuous_cos</span> : continuous cos.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="bp">exact</span>/differentiable_continuous/derivable1_diffP/derivable_cos.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos2Dsin2</span> <span class="nv">x</span> : (cos x) ^+ <span class="mi">2</span> + (sin x) ^+ <span class="mi">2</span> = <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">set</span> v := LHS; <span class="nb">pattern</span> x <span class="kr">in</span> v; <span class="nb">move</span>: @v; <span class="nb">set</span> f := (X <span class="kr">in</span> <span class="kr">let</span> <span class="nv">_</span> := X x <span class="kr">in</span> _) =&gt; /=.
+<span class="nb">apply</span>: (@eq_trans _ _ (f <span class="mi">0</span>)); <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> /f sin0 cos0 expr1n expr0n addr0.
+<span class="nb">apply</span>: is_derive_0_is_cst =&gt; {}x.
+<span class="nb">apply</span>: trigger_derive; <span class="nb">rewrite</span> /GRing.scale /=.
+<span class="bp">by</span> <span class="nb">rewrite</span> mulrN ![sin x * _]mulrC -opprD addrC subrr.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_max</span> <span class="nv">x</span> : `| cos x | &lt;= <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> -(expr_le1 (_ : <span class="mi">0</span> &lt; <span class="mi">2</span>)%nat) // -normrX ger0_norm <span class="nl">?exprn_even_ge0</span> //.
+<span class="bp">by</span> <span class="nb">rewrite</span> -(cos2Dsin2 x) ler_addl <span class="nl">?sqr_ge0</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_geN1</span> <span class="nv">x</span> : -<span class="mi">1</span> &lt;= cos x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> ler_oppl; <span class="nb">have</span> /ler_normlP[] := cos_max x. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_le1</span> <span class="nv">x</span> : cos x &lt;= <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">have</span> /ler_normlP[] := cos_max x. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin_max</span> <span class="nv">x</span> : `| sin x | &lt;= <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> -(expr_le1 (_ : <span class="mi">0</span> &lt; <span class="mi">2</span>)%nat) // -normrX ger0_norm <span class="nl">?exprn_even_ge0</span> //.
+<span class="bp">by</span> <span class="nb">rewrite</span> -(cos2Dsin2 x) ler_addr <span class="nl">?sqr_ge0</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin_geN1</span> <span class="nv">x</span> : -<span class="mi">1</span> &lt;= sin x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> ler_oppl; <span class="nb">have</span> /ler_normlP[] := sin_max x. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin_le1</span> <span class="nv">x</span> : sin x &lt;= <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">have</span> /ler_normlP[] := sin_max x. <span class="kn">Qed</span>.
+
+<span class="kn">Fact</span> <span class="nf">sinD_cosD</span> <span class="nv">x</span> <span class="nv">y</span> :
+  (sin (x + y) - (sin x * cos y + cos x * sin y)) ^+ <span class="mi">2</span> +
+  (cos (x + y) - (cos x * cos y - sin x * sin y)) ^+ <span class="mi">2</span> = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">set</span> v := LHS; <span class="nb">pattern</span> x <span class="kr">in</span> v; <span class="nb">move</span>: @v; <span class="nb">set</span> f := (X <span class="kr">in</span> <span class="kr">let</span> <span class="nv">_</span> := X x <span class="kr">in</span> _) =&gt; /=.
+<span class="nb">apply</span>: (@eq_trans _ _ (f <span class="mi">0</span>)); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> /f cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr, expr0n).
+<span class="nb">apply</span>: is_derive_0_is_cst =&gt; {}x.
+<span class="bp">by</span> <span class="nb">apply</span>: trigger_derive; <span class="nb">rewrite</span> /GRing.scale /=; <span class="bp">nsatz</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sinD</span> <span class="nv">x</span> <span class="nv">y</span> : sin (x + y) = sin x * cos y + cos x * sin y.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> /eqP := sinD_cosD x y.
+<span class="nb">rewrite</span> paddr_eq0 =&gt; [/andP[]||]; <span class="kp">try</span> <span class="bp">exact</span>: sqr_ge0.
+<span class="bp">by</span> <span class="nb">rewrite</span> sqrf_eq0 subr_eq0 =&gt; /eqP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cosD</span> <span class="nv">x</span> <span class="nv">y</span> : cos (x + y) = cos x * cos y - sin x * sin y.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> /eqP := sinD_cosD x y.
+<span class="nb">rewrite</span> paddr_eq0 =&gt; [/andP[_]||]; <span class="kp">try</span> <span class="bp">exact</span>: sqr_ge0.
+<span class="bp">by</span> <span class="nb">rewrite</span> sqrf_eq0 subr_eq0 =&gt; /eqP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin2cos2</span> <span class="nv">x</span> : sin x ^+ <span class="mi">2</span> = <span class="mi">1</span> - cos x ^+ <span class="mi">2</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>/eqP: (cos2Dsin2 x); <span class="nb">rewrite</span> eq_sym addrC -subr_eq =&gt; /eqP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos2sin2</span> <span class="nv">x</span> : cos x ^+ <span class="mi">2</span> = <span class="mi">1</span> - sin x ^+ <span class="mi">2</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>/eqP: (cos2Dsin2 x); <span class="nb">rewrite</span> eq_sym -subr_eq =&gt; /eqP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin_mulr2n</span> <span class="nv">x</span> : sin (x *+ <span class="mi">2</span>) = (cos x * sin x) *+ <span class="mi">2</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> mulr2n sinD mulrC -mulr2n. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_mulr2n</span> <span class="nv">x</span> : cos (x *+ <span class="mi">2</span>) = cos x ^+<span class="mi">2</span> *+ <span class="mi">2</span> - <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> mulr2n cosD -!expr2 sin2cos2 opprB addrA mulr2n. <span class="kn">Qed</span>.
+
+<span class="kn">Fact</span> <span class="nf">sinN_cosN</span> <span class="nv">x</span> :
+  (sin (- x) + sin x) ^+ <span class="mi">2</span> + (cos (- x) - cos x) ^+ <span class="mi">2</span> = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">set</span> v := LHS; <span class="nb">pattern</span> x <span class="kr">in</span> v; <span class="nb">move</span>: @v; <span class="nb">set</span> f := (X <span class="kr">in</span> <span class="kr">let</span> <span class="nv">_</span> := X x <span class="kr">in</span> _) =&gt; /=.
+<span class="nb">apply</span>: (@eq_trans _ _ (f <span class="mi">0</span>)); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> /f oppr0 cos0 sin0 !(addr0, subrr, expr0n).
+<span class="nb">apply</span>: is_derive_0_is_cst =&gt; {}x.
+<span class="bp">by</span> <span class="nb">apply</span>: trigger_derive; <span class="nb">rewrite</span> /GRing.scale /=; <span class="bp">nsatz</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sinN</span> <span class="nv">x</span> : sin (- x) = - sin x.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> /eqP := sinN_cosN x.
+<span class="nb">rewrite</span> paddr_eq0 =&gt; [/andP[]||]; <span class="kp">try</span> <span class="bp">exact</span>: sqr_ge0.
+<span class="bp">by</span> <span class="nb">rewrite</span> sqrf_eq0 addr_eq0 =&gt; /eqP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cosN</span> <span class="nv">x</span> : cos (- x) = cos x.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> /eqP := sinN_cosN x.
+<span class="nb">rewrite</span> paddr_eq0 =&gt; [/andP[_]||]; <span class="kp">try</span> <span class="bp">exact</span>: sqr_ge0.
+<span class="bp">by</span> <span class="nb">rewrite</span> sqrf_eq0 subr_eq0 =&gt; /eqP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin_sg</span> <span class="nv">x</span> <span class="nv">y</span> : sin (Num.sg x * y) = Num.sg x * sin y.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: sgrP; <span class="nb">rewrite</span> <span class="nl">?mul1r</span> <span class="nl">?mulN1r</span> <span class="nl">?sinN</span> // !mul0r sin0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_sg</span> <span class="nv">x</span> <span class="nv">y</span> : x != <span class="mi">0</span> -&gt; cos (Num.sg x * y) = cos y.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: sgrP; <span class="nb">rewrite</span> <span class="nl">?mul1r</span> <span class="nl">?mulN1r</span> <span class="nl">?cosN</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cosB</span> <span class="nv">x</span> <span class="nv">y</span> : cos (x - y) = cos x * cos y + sin x * sin y.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> cosD cosN sinN mulrN opprK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sinB</span> <span class="nv">x</span> <span class="nv">y</span> : sin (x - y) = sin x * cos y - cos x * sin y.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> sinD cosN sinN mulrN. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">norm_cos_eq1</span> <span class="nv">x</span> : (`|cos x| == <span class="mi">1</span>) = (sin x == <span class="mi">0</span>).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> -sqrf_eq0 -sqrp_eq1 // -normrX ger0_norm <span class="nl">?exprn_even_ge0</span> //.
+<span class="bp">by</span> <span class="nb">rewrite</span> [X <span class="kr">in</span> _ = (X == _)]sin2cos2 subr_eq0 eq_sym.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">norm_sin_eq1</span> <span class="nv">x</span> : (`|sin x| == <span class="mi">1</span>) = (cos x == <span class="mi">0</span>).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> -sqrf_eq0 -sqrp_eq1 // -normrX ger0_norm <span class="nl">?exprn_even_ge0</span> //.
+<span class="bp">by</span> <span class="nb">rewrite</span> [X <span class="kr">in</span> _ = (X == _)]cos2sin2 subr_eq0 eq_sym.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos1sin0</span> <span class="nv">x</span> : `|cos x| = <span class="mi">1</span> -&gt; sin x = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>/eqP; <span class="nb">rewrite</span> norm_cos_eq1 =&gt; /eqP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin1cos0</span> <span class="nv">x</span> : `|sin x| = <span class="mi">1</span> -&gt; cos x = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>/eqP; <span class="nb">rewrite</span> norm_sin_eq1 =&gt; /eqP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin0cos1</span> <span class="nv">x</span> : sin x = <span class="mi">0</span> -&gt; `|cos x| = <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>/eqP; <span class="nb">rewrite</span> -norm_cos_eq1 =&gt; /eqP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_norm</span> <span class="nv">x</span> : cos `|x| = cos x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: (ler0P x); <span class="nb">rewrite</span> <span class="nl">?cosN</span>. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">CosSin</span>.
+<span class="kn">Arguments</span> sin {R}.
+<span class="kn">Arguments</span> cos {R}.
+
+<span class="kn">Section</span> <span class="nf">Pi</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+<span class="kn">Implicit Types</span> (<span class="nv">x</span> <span class="nv">y</span> : R) (<span class="nv">n</span> <span class="nv">k</span> : nat).
+
+<span class="kn">Definition</span> <span class="nf">pi</span> : R := get [<span class="nb">set</span> x | <span class="mi">0</span> &lt;= x &lt;= <span class="mi">2</span> /\ cos x = <span class="mi">0</span>] *+ <span class="mi">2</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pihalfE</span> : pi / <span class="mi">2</span> = get [<span class="nb">set</span> x | <span class="mi">0</span> &lt;= x &lt;= <span class="mi">2</span> /\ cos x = <span class="mi">0</span>].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /pi -(mulr_natr (get _)) -mulrA divff <span class="nl">?mulr1</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos2_lt0</span> : cos <span class="mi">2</span> &lt; <span class="mi">0</span> :&gt; R.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> -(opprK (cos _)) oppr_lt0; <span class="nb">have</span> /cvgN h := @cvg_cos_coeff&#39; R <span class="mi">2</span>.
+<span class="nb">rewrite</span> -(cvg_lim (@Rhausdorff R) h).
+<span class="nb">apply</span>: (@lt_trans _ _ (\sum_(<span class="mi">0</span> &lt;= i &lt; <span class="mi">3</span>) - cos_coeff&#39; <span class="mi">2</span> i)).
+  <span class="kp">do</span> <span class="mi">3</span> <span class="nb">rewrite</span> big_nat_recl//; <span class="nb">rewrite</span> big_nil addr0 <span class="mi">3</span>!cos_coeff&#39;E double0.
+  <span class="nb">rewrite</span> cos_coeff_2_0 cos_coeff_2_2 -muln2 cos_coeff_2_4 addrA -(opprD <span class="mi">1</span>).
+  <span class="nb">rewrite</span> opprB -(@natrB _ <span class="mi">2</span> <span class="mi">1</span>)// subn1/= -[<span class="kr">in</span> X <span class="kr">in</span> X - _](@divff _ <span class="mi">3</span>%:R)//.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -mulrBl divr_gt0// -natrB// -[(_ - _)%N]/_.+<span class="mi">1</span>.
+<span class="nb">rewrite</span> -seriesN lt_sum_lim_series //.
+  <span class="bp">by</span> <span class="nb">move</span>/cvgP <span class="kr">in</span> h; <span class="bp">by</span> <span class="nb">rewrite</span> seriesN.
+<span class="nb">move</span>=&gt; d.
+<span class="nb">rewrite</span> /cos_coeff&#39; <span class="mi">2</span>!exprzD_nat (exprSz _ d.*<span class="mi">2</span>) -[<span class="kr">in</span> (-<span class="mi">1</span>) ^ d.*<span class="mi">2</span>](muln2 d).
+<span class="nb">rewrite</span> -(exprnP _ (d * <span class="mi">2</span>)) (exprM (-<span class="mi">1</span>)) sqrr_sign <span class="mi">2</span>!mulr1 -exprSzr.
+<span class="nb">rewrite</span> (_ : <span class="mi">4</span> = <span class="mi">2</span> * <span class="mi">2</span>)%N // -(exprnP _ (<span class="mi">2</span> * <span class="mi">2</span>)) (exprM (-<span class="mi">1</span>)) sqrr_sign.
+<span class="nb">rewrite</span> mul1r [(-<span class="mi">1</span>) ^ <span class="mi">3</span>](_ : _ = -<span class="mi">1</span>) <span class="nl">?mulN1r</span> <span class="nl">?mulNr</span> <span class="nl">?opprK</span>; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -exprnP <span class="mi">2</span>!exprS expr1 mulrN1 opprK mulr1.
+<span class="nb">rewrite</span> subr_gt0.
+<span class="nb">rewrite</span> addnS doubleS -[X <span class="kr">in</span> <span class="mi">2</span> ^+ X]addn2 exprD -mulrA ltr_pmul2l//.
+<span class="nb">rewrite</span> factS factS <span class="mi">2</span>!natrM mulrA invfM !mulrA.
+<span class="nb">rewrite</span> ltr_pdivr_mulr <span class="nl">?ltr0n</span> <span class="nl">?fact_gt0</span>// mulVf <span class="nl">?pnatr_eq0</span> <span class="nl">?gtn_eqF</span> <span class="nl">?fact_gt0</span>//.
+<span class="nb">rewrite</span> ltr_pdivr_mulr <span class="nl">?mul1r</span> //.
+<span class="bp">by</span> <span class="nb">rewrite</span> expr2 -!natrM ltr_nat !mulSn !add2n mul0n !addnS.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin2_gt0</span> <span class="nv">x</span> : <span class="mi">0</span> &lt; x &lt; <span class="mi">2</span> -&gt; <span class="mi">0</span> &lt; sin x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /andP[x_gt0 x_lt2].
+<span class="nb">have</span> sinx := @cvg_sin_coeff&#39; _ x.
+<span class="nb">rewrite</span> -(cvg_lim (@Rhausdorff R) sinx).
+<span class="nb">rewrite</span> [ltLHS](_ : <span class="mi">0</span> = \sum_(<span class="mi">0</span> &lt;= i &lt; <span class="mi">0</span>) sin_coeff&#39; x i :&gt; R); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> big_nil.
+<span class="nb">rewrite</span> lt_sum_lim_series //; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">move</span>/cvgP <span class="kr">in</span> sinx.
+<span class="nb">move</span>=&gt; d.
+<span class="nb">rewrite</span> /sin_coeff&#39; <span class="mi">2</span>!exprzD_nat (exprSz _ d.*<span class="mi">2</span>) -[<span class="kr">in</span> (-<span class="mi">1</span>) ^ d.*<span class="mi">2</span>](muln2 d).
+<span class="nb">rewrite</span> -(exprnP _ (d * <span class="mi">2</span>)) (exprM (-<span class="mi">1</span>)) sqrr_sign <span class="mi">2</span>!mulr1 -exprSzr.
+<span class="nb">rewrite</span> !add0n!mul1r mulN1r -[d.*<span class="mi">2</span>.+<span class="mi">1</span>]addn1 doubleD -addSn exprD.
+<span class="nb">rewrite</span> -(ffact_fact (leq_addl _ _)) addnK.
+<span class="nb">rewrite</span> mulNr -!mulrA -mulrBr mulr_gt0 <span class="nl">?exprn_gt0</span> //.
+<span class="nb">set</span> u := _.+<span class="mi">1</span>.
+<span class="nb">rewrite</span> natrM invfM.
+<span class="nb">rewrite</span> -[X <span class="kr">in</span> _ &lt; X - _]mul1r !mulrA -mulrBl divr_gt0 //; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (ltr_nat _ <span class="mi">0</span>) fact_gt0.
+<span class="nb">rewrite</span> subr_gt0.
+<span class="nb">set</span> v := _ ^_ _; <span class="nb">rewrite</span> -[ltRHS](divff (_ : v%:R != <span class="mi">0</span>)); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> lt0r_neq0 // (ltr_nat _ <span class="mi">0</span>) ffact_gt0 leq_addl.
+<span class="nb">rewrite</span> ltr_pmul2r; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> invr_gt0 (ltr_nat _ <span class="mi">0</span>) ffact_gt0 leq_addl.
+<span class="nb">rewrite</span> {}/v !addnS addn0 !ffactnS ffactn0 muln1 /= natrM.
+<span class="bp">by</span> <span class="nb">rewrite</span> (ltr_pmul (ltW _ ) (ltW _)) // (lt_le_trans x_lt2) // ler_nat.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos1_gt0</span> : cos <span class="mi">1</span> &gt; <span class="mi">0</span> :&gt; R.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> h := @cvg_cos_coeff&#39; R <span class="mi">1</span>; <span class="nb">rewrite</span> -(cvg_lim (@Rhausdorff R) h).
+<span class="nb">apply</span>: (@lt_trans _ _ (\sum_(<span class="mi">0</span> &lt;= i &lt; <span class="mi">2</span>) cos_coeff&#39; <span class="mi">1</span> i)).
+  <span class="nb">rewrite</span> big_nat_recr//= big_nat_recr//= big_nil add0r.
+  <span class="nb">rewrite</span> /cos_coeff&#39; expr0z expr1n fact0 !mul1r expr1n expr1z.
+  <span class="bp">by</span> <span class="nb">rewrite</span> !mulNr subr_gt0 mul1r div1r ltf_pinv <span class="nl">?posrE</span> <span class="nl">?ltr0n</span>// ltr_nat.
+<span class="nb">rewrite</span> lt_sum_lim_series //; [<span class="bp">by</span> <span class="nb">move</span>/cvgP <span class="kr">in</span> h|<span class="nb">move</span>=&gt; d].
+<span class="nb">rewrite</span> /cos_coeff&#39; !(expr1n,mulr1).
+<span class="nb">rewrite</span> -muln2 -mulSn muln2 -exprnP -signr_odd odd_double expr0.
+<span class="nb">rewrite</span> -exprnP -signr_odd oddD/= muln2 odd_double/= expr1 add2n.
+<span class="nb">rewrite</span> mulNr subr_gt0 <span class="mi">2</span>!div1r ltf_pinv <span class="nl">?posrE</span> <span class="nl">?ltr0n</span> <span class="nl">?fact_gt0</span>//.
+<span class="bp">by</span> <span class="nb">rewrite</span> ltr_nat ltn_pfact//ltn_double doubleS.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_exists</span> : <span class="kr">exists2</span> pih : R, <span class="mi">1</span> &lt;= pih &lt;= <span class="mi">2</span> &amp; cos pih = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> /IVT[] : minr (cos <span class="mi">1</span>) (cos <span class="mi">2</span>) &lt;= (<span class="mi">0</span> : R) &lt;= maxr (cos <span class="mi">1</span>) (cos <span class="mi">2</span>).
+  - <span class="bp">by</span> <span class="nb">rewrite</span> le_maxr (ltW cos1_gt0) le_minl (ltW cos2_lt0) orbC.
+  - <span class="bp">by</span> <span class="nb">rewrite</span> ler1n.
+  - <span class="bp">by</span> <span class="nb">apply</span>/continuous_subspaceT =&gt; ?; <span class="bp">exact</span>: continuous_cos.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; pih /itvP pihI chpi_eq0; <span class="kr">exists</span> <span class="nv">pih</span>; <span class="nb">rewrite</span> <span class="nl">?pihI</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_02_uniq</span> <span class="nv">x</span> <span class="nv">y</span> :
+  <span class="mi">0</span> &lt;= x &lt;= <span class="mi">2</span> -&gt; cos x = <span class="mi">0</span> -&gt; <span class="mi">0</span> &lt;= y &lt;= <span class="mi">2</span> -&gt; cos y = <span class="mi">0</span> -&gt; x = y.
+<span class="kn">Proof</span>.
+<span class="nb">wlog</span> xLy : x y / x &lt;= y =&gt; [H xB cx0 yB cy0|].
+  <span class="bp">by</span> <span class="nb">case</span>: (lerP x y) =&gt; [/H //| /ltW /H H1]; [<span class="bp">exact</span>|<span class="bp">exact</span>/esym/H1].
+<span class="nb">move</span>=&gt; /andP[x_ge0 x_le2] cx0 /andP[y_ge0 y_le2] cy0.
+<span class="nb">case</span>: (x =P y) =&gt; // /eqP xDy.
+<span class="nb">have</span> xLLs : x &lt; y <span class="bp">by</span> <span class="nb">rewrite</span> le_eqVlt (negPf xDy) <span class="kr">in</span> xLy.
+<span class="nb">have</span> /(Rolle xLLs)[x1 _|x1|x1 x1I [_ x1D]] : cos x = cos y <span class="bp">by</span> <span class="nb">rewrite</span> cy0.
+- <span class="bp">exact</span>: derivable_cos.
+- <span class="bp">by</span> <span class="nb">apply</span>/continuous_subspaceT =&gt; ?; <span class="bp">exact</span>: continuous_cos.
+- <span class="nb">have</span> [_ /esym/eqP] := is_derive_cos x1; <span class="nb">rewrite</span> x1D oppr_eq0 =&gt; /eqP Hs.
+  <span class="nb">suff</span> : <span class="mi">0</span> &lt; sin x1 <span class="bp">by</span> <span class="nb">rewrite</span> Hs ltxx.
+  <span class="nb">apply</span>/sin2_gt0/andP; <span class="nb">split</span>.
+  + <span class="bp">by</span> <span class="nb">rewrite</span> (le_lt_trans x_ge0)// (itvP x1I).
+  + <span class="bp">by</span> <span class="nb">rewrite</span> (lt_le_trans _ y_le2)// (itvP x1I).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pihalf_02_cos_pihalf</span> : <span class="mi">0</span> &lt;= pi / <span class="mi">2</span> &lt;= <span class="mi">2</span> /\ cos (pi / <span class="mi">2</span>) = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> [x /andP[x1 x2] cs0] := cos_exists; <span class="nb">rewrite</span> pihalfE.
+<span class="nb">case</span>: xgetP =&gt; [_-&gt;[]//|/(_ x)/=].
+<span class="bp">by</span> <span class="nb">rewrite</span> cs0 (le_trans _ x1)// x2 =&gt; /not_andP[].
+<span class="kn">Qed</span>.
+
+#[deprecated(note=<span class="s2">&quot;Use pihalf_ge1 and pihalf_lt2 instead&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">pihalf_02</span> : <span class="mi">0</span> &lt; pi / <span class="mi">2</span> &lt; <span class="mi">2</span>.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> [pih02 cpih] := pihalf_02_cos_pihalf.
+<span class="nb">rewrite</span> <span class="mi">2</span>!lt_neqAle andbCA -andbA pih02 andbT; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>/eqP =&gt; pih2; <span class="nb">have</span> := cos2_lt0; <span class="nb">rewrite</span> -pih2 cpih ltxx.
+<span class="nb">apply</span>/eqP =&gt; pih0; <span class="nb">have</span> := @cos0 R.
+<span class="bp">by</span> <span class="nb">rewrite</span> pih0 cpih; <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_sym oner_eq0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Let</span> <span class="nf">pihalf_12</span> : <span class="mi">1</span> &lt;= pi / <span class="mi">2</span> &lt; <span class="mi">2</span>.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> [/andP[pih0 pih2] cpih] := pihalf_02_cos_pihalf.
+<span class="nb">rewrite</span> lt_neqAle andbA andbAC pih2 andbT; <span class="nb">apply</span>/andP; <span class="nb">split</span>; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>/eqP =&gt; hpi2; <span class="nb">have</span> := cos2_lt0; <span class="nb">rewrite</span> -hpi2 cpih ltxx.
+<span class="nb">rewrite</span> leNgt; <span class="nb">apply</span>/negP =&gt; hpi1; <span class="nb">have</span> [x /andP[x1 x2] cs0] := cos_exists.
+<span class="nb">have</span> := @cos_02_uniq (pi / <span class="mi">2</span>) x.
+<span class="nb">rewrite</span> pih0 pih2 cpih (le_trans _ x1)// x2 cs0 =&gt; /(_ erefl erefl erefl erefl).
+<span class="bp">by</span> <span class="nb">move</span>=&gt; pih; <span class="nb">move</span>: hpi1; <span class="nb">rewrite</span> pih =&gt; /lt_le_trans/(_ x1); <span class="nb">rewrite</span> ltxx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pihalf_ge1</span> : <span class="mi">1</span> &lt;= pi / <span class="mi">2</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">have</span> /andP[] := pihalf_12. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pihalf_lt2</span> : pi / <span class="mi">2</span> &lt; <span class="mi">2</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">have</span> /andP[] := pihalf_12. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pi_ge2</span> : <span class="mi">2</span> &lt;= pi.
+<span class="kn">Proof</span>. <span class="bp">by</span>  <span class="nb">have</span> := pihalf_ge1; <span class="nb">rewrite</span> ler_pdivl_mulr// mul1r. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pi_gt0</span> : <span class="mi">0</span> &lt; pi. <span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> (lt_le_trans _ pi_ge2). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pi_ge0</span> : <span class="mi">0</span> &lt;= pi. <span class="kn">Proof</span>. <span class="bp">exact</span>: (ltW pi_gt0). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin_gt0_pihalf</span> <span class="nv">x</span> : <span class="mi">0</span> &lt; x &lt; pi / <span class="mi">2</span> -&gt; <span class="mi">0</span> &lt; sin x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /andP[x_gt0 xLpi]; <span class="nb">apply</span>: sin2_gt0; <span class="nb">rewrite</span> x_gt0 /=.
+<span class="bp">by</span> <span class="nb">apply</span>: lt_trans xLpi _; <span class="bp">exact</span>: pihalf_lt2.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_gt0_pihalf</span> <span class="nv">x</span> : -(pi / <span class="mi">2</span>) &lt; x &lt; pi / <span class="mi">2</span> -&gt; <span class="mi">0</span> &lt; cos x.
+<span class="kn">Proof</span>.
+<span class="nb">wlog</span> : x / <span class="mi">0</span> &lt;= x =&gt; [Hw|x_ge0].
+  <span class="nb">case</span>: (leP <span class="mi">0</span> x) =&gt; [/Hw//| x_lt_0].
+  <span class="nb">rewrite</span> -{-<span class="mi">1</span>}[x]opprK ltr_oppl andbC [-- _ &lt; _]ltr_oppl cosN.
+  <span class="bp">by</span> <span class="nb">apply</span>: Hw =&gt; //; <span class="nb">rewrite</span> oppr_cp0 ltW.
+<span class="nb">move</span>=&gt; /andP[x_gt0 xLpi2]; <span class="nb">case</span>: (ler0P (cos x)) =&gt; // cx_le0.
+<span class="nb">have</span> /IVT[]// : minr (cos <span class="mi">0</span>) (cos x) &lt;= <span class="mi">0</span> &lt;= maxr (cos <span class="mi">0</span>) (cos x).
+  <span class="bp">by</span> <span class="nb">rewrite</span> cos0 /minr /maxr !ifN <span class="nl">?cx_le0</span> //= -leNgt (le_trans cx_le0).
+- <span class="bp">by</span> <span class="nb">apply</span>/continuous_subspaceT =&gt; ?; <span class="bp">exact</span>: continuous_cos.
+<span class="nb">move</span>=&gt; x1 /itvP xx1 cx1_eq0.
+<span class="nb">suff</span> x1E : x1 = pi/<span class="mi">2</span>.
+  <span class="nb">have</span> : x1 &lt; pi / <span class="mi">2</span> <span class="bp">by</span> <span class="nb">apply</span>: le_lt_trans xLpi2; <span class="nb">rewrite</span> xx1.
+  <span class="bp">by</span> <span class="nb">rewrite</span> x1E ltxx.
+<span class="nb">apply</span>: cos_02_uniq=&gt; //; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">case</span> pihalf_02_cos_pihalf =&gt; _ -&gt;.
+  <span class="bp">by</span> <span class="nb">rewrite</span> xx1 ltW // (lt_trans _ pihalf_lt2) // (le_lt_trans _ xLpi2) // xx1.
+<span class="bp">by</span> <span class="nb">rewrite</span> divr_ge0 ?(ltW pihalf_lt2)// pi_ge0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_pihalf</span> : cos (pi / <span class="mi">2</span>) = <span class="mi">0</span>. <span class="kn">Proof</span>. <span class="bp">exact</span>: pihalf_02_cos_pihalf.<span class="mi">2</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin_pihalf</span> : sin (pi / <span class="mi">2</span>) = <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> := cos2Dsin2 (pi / <span class="mi">2</span>); <span class="nb">rewrite</span> cos_pihalf expr0n add0r.
+<span class="nb">rewrite</span> -[<span class="kr">in</span> X <span class="kr">in</span> _ = X -&gt; _](expr1n _ <span class="mi">2</span>%N) =&gt; /eqP; <span class="nb">rewrite</span> -subr_eq0 subr_sqr.
+<span class="nb">rewrite</span> mulf_eq0=&gt; /orP[|]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> subr_eq0=&gt; /eqP.
+<span class="nb">rewrite</span> addr_eq0 =&gt; /eqP spi21; <span class="nb">have</span> /sin2_gt0: <span class="mi">0</span> &lt; pi / <span class="mi">2</span> &lt; <span class="mi">2</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> pihalf_lt2 andbT (lt_le_trans _ pihalf_ge1).
+<span class="bp">by</span> <span class="nb">rewrite</span> spi21 ltr0N1.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_ge0_pihalf</span> <span class="nv">x</span> : -(pi / <span class="mi">2</span>) &lt;= x &lt;= pi / <span class="mi">2</span> -&gt; <span class="mi">0</span> &lt;= cos x.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> le_eqVlt; <span class="nb">case</span>: (_ =P x) =&gt; /= [&lt;-|_].
+  <span class="bp">by</span> <span class="nb">rewrite</span> cosN cos_pihalf.
+<span class="nb">rewrite</span> le_eqVlt; <span class="nb">case</span>: (x =P _) =&gt; /= [-&gt;|_ H]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> cos_pihalf.
+<span class="bp">by</span> <span class="nb">rewrite</span> ltW //; <span class="nb">apply</span>: cos_gt0_pihalf.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cospi</span> : cos pi = - <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> /pi mulr2n cosD -pihalfE sin_pihalf mulr1 cos_pihalf mulr0 add0r.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sinpi</span> : sin pi = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> := sinD (pi / <span class="mi">2</span>) (pi / <span class="mi">2</span>); <span class="nb">rewrite</span> cos_pihalf mulr0 mul0r.
+<span class="bp">by</span> <span class="nb">rewrite</span> -mulrDl -mulr2n -mulr_natr -mulrA divff// mulr1 addr0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos2pi</span> : cos (pi *+ <span class="mi">2</span>) = <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> mulr2n cosD cospi sinpi !mulrN1 mulr0 subr0 opprK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin2pi</span> : sin (pi *+ <span class="mi">2</span>) = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> mulr2n sinD sinpi cospi !mulrN1 mulr0 oppr0 addr0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sinDpi</span> : alternating sin pi.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; a; <span class="nb">rewrite</span> sinD cospi mulrN1 sinpi mulr0 addr0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cosDpi</span> : alternating cos pi.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; a; <span class="nb">rewrite</span> cosD cospi mulrN1 sinpi mulr0 subr0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sinD2pi</span> : periodic sin (pi *+ <span class="mi">2</span>).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; a; <span class="nb">rewrite</span> sinD cos2pi sin2pi mulr0 mulr1 addr0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cosD2pi</span> : periodic cos (pi *+ <span class="mi">2</span>).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; a; <span class="nb">rewrite</span> cosD cos2pi mulr1 sin2pi mulr0 subr0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cosDpihalf</span> <span class="nv">a</span> : cos (a + pi / <span class="mi">2</span>) = - sin a.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> cosD cos_pihalf mulr0 add0r sin_pihalf mulr1. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cosBpihalf</span> <span class="nv">a</span> : cos (a - pi / <span class="mi">2</span>) = sin a.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> cosB cos_pihalf mulr0 add0r sin_pihalf mulr1. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sinDpihalf</span> <span class="nv">a</span> : sin (a + pi / <span class="mi">2</span>) = cos a.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> sinD cos_pihalf mulr0 add0r sin_pihalf mulr1. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sinBpihalf</span> <span class="nv">a</span> : sin (a - pi / <span class="mi">2</span>) = - cos a.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> sinB cos_pihalf mulr0 add0r sin_pihalf mulr1. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin_ge0_pi</span> <span class="nv">x</span> : <span class="mi">0</span> &lt;= x &lt;= pi -&gt; <span class="mi">0</span> &lt;= sin x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; xI; <span class="nb">rewrite</span> -cosBpihalf cos_ge0_pihalf //.
+<span class="bp">by</span> <span class="nb">rewrite</span> ler_subr_addl subrr ler_sub_addr -mulr2n -[_ *+ <span class="mi">2</span>]mulr_natr divfK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin_gt0_pi</span> <span class="nv">x</span> : <span class="mi">0</span> &lt; x &lt; pi -&gt; <span class="mi">0</span> &lt; sin x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; xI; <span class="nb">rewrite</span> -cosBpihalf cos_gt0_pihalf //.
+<span class="bp">by</span> <span class="nb">rewrite</span> ltr_subr_addl subrr ltr_sub_addr -mulr2n -[_ *+ <span class="mi">2</span>]mulr_natr divfK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ltr_cos</span> : {<span class="kr">in</span> `[<span class="mi">0</span>, pi] &amp;, {mono cos : x y /~ y &lt; x}}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x y; <span class="nb">rewrite</span> !in_itv/= le_eqVlt; <span class="nb">case</span>: eqP =&gt; [&lt;- _|_] /=.
+  <span class="nb">rewrite</span> cos0 le_eqVlt; <span class="nb">case</span>: eqP =&gt; /= [&lt;- _|_ /andP[y_gt0 gLpi]].
+    <span class="bp">by</span> <span class="nb">rewrite</span> cos0 !ltxx.
+  <span class="nb">rewrite</span> y_gt0; <span class="nb">apply</span>/idP.
+  <span class="nb">suff</span> : cos y != <span class="mi">1</span> <span class="bp">by</span> <span class="nb">case</span>: ltrgtP (cos_le1 y).
+  <span class="nb">rewrite</span> -cos0 eq_sym; <span class="nb">apply</span>/eqP =&gt; /Rolle [||x1|x1 /itvP x1I [_ x1D]] //.
+    <span class="bp">by</span> <span class="nb">apply</span>/continuous_subspaceT =&gt; ?; <span class="bp">exact</span>: continuous_cos.
+  <span class="nb">case</span>: (is_derive_cos x1) =&gt; _ /eqP; <span class="nb">rewrite</span> x1D eq_sym oppr_eq0 =&gt; /eqP s_eq0.
+  <span class="nb">suff</span> : <span class="mi">0</span> &lt; sin x1 <span class="bp">by</span> <span class="nb">rewrite</span> s_eq0 ltxx.
+  <span class="bp">by</span> <span class="nb">apply</span>: sin_gt0_pi; <span class="nb">rewrite</span> x1I /= (lt_le_trans (_ : _ &lt; y)) <span class="nl">?x1I</span> // yI.
+<span class="nb">rewrite</span> le_eqVlt; <span class="nb">case</span>: eqP =&gt; [-&gt; _ /andP[y_ge0]|/= _ /andP[x_gt0 x_ltpi]] /=.
+  <span class="nb">rewrite</span> cospi le_eqVlt; <span class="nb">case</span>: eqP =&gt; /= [-&gt; _|/eqP yDpi y_ltpi].
+    <span class="bp">by</span> <span class="nb">rewrite</span> cospi ltxx.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ltNge cos_geN1 ltNge ltW.
+<span class="nb">rewrite</span> le_eqVlt; <span class="nb">case</span>: eqP =&gt; [&lt;- _|_] /=.
+  <span class="nb">rewrite</span> cos0 [_ &lt; <span class="mi">0</span>]ltNge ltW //=.
+  <span class="bp">by</span> <span class="nb">apply</span>/idP/negP; <span class="nb">rewrite</span> -leNgt cos_le1.
+<span class="nb">rewrite</span> le_eqVlt; <span class="nb">case</span>: eqP =&gt; /= [-&gt; _ | _ /andP[y_gt0 y_ltpi]].
+  <span class="nb">rewrite</span> cospi x_ltpi; <span class="nb">apply</span>/idP.
+  <span class="nb">suff</span> : cos x != -<span class="mi">1</span> <span class="bp">by</span> <span class="nb">case</span>: ltrgtP (cos_geN1 x).
+  <span class="nb">rewrite</span> -cospi; <span class="nb">apply</span>/eqP =&gt; /Rolle [||x1|x1 /itvP x1I [_ x1D]] //.
+    <span class="bp">by</span> <span class="nb">apply</span>/continuous_subspaceT =&gt; ?; <span class="bp">exact</span>: continuous_cos.
+  <span class="nb">case</span>: (is_derive_cos x1) =&gt; _ /eqP; <span class="nb">rewrite</span> x1D eq_sym oppr_eq0 =&gt; /eqP s_eq0.
+  <span class="nb">suff</span> : <span class="mi">0</span> &lt; sin x1 <span class="bp">by</span> <span class="nb">rewrite</span> s_eq0 ltxx.
+  <span class="bp">by</span> <span class="nb">apply</span>: sin_gt0_pi; <span class="nb">rewrite</span> x1I /= (lt_le_trans (_ : _ &lt; x)) <span class="nl">?x1I</span>.
+<span class="nb">wlog</span> xLy : x y x_gt0 x_ltpi y_gt0 y_ltpi / x &lt;= y =&gt; [H | ].
+  <span class="nb">case</span>: (lerP x y) =&gt; [/H //-&gt;//|yLx].
+  <span class="bp">by</span> <span class="nb">rewrite</span> !ltNge ltW ?(ltW yLx) // H // ltW.
+<span class="nb">case</span>: (x =P y) =&gt; [-&gt;| /eqP xDy]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> ltxx.
+<span class="nb">have</span> xLLs : x &lt; y <span class="bp">by</span> <span class="nb">rewrite</span> le_eqVlt (negPf xDy) <span class="kr">in</span> xLy.
+<span class="nb">rewrite</span> xLLs -subr_gt0 -opprB; <span class="nb">rewrite</span> -subr_gt0 <span class="kr">in</span> xLLs; <span class="nb">apply</span>/idP.
+<span class="nb">have</span> [x1|z /itvP zI -&gt;] := @MVT_segment _ cos (- sin) _ _ xLy.
+  <span class="bp">by</span> <span class="nb">apply</span>/continuous_subspaceT =&gt; ?; <span class="bp">exact</span>: continuous_cos.
+<span class="nb">rewrite</span> -mulNr opprK mulr_gt0 //; <span class="nb">apply</span>: sin_gt0_pi.
+<span class="bp">by</span> <span class="nb">rewrite</span> (lt_le_trans x_gt0) <span class="nl">?zI</span> //= (le_lt_trans _ y_ltpi) <span class="nl">?zI</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ltr_sin</span> : {<span class="kr">in</span> `[ (- (pi/<span class="mi">2</span>)), pi/<span class="mi">2</span>] &amp;, {mono sin : x y / x &lt; y}}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x y /itvP xpi /itvP ypi; <span class="nb">rewrite</span> -[sin x]opprK ltr_oppl.
+<span class="nb">rewrite</span> -!cosDpihalf -[x &lt; y](ltr_add2r (pi /<span class="mi">2</span>)) ltr_cos// !in_itv/=.
+- <span class="bp">by</span> <span class="nb">rewrite</span> -ler_subl_addr sub0r xpi/= [leRHS]splitr ler_add2r xpi.
+- <span class="bp">by</span> <span class="nb">rewrite</span> -ler_subl_addr sub0r ypi/= [leRHS]splitr ler_add2r ypi.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_inj</span> : {<span class="kr">in</span> `[<span class="mi">0</span>,pi] &amp;, injective (@cos R)}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x y x0pi y0pi xy; <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+- <span class="bp">by</span> <span class="nb">have</span> := ltr_cos y0pi x0pi; <span class="nb">rewrite</span> xy ltxx =&gt; /esym/negbT; <span class="nb">rewrite</span> -leNgt.
+- <span class="bp">by</span> <span class="nb">have</span> := ltr_cos x0pi y0pi; <span class="nb">rewrite</span> xy ltxx =&gt; /esym/negbT; <span class="nb">rewrite</span> -leNgt.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin_inj</span> : {<span class="kr">in</span> `[(- (pi/<span class="mi">2</span>)), (pi/<span class="mi">2</span>)] &amp;, injective sin}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x y /itvP xpi /itvP ypi sinE; <span class="nb">have</span> : - sin x = - sin y <span class="bp">by</span> <span class="nb">rewrite</span> sinE.
+<span class="nb">rewrite</span> -!cosDpihalf =&gt; /cos_inj h; <span class="nb">apply</span>/(addIr (pi/<span class="mi">2</span>))/h; <span class="nb">rewrite</span> !in_itv/=.
+- <span class="bp">by</span> <span class="nb">rewrite</span> -ler_subl_addr sub0r xpi/= [leRHS]splitr ler_add2r xpi.
+- <span class="bp">by</span> <span class="nb">rewrite</span> -ler_subl_addr sub0r ypi/= [leRHS]splitr ler_add2r ypi.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Pi</span>.
+
+<span class="kn">Arguments</span> pi {R}.
+
+<span class="kn">Section</span> <span class="nf">Tan</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+
+<span class="kn">Definition</span> <span class="nf">tan</span> (<span class="nv">x</span> : R) := sin x / cos x.
+
+<span class="kn">Lemma</span> <span class="nf">tan0</span> : tan <span class="mi">0</span> = <span class="mi">0</span> :&gt; R.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /tan sin0 cos0 mul0r. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">tanpi</span> : tan pi = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /tan sinpi mul0r. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">tanN</span> <span class="nv">x</span> : tan (- x) = - tan x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /tan sinN cosN mulNr. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">tanD</span> <span class="nv">x</span> <span class="nv">y</span> : cos x != <span class="mi">0</span> -&gt; cos y != <span class="mi">0</span> -&gt;
+  tan (x + y) = (tan x + tan y) / (<span class="mi">1</span> - tan x * tan y).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; cxNZ cyNZ.
+<span class="nb">rewrite</span> /tan sinD cosD !addf_div // [sin y * cos x]mulrC -!mulrA -invfM.
+<span class="nb">congr</span> (_ / _).
+<span class="nb">rewrite</span> mulrBr mulr1 !mulrA.
+<span class="nb">rewrite</span> -[_ * _ * sin x]mulrA [cos x * (_ * _)]mulrC mulfK //.
+<span class="bp">by</span> <span class="nb">rewrite</span> -[_ * _ * sin y]mulrA [cos y * (_ * _)]mulrC mulfK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">tan_mulr2n</span> <span class="nv">x</span> :
+  cos x != <span class="mi">0</span> -&gt; tan (x *+ <span class="mi">2</span>) = tan x *+ <span class="mi">2</span> / (<span class="mi">1</span> -  tan x ^+ <span class="mi">2</span>).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; cxNZ.
+<span class="nb">rewrite</span> /tan cos_mulr2n sin_mulr2n.
+<span class="nb">rewrite</span> !mulr2n exprMn exprVn -[<span class="kr">in</span> RHS](divff (_ : <span class="mi">1</span> != <span class="mi">0</span>)) //.
+<span class="nb">rewrite</span> -mulNr !addf_div <span class="nl">?sqrf_eq0</span> //.
+<span class="nb">rewrite</span> mul1r mulr1 -!mulrA -invfM -expr2; <span class="nb">congr</span> (_ / _).
+  <span class="bp">by</span> <span class="nb">rewrite</span> [cos x * _]mulrC.
+<span class="nb">rewrite</span> mulrCA mulrA mulfK  <span class="nl">?sqrf_eq0</span> // [X <span class="kr">in</span> _ = _ - X]sin2cos2.
+<span class="bp">by</span> <span class="nb">rewrite</span> opprB addrA.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos2_tan2</span> <span class="nv">x</span> : cos x != <span class="mi">0</span> -&gt; (cos x) ^- <span class="mi">2</span> = <span class="mi">1</span> + (tan x) ^+ <span class="mi">2</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; cosx.
+<span class="nb">rewrite</span> /tan exprMn [X <span class="kr">in</span> _ = <span class="mi">1</span> + X * _]sin2cos2 mulrBl -exprMn divff //.
+<span class="bp">by</span> <span class="nb">rewrite</span> expr1n addrCA subrr addr0 mul1r exprVn.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">tan_pihalf</span> : tan (pi / <span class="mi">2</span>) = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /tan cos_pihalf invr0 mulr0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">tan_piquarter</span> : tan (pi / <span class="mi">4</span>%:R) = <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /tan -cosBpihalf (splitr (pi / <span class="mi">2</span>)) opprD addrA -mulrA -invfM -natrM.
+<span class="nb">rewrite</span> subrr sub0r cosN divff// gt_eqF// cos_gt0_pihalf//.
+<span class="nb">rewrite</span> ltr_pmul2l <span class="nl">?pi_gt0</span>// ltf_pinv <span class="nl">?qualifE</span>// ltr_nat andbT.
+<span class="bp">by</span> <span class="nb">rewrite</span> (@lt_trans _ _ <span class="mi">0</span>)// <span class="nl">?oppr_lt0</span> <span class="nl">?divr_gt0</span> <span class="nl">?pi_gt0</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">tanDpi</span> <span class="nv">x</span> : tan (x + pi) = tan x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /tan cosDpi sinDpi mulNr invrN mulrN opprK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">continuous_tan</span> <span class="nv">x</span> : cos x != <span class="mi">0</span> -&gt; {<span class="kr">for</span> x, continuous tan}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; cxNZ.
+<span class="nb">apply</span>: continuousM; <span class="kp">first</span> <span class="bp">exact</span>: continuous_sin.
+<span class="bp">exact</span>/(continuousV cxNZ)/continuous_cos.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">is_derive_tan</span> <span class="nv">x</span> :
+  cos x != <span class="mi">0</span> -&gt; is_derive x <span class="mi">1</span> tan ((cos x)^-<span class="mi">2</span>).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; cxNZ; <span class="nb">apply</span>: trigger_derive.
+<span class="nb">rewrite</span> /= ![_ *: - _]mulrN mulNr mulrN opprK [_^-<span class="mi">1</span> *: _]mulVf //.
+<span class="nb">rewrite</span> mulrCA -expr2 [X <span class="kr">in</span> _ * X + _ = _]sin2cos2.
+<span class="bp">by</span> <span class="nb">rewrite</span> mulrBr mulr1 mulVf <span class="nl">?sqrf_eq0</span> // subrK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivable_tan</span> <span class="nv">x</span> : cos x != <span class="mi">0</span> -&gt; derivable tan x <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /is_derive_tan[]. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ltr_tan</span> : {<span class="kr">in</span> `](- (pi/<span class="mi">2</span>)), (pi/<span class="mi">2</span>)[ &amp;, {mono tan : x y / x &lt; y}}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x y; <span class="nb">wlog</span> xLy : x y / x &lt;= y =&gt; [H xB yB|/itvP xB /itvP yB].
+  <span class="nb">case</span>: (lerP x y) =&gt; [/H //-&gt;//|yLx].
+  <span class="bp">by</span> <span class="nb">rewrite</span> !ltNge ltW ?(ltW yLx) // H // ltW.
+<span class="nb">case</span>: (x =P y) =&gt; [-&gt;| /eqP xDy]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> ltxx.
+<span class="nb">have</span> xLLs : x &lt; y <span class="bp">by</span> <span class="nb">rewrite</span> le_eqVlt (negPf xDy) <span class="kr">in</span> xLy.
+<span class="nb">rewrite</span> -subr_gt0 xLLs; <span class="nb">rewrite</span> -subr_gt0 <span class="kr">in</span> xLLs; <span class="nb">apply</span>/idP.
+<span class="nb">have</span> [x1 /itvP x1I|z |] := @MVT_segment _ tan (<span class="kr">fun</span> <span class="nv">x</span> =&gt; (cos x) ^-<span class="mi">2</span>) _ _ xLy.
+- <span class="nb">apply</span>: is_derive_tan.
+  <span class="nb">rewrite</span> gt_eqF // cos_gt0_pihalf // (@lt_le_trans _  _ x) <span class="nl">?x1I</span> <span class="nl">?xB</span>//=.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (@le_lt_trans _  _ y) <span class="nl">?x1I</span> <span class="nl">?yB</span>.
+- <span class="nb">apply</span>/continuous_in_subspaceT =&gt; ? -/[!(@mem_setE R)] /itvP inI.
+  <span class="nb">apply</span>: continuous_tan; <span class="nb">rewrite</span> gt_eqF// cos_gt0_pihalf//.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (@lt_le_trans _  _ x) <span class="nl">?xB</span> <span class="nl">?inI</span>// (@le_lt_trans _  _ y) <span class="nl">?yB</span> <span class="nl">?inI</span>.
+- <span class="nb">move</span>=&gt; x1 /itvP x1I -&gt;.
+  <span class="nb">rewrite</span> mulr_gt0 // invr_gt0 // exprn_gte0 // cos_gt0_pihalf //.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (@lt_le_trans _  _ x) <span class="nl">?x1I</span> <span class="nl">?xB</span>//= (@le_lt_trans _  _ y) <span class="nl">?x1I</span> <span class="nl">?yB</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">tan_inj</span> : {<span class="kr">in</span> `](- (pi/<span class="mi">2</span>)), (pi/<span class="mi">2</span>)[ &amp;, injective tan}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x y xB yB tanE.
+<span class="bp">by</span> <span class="nb">case</span>: (ltrgtP x y); <span class="nb">rewrite</span> // -ltr_tan <span class="nl">?tanE</span> <span class="nl">?ltxx</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Tan</span>.
+<span class="kn">Arguments</span> tan {R}.
+
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (is_derive _ _ tan _) =&gt;
+  (<span class="nb">eapply</span> is_derive_tan; <span class="kp">first</span> <span class="bp">by</span> []) : typeclass_instances.
+
+<span class="kn">Section</span> <span class="nf">Acos</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+
+<span class="kn">Definition</span> <span class="nf">acos</span> (<span class="nv">x</span> : R) : R := get [<span class="nb">set</span> y | <span class="mi">0</span> &lt;= y &lt;= pi /\ cos y = x].
+
+<span class="kn">Lemma</span> <span class="nf">acos_def</span> <span class="nv">x</span> :
+  -<span class="mi">1</span> &lt;= x &lt;= <span class="mi">1</span> -&gt; <span class="mi">0</span> &lt;= acos x &lt;= pi /\ cos (acos x) = x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; xB; <span class="nb">rewrite</span> /acos; <span class="nb">case</span>: xgetP =&gt; //= He.
+<span class="nb">pose</span> f y := cos y - x.
+<span class="nb">have</span> /(IVT (@pi_ge0 _))[] // : minr (f <span class="mi">0</span>) (f pi) &lt;= <span class="mi">0</span> &lt;= maxr (f <span class="mi">0</span>) (f pi).
+  <span class="nb">rewrite</span> /f cos0 cospi /minr /maxr ltr_add2r -subr_lt0 opprK (_ : <span class="mi">1</span> + <span class="mi">1</span> = <span class="mi">2</span>)//.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ltrn0 subr_le0 subr_ge0.
+- <span class="nb">move</span>=&gt; y y0pi.
+  <span class="bp">by</span> <span class="nb">apply</span>: continuousB; <span class="nb">apply</span>/continuous_in_subspaceT =&gt; ? ?;
+    [<span class="bp">exact</span>: continuous_cos|<span class="bp">exact</span>: cst_continuous].
+- <span class="nb">rewrite</span> /f =&gt; x1 /itvP x1I /eqP; <span class="nb">rewrite</span> subr_eq0 =&gt; /eqP cosx1E.
+  <span class="bp">by</span> <span class="nb">case</span>: (He x1); <span class="nb">rewrite</span> !x1I.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">acos_ge0</span> <span class="nv">x</span> : -<span class="mi">1</span> &lt;= x &lt;= <span class="mi">1</span> -&gt; <span class="mi">0</span> &lt;= acos x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /acos_def[/andP[]]. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">acos_lepi</span> <span class="nv">x</span> : -<span class="mi">1</span> &lt;= x &lt;= <span class="mi">1</span> -&gt; acos x &lt;= pi.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /acos_def[/andP[]]. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">acosK</span> : {<span class="kr">in</span> `[(-<span class="mi">1</span>),<span class="mi">1</span>], cancel acos cos}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> in_itv/==&gt; /acos_def[/andP[]]. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">acos_gt0</span> <span class="nv">x</span> : -<span class="mi">1</span> &lt;= x &lt; <span class="mi">1</span> -&gt; <span class="mi">0</span> &lt; acos x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /andP[x_geN1 x_lt1]; <span class="nb">move</span>: (x_lt1).
+<span class="nb">have</span> : <span class="mi">0</span> &lt;= acos x <span class="bp">by</span> <span class="nb">rewrite</span> acos_ge0 // x_geN1 ltW.
+<span class="nb">have</span> : cos (acos x) = x <span class="bp">by</span> <span class="nb">rewrite</span> acosK// in_itv/= x_geN1/= ltW.
+<span class="bp">by</span> <span class="nb">case</span>: ltrgt0P =&gt; // -&gt;; <span class="nb">rewrite</span> cos0 =&gt; -&gt;; <span class="nb">rewrite</span> ltxx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">acos_ltpi</span> <span class="nv">x</span> : -<span class="mi">1</span> &lt; x &lt;= <span class="mi">1</span> -&gt; acos x &lt; pi.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /andP[x_gtN1 x_le1]; <span class="nb">move</span>: (x_gtN1).
+<span class="nb">have</span> : acos x &lt;= pi <span class="bp">by</span> <span class="nb">rewrite</span> acos_lepi // x_le1 ltW.
+<span class="nb">have</span> : cos (acos x) = x <span class="bp">by</span> <span class="nb">rewrite</span> acosK// in_itv/= x_le1 ltW.
+<span class="bp">by</span> <span class="nb">case</span>: (ltrgtP (acos x) pi) =&gt; // -&gt;; <span class="nb">rewrite</span> cospi =&gt; -&gt;; <span class="nb">rewrite</span> ltxx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cosK</span> : {<span class="kr">in</span> `[<span class="mi">0</span>, pi], cancel cos acos}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x xB; <span class="nb">apply</span>: cos_inj =&gt; //; <span class="nb">rewrite</span> <span class="nl">?acosK</span>//; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">move</span>: xB; <span class="nb">rewrite</span> !in_itv/= =&gt; /andP[? ?];<span class="nb">rewrite</span> cos_geN1 cos_le1.
+<span class="nb">move</span>: xB; <span class="nb">rewrite</span> !in_itv/= =&gt; /andP[? ?].
+<span class="bp">by</span> <span class="nb">rewrite</span> acos_ge0 <span class="nl">?acos_lepi</span> <span class="nl">?cos_geN1</span> <span class="nl">?cos_le1</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">acos1</span> : acos (<span class="mi">1</span> : R) = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">have</span> := @cosK <span class="mi">0</span>; <span class="nb">rewrite</span> cos0 =&gt; -&gt; //; <span class="nb">rewrite</span> in_itv //= lexx pi_ge0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">acos0</span> : acos (<span class="mi">0</span> : R) = pi / <span class="mi">2</span>%:R.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> := @cosK (pi / <span class="mi">2</span>%:R).
+<span class="nb">rewrite</span> cos_pihalf =&gt; -&gt; //; <span class="nb">rewrite</span> in_itv//= divr_ge0 <span class="nl">?ler0n</span> <span class="nl">?pi_ge0</span>//=.
+<span class="bp">by</span> <span class="nb">rewrite</span> ler_pdivr_mulr <span class="nl">?ltr0n</span>// ler_pemulr <span class="nl">?pi_ge0</span>// ler1n.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">acosN</span> <span class="nv">a</span> : -<span class="mi">1</span> &lt;= a &lt;= <span class="mi">1</span> -&gt; acos (- a) = pi - acos a.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; a1; <span class="nb">have</span> ? : -<span class="mi">1</span> &lt;= - a &lt;= <span class="mi">1</span> <span class="bp">by</span> <span class="nb">rewrite</span> ler_oppl opprK ler_oppl andbC.
+<span class="nb">apply</span>: cos_inj; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> in_itv/= acos_ge0//= acos_lepi.
+- <span class="bp">by</span> <span class="nb">rewrite</span> in_itv/= subr_ge0 acos_lepi//= ler_subl_addl ler_addr acos_ge0.
+- <span class="bp">by</span> <span class="nb">rewrite</span> addrC cosDpi cosN !acosK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">acosN1</span> : acos (- <span class="mi">1</span>) = (pi : R).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> acosN <span class="nl">?acos1</span> <span class="nl">?subr0</span> <span class="nl">?lexx</span>// -subr_ge0 opprK addr_ge0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cosKN</span> <span class="nv">a</span> : - pi &lt;= a &lt;= <span class="mi">0</span> -&gt; acos (cos a) = - a.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; pia0; <span class="nb">rewrite</span> -(cosN a) cosK// in_itv/= ler_oppr oppr0 ler_oppl andbC.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sin_acos</span> <span class="nv">x</span> : -<span class="mi">1</span> &lt;= x &lt;= <span class="mi">1</span> -&gt; sin (acos x) = Num.sqrt (<span class="mi">1</span> - x^+<span class="mi">2</span>).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; xB.
+<span class="nb">rewrite</span> -[LHS]ger0_norm; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> sin_ge0_pi // acos_ge0 <span class="nl">?acos_lepi</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> -sqrtr_sqr sin2cos2 acosK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">continuous_acos</span> <span class="nv">x</span> : -<span class="mi">1</span> &lt; x &lt; <span class="mi">1</span> -&gt; {<span class="kr">for</span> x, continuous acos}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /andP[x_gtN1 x_lt1]; <span class="nb">rewrite</span> -[x]acosK; <span class="kp">first</span> <span class="nb">last</span>.
+  <span class="bp">by</span> <span class="nb">have</span> : -<span class="mi">1</span> &lt;= x &lt;= <span class="mi">1</span> <span class="bp">by</span> <span class="nb">rewrite</span> !ltW //; <span class="nb">case</span>/andP: xB.
+<span class="nb">apply</span>: nbhs_singleton (near_can_continuous _ _); <span class="nb">last first</span>.
+   <span class="bp">by</span> near=&gt; z; <span class="nb">apply</span>: continuous_cos.
+<span class="nb">have</span> /near_in_itv aI : acos x \<span class="kr">in</span> `]<span class="mi">0</span>, pi[.
+  <span class="nb">suff</span> : <span class="mi">0</span> &lt; acos x &lt; pi <span class="bp">by</span> [].
+  <span class="bp">by</span> <span class="nb">rewrite</span> acos_gt0 <span class="nl">?ltW</span> //= acos_ltpi // ltW <span class="nl">?andbT</span>.
+near=&gt; z; <span class="nb">apply</span>: cosK.
+<span class="nb">suff</span> /itvP zI : z \<span class="kr">in</span> `]<span class="mi">0</span>, pi[ <span class="bp">by</span> <span class="nb">have</span> : <span class="mi">0</span> &lt;= z &lt;= pi <span class="bp">by</span> <span class="nb">rewrite</span> ltW <span class="nl">?zI</span>.
+<span class="bp">by</span> near: z.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">is_derive1_acos</span> (<span class="nv">x</span> : R) :
+  -<span class="mi">1</span> &lt; x &lt; <span class="mi">1</span> -&gt; is_derive x <span class="mi">1</span> acos (- (Num.sqrt (<span class="mi">1</span> - x ^+ <span class="mi">2</span>))^-<span class="mi">1</span>).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /andP[x_gtN1 x_lt1]; <span class="nb">rewrite</span> -sin_acos <span class="nl">?ltW</span> // -invrN.
+<span class="nb">rewrite</span> -{<span class="mi">1</span>}[x]acosK; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">have</span> : -<span class="mi">1</span> &lt;= x &lt;= <span class="mi">1</span> <span class="bp">by</span> <span class="nb">rewrite</span> ltW // ltW.
+<span class="nb">have</span> /near_in_itv aI : acos x \<span class="kr">in</span> `]<span class="mi">0</span>, pi[.
+  <span class="nb">suff</span> : <span class="mi">0</span> &lt; acos x &lt; pi <span class="bp">by</span> [].
+  <span class="bp">by</span> <span class="nb">rewrite</span> acos_gt0 <span class="nl">?ltW</span> //= acos_ltpi // ltW <span class="nl">?andbT</span>.
+<span class="nb">apply</span>: (@is_derive_inverse R cos).
+- near=&gt; z; <span class="nb">apply</span>: cosK.
+  <span class="nb">suff</span> /itvP zI : z \<span class="kr">in</span> `]<span class="mi">0</span>, pi[ <span class="bp">by</span> <span class="nb">have</span> : <span class="mi">0</span> &lt;= z &lt;= pi <span class="bp">by</span> <span class="nb">rewrite</span> ltW <span class="nl">?zI</span>.
+  <span class="bp">by</span> near: z.
+- <span class="bp">by</span> near=&gt; z; <span class="nb">apply</span>: continuous_cos.
+- <span class="nb">rewrite</span> oppr_eq0 sin_acos <span class="nl">?ltW</span> // sqrtr_eq0 // -ltNge subr_gt0.
+  <span class="nb">rewrite</span> -real_normK <span class="nl">?qualifE</span>; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">case</span>: ltrgt0P.
+  <span class="bp">by</span> <span class="nb">rewrite</span> exprn_cp1 // ltr_norml x_gtN1.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Acos</span>.
+
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (is_derive _ <span class="mi">1</span> (@acos _) _) =&gt;
+  (<span class="nb">eapply</span> is_derive1_acos; <span class="kp">first</span> <span class="bp">by</span> []) : typeclass_instances.
+
+<span class="kn">Section</span> <span class="nf">Asin</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+
+<span class="kn">Definition</span> <span class="nf">asin</span> (<span class="nv">x</span> : R) : R := get [<span class="nb">set</span> y | -(pi / <span class="mi">2</span>) &lt;= y &lt;= pi / <span class="mi">2</span> /\ sin y = x].
+
+<span class="kn">Lemma</span> <span class="nf">asin_def</span> <span class="nv">x</span> :
+  -<span class="mi">1</span> &lt;= x &lt;= <span class="mi">1</span> -&gt; -(pi / <span class="mi">2</span>) &lt;= asin x &lt;= pi / <span class="mi">2</span> /\ sin (asin x) = x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; xB; <span class="nb">rewrite</span> /asin; <span class="nb">case</span>: xgetP =&gt; //= He.
+<span class="nb">pose</span> f y := sin y - x.
+<span class="nb">have</span> /IVT[] // :
+    minr (f (-(pi/<span class="mi">2</span>))) (f (pi/<span class="mi">2</span>)) &lt;= <span class="mi">0</span> &lt;= maxr (f (-(pi/<span class="mi">2</span>))) (f (pi/<span class="mi">2</span>)).
+  <span class="nb">rewrite</span> /f sinN sin_pihalf /minr /maxr ltr_add2r -subr_gt0 opprK.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (_ : <span class="mi">1</span> + <span class="mi">1</span> = <span class="mi">2</span>)// ltr0n/= subr_le0 subr_ge0.
+- <span class="bp">by</span> <span class="nb">rewrite</span> -subr_ge0 opprK -splitr pi_ge0.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; *; <span class="nb">apply</span>: continuousB; <span class="nb">apply</span>/continuous_in_subspaceT =&gt; ? ?;
+   [<span class="bp">exact</span>: continuous_sin| <span class="bp">exact</span>: cst_continuous].
+- <span class="nb">rewrite</span> /f =&gt; x1 /itvP x1I /eqP; <span class="nb">rewrite</span> subr_eq0 =&gt; /eqP sinx1E.
+  <span class="bp">by</span> <span class="nb">case</span>: (He x1); <span class="nb">rewrite</span> !x1I.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">asin_geNpi2</span> <span class="nv">x</span> : -<span class="mi">1</span> &lt;= x &lt;= <span class="mi">1</span> -&gt; -(pi / <span class="mi">2</span>) &lt;= asin x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /asin_def[/andP[]]. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">asin_lepi2</span> <span class="nv">x</span> : -<span class="mi">1</span> &lt;= x &lt;= <span class="mi">1</span> -&gt; asin x &lt;= pi / <span class="mi">2</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /asin_def[/andP[]]. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">asinK</span> : {<span class="kr">in</span> `[(-<span class="mi">1</span>),<span class="mi">1</span>], cancel asin sin}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> in_itv/= =&gt; /asin_def[/andP[]]. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">asin_ltpi2</span> <span class="nv">x</span> : -<span class="mi">1</span> &lt;= x &lt; <span class="mi">1</span> -&gt; asin x &lt; pi/<span class="mi">2</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /andP[x_geN1 x_lt1]; <span class="nb">move</span>: (x_lt1).
+<span class="nb">have</span> : asin x &lt;= pi / <span class="mi">2</span> <span class="bp">by</span> <span class="nb">rewrite</span> asin_lepi2 // x_geN1 ltW.
+<span class="nb">have</span> : sin (asin x) = x <span class="bp">by</span> <span class="nb">rewrite</span> asinK// in_itv/= x_geN1 ltW.
+<span class="nb">case</span>: (ltrgtP _ ((pi / <span class="mi">2</span>))) =&gt; // -&gt;.
+<span class="bp">by</span> <span class="nb">rewrite</span> sin_pihalf =&gt; &lt;-; <span class="nb">rewrite</span> ltxx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">asin_gtNpi2</span> <span class="nv">x</span> : -<span class="mi">1</span> &lt; x &lt;= <span class="mi">1</span> -&gt; - (pi / <span class="mi">2</span>) &lt; asin x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /andP[x_gtN1 x_le1]; <span class="nb">move</span>: (x_gtN1).
+<span class="nb">have</span> : - (pi / <span class="mi">2</span>) &lt;= asin x <span class="bp">by</span> <span class="nb">rewrite</span> asin_geNpi2 // x_le1 ltW.
+<span class="nb">have</span> : sin (asin x) = x <span class="bp">by</span> <span class="nb">rewrite</span> asinK// in_itv/= x_le1 ltW.
+<span class="bp">by</span> <span class="nb">case</span>: (ltrgtP (asin x)) =&gt; //-&gt;; <span class="nb">rewrite</span> sinN sin_pihalf =&gt; &lt;-; <span class="nb">rewrite</span> ltxx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sinK</span> : {<span class="kr">in</span> `[(- (pi / <span class="mi">2</span>)), pi / <span class="mi">2</span>], cancel sin asin}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> !in_itv/= =&gt; xB ; <span class="nb">apply</span>: sin_inj =&gt; //; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> asinK// in_itv/= sin_geN1 sin_le1.
+<span class="bp">by</span> <span class="nb">rewrite</span> in_itv/= asin_geNpi2/= <span class="nl">?asin_lepi2</span> <span class="nl">?sin_geN1</span> <span class="nl">?sin_le1</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_asin</span> <span class="nv">x</span> : -<span class="mi">1</span> &lt;= x &lt;= <span class="mi">1</span> -&gt; cos (asin x) = Num.sqrt (<span class="mi">1</span> - x^+<span class="mi">2</span>).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; xB; <span class="nb">rewrite</span> -[LHS]ger0_norm; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> -sqrtr_sqr cos2sin2 asinK.
+<span class="bp">by</span> <span class="nb">apply</span>: cos_ge0_pihalf; <span class="nb">rewrite</span> asin_lepi2 // asin_geNpi2.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">continuous_asin</span> <span class="nv">x</span> : -<span class="mi">1</span> &lt; x &lt; <span class="mi">1</span> -&gt; {<span class="kr">for</span> x, continuous asin}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /andP[x_gtN1 x_lt1]; <span class="nb">rewrite</span> -[x]asinK; <span class="kp">first</span> <span class="nb">last</span>.
+  <span class="bp">by</span> <span class="nb">have</span> : -<span class="mi">1</span> &lt;= x &lt;= <span class="mi">1</span> <span class="bp">by</span> <span class="nb">rewrite</span> !ltW //; <span class="nb">case</span>/andP: xB.
+<span class="nb">apply</span>: nbhs_singleton (near_can_continuous _ _); <span class="nb">last first</span>.
+  <span class="bp">by</span> near=&gt; z; <span class="nb">apply</span>: continuous_sin.
+<span class="nb">have</span> /near_in_itv aI : asin x \<span class="kr">in</span> `](-(pi/<span class="mi">2</span>)), (pi/<span class="mi">2</span>)[.
+  <span class="nb">suff</span> : - (pi / <span class="mi">2</span>) &lt; asin x &lt; pi / <span class="mi">2</span> <span class="bp">by</span> [].
+  <span class="bp">by</span> <span class="nb">rewrite</span> asin_gtNpi2 <span class="nl">?ltW</span> <span class="nl">?andbT</span> //= asin_ltpi2 // ltW.
+near=&gt; z; <span class="nb">apply</span>: sinK.
+<span class="nb">suff</span> /itvP zI : z \<span class="kr">in</span> `](-(pi/<span class="mi">2</span>)), (pi/<span class="mi">2</span>)[.
+  <span class="bp">by</span> <span class="nb">have</span> : - (pi / <span class="mi">2</span>) &lt;= z &lt;= pi / <span class="mi">2</span> <span class="bp">by</span> <span class="nb">rewrite</span> ltW <span class="nl">?zI</span>.
+<span class="bp">by</span> near: z.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">is_derive1_asin</span> (<span class="nv">x</span> : R) :
+  -<span class="mi">1</span> &lt; x &lt; <span class="mi">1</span> -&gt; is_derive x <span class="mi">1</span> asin ((Num.sqrt (<span class="mi">1</span> - x ^+ <span class="mi">2</span>))^-<span class="mi">1</span>).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /andP[x_gtN1 x_lt1]; <span class="nb">rewrite</span> -cos_asin <span class="nl">?ltW</span> //.
+<span class="nb">rewrite</span> -{<span class="mi">1</span>}[x]asinK; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">have</span> : -<span class="mi">1</span> &lt;= x &lt;= <span class="mi">1</span> <span class="bp">by</span> <span class="nb">rewrite</span> ltW // ltW.
+<span class="nb">have</span> /near_in_itv aI : asin x \<span class="kr">in</span> `](-(pi/<span class="mi">2</span>)), (pi/<span class="mi">2</span>)[.
+  <span class="nb">suff</span> : -(pi/<span class="mi">2</span>) &lt; asin x &lt; pi/<span class="mi">2</span> <span class="bp">by</span> [].
+  <span class="bp">by</span> <span class="nb">rewrite</span> asin_gtNpi2 <span class="nl">?ltW</span> <span class="nl">?andbT</span> //= asin_ltpi2 // ltW.
+<span class="nb">apply</span>: (@is_derive_inverse R sin).
+- near=&gt; z; <span class="nb">apply</span>: sinK.
+  <span class="nb">suff</span> /itvP zI : z \<span class="kr">in</span> `](-(pi/<span class="mi">2</span>)), (pi/<span class="mi">2</span>)[.
+    <span class="bp">by</span> <span class="nb">have</span> : - (pi / <span class="mi">2</span>) &lt;= z &lt;= pi / <span class="mi">2</span> <span class="bp">by</span> <span class="nb">rewrite</span> ltW <span class="nl">?zI</span>.
+  <span class="bp">by</span> near: z.
+- <span class="bp">by</span> near=&gt; z; <span class="bp">exact</span>: continuous_sin.
+- <span class="nb">rewrite</span> cos_asin <span class="nl">?ltW</span> // sqrtr_eq0 // -ltNge subr_gt0.
+  <span class="nb">rewrite</span> -real_normK <span class="nl">?qualifE</span>; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">case</span>: ltrgt0P.
+  <span class="bp">by</span> <span class="nb">rewrite</span> exprn_cp1 // ltr_norml x_gtN1.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Asin</span>.
+
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (is_derive _ <span class="mi">1</span> (@asin _) _) =&gt;
+  (<span class="nb">eapply</span> is_derive1_asin; <span class="kp">first</span> <span class="bp">by</span> []) : typeclass_instances.
+
+<span class="kn">Section</span> <span class="nf">Atan</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+
+<span class="kn">Definition</span> <span class="nf">atan</span> (<span class="nv">x</span> : R) : R :=
+  get [<span class="nb">set</span> y | -(pi / <span class="mi">2</span>) &lt; y &lt; pi / <span class="mi">2</span> /\ tan y = x].
+
+<span class="c">(* Did not see how to use ITV like in the other *)</span>
+<span class="kn">Lemma</span> <span class="nf">atan_def</span> <span class="nv">x</span> : -(pi / <span class="mi">2</span>) &lt; atan x &lt; pi / <span class="mi">2</span> /\ tan (atan x) = x.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /atan; <span class="nb">case</span>: xgetP =&gt; //= He.
+<span class="nb">pose</span> x1 := Num.sqrt (<span class="mi">1</span> + x^+ <span class="mi">2</span>) ^-<span class="mi">1</span>.
+<span class="nb">have</span> ox2_gt0 : <span class="mi">0</span> &lt; <span class="mi">1</span> + x^<span class="mi">2</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>: lt_le_trans (_ : <span class="mi">1</span> &lt;= _); <span class="nb">rewrite</span> <span class="nl">?ler_addl</span> <span class="nl">?sqr_ge0</span>.
+<span class="nb">have</span> ox2_ge0 : <span class="mi">0</span> &lt;= <span class="mi">1</span> + x^<span class="mi">2</span> <span class="bp">by</span> <span class="nb">rewrite</span> ltW.
+<span class="nb">have</span> x1B : -<span class="mi">1</span> &lt;= x1 &lt;= <span class="mi">1</span>.
+  <span class="nb">rewrite</span> -ler_norml /x1 ger0_norm <span class="nl">?sqrtr_ge0</span> // -[leRHS]sqrtr1.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ler_psqrt <span class="nl">?qualifE</span> <span class="nl">?invr_gte0</span> //= invf_cp1 // ler_addl sqr_ge0.
+<span class="nb">case</span>: (He (Num.sg x * acos x1)); <span class="nb">split</span>; <span class="nb">last first</span>.
+  <span class="nb">case</span>: (x =P <span class="mi">0</span>) =&gt; [-&gt;|/eqP xD0]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> /tan sgr0 mul0r sin0 mul0r.
+  <span class="nb">rewrite</span> /tan sin_sg cos_sg // acosK <span class="nl">?sin_acos</span> //.
+  <span class="nb">rewrite</span> /x1 sqr_sqrtr// <span class="nl">?invr_ge0</span> //.
+  <span class="nb">rewrite</span> -{<span class="mi">1</span>}[_^-<span class="mi">1</span> <span class="kr">in</span> X <span class="kr">in</span> X / _ = _]mul1r.
+  <span class="nb">rewrite</span> -{<span class="mi">1</span>}[X <span class="kr">in</span> X - _](divff (_: <span class="mi">1</span> != <span class="mi">0</span>)) //.
+  <span class="nb">rewrite</span> -mulNr addf_div <span class="nl">?lt0r_neq0</span> //.
+  <span class="nb">rewrite</span> mul1r mulr1 [X <span class="kr">in</span> X - <span class="mi">1</span>]addrC addrK // sqrtrM <span class="nl">?sqr_ge0</span> //.
+  <span class="nb">rewrite</span> sqrtrV // invrK // mulrA divfK //; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> sqrtr_eq0 -ltNge.
+  <span class="bp">by</span> <span class="nb">rewrite</span> sqrtr_sqr mulr_sg_norm.
+<span class="nb">rewrite</span> -ltr_norml normrM.
+<span class="nb">have</span> pi2 : <span class="mi">0</span> &lt; pi / <span class="mi">2</span> :&gt; R <span class="bp">by</span> <span class="nb">rewrite</span> divr_gt0 // pi_gt0.
+<span class="nb">case</span>: (x =P <span class="mi">0</span>) =&gt; [-&gt;|/eqP xD0]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> sgr0 normr0 mul0r.
+<span class="nb">rewrite</span> normr_sg xD0 mul1r ltr_norml.
+<span class="nb">rewrite</span> (@lt_le_trans _ _ <span class="mi">0</span>) <span class="nl">?acos_ge0</span> <span class="nl">?oppr_cp0</span> //=.
+<span class="nb">rewrite</span> -ltr_cos <span class="nl">?in_itv</span>/= <span class="nl">?acos_ge0</span>/= <span class="nl">?acos_lepi</span>//; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> divr_ge0 <span class="nl">?pi_ge0</span>//= ler_pdivr_mulr// ler_pmulr <span class="nl">?pi_gt0</span>// ler1n.
+<span class="bp">by</span> <span class="nb">rewrite</span> cos_pihalf acosK // <span class="nl">?sqrtr_gt0</span> <span class="nl">?invr_gt0</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">atan_gtNpi2</span> <span class="nv">x</span> : - (pi / <span class="mi">2</span>) &lt; atan x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: (atan_def x) =&gt; [] /andP[]. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">atan_ltpi2</span> <span class="nv">x</span> : atan x &lt; pi / <span class="mi">2</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: (atan_def x) =&gt; [] /andP[]. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">atanK</span> : cancel atan tan.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">case</span>: (atan_def x). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">atan0</span> : atan <span class="mi">0</span> = <span class="mi">0</span> :&gt; R.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: tan_inj; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> atanK tan0.
+- <span class="bp">by</span> <span class="nb">rewrite</span> in_itv/= atan_gtNpi2 atan_ltpi2.
+- <span class="bp">by</span> <span class="nb">rewrite</span> in_itv/= oppr_cp0 divr_gt0 <span class="nl">?pi_gt0</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">atan1</span> : atan <span class="mi">1</span> = pi / <span class="mi">4</span>%:R :&gt; R.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: tan_inj; <span class="kp">first</span> <span class="mi">2</span> <span class="nb">last</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> atanK tan_piquarter.
+  <span class="bp">by</span> <span class="nb">rewrite</span> in_itv/= atan_gtNpi2 atan_ltpi2.
+<span class="nb">rewrite</span> in_itv/= -mulNr (lt_trans _ (_ : <span class="mi">0</span> &lt; _ )) /=; <span class="nb">last</span> <span class="mi">2</span> <span class="kp">first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> mulNr oppr_cp0 divr_gt0 // pi_gt0.
+  <span class="bp">by</span> <span class="nb">rewrite</span> divr_gt0 <span class="nl">?pi_gt0</span> // ltr0n.
+<span class="nb">rewrite</span> ltr_pdivr_mulr// -mulrA ltr_pmulr// <span class="nl">?pi_gt0</span>//.
+<span class="bp">by</span> <span class="nb">rewrite</span> (natrM _ <span class="mi">2</span> <span class="mi">2</span>) mulrA mulVf// mul1r ltr1n.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">atanN</span> <span class="nv">x</span> : atan (- x) = - atan x.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: tan_inj; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> in_itv/= atan_ltpi2 atan_gtNpi2.
+- <span class="bp">by</span> <span class="nb">rewrite</span> in_itv/= ltr_oppl opprK ltr_oppl andbC atan_ltpi2 atan_gtNpi2.
+- <span class="bp">by</span> <span class="nb">rewrite</span> tanN !atanK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">tanK</span> : {<span class="kr">in</span> `](- (pi / <span class="mi">2</span>)), (pi / <span class="mi">2</span>)[ , cancel tan atan}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x xB; <span class="nb">apply</span> tan_inj =&gt; //; <span class="nb">rewrite</span> <span class="nl">?atanK</span>//.
+<span class="bp">by</span> <span class="nb">rewrite</span> in_itv/= atan_gtNpi2 atan_ltpi2.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">continuous_atan</span> <span class="nv">x</span> : {<span class="kr">for</span> x, continuous atan}.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> -[x]atanK.
+<span class="nb">have</span> /near_in_itv aI : atan x \<span class="kr">in</span> `](-(pi / <span class="mi">2</span>)), (pi / <span class="mi">2</span>)[.
+  <span class="nb">suff</span> : - (pi / <span class="mi">2</span>) &lt; atan x &lt; pi / <span class="mi">2</span> <span class="bp">by</span> [].
+  <span class="bp">by</span> <span class="nb">rewrite</span> atan_gtNpi2 atan_ltpi2.
+<span class="nb">apply</span>: nbhs_singleton (near_can_continuous _ _); <span class="nb">last first</span>.
+  <span class="bp">by</span> near=&gt; z; <span class="nb">apply</span>/continuous_tan/lt0r_neq0/cos_gt0_pihalf; near: z.
+<span class="bp">by</span> near=&gt; z; <span class="nb">apply</span>: tanK; near: z.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cos_atan</span> <span class="nv">x</span> : cos (atan x) = (Num.sqrt (<span class="mi">1</span> + x ^+ <span class="mi">2</span>)) ^-<span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> cos_gt0 : <span class="mi">0</span> &lt; cos (atan x).
+  <span class="bp">by</span> <span class="nb">apply</span>: cos_gt0_pihalf; <span class="nb">rewrite</span> atan_gtNpi2 atan_ltpi2.
+<span class="nb">have</span> cosD0 : cos (atan x) != <span class="mi">0</span> <span class="bp">by</span> <span class="nb">apply</span>: lt0r_neq0.
+<span class="nb">have</span> /eqP : cos (atan x) ^+<span class="mi">2</span> = (Num.sqrt (<span class="mi">1</span> + x ^+ <span class="mi">2</span>))^-<span class="mi">2</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -[LHS]invrK cos2_tan2 // atanK sqr_sqrtr // addr_ge0 // sqr_ge0.
+<span class="nb">rewrite</span> -exprVn eqf_sqr =&gt; /orP[] /eqP // cosE.
+<span class="nb">move</span>: cos_gt0; <span class="nb">rewrite</span> cosE ltNge; <span class="nb">case</span>/negP.
+<span class="bp">by</span> <span class="nb">rewrite</span> oppr_le0 invr_ge0 sqrtr_ge0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_derive1_atan</span> (<span class="nv">x</span> : R) : is_derive x <span class="mi">1</span> atan (<span class="mi">1</span> + x ^+ <span class="mi">2</span>)^-<span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> -{<span class="mi">1</span>}[x]atanK.
+<span class="nb">have</span> cosD0 : cos (atan x) != <span class="mi">0</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>/lt0r_neq0/cos_gt0_pihalf; <span class="nb">rewrite</span> atan_gtNpi2 atan_ltpi2.
+<span class="nb">have</span> /near_in_itv aI : atan x \<span class="kr">in</span> `](-(pi/<span class="mi">2</span>)), (pi/<span class="mi">2</span>)[.
+  <span class="nb">suff</span> : - (pi / <span class="mi">2</span>) &lt; atan x &lt; pi / <span class="mi">2</span> <span class="bp">by</span> [].
+  <span class="bp">by</span> <span class="nb">rewrite</span> atan_gtNpi2 atan_ltpi2.
+<span class="nb">apply</span>: (@is_derive_inverse R tan).
+- <span class="bp">by</span> near=&gt; z; <span class="nb">apply</span>: tanK; near: z.
+- <span class="bp">by</span> near=&gt; z; <span class="nb">apply</span>/continuous_tan/lt0r_neq0/cos_gt0_pihalf; near: z.
+- <span class="bp">by</span> <span class="nb">rewrite</span> -[X <span class="kr">in</span> <span class="mi">1</span> + X ^+ <span class="mi">2</span>]atanK -cos2_tan2 //; <span class="bp">exact</span>: is_derive_tan.
+<span class="bp">by</span> <span class="nb">apply</span>/lt0r_neq0/(@lt_le_trans _ _ <span class="mi">1</span>) =&gt; //; <span class="nb">rewrite</span> ler_addl sqr_ge0.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Atan</span>.</span></pre></article></body></html>

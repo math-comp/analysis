@@ -1,0 +1,166 @@
+
+/* Classes:
+     h1.title     the title of the page
+     div.coq      encloses all generated body
+     div.doc      contents of (** *) comments
+     div.footer   footer
+     span.togglescript   "Proof." line
+     div.proofscript  contents of proof script
+     span.docright contents of (**r *) comments
+     span.bracket contents of [ ] within comments
+     span.comment contents of (* *) comments
+     span.kwd     Coq keyword
+     span.id      any other identifier
+*/
+
+body {
+  font-family: Arial, Helvetica;
+  margin-left: 5em;
+  margin-right: 5em;
+  font-size: large;
+}
+
+h1.title {
+  font-size: 2em;
+  text-align: center
+}
+
+h1 {
+  margin-left: 0em;
+  padding: 0px;
+  text-align: center
+}
+h2 {
+  margin-left: 0em;
+  padding: 0px;
+  color: #580909
+}
+h3 {
+  margin-left: 0em;
+  padding: 0px;
+  color: #C05001;
+}
+
+h1, h2, h3 {
+  font-family: sans-serif;
+
+}
+
+div.coq {
+  margin-left: 15%;
+  margin-right: 15%;
+  font-family: monospace;
+}
+
+div.doc {
+  margin-left: -5%;
+  margin-top: 0.2em;
+  margin-bottom: 0.5em;
+  font-family: serif;
+  background-color: #f2f1f1;
+}
+
+span.toggleproof {
+  font-size: 0.8em;
+  text-decoration: underline;
+}
+
+span.toggleproof:hover {
+  cursor: pointer;
+}
+
+div.proofscript {
+  font-size: 0.8em;
+}
+
+div.footer {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  font-size: 0.8em;
+  font-style: italic;
+}  
+
+span.docright {
+  position: absolute;
+  left: 60%;
+  width: 40%;
+  font-family: serif;
+}
+
+span.bracket {
+  font-family: monospace;
+  color: #008000;
+}
+
+span.vernacular {
+  color:  #9400d3;
+}
+
+span.gallina-kwd {
+  color:  #228b22;
+}
+
+.hierarchy-builder {
+  color: #ff4500;
+  margin: 2em 0;
+  border: solid 1px #cd0000;
+}
+
+span.comment {
+  color:  #008000;
+}
+
+a:visited {color : #416DFF; text-decoration : none; }
+a:link {color : #416DFF; text-decoration : none; }
+a:hover {text-decoration : none; }
+a:active {text-decoration : none; }
+
+pre.ssrdoc {
+    border: solid 2px;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+div.ssrdoc {
+    border: solid 2px;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+.warning {
+    color: #cd0000;
+}
+
+:target {
+    background-color: yellow;
+    transition: background-color 0.5s;
+}
+
+.darkmode--activated span.katex {
+    color: white;
+}
+
+@media screen and (max-width:960px) {
+
+    body {
+	font-family: Arial, Helvetica;
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+	font-size: large;
+    }
+
+    div.doc {
+	margin-left: 0%;
+	margin-top: 0.2em;
+	margin-bottom: 0.5em;
+	font-family: serif;
+	background-color: #f2f1f1;
+    }
+
+    div.coq {
+	margin-left: 1%;
+	margin-right: 1%;
+	font-family: monospace;
+    }
+
+}

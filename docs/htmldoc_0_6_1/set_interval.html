@@ -1,0 +1,486 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>set_interval</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library set_interval</h1>
+
+<div class="code">
+<span class="comment">(*&nbsp;mathcomp&nbsp;analysis&nbsp;(c)&nbsp;2017&nbsp;Inria&nbsp;and&nbsp;AIST.&nbsp;License:&nbsp;CeCILL-C.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*)</span><br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">mathcomp</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">all_ssreflect</span> <span class="id" title="var">ssralg</span> <span class="id" title="var">ssrnum</span> <span class="id" title="var">interval</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">mathcomp_extra</span> <span class="id" title="var">boolp</span> <span class="id" title="var">classical_sets</span> <span class="id" title="var">functions</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">HB</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">structures</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+ This files contains lemmas about sets and intervals.                       
+
+<div class="paragraph"> </div>
+
+              neitv i == the interval i is non-empty                        
+                         when the support type is a numFieldType, this      
+                         is equivalent to (i.1 &lt; i.2)%O (lemma neitvE)      
+   set_itv_infty_set0 == multirule to simplify empty intervals              
+         conv, ndconv == convexity operator                                 
+         factor a b x := (x - a) / (b - a)                                  
+             set_itvE == multirule to turn intervals into inequalities      
+     disjoint_itv i j == intervals i and j are disjoint                     
+                                                                             
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">Order.TTheory</span> <span class="id" title="var">GRing.Theory</span> <span class="id" title="var">Num.Def</span> <span class="id" title="var">Num.Theory</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">classical_set_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">ring_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+ definitions and lemmas to make a bridge between MathComp intervals and     
+ classical sets                                                              
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">set_itv_porderType</span>.<br/>
+<span class="id" title="keyword">Variables</span> (<span class="id" title="var">d</span> : <span class="id" title="var">unit</span>) (<span class="id" title="var">T</span> : <span class="id" title="var">porderType</span> <span class="id" title="var">d</span>).<br/>
+<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Types</span> (<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">interval</span> <span class="id" title="var">T</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">T</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">itv_bound</span> <span class="id" title="var">T</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">neitv</span> <span class="id" title="var">i</span> := [<span class="id" title="tactic">set</span>` <span class="id" title="var">i</span>] != <span class="id" title="var">set0</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">neitv_lt_bnd</span> <span class="id" title="var">i</span> : <span class="id" title="var">neitv</span> <span class="id" title="var">i</span> → (<span class="id" title="var">i</span>.1 &lt; <span class="id" title="var">i</span>.2)%<span class="id" title="var">O</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itvP</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> : [<span class="id" title="tactic">set</span>` <span class="id" title="var">i</span>] = [<span class="id" title="tactic">set</span>` <span class="id" title="var">j</span>] :&gt; <span class="id" title="tactic">set</span> <span class="id" title="var">_</span> ↔ <span class="id" title="var">i</span> =<span class="id" title="var">i</span> <span class="id" title="var">j</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">subset_itvP</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> : {<span class="id" title="var">subset</span> <span class="id" title="var">i</span> ≤ <span class="id" title="var">j</span>} ↔ [<span class="id" title="tactic">set</span>` <span class="id" title="var">i</span>] `&lt;=` [<span class="id" title="tactic">set</span>` <span class="id" title="var">j</span>].<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itvoo</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : `]<span class="id" title="var">x</span>, <span class="id" title="var">y</span>[%<span class="id" title="var">classic</span> = [<span class="id" title="tactic">set</span> <span class="id" title="var">z</span> | (<span class="id" title="var">x</span> &lt; <span class="id" title="var">z</span> &lt; <span class="id" title="var">y</span>)%<span class="id" title="var">O</span>].<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itvco</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : `[<span class="id" title="var">x</span>, <span class="id" title="var">y</span>[%<span class="id" title="var">classic</span> = [<span class="id" title="tactic">set</span> <span class="id" title="var">z</span> | (<span class="id" title="var">x</span> ≤ <span class="id" title="var">z</span> &lt; <span class="id" title="var">y</span>)%<span class="id" title="var">O</span>].<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itvcc</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : `[<span class="id" title="var">x</span>, <span class="id" title="var">y</span>]%<span class="id" title="var">classic</span> = [<span class="id" title="tactic">set</span> <span class="id" title="var">z</span> | (<span class="id" title="var">x</span> ≤ <span class="id" title="var">z</span> ≤ <span class="id" title="var">y</span>)%<span class="id" title="var">O</span>].<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itvoc</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : `]<span class="id" title="var">x</span>, <span class="id" title="var">y</span>]%<span class="id" title="var">classic</span> = [<span class="id" title="tactic">set</span> <span class="id" title="var">z</span> | (<span class="id" title="var">x</span> &lt; <span class="id" title="var">z</span> ≤ <span class="id" title="var">y</span>)%<span class="id" title="var">O</span>].<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itv1</span> <span class="id" title="var">x</span> : `[<span class="id" title="var">x</span>, <span class="id" title="var">x</span>]%<span class="id" title="var">classic</span> = [<span class="id" title="tactic">set</span> <span class="id" title="var">x</span>].<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itvoo0</span> <span class="id" title="var">x</span> : `]<span class="id" title="var">x</span>, <span class="id" title="var">x</span>[%<span class="id" title="var">classic</span> = <span class="id" title="var">set0</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itvoc0</span> <span class="id" title="var">x</span> : `]<span class="id" title="var">x</span>, <span class="id" title="var">x</span>]%<span class="id" title="var">classic</span> = <span class="id" title="var">set0</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itvco0</span> <span class="id" title="var">x</span> : `[<span class="id" title="var">x</span>, <span class="id" title="var">x</span>[%<span class="id" title="var">classic</span> = <span class="id" title="var">set0</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itv_infty_infty</span> : `]-<span class="id" title="var">oo</span>, +<span class="id" title="var">oo</span>[%<span class="id" title="var">classic</span> = @<span class="id" title="var">setT</span> <span class="id" title="var">T</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itv_o_infty</span> <span class="id" title="var">x</span> : `]<span class="id" title="var">x</span>, +<span class="id" title="var">oo</span>[%<span class="id" title="var">classic</span> = [<span class="id" title="tactic">set</span> <span class="id" title="var">z</span> | (<span class="id" title="var">x</span> &lt; <span class="id" title="var">z</span>)%<span class="id" title="var">O</span>].<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itv_c_infty</span> <span class="id" title="var">x</span> : `[<span class="id" title="var">x</span>, +<span class="id" title="var">oo</span>[%<span class="id" title="var">classic</span> = [<span class="id" title="tactic">set</span> <span class="id" title="var">z</span> | (<span class="id" title="var">x</span> ≤ <span class="id" title="var">z</span>)%<span class="id" title="var">O</span>].<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itv_infty_o</span> <span class="id" title="var">x</span> : `]-<span class="id" title="var">oo</span>, <span class="id" title="var">x</span>[%<span class="id" title="var">classic</span> = [<span class="id" title="tactic">set</span> <span class="id" title="var">z</span> | (<span class="id" title="var">z</span> &lt; <span class="id" title="var">x</span>)%<span class="id" title="var">O</span>].<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itv_infty_c</span> <span class="id" title="var">x</span> : `]-<span class="id" title="var">oo</span>, <span class="id" title="var">x</span>]%<span class="id" title="var">classic</span> = [<span class="id" title="tactic">set</span> <span class="id" title="var">z</span> | (<span class="id" title="var">z</span> ≤ <span class="id" title="var">x</span>)%<span class="id" title="var">O</span>].<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itv_pinfty_bnd</span> <span class="id" title="var">a</span> : [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> +<span class="id" title="var">oo</span>%<span class="id" title="var">O</span> <span class="id" title="var">a</span>] = <span class="id" title="var">set0</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itv_bnd_ninfty</span> <span class="id" title="var">a</span> : [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> <span class="id" title="var">a</span> -<span class="id" title="var">oo</span>%<span class="id" title="var">O</span>] = <span class="id" title="var">set0</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">set_itv_infty_set0</span> := (<span class="id" title="var">set_itv_bnd_ninfty</span>, <span class="id" title="var">set_itv_pinfty_bnd</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">set_itvE</span> := (<span class="id" title="var">set_itv1</span>, <span class="id" title="var">set_itvoo0</span>, <span class="id" title="var">set_itvoc0</span>, <span class="id" title="var">set_itvco0</span>, <span class="id" title="var">set_itvoo</span>,<br/>
+&nbsp;&nbsp;<span class="id" title="var">set_itvcc</span>, <span class="id" title="var">set_itvoc</span>, <span class="id" title="var">set_itvco</span>, <span class="id" title="var">set_itv_infty_infty</span>, <span class="id" title="var">set_itv_o_infty</span>,<br/>
+&nbsp;&nbsp;<span class="id" title="var">set_itv_c_infty</span>, <span class="id" title="var">set_itv_infty_o</span>, <span class="id" title="var">set_itv_infty_c</span>, <span class="id" title="var">set_itv_infty_set0</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">setUitv1</span> (<span class="id" title="var">a</span> : <span class="id" title="var">itv_bound</span> <span class="id" title="var">T</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">T</span>) : (<span class="id" title="var">a</span> ≤ <span class="id" title="var">BLeft</span> <span class="id" title="var">x</span>)%<span class="id" title="var">O</span> →<br/>
+&nbsp;&nbsp;[<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> <span class="id" title="var">a</span> (<span class="id" title="var">BLeft</span> <span class="id" title="var">x</span>)] `|` [<span class="id" title="tactic">set</span> <span class="id" title="var">x</span>] = [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> <span class="id" title="var">a</span> (<span class="id" title="var">BRight</span> <span class="id" title="var">x</span>)].<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">setU1itv</span> (<span class="id" title="var">a</span> : <span class="id" title="var">itv_bound</span> <span class="id" title="var">T</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">T</span>) : (<span class="id" title="var">BRight</span> <span class="id" title="var">x</span> ≤ <span class="id" title="var">a</span>)%<span class="id" title="var">O</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">x</span> |` [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BRight</span> <span class="id" title="var">x</span>) <span class="id" title="var">a</span>] = [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BLeft</span> <span class="id" title="var">x</span>) <span class="id" title="var">a</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">set_itv_porderType</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">neitv</span> {<span class="id" title="var">d</span> <span class="id" title="var">T</span>} <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itv_ge</span> [<span class="id" title="var">disp</span> : <span class="id" title="var">unit</span>] [<span class="id" title="var">T</span> : <span class="id" title="var">porderType</span> <span class="id" title="var">disp</span>] [<span class="id" title="var">b1</span> <span class="id" title="var">b2</span> : <span class="id" title="var">itv_bound</span> <span class="id" title="var">T</span>] :<br/>
+&nbsp;&nbsp;~~ (<span class="id" title="var">b1</span> &lt; <span class="id" title="var">b2</span>)%<span class="id" title="var">O</span> → [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> <span class="id" title="var">b1</span> <span class="id" title="var">b2</span>] = <span class="id" title="var">set0</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">set_itv_latticeType</span>.<br/>
+<span class="id" title="keyword">Variables</span> (<span class="id" title="var">d</span> : <span class="id" title="var">unit</span>) (<span class="id" title="var">T</span> : <span class="id" title="var">latticeType</span> <span class="id" title="var">d</span>).<br/>
+<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Types</span> (<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">interval</span> <span class="id" title="var">T</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">T</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">itv_bound</span> <span class="id" title="var">T</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itvI</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> :  [<span class="id" title="tactic">set</span>` (<span class="id" title="var">i</span> `&amp;` <span class="id" title="var">j</span>)%<span class="id" title="var">O</span>] = [<span class="id" title="tactic">set</span>` <span class="id" title="var">i</span>] `&amp;` [<span class="id" title="tactic">set</span>` <span class="id" title="var">j</span>].<br/>
+ 
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">set_itv_latticeType</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">set_itv_numFieldType</span>.<br/>
+<span class="id" title="keyword">Variable</span> <span class="id" title="var">R</span> : <span class="id" title="var">numFieldType</span>.<br/>
+<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Types</span> <span class="id" title="var">i</span> : <span class="id" title="var">interval</span> <span class="id" title="var">R</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">neitvE</span> <span class="id" title="var">i</span> : <span class="id" title="var">neitv</span> <span class="id" title="var">i</span> = (<span class="id" title="var">i</span>.1 &lt; <span class="id" title="var">i</span>.2)%<span class="id" title="var">O</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">neitvP</span> <span class="id" title="var">i</span> : <span class="id" title="var">reflect</span> (<span class="id" title="var">i</span>.1 &lt; <span class="id" title="var">i</span>.2)%<span class="id" title="var">O</span> (<span class="id" title="var">neitv</span> <span class="id" title="var">i</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">set_itv_numFieldType</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">setitv0</span> (<span class="id" title="var">R</span> : <span class="id" title="var">realDomainType</span>) : [<span class="id" title="tactic">set</span>` (0%<span class="id" title="var">O</span> : <span class="id" title="var">interval</span> <span class="id" title="var">R</span>)] = <span class="id" title="var">set0</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">interval_has_bound</span>.<br/>
+<span class="id" title="keyword">Variable</span> <span class="id" title="var">R</span> : <span class="id" title="var">numDomainType</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">has_lbound_itv</span> (<span class="id" title="var">x</span> : <span class="id" title="var">R</span>) <span class="id" title="var">b</span> (<span class="id" title="var">a</span> : <span class="id" title="var">itv_bound</span> <span class="id" title="var">R</span>) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">has_lbound</span> [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">b</span> <span class="id" title="var">x</span>) <span class="id" title="var">a</span>].<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">has_ubound_itv</span> (<span class="id" title="var">x</span> : <span class="id" title="var">R</span>) <span class="id" title="var">b</span> (<span class="id" title="var">a</span> : <span class="id" title="var">itv_bound</span> <span class="id" title="var">R</span>) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">has_ubound</span> [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> <span class="id" title="var">a</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">b</span> <span class="id" title="var">x</span>)].<br/>
+ 
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">interval_has_bound</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">subr_image</span>.<br/>
+<span class="id" title="keyword">Variable</span> <span class="id" title="var">R</span> : <span class="id" title="var">numDomainType</span>.<br/>
+<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Types</span> <span class="id" title="var">E</span> : <span class="id" title="tactic">set</span> <span class="id" title="var">R</span>.<br/>
+<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Types</span> <span class="id" title="var">x</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">setNK</span> : <span class="id" title="var">involutive</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">E</span> ⇒ -%<span class="id" title="var">R</span> @` <span class="id" title="var">E</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">lb_ubN</span> <span class="id" title="var">E</span> <span class="id" title="var">x</span> : <span class="id" title="var">lbound</span> <span class="id" title="var">E</span> <span class="id" title="var">x</span> ↔ <span class="id" title="var">ubound</span> (-%<span class="id" title="var">R</span> @` <span class="id" title="var">E</span>) (- <span class="id" title="var">x</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">ub_lbN</span> <span class="id" title="var">E</span> <span class="id" title="var">x</span> : <span class="id" title="var">ubound</span> <span class="id" title="var">E</span> <span class="id" title="var">x</span> ↔ <span class="id" title="var">lbound</span> (-%<span class="id" title="var">R</span> @` <span class="id" title="var">E</span>) (- <span class="id" title="var">x</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">memNE</span> <span class="id" title="var">E</span> <span class="id" title="var">x</span> : <span class="id" title="var">E</span> <span class="id" title="var">x</span> = (-%<span class="id" title="var">R</span> @` <span class="id" title="var">E</span>) (- <span class="id" title="var">x</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">nonemptyN</span> <span class="id" title="var">E</span> : <span class="id" title="var">nonempty</span> (-%<span class="id" title="var">R</span> @` <span class="id" title="var">E</span>) ↔ <span class="id" title="var">nonempty</span> <span class="id" title="var">E</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">opp_set_eq0</span> <span class="id" title="var">E</span> : (-%<span class="id" title="var">R</span> @` <span class="id" title="var">E</span>) = <span class="id" title="var">set0</span> ↔ <span class="id" title="var">E</span> = <span class="id" title="var">set0</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">has_lb_ubN</span> <span class="id" title="var">E</span> : <span class="id" title="var">has_lbound</span> <span class="id" title="var">E</span> ↔ <span class="id" title="var">has_ubound</span> (-%<span class="id" title="var">R</span> @` <span class="id" title="var">E</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">subr_image</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">interval_hasNbound</span>.<br/>
+<span class="id" title="keyword">Variable</span> <span class="id" title="var">R</span> : <span class="id" title="var">realDomainType</span>.<br/>
+<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Types</span> <span class="id" title="var">E</span> : <span class="id" title="tactic">set</span> <span class="id" title="var">R</span>.<br/>
+<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Types</span> <span class="id" title="var">x</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">has_ubPn</span> {<span class="id" title="var">E</span>} : ¬ <span class="id" title="var">has_ubound</span> <span class="id" title="var">E</span> ↔ (<span class="id" title="keyword">∀</span> <span class="id" title="var">x</span>, <span class="id" title="var">exists2</span> <span class="id" title="var">y</span>, <span class="id" title="var">E</span> <span class="id" title="var">y</span> &amp; <span class="id" title="var">x</span> &lt; <span class="id" title="var">y</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">has_lbPn</span> <span class="id" title="var">E</span> : ¬ <span class="id" title="var">has_lbound</span> <span class="id" title="var">E</span> ↔ (<span class="id" title="keyword">∀</span> <span class="id" title="var">x</span>, <span class="id" title="var">exists2</span> <span class="id" title="var">y</span>, <span class="id" title="var">E</span> <span class="id" title="var">y</span> &amp; <span class="id" title="var">y</span> &lt; <span class="id" title="var">x</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">hasNlbound_itv</span> (<span class="id" title="var">a</span> : <span class="id" title="var">itv_bound</span> <span class="id" title="var">R</span>) : <span class="id" title="var">a</span> != -<span class="id" title="var">oo</span>%<span class="id" title="var">O</span> →<br/>
+&nbsp;&nbsp;¬ <span class="id" title="var">has_lbound</span> [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> -<span class="id" title="var">oo</span>%<span class="id" title="var">O</span> <span class="id" title="var">a</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">hasNubound_itv</span> (<span class="id" title="var">a</span> : <span class="id" title="var">itv_bound</span> <span class="id" title="var">R</span>) : <span class="id" title="var">a</span> != +<span class="id" title="var">oo</span>%<span class="id" title="var">O</span> →<br/>
+&nbsp;&nbsp;¬ <span class="id" title="var">has_ubound</span> [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> <span class="id" title="var">a</span> +<span class="id" title="var">oo</span>%<span class="id" title="var">O</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">interval_hasNbound</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">global</span>] <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 0 (<span class="id" title="var">has_lbound</span> <span class="id" title="var">_</span>) ⇒ <span class="id" title="tactic">solve</span>[<span class="id" title="tactic">apply</span>: <span class="id" title="var">has_lbound_itv</span>] : <span class="id" title="var">core</span>.<br/>
+#[<span class="id" title="var">global</span>] <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 0 (<span class="id" title="var">has_ubound</span> <span class="id" title="var">_</span>) ⇒ <span class="id" title="tactic">solve</span>[<span class="id" title="tactic">apply</span>: <span class="id" title="var">has_ubound_itv</span>] : <span class="id" title="var">core</span>.<br/>
+#[<span class="id" title="var">global</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 0 (~ <span class="id" title="var">has_lbound</span> <span class="id" title="var">_</span>) ⇒ <span class="id" title="tactic">solve</span>[<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span>: <span class="id" title="var">hasNlbound_itv</span>] : <span class="id" title="var">core</span>.<br/>
+#[<span class="id" title="var">global</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 0 (~ <span class="id" title="var">has_ubound</span> <span class="id" title="var">_</span>) ⇒ <span class="id" title="tactic">solve</span>[<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span>: <span class="id" title="var">hasNubound_itv</span>] : <span class="id" title="var">core</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">opp_itv_bnd_infty</span> (<span class="id" title="var">R</span> : <span class="id" title="var">numDomainType</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">R</span>) <span class="id" title="var">b</span> :<br/>
+&nbsp;&nbsp;-%<span class="id" title="var">R</span> @` [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">b</span> <span class="id" title="var">x</span>) +<span class="id" title="var">oo</span>%<span class="id" title="var">O</span>] =<br/>
+&nbsp;&nbsp;[<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> -<span class="id" title="var">oo</span>%<span class="id" title="var">O</span> (<span class="id" title="var">BSide</span> (<span class="id" title="var">negb</span> <span class="id" title="var">b</span>) (- <span class="id" title="var">x</span>))].<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">opp_itv_infty_bnd</span> (<span class="id" title="var">R</span> : <span class="id" title="var">numDomainType</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">R</span>) <span class="id" title="var">b</span> :<br/>
+&nbsp;&nbsp;-%<span class="id" title="var">R</span> @` [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> -<span class="id" title="var">oo</span>%<span class="id" title="var">O</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">b</span> <span class="id" title="var">x</span>)] =<br/>
+&nbsp;&nbsp;[<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> (<span class="id" title="var">negb</span> <span class="id" title="var">b</span>) (- <span class="id" title="var">x</span>)) +<span class="id" title="var">oo</span>%<span class="id" title="var">O</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">opp_itv_bnd_bnd</span> (<span class="id" title="var">R</span> : <span class="id" title="var">numDomainType</span>) <span class="id" title="var">a</span> <span class="id" title="var">b</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">R</span>) :<br/>
+&nbsp;&nbsp;-%<span class="id" title="var">R</span> @` [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">a</span> <span class="id" title="var">x</span>) (<span class="id" title="var">BSide</span> <span class="id" title="var">b</span> <span class="id" title="var">y</span>)] =<br/>
+&nbsp;&nbsp;[<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> (~~ <span class="id" title="var">b</span>) (- <span class="id" title="var">y</span>)) (<span class="id" title="var">BSide</span> (~~ <span class="id" title="var">a</span>) (- <span class="id" title="var">x</span>))].<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">opp_itvoo</span> (<span class="id" title="var">R</span> : <span class="id" title="var">numDomainType</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">R</span>) :<br/>
+&nbsp;&nbsp;-%<span class="id" title="var">R</span> @` `]<span class="id" title="var">x</span>, <span class="id" title="var">y</span>[%<span class="id" title="var">classic</span> = `](- <span class="id" title="var">y</span>), (- <span class="id" title="var">x</span>)[%<span class="id" title="var">classic</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+ lemmas between itv and set-theoretic operations  
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">set_itv_porderType</span>.<br/>
+<span class="id" title="keyword">Variables</span> (<span class="id" title="var">d</span> : <span class="id" title="var">unit</span>) (<span class="id" title="var">T</span> : <span class="id" title="var">orderType</span> <span class="id" title="var">d</span>).<br/>
+<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Types</span> (<span class="id" title="var">a</span> : <span class="id" title="var">itv_bound</span> <span class="id" title="var">T</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">T</span>) (<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">interval</span> <span class="id" title="var">T</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">bool</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">setCitvl</span> <span class="id" title="var">a</span> : ~` [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> -<span class="id" title="var">oo</span>%<span class="id" title="var">O</span> <span class="id" title="var">a</span>] = [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> <span class="id" title="var">a</span> +<span class="id" title="var">oo</span>%<span class="id" title="var">O</span>].<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">setCitvr</span> <span class="id" title="var">a</span> : ~` [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> <span class="id" title="var">a</span> +<span class="id" title="var">oo</span>%<span class="id" title="var">O</span>] = [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> -<span class="id" title="var">oo</span>%<span class="id" title="var">O</span> <span class="id" title="var">a</span>].<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itv_splitI</span> <span class="id" title="var">i</span> : [<span class="id" title="tactic">set</span>` <span class="id" title="var">i</span>] = [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> <span class="id" title="var">i</span>.1 +<span class="id" title="var">oo</span>%<span class="id" title="var">O</span>] `&amp;` [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> -<span class="id" title="var">oo</span>%<span class="id" title="var">O</span> <span class="id" title="var">i</span>.2].<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">setCitv</span> <span class="id" title="var">i</span> :<br/>
+&nbsp;&nbsp;~` [<span class="id" title="tactic">set</span>` <span class="id" title="var">i</span>] = [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> -<span class="id" title="var">oo</span>%<span class="id" title="var">O</span> <span class="id" title="var">i</span>.1] `|` [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> <span class="id" title="var">i</span>.2 +<span class="id" title="var">oo</span>%<span class="id" title="var">O</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">set_itv_splitD</span> <span class="id" title="var">i</span> :<br/>
+&nbsp;&nbsp;[<span class="id" title="tactic">set</span>` <span class="id" title="var">i</span>] = [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> <span class="id" title="var">i</span>.1 +<span class="id" title="var">oo</span>%<span class="id" title="var">O</span>] `\` [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> <span class="id" title="var">i</span>.2 +<span class="id" title="var">oo</span>%<span class="id" title="var">O</span>].<br/>
+ 
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">set_itv_porderType</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">conv_factor_numDomainType</span>.<br/>
+<span class="id" title="keyword">Variable</span> <span class="id" title="var">R</span> : <span class="id" title="var">numDomainType</span>.<br/>
+<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Types</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">t</span> <span class="id" title="var">r</span> : <span class="id" title="var">R</span>) (<span class="id" title="var">A</span> : <span class="id" title="tactic">set</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">mem_1B_itvcc</span> <span class="id" title="var">t</span> : (1 - <span class="id" title="var">t</span> \<span class="id" title="tactic">in</span> `[0, 1]) = (<span class="id" title="var">t</span> \<span class="id" title="tactic">in</span> `[0, 1]).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">t</span> : <span class="id" title="var">R</span> := (1 - <span class="id" title="var">t</span>) × <span class="id" title="var">a</span> + <span class="id" title="var">t</span> × <span class="id" title="var">b</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">conv_id</span> : <span class="id" title="var">conv</span> 0 1 = <span class="id" title="var">id</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">convEl</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">t</span> : <span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">t</span> = <span class="id" title="var">t</span> × (<span class="id" title="var">b</span> - <span class="id" title="var">a</span>) + <span class="id" title="var">a</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">convEr</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">t</span> : <span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">t</span> = (1 - <span class="id" title="var">t</span>) × (<span class="id" title="var">a</span> - <span class="id" title="var">b</span>) + <span class="id" title="var">b</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">conv10</span> <span class="id" title="var">t</span> : <span class="id" title="var">conv</span> 1 0 <span class="id" title="var">t</span> = 1 - <span class="id" title="var">t</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">conv0</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> 0 = <span class="id" title="var">a</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">conv1</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> 1 = <span class="id" title="var">b</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">conv_sym</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">t</span> : <span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">t</span> = <span class="id" title="var">conv</span> <span class="id" title="var">b</span> <span class="id" title="var">a</span> (1 - <span class="id" title="var">t</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">conv_flat</span> <span class="id" title="var">a</span> : <span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">a</span> = <span class="id" title="var">cst</span> <span class="id" title="var">a</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">leW_conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> ≤ <span class="id" title="var">b</span> → {<span class="id" title="var">homo</span> <span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">x</span> <span class="id" title="var">y</span> / <span class="id" title="var">x</span> ≤ <span class="id" title="var">y</span>}.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">x</span> := (<span class="id" title="var">x</span> - <span class="id" title="var">a</span>) / (<span class="id" title="var">b</span> - <span class="id" title="var">a</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">leW_factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> ≤ <span class="id" title="var">b</span> → {<span class="id" title="var">homo</span> <span class="id" title="var">factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">x</span> <span class="id" title="var">y</span> / <span class="id" title="var">x</span> ≤ <span class="id" title="var">y</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">factor_flat</span> <span class="id" title="var">a</span> : <span class="id" title="var">factor</span> <span class="id" title="var">a</span> <span class="id" title="var">a</span> = <span class="id" title="var">cst</span> 0.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">factorl</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">a</span> = 0.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ndconv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="keyword">of</span> <span class="id" title="var">a</span> &lt; <span class="id" title="var">b</span> := <span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">ndconvE</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> (<span class="id" title="var">ab</span> : <span class="id" title="var">a</span> &lt; <span class="id" title="var">b</span>) : <span class="id" title="var">ndconv</span> <span class="id" title="var">ab</span> = <span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.  <br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">conv_factor_numDomainType</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">conv_factor_numFieldType</span>.<br/>
+<span class="id" title="keyword">Variable</span> <span class="id" title="var">R</span> : <span class="id" title="var">numFieldType</span>.<br/>
+<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Types</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">t</span> <span class="id" title="var">r</span> : <span class="id" title="var">R</span>) (<span class="id" title="var">A</span> : <span class="id" title="tactic">set</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">factorr</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> != <span class="id" title="var">b</span> → <span class="id" title="var">factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">b</span> = 1.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">factorK</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> != <span class="id" title="var">b</span> → <span class="id" title="var">cancel</span> (<span class="id" title="var">factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">convK</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> != <span class="id" title="var">b</span> → <span class="id" title="var">cancel</span> (<span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">conv_inj</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> != <span class="id" title="var">b</span> → <span class="id" title="var">injective</span> (<span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">factor_inj</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> != <span class="id" title="var">b</span> → <span class="id" title="var">injective</span> (<span class="id" title="var">factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">conv_bij</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> != <span class="id" title="var">b</span> → <span class="id" title="var">bijective</span> (<span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">factor_bij</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> != <span class="id" title="var">b</span> → <span class="id" title="var">bijective</span> (<span class="id" title="var">factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">le_conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> &lt; <span class="id" title="var">b</span> → {<span class="id" title="var">mono</span> <span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">x</span> <span class="id" title="var">y</span> / <span class="id" title="var">x</span> ≤ <span class="id" title="var">y</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">le_factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> &lt; <span class="id" title="var">b</span> → {<span class="id" title="var">mono</span> <span class="id" title="var">factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">x</span> <span class="id" title="var">y</span> / <span class="id" title="var">x</span> ≤ <span class="id" title="var">y</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">lt_conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> &lt; <span class="id" title="var">b</span> → {<span class="id" title="var">mono</span> <span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">x</span> <span class="id" title="var">y</span> / <span class="id" title="var">x</span> &lt; <span class="id" title="var">y</span>}.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">lt_factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> &lt; <span class="id" title="var">b</span> → {<span class="id" title="var">mono</span> <span class="id" title="var">factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">x</span> <span class="id" title="var">y</span> / <span class="id" title="var">x</span> &lt; <span class="id" title="var">y</span>}.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Let</span> <span class="id" title="var">ltNeq</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> &lt; <span class="id" title="var">b</span> → <span class="id" title="var">a</span> != <span class="id" title="var">b</span>.  <br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">conv_itv_bij</span> <span class="id" title="var">ba</span> <span class="id" title="var">bb</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> &lt; <span class="id" title="var">b</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">set_bij</span> [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">ba</span> 0) (<span class="id" title="var">BSide</span> <span class="id" title="var">bb</span> 1)]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">ba</span> <span class="id" title="var">a</span>) (<span class="id" title="var">BSide</span> <span class="id" title="var">bb</span> <span class="id" title="var">b</span>)] (<span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">factor_itv_bij</span> <span class="id" title="var">ba</span> <span class="id" title="var">bb</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> &lt; <span class="id" title="var">b</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">set_bij</span> [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">ba</span> <span class="id" title="var">a</span>) (<span class="id" title="var">BSide</span> <span class="id" title="var">bb</span> <span class="id" title="var">b</span>)]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">ba</span> 0) (<span class="id" title="var">BSide</span> <span class="id" title="var">bb</span> 1)] (<span class="id" title="var">factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">mem_conv_itv</span> <span class="id" title="var">ba</span> <span class="id" title="var">bb</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> &lt; <span class="id" title="var">b</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">set_fun</span> [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">ba</span> 0) (<span class="id" title="var">BSide</span> <span class="id" title="var">bb</span> 1)]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">ba</span> <span class="id" title="var">a</span>) (<span class="id" title="var">BSide</span> <span class="id" title="var">bb</span> <span class="id" title="var">b</span>)] (<span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">mem_conv_itvcc</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> ≤ <span class="id" title="var">b</span> → <span class="id" title="var">set_fun</span> `[0, 1] `[<span class="id" title="var">a</span>, <span class="id" title="var">b</span>] (<span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">range_conv</span> <span class="id" title="var">ba</span> <span class="id" title="var">bb</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> &lt; <span class="id" title="var">b</span> →<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" title="var">conv</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> @` [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">ba</span> 0) (<span class="id" title="var">BSide</span> <span class="id" title="var">bb</span> 1)] =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">ba</span> <span class="id" title="var">a</span>) (<span class="id" title="var">BSide</span> <span class="id" title="var">bb</span> <span class="id" title="var">b</span>)].<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">range_factor</span> <span class="id" title="var">ba</span> <span class="id" title="var">bb</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">a</span> &lt; <span class="id" title="var">b</span> →<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" title="var">factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> @` [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">ba</span> <span class="id" title="var">a</span>) (<span class="id" title="var">BSide</span> <span class="id" title="var">bb</span> <span class="id" title="var">b</span>)] =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">ba</span> 0) (<span class="id" title="var">BSide</span> <span class="id" title="var">bb</span> 1)].<br/>
+ 
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">conv_factor_numFieldType</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">mem_factor_itv</span> (<span class="id" title="var">R</span> : <span class="id" title="var">realFieldType</span>) <span class="id" title="var">ba</span> <span class="id" title="var">bb</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">R</span>) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">set_fun</span> [<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">ba</span> <span class="id" title="var">a</span>) (<span class="id" title="var">BSide</span> <span class="id" title="var">bb</span> <span class="id" title="var">b</span>)]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class="id" title="tactic">set</span>` <span class="id" title="var">Interval</span> (<span class="id" title="var">BSide</span> <span class="id" title="var">ba</span> 0) (<span class="id" title="var">BSide</span> <span class="id" title="var">bb</span> 1)] (<span class="id" title="var">factor</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">neitv_bnd1</span> (<span class="id" title="var">R</span> : <span class="id" title="var">numFieldType</span>) (<span class="id" title="var">s</span> : <span class="id" title="var">seq</span> (<span class="id" title="var">interval</span> <span class="id" title="var">R</span>)) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span> <span class="id" title="var">neitv</span> <span class="id" title="var">s</span> → <span class="id" title="keyword">∀</span> <span class="id" title="var">i</span>, <span class="id" title="var">i</span> \<span class="id" title="tactic">in</span> <span class="id" title="var">s</span> → <span class="id" title="var">i</span>.1 != +<span class="id" title="var">oo</span>%<span class="id" title="var">O</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">neitv_bnd2</span> (<span class="id" title="var">R</span> : <span class="id" title="var">numFieldType</span>) (<span class="id" title="var">s</span> : <span class="id" title="var">seq</span> (<span class="id" title="var">interval</span> <span class="id" title="var">R</span>)) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span> <span class="id" title="var">neitv</span> <span class="id" title="var">s</span> → <span class="id" title="keyword">∀</span> <span class="id" title="var">i</span>, <span class="id" title="var">i</span> \<span class="id" title="tactic">in</span> <span class="id" title="var">s</span> → <span class="id" title="var">i</span>.2 != -<span class="id" title="var">oo</span>%<span class="id" title="var">O</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">trivIset_set_itv_nth</span> (<span class="id" title="var">R</span> : <span class="id" title="var">numDomainType</span>) <span class="id" title="var">def</span> (<span class="id" title="var">s</span> : <span class="id" title="var">seq</span> (<span class="id" title="var">interval</span> <span class="id" title="var">R</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">D</span> : <span class="id" title="tactic">set</span> <span class="id" title="var">nat</span>) : [<span class="id" title="tactic">set</span>` <span class="id" title="var">def</span>] = <span class="id" title="var">set0</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">trivIset</span> <span class="id" title="var">D</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">i</span> ⇒ [<span class="id" title="tactic">set</span>` <span class="id" title="var">nth</span> <span class="id" title="var">def</span> <span class="id" title="var">s</span> <span class="id" title="var">i</span>]) ↔<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">trivIset</span> <span class="id" title="var">D</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">i</span> ⇒ <span class="id" title="var">nth</span> <span class="id" title="var">set0</span> [<span class="id" title="var">seq</span> [<span class="id" title="tactic">set</span>` <span class="id" title="var">j</span>] | <span class="id" title="var">j</span> &lt;- <span class="id" title="var">s</span>] <span class="id" title="var">i</span>).<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">trivIset_set_itv_nth</span> {<span class="id" title="var">R</span>} <span class="id" title="var">_</span> {<span class="id" title="var">s</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">disjoint_itv</span>.<br/>
+<span class="id" title="keyword">Context</span> {<span class="id" title="var">R</span> : <span class="id" title="var">numDomainType</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">disjoint_itv</span> : <span class="id" title="var">rel</span> (<span class="id" title="var">interval</span> <span class="id" title="var">R</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> ⇒ [<span class="id" title="var">disjoint</span> [<span class="id" title="tactic">set</span>` <span class="id" title="var">a</span>] &amp; [<span class="id" title="tactic">set</span>` <span class="id" title="var">b</span>]].<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">disjoint_itvxx</span> (<span class="id" title="var">i</span> : <span class="id" title="var">interval</span> <span class="id" title="var">R</span>) : <span class="id" title="var">neitv</span> <span class="id" title="var">i</span> → ~~ <span class="id" title="var">disjoint_itv</span> <span class="id" title="var">i</span> <span class="id" title="var">i</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">lt_disjoint</span> (<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">interval</span> <span class="id" title="var">R</span>) :<br/>
+&nbsp;&nbsp;(<span class="id" title="keyword">∀</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">x</span> \<span class="id" title="tactic">in</span> <span class="id" title="var">i</span> → <span class="id" title="var">y</span> \<span class="id" title="tactic">in</span> <span class="id" title="var">j</span> → <span class="id" title="var">x</span> &lt; <span class="id" title="var">y</span>) → <span class="id" title="var">disjoint_itv</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">disjoint_itv</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">disjoint_neitv</span> {<span class="id" title="var">R</span> : <span class="id" title="var">realFieldType</span>} (<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">interval</span> <span class="id" title="var">R</span>) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">disjoint_itv</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> ↔ ~~ <span class="id" title="var">neitv</span> (<span class="id" title="var">itv_meet</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>).<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

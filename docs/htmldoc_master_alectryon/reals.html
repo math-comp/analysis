@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>reals.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)</span>
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="c">(* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)</span>
+<span class="c">(* Copyright (c) - 2015--2018 - Inria                                   *)</span>
+<span class="c">(* Copyright (c) - 2016--2018 - Polytechnique                           *)</span>
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+
+<span class="sd">(******************************************************************************)</span>
+<span class="c">(*                   An axiomatization of real numbers                        *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* This file provides a classical axiomatization of real numbers as a         *)</span>
+<span class="c">(* discrete real archimedean field with in particular a theory of floor and   *)</span>
+<span class="c">(* ceil.                                                                      *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(*     realType == type of real numbers                                       *)</span>
+<span class="c">(*        sup A == where A : set R with R : realType, the supremum of A when  *)</span>
+<span class="c">(*                 it exists, 0 otherwise                                     *)</span>
+<span class="c">(*        inf A := - sup (- A)                                                *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* The mixin corresponding to realType extends an archiFieldType with two     *)</span>
+<span class="c">(* properties:                                                                *)</span>
+<span class="c">(*  - when sup A exists, it is an upper bound of A (lemma sup_upper_bound)    *)</span>
+<span class="c">(*  - when sup A exists, there exists an element x in A such that             *)</span>
+<span class="c">(*    sup A - eps &lt; x for any 0 &lt; eps (lemma sup_adherent)                    *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(*         Rint == the set of real numbers that can be written as z%:~R,      *)</span>
+<span class="c">(*                 i.e., as an integer                                        *)</span>
+<span class="c">(*     Rtoint r == r when r is an integer, 0 otherwise                        *)</span>
+<span class="c">(*  floor_set x := [set y | Rtoint y /\ y &lt;= x]                               *)</span>
+<span class="c">(*     Rfloor x == the floor of x as a real number                            *)</span>
+<span class="c">(*      floor x == the floor of x as an integer (type int)                    *)</span>
+<span class="c">(*     range1 x := [set y |x &lt;= y &lt; x + 1]                                    *)</span>
+<span class="c">(*      Rceil x == the ceil of x as a real number, i.e., - Rfloor (- x)       *)</span>
+<span class="c">(*       ceil x := - floor (- x)                                              *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="sd">(******************************************************************************)</span>
+
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect all_algebra.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> boolp classical_sets set_interval.
+<span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> mathcomp_extra.
+
+<span class="kn">Require Import</span> Setoid.
+
+<span class="kn">Declare Scope</span> real_scope.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kt">Set</span>   Implicit <span class="kn">Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+<span class="kn">Unset SsrOldRewriteGoalsOrder</span>.
+
+<span class="kn">Import</span> Order.TTheory Order.Syntax GRing.Theory Num.Def Num.Theory.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Delimit Scope</span> real_scope <span class="kr">with</span> real.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+
+<span class="kn">Section</span> <span class="nf">subr_image</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : numDomainType.
+<span class="kn">Implicit Types</span> (<span class="nv">E</span> : <span class="nb">set</span> R) (<span class="nv">x</span> : R).
+
+<span class="kn">Lemma</span> <span class="nf">has_ub_lbN</span> <span class="nv">E</span> : has_ubound E &lt;-&gt; has_lbound (-%R @` E).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> has_lb_ubN image_comp /comp /=.
+<span class="bp">by</span> <span class="nb">under</span> eq_fun <span class="kp">do</span> <span class="nb">rewrite</span> opprK; <span class="nb">rewrite</span> image_id.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">has_lbound0</span> : has_lbound (@set0 R). <span class="kn">Proof</span>. <span class="bp">by</span> <span class="kr">exists</span> <span class="mi">0</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">has_ubound0</span> : has_ubound (@set0 R). <span class="kn">Proof</span>. <span class="bp">by</span> <span class="kr">exists</span> <span class="mi">0</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ubound0</span> : ubound (@set0 R) = setT.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> predeqE =&gt; r; <span class="nb">split</span> =&gt; // _. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lboundT</span> : lbound [<span class="nb">set</span>: R] = set0.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> predeqE =&gt; r; <span class="nb">split</span> =&gt; // /(_ (r - <span class="mi">1</span>) Logic.I).
+<span class="nb">rewrite</span> ler_subr_addl addrC -ler_subr_addl subrr.
+<span class="bp">by</span> <span class="nb">rewrite</span> real_leNgt <span class="nl">?realE</span> <span class="nl">?ler01</span>// <span class="nl">?lexx</span>// ltr01.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">subr_image</span>.
+
+<span class="kn">Section</span> <span class="nf">has_bound_lemmas</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realDomainType.
+<span class="kn">Implicit Types</span> <span class="nv">E</span> : <span class="nb">set</span> R.
+<span class="kn">Implicit Types</span> <span class="nv">x</span> : R.
+
+<span class="kn">Lemma</span> <span class="nf">has_ub_image_norm</span> <span class="nv">E</span> : has_ubound (normr @` E) -&gt; has_ubound E.
+<span class="kn">Proof</span>.
+<span class="nb">case</span> =&gt; M /ubP uM; <span class="kr">exists</span> `|M|; <span class="nb">apply</span>/ubP =&gt; r rS.
+<span class="nb">rewrite</span> (le_trans (real_ler_norm _)) <span class="nl">?num_real</span> //.
+<span class="nb">rewrite</span> (le_trans (uM _ _)) <span class="nl">?real_ler_norm</span> <span class="nl">?num_real</span> //.
+<span class="bp">by</span> <span class="kr">exists</span> <span class="nv">r</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">has_inf_supN</span> <span class="nv">E</span> : has_sup (-%R @` E) &lt;-&gt; has_inf E.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; [ [NEn0 [x /ub_lbN xubE]]  | [En0 [x /lb_ubN xlbe]] ].
+<span class="bp">by</span> <span class="nb">split</span>; [<span class="nb">apply</span>/nonemptyN|<span class="nb">rewrite</span> -[E]setNK; <span class="kr">exists</span> (- x)].
+<span class="bp">by</span> <span class="nb">split</span>; [<span class="nb">apply</span>/nonemptyN|<span class="kr">exists</span> (- x)].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">has_supPn</span> {<span class="nv">E</span>} : E !=set0 -&gt;
+  ~ has_sup E &lt;-&gt; (<span class="kr">forall</span> <span class="nv">x</span>, <span class="kr">exists2</span> y, E y &amp; x &lt; y).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; nzE; <span class="nb">split</span>=&gt; [/asboolPn|/has_ubPn h [_]] //.
+<span class="bp">by</span> <span class="nb">rewrite</span> asbool_and (asboolT nzE) /= =&gt; /asboolP/has_ubPn.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">has_bound_lemmas</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Module</span> <span class="nf">Real</span>.
+<span class="kn">Section</span> <span class="nf">Mixin</span>.
+
+<span class="kn">Variable</span> (<span class="nv">R</span> : archiFieldType).
+
+<span class="kn">Record</span> <span class="nf">mixin_of</span> : <span class="kt">Type</span> := Mixin {
+   _  :
+    <span class="kr">forall</span> <span class="nv">E</span> : <span class="nb">set</span> (Num.ArchimedeanField.sort R),
+      has_sup E -&gt; ubound E (supremum <span class="mi">0</span> E) ;
+   _  :
+    <span class="kr">forall</span> (<span class="nv">E</span> : <span class="nb">set</span> (Num.ArchimedeanField.sort R)) (<span class="nv">eps</span> : R), <span class="mi">0</span> &lt; eps -&gt;
+      has_sup E -&gt; <span class="kr">exists2</span> e : R, E e &amp; (supremum <span class="mi">0</span> E - eps) &lt; e ;
+}.
+
+<span class="kn">End</span> <span class="nf">Mixin</span>.
+
+<span class="kn">Definition</span> <span class="nf">EtaMixin</span> <span class="nv">R</span> <span class="nv">sup_upper_bound</span> <span class="nv">sup_adherent</span> :=
+  <span class="kr">let</span> <span class="nv">_</span> := @Mixin R sup_upper_bound sup_adherent <span class="kr">in</span>
+  @Mixin (Num.ArchimedeanField.Pack (Num.ArchimedeanField.class R))
+         sup_upper_bound sup_adherent.
+<span class="kn">Section</span> <span class="nf">ClassDef</span>.
+
+<span class="kn">Record</span> <span class="nf">class_of</span> (<span class="nv">R</span> : <span class="kt">Type</span>) : <span class="kt">Type</span> := <span class="kn">Class</span> {
+  base : Num.ArchimedeanField.class_of R;
+  mixin_rcf : Num.real_closed_axiom (Num.NumDomain.Pack base);
+  <span class="c">(* TODO: ajouter une structure de pseudoMetricNormedDomain *)</span>
+  mixin : mixin_of (Num.ArchimedeanField.Pack base)
+}.
+
+<span class="kn">Local Coercion</span> <span class="nf">base</span> : class_of &gt;-&gt; Num.ArchimedeanField.class_of.
+<span class="kn">Local Coercion</span> <span class="nf">base_rcf</span> R (c : class_of R) : Num.RealClosedField.class_of R :=
+  @Num.RealClosedField.<span class="kn">Class</span> <span class="nf">_</span> <span class="nv">c</span> (@mixin_rcf _ c).
+
+<span class="kn">Structure</span> <span class="nf">type</span> := Pack {sort; _ : class_of sort; _ : <span class="kt">Type</span>}.
+<span class="kn">Local Coercion</span> <span class="nf">sort</span> : type &gt;-&gt; <span class="kt">Sortclass</span>.
+<span class="kn">Variables</span> (<span class="nv">T</span> : <span class="kt">Type</span>) (<span class="nv">cT</span> : type).
+<span class="kn">Definition</span> <span class="nf">class</span> := <span class="kr">let</span>: Pack _ c _ <span class="kr">as</span> cT&#39; := cT <span class="kr">return</span> class_of cT&#39; <span class="kr">in</span> c.
+<span class="kn">Definition</span> <span class="nf">clone</span> <span class="nv">c</span> <span class="nv">of</span> <span class="nv">phant_id</span> <span class="nv">class</span> <span class="nv">c</span> := @Pack T c T.
+<span class="kn">Let</span> <span class="nf">xT</span> := <span class="kr">let</span>: Pack T _ _ := cT <span class="kr">in</span> T.
+<span class="kn">Notation</span> <span class="nf">xclass</span> := (class : class_of xT).
+
+<span class="kn">Definition</span> <span class="nf">rcf_axiom</span> {<span class="nv">R</span>} (<span class="nv">cR</span> : Num.RealClosedField.class_of R) :
+   Num.real_closed_axiom (Num.NumDomain.Pack cR) :=
+  <span class="kr">match</span> cR <span class="kr">with</span> Num.RealClosedField.<span class="kn">Class</span> <span class="nf">_</span> <span class="nv">ax</span> =&gt; ax <span class="kr">end</span>.
+<span class="kn">Coercion</span> <span class="nf">rcf_axiom</span> : Num.RealClosedField.class_of &gt;-&gt; Num.real_closed_axiom.
+
+<span class="kn">Definition</span> <span class="nf">pack</span> <span class="nv">b0</span> (<span class="nv">m0</span> : mixin_of (@Num.ArchimedeanField.Pack T b0)) :=
+  <span class="kr">fun</span> <span class="nv">bT</span> <span class="nv">b</span> &amp; phant_id (Num.ArchimedeanField.class bT) b =&gt;
+  <span class="kr">fun</span> (<span class="nv">bTr</span> : rcfType) (<span class="nv">br</span> : Num.RealClosedField.class_of bTr) &amp;
+      phant_id (Num.RealClosedField.class bTr) br =&gt;
+  <span class="kr">fun</span>  <span class="nv">cra</span> &amp; phant_id (@rcf_axiom bTr br) cra =&gt;
+  <span class="kr">fun</span>    <span class="nv">m</span> &amp; phant_id m0 m =&gt; Pack (@<span class="kn">Class</span> <span class="nf">T</span> <span class="nv">b</span> <span class="nv">cra</span> <span class="nv">m</span>) T.
+
+<span class="kn">Definition</span> <span class="nf">eqType</span> := @Equality.Pack cT xclass.
+<span class="kn">Definition</span> <span class="nf">choiceType</span> := @Choice.Pack cT xclass.
+<span class="kn">Definition</span> <span class="nf">porderType</span> := @Order.POrder.Pack ring_display cT xclass.
+<span class="kn">Definition</span> <span class="nf">latticeType</span> := @Order.Lattice.Pack ring_display cT xclass.
+<span class="kn">Definition</span> <span class="nf">distrLatticeType</span> := @Order.DistrLattice.Pack ring_display cT xclass.
+<span class="kn">Definition</span> <span class="nf">orderType</span> := @Order.Total.Pack ring_display cT xclass.
+<span class="kn">Definition</span> <span class="nf">zmodType</span> := @GRing.Zmodule.Pack cT xclass.
+<span class="kn">Definition</span> <span class="nf">ringType</span> := @GRing.Ring.Pack cT xclass.
+<span class="kn">Definition</span> <span class="nf">comRingType</span> := @GRing.ComRing.Pack cT xclass.
+<span class="kn">Definition</span> <span class="nf">unitRingType</span> := @GRing.UnitRing.Pack cT xclass.
+<span class="kn">Definition</span> <span class="nf">comUnitRingType</span> := @GRing.ComUnitRing.Pack cT xclass.
+<span class="kn">Definition</span> <span class="nf">idomainType</span> := @GRing.IntegralDomain.Pack cT xclass.
+<span class="kn">Definition</span> <span class="nf">numDomainType</span> := @Num.NumDomain.Pack cT xclass.
+<span class="kn">Definition</span> <span class="nf">normedZmodType</span> := NormedZmodType numDomainType cT xclass.
+<span class="kn">Definition</span> <span class="nf">fieldType</span> := @GRing.Field.Pack cT xclass.
+<span class="kn">Definition</span> <span class="nf">realDomainType</span> := @Num.RealDomain.Pack cT xclass.
+<span class="kn">Definition</span> <span class="nf">numFieldType</span> := @Num.NumField.Pack cT xclass.
+<span class="kn">Definition</span> <span class="nf">realFieldType</span> := @Num.RealField.Pack cT xclass.
+<span class="kn">Definition</span> <span class="nf">archimedeanFieldType</span> := @Num.ArchimedeanField.Pack cT xclass.
+<span class="kn">Definition</span> <span class="nf">rcfType</span> := @Num.RealClosedField.Pack cT xclass.
+<span class="kn">Definition</span> <span class="nf">join_rcfType</span> := @Num.RealClosedField.Pack archimedeanFieldType xclass.
+
+<span class="kn">End</span> <span class="nf">ClassDef</span>.
+
+<span class="kn">Module</span> <span class="nf">Exports</span>.
+<span class="kn">Coercion</span> <span class="nf">base</span> : class_of &gt;-&gt; Num.ArchimedeanField.class_of.
+<span class="kn">Coercion</span> <span class="nf">base_rcf</span> : class_of &gt;-&gt; Num.RealClosedField.class_of.
+<span class="kn">Coercion</span> <span class="nf">mixin</span> : class_of &gt;-&gt; mixin_of.
+<span class="kn">Coercion</span> <span class="nf">sort</span> : type &gt;-&gt; <span class="kt">Sortclass</span>.
+<span class="kn">Bind Scope</span> ring_scope <span class="kr">with</span> sort.
+<span class="kn">Coercion</span> <span class="nf">eqType</span> : type &gt;-&gt; Equality.type.
+<span class="kn">Canonical</span> <span class="nf">eqType</span>.
+<span class="kn">Coercion</span> <span class="nf">choiceType</span> : type &gt;-&gt; Choice.type.
+<span class="kn">Canonical</span> <span class="nf">choiceType</span>.
+<span class="kn">Coercion</span> <span class="nf">porderType</span> : type &gt;-&gt; Order.POrder.type.
+<span class="kn">Canonical</span> <span class="nf">porderType</span>.
+<span class="kn">Coercion</span> <span class="nf">latticeType</span> : type &gt;-&gt; Order.Lattice.type.
+<span class="kn">Canonical</span> <span class="nf">latticeType</span>.
+<span class="kn">Coercion</span> <span class="nf">distrLatticeType</span> : type &gt;-&gt; Order.DistrLattice.type.
+<span class="kn">Canonical</span> <span class="nf">distrLatticeType</span>.
+<span class="kn">Coercion</span> <span class="nf">orderType</span> : type &gt;-&gt; Order.Total.type.
+<span class="kn">Canonical</span> <span class="nf">orderType</span>.
+<span class="kn">Coercion</span> <span class="nf">zmodType</span> : type &gt;-&gt; GRing.Zmodule.type.
+<span class="kn">Canonical</span> <span class="nf">zmodType</span>.
+<span class="kn">Coercion</span> <span class="nf">ringType</span> : type &gt;-&gt; GRing.Ring.type.
+<span class="kn">Canonical</span> <span class="nf">ringType</span>.
+<span class="kn">Coercion</span> <span class="nf">comRingType</span> : type &gt;-&gt; GRing.ComRing.type.
+<span class="kn">Canonical</span> <span class="nf">comRingType</span>.
+<span class="kn">Coercion</span> <span class="nf">unitRingType</span> : type &gt;-&gt; GRing.UnitRing.type.
+<span class="kn">Canonical</span> <span class="nf">unitRingType</span>.
+<span class="kn">Coercion</span> <span class="nf">comUnitRingType</span> : type &gt;-&gt; GRing.ComUnitRing.type.
+<span class="kn">Canonical</span> <span class="nf">comUnitRingType</span>.
+<span class="kn">Coercion</span> <span class="nf">idomainType</span> : type &gt;-&gt; GRing.IntegralDomain.type.
+<span class="kn">Canonical</span> <span class="nf">idomainType</span>.
+<span class="kn">Coercion</span> <span class="nf">numDomainType</span> : type &gt;-&gt; Num.NumDomain.type.
+<span class="kn">Canonical</span> <span class="nf">numDomainType</span>.
+<span class="kn">Coercion</span> <span class="nf">normedZmodType</span> : type &gt;-&gt; Num.NormedZmodule.type.
+<span class="kn">Canonical</span> <span class="nf">normedZmodType</span>.
+<span class="kn">Coercion</span> <span class="nf">realDomainType</span> : type &gt;-&gt; Num.RealDomain.type.
+<span class="kn">Canonical</span> <span class="nf">realDomainType</span>.
+<span class="kn">Coercion</span> <span class="nf">fieldType</span> : type &gt;-&gt; GRing.Field.type.
+<span class="kn">Canonical</span> <span class="nf">fieldType</span>.
+<span class="kn">Coercion</span> <span class="nf">numFieldType</span> : type &gt;-&gt; Num.NumField.type.
+<span class="kn">Canonical</span> <span class="nf">numFieldType</span>.
+<span class="kn">Coercion</span> <span class="nf">realFieldType</span> : type &gt;-&gt; Num.RealField.type.
+<span class="kn">Canonical</span> <span class="nf">realFieldType</span>.
+<span class="kn">Coercion</span> <span class="nf">archimedeanFieldType</span> : type &gt;-&gt; Num.ArchimedeanField.type.
+<span class="kn">Canonical</span> <span class="nf">archimedeanFieldType</span>.
+<span class="kn">Coercion</span> <span class="nf">rcfType</span> : type &gt;-&gt; Num.RealClosedField.type.
+<span class="kn">Canonical</span> <span class="nf">rcfType</span>.
+<span class="kn">Canonical</span> <span class="nf">join_rcfType</span>.
+
+<span class="kn">Notation</span> <span class="nf">realType</span> := type.
+<span class="kn">Notation</span> <span class="nf">RealType</span> T m := (@pack T _ m _ _ id _ _ id _ id _ id).
+<span class="kn">Notation</span> <span class="nf">RealMixin</span> := EtaMixin.
+<span class="kn">Notation</span> <span class="s2">&quot;[ &#39;realType&#39; &#39;of&#39; T &#39;for&#39; cT ]&quot;</span> := (@clone T cT _ idfun)
+  (<span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;[ &#39;realType&#39;  &#39;of&#39;  T  &#39;for&#39;  cT ]&quot;</span>) : form_scope.
+<span class="kn">Notation</span> <span class="s2">&quot;[ &#39;realType&#39; &#39;of&#39; T ]&quot;</span> := (@clone T _ _ id)
+  (<span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;[ &#39;realType&#39;  &#39;of&#39;  T ]&quot;</span>) : form_scope.
+
+<span class="kn">End</span> <span class="nf">Exports</span>.
+<span class="kn">End</span> <span class="nf">Real</span>.
+
+<span class="kn">Export</span> Real.Exports.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Definition</span> <span class="nf">sup</span> {<span class="nv">R</span> : realType} := @supremum _ R <span class="mi">0</span>.
+<span class="c">(*Local Notation &quot;-` E&quot; := [pred x | - x \in E]</span>
+<span class="c">  (at level 35, right associativity) : fun_scope.*)</span>
+<span class="kn">Definition</span> <span class="nf">inf</span> {<span class="nv">R</span> : realType} (<span class="nv">E</span> : <span class="nb">set</span> R) := - sup (-%R @` E).
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Lemma</span> <span class="nf">sup_upper_bound</span> {<span class="nv">R</span> : realType} (<span class="nv">E</span> : <span class="nb">set</span> R):
+  has_sup E -&gt; ubound E (sup E).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; supE; <span class="nb">case</span>: R E supE=&gt; ? [? ? []]. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sup_adherent</span> {<span class="nv">R</span> : realType} (<span class="nv">E</span> : <span class="nb">set</span> R) (<span class="nv">eps</span> : R) : <span class="mi">0</span> &lt; eps -&gt;
+  has_sup E -&gt; <span class="kr">exists2</span> e : R, E e &amp; (sup E - eps) &lt; e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: R E eps=&gt; ? [? ? []]. <span class="kn">Qed</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">IsInt</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realFieldType}.
+
+<span class="kn">Definition</span> <span class="nf">Rint</span> := [qualify a x : R | `[&lt; <span class="kr">exists</span> <span class="nv">z</span>, x == z%:~R &gt;]].
+<span class="kn">Fact</span> <span class="nf">Rint_key</span> : pred_key Rint. <span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+<span class="kn">Canonical</span> <span class="nf">Rint_keyed</span> := KeyedQualifier Rint_key.
+
+<span class="kn">Lemma</span> <span class="nf">Rint_def</span> <span class="nv">x</span> : (x \<span class="kr">is</span> a Rint) = (`[&lt; <span class="kr">exists</span> <span class="nv">z</span>, x == z%:~R &gt;]).
+<span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RintP</span> <span class="nv">x</span> : reflect (<span class="kr">exists</span> <span class="nv">z</span>, x = z%:~R) (x \<span class="kr">in</span> Rint).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">apply</span>/(iffP idP) =&gt; [/asboolP[z /eqP]|[z]] -&gt;; [|<span class="nb">apply</span>/asboolP]; <span class="kr">exists</span> <span class="nv">z</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RintC</span> <span class="nv">z</span> : z%:~R \<span class="kr">is</span> a Rint.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/RintP; <span class="kr">exists</span> <span class="nv">z</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rint0</span> : <span class="mi">0</span> \<span class="kr">is</span> a Rint.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -[<span class="mi">0</span>](mulr0z <span class="mi">1</span>) RintC. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rint1</span> : <span class="mi">1</span> \<span class="kr">is</span> a Rint.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -[<span class="mi">1</span>]mulr1z RintC. <span class="kn">Qed</span>.
+
+<span class="kn">Hint Resolve</span> Rint0 Rint1 RintC : core.
+
+<span class="kn">Lemma</span> <span class="nf">Rint_subring_closed</span> : subring_closed Rint.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; // _ _ /RintP[x -&gt;] /RintP[y -&gt;]; <span class="nb">apply</span>/RintP.
+<span class="bp">by</span> <span class="kr">exists</span> (<span class="nv">x</span> - y); <span class="nb">rewrite</span> rmorphB. <span class="bp">by</span> <span class="kr">exists</span> (<span class="nv">x</span> * y); <span class="nb">rewrite</span> rmorphM.
+<span class="kn">Qed</span>.
+
+<span class="kn">Canonical</span> <span class="nf">Rint_opprPred</span> := OpprPred Rint_subring_closed.
+<span class="kn">Canonical</span> <span class="nf">Rint_addrPred</span> := AddrPred Rint_subring_closed.
+<span class="kn">Canonical</span> <span class="nf">Rint_mulrPred</span> := MulrPred Rint_subring_closed.
+<span class="kn">Canonical</span> <span class="nf">Rint_zmodPred</span> := ZmodPred Rint_subring_closed.
+<span class="kn">Canonical</span> <span class="nf">Rint_semiringPred</span> := SemiringPred Rint_subring_closed.
+<span class="kn">Canonical</span> <span class="nf">Rint_smulrPred</span> := SmulrPred Rint_subring_closed.
+<span class="kn">Canonical</span> <span class="nf">Rint_subringPred</span> := SubringPred Rint_subring_closed.
+
+<span class="kn">Lemma</span> <span class="nf">Rint_ler_addr1</span> (<span class="nv">x</span> <span class="nv">y</span> : R) : x \<span class="kr">is</span> a Rint -&gt; y \<span class="kr">is</span> a Rint -&gt;
+  (x + <span class="mi">1</span> &lt;= y) = (x &lt; y).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /RintP[xi -&gt;] /RintP[yi -&gt;]; <span class="nb">rewrite</span> -{<span class="mi">2</span>}[<span class="mi">1</span>]mulr1z.
+<span class="bp">by</span> <span class="nb">rewrite</span> -intrD !(ltr_int, ler_int) lez_addr1.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rint_ltr_addr1</span> (<span class="nv">x</span> <span class="nv">y</span> : R) : x \<span class="kr">is</span> a Rint -&gt; y \<span class="kr">is</span> a Rint -&gt;
+  (x &lt; y + <span class="mi">1</span>) = (x &lt;= y).
+<span class="nb">move</span>=&gt; /RintP[xi -&gt;] /RintP[yi -&gt;]; <span class="nb">rewrite</span> -{<span class="mi">3</span>}[<span class="mi">1</span>]mulr1z.
+<span class="bp">by</span> <span class="nb">rewrite</span> -intrD !(ltr_int, ler_int) ltz_addr1.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">IsInt</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">ToInt</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType}.
+
+<span class="kn">Implicit Types</span> <span class="nv">x</span> <span class="nv">y</span> : R.
+
+<span class="kn">Definition</span> <span class="nf">Rtoint</span> (<span class="nv">x</span> : R) : int :=
+  <span class="kr">if</span> insub x : {? x | x \<span class="kr">is</span> a Rint} <span class="kr">is</span> Some Px <span class="kr">then</span>
+    xchoose (asboolP _ (tagged Px))
+  <span class="kr">else</span> <span class="mi">0</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RtointK</span> (<span class="nv">x</span> : R): x \<span class="kr">is</span> a Rint -&gt; (Rtoint x)%:~R = x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Ix; <span class="nb">rewrite</span> /Rtoint insubT /= [RHS](eqP (xchooseP (asboolP _ Ix))).
+<span class="bp">by</span> <span class="nb">congr</span> _%:~R; <span class="nb">apply</span>/eq_xchoose.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rtointz</span> (<span class="nv">z</span> : int): Rtoint z%:~R = z.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> -(@eqr_int R) RtointK <span class="nl">?rpred_int</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rtointn</span> (<span class="nv">n</span> : nat): Rtoint n%:R = n%:~R.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -{<span class="mi">1</span>}mulrz_nat Rtointz. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">inj_Rtoint</span> : {<span class="kr">in</span> Rint &amp;, injective Rtoint}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x y Ix Iy /= /(congr1 (@intmul R <span class="mi">1</span>)); <span class="nb">rewrite</span> !RtointK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RtointN</span> <span class="nv">x</span> : x \<span class="kr">is</span> a Rint -&gt; Rtoint (- x) = - Rtoint x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Ir; <span class="nb">apply</span>/eqP.
+<span class="bp">by</span> <span class="nb">rewrite</span> -(@eqr_int R) RtointK // <span class="nl">?rpredN</span> // mulrNz RtointK.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">ToInt</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">RealDerivedOps</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+
+<span class="kn">Implicit Types</span> <span class="nv">x</span> <span class="nv">y</span> : R.
+<span class="kn">Definition</span> <span class="nf">floor_set</span> <span class="nv">x</span> := [<span class="nb">set</span> y : R | (y \<span class="kr">is</span> a Rint) &amp;&amp; (y &lt;= x)].
+
+<span class="kn">Definition</span> <span class="nf">Rfloor</span> <span class="nv">x</span> : R := sup (floor_set x).
+
+<span class="kn">Definition</span> <span class="nf">floor</span> <span class="nv">x</span> : int := Rtoint (Rfloor x).
+
+<span class="kn">Definition</span> <span class="nf">range1</span> (<span class="nv">x</span> : R) := [<span class="nb">set</span> y | x &lt;= y &lt; x + <span class="mi">1</span>].
+
+<span class="kn">Definition</span> <span class="nf">Rceil</span> <span class="nv">x</span> := - Rfloor (- x).
+
+<span class="kn">Definition</span> <span class="nf">ceil</span> <span class="nv">x</span> := - floor (- x).
+
+<span class="kn">End</span> <span class="nf">RealDerivedOps</span>.
+
+<span class="c">(*-------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">RealLemmas</span>.
+
+<span class="kn">Variables</span> (<span class="nv">R</span> : realType).
+
+<span class="kn">Implicit Types</span> <span class="nv">E</span> : <span class="nb">set</span> R.
+<span class="kn">Implicit Types</span> <span class="nv">x</span> : R.
+
+<span class="kn">Lemma</span> <span class="nf">sup_out</span> <span class="nv">E</span> : ~ has_sup E -&gt; sup E = <span class="mi">0</span>. <span class="kn">Proof</span>. <span class="bp">exact</span>: supremum_out. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sup0</span> : sup (@set0 R) = <span class="mi">0</span>. <span class="kn">Proof</span>. <span class="bp">exact</span>: supremum0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sup1</span> <span class="nv">x</span> : sup [<span class="nb">set</span> x] = x. <span class="kn">Proof</span>. <span class="bp">exact</span>: supremum1. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sup_ub</span> {<span class="nv">E</span>} : has_ubound E -&gt; ubound E (sup E).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; ubE; <span class="nb">apply</span>/ubP=&gt; x x_in_E; <span class="nb">move</span>: (x) (x_in_E).
+<span class="bp">by</span> <span class="nb">apply</span>/ubP/sup_upper_bound=&gt; //; <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sup_ub_strict</span> <span class="nv">E</span> : has_ubound E -&gt;
+  ~ E (sup E) -&gt; E `&lt;=` [<span class="nb">set</span> r | r &lt; sup E].
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; ubE EsupE r Er; <span class="nb">rewrite</span> /mkset lt_neqAle sup_ub // andbT.
+<span class="bp">by</span> <span class="nb">apply</span>/negP =&gt; /eqP supEr; <span class="nb">move</span>: EsupE; <span class="nb">rewrite</span> -supEr.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sup_total</span> {<span class="nv">E</span>} <span class="nv">x</span> : has_sup E -&gt; down E x \/ sup E &lt;= x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; has_supE; <span class="nb">rewrite</span> orC.
+<span class="nb">case</span>: (lerP (sup E) x)=&gt; hx /=; [<span class="bp">by</span> <span class="nb">left</span>|<span class="nb">right</span>].
+<span class="nb">have</span> /sup_adherent/(_  has_supE) : <span class="mi">0</span> &lt; sup E - x <span class="bp">by</span> <span class="nb">rewrite</span> subr_gt0.
+<span class="nb">case</span>=&gt; e Ee hlte; <span class="nb">apply</span>/downP; <span class="kr">exists</span> <span class="nv">e</span> =&gt; //; <span class="nb">move</span>: hlte.
+<span class="bp">by</span> <span class="nb">rewrite</span> opprB addrCA subrr addr0 =&gt; /ltW.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sup_le_ub</span> {<span class="nv">E</span>} <span class="nv">x</span> : E !=set0 -&gt; (ubound E) x -&gt; sup E &lt;= x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; hasE leEx; <span class="nb">set</span> y := sup E; <span class="nb">pose</span> z := (x + y) / <span class="mi">2</span>%:R.
+<span class="nb">have</span> Dz: <span class="mi">2</span>%:R * z = x + y.
+  <span class="bp">by</span> <span class="nb">rewrite</span> mulrCA divff <span class="nl">?mulr1</span> // pnatr_eq0.
+<span class="nb">have</span> ubE : has_sup E <span class="bp">by</span> <span class="nb">split</span> =&gt; //; <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="nb">have</span> [/downP [t Et lezt] | leyz] := sup_total z ubE.
+  <span class="nb">rewrite</span> -(ler_add2l x) -Dz -mulr2n -[leRHS]mulr_natl.
+  <span class="nb">rewrite</span> ler_pmul2l <span class="nl">?ltr0Sn</span> //; <span class="nb">apply</span>/(le_trans lezt).
+  <span class="bp">by</span> <span class="nb">move</span>/ubP : leEx; <span class="bp">exact</span>.
+<span class="nb">rewrite</span> -(ler_add2r y) -Dz -mulr2n -[leLHS]mulr_natl.
+<span class="bp">by</span> <span class="nb">rewrite</span> ler_pmul2l <span class="nl">?ltr0Sn</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sup_setU</span> (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> R) : has_sup B -&gt;
+  (<span class="kr">forall</span> <span class="nv">a</span> <span class="nv">b</span>, A a -&gt; B b -&gt; a &lt;= b) -&gt; sup (A `|` B) = sup B.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; [B0 [l Bl]] AB; <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+- <span class="nb">apply</span> sup_le_ub =&gt; [|x [Ax|]]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>: subset_nonempty B0 =&gt; ?; <span class="nb">right</span>.
+  <span class="bp">by</span> <span class="nb">case</span>: B0 =&gt; b Bb; <span class="nb">rewrite</span> (le_trans (AB _ _ Ax Bb)) // sup_ub //; <span class="kr">exists</span> <span class="nv">l</span>.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; Bx; <span class="nb">rewrite</span> sup_ub //; <span class="kr">exists</span> <span class="nv">l</span>.
+- <span class="nb">apply</span> sup_le_ub =&gt; // b Bb; <span class="nb">apply</span> sup_ub; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">right</span>.
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">l</span> =&gt; x [Ax|Bx]; [<span class="nb">rewrite</span> (le_trans (AB _ _ Ax Bb)) // Bl|<span class="bp">exact</span>: Bl].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sup_gt</span> (<span class="nv">S</span> : <span class="nb">set</span> R) (<span class="nv">x</span> : R) : S !=set0 -&gt;
+  (x &lt; sup S -&gt; <span class="kr">exists2</span> y, S y &amp; x &lt; y)%R.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; S0; <span class="nb">rewrite</span> not_exists2P =&gt; + g; <span class="nb">apply</span>/negP; <span class="nb">rewrite</span> -leNgt.
+<span class="bp">by</span> <span class="nb">apply</span> sup_le_ub =&gt; // y Sy; <span class="nb">move</span>: (g y) =&gt; -[// | /negP]; <span class="nb">rewrite</span> leNgt.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">RealLemmas</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">InfTheory</span>.
+
+<span class="kn">Variables</span> (<span class="nv">R</span> : realType).
+
+<span class="kn">Implicit Types</span> <span class="nv">E</span> : <span class="nb">set</span> R.
+<span class="kn">Implicit Types</span> <span class="nv">x</span> : R.
+
+<span class="kn">Lemma</span> <span class="nf">inf_lower_bound</span> <span class="nv">E</span> : has_inf E -&gt; lbound E (inf E).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /has_inf_supN /sup_upper_bound /ubP inflb; <span class="nb">apply</span>/lbP =&gt; x.
+<span class="bp">by</span> <span class="nb">rewrite</span> memNE =&gt; /inflb; <span class="nb">rewrite</span> ler_oppl.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">inf_adherent</span> <span class="nv">E</span> (<span class="nv">eps</span> : R) : <span class="mi">0</span> &lt; eps -&gt;
+  has_inf E -&gt; <span class="kr">exists2</span> e, E e &amp; e &lt; inf E + eps.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; + /has_inf_supN supNE =&gt; /sup_adherent /(_ supNE)[e NEx egtsup].
+<span class="kr">exists</span> (- e); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">case</span>: NEx =&gt; x Ex &lt;-{}; <span class="nb">rewrite</span> opprK.
+<span class="bp">by</span> <span class="nb">rewrite</span> ltr_oppl -mulN1r mulrDr !mulN1r opprK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">inf_out</span> <span class="nv">E</span> : ~ has_inf E -&gt; inf E = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; ninfE; <span class="nb">rewrite</span> -oppr0 -(@sup_out _ (-%R @` E)) =&gt; // supNE; <span class="nb">apply</span>: ninfE.
+<span class="bp">exact</span>/has_inf_supN.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">inf0</span> : inf (@set0 R) = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /inf image_set0 sup0 oppr0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">inf1</span> <span class="nv">x</span> : inf [<span class="nb">set</span> x] = x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /inf image_set1 sup1 opprK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">inf_lb</span> <span class="nv">E</span> : has_lbound E -&gt; lbound E (inf E).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>/has_lb_ubN/sup_ub/ub_lbN; <span class="nb">rewrite</span> setNK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">inf_lb_strict</span> <span class="nv">E</span> : has_lbound E -&gt;
+  ~ E (inf E) -&gt; E `&lt;=` [<span class="nb">set</span> r | inf E &lt; r].
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; lE EinfE r Er; <span class="nb">rewrite</span> /mkset lt_neqAle inf_lb // andbT.
+<span class="bp">by</span> <span class="nb">apply</span>/negP =&gt; /eqP infEr; <span class="nb">move</span>: EinfE; <span class="nb">rewrite</span> infEr.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lb_le_inf</span> <span class="nv">E</span> <span class="nv">x</span> : nonempty E -&gt; (lbound E) x -&gt; x &lt;= inf E.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /(nonemptyN E) En0 /lb_ubN /(sup_le_ub En0); <span class="nb">rewrite</span> ler_oppr.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">has_infPn</span> <span class="nv">E</span> : nonempty E -&gt;
+  ~ has_inf E &lt;-&gt; (<span class="kr">forall</span> <span class="nv">x</span>, <span class="kr">exists2</span> y, E y &amp; y &lt; x).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; nzE; <span class="nb">split</span>=&gt; [/asboolPn|/has_lbPn h [_] //].
+<span class="bp">by</span> <span class="nb">rewrite</span> asbool_and (asboolT nzE) /= =&gt; /asboolP/has_lbPn.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">inf_setU</span> (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> R) : has_inf A -&gt;
+  (<span class="kr">forall</span> <span class="nv">a</span> <span class="nv">b</span>, A a -&gt; B b -&gt; a &lt;= b) -&gt; inf (A `|` B) = inf A.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; hiA AB; <span class="nb">congr</span> (- _).
+<span class="nb">rewrite</span> image_setU setUC sup_setU //; <span class="kp">first</span> <span class="bp">exact</span>/has_inf_supN.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; _ _ [] b Bb &lt;-{} [] a Aa &lt;-{}; <span class="nb">rewrite</span> ler_oppl opprK; <span class="nb">apply</span> AB.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">inf_lt</span> (<span class="nv">S</span> : <span class="nb">set</span> R) (<span class="nv">x</span> : R) : S !=set0 -&gt;
+  (inf S &lt; x -&gt; <span class="kr">exists2</span> y, S y &amp; y &lt; x)%R.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /nonemptyN S0; <span class="nb">rewrite</span> /inf ltr_oppl =&gt; /sup_gt =&gt; /(_ S0)[r [r&#39; Sr&#39;]].
+<span class="bp">by</span> <span class="nb">move</span>=&gt; &lt;-; <span class="nb">rewrite</span> ltr_oppr opprK =&gt; r&#39;x; <span class="kr">exists</span> <span class="nv">r&#39;</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">InfTheory</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">FloorTheory</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+
+<span class="kn">Implicit Types</span> <span class="nv">x</span> <span class="nv">y</span> : R.
+
+<span class="kn">Lemma</span> <span class="nf">has_sup_floor_set</span> <span class="nv">x</span> : has_sup (floor_set x).
+<span class="kn">Proof</span>.
+<span class="nb">split</span>; [<span class="kr">exists</span> (- (Num.bound (-x))%:~R) | <span class="kr">exists</span> (<span class="nv">Num</span>.bound x)%:~R].
+  <span class="nb">rewrite</span> /floor_set/mkset rpredN rpred_int /= ler_oppl.
+  <span class="nb">case</span>: (ger0P (-x)) =&gt; [/archi_boundP/ltW//|].
+  <span class="bp">by</span> <span class="nb">move</span>/ltW/le_trans; <span class="nb">apply</span>; <span class="nb">rewrite</span> ler0z.
+<span class="nb">apply</span>/ubP=&gt; y /andP[_] /le_trans; <span class="nb">apply</span>.
+<span class="nb">case</span>: (ger0P x)=&gt; [/archi_boundP/ltW|] //.
+<span class="bp">by</span> <span class="nb">move</span>/ltW/le_trans; <span class="nb">apply</span>; <span class="nb">rewrite</span> ler0z.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sup_in_floor_set</span> <span class="nv">x</span> : (floor_set x) (sup (floor_set x)).
+<span class="kn">Proof</span>.
+<span class="nb">have</span> /(sup_adherent ltr01) [y Fy] := has_sup_floor_set x.
+<span class="nb">have</span> /sup_upper_bound /ubP /(_ _ Fy) := has_sup_floor_set x.
+<span class="nb">rewrite</span> le_eqVlt=&gt; /orP[/eqP&lt;-//| lt_yFx].
+<span class="nb">rewrite</span> ltr_subl_addr -ltr_subl_addl =&gt; lt1_FxBy.
+<span class="nb">pose</span> e := sup (floor_set x) - y; <span class="nb">have</span> := has_sup_floor_set x.
+<span class="nb">move</span>/sup_adherent=&gt; -/(_ e) []; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> subr_gt0.
+<span class="nb">move</span>=&gt; z Fz; <span class="nb">rewrite</span> /e opprB addrCA subrr addr0 =&gt; lt_yz.
+<span class="nb">have</span> /sup_upper_bound /ubP /(_ _ Fz) := has_sup_floor_set x.
+<span class="nb">rewrite</span> -(ler_add2r (-y)) =&gt; /le_lt_trans /(_ lt1_FxBy).
+<span class="nb">case</span>/andP: Fy Fz lt_yz=&gt; /RintP[yi -&gt; _].
+<span class="nb">case</span>/andP=&gt; /RintP[zi -&gt; _]; <span class="nb">rewrite</span> -rmorphB /= ltrz1 ltr_int.
+<span class="nb">rewrite</span> lt_neqAle =&gt; /andP[ne_yz le_yz].
+<span class="nb">rewrite</span> -[_-_]gez0_abs <span class="nl">?subr_ge0</span> // ltz_nat ltnS leqn0.
+<span class="bp">by</span> <span class="nb">rewrite</span> absz_eq0 subr_eq0 eq_sym (negbTE ne_yz).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">isint_Rfloor</span> <span class="nv">x</span> : Rfloor x \<span class="kr">is</span> a Rint.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>/andP: (sup_in_floor_set x). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RfloorE</span> <span class="nv">x</span> : Rfloor x = (floor x)%:~R.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /floor RtointK <span class="nl">?isint_Rfloor</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">mem_rg1_Rfloor</span> <span class="nv">x</span> : (range1 (Rfloor x)) x.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /range1/mkset.
+<span class="nb">have</span> /andP[_ -&gt;] /= := sup_in_floor_set x.
+<span class="nb">have</span> [|] := pselect ((floor_set x) (Rfloor x + <span class="mi">1</span>)); <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> /floor_set =&gt; /negP.
+  <span class="bp">by</span> <span class="nb">rewrite</span> negb_and -ltNge rpredD // ?(Rint1, isint_Rfloor).
+<span class="nb">move</span>/ubP : (sup_upper_bound (has_sup_floor_set x)) =&gt; h/h.
+<span class="bp">by</span> <span class="nb">rewrite</span> ger_addl ler10.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rfloor_le</span> <span class="nv">x</span> : Rfloor x &lt;= x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>/andP: (mem_rg1_Rfloor x). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">floor_le</span> <span class="nv">x</span> : (floor x)%:~R &lt;= x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -RfloorE; <span class="bp">exact</span>: Rfloor_le. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lt_succ_Rfloor</span> <span class="nv">x</span> : x &lt; Rfloor x + <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>/andP: (mem_rg1_Rfloor x). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">range1z_inj</span> <span class="nv">x</span> (<span class="nv">m1</span> <span class="nv">m2</span> : int) :
+  (range1 m1%:~R) x -&gt; (range1 m2%:~R) x -&gt; m1 = m2.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /andP[m1x x_m1] /andP[m2x x_m2].
+<span class="nb">wlog</span> <span class="nb">suffices</span>: m1 m2 m1x {x_m1 m2x} x_m2 / (m1 &lt;= m2).
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; ih; <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le !ih.
+<span class="nb">rewrite</span> -(ler_add2r <span class="mi">1</span>) lez_addr1 -(@ltr_int R) intrD.
+<span class="bp">exact</span>/(le_lt_trans m1x).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">range1rr</span> <span class="nv">x</span> : (range1 x) x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /range1/mkset lexx /= ltr_addl ltr01. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">range1zP</span> (<span class="nv">m</span> : int) <span class="nv">x</span> : Rfloor x = m%:~R &lt;-&gt; (range1 m%:~R) x.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; [&lt;-|h]; <span class="kp">first</span> <span class="bp">exact</span>/mem_rg1_Rfloor.
+<span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> RfloorE eqr_int; <span class="nb">apply</span>/eqP/(@range1z_inj x) =&gt; //.
+<span class="bp">by</span> <span class="nb">rewrite</span> /range1/mkset -RfloorE mem_rg1_Rfloor.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rfloor_natz</span> (<span class="nv">z</span> : int) : Rfloor z%:~R = z%:~R :&gt; R.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/range1zP/range1rr. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rfloor0</span> : Rfloor <span class="mi">0</span> = <span class="mi">0</span> :&gt; R.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -{<span class="mi">1</span>}(mulr0z <span class="mi">1</span>) Rfloor_natz. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rfloor1</span> : Rfloor <span class="mi">1</span> = <span class="mi">1</span> :&gt; R.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -{<span class="mi">1</span>}(mulr1z <span class="mi">1</span>) Rfloor_natz. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_Rfloor</span> : {homo (@Rfloor R) : x y / x &lt;= y}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x y le_xy; <span class="nb">case</span>: lerP=&gt; //=; <span class="nb">rewrite</span> -Rint_ler_addr1 <span class="nl">?isint_Rfloor</span> //.
+<span class="nb">move</span>/(lt_le_trans (lt_succ_Rfloor y))/lt_le_trans/(_ (Rfloor_le x)).
+<span class="bp">by</span> <span class="nb">rewrite</span> ltNge le_xy.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rfloor_ge_int</span> <span class="nv">x</span> (<span class="nv">n</span> : int) : (n%:~R &lt;= x)= (n%:~R &lt;= Rfloor x).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/idP/idP; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">move</span>/le_trans =&gt; /(_ _ (Rfloor_le x)).
+<span class="bp">by</span> <span class="nb">move</span>/le_Rfloor; <span class="nb">apply</span> le_trans; <span class="nb">rewrite</span> Rfloor_natz.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rfloor_lt_int</span> <span class="nv">x</span> (<span class="nv">z</span> : int) : (x &lt; z%:~R) = (Rfloor x &lt; z%:~R).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> ltNge Rfloor_ge_int -ltNge. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rfloor_le0</span> <span class="nv">x</span> : x &lt;= <span class="mi">0</span> -&gt; Rfloor x &lt;= <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">rewrite</span> -Rfloor0 le_Rfloor. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rfloor_lt0</span> <span class="nv">x</span> : x &lt; <span class="mi">0</span> -&gt; Rfloor x &lt; <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x0; <span class="nb">rewrite</span> (le_lt_trans _ x0) // Rfloor_le. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">floor_natz</span> <span class="nv">n</span> : floor (n%:R : R) = n%:~R :&gt; int.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /floor (Rfloor_natz n) Rtointz intz. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">floor0</span> : floor (<span class="mi">0</span> : R) = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /floor Rfloor0 (_ : <span class="mi">0</span> = <span class="mi">0</span>%:R) // Rtointn. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">floor1</span> : floor (<span class="mi">1</span> : R) = <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /floor Rfloor1 (_ : <span class="mi">1</span> = <span class="mi">1</span>%:R) // Rtointn. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">floor_ge0</span> <span class="nv">x</span> : (<span class="mi">0</span> &lt;= floor x) = (<span class="mi">0</span> &lt;= x).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -(@ler_int R) -RfloorE -Rfloor_ge_int. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">floor_le0</span> <span class="nv">x</span> : x &lt;= <span class="mi">0</span> -&gt; floor x &lt;= <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">rewrite</span> -(@ler_int R) -RfloorE Rfloor_le0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">floor_lt0</span> <span class="nv">x</span> : x &lt; <span class="mi">0</span> -&gt; floor x &lt; <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">rewrite</span> -(@ltrz0 R) RtointK <span class="nl">?isint_Rfloor</span>// Rfloor_lt0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_floor</span> : {homo @floor R : x y / x &lt;= y}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt;*; <span class="nb">rewrite</span> -(@ler_int R) !RtointK <span class="nl">?isint_Rfloor</span> <span class="nl">?le_Rfloor</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">floor_neq0</span> <span class="nv">x</span> : (floor x != <span class="mi">0</span>) = (x &lt; <span class="mi">0</span>) || (x &gt;= <span class="mi">1</span>).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/idP/orP =&gt; [|[x0|/le_floor r1]]; <span class="kp">first</span> <span class="nb">rewrite</span> neq_lt =&gt; /orP[x0|x0].
+- <span class="bp">by</span> <span class="nb">left</span>; <span class="nb">apply</span>: contra_lt x0; <span class="nb">rewrite</span> floor_ge0.
+- <span class="bp">by</span> <span class="nb">right</span>; <span class="nb">rewrite</span> (le_trans _ (floor_le _))// ler1z -gtz0_ge1.
+- <span class="bp">by</span> <span class="nb">rewrite</span> lt_eqF//; <span class="nb">apply</span>: contra_lt x0; <span class="nb">rewrite</span> floor_ge0.
+- <span class="bp">by</span> <span class="nb">rewrite</span> gt_eqF// (lt_le_trans _ r1)// floor1.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lt_succ_floor</span> <span class="nv">x</span> : x &lt; (floor x)%:~R + <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -RfloorE lt_succ_Rfloor. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">floor_lt_int</span> <span class="nv">x</span> (<span class="nv">z</span> : int) : (x &lt; z%:~R) = (floor x &lt; z).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> Rfloor_lt_int RfloorE ltr_int. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">floor_ge_int</span> <span class="nv">x</span> (<span class="nv">z</span> : int) : (z%:~R &lt;= x) = (z &lt;= floor x).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> Rfloor_ge_int RfloorE ler_int. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ltr_add_invr</span> (<span class="nv">y</span> <span class="nv">x</span> : R) : y &lt; x -&gt; <span class="kr">exists</span> <span class="nv">k</span>, y + k.+<span class="mi">1</span>%:R^-<span class="mi">1</span> &lt; x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; yx; <span class="kr">exists</span> `|floor (x - y)^-<span class="mi">1</span>|%N.
+<span class="nb">rewrite</span> -ltr_subr_addl -{<span class="mi">2</span>}(invrK (x - y)%R) ltf_pinv <span class="nl">?qualifE</span> <span class="nl">?ltr0n</span>//.
+  <span class="bp">by</span> <span class="nb">rewrite</span> invr_gt0 subr_gt0.
+<span class="nb">rewrite</span> -natr1 natr_absz ger0_norm.
+  <span class="bp">by</span> <span class="nb">rewrite</span> floor_ge0 invr_ge0 subr_ge0 ltW.
+<span class="bp">by</span> <span class="nb">rewrite</span> -RfloorE lt_succ_Rfloor.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">FloorTheory</span>.
+
+<span class="kn">Section</span> <span class="nf">CeilTheory</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+
+<span class="kn">Implicit Types</span> <span class="nv">x</span> <span class="nv">y</span> : R.
+
+<span class="kn">Lemma</span> <span class="nf">isint_Rceil</span> <span class="nv">x</span> : Rceil x \<span class="kr">is</span> a Rint.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /Rceil rpredN isint_Rfloor. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rceil0</span> : Rceil <span class="mi">0</span> = <span class="mi">0</span> :&gt; R.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /Rceil oppr0 Rfloor0 oppr0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rceil_ge</span> <span class="nv">x</span> : x &lt;= Rceil x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /Rceil ler_oppr Rfloor_le. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_Rceil</span> : {homo (@Rceil R) : x y / x &lt;= y}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x y ?; <span class="nb">rewrite</span> ler_oppl opprK le_Rfloor // ler_oppl opprK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rceil_ge0</span> <span class="nv">x</span> : <span class="mi">0</span> &lt;= x -&gt; <span class="mi">0</span> &lt;= Rceil x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">rewrite</span> -Rceil0 le_Rceil. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RceilE</span> <span class="nv">x</span> : Rceil x = (ceil x)%:~R.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /Rceil /ceil RfloorE mulrNz. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ceil_ge</span> <span class="nv">x</span> : x &lt;= (ceil x)%:~R.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -RceilE; <span class="bp">exact</span>: Rceil_ge. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ceil_ge0</span> <span class="nv">x</span> : <span class="mi">0</span> &lt;= x -&gt; <span class="mi">0</span> &lt;= ceil x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>/(ge_trans (ceil_ge x)); <span class="nb">rewrite</span> -(ler_int R). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ceil_gt0</span> <span class="nv">x</span> : <span class="mi">0</span> &lt; x -&gt; <span class="mi">0</span> &lt; ceil x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">rewrite</span> /ceil oppr_gt0 floor_lt0 // ltr_oppl oppr0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ceil_le0</span> <span class="nv">x</span> : x &lt;= <span class="mi">0</span> -&gt; ceil x &lt;= <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x0; <span class="nb">rewrite</span> -ler_oppl oppr0 floor_ge0 -ler_oppr oppr0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_ceil</span> : {homo @ceil R : x y / x &lt;= y}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x y xy; <span class="nb">rewrite</span> ler_oppl opprK le_floor // ler_oppl opprK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ceil_ge_int</span> <span class="nv">x</span> (<span class="nv">z</span> : int) : (x &lt;= z%:~R) = (ceil x &lt;= z).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /ceil ler_oppl -floor_ge_int// -ler_oppr mulrNz opprK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ceil_lt_int</span> <span class="nv">x</span> (<span class="nv">z</span> : int) : (z%:~R &lt; x) = (z &lt; ceil x).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> ltNge ceil_ge_int -ltNge. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">CeilTheory</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">Sup</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType}.
+
+<span class="kn">Lemma</span> <span class="nf">le_down</span> (<span class="nv">S</span> : <span class="nb">set</span> R) : S `&lt;=` down S.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x xS; <span class="nb">apply</span>/downP; <span class="kr">exists</span> <span class="nv">x</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">downK</span> (<span class="nv">S</span> : <span class="nb">set</span> R) : down (down S) = down S.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> predeqE =&gt; x; <span class="nb">split</span>.
+- <span class="nb">case</span>/downP =&gt; y /downP[z Sz yz xy].
+  <span class="bp">by</span> <span class="nb">apply</span>/downP; <span class="kr">exists</span> <span class="nv">z</span> =&gt; //; <span class="nb">rewrite</span> (le_trans xy).
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; Sx; <span class="nb">apply</span>/downP; <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">has_sup_down</span> (<span class="nv">S</span> : <span class="nb">set</span> R) : has_sup (down S) &lt;-&gt; has_sup S.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; -[nzS nzubS].
+  <span class="nb">case</span>: nzS=&gt; x /downP[y yS le_xy]; <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">y</span>.
+  <span class="nb">case</span>: nzubS=&gt; u /ubP ubS; <span class="kr">exists</span> <span class="nv">u</span>; <span class="nb">apply</span>/ubP=&gt; z zS.
+  <span class="bp">by</span> <span class="nb">apply</span>/ubS; <span class="nb">apply</span>/downP; <span class="kr">exists</span> <span class="nv">z</span>.
+<span class="nb">case</span>: nzS=&gt; x xS; <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">x</span>; <span class="nb">apply</span>/le_down.
+<span class="nb">case</span>: nzubS=&gt; u /ubP ubS; <span class="kr">exists</span> <span class="nv">u</span>; <span class="nb">apply</span>/ubP=&gt; y /downP [].
+<span class="bp">by</span> <span class="nb">move</span>=&gt; z zS /le_trans; <span class="nb">apply</span>; <span class="nb">apply</span>/ubS.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_sup</span> (<span class="nv">S1</span> <span class="nv">S2</span> : <span class="nb">set</span> R) :
+  S1 `&lt;=` down S2 -&gt; nonempty S1 -&gt; has_sup S2
+    -&gt; sup S1 &lt;= sup S2.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; le_S12 nz_S1 hs_S2; <span class="nb">have</span> hs_S1: has_sup S1.
+  <span class="nb">split</span>=&gt; //; <span class="nb">case</span>: hs_S2=&gt; _ [x ubx].
+  <span class="kr">exists</span> <span class="nv">x</span>; <span class="nb">apply</span>/ubP=&gt; y /le_S12 /downP[z zS2 le_yz].
+  <span class="bp">by</span> <span class="nb">apply</span>/(le_trans le_yz); <span class="nb">move</span>/ubP: ubx; <span class="nb">apply</span>.
+<span class="nb">rewrite</span> leNgt -subr_gt0; <span class="nb">apply</span>/negP =&gt; lt_sup.
+<span class="nb">case</span>: (sup_adherent lt_sup hs_S1 )=&gt; x /le_S12 xdS2.
+<span class="nb">rewrite</span> subKr =&gt; lt_S2x; <span class="nb">case</span>/downP: xdS2=&gt; z zS2.
+<span class="nb">move</span>/(lt_le_trans lt_S2x); <span class="nb">rewrite</span> ltNge.
+<span class="bp">by</span> <span class="nb">move</span>/ubP: (sup_upper_bound hs_S2) =&gt; -&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sup_down</span> (<span class="nv">S</span> : <span class="nb">set</span> R) : sup (down S) = sup S.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> [supS|supNS] := pselect (has_sup S); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> !sup_out // =&gt; /has_sup_down.
+<span class="nb">have</span> supDS : has_sup (down S) <span class="bp">by</span> <span class="nb">apply</span>/has_sup_down.
+<span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le !le_sup //.
+  <span class="bp">by</span> <span class="nb">case</span>: supS =&gt; -[x xS] _; <span class="kr">exists</span> <span class="nv">x</span>; <span class="nb">apply</span>/le_down.
+  <span class="nb">rewrite</span> downK; <span class="bp">exact</span>: le_down.
+  <span class="bp">by</span> <span class="nb">case</span>: supS.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lt_sup_imfset</span> {<span class="nv">T</span> : <span class="kt">Type</span>} (<span class="nv">F</span> : T -&gt; R) <span class="nv">l</span> :
+  has_sup [<span class="nb">set</span> y | <span class="kr">exists</span> <span class="nv">x</span>, y = F x] -&gt;
+  l &lt; sup [<span class="nb">set</span> y | <span class="kr">exists</span> <span class="nv">x</span>, y = F x] -&gt;
+  <span class="kr">exists2</span> x, l &lt; F x &amp; F x &lt;= sup [<span class="nb">set</span> y | <span class="kr">exists</span> <span class="nv">x</span>, y = F x].
+<span class="kn">Proof</span>.
+<span class="nb">set</span> P := [<span class="nb">set</span> y | _] =&gt; hs; <span class="nb">rewrite</span> -subr_gt0.
+<span class="nb">move</span>=&gt; /sup_adherent/(_ hs)[_ [x -&gt;]]; <span class="nb">rewrite</span> subKr=&gt; lt_lFx.
+<span class="bp">by</span> <span class="kr">exists</span> <span class="nv">x</span> =&gt; //; <span class="nb">move</span>/ubP : (sup_upper_bound hs) =&gt; -&gt; //; <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lt_inf_imfset</span> {<span class="nv">T</span> : <span class="kt">Type</span>} (<span class="nv">F</span> : T -&gt; R) <span class="nv">l</span> :
+  has_inf [<span class="nb">set</span> y | <span class="kr">exists</span> <span class="nv">x</span>, y = F x] -&gt;
+  inf [<span class="nb">set</span> y | <span class="kr">exists</span> <span class="nv">x</span>, y = F x] &lt; l -&gt;
+  <span class="kr">exists2</span> x, F x &lt; l &amp; inf [<span class="nb">set</span> y | <span class="kr">exists</span> <span class="nv">x</span>, y = F x] &lt;= F x.
+<span class="kn">Proof</span>.
+<span class="nb">set</span> P := [<span class="nb">set</span> y | _]; <span class="nb">move</span>=&gt; hs; <span class="nb">rewrite</span> -subr_gt0.
+<span class="nb">move</span>=&gt; /inf_adherent/(_ hs)[_ [x -&gt;]]; <span class="nb">rewrite</span> addrA [_ + l]addrC addrK.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; ltFxl; <span class="kr">exists</span> <span class="nv">x</span>=&gt; //; <span class="nb">move</span>/lbP : (inf_lower_bound hs) =&gt; -&gt; //; <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Sup</span>.
+
+<span class="kn">Lemma</span> <span class="nf">int_lbound_has_minimum</span> (<span class="nv">B</span> : <span class="nb">set</span> int) <span class="nv">i</span> : B !=set0 -&gt; lbound B i -&gt;
+  <span class="kr">exists</span> <span class="nv">j</span>, B j /\ <span class="kr">forall</span> <span class="nv">k</span>, B k -&gt; j &lt;= k.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; [i0 Bi0] lbBi; <span class="nb">have</span> [n i0in] : <span class="kr">exists</span> <span class="nv">n</span>, i0 - i = n%:Z.
+  <span class="bp">by</span> <span class="kr">exists</span> `|i0 - i|%N; <span class="nb">rewrite</span> gez0_abs // subr_ge0; <span class="bp">exact</span>: lbBi.
+<span class="nb">elim</span>: n i lbBi i0in =&gt; [i lbBi /eqP|n ih i lbBi i0in1].
+  <span class="bp">by</span> <span class="nb">rewrite</span> subr_eq0 =&gt; /eqP i0i; <span class="kr">exists</span> <span class="nv">i0</span>; <span class="nb">split</span> =&gt;// k Bk; <span class="nb">rewrite</span> i0i lbBi.
+<span class="nb">have</span> i0i1n : i0 - (i + <span class="mi">1</span>) = n <span class="bp">by</span> <span class="nb">rewrite</span> opprD addrA i0in1 -addn1 PoszD addrK.
+<span class="nb">have</span> [?|/not_forallP] := pselect (lbound B (i + <span class="mi">1</span>)); <span class="kp">first</span> <span class="bp">exact</span>: (ih (i + <span class="mi">1</span>)).
+<span class="nb">move</span>=&gt; /contrapT[x /not_implyP[Bx i1x]]; <span class="kr">exists</span> <span class="nv">x</span>; <span class="nb">split</span> =&gt; // k Bk.
+<span class="nb">rewrite</span> (le_trans _ (lbBi _ Bk)) //.
+<span class="bp">by</span> <span class="nb">move</span>/negP : i1x; <span class="nb">rewrite</span> -ltNge ltz_addr1.
+<span class="kn">Qed</span>.
+
+<span class="kn">Section</span> <span class="nf">rat_in_itvoo</span>.
+
+<span class="kn">Let</span> <span class="nf">bound_div</span> (<span class="nv">R</span> : archiFieldType) (<span class="nv">x</span> <span class="nv">y</span> : R) : nat :=
+  <span class="kr">if</span> y &lt; <span class="mi">0</span> <span class="kr">then</span> <span class="mi">0</span>%N <span class="kr">else</span> Num.bound (y / x).
+
+<span class="kn">Let</span> <span class="nf">archi_bound_divP</span> (<span class="nv">R</span> : archiFieldType) (<span class="nv">x</span> <span class="nv">y</span> : R) :
+  <span class="mi">0</span> &lt; x -&gt; y &lt; x *+ bound_div x y.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x0; <span class="nb">have</span> [y0|y0] := leP <span class="mi">0</span> y; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> /bound_div y0 mulr0n.
+<span class="nb">rewrite</span> /bound_div (ltNge y <span class="mi">0</span>) y0/= -mulr_natl -ltr_pdivr_mulr//.
+<span class="bp">by</span> <span class="nb">rewrite</span> archi_boundP// (divr_ge0 _(ltW _)).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">rat_in_itvoo</span> (<span class="nv">R</span> : realType) (<span class="nv">x</span> <span class="nv">y</span> : R) :
+  x &lt; y -&gt; <span class="kr">exists</span> <span class="nv">q</span>, ratr q \<span class="kr">in</span> `]x, y[.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; xy; <span class="nb">move</span>: (xy); <span class="nb">rewrite</span> -subr_gt0.
+<span class="nb">move</span>=&gt; /(archi_bound_divP <span class="mi">1</span>); <span class="nb">set</span> n := bound_div _ _ =&gt; nyx.
+<span class="nb">have</span> [m1 m1nx] : <span class="kr">exists</span> <span class="nv">m1</span>, m1.+<span class="mi">1</span>%:~R &gt; x *+ n.
+  <span class="nb">have</span> := archi_bound_divP (x *+ n) ltr01; <span class="nb">set</span> p := bound_div _ _ =&gt; nxp.
+  <span class="nb">have</span> [x0|x0] := ltP <span class="mi">0</span> x.
+    <span class="kr">exists</span> <span class="nv">p</span>.-<span class="mi">1</span>; <span class="nb">rewrite</span> prednK // lt0n; <span class="nb">apply</span>: contraPN nxp =&gt; /eqP -&gt;.
+    <span class="bp">by</span> <span class="nb">apply</span>/negP; <span class="nb">rewrite</span> -leNgt mulrn_wge0 // ltW.
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="mi">0</span>%N; <span class="nb">rewrite</span> (le_lt_trans _ ltr01) // mulrn_wle0.
+<span class="nb">have</span> [m2 m2nx] : <span class="kr">exists</span> <span class="nv">m2</span>, m2.+<span class="mi">1</span>%:~R &gt; - x *+ n.
+  <span class="nb">have</span> := archi_bound_divP (- x *+ n) ltr01; <span class="nb">set</span> p := bound_div _ _ =&gt; nxp.
+  <span class="nb">have</span> [x0|x0] := ltP <span class="mi">0</span> x.
+    <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">O</span>; <span class="nb">rewrite</span> (le_lt_trans _ ltr01) // nmulrn_rle0// oppr_lt0.
+  <span class="kr">exists</span> <span class="nv">p</span>.-<span class="mi">1</span>; <span class="nb">rewrite</span> prednK // -(ltr_nat R) (le_lt_trans _ nxp) //.
+  <span class="bp">by</span> <span class="nb">rewrite</span> mulrn_wge0 // oppr_ge0.
+<span class="nb">have</span> : <span class="kr">exists</span> <span class="nv">m</span>, -(m2.+<span class="mi">1</span> : int) &lt;= m &lt;= m1.+<span class="mi">1</span> /\ m%:~R - <span class="mi">1</span> &lt;= x *+ n &lt; m%:~R.
+  <span class="nb">have</span> m2m1 : - (m2.+<span class="mi">1</span> : int) &lt; m1.+<span class="mi">1</span>.
+    <span class="bp">by</span> <span class="nb">rewrite</span> -(ltr_int R) (lt_trans _ m1nx)// rmorphN /= ltr_oppl // -mulNrn.
+  <span class="nb">pose</span> B := [<span class="nb">set</span> m : int | m%:~R &gt; x *+ n].
+  <span class="nb">have</span> m1B : B m1.+<span class="mi">1</span> <span class="bp">by</span> [].
+  <span class="nb">have</span> m2B : lbound B (- m2.+<span class="mi">1</span>%:~R).
+    <span class="nb">move</span>=&gt; i; <span class="nb">rewrite</span> /B /= -(opprK (x *+ n)) -ltr_oppl -mulNrn =&gt; nxi.
+    <span class="nb">rewrite</span> -(mulN1r m2.+<span class="mi">1</span>%:~R) mulN1r -ler_oppl.
+    <span class="bp">by</span> <span class="nb">have</span> := lt_trans nxi m2nx; <span class="nb">rewrite</span> intz -mulrNz ltr_int =&gt; /ltW.
+  <span class="nb">have</span> [m [Bm infB]] := int_lbound_has_minimum (ex_intro _ _ m1B) m2B.
+  <span class="nb">have</span> mN1B : ~ B (m - <span class="mi">1</span>).
+    <span class="bp">by</span> <span class="nb">move</span>=&gt; /infB; <span class="nb">apply</span>/negP; <span class="nb">rewrite</span> -ltNge ltr_subl_addr ltz_addr1.
+  <span class="kr">exists</span> <span class="nv">m</span>; <span class="nb">split</span>; [<span class="nb">apply</span>/andP; <span class="nb">split</span>|<span class="nb">apply</span>/andP; <span class="nb">split</span>] =&gt; //.
+  - <span class="bp">by</span> <span class="nb">move</span>: m2B; <span class="nb">rewrite</span> /lbound /= =&gt; /(_ _ Bm); <span class="nb">rewrite</span> intz.
+  - <span class="bp">exact</span>: infB.
+  - <span class="bp">by</span> <span class="nb">rewrite</span> leNgt; <span class="nb">apply</span>/negP; <span class="nb">rewrite</span> /B /= intrD <span class="kr">in</span> mN1B.
+<span class="nb">move</span>=&gt; [m [/andP[m2m mm1] /andP[mnx nxm]]].
+<span class="nb">have</span> [/andP[a b] c] : x *+ n &lt; m%:~R &lt;= <span class="mi">1</span> + x *+ n /\ <span class="mi">1</span> + x *+ n &lt; y *+ n.
+  <span class="nb">split</span>; [<span class="nb">apply</span>/andP; <span class="nb">split</span>|] =&gt; //; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> -ler_subl_addl.
+  <span class="bp">by</span> <span class="nb">move</span>: nyx; <span class="nb">rewrite</span> mulrnDl -ltr_subr_addr mulNrn.
+<span class="nb">have</span> n_gt0 : n != <span class="mi">0</span>%N <span class="bp">by</span> <span class="nb">apply</span>: contraTN nyx =&gt; /eqP -&gt;; <span class="nb">rewrite</span> mulr0n ltr10.
+<span class="kr">exists</span> (<span class="nv">m</span>%:Q / n%:Q); <span class="nb">rewrite</span> in_itv /=; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+  <span class="nb">rewrite</span> rmorphM (@rmorphV _ _ _ n%:~R); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> unitfE // intr_eq0.
+  <span class="nb">rewrite</span> ltr_pdivl_mulr /=; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> ltr0q ltr0z ltz_nat lt0n.
+  <span class="bp">by</span> <span class="nb">rewrite</span> mulrC // !ratr_int mulr_natl.
+<span class="nb">rewrite</span> rmorphM /= (@rmorphV _ _ _ n%:~R); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> unitfE // intr_eq0.
+<span class="nb">rewrite</span> ltr_pdivr_mulr /=; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> ltr0q ltr0z ltz_nat lt0n.
+<span class="bp">by</span> <span class="nb">rewrite</span> <span class="mi">2</span>!ratr_int mulr_natr (le_lt_trans _ c).
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">rat_in_itvoo</span>.</span></pre></article></body></html>

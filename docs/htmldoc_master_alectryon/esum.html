@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>esum.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)</span>
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect ssralg ssrnum finmap.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> boolp classical_sets functions.
+<span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> cardinality fsbigop mathcomp_extra.
+<span class="kn">Require Import</span> reals ereal signed topology sequences normedtype numfun.
+
+<span class="sd">(******************************************************************************)</span>
+<span class="c">(*                      Summation over classical sets                         *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* This file provides a definition of sum over classical sets and a few       *)</span>
+<span class="c">(* lemmas in particular for the case of sums of non-negative terms.           *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(*            fsets S == the set of finite sets (fset) included in S          *)</span>
+<span class="c">(* \esum_(i in I) f i == summation of non-negative extended real numbers over *)</span>
+<span class="c">(*                       classical sets; I is a classical set and f is a      *)</span>
+<span class="c">(*                       function whose codomain is included in the extended  *)</span>
+<span class="c">(*                       reals; it is 0 if I = set0 and sup(\sum_A a) where A *)</span>
+<span class="c">(*                       is a finite set included in I o.w.                   *)</span>
+<span class="c">(*       summable D f := \esum_(x in D) `| f x | &lt; +oo                        *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="sd">(******************************************************************************)</span>
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;\esum_ ( i &#39;in&#39; P ) F&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">41</span>, F <span class="kn">at level</span> <span class="mi">41</span>, <span class="kn">format</span> <span class="s2">&quot;\esum_ ( i  &#39;in&#39;  P )  F&quot;</span>).
+
+<span class="kn">Set Implicit Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+<span class="kn">Import</span> Order.TTheory GRing.Theory Num.Def Num.Theory.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ereal_scope.
+
+<span class="kn">Section</span> <span class="nf">set_of_fset_in_a_set</span>.
+<span class="kn">Variable</span> (<span class="nv">T</span> : choiceType).
+<span class="kn">Implicit Type</span> <span class="nf">S</span> : <span class="nb">set</span> T.
+
+<span class="kn">Definition</span> <span class="nf">fsets</span> <span class="nv">S</span> : <span class="nb">set</span> (<span class="nb">set</span> T) := [<span class="nb">set</span> F | finite_set F /\ F `&lt;=` S].
+
+<span class="kn">Lemma</span> <span class="nf">fsets_set0</span> <span class="nv">S</span> : fsets S set0. <span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsets_self</span> (<span class="nv">F</span> : <span class="nb">set</span> T) : finite_set F -&gt; fsets F F.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; finF; <span class="nb">split</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsets0</span> : fsets set0 = [<span class="nb">set</span> set0].
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> predeqE =&gt; A; <span class="nb">split</span> =&gt; [|-&gt;]; <span class="nb">last</span> <span class="bp">exact</span>: fsets_set0.
+<span class="bp">by</span> <span class="nb">rewrite</span> /fsets/= subset0 =&gt; -[].
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">set_of_fset_in_a_set</span>.
+
+<span class="kn">Section</span> <span class="nf">esum</span>.
+<span class="kn">Variables</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">T</span> : choiceType).
+<span class="kn">Implicit Types</span> (<span class="nv">S</span> : <span class="nb">set</span> T) (<span class="nv">a</span> : T -&gt; \bar R).
+
+<span class="kn">Definition</span> <span class="nf">esum</span> <span class="nv">S</span> <span class="nv">a</span> := ereal_sup [<span class="nb">set</span> \sum_(x \<span class="kr">in</span> A) a x | A <span class="kr">in</span> fsets S].
+
+<span class="kn">Local</span> <span class="kn">Notation</span> <span class="s2">&quot;\esum_ ( i &#39;in&#39; P ) A&quot;</span> := (esum P (<span class="kr">fun</span> <span class="nv">i</span> =&gt; A)).
+
+<span class="kn">Lemma</span> <span class="nf">esum_set0</span> <span class="nv">a</span> : \esum_(i <span class="kr">in</span> set0) a i = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /esum fsets0 [X <span class="kr">in</span> ereal_sup X](_ : _ = [<span class="nb">set</span> <span class="mi">0</span>%E]) <span class="nl">?ereal_sup1</span>//.
+<span class="nb">apply</span>/seteqP; <span class="nb">split</span>=&gt; [x [_ /= -&gt;]|x]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> fsbig_set0.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt; /=; <span class="kr">exists</span> <span class="nv">set0</span> =&gt; //; <span class="nb">rewrite</span> fsbig_set0.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">esum</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;\esum_ ( i &#39;in&#39; P ) F&quot;</span> := (esum P (<span class="kr">fun</span> <span class="nv">i</span> =&gt; F)) : ring_scope.
+
+<span class="kn">Section</span> <span class="nf">esum_realType</span>.
+<span class="kn">Variables</span> (<span class="nv">R</span> : realType) (<span class="nv">T</span> : choiceType).
+<span class="kn">Implicit Types</span> (<span class="nv">a</span> : T -&gt; \bar R).
+
+<span class="kn">Lemma</span> <span class="nf">esum_ge0</span> (<span class="nv">S</span> : <span class="nb">set</span> T) <span class="nv">a</span> :
+  (<span class="kr">forall</span> <span class="nv">x</span>, S x -&gt; <span class="mi">0</span> &lt;= a x) -&gt; <span class="mi">0</span> &lt;= \esum_(i <span class="kr">in</span> S) a i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; a0; <span class="nb">apply</span>: ereal_sup_ub.
+<span class="bp">by</span> <span class="kr">exists</span> <span class="nv">set0</span>; [<span class="bp">exact</span>: fsets_set0|<span class="nb">rewrite</span> fsbig_set0].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">esum_fset</span> (<span class="nv">F</span> : <span class="nb">set</span> T) <span class="nv">a</span> : finite_set F -&gt;
+    (<span class="kr">forall</span> <span class="nv">i</span>, i \<span class="kr">in</span> F -&gt; <span class="mi">0</span> &lt;= a i) -&gt;
+  \esum_(i <span class="kr">in</span> F) a i = \sum_(i \<span class="kr">in</span> F) a i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; finF f0; <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le; <span class="nb">apply</span>/andP; <span class="nb">split</span>; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">apply</span> ereal_sup_ub; <span class="kr">exists</span> <span class="nv">F</span> =&gt; //; <span class="bp">exact</span>: fsets_self.
+<span class="nb">apply</span> ub_ereal_sup =&gt; /= ? -[F&#39; [finF&#39; F&#39;F] &lt;-].
+<span class="nb">apply</span>/lee_fsum_nneg_subset =&gt; //; <span class="kp">first</span> <span class="bp">exact</span>/subsetP.
+<span class="bp">by</span>  <span class="nb">move</span>=&gt; t; <span class="nb">rewrite</span> inE/= =&gt; /andP[_] /f0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">esum_set1</span> <span class="nv">t</span> <span class="nv">a</span> : <span class="mi">0</span> &lt;= a t -&gt; \esum_(i <span class="kr">in</span> [<span class="nb">set</span> t]) a i = a t.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">rewrite</span> esum_fset// <span class="nl">?fset_set1</span>// <span class="nl">?fsbig_set1</span>// =&gt; t&#39; /[!inE] -&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">esum_realType</span>.
+
+<span class="kn">Lemma</span> <span class="nf">esum_ge</span> [R : realType] [T : choiceType] (I : <span class="nb">set</span> T) (a : T -&gt; \bar R) x :
+  (<span class="kr">exists2</span> X : <span class="nb">set</span> T, fsets I X &amp; x &lt;= \sum_(i \<span class="kr">in</span> X) a i) -&gt;
+  x &lt;= \esum_(i <span class="kr">in</span> I) a i.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; [X IX /le_trans-&gt;//]; <span class="nb">apply</span>: ereal_sup_ub =&gt; /=; <span class="kr">exists</span> <span class="nv">X</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">esum1</span> [R : realFieldType] [I : choiceType] (D : <span class="nb">set</span> I) (a : I -&gt; \bar R) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, D i -&gt; a i = <span class="mi">0</span>) -&gt; \esum_(i <span class="kr">in</span> D) a i = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; a0; <span class="nb">rewrite</span> /esum (_ : [<span class="nb">set</span> _ | _ <span class="kr">in</span> _] = [<span class="nb">set</span> <span class="mi">0</span>]) <span class="nl">?ereal_sup1</span>//.
+<span class="nb">apply</span>/seteqP; <span class="nb">split</span>=&gt; x //= =&gt; [[X [finX XI]] &lt;-|-&gt;].
+  <span class="bp">by</span> <span class="nb">rewrite</span> fsbig1// =&gt; i /XI/a0.
+<span class="bp">by</span> <span class="kr">exists</span> <span class="nv">set0</span>; <span class="nb">rewrite</span> <span class="nl">?fsbig_set0</span>//; <span class="bp">exact</span>: fsets_set0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_esum</span> [R : realType] [T : choiceType] (I : <span class="nb">set</span> T) (a b : T -&gt; \bar R) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, I i -&gt; a i &lt;= b i) -&gt;
+  \esum_(i <span class="kr">in</span> I) a i &lt;= \esum_(i <span class="kr">in</span> I) b i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; le_ab; <span class="nb">rewrite</span> ub_ereal_sup =&gt; //= _ [X [finX XI]] &lt;-; <span class="nb">rewrite</span> esum_ge//.
+<span class="bp">by</span> <span class="kr">exists</span> <span class="nv">X</span> =&gt; //; <span class="nb">apply</span>: lee_fsum =&gt; // t /XI /le_ab.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_esum</span> [R : realType] [T : choiceType] (I : <span class="nb">set</span> T) (a b : T -&gt; \bar R) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, I i -&gt; a i = b i) -&gt;
+  \esum_(i <span class="kr">in</span> I) a i = \esum_(i <span class="kr">in</span> I) b i.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; e; <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le !le_esum// =&gt; i Ii; <span class="nb">rewrite</span> e. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">esumD</span> [R : realType] [T : choiceType] (I : <span class="nb">set</span> T) (a b : T -&gt; \bar R) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, I i -&gt; <span class="mi">0</span> &lt;= a i) -&gt; (<span class="kr">forall</span> <span class="nv">i</span>, I i -&gt; <span class="mi">0</span> &lt;= b i) -&gt;
+  \esum_(i <span class="kr">in</span> I) (a i + b i) = \esum_(i <span class="kr">in</span> I) a i + \esum_(i <span class="kr">in</span> I) b i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; ag0 bg0; <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+  <span class="nb">rewrite</span> ub_ereal_sup//= =&gt; x [X [finX XI]] &lt;-; <span class="nb">rewrite</span> fsbig_split//=.
+  <span class="bp">by</span> <span class="nb">rewrite</span> lee_add// ereal_sup_ub//=; <span class="kr">exists</span> <span class="nv">X</span>.
+<span class="nb">wlog</span> : a b ag0 bg0 / \esum_(i <span class="kr">in</span> I) a i \<span class="kr">isn&#39;t</span> a fin_num =&gt; [saoo|]; <span class="nb">last first</span>.
+  <span class="nb">move</span>=&gt; /fin_numPn[-&gt;|/[dup] aoo -&gt;]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> leNye.
+  <span class="nb">rewrite</span> (@le_trans _ _ +oo)//; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> /adde/=; <span class="nb">case</span>: esum.
+  <span class="nb">rewrite</span> leye_eq; <span class="nb">apply</span>/eqP/eq_infty =&gt; y; <span class="nb">rewrite</span> esum_ge//.
+  <span class="nb">have</span> : y%:E &lt; \esum_(i <span class="kr">in</span> I) a i <span class="bp">by</span> <span class="nb">rewrite</span> aoo// ltry.
+  <span class="nb">move</span>=&gt; /ereal_sup_gt[_ [X [finX XI]] &lt;-] /ltW yle; <span class="kr">exists</span> <span class="nv">X</span> =&gt; //=.
+  <span class="nb">rewrite</span> (le_trans yle)// fsbig_split// lee_addl// fsume_ge0// =&gt; // i.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; /XI; <span class="bp">exact</span>: bg0.
+<span class="nb">case</span>: (boolP (\esum_(i <span class="kr">in</span> I) a i \<span class="kr">is</span> a fin_num)) =&gt; sa; <span class="nb">last</span> <span class="bp">exact</span>: saoo.
+<span class="nb">case</span>: (boolP (\esum_(i <span class="kr">in</span> I) b i \<span class="kr">is</span> a fin_num)) =&gt; sb; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> addeC (eq_esum (<span class="kr">fun</span> <span class="nv">_</span> <span class="nv">_</span> =&gt; addeC _ _)) saoo.
+<span class="nb">rewrite</span> -lee_subr_addr// ub_ereal_sup//= =&gt; _ [X [finX XI]] &lt;-.
+<span class="nb">have</span> saX : \sum_(i \<span class="kr">in</span> X) a i \<span class="kr">is</span> a fin_num.
+  <span class="nb">apply</span>: contraTT sa =&gt; /fin_numPn[] sa.
+    <span class="nb">suff</span> : \sum_(i \<span class="kr">in</span> X) a i &gt;= <span class="mi">0</span> <span class="bp">by</span> <span class="nb">rewrite</span> sa.
+    <span class="bp">by</span> <span class="nb">rewrite</span> fsume_ge0// =&gt; i /XI/ag0.
+  <span class="nb">apply</span>/fin_numPn; <span class="nb">right</span>; <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> -leye_eq esum_ge//.
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">X</span>; <span class="nb">rewrite</span> // sa.
+<span class="nb">rewrite</span> lee_subr_addr// addeC -lee_subr_addr// ub_ereal_sup//= =&gt; _ [Y [finY YI]] &lt;-.
+<span class="nb">rewrite</span> lee_subr_addr// addeC esum_ge//; <span class="kr">exists</span> (<span class="nv">X</span> `|` Y).
+  <span class="bp">by</span> <span class="nb">split</span>; [<span class="nb">rewrite</span> finite_setU|<span class="nb">rewrite</span> subUset].
+<span class="nb">rewrite</span> fsbig_split <span class="nl">?finite_setU</span>//= lee_add// lee_fsum_nneg_subset//= <span class="nl">?finite_setU</span>//.
+- <span class="bp">exact</span>/subsetP/subsetUl.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> !inE in_setU andb_orr andNb/= =&gt; /andP[_] /[!inE] /YI/ag0.
+- <span class="bp">exact</span>/subsetP/subsetUr.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> !inE in_setU andb_orr andNb/= orbF =&gt; /andP[_] /[!inE] /XI/bg0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">esum_mkcond</span> [R : realType] [T : choiceType] (I : <span class="nb">set</span> T)
+    (a : T -&gt; \bar R) :
+  \esum_(i <span class="kr">in</span> I) a i = \esum_(i <span class="kr">in</span> [<span class="nb">set</span>: T]) <span class="kr">if</span> i \<span class="kr">in</span> I <span class="kr">then</span> a i <span class="kr">else</span> <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le !ub_ereal_sup//= =&gt; _ [X [finX XI]] &lt;-.
+  <span class="nb">rewrite</span> -big_mkcond/= big_fset_condE/=; <span class="nb">set</span> Y := [fset _ | _ <span class="kr">in</span> _ &amp; _]%fset.
+  <span class="nb">rewrite</span> ereal_sup_ub//=; <span class="kr">exists</span> [<span class="nb">set</span>` Y]; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> fsbig_finite// set_fsetK.
+  <span class="bp">by</span> <span class="nb">split</span> =&gt; // i/=; <span class="nb">rewrite</span> !inE/= =&gt; /andP[_]; <span class="nb">rewrite</span> inE.
+<span class="nb">rewrite</span> ereal_sup_ub//; <span class="kr">exists</span> <span class="nv">X</span> =&gt; //; <span class="nb">apply</span>: eq_fsbigr =&gt; x; <span class="nb">rewrite</span> inE =&gt; Xx.
+<span class="bp">by</span> <span class="nb">rewrite</span> ifT// inE; <span class="bp">exact</span>: XI.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">esum_mkcondr</span> [R : realType] [T : choiceType] (I J : <span class="nb">set</span> T) (a : T -&gt; \bar R) :
+  \esum_(i <span class="kr">in</span> I `&amp;` J) a i = \esum_(i <span class="kr">in</span> I) <span class="kr">if</span> i \<span class="kr">in</span> J <span class="kr">then</span> a i <span class="kr">else</span> <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> esum_mkcond [RHS]esum_mkcond; <span class="nb">apply</span>: eq_esum=&gt; i _.
+<span class="bp">by</span> <span class="nb">rewrite</span> in_setI; <span class="nb">case</span>: (i \<span class="kr">in</span> I) (i \<span class="kr">in</span> J) =&gt; [] [].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">esum_mkcondl</span> [R : realType] [T : choiceType] (I J : <span class="nb">set</span> T) (a : T -&gt; \bar R) :
+  \esum_(i <span class="kr">in</span> I `&amp;` J) a i = \esum_(i <span class="kr">in</span> J) <span class="kr">if</span> i \<span class="kr">in</span> I <span class="kr">then</span> a i <span class="kr">else</span> <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> esum_mkcond [RHS]esum_mkcond; <span class="nb">apply</span>: eq_esum=&gt; i _.
+<span class="bp">by</span> <span class="nb">rewrite</span> in_setI; <span class="nb">case</span>: (i \<span class="kr">in</span> I) (i \<span class="kr">in</span> J) =&gt; [] [].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">esumID</span> (<span class="nv">R</span> : realType) (<span class="nv">I</span> : choiceType) (<span class="nv">B</span> : <span class="nb">set</span> I) (<span class="nv">A</span> : <span class="nb">set</span> I)
+  (<span class="nv">F</span> : I -&gt; \bar R) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, A i -&gt; F i &gt;= <span class="mi">0</span>) -&gt;
+  \esum_(i <span class="kr">in</span> A) F i = (\esum_(i <span class="kr">in</span> A `&amp;` B) F i) +
+                        (\esum_(i <span class="kr">in</span> A `&amp;` ~` B) F i).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; F0; <span class="nb">rewrite</span> !esum_mkcondr -esumD; <span class="kp">do</span> <span class="nl">?by</span> <span class="nb">move</span>=&gt; i /F0; <span class="nb">case</span>: ifP.
+<span class="bp">by</span> <span class="nb">apply</span>: eq_esum=&gt; i; <span class="nb">rewrite</span> in_setC; <span class="nb">case</span>: ifP; <span class="nb">rewrite</span> /= (adde0, add0e).
+<span class="kn">Qed</span>.
+<span class="kn">Arguments</span> esumID {R I}.
+
+<span class="kn">Lemma</span> <span class="nf">esum_sum</span> [R : realType] [T1 T2 : choiceType]
+    (I : <span class="nb">set</span> T1) (r : seq T2) (P : pred T2) (a : T1 -&gt; T2 -&gt; \bar R) :
+  (<span class="kr">forall</span> <span class="nv">i</span> <span class="nv">j</span>, I i -&gt; P j -&gt; <span class="mi">0</span> &lt;= a i j) -&gt;
+  \esum_(i <span class="kr">in</span> I) \sum_(j &lt;- r | P j) a i j =
+  \sum_(j &lt;- r | P j) \esum_(i <span class="kr">in</span> I) a i j.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; a_ge0; <span class="nb">elim</span>: r =&gt; [|j r IHr]; <span class="nb">rewrite</span> ?(big_nil, big_cons)// -<span class="nl">?IHr</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> esum1// =&gt; i; <span class="nb">rewrite</span> big_nil.
+<span class="nb">case</span>: (boolP (P j)) =&gt; Pj; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>: eq_esum =&gt; i Ii; <span class="nb">rewrite</span> big_cons (negPf Pj).
+<span class="nb">have</span> aj_ge0 i : I i -&gt; a i j &gt;= <span class="mi">0</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">apply</span>: a_ge0.
+<span class="nb">rewrite</span> -esumD//; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; i Ii; <span class="nb">apply</span>: sume_ge0 =&gt; *; <span class="nb">apply</span>: a_ge0.
+<span class="bp">by</span> <span class="nb">apply</span>: eq_esum =&gt; i Ii; <span class="nb">rewrite</span> big_cons Pj.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">esum_esum</span> [R : realType] [T1 T2 : choiceType]
+    (I : <span class="nb">set</span> T1) (J : T1 -&gt; <span class="nb">set</span> T2) (a : T1 -&gt; T2 -&gt; \bar R) :
+  (<span class="kr">forall</span> <span class="nv">i</span> <span class="nv">j</span>, I i -&gt; J i j -&gt; <span class="mi">0</span> &lt;= a i j) -&gt;
+  \esum_(i <span class="kr">in</span> I) \esum_(j <span class="kr">in</span> J i) a i j = \esum_(k <span class="kr">in</span> I `*`` J) a k.<span class="mi">1</span> k.<span class="mi">2</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; a_ge0; <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+  <span class="nb">apply</span>: ub_ereal_sup =&gt; /= _ [X [finX XI]] &lt;-.
+  <span class="nb">under</span> eq_fsbigr <span class="kp">do</span> <span class="nb">rewrite</span> esum_mkcond.
+  <span class="nb">rewrite</span> fsbig_finite//= big_seq -esum_sum; <span class="nb">last first</span>.
+    <span class="nb">move</span>=&gt; i j _ /[!in_fset_set]// /[!inE] /XI Ij.
+    <span class="bp">by</span> <span class="nb">case</span>: ifPn =&gt; // /[!inE] /a_ge0-/(_ Ij).
+  <span class="nb">under</span> eq_esum <span class="kp">do</span> <span class="nb">rewrite</span> -big_seq -big_mkcond/=.
+  <span class="nb">apply</span>: ub_ereal_sup =&gt; /= _ [Y [finY _] &lt;-]; <span class="nb">apply</span>: ereal_sup_ub =&gt; /=.
+  <span class="nb">set</span> XYJ := [<span class="nb">set</span> z | z \<span class="kr">in</span> X `*` Y /\ z.<span class="mi">2</span> \<span class="kr">in</span> J z.<span class="mi">1</span>].
+  <span class="nb">have</span> ? : finite_set XYJ.
+    <span class="nb">apply</span>: sub_finite_set (finite_setM finX finY) =&gt; z/=.
+    <span class="bp">by</span> <span class="nb">rewrite</span> /XYJ/= in_setM =&gt; -[/andP[] /[!inE]].
+  <span class="kr">exists</span> <span class="nv">XYJ</span> =&gt; /=; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">split</span> =&gt; //= z; <span class="nb">rewrite</span> /XYJ/= <span class="mi">2</span>!inE=&gt; -[[/XI]].
+  <span class="nb">rewrite</span> [<span class="kr">in</span> RHS]fsbig_finite//= (exchange_big_dep xpredT)// pair_big_dep_cond.
+  <span class="nb">rewrite</span> fsbig_finite//; <span class="nb">apply</span>: eq_fbigl =&gt; -[/= x y]; <span class="nb">rewrite</span> in_fset_set//.
+  <span class="nb">apply</span>/idP/imfset2P.
+    <span class="nb">rewrite</span> /XYJ !inE/= !inE/= -andA =&gt; -[Xx [Yy Jxy]].
+    <span class="kr">exists</span> <span class="nv">x</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> !inE in_fset_set// mem_set.
+    <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">y</span> =&gt; //; <span class="nb">rewrite</span> !inE mem_set// in_fset_set// mem_set.
+  <span class="nb">move</span>=&gt; [t1]; <span class="nb">rewrite</span> !inE andbT/= in_fset_set// inE =&gt; Xt1.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; [t2]; <span class="nb">rewrite</span> !inE in_fset_set /XYJ//= =&gt;/andP[/[!inE] ? ?] [-&gt; -&gt;].
+<span class="nb">apply</span>: ub_ereal_sup =&gt; _ /= [X/= [finX XIJ]] &lt;-; <span class="nb">apply</span>: esum_ge.
+<span class="kr">exists</span> <span class="nv">X</span>.`<span class="mi">1</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">split</span>=&gt; [|x [y /XIJ[]//]]; <span class="bp">exact</span>: finite_set_fst.
+<span class="nb">apply</span>: (@le_trans _ _
+    (\sum_(i &lt;- fset_set X.`<span class="mi">1</span>) \sum_(j &lt;- fset_set X.`<span class="mi">2</span> | j \<span class="kr">in</span> J i) a i j)).
+  <span class="nb">rewrite</span> pair_big_dep_cond//=; <span class="nb">set</span> Y := Imfset.imfset2 _ _ _ _.
+  <span class="nb">rewrite</span> [leRHS](big_fsetID _ (mem X))/=.
+  <span class="nb">rewrite</span> (_ : [fset x | x <span class="kr">in</span> Y &amp; x \<span class="kr">in</span> X] = Y `&amp;` fset_set X)%fset; <span class="nb">last first</span>.
+    <span class="bp">by</span> <span class="nb">apply</span>/fsetP =&gt; x; <span class="nb">rewrite</span> <span class="mi">2</span>!inE/= in_fset_set.
+  <span class="nb">rewrite</span> (fsetIidPr _).
+    <span class="nb">rewrite</span> fsbig_finite// lee_addl// big_seq sume_ge0//=.
+    <span class="nb">move</span>=&gt; [x y] /imfsetP[[x1 y1]] /[!inE] /andP[] /imfset2P[x2]/= /[!inE].
+    <span class="nb">rewrite</span> andbT in_fset_set//; <span class="nb">last</span> <span class="bp">exact</span>: finite_set_fst.
+    <span class="nb">move</span>=&gt; /[!inE] x2X [y2] /[!inE] /andP[] /[!in_fset_set]; <span class="nb">last first</span>.
+      <span class="bp">exact</span>: finite_set_snd.
+    <span class="nb">move</span>=&gt; /[!inE] y2X y2J [-&gt; -&gt;] _ [-&gt; -&gt;]; <span class="nb">rewrite</span> a_ge0//.
+    <span class="bp">by</span> <span class="nb">move</span>: x2X =&gt; [y3 /XIJ []].
+  <span class="nb">apply</span>/fsubsetP =&gt; -[i j]; <span class="nb">rewrite</span> in_fset_set// inE =&gt; Xij; <span class="nb">apply</span>/imfset2P.
+  <span class="kr">exists</span> <span class="nv">i</span> =&gt; /=.
+    <span class="nb">rewrite</span> !inE/= in_fset_set//; <span class="nb">last</span> <span class="bp">exact</span>: finite_set_fst.
+    <span class="bp">by</span> <span class="nb">rewrite</span> andbT mem_set//; <span class="nb">move</span>/fst_set_fst : Xij.
+  <span class="kr">exists</span> <span class="nv">j</span> =&gt; //; <span class="nb">rewrite</span> !inE/= in_fset_set; <span class="nb">last</span> <span class="bp">exact</span>: finite_set_snd.
+  <span class="nb">rewrite</span> mem_set/=; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">move</span>/snd_set_snd : Xij.
+  <span class="bp">by</span> <span class="nb">rewrite</span> mem_set//; <span class="nb">move</span>/XIJ : Xij =&gt; [].
+<span class="nb">rewrite</span> -fsbig_finite; <span class="nb">last</span> <span class="bp">exact</span>: finite_set_fst.
+<span class="nb">apply</span> lee_fsum=&gt; [|i Xi]; <span class="kp">first</span> <span class="bp">exact</span>: finite_set_fst.
+<span class="nb">rewrite</span> ereal_sup_ub =&gt; //=; <span class="nb">have</span> ? : finite_set (X.`<span class="mi">2</span> `&amp;` J i).
+  <span class="bp">by</span> <span class="nb">apply</span>: finite_setI; <span class="nb">left</span>; <span class="bp">exact</span>: finite_set_snd.
+<span class="kr">exists</span> (<span class="nv">X</span>.`<span class="mi">2</span> `&amp;` J i) =&gt; //.
+<span class="nb">rewrite</span> [<span class="kr">in</span> RHS]big_fset_condE/= fsbig_finite//; <span class="nb">apply</span> eq_fbigl =&gt; j.
+<span class="bp">by</span> <span class="nb">rewrite</span> in_fset_set// !inE/= in_setI in_fset_set//; <span class="bp">exact</span>: finite_set_snd.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lee_sum_fset_nat</span> (<span class="nv">R</span> : realDomainType)
+    (<span class="nv">f</span> : (\bar R)^nat) (<span class="nv">F</span> : {fset nat}) <span class="nv">n</span> (<span class="nv">P</span> : pred nat) :
+    (<span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; <span class="mi">0</span>%E &lt;= f i) -&gt;
+    [<span class="nb">set</span>` F] `&lt;=` `I_n -&gt;
+  \sum_(i &lt;- F | P i) f i &lt;= \sum_(<span class="mi">0</span> &lt;= i &lt; n | P i) f i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; f0 Fn; <span class="nb">rewrite</span> [leRHS](bigID (mem F))/=.
+<span class="nb">suff</span> -&gt; : \sum_(<span class="mi">0</span> &lt;= i &lt; n | P i &amp;&amp; (i \<span class="kr">in</span> F)) f i = \sum_(i &lt;- F | P i) f i.
+  <span class="bp">by</span> <span class="nb">rewrite</span> lee_addl <span class="nl">?sume_ge0</span>// =&gt; i /andP[/f0].
+<span class="nb">rewrite</span> -big_filter -[RHS]big_filter; <span class="nb">apply</span>: perm_big.
+<span class="nb">rewrite</span> uniq_perm <span class="nl">?filter_uniq</span> <span class="nl">?index_iota</span> <span class="nl">?iota_uniq</span> <span class="nl">?fset_uniq</span>//.
+<span class="nb">move</span>=&gt; i; <span class="nb">rewrite</span> <span class="nl">?mem_filter</span>.
+<span class="nb">case</span>: (boolP (P i)) =&gt; //= Pi; <span class="nb">case</span>: (boolP (i \<span class="kr">in</span> F)) =&gt; //= Fi.
+<span class="bp">by</span> <span class="nb">rewrite</span> mem_iota leq0n add0n subn0/=; <span class="nb">apply</span>: Fn.
+<span class="kn">Qed</span>.
+<span class="kn">Arguments</span> lee_sum_fset_nat {R f} F n P.
+
+<span class="kn">Lemma</span> <span class="nf">lee_sum_fset_lim</span> (<span class="nv">R</span> : realType) (<span class="nv">f</span> : (\bar R)^nat) (<span class="nv">F</span> : {fset nat})
+    (<span class="nv">P</span> : pred nat) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; <span class="mi">0</span>%E &lt;= f i) -&gt;
+  \sum_(i &lt;- F | P i) f i &lt;= \sum_(i &lt;oo | P i) f i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; f0; <span class="nb">pose</span> n := (\max_(k &lt;- F) k).+<span class="mi">1</span>.
+<span class="nb">rewrite</span> (le_trans (lee_sum_fset_nat F n _ _ _))//; <span class="nb">last</span> <span class="bp">exact</span>: nneseries_lim_ge.
+<span class="nb">move</span>=&gt; k /= kF; <span class="nb">rewrite</span> /n big_seq_fsetE/=.
+<span class="bp">by</span> <span class="nb">rewrite</span> -[k]/(val [`kF]%fset) ltnS leq_bigmax.
+<span class="kn">Qed</span>.
+<span class="kn">Arguments</span> lee_sum_fset_lim {R f} F P.
+
+<span class="kn">Lemma</span> <span class="nf">nneseries_esum</span> (<span class="nv">R</span> : realType) (<span class="nv">a</span> : nat -&gt; \bar R) (<span class="nv">P</span> : pred nat) :
+  (<span class="kr">forall</span> <span class="nv">n</span>, P n -&gt; <span class="mi">0</span> &lt;= a n) -&gt;
+  \sum_(i &lt;oo | P i) a i = \esum_(i <span class="kr">in</span> [<span class="nb">set</span> x | P x]) a i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; a0; <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+  <span class="nb">apply</span>: (lime_le (is_cvg_nneseries_cond a0)); <span class="nb">apply</span>: nearW =&gt; n.
+  <span class="nb">apply</span>: ereal_sup_ub =&gt; /=; <span class="kr">exists</span> [<span class="nb">set</span>` [fset val i | i <span class="kr">in</span> &#39;I_n &amp; P i]%fset].
+    <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">exact</span>: finite_fset.
+    <span class="bp">by</span> <span class="nb">move</span>=&gt; /= k /imfsetP[/= i]; <span class="nb">rewrite</span> inE =&gt; + -&gt;.
+  <span class="nb">rewrite</span> fsbig_finite//= set_fsetK big_imfset/=; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; ? ? ? ? /val_inj.
+  <span class="bp">by</span> <span class="nb">rewrite</span> big_filter big_enum_cond/= big_mkord.
+<span class="nb">apply</span>: ub_ereal_sup =&gt; _ [/= F [finF PF] &lt;-].
+<span class="nb">rewrite</span> fsbig_finite//= -(big_rmcond_in P)/=; <span class="kp">first</span> <span class="bp">exact</span>: lee_sum_fset_lim.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; k; <span class="nb">rewrite</span> in_fset_set// inE =&gt; /PF -&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">reindex_esum</span> (<span class="nv">R</span> : realType) (<span class="nv">T</span> <span class="nv">T&#39;</span> : choiceType)
+    (<span class="nv">P</span> : <span class="nb">set</span> T) (<span class="nv">Q</span> : <span class="nb">set</span> T&#39;) (<span class="nv">e</span> : T -&gt; T&#39;) (<span class="nv">a</span> : T&#39; -&gt; \bar R) :
+    set_bij P Q e -&gt;
+  \esum_(j <span class="kr">in</span> Q) a j = \esum_(i <span class="kr">in</span> P) a (e i).
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/choicePpointed: T =&gt; T <span class="kr">in</span> e P *.
+  <span class="nb">rewrite</span> !emptyE =&gt; /Pbij[{}e -&gt;].
+  <span class="bp">by</span> <span class="nb">rewrite</span> -[<span class="kr">in</span> LHS](image_eq e) image_set0 !esum_set0.
+<span class="nb">elim</span>/choicePpointed: T&#39; =&gt; T&#39; <span class="kr">in</span> a e Q *; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">have</span> := no (e point).
+<span class="nb">move</span>=&gt; /(@pPbij _ _ _)[{}e -&gt;].
+<span class="nb">gen have</span> le_esum : T T&#39; a P Q e /
+    \esum_(j <span class="kr">in</span> Q) a j &lt;= \esum_(i <span class="kr">in</span> P) a (e i); <span class="nb">last first</span>.
+  <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le le_esum//=.
+  <span class="nb">rewrite</span> [leRHS](_ : _ = \esum_(j <span class="kr">in</span> Q) a (e (e^-<span class="mi">1</span>%FUN j))); <span class="nb">last first</span>.
+    <span class="bp">by</span> <span class="nb">apply</span>: eq_esum =&gt; i Qi; <span class="nb">rewrite</span> invK <span class="nl">?inE</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> le_esum =&gt; //= i Qi; <span class="nb">rewrite</span> a_ge0//; <span class="bp">exact</span>: funS.
+<span class="nb">rewrite</span> ub_ereal_sup =&gt; //= _ [X [finX XQ] &lt;-]; <span class="nb">rewrite</span> ereal_sup_ub =&gt; //=.
+<span class="kr">exists</span> [<span class="nb">set</span>` (e^-<span class="mi">1</span> @` (fset_set X))%fset].
+  <span class="nb">split</span>=&gt; [|t /= /imfsetP[t&#39;/=]]; <span class="kp">first</span> <span class="bp">exact</span>: finite_fset.
+  <span class="bp">by</span> <span class="nb">rewrite</span> in_fset_set// inE =&gt; /XQ Qt&#39; -&gt;; <span class="bp">exact</span>: funS.
+<span class="nb">rewrite</span> fsbig_finite//= set_fsetK big_imfset =&gt; //=; <span class="nb">last first</span>.
+  <span class="nb">move</span>=&gt; x y; <span class="nb">rewrite</span> !in_fset_set// !inE =&gt; /XQ ? /XQ ? /(congr1 e).
+  <span class="bp">by</span> <span class="nb">rewrite</span> !invK <span class="nl">?inE</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> -fsbig_finite//; <span class="nb">apply</span>: eq_fsbigr=&gt; x /[!inE]/XQ ?; <span class="nb">rewrite</span> invK <span class="nl">?inE</span>.
+<span class="kn">Qed</span>.
+<span class="kn">Arguments</span> reindex_esum {R T T&#39;} P Q e a.
+
+<span class="kn">Section</span> <span class="nf">nneseries_interchange</span>.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ereal_scope.
+
+<span class="kn">Let</span> <span class="nf">nneseries_esum_prod</span> (<span class="nv">R</span> : realType) (<span class="nv">a</span> : nat -&gt; nat -&gt; \bar R)
+  (<span class="nv">P</span> <span class="nv">Q</span> : pred nat) : (<span class="kr">forall</span> <span class="nv">i</span> <span class="nv">j</span>, <span class="mi">0</span> &lt;= a i j) -&gt;
+  \sum_(i &lt;oo | P i) \sum_(j &lt;oo | Q j) a i j =
+  \esum_(i <span class="kr">in</span> P `*` Q) a i.<span class="mi">1</span> i.<span class="mi">2</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; a0; <span class="nb">rewrite</span> -(@esum_esum _ _ _ P (<span class="kr">fun</span>=&gt; Q))//.
+<span class="nb">rewrite</span> nneseries_esum//; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; n _; <span class="bp">exact</span>: nneseries_ge0.
+<span class="nb">rewrite</span> (_ : [<span class="nb">set</span> x | P x] = P); <span class="nb">last</span> <span class="bp">by</span> <span class="nb">apply</span>/seteqP; <span class="nb">split</span>.
+<span class="bp">by</span> <span class="nb">apply</span> eq_esum =&gt; i Pi; <span class="nb">rewrite</span> nneseries_esum.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nneseries_interchange</span> (<span class="nv">R</span> : realType) (<span class="nv">a</span> : nat -&gt; nat -&gt; \bar R)
+  (<span class="nv">P</span> <span class="nv">Q</span> : pred nat) : (<span class="kr">forall</span> <span class="nv">i</span> <span class="nv">j</span>, <span class="mi">0</span> &lt;= a i j) -&gt;
+  \sum_(i &lt;oo | P i) \sum_(j &lt;oo | Q j) a i j =
+  \sum_(j &lt;oo | Q j) \sum_(i &lt;oo | P i) a i j.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; a0; <span class="nb">rewrite</span> !nneseries_esum_prod//.
+<span class="nb">rewrite</span> (reindex_esum (Q `*` P) _ (<span class="kr">fun</span> <span class="nv">x</span> =&gt; (x.<span class="mi">2</span>, x.<span class="mi">1</span>)))//; <span class="nb">split</span>=&gt; //=.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; [i j] [/=].
+<span class="bp">by</span> <span class="nb">move</span>=&gt; [i1 i2] [j1 j2] /= _ _ [] -&gt; -&gt;.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; [i1 i2] [Pi1 Qi2] /=; <span class="kr">exists</span> (<span class="nv">i2</span>, i1).
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">nneseries_interchange</span>.
+
+<span class="kn">Lemma</span> <span class="nf">esum_image</span> (<span class="nv">R</span> : realType) (<span class="nv">T</span> <span class="nv">T&#39;</span> : choiceType)
+    (<span class="nv">P</span> : <span class="nb">set</span> T) (<span class="nv">e</span> : T -&gt; T&#39;) (<span class="nv">a</span> : T&#39; -&gt; \bar R) :
+    set_inj P e -&gt;
+  \esum_(j <span class="kr">in</span> e @` P) a j = \esum_(i <span class="kr">in</span> P) a (e i).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /inj_bij; <span class="nb">apply</span>: reindex_esum. <span class="kn">Qed</span>.
+<span class="kn">Arguments</span> esum_image {R T T&#39;} P e a.
+
+<span class="kn">Lemma</span> <span class="nf">esum_pred_image</span> (<span class="nv">R</span> : realType) (<span class="nv">T</span> : choiceType) (<span class="nv">a</span> : T -&gt; \bar R)
+    (<span class="nv">e</span> : nat -&gt; T) (<span class="nv">P</span> : pred nat) :
+    (<span class="kr">forall</span> <span class="nv">n</span>, P n -&gt; <span class="mi">0</span> &lt;= a (e n)) -&gt;
+    set_inj P e -&gt;
+  \esum_(i <span class="kr">in</span> e @` P) a i = \sum_(i &lt;oo | P i) a (e i).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; a0 einj; <span class="nb">rewrite</span> esum_image// nneseries_esum. <span class="kn">Qed</span>.
+<span class="kn">Arguments</span> esum_pred_image {R T} a e P.
+
+<span class="kn">Lemma</span> <span class="nf">esum_set_image</span>  [R : realType] [T : choiceType] [a : T -&gt; \bar R]
+    [e : nat -&gt; T] [P : <span class="nb">set</span> nat] :
+    (<span class="kr">forall</span> <span class="nv">n</span> : nat, P n -&gt; <span class="mi">0</span> &lt;= a (e n)) -&gt;
+  set_inj P e -&gt;
+  \esum_(i <span class="kr">in</span> [<span class="nb">set</span> e x | x <span class="kr">in</span> P]) a i = \sum_(i &lt;oo | i \<span class="kr">in</span> P) a (e i).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; a0 einj; <span class="nb">rewrite</span> esum_image// nneseries_esum <span class="nl">?set_mem_set</span>//.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; n; <span class="nb">rewrite</span> inE =&gt; /a0.
+<span class="kn">Qed</span>.
+<span class="kn">Arguments</span> esum_set_image {R T} a e P.
+
+<span class="kn">Section</span> <span class="nf">esum_bigcup</span>.
+<span class="kn">Variables</span> (<span class="nv">R</span> : realType) (<span class="nv">T</span> : choiceType) (<span class="nv">K</span> : <span class="nb">set</span> nat).
+<span class="kn">Implicit Types</span> (<span class="nv">J</span> : nat -&gt; <span class="nb">set</span> T) (<span class="nv">a</span> : T -&gt; \bar R).
+
+<span class="kn">Lemma</span> <span class="nf">esum_bigcupT</span> <span class="nv">J</span> <span class="nv">a</span> : trivIset setT J -&gt; (<span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= a x) -&gt;
+  \esum_(i <span class="kr">in</span> \bigcup_(k <span class="kr">in</span> K) (J k)) a i =
+  \esum_(i <span class="kr">in</span> K) \esum_(j <span class="kr">in</span> J i) a j.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; tJ a0; <span class="nb">rewrite</span> esum_esum//; <span class="nb">apply</span>: reindex_esum =&gt; //; <span class="nb">split</span>.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; [/= i j] [Ki Jij]; <span class="kr">exists</span> <span class="nv">i</span>.
+- <span class="nb">move</span>=&gt; [/= i1 j1] [/= i2 j2]; <span class="nb">rewrite</span> <span class="nl">?inE</span>/=.
+  <span class="nb">move</span>=&gt; [K1 J1] [K2 J2] j12; <span class="nb">congr</span> (_, _) =&gt; //.
+  <span class="bp">by</span> <span class="nb">apply</span>: (@tJ i1 i2) =&gt; //; <span class="kr">exists</span> <span class="nv">j1</span>; <span class="nb">split</span>=&gt; //; <span class="nb">rewrite</span> j12.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; j [i Ki Jij]/=; <span class="kr">exists</span> (<span class="nv">i</span>, j).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">esum_bigcup</span> <span class="nv">J</span> <span class="nv">a</span> : trivIset [<span class="nb">set</span> i | a @` J i != [<span class="nb">set</span> <span class="mi">0</span>]] J -&gt;
+    (<span class="kr">forall</span> <span class="nv">x</span> : T, (\bigcup_(k <span class="kr">in</span> K) J k) x -&gt; <span class="mi">0</span> &lt;= a x) -&gt;
+  \esum_(i <span class="kr">in</span> \bigcup_(k <span class="kr">in</span> K) J k) a i = \esum_(k <span class="kr">in</span> K) \esum_(j <span class="kr">in</span> J k) a j.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Jtriv a_ge0.
+<span class="nb">pose</span> J&#39; i := <span class="kr">if</span> a @` J i == [<span class="nb">set</span> <span class="mi">0</span>] <span class="kr">then</span> set0 <span class="kr">else</span> J i.
+<span class="nb">pose</span> a&#39; x := <span class="kr">if</span> x \<span class="kr">in</span> \bigcup_(k <span class="kr">in</span> K) J k <span class="kr">then</span> a x <span class="kr">else</span> <span class="mi">0</span>.
+<span class="nb">have</span> a&#39;E k x : K k -&gt; J k x -&gt; a&#39; x = a x.
+  <span class="nb">move</span>=&gt; Kk Jkx; <span class="nb">rewrite</span> /a&#39;; <span class="nb">case</span>: ifPn; <span class="nb">rewrite</span> ?(inE, notin_set)//=.
+  <span class="bp">by</span> <span class="nb">case</span>; <span class="kr">exists</span> <span class="nv">k</span>.
+<span class="nb">have</span> a&#39;_ge0 x : a&#39; x &gt;= <span class="mi">0</span> <span class="bp">by</span> <span class="nb">rewrite</span> /a&#39;; <span class="nb">case</span>: ifPn; <span class="nb">rewrite</span> // <span class="nl">?inE</span> =&gt; /a_ge0.
+<span class="nb">transitivity</span> (\esum_(i <span class="kr">in</span> \bigcup_(k <span class="kr">in</span> K) J&#39; k) a&#39; i).
+  <span class="nb">rewrite</span> esum_mkcond [RHS]esum_mkcond /a&#39;; <span class="nb">apply</span>: eq_esum =&gt; x _.
+  <span class="kp">do</span> <span class="mi">2</span>!<span class="nb">case</span>: ifPn; <span class="nb">rewrite</span> ?(inE, notin_set)//= =&gt; J&#39;x Jx.
+  <span class="nb">apply</span>: contra_not_eq J&#39;x =&gt; Nax.
+  <span class="nb">move</span>: Jx =&gt; [k kK Jkx]; <span class="kr">exists</span> <span class="nv">k</span>=&gt; //; <span class="nb">rewrite</span> /J&#39;/=; <span class="nb">case</span>: ifPn=&gt; //=.
+  <span class="nb">move</span>=&gt; /eqP/(congr1 (@^~ (a x)))/=; <span class="nb">rewrite</span> propeqE =&gt; -[+ _].
+  <span class="bp">by</span> <span class="nb">apply</span>: contra_neq_not Nax; <span class="nb">apply</span>; <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="nb">rewrite</span> esum_bigcupT//; <span class="nb">last first</span>.
+  <span class="nb">move</span>=&gt; i j _ _ [x []]; <span class="nb">rewrite</span> /J&#39;/=.
+  <span class="nb">case</span>: eqVneq =&gt; //= Ai0 Jix; <span class="nb">case</span>: eqVneq =&gt; //= Aj0 Jjx.
+  <span class="bp">by</span> <span class="nb">have</span> := Jtriv i j Ai0 Aj0; <span class="nb">apply</span>; <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="nb">apply</span>: eq_esum =&gt; i Ki.
+<span class="nb">rewrite</span> esum_mkcond [RHS]esum_mkcond; <span class="nb">apply</span>: eq_esum =&gt; x _.
+<span class="kp">do</span> <span class="mi">2</span>!<span class="nb">case</span>: ifPn; <span class="nb">rewrite</span> ?(inE, notin_set)//=.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; /a&#39;E-&gt;//.
+- <span class="bp">by</span> <span class="nb">rewrite</span> /J&#39;; <span class="nb">case</span>: ifPn =&gt; //.
+<span class="nb">move</span>=&gt; Jix; <span class="nb">rewrite</span> /J&#39;; <span class="nb">case</span>: ifPn=&gt; //=.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /eqP/(congr1 (@^~ (a x)))/=; <span class="nb">rewrite</span> propeqE =&gt; -[-&gt;]//; <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">esum_bigcup</span>.
+
+<span class="kn">Arguments</span> esum_bigcupT {R T K} J a.
+<span class="kn">Arguments</span> esum_bigcup {R T K} J a.
+
+<span class="kn">Definition</span> <span class="nf">summable</span> (<span class="nv">T</span> : choiceType) (<span class="nv">R</span> : realType) (<span class="nv">D</span> : <span class="nb">set</span> T)
+  (<span class="nv">f</span> : T -&gt; \bar R) := (\esum_(x <span class="kr">in</span> D) `| f x | &lt; +oo)%E.
+
+<span class="kn">Section</span> <span class="nf">summable_lemmas</span>.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ereal_scope.
+<span class="kn">Variables</span> (<span class="nv">T</span> : choiceType) (<span class="nv">R</span> : realType).
+<span class="kn">Implicit Types</span> (<span class="nv">D</span> : <span class="nb">set</span> T) (<span class="nv">f</span> : T -&gt; \bar R).
+
+<span class="kn">Lemma</span> <span class="nf">summable_pinfty</span> <span class="nv">D</span> <span class="nv">f</span> : summable D f -&gt; <span class="kr">forall</span> <span class="nv">x</span>, D x -&gt; `| f x | &lt; +oo.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Dfoo x Dx; <span class="nb">apply</span>: le_lt_trans Dfoo.
+<span class="nb">rewrite</span> (esumID [<span class="nb">set</span> x])// setI1 mem_set// esum_set1// lee_addl//.
+<span class="bp">exact</span>: esum_ge0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summableE</span> <span class="nv">D</span> <span class="nv">f</span> : summable D f = (\esum_(x <span class="kr">in</span> D) `| f x | \<span class="kr">is</span> a fin_num).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /summable fin_numElt; <span class="nb">apply</span>/idP/idP =&gt; [-&gt;|/andP[]//].
+<span class="bp">by</span> <span class="nb">rewrite</span> andbT (lt_le_trans (ltNyr <span class="mi">0</span>))//; <span class="bp">exact</span>: esum_ge0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summableD</span> <span class="nv">D</span> <span class="nv">f</span> <span class="nv">g</span> : summable D f -&gt; summable D g -&gt; summable D (f \+ g).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Df Dg; <span class="nb">apply</span>: le_lt_trans (lte_add_pinfty Df Dg).
+<span class="bp">by</span> <span class="nb">rewrite</span> -esumD//; <span class="nb">apply</span> le_esum =&gt; t Dt; <span class="bp">exact</span>: lee_abs_add.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summableN</span> <span class="nv">D</span> <span class="nv">f</span> : summable D f = summable D (\- f).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> /summable; <span class="nb">congr</span> (_ &lt; +oo); <span class="nb">apply</span>: eq_esum =&gt; t Dt; <span class="nb">rewrite</span> abseN.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summableB</span> <span class="nv">D</span> <span class="nv">f</span> <span class="nv">g</span> : summable D f -&gt; summable D g -&gt; summable D (f \- g).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; Df; <span class="nb">rewrite</span> summableN; <span class="bp">exact</span>: summableD. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summable_funepos</span> <span class="nv">D</span> <span class="nv">f</span> : summable D f -&gt; summable D f^\+.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: le_lt_trans; <span class="nb">apply</span> le_esum =&gt; t Dt.
+<span class="bp">by</span> <span class="nb">rewrite</span> -/((abse \o f) t) fune_abse gee0_abs// lee_addl.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summable_funeneg</span> <span class="nv">D</span> <span class="nv">f</span> : summable D f -&gt; summable D f^\-.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: le_lt_trans; <span class="nb">apply</span> le_esum =&gt; t Dt.
+<span class="bp">by</span> <span class="nb">rewrite</span> -/((abse \o f) t) fune_abse gee0_abs// lee_addr.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">summable_lemmas</span>.
+
+<span class="kn">Import</span> numFieldNormedType.Exports.
+
+<span class="kn">Section</span> <span class="nf">summable_nat</span>.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ereal_scope.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+
+<span class="kn">Lemma</span> <span class="nf">summable_fine_sum</span> <span class="nv">r</span> (<span class="nv">P</span> : pred nat) (<span class="nv">f</span> : nat -&gt; \bar R) : summable P f -&gt;
+  (\sum_(<span class="mi">0</span> &lt;= k &lt; r | P k) fine (f k))%R = fine (\sum_(<span class="mi">0</span> &lt;= k &lt; r | P k) f k).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Pf; <span class="nb">elim</span>: r =&gt; [|r ih]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> !big_nil.
+<span class="nb">rewrite</span> big_mkcond/= big_nat_recr// [<span class="kr">in</span> RHS]big_mkcond/= big_nat_recr//=.
+<span class="nb">rewrite</span> -!big_mkcond/= ih; <span class="nb">case</span>: ifPn =&gt; Pr =&gt; //; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> adde0 addr0.
+<span class="nb">rewrite</span> fineD//; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> fin_num_abs (summable_pinfty Pf).
+<span class="bp">by</span> <span class="nb">apply</span>/sum_fin_numP =&gt; i ir Pi; <span class="nb">rewrite</span> fin_num_abs (summable_pinfty Pf).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summable_cvg</span> (<span class="nv">P</span> : pred nat) (<span class="nv">f</span> : (\bar R)^nat) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; <span class="mi">0</span> &lt;= f i)%E -&gt; summable P f -&gt;
+  cvg (<span class="kr">fun</span> <span class="nv">n</span> =&gt; \sum_(<span class="mi">0</span> &lt;= k &lt; n | P k) fine (f k))%R.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; f0 Pf; <span class="nb">apply</span>: nondecreasing_is_cvg.
+  <span class="bp">by</span> <span class="nb">apply</span>: nondecreasing_series =&gt; n Pn; <span class="bp">exact</span>/fine_ge0/f0.
+<span class="kr">exists</span> (<span class="nv">fine</span> (\sum_(i &lt;oo | P i) `|f i|)) =&gt; x /= [n _ &lt;-].
+<span class="nb">rewrite</span> summable_fine_sum// -lee_fin fineK//; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>/sum_fin_numP =&gt; i ni Pi; <span class="nb">rewrite</span> fin_num_abs (summable_pinfty Pf).
+<span class="nb">rewrite</span> fineK//; <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> nneseries_esum// fin_numElt; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+    <span class="bp">by</span> <span class="nb">rewrite</span> (@lt_le_trans _ _ <span class="mi">0</span>)// <span class="nl">?lte_ninfty</span>//; <span class="bp">exact</span>: esum_ge0.
+  <span class="bp">by</span> <span class="nb">apply</span>: le_lt_trans Pf; <span class="nb">apply</span> le_esum.
+<span class="nb">apply</span>: le_trans (nneseries_lim_ge n _) =&gt; //; <span class="nb">apply</span>: lee_sum =&gt; i _.
+<span class="bp">by</span> <span class="nb">rewrite</span> lee_abs.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summable_nneseries_lim</span> (<span class="nv">P</span> : pred nat) (<span class="nv">f</span> : (\bar R)^nat) :
+    (<span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; <span class="mi">0</span> &lt;= f i)%E -&gt; summable P f -&gt;
+  \sum_(i &lt;oo | P i) f i =
+  (lim (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (\sum_(<span class="mi">0</span> &lt;= k &lt; n | P k) fine (f k))%R))%:E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; f0 Pf; <span class="nb">pose</span> A_ n := (\sum_(<span class="mi">0</span> &lt;= k &lt; n | P k) fine (f k))%R.
+<span class="nb">transitivity</span> (lim (EFin \o A_)).
+  <span class="nb">congr</span> (lim _); <span class="nb">apply</span>/funext =&gt; /= n; <span class="nb">rewrite</span> /A_ /= -sumEFin.
+  <span class="nb">apply</span> eq_bigr =&gt; i Pi/=; <span class="nb">rewrite</span> fineK//.
+  <span class="bp">by</span> <span class="nb">rewrite</span> fin_num_abs (@summable_pinfty _ _ P).
+<span class="bp">by</span> <span class="nb">rewrite</span> EFin_lim//; <span class="nb">apply</span>: summable_cvg.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summable_nneseries</span> (<span class="nv">f</span> : nat -&gt; \bar R) (<span class="nv">P</span> : pred nat) : summable P f -&gt;
+  \sum_(i &lt;oo | P i) (f i) =
+  \sum_(i &lt;oo | P i) f^\+ i - \sum_(i &lt;oo | P i) f^\- i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Pf.
+<span class="nb">pose</span> A_ n := (\sum_(<span class="mi">0</span> &lt;= k &lt; n | P k) fine (f^\+ k))%R.
+<span class="nb">pose</span> B_ n := (\sum_(<span class="mi">0</span> &lt;= k &lt; n | P k) fine (f^\- k))%R.
+<span class="nb">pose</span> C_ n := fine (\sum_(<span class="mi">0</span> &lt;= k &lt; n | P k) f k).
+<span class="nb">pose</span> A := lim A_.
+<span class="nb">pose</span> B := lim B_.
+<span class="nb">suff</span>: ((<span class="kr">fun</span> <span class="nv">n</span> =&gt; C_ n - (A - B)) --&gt; (<span class="mi">0</span> : R^o))%R.
+  <span class="nb">move</span>=&gt; CAB.
+  <span class="nb">rewrite</span> [X <span class="kr">in</span>  X - _]summable_nneseries_lim//; <span class="nb">last</span> <span class="bp">exact</span>/summable_funepos.
+  <span class="nb">rewrite</span> [X <span class="kr">in</span> _ - X]summable_nneseries_lim//; <span class="nb">last</span> <span class="bp">exact</span>/summable_funeneg.
+  <span class="nb">rewrite</span> -EFinB; <span class="nb">apply</span>/cvg_lim =&gt; //; <span class="nb">apply</span>/fine_cvgP; <span class="nb">split</span>.
+    <span class="nb">apply</span>: nearW =&gt; n.
+    <span class="nb">rewrite</span> fin_num_abs; <span class="nb">apply</span>: le_lt_trans Pf =&gt; /=.
+    <span class="bp">by</span> <span class="nb">rewrite</span> -nneseries_esum// (le_trans (lee_abs_sum _ _ _))// nneseries_lim_ge.
+  <span class="bp">by</span> <span class="nb">apply</span>: (@cvg_sub0 _ _ _ _ _ _ (cst (A - B)%R) _ CAB) =&gt; //; <span class="bp">exact</span>: cvg_cst.
+<span class="nb">have</span> : ((<span class="kr">fun</span> <span class="nv">x</span> =&gt; A_ x - B_ x) --&gt; A - B)%R.
+  <span class="nb">apply</span>: cvgD.
+  - <span class="bp">by</span> <span class="nb">apply</span>: summable_cvg =&gt; //; <span class="bp">exact</span>/summable_funepos.
+  - <span class="bp">by</span> <span class="nb">apply</span>: cvgN; <span class="nb">apply</span>: summable_cvg =&gt; //; <span class="bp">exact</span>/summable_funeneg.
+<span class="nb">move</span>=&gt; /cvgrPdist_lt cvgAB; <span class="nb">apply</span>/cvgrPdist_lt =&gt; e e0.
+<span class="nb">move</span>: cvgAB =&gt; /(_ _ e0) [N _/= hN] /=.
+near=&gt; n.
+<span class="nb">rewrite</span> distrC subr0.
+<span class="nb">have</span> -&gt; : (C_ = A_ \- B_)%R.
+  <span class="nb">apply</span>/funext =&gt; k.
+  <span class="nb">rewrite</span> /= /A_ /C_ /B_ -sumrN -big_split/= -summable_fine_sum//.
+  <span class="nb">apply</span> eq_bigr =&gt; i Pi.
+  <span class="nb">rewrite</span> -fineB//.
+  - <span class="bp">by</span> <span class="nb">rewrite</span> [<span class="kr">in</span> LHS](funeposneg f).
+  - <span class="bp">by</span> <span class="nb">rewrite</span> fin_num_abs (@summable_pinfty _ _ P) //; <span class="bp">exact</span>/summable_funepos.
+  - <span class="bp">by</span> <span class="nb">rewrite</span> fin_num_abs (@summable_pinfty _ _ P) //; <span class="bp">exact</span>/summable_funeneg.
+<span class="bp">by</span> <span class="nb">rewrite</span> distrC; <span class="nb">apply</span>: hN; near: n; <span class="kr">exists</span> <span class="nv">N</span>.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">summable_nneseries_esum</span>  (<span class="nv">f</span> : nat -&gt; \bar R) (<span class="nv">P</span> : pred nat) :
+  summable P f -&gt; \sum_(i &lt;oo | P i) f i = esum P f^\+ - esum P f^\-.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Pfoo.
+<span class="nb">rewrite</span> -nneseries_esum; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; n Pn; <span class="nb">rewrite</span> /maxe; <span class="nb">case</span>: ifPn =&gt; //; <span class="nb">rewrite</span> -leNgt.
+<span class="nb">rewrite</span> -nneseries_esum; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; n Pn; <span class="nb">rewrite</span> /maxe; <span class="nb">case</span>: ifPn =&gt; //; <span class="nb">rewrite</span> leNgt.
+<span class="bp">by</span> <span class="nb">rewrite</span> [LHS]summable_nneseries.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">summable_nat</span>.
+
+<span class="kn">Section</span> <span class="nf">esumB</span>.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ereal_scope.
+<span class="kn">Variables</span> (<span class="nv">R</span> : realType) (<span class="nv">T</span> : choiceType).
+<span class="kn">Implicit Types</span> (<span class="nv">D</span> : <span class="nb">set</span> T) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; \bar R).
+
+<span class="kn">Let</span> <span class="nf">esum_posneg</span> <span class="nv">D</span> <span class="nv">f</span> := esum D f^\+ - esum D f^\-.
+
+<span class="kn">Let</span> <span class="nf">ge0_esum_posneg</span> <span class="nv">D</span> <span class="nv">f</span> : (<span class="kr">forall</span> <span class="nv">x</span>, D x -&gt; <span class="mi">0</span> &lt;= f x) -&gt;
+  esum_posneg D f = \esum_(x <span class="kr">in</span> D) f x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Sa; <span class="nb">rewrite</span> /esum_posneg [X <span class="kr">in</span> _ - X](_ : _ = <span class="mi">0</span>) <span class="nl">?sube0</span>; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> esum1// =&gt; x Sx; <span class="nb">rewrite</span> -[LHS]/(f^\- x) (ge0_funenegE Sa)// inE.
+<span class="bp">by</span> <span class="nb">apply</span>: eq_esum =&gt; t St; <span class="nb">apply</span>/max_idPl; <span class="bp">exact</span>: Sa.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">esumB</span> <span class="nv">D</span> <span class="nv">f</span> <span class="nv">g</span> : summable D f -&gt; summable D g -&gt;
+  (<span class="kr">forall</span> <span class="nv">i</span>, D i -&gt; <span class="mi">0</span> &lt;= f i) -&gt; (<span class="kr">forall</span> <span class="nv">i</span>, D i -&gt; <span class="mi">0</span> &lt;= g i) -&gt;
+  \esum_(i <span class="kr">in</span> D) (f \- g)^\+ i - \esum_(i <span class="kr">in</span> D) (f \- g)^\- i =
+  \esum_(i <span class="kr">in</span> D) f i - \esum_(i <span class="kr">in</span> D) g i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Df Dg f0 g0.
+<span class="nb">have</span> /eqP : esum D (f \- g)^\+ + esum_posneg D g = esum D (f \- g)^\- + esum_posneg D f.
+  <span class="nb">rewrite</span> !ge0_esum_posneg// -!esumD//; <span class="nb">last</span> <span class="mi">2</span> <span class="kp">first</span>.
+    <span class="bp">by</span> <span class="nb">move</span>=&gt; t Dt; <span class="nb">rewrite</span> le_maxr lexx orbT.
+    <span class="bp">by</span> <span class="nb">move</span>=&gt; t Dt; <span class="nb">rewrite</span> le_maxr lexx orbT.
+  <span class="nb">apply</span> eq_esum =&gt; i Di; <span class="nb">have</span> [fg|fg] := leP <span class="mi">0</span> (f i - g i).
+    <span class="nb">rewrite</span> max_r <span class="mi">1</span><span class="nl">?lee_oppl</span> <span class="nl">?oppe0</span>// add0e subeK//.
+    <span class="bp">by</span> <span class="nb">rewrite</span> fin_num_abs (summable_pinfty Dg).
+  <span class="nb">rewrite</span> add0e max_l; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> lee_oppr oppe0 ltW.
+  <span class="nb">rewrite</span> fin_num_oppeB//; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> fin_num_abs (summable_pinfty Dg).
+  <span class="bp">by</span> <span class="nb">rewrite</span> -addeA addeCA addeA subeK// fin_num_abs (summable_pinfty Df).
+<span class="nb">rewrite</span> [X <span class="kr">in</span> _ == X -&gt; _]addeC -sube_eq; <span class="nb">last</span> <span class="mi">2</span> <span class="kp">first</span>.
+  - <span class="nb">rewrite</span> fin_numD; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+      <span class="nb">rewrite</span> (@eq_esum _ _ _ _ (abse \o (f \- g)^\+))//.
+        <span class="bp">by</span> <span class="nb">rewrite</span> -summableE; <span class="bp">exact</span>/summable_funepos/summableB.
+      <span class="bp">by</span> <span class="nb">move</span>=&gt; t Dt; <span class="nb">rewrite</span> /= gee0_abs.
+    <span class="nb">move</span>: Dg; <span class="nb">rewrite</span> summableE (@eq_esum _ _ _ _ g)//.
+      <span class="bp">by</span> <span class="nb">rewrite</span> ge0_esum_posneg// =&gt; t Tt; <span class="nb">rewrite</span> gee0_abs// g0.
+    <span class="bp">by</span> <span class="nb">move</span>=&gt; t Tt; <span class="nb">rewrite</span> gee0_abs// g0.
+  - <span class="nb">rewrite</span> fin_num_adde_defr// ge0_esum_posneg//.
+    <span class="nb">rewrite</span> (@eq_esum _ _ _ _ (abse \o f))// -<span class="nl">?summableE</span>// =&gt; i Di.
+    <span class="bp">by</span> <span class="nb">rewrite</span> /= gee0_abs// f0.
+<span class="nb">rewrite</span> -addeA addeCA eq_sym [X <span class="kr">in</span> _ == X -&gt; _]addeC -sube_eq; <span class="nb">last</span> <span class="mi">2</span> <span class="kp">first</span>.
+  - <span class="nb">rewrite</span> ge0_esum_posneg// (@eq_esum _ _ _ _ (abse \o f))// -<span class="nl">?summableE</span>// =&gt; i Di.
+    <span class="bp">by</span> <span class="nb">rewrite</span> /= gee0_abs// f0.
+  - <span class="nb">rewrite</span> fin_num_adde_defl// ge0_esum_posneg//.
+    <span class="nb">rewrite</span> (@eq_esum _ _ _ _ (abse \o g))// -<span class="nl">?summableE</span>// =&gt; i Di.
+    <span class="bp">by</span> <span class="nb">rewrite</span> /= gee0_abs// g0.
+<span class="bp">by</span> <span class="nb">rewrite</span> ge0_esum_posneg// ge0_esum_posneg// =&gt; /eqP -&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">esumB</span>.</span></pre></article></body></html>

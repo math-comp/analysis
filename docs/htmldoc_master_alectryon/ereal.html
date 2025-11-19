@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>ereal.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)</span>
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="c">(* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)</span>
+<span class="c">(* Copyright (c) - 2015--2018 - Inria                                   *)</span>
+<span class="c">(* Copyright (c) - 2016--2018 - Polytechnique                           *)</span>
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect all_algebra finmap.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> boolp classical_sets functions fsbigop.
+<span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> cardinality set_interval mathcomp_extra.
+<span class="kn">Require Import</span> reals signed topology.
+<span class="kn">Require Export</span> constructive_ereal.
+
+<span class="sd">(******************************************************************************)</span>
+<span class="c">(*                   Extended real numbers, classical part                    *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* This is an addition to the file ereal.v with classical logic elements.     *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(*  (\sum_(i \in A) f i)%E == finitely supported sum, see fsbigop.v           *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(*             ereal_sup E == supremum of E                                   *)</span>
+<span class="c">(*             ereal_inf E == infimum of E                                    *)</span>
+<span class="c">(*  ereal_supremums_neq0 S == S has a supremum                                *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* Topology of extended real numbers:                                         *)</span>
+<span class="c">(*        ereal_topologicalType R == topology for extended real numbers over  *)</span>
+<span class="c">(*                                   R, a realFieldType                       *)</span>
+<span class="c">(*       ereal_pseudoMetricType R == pseudometric space for extended reals    *)</span>
+<span class="c">(*                                   over R where is a realFieldType; the     *)</span>
+<span class="c">(*                                   distance between x and y is defined by   *)</span>
+<span class="c">(*                                   `|contract x - contract y|               *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* Filters:                                                                   *)</span>
+<span class="c">(*                  ereal_dnbhs x == filter on extended real numbers that     *)</span>
+<span class="c">(*                                   corresponds to the deleted neighborhood  *)</span>
+<span class="c">(*                                   x^&#39; if x is a real number and to         *)</span>
+<span class="c">(*                                   predicates that are eventually true if x *)</span>
+<span class="c">(*                                   is +oo/-oo.                              *)</span>
+<span class="c">(*                   ereal_nbhs x == same as ereal_dnbhs where dnbhs is       *)</span>
+<span class="c">(*                                   replaced with nbhs.                      *)</span>
+<span class="c">(*                ereal_loc_seq x == sequence that converges to x in the set  *)</span>
+<span class="c">(*                                   of extended real numbers.                *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="sd">(******************************************************************************)</span>
+
+<span class="kn">Set Implicit Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+
+<span class="kn">Import</span> Order.TTheory GRing.Theory Num.Theory.
+<span class="kn">Import</span> numFieldTopology.Exports.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ereal_scope.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+
+<span class="kn">Lemma</span> <span class="nf">EFin_bigcup</span> <span class="nv">T</span> (<span class="nv">F</span> : nat -&gt; <span class="nb">set</span> T) :
+  EFin @` (\bigcup_i F i) = \bigcup_i (EFin @` F i).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> eqEsubset; <span class="nb">split</span> =&gt; [_ [r [n _ Fnr &lt;-]]|]; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">n</span> =&gt; //; <span class="kr">exists</span> <span class="nv">r</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x [n _ [r Fnr &lt;- /=]]; <span class="kr">exists</span> <span class="nv">r</span> =&gt; //; <span class="kr">exists</span> <span class="nv">n</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">EFin_setC</span> <span class="nv">T</span> (<span class="nv">A</span> : <span class="nb">set</span> T) :
+  EFin @` (~` A) = (~` (EFin @` A)) `\` [<span class="nb">set</span> -oo; +oo].
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> eqEsubset; <span class="nb">split</span> =&gt; [_ [r Ar &lt;-]|[r | |]].
+  <span class="bp">by</span> <span class="nb">split</span> =&gt; [|[]//]; <span class="nb">apply</span>: contra_not Ar =&gt; -[? ? [] &lt;-].
+- <span class="nb">move</span>=&gt; [Ar _]; <span class="nb">apply</span>/not_exists2P; <span class="nb">apply</span>: contra_not Ar =&gt; h.
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">r</span> =&gt; //; <span class="nb">have</span> [|//] := h r; <span class="nb">apply</span>: contrapT.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; -[_] /not_orP[_ /=].
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; -[_] /not_orP[/=].
+<span class="kn">Qed</span>.
+
+<span class="kn">Local</span> <span class="kn">Close Scope</span> classical_set_scope.
+
+<span class="kn">Notation</span> <span class="s2">&quot;\sum_ ( i &#39;\in&#39; A ) F&quot;</span> := (\big[+%dE/<span class="mi">0</span>%E]_(i \<span class="kr">in</span> A) F%dE) :
+  ereal_dual_scope.
+<span class="kn">Notation</span> <span class="s2">&quot;\sum_ ( i &#39;\in&#39; A ) F&quot;</span> := (\big[+%E/<span class="mi">0</span>%E]_(i \<span class="kr">in</span> A) F%E) :
+  ereal_scope.
+
+<span class="kn">Section</span> <span class="nf">ERealArith</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : numDomainType}.
+<span class="kn">Implicit Types</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nv">z</span> : \bar R.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+
+<span class="kn">Lemma</span> <span class="nf">preimage_abse_pinfty</span> : @abse R @^-<span class="mi">1</span>` [<span class="nb">set</span> +oo] = [<span class="nb">set</span> -oo; +oo].
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> predeqE =&gt; y; <span class="nb">split</span> ; <span class="nb">move</span>: y =&gt; [y//| |]//=; [<span class="nb">right</span> | <span class="nb">left</span> | <span class="nb">case</span>].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">preimage_abse_ninfty</span> : (@abse R @^-<span class="mi">1</span>` [<span class="nb">set</span> -oo])%classic = set0.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> predeqE =&gt; t; <span class="nb">split</span> =&gt; //=; <span class="nb">apply</span>/eqP.
+<span class="bp">by</span> <span class="nb">rewrite</span> gt_eqF// (lt_le_trans _ (abse_ge0 t)).
+<span class="kn">Qed</span>.
+
+<span class="kn">Local</span> <span class="kn">Close Scope</span> classical_set_scope.
+
+<span class="kn">End</span> <span class="nf">ERealArith</span>.
+
+<span class="kn">Section</span> <span class="nf">ERealArithTh_numDomainType</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : numDomainType}.
+<span class="kn">Implicit Types</span> (<span class="nv">x</span> <span class="nv">y</span> <span class="nv">z</span> : \bar R) (<span class="nv">r</span> : R).
+
+<span class="kn">Lemma</span> <span class="nf">oppe_subset</span> (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> (\bar R)) :
+  ((A `&lt;=` B) &lt;-&gt; (-%E @` A `&lt;=` -%E @` B))%classic.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; [AB _ [] x ? &lt;-|AB x Ax]; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">x</span> =&gt; //; <span class="bp">exact</span>: AB.
+<span class="nb">have</span> /AB[y By] : ((-%E @` A) (- x))%classic <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> eqe_oppP =&gt; &lt;-.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsume_ge0</span> (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; \bar R) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; <span class="mi">0</span> &lt;= F i) -&gt; <span class="mi">0</span> &lt;= \sum_(i \<span class="kr">in</span> P) F i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; PF; <span class="nb">case</span>: finite_supportP; <span class="nb">rewrite</span> <span class="nl">?big_nil</span>// =&gt; X XP F0 _.
+<span class="bp">by</span> <span class="nb">rewrite</span> big_seq_cond big_mkcondr sume_ge0// =&gt; i /XP/PF.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsume_le0</span> (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; \bar R) :
+  (<span class="kr">forall</span> <span class="nv">t</span>, P t -&gt; F t &lt;= <span class="mi">0</span>) -&gt; \sum_(i \<span class="kr">in</span> P) F i &lt;= <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; PF; <span class="nb">case</span>: finite_supportP; <span class="nb">rewrite</span> <span class="nl">?big_nil</span>// =&gt; X XP F0 _.
+<span class="bp">by</span> <span class="nb">rewrite</span> big_seq_cond big_mkcondr sume_le0// =&gt; i /XP/PF.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsumEFin</span> (<span class="nv">I</span> : choiceType) <span class="nv">A</span> (<span class="nv">F</span> : I -&gt; R) : finite_set A -&gt;
+  \sum_(i \<span class="kr">in</span> A) (F i)%:E = (\sum_(i \<span class="kr">in</span> A) F i)%:E.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; fs; <span class="nb">rewrite</span> fsbig_finite//= sumEFin -fsbig_finite. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">ERealArithTh_numDomainType</span>.
+
+<span class="kn">Section</span> <span class="nf">ERealArithTh_realDomainType</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realDomainType}.
+<span class="kn">Implicit Types</span> (<span class="nv">x</span> <span class="nv">y</span> <span class="nv">z</span> <span class="nv">u</span> <span class="nv">a</span> <span class="nv">b</span> : \bar R) (<span class="nv">r</span> : R).
+
+<span class="kn">Lemma</span> <span class="nf">fsume_gt0</span> (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; \bar R) :
+  <span class="mi">0</span> &lt; \sum_(i \<span class="kr">in</span> P) F i -&gt; <span class="kr">exists2</span> i, P i &amp; <span class="mi">0</span> &lt; F i.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: contraPP =&gt; /forall2NP xNPF; <span class="nb">rewrite</span> le_gtF// fsume_le0// =&gt; i Pi.
+<span class="bp">by</span> <span class="nb">case</span>: (xNPF i) =&gt; // /negP; <span class="nb">case</span>: ltP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsume_lt0</span> (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; \bar R) :
+  \sum_(i \<span class="kr">in</span> P) F i &lt; <span class="mi">0</span> -&gt; <span class="kr">exists2</span> i, P i &amp; F i &lt; <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: contraPP =&gt; /forall2NP xNPF; <span class="nb">rewrite</span> le_gtF// fsume_ge0// =&gt; i Pi.
+<span class="bp">by</span> <span class="nb">case</span>: (xNPF i) =&gt; // /negP; <span class="nb">case</span>: ltP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pfsume_eq0</span> (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; \bar R) :
+  finite_set P -&gt;
+  (<span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; <span class="mi">0</span> &lt;= F i) -&gt;
+  \sum_(i \<span class="kr">in</span> P) F i = <span class="mi">0</span> -&gt; <span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; F i = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Pfin F0 /eqP; <span class="nb">apply</span>: contraTP =&gt; /existsPNP[i Pi /eqP Fi0].
+<span class="nb">rewrite</span> (fsbigD1 i)//= padde_eq0 <span class="nl">?F0</span> <span class="nl">?negb_and</span> <span class="nl">?Fi0</span>//.
+<span class="bp">by</span> <span class="nb">rewrite</span> fsume_ge0// =&gt; j [/F0-&gt;].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lee_fsum_nneg_subset</span> [T : choiceType] [A B : <span class="nb">set</span> T] [f : T -&gt; \bar R] :
+  finite_set A -&gt; finite_set B -&gt;
+  {subset A &lt;= B} -&gt; {<span class="kr">in</span> [predD B &amp; A], <span class="kr">forall</span> <span class="nv">t</span> : T, <span class="mi">0</span> &lt;= f t}%E -&gt;
+  (\sum_(t \<span class="kr">in</span> A) f t &lt;= \sum_(t \<span class="kr">in</span> B) f t)%E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; finA finB AB f0; <span class="nb">rewrite</span> !fsbig_finite//=; <span class="nb">apply</span>: lee_sum_nneg_subfset.
+  <span class="bp">by</span> <span class="nb">apply</span>/fsubsetP; <span class="nb">rewrite</span> -fset_set_sub//; <span class="nb">apply</span>/subsetP.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; t; <span class="nb">rewrite</span> !inE !in_fset_set// =&gt; /f0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lee_fsum</span> [T : choiceType] (I : <span class="nb">set</span> T) (a b : T -&gt; \bar R) :
+  finite_set I -&gt;
+  (<span class="kr">forall</span> <span class="nv">i</span>, I i -&gt; a i &lt;= b i)%E -&gt; (\sum_(i \<span class="kr">in</span> I) a i &lt;= \sum_(i \<span class="kr">in</span> I) b i)%E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; finI ab.
+<span class="nb">rewrite</span> !fsbig_finite// big_seq [<span class="kr">in</span> leRHS]big_seq lee_sum //.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; i; <span class="nb">rewrite</span> in_fset_set// inE; <span class="bp">exact</span>: ab.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ge0_mule_fsumr</span> (<span class="nv">T</span> : choiceType) <span class="nv">x</span> (<span class="nv">F</span> : T -&gt; \bar R) (<span class="nv">P</span> : <span class="nb">set</span> T) :
+  (<span class="kr">forall</span> <span class="nv">i</span> : T, <span class="mi">0</span> &lt;= F i) -&gt; x * (\sum_(i \<span class="kr">in</span> P) F i) = \sum_(i \<span class="kr">in</span> P) x * F i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; F0; <span class="nb">have</span> [-&gt;{x}|x0] := eqVneq x <span class="mi">0</span>%E.
+  <span class="bp">by</span> <span class="nb">rewrite</span> mul0e big1// =&gt; ? _; <span class="nb">rewrite</span> mul0e.
+<span class="nb">rewrite</span> ge0_sume_distrr//; <span class="nb">apply</span>: eq_fbigl =&gt; y.
+<span class="nb">rewrite</span> !<span class="nb">unlock</span>; <span class="nb">congr</span> (_ \<span class="kr">in</span> fset_set _).
+<span class="nb">apply</span>/seteqP; <span class="nb">rewrite</span> /preimage; <span class="nb">split</span>=&gt; [|] z/= [Pz Fz0];
+  <span class="nb">split</span>=&gt; //; <span class="nb">apply</span>: contra_not Fz0.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /eqP; <span class="nb">rewrite</span> mule_eq0 (negbTE x0)/= =&gt; /eqP.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt;; <span class="nb">rewrite</span> mule0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ge0_mule_fsuml</span> (<span class="nv">T</span> : choiceType) <span class="nv">x</span> (<span class="nv">F</span> : T -&gt; \bar R) (<span class="nv">P</span> : <span class="nb">set</span> T) :
+  (<span class="kr">forall</span> <span class="nv">i</span> : T, <span class="mi">0</span> &lt;= F i) -&gt; (\sum_(i \<span class="kr">in</span> P) F i) * x = \sum_(i \<span class="kr">in</span> P) F i * x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; F0; <span class="nb">rewrite</span> muleC ge0_mule_fsumr//.
+<span class="bp">by</span> <span class="nb">apply</span>: eq_fsbigr =&gt; i; <span class="nb">rewrite</span> muleC.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">ERealArithTh_realDomainType</span>.
+<span class="kn">Arguments</span> lee_fsum [R T I a b].
+
+<span class="kn">Module</span> <span class="nf">DualAddTheoryNumDomain</span>.
+
+<span class="kn">Import</span> DualAddTheory.
+
+<span class="kn">Section</span> <span class="nf">DualERealArithTh_numDomainType</span>.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ereal_dual_scope.
+
+<span class="kn">Context</span> {<span class="nv">R</span> : numDomainType}.
+
+<span class="kn">Implicit Types</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nv">z</span> : \bar R.
+
+<span class="kn">Lemma</span> <span class="nf">finite_supportNe</span> (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; \bar R) :
+  finite_support <span class="mi">0</span>%E P (\- F)%E = finite_support <span class="mi">0</span>%E P F.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /finite_support !<span class="nb">unlock</span>; <span class="nb">congr</span> fset_set; <span class="nb">congr</span> setI.
+<span class="bp">by</span> <span class="nb">rewrite</span> seteqP; <span class="nb">split</span>=&gt; x /= /eqP + /<span class="kp">ltac</span>:(<span class="nb">apply</span>/eqP); <span class="nb">rewrite</span> oppe_eq0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dual_fsumeE</span> (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; \bar R) :
+  (\sum_(i \<span class="kr">in</span> P) F i)%dE = (- (\sum_(i \<span class="kr">in</span> P) (- F i)))%E.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> finite_supportNe.
+<span class="nb">apply</span>: (big_ind2 (<span class="kr">fun</span> <span class="nv">x</span> <span class="nv">y</span> =&gt; x = - y)%E) =&gt; [|_ x _ y -&gt; -&gt;|i _].
+- <span class="bp">by</span> <span class="nb">rewrite</span> oppe0.
+- <span class="bp">by</span> <span class="nb">rewrite</span> dual_addeE !oppeK.
+- <span class="bp">by</span> <span class="nb">rewrite</span> oppeK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dfsume_ge0</span> (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; \bar R) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; <span class="mi">0</span> &lt;= F i) -&gt; <span class="mi">0</span> &lt;= \sum_(i \<span class="kr">in</span> P) F i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; PF; <span class="nb">case</span>: finite_supportP; <span class="nb">rewrite</span> <span class="nl">?big_nil</span>// =&gt; X XP F0 _.
+<span class="bp">by</span> <span class="nb">rewrite</span> big_seq_cond big_mkcondr dsume_ge0// =&gt; i /XP/PF.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dfsume_le0</span> (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; \bar R) :
+  (<span class="kr">forall</span> <span class="nv">t</span>, P t -&gt; F t &lt;= <span class="mi">0</span>) -&gt; \sum_(i \<span class="kr">in</span> P) F i &lt;= <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; PF; <span class="nb">case</span>: finite_supportP; <span class="nb">rewrite</span> <span class="nl">?big_nil</span>// =&gt; X XP F0 _.
+<span class="bp">by</span> <span class="nb">rewrite</span> big_seq_cond big_mkcondr dsume_le0// =&gt; i /XP/PF.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">DualERealArithTh_numDomainType</span>.
+
+<span class="kn">Section</span> <span class="nf">DualERealArithTh_realDomainType</span>.
+
+<span class="kn">Import</span> DualAddTheory.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ereal_dual_scope.
+
+<span class="kn">Context</span> {<span class="nv">R</span> : realDomainType}.
+<span class="kn">Implicit Types</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nv">z</span> <span class="nv">a</span> <span class="nv">b</span> : \bar R.
+
+<span class="kn">Lemma</span> <span class="nf">dfsume_gt0</span> (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; \bar R) :
+  <span class="mi">0</span> &lt; \sum_(i \<span class="kr">in</span> P) F i -&gt; <span class="kr">exists2</span> i, P i &amp; <span class="mi">0</span> &lt; F i.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> dual_fsumeE oppe_gt0 =&gt; /fsume_lt0[i Pi].
+<span class="bp">by</span> <span class="nb">rewrite</span> oppe_lt0 =&gt; ?; <span class="kr">exists</span> <span class="nv">i</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dfsume_lt0</span> (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; \bar R) :
+  \sum_(i \<span class="kr">in</span> P) F i &lt; <span class="mi">0</span> -&gt; <span class="kr">exists2</span> i, P i &amp; F i &lt; <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> dual_fsumeE oppe_lt0 =&gt; /fsume_gt0[i Pi].
+<span class="bp">by</span> <span class="nb">rewrite</span> oppe_gt0 =&gt; ?; <span class="kr">exists</span> <span class="nv">i</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pdfsume_eq0</span> (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; \bar R) :
+  finite_set P -&gt;
+  (<span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; <span class="mi">0</span> &lt;= F i) -&gt;
+  \sum_(i \<span class="kr">in</span> P) F i = <span class="mi">0</span> -&gt; <span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; F i = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Pfin F0 /eqP; <span class="nb">apply</span>: contraTP =&gt; /existsPNP[i Pi /eqP Fi0].
+<span class="nb">rewrite</span> (fsbigD1 i)//= pdadde_eq0 <span class="nl">?F0</span> <span class="nl">?negb_and</span> <span class="nl">?Fi0</span>//.
+<span class="bp">by</span> <span class="nb">rewrite</span> dfsume_ge0// =&gt; j [/F0-&gt;].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le0_mule_dfsumr</span> (<span class="nv">T</span> : choiceType) <span class="nv">x</span> (<span class="nv">F</span> : T -&gt; \bar R) (<span class="nv">P</span> : <span class="nb">set</span> T) :
+  (<span class="kr">forall</span> <span class="nv">i</span> : T, F i &lt;= <span class="mi">0</span>) -&gt; x * (\sum_(i \<span class="kr">in</span> P) F i) = \sum_(i \<span class="kr">in</span> P) x * F i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Fge0.
+<span class="nb">rewrite</span> !dual_fsumeE muleN ge0_mule_fsumr; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">rewrite</span> oppe_ge0.
+<span class="nb">rewrite</span> (eq_bigr _ (<span class="kr">fun</span> <span class="nv">_</span> <span class="nv">_</span> =&gt; muleN _ _)).
+<span class="bp">by</span> <span class="nb">rewrite</span> (eq_finite_support _ (<span class="kr">fun</span> <span class="nv">i</span> <span class="nv">_</span> =&gt; muleN _ _)).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le0_mule_dfsuml</span> (<span class="nv">T</span> : choiceType) <span class="nv">x</span> (<span class="nv">F</span> : T -&gt; \bar R) (<span class="nv">P</span> : <span class="nb">set</span> T) :
+  (<span class="kr">forall</span> <span class="nv">i</span> : T, F i &lt;= <span class="mi">0</span>) -&gt; (\sum_(i \<span class="kr">in</span> P) F i) * x = \sum_(i \<span class="kr">in</span> P) F i * x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; F0; <span class="nb">rewrite</span> muleC le0_mule_dfsumr//.
+<span class="bp">by</span> <span class="nb">apply</span>: eq_fsbigr =&gt; i; <span class="nb">rewrite</span> muleC.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">DualERealArithTh_realDomainType</span>.
+
+<span class="kn">End</span> <span class="nf">DualAddTheoryNumDomain</span>.
+
+<span class="kn">Module</span> <span class="nf">DualAddTheory</span>.
+<span class="kn">Export</span> ConstructiveDualAddTheory.
+<span class="kn">Export</span> DualAddTheoryNumDomain.
+<span class="kn">End</span> <span class="nf">DualAddTheory</span>.
+
+<span class="kn">Section</span> <span class="nf">ereal_supremum</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realFieldType.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+<span class="kn">Implicit Types</span> (<span class="nv">S</span> : <span class="nb">set</span> (\bar R)) (<span class="nv">x</span> <span class="nv">y</span> : \bar R).
+
+<span class="kn">Lemma</span> <span class="nf">ereal_ub_pinfty</span> <span class="nv">S</span> : ubound S +oo.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/ubP=&gt; x _; <span class="nb">rewrite</span> leey. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_ub_ninfty</span> <span class="nv">S</span> : ubound S -oo -&gt; S = set0 \/ S = [<span class="nb">set</span> -oo].
+<span class="kn">Proof</span>.
+<span class="nb">have</span> [-&gt;|/set0P[x Sx] Snoo] := eqVneq S set0; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">left</span>.
+<span class="nb">right</span>; <span class="nb">rewrite</span> predeqE =&gt; y; <span class="nb">split</span> =&gt; [/Snoo|-&gt;{y}].
+  <span class="bp">by</span> <span class="nb">rewrite</span> leeNy_eq =&gt; /eqP -&gt;.
+<span class="bp">by</span> <span class="nb">have</span> := Snoo _ Sx; <span class="nb">rewrite</span> leeNy_eq =&gt; /eqP &lt;-.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_supremums_set0_ninfty</span> : supremums (@set0 (\bar R)) -oo.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>; [<span class="bp">exact</span>/ubP | <span class="nb">apply</span>/lbP=&gt; y _; <span class="nb">rewrite</span> leNye]. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">supremum_pinfty</span> <span class="nv">S</span> <span class="nv">x0</span> : S +oo -&gt; supremum x0 S = +oo.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Spoo; <span class="nb">rewrite</span> /supremum ifF; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">apply</span>/eqP =&gt; S0; <span class="nb">rewrite</span> S0 <span class="kr">in</span> Spoo.
+<span class="nb">have</span> sSoo : supremums S +oo.
+  <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">exact</span>: ereal_ub_pinfty.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; /= y /(_ _ Spoo); <span class="nb">rewrite</span> leye_eq =&gt; /eqP -&gt;.
+<span class="nb">case</span>: xgetP.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; _ -&gt; sSxget; <span class="nb">move</span>: (is_subset1_supremums sSoo sSxget).
+<span class="bp">by</span> <span class="nb">move</span>/(_ +oo) =&gt; gSoo; <span class="nb">exfalso</span>; <span class="nb">apply</span> gSoo =&gt; {gSoo}.
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">ereal_sup</span> <span class="nv">S</span> := supremum -oo S.
+
+<span class="kn">Definition</span> <span class="nf">ereal_inf</span> <span class="nv">S</span> := - ereal_sup (-%E @` S).
+
+<span class="kn">Lemma</span> <span class="nf">ereal_sup0</span> : ereal_sup set0 = -oo. <span class="kn">Proof</span>. <span class="bp">exact</span>: supremum0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_sup1</span> <span class="nv">x</span> : ereal_sup [<span class="nb">set</span> x] = x. <span class="kn">Proof</span>. <span class="bp">exact</span>: supremum1. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_inf0</span> : ereal_inf set0 = +oo.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /ereal_inf image_set0 ereal_sup0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_inf1</span> <span class="nv">x</span> : ereal_inf [<span class="nb">set</span> x] = x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /ereal_inf image_set1 ereal_sup1 oppeK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ub_ereal_sup</span> <span class="nv">S</span> <span class="nv">M</span> : ubound S M -&gt; ereal_sup S &lt;= M.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /ereal_sup /supremum; <span class="nb">case</span>: ifPn =&gt; [/eqP -&gt;|]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> leNye.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; _ SM; <span class="nb">case</span>: xgetP =&gt; [_ -&gt; [_]| _] /=; [<span class="bp">exact</span> |<span class="nb">rewrite</span> leNye].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lb_ereal_inf</span> <span class="nv">S</span> <span class="nv">M</span> : lbound S M -&gt; M &lt;= ereal_inf S.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; SM; <span class="nb">rewrite</span> /ereal_inf lee_oppr; <span class="nb">apply</span> ub_ereal_sup =&gt; x [y Sy &lt;-{x}].
+<span class="bp">by</span> <span class="nb">rewrite</span> lee_oppl oppeK; <span class="nb">apply</span> SM.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ub_ereal_sup_adherent</span> <span class="nv">S</span> (<span class="nv">e</span> : R) : (<span class="mi">0</span> &lt; e)%R -&gt;
+  ereal_sup S \<span class="kr">is</span> a fin_num -&gt; <span class="kr">exists2</span> x, S x &amp; (ereal_sup S - e%:E &lt; x).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; e0 Sr; <span class="nb">have</span> : ~ ubound S (ereal_sup S - e%:E).
+  <span class="nb">move</span>/ub_ereal_sup; <span class="nb">apply</span>/negP.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -ltNge lte_subl_addr // lte_addl // lte_fin.
+<span class="nb">move</span>/asboolP; <span class="nb">rewrite</span> asbool_neg; <span class="nb">case</span>/existsp_asboolPn =&gt; /= x.
+<span class="bp">by</span> <span class="nb">rewrite</span> not_implyE =&gt; -[? ?]; <span class="kr">exists</span> <span class="nv">x</span> =&gt; //; <span class="nb">rewrite</span> ltNge; <span class="nb">apply</span>/negP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lb_ereal_inf_adherent</span> <span class="nv">S</span> (<span class="nv">e</span> : R) : (<span class="mi">0</span> &lt; e)%R -&gt;
+  ereal_inf S \<span class="kr">is</span> a fin_num -&gt; <span class="kr">exists2</span> x, S x &amp; (x &lt; ereal_inf S + e%:E).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; e0; <span class="nb">rewrite</span> fin_numN =&gt; /(ub_ereal_sup_adherent e0)[x []].
+<span class="nb">move</span>=&gt; y Sy &lt;-; <span class="nb">rewrite</span> -lte_oppr =&gt; /lt_le_trans ex; <span class="kr">exists</span> <span class="nv">y</span> =&gt; //.
+<span class="bp">by</span> <span class="nb">apply</span>: ex; <span class="nb">rewrite</span> fin_num_oppeD// oppeK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_sup_gt</span> <span class="nv">S</span> <span class="nv">x</span> : x &lt; ereal_sup S -&gt; <span class="kr">exists2</span> y, S y &amp; x &lt; y.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> not_exists2P =&gt; + g; <span class="nb">apply</span>/negP; <span class="nb">rewrite</span> -leNgt.
+<span class="bp">by</span> <span class="nb">apply</span>: ub_ereal_sup =&gt; y Sy; <span class="nb">move</span>: (g y) =&gt; [//|/negP]; <span class="nb">rewrite</span> leNgt.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_inf_lt</span> <span class="nv">S</span> <span class="nv">x</span> : ereal_inf S &lt; x -&gt; <span class="kr">exists2</span> y, S y &amp; y &lt; x.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> lte_oppl =&gt; /ereal_sup_gt[_ [y Sy &lt;-]].
+<span class="bp">by</span> <span class="nb">rewrite</span> lte_oppl oppeK =&gt; xlty; <span class="kr">exists</span> <span class="nv">y</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">ereal_supremum</span>.
+
+<span class="kn">Section</span> <span class="nf">ereal_supremum_realType</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+<span class="kn">Implicit Types</span> <span class="nv">S</span> : <span class="nb">set</span> (\bar R).
+<span class="kn">Implicit Types</span> <span class="nv">x</span> : \bar R.
+
+<span class="kn">Let</span> <span class="nf">fine_def</span> <span class="nv">r0</span> <span class="nv">x</span> : R := <span class="kr">if</span> x <span class="kr">is</span> r%:E <span class="kr">then</span> r <span class="kr">else</span> r0.
+<span class="c">(* NB: see also fine above *)</span>
+
+<span class="kn">Lemma</span> <span class="nf">ereal_supremums_neq0</span> <span class="nv">S</span> : supremums S !=set0.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> [-&gt;|Snoo] := eqVneq S [<span class="nb">set</span> -oo].
+  <span class="bp">by</span> <span class="kr">exists</span> -oo; <span class="nb">split</span>; [<span class="nb">rewrite</span> ub_set1 |<span class="bp">exact</span>: lb_ub_refl].
+<span class="nb">have</span> [-&gt;|S0] := eqVneq S set0.
+  <span class="bp">by</span> <span class="kr">exists</span> -oo; <span class="bp">exact</span>: ereal_supremums_set0_ninfty.
+<span class="nb">have</span> [Spoo|Spoo] := pselect (S +oo).
+  <span class="bp">by</span> <span class="kr">exists</span> +oo; <span class="nb">split</span>; [<span class="nb">apply</span>/ereal_ub_pinfty | <span class="nb">apply</span>/lbP =&gt; /= y /ubP; <span class="nb">apply</span>].
+<span class="nb">have</span> [r Sr] : <span class="kr">exists</span> <span class="nv">r</span>, S r%:E.
+  <span class="nb">move</span>: S0 =&gt; /set0P[] [r Sr| // |Snoo1]; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">r</span>.
+  <span class="nb">apply</span>/not_existsP =&gt; nS; <span class="nb">move</span>/negP : Snoo; <span class="nb">apply</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> predeqE =&gt; -[] // r; <span class="nb">split</span> =&gt; // /nS.
+<span class="nb">set</span> U := fine_def r @` S.
+<span class="nb">have</span> [|] := eqVneq (ubound U) set0.
+  <span class="nb">rewrite</span> -subset0 =&gt; U0; <span class="kr">exists</span> +oo.
+  <span class="nb">split</span>; [<span class="bp">exact</span>/ereal_ub_pinfty | <span class="nb">apply</span>/lbP =&gt; /= -[r0 /ubP Sr0|//|]].
+  - <span class="nb">suff</span> : ubound U r0 <span class="bp">by</span> <span class="nb">move</span>/U0.
+    <span class="bp">by</span> <span class="nb">apply</span>/ubP=&gt; _ -[] [r1 Sr1 &lt;-|//| /= _ &lt;-]; <span class="nb">rewrite</span> -lee_fin; <span class="nb">apply</span> Sr0.
+  - <span class="bp">by</span> <span class="nb">move</span>/ereal_ub_ninfty =&gt; [|]; <span class="bp">by</span> [<span class="nb">move</span>/eqP : S0|<span class="nb">move</span>/eqP : Snoo].
+<span class="nb">set</span> u : R := sup U.
+<span class="kr">exists</span> <span class="nv">u</span>%:E; <span class="nb">split</span>; <span class="nb">last first</span>.
+  <span class="nb">apply</span>/lbP=&gt; -[r0 /ubP Sr0| |].
+  - <span class="nb">rewrite</span> lee_fin; <span class="nb">apply</span>/sup_le_ub; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">r</span>, r%:E.
+    <span class="bp">by</span> <span class="nb">apply</span>/ubP =&gt; _ -[[r2 ? &lt;-| // | /= _ &lt;-]]; <span class="nb">rewrite</span> -lee_fin; <span class="bp">exact</span>: Sr0.
+  - <span class="bp">by</span> <span class="nb">rewrite</span> leey.
+  - <span class="bp">by</span> <span class="nb">move</span>/ereal_ub_ninfty=&gt; [|/eqP //]; [<span class="nb">move</span>/eqP : S0|<span class="nb">rewrite</span> (negbTE Snoo)].
+<span class="nb">apply</span>/ubP =&gt; -[r0 Sr0|//|_]; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> leNye.
+<span class="nb">rewrite</span> lee_fin.
+<span class="nb">suff</span> : has_sup U <span class="bp">by</span> <span class="nb">move</span>/sup_upper_bound/ubP; <span class="nb">apply</span>; <span class="kr">exists</span> <span class="nv">r0</span>%:E.
+<span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">r0</span>, r0%:E.
+<span class="kr">exists</span> <span class="nv">u</span>; <span class="nb">apply</span>/ubP =&gt; y; <span class="nb">move</span>=&gt; [] y&#39; Sy&#39; &lt;-{y}.
+<span class="nb">have</span> : has_sup U <span class="bp">by</span> <span class="nb">split</span>; [<span class="kr">exists</span> <span class="nv">r</span>, r%:E | <span class="bp">exact</span>/set0P].
+<span class="nb">move</span>/sup_upper_bound/ubP; <span class="nb">apply</span>.
+<span class="bp">by</span> <span class="nb">case</span>: y&#39; Sy&#39; =&gt; [r1 /= Sr1 | // | /= _]; [<span class="kr">exists</span> <span class="nv">r1</span>%:E | <span class="kr">exists</span> <span class="nv">r</span>%:E].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_sup_ub</span> <span class="nv">S</span> : ubound S (ereal_sup S).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; y Sy; <span class="nb">rewrite</span> /ereal_sup /supremum ifF; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> predeqE =&gt; /(_ y)[+ _]; <span class="bp">exact</span>.
+<span class="nb">case</span>: xgetP =&gt; /=; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; _ -&gt; -[] /ubP geS _; <span class="nb">apply</span> geS.
+<span class="bp">by</span> <span class="nb">case</span>: (ereal_supremums_neq0 S) =&gt; /= x0 Sx0; <span class="nb">move</span>/(_ x0).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_sup_ninfty</span> <span class="nv">S</span> : ereal_sup S = -oo &lt;-&gt; S `&lt;=` [<span class="nb">set</span> -oo].
+<span class="kn">Proof</span>.
+<span class="nb">split</span>.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; supS [r /ereal_sup_ub | /ereal_sup_ub |//]; <span class="nb">rewrite</span> supS.
+<span class="nb">move</span>=&gt; /(@subset_set1 _ S) [] -&gt;; [<span class="bp">exact</span>: ereal_sup0|<span class="bp">exact</span>: ereal_sup1].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_inf_lb</span> <span class="nv">S</span> : lbound S (ereal_inf S).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x Sx; <span class="nb">rewrite</span> /ereal_inf lee_oppl; <span class="nb">apply</span> ereal_sup_ub; <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_inf_pinfty</span> <span class="nv">S</span> : ereal_inf S = +oo &lt;-&gt; S `&lt;=` [<span class="nb">set</span> +oo].
+<span class="kn">Proof</span>. <span class="nb">rewrite</span> eqe_oppLRP oppe_subset image_set1; <span class="bp">exact</span>: ereal_sup_ninfty. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_ereal_sup</span> : {homo @ereal_sup R : A B / A `&lt;=` B &gt;-&gt; A &lt;= B}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; A B AB; <span class="nb">apply</span> ub_ereal_sup =&gt; x Ax; <span class="nb">apply</span>/ereal_sup_ub/AB. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_ereal_inf</span> : {homo @ereal_inf R : A B / A `&lt;=` B &gt;-&gt; B &lt;= A}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; A B AB; <span class="nb">apply</span> lb_ereal_inf =&gt; x Bx; <span class="bp">exact</span>/ereal_inf_lb/AB. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">hasNub_ereal_sup</span> (<span class="nv">A</span> : <span class="nb">set</span> (\bar R)) : ~ has_ubound A -&gt;
+  A !=set0 -&gt; ereal_sup A = +oo%E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; hasNubA A0.
+<span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le leey /= leNgt; <span class="nb">apply</span>: contra_notN hasNubA =&gt; Aoo.
+<span class="bp">by</span> <span class="kr">exists</span> (<span class="nv">ereal_sup</span> <span class="nv">A</span>); <span class="bp">exact</span>: ereal_sup_ub.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_sup_EFin</span>  (<span class="nv">A</span> : <span class="nb">set</span> R) :
+  has_ubound A -&gt; A !=set0 -&gt; ereal_sup (EFin @` A) = (sup A)%:E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; has_ubA A0; <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>: ub_ereal_sup =&gt; /= y [r Ar &lt;-{y}]; <span class="nb">rewrite</span> lee_fin sup_ub.
+<span class="nb">set</span> esup := ereal_sup _; <span class="nb">have</span> := leey esup.
+<span class="nb">rewrite</span> le_eqVlt =&gt; /predU1P[-&gt;|esupoo]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> leey.
+<span class="nb">have</span> := leNye esup; <span class="nb">rewrite</span> le_eqVlt =&gt; /predU1P[/esym|ooesup].
+  <span class="nb">case</span>: A0 =&gt; i Ai.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; /ereal_sup_ninfty /(_ i%:E) /(_ (ex_intro2 A _ i Ai erefl)).
+<span class="nb">have</span> esup_fin_num : esup \<span class="kr">is</span> a fin_num.
+  <span class="bp">by</span> <span class="nb">rewrite</span> fin_numE -leeNy_eq -ltNge ooesup /= -leye_eq -ltNge esupoo.
+<span class="nb">rewrite</span> -(@fineK _ esup) // lee_fin leNgt.
+<span class="nb">apply</span>/negP =&gt; /(sup_gt A0)[r Ar]; <span class="nb">apply</span>/negP; <span class="nb">rewrite</span> -leNgt.
+<span class="bp">by</span> <span class="nb">rewrite</span> -lee_fin fineK//; <span class="nb">apply</span>: ereal_sup_ub; <span class="kr">exists</span> <span class="nv">r</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_inf_EFin</span> (<span class="nv">A</span> : <span class="nb">set</span> R) : has_lbound A -&gt; A !=set0 -&gt;
+   ereal_inf (EFin @` A) = (inf A)%:E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; has_lbA A0; <span class="nb">rewrite</span> /ereal_inf /inf EFinN; <span class="nb">congr</span> (- _)%E.
+<span class="nb">rewrite</span> -ereal_sup_EFin; [|<span class="bp">exact</span>/has_lb_ubN|<span class="bp">exact</span>/nonemptyN].
+<span class="bp">by</span> <span class="nb">rewrite</span> !image_comp.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">ereal_supremum_realType</span>.
+
+<span class="kn">Canonical</span> <span class="nf">ereal_pointed</span> (R : numDomainType) := PointedType (extended R) <span class="mi">0</span>%E.
+
+<span class="kn">Lemma</span> <span class="nf">restrict_abse</span> <span class="nv">T</span> (<span class="nv">R</span> : numDomainType) (<span class="nv">f</span> : T -&gt; \bar R) (<span class="nv">D</span> : <span class="nb">set</span> T) :
+  (abse \o f) \_ D = abse \o (f \_ D).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">apply</span>/funext=&gt; t; <span class="nb">rewrite</span> /restrict/=; <span class="nb">case</span>: ifPn =&gt; // _; <span class="nb">rewrite</span> abse0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Section</span> <span class="nf">SignedRealFieldStability</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realFieldType}.
+
+<span class="kn">Definition</span> <span class="nf">ereal_sup_reality_subdef</span> (<span class="nv">xnz</span> : KnownSign.nullity)
+    (<span class="nv">xr</span> : KnownSign.reality) :=
+  (<span class="kr">if</span> KnownSign.wider_reality &lt;=<span class="mi">0</span> xr <span class="kr">then</span> KnownSign.Real &lt;=<span class="mi">0</span>
+   <span class="kr">else</span> &gt;=&lt;<span class="mi">0</span>)%snum_sign.
+<span class="kn">Arguments</span> ereal_sup_reality_subdef /.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_sup_snum_subproof</span> (<span class="nv">xnz</span> : KnownSign.nullity) (<span class="nv">xr</span> : KnownSign.reality)
+    (<span class="nv">S</span> : {<span class="nb">compare</span> (<span class="mi">0</span> : \bar R) &amp; xnz &amp; xr} -&gt; <span class="kt">Prop</span>)
+    (<span class="nv">r</span> := ereal_sup_reality_subdef xnz xr) :
+  Signed.spec <span class="mi">0</span> ?=<span class="mi">0</span> r (ereal_sup [<span class="nb">set</span> x%:num | x <span class="kr">in</span> S]%classic).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> {}/r; <span class="nb">move</span>: xr S =&gt; [[[]|]|] S /=;
+  <span class="kp">do</span> ?[<span class="bp">by</span> <span class="nb">apply</span>: ub_ereal_sup =&gt; _ [? _ &lt;-]
+      |<span class="bp">by</span> <span class="nb">case</span>: ereal_sup =&gt; [s||];
+          <span class="nb">rewrite</span> <span class="nl">?leey</span> <span class="nl">?leNye</span>// !lee_fin -realE num_real].
+<span class="kn">Qed</span>.
+
+<span class="kn">Canonical</span> <span class="nf">ereal_sup_snum</span> (xnz : KnownSign.nullity) (xr : KnownSign.reality)
+    (S : {<span class="nb">compare</span> (<span class="mi">0</span> : \bar R) &amp; xnz &amp; xr} -&gt; <span class="kt">Prop</span>) :=
+  Signed.mk (ereal_sup_snum_subproof S).
+
+<span class="kn">Definition</span> <span class="nf">ereal_inf_reality_subdef</span> (<span class="nv">xnz</span> : KnownSign.nullity)
+    (<span class="nv">xr</span> : KnownSign.reality) :=
+  (<span class="kr">if</span> KnownSign.wider_reality &gt;=<span class="mi">0</span> xr <span class="kr">then</span> KnownSign.Real &gt;=<span class="mi">0</span>
+   <span class="kr">else</span> &gt;=&lt;<span class="mi">0</span>)%snum_sign.
+<span class="kn">Arguments</span> ereal_inf_reality_subdef /.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_inf_snum_subproof</span> (<span class="nv">xnz</span> : KnownSign.nullity) (<span class="nv">xr</span> : KnownSign.reality)
+    (<span class="nv">S</span> : {<span class="nb">compare</span> (<span class="mi">0</span> : \bar R) &amp; xnz &amp; xr} -&gt; <span class="kt">Prop</span>)
+    (<span class="nv">r</span> := ereal_inf_reality_subdef xnz xr) :
+  Signed.spec <span class="mi">0</span> ?=<span class="mi">0</span> r (ereal_inf [<span class="nb">set</span> x%:num | x <span class="kr">in</span> S]%classic).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> {}/r; <span class="nb">move</span>: xr S =&gt; [[[]|]|] S /=;
+  <span class="kp">do</span> ?[<span class="bp">by</span> <span class="nb">apply</span>: lb_ereal_inf =&gt; _ [? _ &lt;-]
+      |<span class="bp">by</span> <span class="nb">case</span>: ereal_inf =&gt; [s||];
+          <span class="nb">rewrite</span> <span class="nl">?leey</span> <span class="nl">?leNye</span>// !lee_fin -realE num_real].
+<span class="kn">Qed</span>.
+
+<span class="kn">Canonical</span> <span class="nf">ereal_inf_snum</span> (xnz : KnownSign.nullity) (xr : KnownSign.reality)
+    (S : {<span class="nb">compare</span> (<span class="mi">0</span> : \bar R) &amp; xnz &amp; xr} -&gt; <span class="kt">Prop</span>) :=
+  Signed.mk (ereal_inf_snum_subproof S).
+
+<span class="kn">End</span> <span class="nf">SignedRealFieldStability</span>.
+
+<span class="kn">Section</span> <span class="nf">ereal_nbhs</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : numFieldType}.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ereal_scope.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+
+<span class="kn">Definition</span> <span class="nf">ereal_dnbhs</span> (<span class="nv">x</span> : \bar R) (<span class="nv">P</span> : \bar R -&gt; <span class="kt">Prop</span>) : <span class="kt">Prop</span> :=
+  <span class="kr">match</span> x <span class="kr">with</span>
+    | r%:E =&gt; r^&#39; (<span class="kr">fun</span> <span class="nv">r</span> =&gt; P r%:E)
+    | +oo =&gt; <span class="kr">exists</span> <span class="nv">M</span>, M \<span class="kr">is</span> Num.real /\ <span class="kr">forall</span> <span class="nv">y</span>, M%:E &lt; y -&gt; P y
+    | -oo =&gt; <span class="kr">exists</span> <span class="nv">M</span>, M \<span class="kr">is</span> Num.real /\ <span class="kr">forall</span> <span class="nv">y</span>, y &lt; M%:E -&gt; P y
+  <span class="kr">end</span>.
+<span class="kn">Definition</span> <span class="nf">ereal_nbhs</span> (<span class="nv">x</span> : \bar R) (<span class="nv">P</span> : \bar R -&gt; <span class="kt">Prop</span>) : <span class="kt">Prop</span> :=
+  <span class="kr">match</span> x <span class="kr">with</span>
+    | x%:E =&gt; nbhs x (<span class="kr">fun</span> <span class="nv">r</span> =&gt; P r%:E)
+    | +oo =&gt; <span class="kr">exists</span> <span class="nv">M</span>, M \<span class="kr">is</span> Num.real /\ <span class="kr">forall</span> <span class="nv">y</span>, M%:E &lt; y -&gt; P y
+    | -oo =&gt; <span class="kr">exists</span> <span class="nv">M</span>, M \<span class="kr">is</span> Num.real /\ <span class="kr">forall</span> <span class="nv">y</span>, y &lt; M%:E -&gt; P y
+  <span class="kr">end</span>.
+<span class="kn">Canonical</span> <span class="nf">ereal_ereal_filter</span> :=
+  FilteredType (extended R) (extended R) (ereal_nbhs).
+<span class="kn">End</span> <span class="nf">ereal_nbhs</span>.
+
+<span class="kn">Section</span> <span class="nf">ereal_nbhs_instances</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : numFieldType}.
+
+<span class="kn">Global Instance</span> <span class="nf">ereal_dnbhs_filter</span> :
+  <span class="kr">forall</span> <span class="nv">x</span> : \bar R, ProperFilter (ereal_dnbhs x).
+<span class="kn">Proof</span>.
+<span class="nb">case</span>=&gt; [x||].
+- <span class="nb">case</span>: (Proper_dnbhs_numFieldType x) =&gt; x0 [//= xT xI xS].
+  <span class="nb">apply</span> Build_ProperFilter&#39; =&gt; //=; <span class="nb">apply</span> Build_Filter =&gt; //=.
+  <span class="nb">move</span>=&gt; P Q lP lQ; <span class="bp">exact</span>: xI.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; P Q PQ /xS; <span class="nb">apply</span> =&gt; y /PQ.
+- <span class="nb">apply</span> Build_ProperFilter.
+    <span class="nb">move</span>=&gt; P [x [xr xP]] //; <span class="kr">exists</span> (<span class="nv">x</span> + <span class="mi">1</span>)%:E; <span class="nb">apply</span> xP =&gt; /=.
+    <span class="bp">by</span> <span class="nb">rewrite</span> lte_fin ltr_addl.
+  <span class="nb">split</span>=&gt; /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
+  + <span class="bp">by</span> <span class="kr">exists</span> <span class="mi">0</span>%R.
+  + <span class="nb">have</span> [MP0|MP0] := eqVneq MP <span class="mi">0</span>%R.
+      <span class="nb">have</span> [MQ0|MQ0] := eqVneq MQ <span class="mi">0</span>%R.
+        <span class="bp">by</span> <span class="kr">exists</span> <span class="mi">0</span>%R; <span class="nb">split</span> =&gt; // x x0; <span class="nb">split</span>;
+          [<span class="nb">apply</span>/gtMP; <span class="nb">rewrite</span> MP0 | <span class="nb">apply</span>/gtMQ; <span class="nb">rewrite</span> MQ0].
+      <span class="kr">exists</span> `|MQ|%R; <span class="nb">rewrite</span> realE normr_ge0; <span class="nb">split</span> =&gt; // x MQx; <span class="nb">split</span>.
+        <span class="bp">by</span> <span class="nb">apply</span>: gtMP; <span class="nb">rewrite</span> (le_lt_trans _ MQx) // MP0 lee_fin.
+      <span class="bp">by</span> <span class="nb">apply</span> gtMQ; <span class="nb">rewrite</span> (le_lt_trans _ MQx)// lee_fin real_ler_normr <span class="nl">?lexx</span>.
+    <span class="nb">have</span> [MQ0|MQ0] := eqVneq MQ <span class="mi">0</span>%R.
+      <span class="kr">exists</span> `|MP|%R; <span class="nb">rewrite</span> realE normr_ge0; <span class="nb">split</span> =&gt; // x MPx; <span class="nb">split</span>.
+      <span class="bp">by</span> <span class="nb">apply</span> gtMP; <span class="nb">rewrite</span> (le_lt_trans _ MPx)// lee_fin real_ler_normr <span class="nl">?lexx</span>.
+      <span class="bp">by</span> <span class="nb">apply</span> gtMQ; <span class="nb">rewrite</span> (le_lt_trans _ MPx) // lee_fin MQ0.
+    <span class="nb">have</span> {}MP0 : (<span class="mi">0</span> &lt; `|MP|)%R <span class="bp">by</span> <span class="nb">rewrite</span> normr_gt0.
+    <span class="nb">have</span> {}MQ0 : (<span class="mi">0</span> &lt; `|MQ|)%R <span class="bp">by</span> <span class="nb">rewrite</span> normr_gt0.
+    <span class="kr">exists</span> (<span class="nv">Num</span>.max (PosNum MP0) (PosNum MQ0))%:num.
+    <span class="nb">rewrite</span> realE /= ge0 /=; <span class="nb">split</span> =&gt; //.
+    <span class="nb">case</span>=&gt; [r| |//].
+    * <span class="nb">rewrite</span> lte_fin/= num_max num_lt_maxl /= =&gt; /andP[MPx MQx]; <span class="nb">split</span>.
+      <span class="bp">by</span> <span class="nb">apply</span>/gtMP; <span class="nb">rewrite</span> lte_fin (le_lt_trans _ MPx)// real_ler_normr <span class="nl">?lexx</span>.
+      <span class="bp">by</span> <span class="nb">apply</span>/gtMQ; <span class="nb">rewrite</span> lte_fin (le_lt_trans _ MQx)// real_ler_normr <span class="nl">?lexx</span>.
+    * <span class="bp">by</span> <span class="nb">move</span>=&gt; _; <span class="nb">split</span>; [<span class="nb">apply</span>/gtMP | <span class="nb">apply</span>/gtMQ].
+  + <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">M</span>; <span class="nb">split</span> =&gt; // ? /gtM /sPQ.
+- <span class="nb">apply</span> Build_ProperFilter.
+  + <span class="nb">move</span>=&gt; P [M [Mr ltMP]]; <span class="kr">exists</span> (<span class="nv">M</span> - <span class="mi">1</span>)%:E.
+    <span class="bp">by</span> <span class="nb">apply</span>: ltMP; <span class="nb">rewrite</span> lte_fin gtr_addl oppr_lt0.
+  + <span class="nb">split</span>=&gt; /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
+    * <span class="bp">by</span> <span class="kr">exists</span> <span class="mi">0</span>%R.
+    * <span class="nb">have</span> [MP0|MP0] := eqVneq MP <span class="mi">0</span>%R.
+        <span class="nb">have</span> [MQ0|MQ0] := eqVneq MQ <span class="mi">0</span>%R.
+          <span class="bp">by</span> <span class="kr">exists</span> <span class="mi">0</span>%R; <span class="nb">split</span> =&gt; // x x0; <span class="nb">split</span>;
+          [<span class="nb">apply</span>/ltMP; <span class="nb">rewrite</span> MP0 | <span class="nb">apply</span>/ltMQ; <span class="nb">rewrite</span> MQ0].
+        <span class="kr">exists</span> (- `|MQ|)%R; <span class="nb">rewrite</span> realN realE normr_ge0; <span class="nb">split</span> =&gt; // x xMQ.
+        <span class="nb">split</span>.
+          <span class="bp">by</span> <span class="nb">apply</span> ltMP; <span class="nb">rewrite</span> (lt_le_trans xMQ)// lee_fin MP0 ler_oppl oppr0.
+       <span class="nb">apply</span> ltMQ; <span class="nb">rewrite</span> (lt_le_trans xMQ) // lee_fin ler_oppl -normrN.
+       <span class="bp">by</span> <span class="nb">rewrite</span> real_ler_normr <span class="nl">?realN</span> // lexx.
+    * <span class="nb">have</span> [MQ0|MQ0] := eqVneq MQ <span class="mi">0</span>%R.
+        <span class="kr">exists</span> (- `|MP|)%R; <span class="nb">rewrite</span> realN realE normr_ge0; <span class="nb">split</span> =&gt; // x MPx.
+        <span class="nb">split</span>.
+          <span class="nb">apply</span> ltMP; <span class="nb">rewrite</span> (lt_le_trans MPx) // lee_fin ler_oppl -normrN.
+          <span class="bp">by</span> <span class="nb">rewrite</span> real_ler_normr <span class="nl">?realN</span> // lexx.
+        <span class="bp">by</span> <span class="nb">apply</span> ltMQ; <span class="nb">rewrite</span> (lt_le_trans MPx) // lee_fin MQ0 ler_oppl oppr0.
+      <span class="nb">have</span> {}MP0 : (<span class="mi">0</span> &lt; `|MP|)%R <span class="bp">by</span> <span class="nb">rewrite</span> normr_gt0.
+      <span class="nb">have</span> {}MQ0 : (<span class="mi">0</span> &lt; `|MQ|)%R <span class="bp">by</span> <span class="nb">rewrite</span> normr_gt0.
+      <span class="kr">exists</span> (- (Num.max (PosNum MP0) (PosNum MQ0))%:num)%R.
+      <span class="nb">rewrite</span> realN realE /= ge0 /=; <span class="nb">split</span> =&gt; //.
+      <span class="nb">case</span>=&gt; [r|//|].
+      - <span class="nb">rewrite</span> lte_fin ltr_oppr num_max num_lt_maxl =&gt; /andP[].
+        <span class="nb">rewrite</span> ltr_oppr =&gt; MPx; <span class="nb">rewrite</span> ltr_oppr =&gt; MQx; <span class="nb">split</span>.
+          <span class="nb">apply</span>/ltMP; <span class="nb">rewrite</span> lte_fin (lt_le_trans MPx) //= ler_oppl -normrN.
+          <span class="bp">by</span> <span class="nb">rewrite</span> real_ler_normr <span class="nl">?realN</span> // lexx.
+        <span class="nb">apply</span>/ltMQ; <span class="nb">rewrite</span> lte_fin (lt_le_trans MQx) //= ler_oppl -normrN.
+        <span class="bp">by</span> <span class="nb">rewrite</span> real_ler_normr <span class="nl">?realN</span> // lexx.
+      - <span class="bp">by</span> <span class="nb">move</span>=&gt; _; <span class="nb">split</span>; [<span class="nb">apply</span>/ltMP | <span class="nb">apply</span>/ltMQ].
+    * <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">M</span>; <span class="nb">split</span> =&gt; // x /ltM /sPQ.
+<span class="kn">Qed</span>.
+<span class="kn">Typeclasses Opaque</span> ereal_dnbhs.
+
+<span class="kn">Global Instance</span> <span class="nf">ereal_nbhs_filter</span> : <span class="kr">forall</span> <span class="nv">x</span>, ProperFilter (@ereal_nbhs R x).
+<span class="kn">Proof</span>.
+<span class="nb">case</span>=&gt; [r| |].
+- <span class="nb">case</span>: (ereal_dnbhs_filter r%:E) =&gt; r0 [//= nrT rI rS].
+  <span class="nb">apply</span>: Build_ProperFilter =&gt; P /nbhs_ballP[r2 r20 rr2].
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">r</span>%:E; <span class="bp">exact</span>/rr2/ballxx.
+- <span class="bp">exact</span>: (ereal_dnbhs_filter +oo).
+- <span class="bp">exact</span>: (ereal_dnbhs_filter -oo).
+<span class="kn">Qed</span>.
+<span class="kn">Typeclasses Opaque</span> ereal_nbhs.
+
+<span class="kn">End</span> <span class="nf">ereal_nbhs_instances</span>.
+
+<span class="kn">Section</span> <span class="nf">ereal_nbhs_infty</span>.
+<span class="kn">Context</span> (<span class="nv">R</span> : numFieldType).
+<span class="kn">Implicit Type</span> (r : R).
+
+<span class="kn">Lemma</span> <span class="nf">ereal_nbhs_pinfty_gt</span> <span class="nv">r</span> : r \<span class="kr">is</span> Num.real -&gt; \<span class="kr">forall</span> <span class="nv">x</span> \near +oo, r%:E &lt; x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">r</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_nbhs_pinfty_ge</span> <span class="nv">r</span> : r \<span class="kr">is</span> Num.real -&gt; \<span class="kr">forall</span> <span class="nv">x</span> \near +oo, r%:E &lt;= x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">r</span>; <span class="nb">split</span> =&gt; //; <span class="nb">apply</span>: ltW. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_nbhs_ninfty_lt</span> <span class="nv">r</span> : r \<span class="kr">is</span> Num.real -&gt; \<span class="kr">forall</span> <span class="nv">x</span> \near -oo, r%:E &gt; x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">r</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_nbhs_ninfty_le</span> <span class="nv">r</span> : r \<span class="kr">is</span> Num.real -&gt; \<span class="kr">forall</span> <span class="nv">x</span> \near -oo, r%:E &gt;= x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">r</span>; <span class="nb">split</span> =&gt; // ?; <span class="nb">apply</span>: ltW. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_nbhs_pinfty_real</span> : \<span class="kr">forall</span> <span class="nv">x</span> \near +oo, fine x \<span class="kr">is</span> @Num.real R.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: filterS (ereal_nbhs_pinfty_gt (@real0 _)) =&gt; x.
+<span class="bp">by</span> <span class="nb">case</span>: x =&gt; //= x; <span class="nb">apply</span>: gtr0_real.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_nbhs_ninfty_real</span> : \<span class="kr">forall</span> <span class="nv">x</span> \near -oo, fine x \<span class="kr">is</span> @Num.real R.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: filterS (ereal_nbhs_ninfty_lt (@real0 _)) =&gt; x.
+<span class="bp">by</span> <span class="nb">case</span>: x =&gt; //= x; <span class="nb">apply</span>: ltr0_real.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">ereal_nbhs_infty</span>.
+
+<span class="kn">Section</span> <span class="nf">ereal_topologicalType</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realFieldType.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_nbhs_singleton</span> (<span class="nv">p</span> : \bar R) (<span class="nv">A</span> : <span class="nb">set</span> (\bar R)) :
+  ereal_nbhs p A -&gt; A p.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>: p =&gt; -[p | [M [Mreal MA]] | [M [Mreal MA]]] /=; [|<span class="bp">exact</span>: MA | <span class="bp">exact</span>: MA].
+<span class="nb">move</span>=&gt; /nbhs_ballP[_/posnumP[e]]; <span class="nb">apply</span>; <span class="bp">exact</span>/ballxx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_nbhs_nbhs</span> (<span class="nv">p</span> : \bar R) (<span class="nv">A</span> : <span class="nb">set</span> (\bar R)) :
+  ereal_nbhs p A -&gt; ereal_nbhs p (ereal_nbhs^~ A).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>: p =&gt; -[p| [M [Mreal MA]] | [M [Mreal MA]]] //=.
+- <span class="nb">move</span>=&gt; /nbhs_ballP[_/posnumP[e]] ballA.
+  <span class="nb">apply</span>/nbhs_ballP; <span class="kr">exists</span> (<span class="nv">e</span>%:num / <span class="mi">2</span>) =&gt; //= r per.
+  <span class="nb">apply</span>/nbhs_ballP; <span class="kr">exists</span> (<span class="nv">e</span>%:num / <span class="mi">2</span>) =&gt; //= x rex.
+  <span class="nb">apply</span>/ballA/(@ball_splitl _ _ r) =&gt; //; <span class="bp">exact</span>/ball_sym.
+- <span class="kr">exists</span> (<span class="nv">M</span> + <span class="mi">1</span>)%R; <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> realD.
+  <span class="nb">move</span>=&gt; -[x| _ |_] //=; <span class="nb">last</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">M</span>.
+  <span class="nb">rewrite</span> lte_fin =&gt; M&#39;x /=.
+  <span class="nb">apply</span>/nbhs_ballP; <span class="kr">exists</span> <span class="mi">1</span>%R =&gt; //= y x1y.
+  <span class="nb">apply</span> MA; <span class="nb">rewrite</span> lte_fin.
+  <span class="nb">rewrite</span> addrC -ltr_subr_addl <span class="kr">in</span> M&#39;x.
+  <span class="nb">rewrite</span> (lt_le_trans M&#39;x) // ler_subl_addl addrC -ler_subl_addl.
+  <span class="nb">rewrite</span> (le_trans _ (ltW x1y)) // real_ler_norm // realB //.
+    <span class="nb">rewrite</span> ltr_subr_addr <span class="kr">in</span> M&#39;x.
+    <span class="nb">rewrite</span> -comparabler0 (@comparabler_trans _ (M + <span class="mi">1</span>)%R) //.
+      <span class="bp">by</span> <span class="nb">rewrite</span> /Order.comparable (ltW M&#39;x) orbT.
+    <span class="bp">by</span> <span class="nb">rewrite</span> comparabler0 realD.
+  <span class="bp">by</span> <span class="nb">rewrite</span> num_real. <span class="c">(* where we really use realFieldType *)</span>
+- <span class="kr">exists</span> (<span class="nv">M</span> - <span class="mi">1</span>)%R; <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> realB.
+  <span class="nb">move</span>=&gt; -[x| _ |_] //=; <span class="nb">last</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">M</span>.
+  <span class="nb">rewrite</span> lte_fin =&gt; M&#39;x /=.
+  <span class="nb">apply</span>/nbhs_ballP; <span class="kr">exists</span> <span class="mi">1</span>%R =&gt; //= y x1y.
+  <span class="nb">apply</span> MA; <span class="nb">rewrite</span> lte_fin.
+  <span class="nb">rewrite</span> ltr_subr_addl <span class="kr">in</span> M&#39;x.
+  <span class="nb">rewrite</span> (le_lt_trans _ M&#39;x) // addrC -ler_subl_addl.
+  <span class="nb">rewrite</span> (le_trans _ (ltW x1y)) // distrC real_ler_norm // realB //.
+    <span class="bp">by</span> <span class="nb">rewrite</span> num_real. <span class="c">(* where we really use realFieldType *)</span>
+  <span class="nb">rewrite</span> addrC -ltr_subr_addr <span class="kr">in</span> M&#39;x.
+  <span class="nb">rewrite</span> -comparabler0 (@comparabler_trans _ (M - <span class="mi">1</span>)%R) //.
+    <span class="bp">by</span> <span class="nb">rewrite</span> /Order.comparable (ltW M&#39;x).
+  <span class="bp">by</span> <span class="nb">rewrite</span> comparabler0 realB.
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">ereal_topologicalMixin</span> : Topological.mixin_of (@ereal_nbhs R) :=
+  topologyOfFilterMixin _ ereal_nbhs_singleton ereal_nbhs_nbhs.
+<span class="kn">Canonical</span> <span class="nf">ereal_topologicalType</span> := TopologicalType _ ereal_topologicalMixin.
+
+<span class="kn">End</span> <span class="nf">ereal_topologicalType</span>.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+
+<span class="kn">Lemma</span> <span class="nf">nbhsNe</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">x</span> : \bar R) :
+  nbhs (- x) = [<span class="nb">set</span> (-%E @` A) | A <span class="kr">in</span> nbhs x].
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: x =&gt; [r /=| |].
+- <span class="nb">rewrite</span> /nbhs /= /ereal_nbhs -nbhs_ballE.
+  <span class="nb">rewrite</span> predeqE =&gt; S; <span class="nb">split</span> =&gt; [[_/posnumP[e] reS]|[S&#39; [_ /posnumP[e] reS&#39; &lt;-]]].
+    <span class="kr">exists</span> (-%E @` S).
+      <span class="kr">exists</span> <span class="nv">e</span>%:num =&gt; //= r1 rer1; <span class="kr">exists</span> (- r1%:E); <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> oppeK.
+      <span class="bp">by</span> <span class="nb">apply</span> reS; <span class="nb">rewrite</span> /ball /= opprK -normrN opprD opprK.
+    <span class="nb">rewrite</span> predeqE =&gt; s; <span class="nb">split</span> =&gt; [[y [z Sz] &lt;- &lt;-]|Ss].
+      <span class="bp">by</span> <span class="nb">rewrite</span> oppeK.
+    <span class="bp">by</span> <span class="kr">exists</span> (- s); [<span class="kr">exists</span> <span class="nv">s</span> | <span class="nb">rewrite</span> oppeK].
+  <span class="kr">exists</span> <span class="nv">e</span>%:num =&gt; //= r1 rer1; <span class="kr">exists</span> (- r1%:E); <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> oppeK.
+  <span class="bp">by</span> <span class="nb">apply</span> reS&#39;; <span class="nb">rewrite</span> /ball /= opprK -normrN opprD.
+- <span class="nb">rewrite</span> predeqE =&gt; S; <span class="nb">split</span>=&gt; [[M [Mreal MS]]|[x [M [Mreal Mx]] &lt;-]].
+    <span class="kr">exists</span> (-%E @` S).
+      <span class="kr">exists</span> (- M)%R; <span class="nb">rewrite</span> realN Mreal; <span class="nb">split</span> =&gt; // x Mx.
+      <span class="bp">by</span> <span class="kr">exists</span> (- x); [<span class="nb">apply</span> MS; <span class="nb">rewrite</span> lte_oppl | <span class="nb">rewrite</span> oppeK].
+    <span class="nb">rewrite</span> predeqE =&gt; x; <span class="nb">split</span>=&gt; [[y [z Sz &lt;- &lt;-]]|Sx]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> oppeK.
+    <span class="bp">by</span> <span class="kr">exists</span> (- x); [<span class="kr">exists</span> <span class="nv">x</span> | <span class="nb">rewrite</span> oppeK].
+  <span class="kr">exists</span> (- M)%R; <span class="nb">rewrite</span> realN; <span class="nb">split</span> =&gt; // y yM.
+  <span class="kr">exists</span> (- y); <span class="bp">by</span> [<span class="nb">apply</span> Mx; <span class="nb">rewrite</span> lte_oppr|<span class="nb">rewrite</span> oppeK].
+- <span class="nb">rewrite</span> predeqE =&gt; S; <span class="nb">split</span>=&gt; [[M [Mreal MS]]|[x [M [Mreal Mx]] &lt;-]].
+    <span class="kr">exists</span> (-%E @` S).
+      <span class="kr">exists</span> (- M)%R; <span class="nb">rewrite</span> realN Mreal; <span class="nb">split</span> =&gt; // x Mx.
+      <span class="bp">by</span> <span class="kr">exists</span> (- x); [<span class="nb">apply</span> MS; <span class="nb">rewrite</span> lte_oppr | <span class="nb">rewrite</span> oppeK].
+    <span class="nb">rewrite</span> predeqE =&gt; x; <span class="nb">split</span>=&gt; [[y [z Sz &lt;- &lt;-]]|Sx]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> oppeK.
+    <span class="bp">by</span> <span class="kr">exists</span> (- x); [<span class="kr">exists</span> <span class="nv">x</span> | <span class="nb">rewrite</span> oppeK].
+  <span class="kr">exists</span> (- M)%R; <span class="nb">rewrite</span> realN; <span class="nb">split</span> =&gt; // y yM.
+  <span class="kr">exists</span> (- y); <span class="bp">by</span> [<span class="nb">apply</span> Mx; <span class="nb">rewrite</span> lte_oppl|<span class="nb">rewrite</span> oppeK].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nbhsNKe</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">z</span> : \bar R) (<span class="nv">A</span> : <span class="nb">set</span> (\bar R)) :
+  nbhs (- z) (-%E @` A) -&gt; nbhs z A.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> nbhsNe =&gt; -[S zS] SA; <span class="nb">rewrite</span> -(oppeK z) nbhsNe.
+<span class="kr">exists</span> (-%E @` S); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> nbhsNe; <span class="kr">exists</span> <span class="nv">S</span>.
+<span class="nb">rewrite</span> predeqE =&gt; x; <span class="nb">split</span> =&gt; [[y [u Su &lt;-{y} &lt;-]]|Ax].
+  <span class="nb">rewrite</span> oppeK.
+  <span class="nb">move</span>: SA; <span class="nb">rewrite</span> predeqE =&gt; /(_ (- u)) [h _].
+  <span class="nb">have</span> : (<span class="kr">exists2</span> y, S y &amp; - y = - u) <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">u</span>.
+  <span class="bp">by</span> <span class="nb">move</span>/h =&gt; -[y Ay] /eqP; <span class="nb">rewrite</span> eqe_opp =&gt; /eqP &lt;-.
+<span class="kr">exists</span> (- x); <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> oppeK.
+<span class="kr">exists</span> <span class="nv">x</span> =&gt; //.
+<span class="nb">move</span>: SA; <span class="nb">rewrite</span> predeqE =&gt; /(_ (- x)) [_ h].
+<span class="nb">have</span> : (-%E @` A) (- x) <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="bp">by</span> <span class="nb">move</span>/h =&gt; [y Sy] /eqP; <span class="nb">rewrite</span> eqe_opp =&gt; /eqP &lt;-.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">oppe_continuous</span> (<span class="nv">R</span> : realFieldType) : continuous (@oppe R).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x S /= xS; <span class="nb">apply</span> nbhsNKe; <span class="nb">rewrite</span> image_preimage //.
+<span class="bp">by</span> <span class="nb">rewrite</span> predeqE =&gt; y; <span class="nb">split</span> =&gt; // _; <span class="kr">exists</span> (- y) =&gt; //; <span class="nb">rewrite</span> oppeK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Section</span> <span class="nf">contract_expand</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realFieldType.
+<span class="kn">Implicit Types</span> (<span class="nv">x</span> : \bar R) (<span class="nv">r</span> : R).
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ereal_scope.
+
+<span class="kn">Lemma</span> <span class="nf">contract_imageN</span> (<span class="nv">S</span> : <span class="nb">set</span> (\bar R)) :
+  (@contract R) @` (-%E @` S) = -%R @` ((@contract R) @` S).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> predeqE =&gt; r; <span class="nb">split</span> =&gt; [[y [z Sz &lt;-{y} &lt;-{r}]]|[s [y Sy &lt;-{s} &lt;-{r}]]].
+<span class="bp">by</span> <span class="kr">exists</span> (<span class="nv">contract</span> <span class="nv">z</span>); [<span class="kr">exists</span> <span class="nv">z</span> | <span class="nb">rewrite</span> contractN].
+<span class="bp">by</span> <span class="kr">exists</span> (- y); [<span class="kr">exists</span> <span class="nv">y</span> | <span class="nb">rewrite</span> contractN].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">contractK</span> : cancel (@contract R) (@expand R).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: (onS_can [pred r | `|r| &lt;= <span class="mi">1</span>]%R (@contract_le1 R)).
+<span class="bp">exact</span>: inj_can_sym_on (@expandK R) (on2W (@contract_inj R)).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">bijective_contract</span> : {on [pred r | `|r| &lt;= <span class="mi">1</span>]%R, bijective (@contract R)}.
+<span class="kn">Proof</span>. <span class="kr">exists</span> (@expand R); [<span class="bp">exact</span>: in1W contractK | <span class="bp">exact</span>: (@expandK R)]. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">le_expandLR</span> := monoLR_in
+  (in_onW_can _ predT contractK) (<span class="kr">fun</span> <span class="nv">x</span> <span class="nv">_</span> =&gt; contract_le1 x) (@le_expand_in R).
+<span class="kn">Definition</span> <span class="nf">lt_expandLR</span> := monoLR_in
+  (in_onW_can _ predT contractK) (<span class="kr">fun</span> <span class="nv">x</span> <span class="nv">_</span> =&gt; contract_le1 x) (@lt_expand R).
+<span class="kn">Definition</span> <span class="nf">le_expandRL</span> := monoRL_in
+  (in_onW_can _ predT contractK) (<span class="kr">fun</span> <span class="nv">x</span> <span class="nv">_</span> =&gt; contract_le1 x) (@le_expand_in R).
+<span class="kn">Definition</span> <span class="nf">lt_expandRL</span> := monoRL_in
+  (in_onW_can _ predT contractK) (<span class="kr">fun</span> <span class="nv">x</span> <span class="nv">_</span> =&gt; contract_le1 x) (@lt_expand R).
+
+<span class="kn">Lemma</span> <span class="nf">contract_eq0</span> <span class="nv">x</span> : (contract x == <span class="mi">0</span>%R) = (x == <span class="mi">0</span>).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -(can_eq contractK) contract0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">contract_eqN1</span> <span class="nv">x</span> : (contract x == -<span class="mi">1</span>) = (x == -oo).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -(can_eq contractK). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">contract_eq1</span> <span class="nv">x</span> : (contract x == <span class="mi">1</span>%R) = (x == +oo).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -(can_eq contractK). <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">contract_expand</span>.
+
+<span class="kn">Section</span> <span class="nf">contract_expand_realType</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+
+<span class="kn">Let</span> <span class="nf">contract</span> := @contract R.
+
+<span class="kn">Lemma</span> <span class="nf">sup_contract_le1</span> <span class="nv">S</span> : S !=set0 -&gt; (`|sup (contract @` S)| &lt;= <span class="mi">1</span>)%R.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>=&gt; x Sx; <span class="nb">rewrite</span> ler_norml; <span class="nb">apply</span>/andP; <span class="nb">split</span>; <span class="nb">last first</span>.
+  <span class="nb">apply</span> sup_le_ub; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> (<span class="nv">contract</span> <span class="nv">x</span>), x.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; r [y Sy] &lt;-; <span class="nb">case</span>/ler_normlP : (contract_le1 y).
+<span class="nb">rewrite</span> (@le_trans _ _ (contract x)) //.
+  <span class="bp">by</span> <span class="nb">case</span>/ler_normlP : (contract_le1 x); <span class="nb">rewrite</span> ler_oppl.
+<span class="nb">apply</span> sup_ub; <span class="nb">last</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="bp">by</span> <span class="kr">exists</span> <span class="mi">1</span>%R =&gt; r [y Sy &lt;-]; <span class="nb">case</span>/ler_normlP : (contract_le1 y).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">contract_sup</span> <span class="nv">S</span> : S !=set0 -&gt; contract (ereal_sup S) = sup (contract @` S).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; S0; <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le; <span class="nb">apply</span>/andP; <span class="nb">split</span>; <span class="nb">last first</span>.
+  <span class="nb">apply</span> sup_le_ub.
+    <span class="bp">by</span> <span class="nb">case</span>: S0 =&gt; x Sx; <span class="kr">exists</span> (<span class="nv">contract</span> <span class="nv">x</span>), x.
+  <span class="nb">move</span>=&gt; x [y Sy] &lt;-{x}; <span class="nb">rewrite</span> le_contract; <span class="bp">exact</span>/ereal_sup_ub.
+<span class="nb">rewrite</span> leNgt; <span class="nb">apply</span>/negP.
+<span class="nb">set</span> supc := sup _; <span class="nb">set</span> csup := contract _; <span class="nb">move</span>=&gt; ltsup.
+<span class="nb">suff</span> [y [ysupS ?]] : <span class="kr">exists</span> <span class="nv">y</span>, y &lt; ereal_sup S /\ ubound S y.
+  <span class="nb">have</span> : ereal_sup S &lt;= y <span class="bp">by</span> <span class="nb">apply</span> ub_ereal_sup.
+  <span class="bp">by</span> <span class="nb">move</span>/(lt_le_trans ysupS); <span class="nb">rewrite</span> ltxx.
+<span class="nb">suff</span> [x [? [ubSx x1]]] : <span class="kr">exists</span> <span class="nv">x</span>, (x &lt; csup)%R /\ ubound (contract @` S) x /\
+    (`|x| &lt;= <span class="mi">1</span>)%R.
+  <span class="kr">exists</span> (<span class="nv">expand</span> <span class="nv">x</span>); <span class="nb">split</span> =&gt; [|y Sy].
+    <span class="bp">by</span> <span class="nb">rewrite</span> -(contractK (ereal_sup S)) lt_expand // inE // contract_le1.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -(contractK y) le_expand //; <span class="nb">apply</span> ubSx; <span class="kr">exists</span> <span class="nv">y</span>.
+<span class="kr">exists</span> ((supc + csup) / <span class="mi">2</span>); <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> midf_lt.
+<span class="nb">split</span> =&gt; [r [y Sy &lt;-{r}]|].
+  <span class="nb">rewrite</span> (@le_trans _ _ supc) <span class="nl">?midf_le</span> //; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> ltW.
+  <span class="nb">apply</span> sup_ub; <span class="nb">last</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">y</span>.
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="mi">1</span>%R =&gt; r [z Sz &lt;-]; <span class="nb">case</span>/ler_normlP : (contract_le1 z).
+<span class="nb">rewrite</span> ler_norml; <span class="nb">apply</span>/andP; <span class="nb">split</span>; <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> ler_pdivr_mulr // mul1r (_ : <span class="mi">2</span> = <span class="mi">1</span> + <span class="mi">1</span>)%R // ler_add //.
+  <span class="bp">by</span> <span class="nb">case</span>/ler_normlP : (sup_contract_le1 S0).
+  <span class="bp">by</span> <span class="nb">case</span>/ler_normlP : (contract_le1 (ereal_sup S)).
+<span class="nb">rewrite</span> ler_pdivl_mulr // (_ : <span class="mi">2</span> = <span class="mi">1</span> + <span class="mi">1</span>)%R // mulN1r opprD ler_add //.
+<span class="bp">by</span> <span class="nb">case</span>/ler_normlP : (sup_contract_le1 S0); <span class="nb">rewrite</span> ler_oppl.
+<span class="bp">by</span> <span class="nb">case</span>/ler_normlP : (contract_le1 (ereal_sup S)); <span class="nb">rewrite</span> ler_oppl.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">contract_inf</span> <span class="nv">S</span> : S !=set0 -&gt; contract (ereal_inf S) = inf (contract @` S).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; -[x Sx]; <span class="nb">rewrite</span> /ereal_inf /contract (contractN (ereal_sup (-%E @` S))).
+<span class="bp">by</span> <span class="nb">rewrite</span> -/contract contract_sup /inf; [<span class="nb">rewrite</span> contract_imageN | <span class="kr">exists</span> (- x), x].
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">contract_expand_realType</span>.
+
+<span class="kn">Section</span> <span class="nf">ereal_PseudoMetric</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realFieldType.
+<span class="kn">Implicit Types</span> (<span class="nv">x</span> <span class="nv">y</span> : \bar R) (<span class="nv">r</span> : R).
+
+<span class="kn">Lemma</span> <span class="nf">le_ereal_ball</span> <span class="nv">x</span> : {homo ereal_ball x : e e&#39; / (e &lt;= e&#39;)%R &gt;-&gt; e `&lt;=` e&#39;}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; e e&#39; ee&#39; y; <span class="nb">rewrite</span> /ereal_ball =&gt; /lt_le_trans; <span class="bp">exact</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expand_ereal_ball_pinfty</span> {<span class="nv">e</span> : {posnum R}} <span class="nv">r</span> : (e%:num &lt;= <span class="mi">1</span>)%R -&gt;
+  expand (<span class="mi">1</span> - e%:num)%R &lt; r%:E -&gt; ereal_ball +oo e%:num r%:E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; e1 er; <span class="nb">rewrite</span> /ereal_ball gtr0_norm <span class="nl">?subr_gt0</span>; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">case</span>/ltr_normlP : (contract_lt1 r).
+<span class="nb">rewrite</span> ltr_subl_addl addrC -ltr_subl_addl -[ltLHS]expandK <span class="nl">?lt_contract</span>//.
+<span class="bp">by</span> <span class="nb">rewrite</span> inE ger0_norm <span class="nl">?ler_subl_addl</span> <span class="nl">?ler_addr</span> // subr_ge0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">contract_ereal_ball_fin_le</span> <span class="nv">r</span> <span class="nv">r&#39;</span> (<span class="nv">e</span> : {posnum R}) : (r &lt;= r&#39;)%R -&gt;
+  (<span class="mi">1</span> &lt;= contract r%:E + e%:num)%R -&gt; ereal_ball r%:E e%:num r&#39;%:E.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> le_eqVlt =&gt; /predU1P[&lt;-{r&#39;} _|rr&#39; re1]; <span class="kp">first</span> <span class="bp">exact</span>: ereal_ball_center.
+<span class="nb">rewrite</span> /ereal_ball ltr0_norm; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> subr_lt0 lt_contract lte_fin.
+<span class="nb">rewrite</span> opprB ltr_subl_addl (lt_le_trans _ re1) //.
+<span class="bp">by</span> <span class="nb">case</span>/ltr_normlP : (contract_lt1 r&#39;).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">contract_ereal_ball_fin_lt</span> <span class="nv">r</span> <span class="nv">r&#39;</span> (<span class="nv">e</span> : {posnum R}) : (r&#39; &lt; r)%R -&gt;
+  (contract r%:E - e%:num &lt;= -<span class="mi">1</span>)%R  -&gt; ereal_ball r%:E e%:num r&#39;%:E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; r&#39;r reN1; <span class="nb">rewrite</span> /ereal_ball.
+<span class="nb">rewrite</span> gtr0_norm <span class="nl">?subr_gt0</span> <span class="nl">?lt_contract</span> <span class="nl">?lte_fin</span>//.
+<span class="nb">rewrite</span> ltr_subl_addl addrC -ltr_subl_addl (le_lt_trans reN1) //.
+<span class="bp">by</span> <span class="nb">move</span>: (contract_lt1 r&#39;); <span class="nb">rewrite</span> ltr_norml =&gt; /andP[].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expand_ereal_ball_fin_lt</span> <span class="nv">r&#39;</span> <span class="nv">r</span> (<span class="nv">e</span> : {posnum R}) : (r&#39; &lt; r)%R -&gt;
+  expand (contract r%:E - e%:num)%R &lt; r&#39;%:E -&gt;
+  (`|contract r%:E - e%:num| &lt; <span class="mi">1</span>)%R -&gt; ereal_ball r%:E e%:num r&#39;%:E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; r&#39;r ? r&#39;e&#39;r.
+<span class="nb">rewrite</span> /ereal_ball gtr0_norm <span class="nl">?subr_gt0</span> <span class="nl">?lt_contract</span> <span class="nl">?lte_fin</span>//.
+<span class="bp">by</span> <span class="nb">rewrite</span> ltr_subl_addl addrC -ltr_subl_addl -lt_expandLR <span class="nl">?inE</span> <span class="nl">?ltW</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ball_ereal_ball_fin_lt</span> <span class="nv">r</span> <span class="nv">r&#39;</span> (<span class="nv">e</span> : {posnum R}) :
+  <span class="kr">let</span> <span class="nv">e&#39;</span> := (r - fine (expand (contract r%:E - e%:num)))%R <span class="kr">in</span>
+  ball r e&#39; r&#39; -&gt; (r&#39; &lt; r)%R -&gt;
+  (`|contract r%:E - (e)%:num| &lt; <span class="mi">1</span>)%R -&gt;
+  ereal_ball r%:E (e)%:num r&#39;%:E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; e&#39; re&#39;r&#39; rr&#39; X; <span class="nb">rewrite</span> /ereal_ball.
+<span class="nb">rewrite</span> gtr0_norm <span class="nl">?subr_gt0</span>// <span class="nl">?lt_contract</span> <span class="nl">?lte_fin</span>//.
+<span class="nb">move</span>: re&#39;r&#39;.
+<span class="nb">rewrite</span> /ball /= gtr0_norm // <span class="nl">?subr_gt0</span>// /e&#39;.
+<span class="nb">rewrite</span> -ltr_subl_addl addrAC subrr add0r ltr_oppl opprK -lte_fin.
+<span class="nb">rewrite</span> fine_expand // lt_expandLR <span class="nl">?inE</span> <span class="nl">?ltW</span>//.
+<span class="bp">by</span> <span class="nb">rewrite</span> ltr_subl_addl addrC -ltr_subl_addl.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ball_ereal_ball_fin_le</span> <span class="nv">r</span> <span class="nv">r&#39;</span> (<span class="nv">e</span> : {posnum R}) :
+  <span class="kr">let</span> <span class="nv">e&#39;</span> : R := (fine (expand (contract r%:E + e%:num)) - r)%R <span class="kr">in</span>
+  ball r e&#39; r&#39; -&gt; (r &lt;= r&#39;)%R -&gt;
+  (`| contract r%:E + e%:num | &lt; <span class="mi">1</span>)%R -&gt;
+  (ereal_ball r%:E e%:num r&#39;%:E).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; e&#39; r&#39;e&#39;r rr&#39; re1; <span class="nb">rewrite</span> /ereal_ball.
+<span class="nb">move</span>: rr&#39;; <span class="nb">rewrite</span> le_eqVlt =&gt; /predU1P[-&gt;|rr&#39;]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> subrr normr0.
+<span class="nb">rewrite</span> /ball /= ltr0_norm <span class="nl">?subr_lt0</span>// opprB <span class="kr">in</span> r&#39;e&#39;r.
+<span class="nb">rewrite</span> ltr0_norm <span class="nl">?subr_lt0</span> <span class="nl">?lt_contract</span> <span class="nl">?lte_fin</span>//.
+<span class="nb">rewrite</span> opprB; <span class="nb">move</span>: r&#39;e&#39;r.
+<span class="nb">rewrite</span> /e&#39; -ltr_subl_addr opprK subrK -lte_fin fine_expand //.
+<span class="bp">by</span> <span class="nb">rewrite</span> lt_expandRL <span class="nl">?inE</span> <span class="nl">?ltW</span>// ltr_subl_addl.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nbhs_oo_up_e1</span> (<span class="nv">A</span> : <span class="nb">set</span> (\bar R)) (<span class="nv">e</span> : {posnum R}) : (e%:num &lt;= <span class="mi">1</span>)%R -&gt;
+  ereal_ball +oo e%:num `&lt;=` A -&gt; nbhs +oo A.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; e1 ooeA.
+<span class="kr">exists</span> (<span class="nv">fine</span> (expand (<span class="mi">1</span> - e%:num)%R)); <span class="nb">rewrite</span> num_real; <span class="nb">split</span> =&gt; //.
+<span class="nb">case</span> =&gt; [r | | //].
+- <span class="nb">rewrite</span> fine_expand; <span class="nb">last first</span>.
+    <span class="bp">by</span> <span class="nb">rewrite</span> ger0_norm <span class="nl">?ltr_subl_addl</span> <span class="nl">?ltr_addr</span> // subr_ge0.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="bp">exact</span>/ooeA/expand_ereal_ball_pinfty.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; _; <span class="bp">exact</span>/ooeA/ereal_ball_center.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nbhs_oo_down_e1</span> (<span class="nv">A</span> : <span class="nb">set</span> (\bar R)) (<span class="nv">e</span> : {posnum R}) : (e%:num &lt;= <span class="mi">1</span>)%R -&gt;
+  ereal_ball -oo e%:num `&lt;=` A -&gt; nbhs -oo A.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; e1 reA; <span class="nb">suff</span> h : nbhs +oo (-%E @` A).
+  <span class="nb">rewrite</span> (_ : -oo = - +oo) // nbhsNe; <span class="kr">exists</span> (-%E @` A) =&gt; //.
+  <span class="nb">rewrite</span> predeqE =&gt; x; <span class="nb">split</span>=&gt; [[y [z Az &lt;- &lt;-]]|Ax]; <span class="nb">rewrite</span> <span class="nl">?oppeK</span> //.
+  <span class="bp">by</span> <span class="kr">exists</span> (- x); [<span class="kr">exists</span> <span class="nv">x</span> | <span class="nb">rewrite</span> oppeK].
+<span class="nb">apply</span> (@nbhs_oo_up_e1 _ e) =&gt; // x x1e; <span class="kr">exists</span> (- x); <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> oppeK.
+<span class="bp">by</span> <span class="nb">apply</span>/reA/ereal_ballN; <span class="nb">rewrite</span> oppeK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nbhs_oo_up_1e</span> (<span class="nv">A</span> : <span class="nb">set</span> (\bar R)) (<span class="nv">e</span> : {posnum R}) : (<span class="mi">1</span> &lt; e%:num)%R -&gt;
+  ereal_ball +oo e%:num `&lt;=` A -&gt; nbhs +oo A.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; e1 reA; <span class="nb">have</span> [e2{e1}|e2] := ltrP <span class="mi">2</span> e%:num.
+  <span class="nb">suff</span> -&gt; : A = setT <span class="bp">by</span> <span class="kr">exists</span> <span class="mi">0</span>%R.
+  <span class="nb">rewrite</span> predeqE =&gt; x; <span class="nb">split</span> =&gt; // _; <span class="nb">apply</span> reA.
+  <span class="bp">exact</span>/ereal_ballN/ereal_ball_ninfty_oversize.
+<span class="nb">have</span> /andP[e10 e11] : (<span class="mi">0</span> &lt; e%:num - <span class="mi">1</span> &lt;= <span class="mi">1</span>)%R.
+  <span class="bp">by</span> <span class="nb">rewrite</span> subr_gt0 e1 /= ler_subl_addl.
+<span class="nb">apply</span> nbhsNKe.
+<span class="nb">have</span> : ((PosNum e10)%:num &lt;= <span class="mi">1</span>)%R <span class="bp">by</span> [].
+<span class="nb">move</span>/(@nbhs_oo_down_e1 (-%E @` A) (PosNum e10)); <span class="nb">apply</span>.
+<span class="nb">move</span>=&gt; y ye; <span class="kr">exists</span> (- y); <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> oppeK.
+<span class="nb">apply</span>/reA/ereal_ballN; <span class="nb">rewrite</span> oppeK /=.
+<span class="bp">by</span> <span class="nb">apply</span>: le_ereal_ball ye =&gt; /=; <span class="nb">rewrite</span> ler_subl_addl ler_addr.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nbhs_oo_down_1e</span> (<span class="nv">A</span> : <span class="nb">set</span> (\bar R)) (<span class="nv">e</span> : {posnum R}) : (<span class="mi">1</span> &lt; e%:num)%R -&gt;
+  ereal_ball -oo e%:num `&lt;=` A -&gt; nbhs -oo A.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; e1 reA; <span class="nb">have</span> [e2{e1}|e2] := ltrP <span class="mi">2</span> e%:num.
+  <span class="nb">suff</span> -&gt; : A = setT <span class="bp">by</span> <span class="kr">exists</span> <span class="mi">0</span>%R.
+  <span class="bp">by</span> <span class="nb">rewrite</span> predeqE =&gt; x; <span class="nb">split</span> =&gt; // _; <span class="bp">exact</span>/reA/ereal_ball_ninfty_oversize.
+<span class="nb">have</span> /andP[e10 e11] : (<span class="mi">0</span> &lt; e%:num - <span class="mi">1</span> &lt;= <span class="mi">1</span>)%R.
+  <span class="bp">by</span> <span class="nb">rewrite</span> subr_gt0 e1 /= ler_subl_addl.
+<span class="nb">apply</span> nbhsNKe.
+<span class="nb">have</span> : ((PosNum e10)%:num &lt;= <span class="mi">1</span>)%R <span class="bp">by</span> [].
+<span class="nb">move</span>/(@nbhs_oo_up_e1 (-%E @` A) (PosNum e10)); <span class="nb">apply</span>.
+<span class="nb">move</span>=&gt; y ye; <span class="kr">exists</span> (- y); <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> oppeK.
+<span class="nb">apply</span>/reA/ereal_ballN; <span class="nb">rewrite</span> /= oppeK.
+<span class="bp">by</span> <span class="nb">apply</span>: le_ereal_ball ye =&gt; /=; <span class="nb">rewrite</span> ler_subl_addl ler_addr.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nbhs_fin_out_above</span> <span class="nv">r</span> (<span class="nv">e</span> : {posnum R}) (<span class="nv">A</span> : <span class="nb">set</span> (\bar R)) :
+  ereal_ball r%:E e%:num `&lt;=` A -&gt;
+  (- <span class="mi">1</span> &lt; contract r%:E - e%:num)%R -&gt;
+  (<span class="mi">1</span> &lt;= contract r%:E + e%:num)%R -&gt;
+  nbhs r%:E A.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; reA reN1 re1.
+<span class="nb">have</span> er1 : (`|contract r%:E - e%:num| &lt; <span class="mi">1</span>)%R.
+  <span class="nb">rewrite</span> ltr_norml reN1 andTb ltr_subl_addl ltr_spaddl //.
+  <span class="bp">by</span> <span class="nb">move</span>: (contract_le1 r%:E); <span class="nb">rewrite</span> ler_norml =&gt; /andP[].
+<span class="nb">pose</span> e&#39; := (r - fine (expand (contract r%:E - e%:num)))%R.
+<span class="nb">have</span> e&#39;0 : (<span class="mi">0</span> &lt; e&#39;)%R.
+  <span class="nb">rewrite</span> subr_gt0 -lte_fin -[ltRHS](contractK r%:E).
+  <span class="nb">rewrite</span> fine_expand // lt_expand <span class="nl">?inE</span> <span class="nl">?contract_le1</span>// <span class="nl">?ltW</span>//.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ltr_subl_addl ltr_addr.
+<span class="nb">apply</span>/nbhs_ballP; <span class="kr">exists</span> <span class="nv">e&#39;</span> =&gt; // r&#39; re&#39;r&#39;; <span class="nb">apply</span> reA.
+<span class="bp">by</span> <span class="nb">have</span> [?|?] := lerP r r&#39;;
+  [<span class="bp">exact</span>: contract_ereal_ball_fin_le | <span class="bp">exact</span>: ball_ereal_ball_fin_lt].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nbhs_fin_out_below</span> <span class="nv">r</span> (<span class="nv">e</span> : {posnum R}) (<span class="nv">A</span> : <span class="nb">set</span> (\bar R)) :
+  ereal_ball r%:E e%:num `&lt;=` A -&gt;
+  (contract r%:E - e%:num &lt;= - <span class="mi">1</span>)%R -&gt;
+  (contract r%:E + e%:num &lt; <span class="mi">1</span>)%R -&gt;
+  nbhs r%:E A.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; reA reN1 re1.
+<span class="nb">have</span> ? : (`|contract r%:E + e%:num| &lt; <span class="mi">1</span>)%R.
+  <span class="nb">rewrite</span> ltr_norml re1 andbT (@lt_le_trans _ _ (contract r%:E)) // <span class="nl">?ler_addl</span> //.
+  <span class="bp">by</span> <span class="nb">move</span>: (contract_lt1 r); <span class="nb">rewrite</span> ltr_norml =&gt; /andP[].
+<span class="nb">pose</span> e&#39; : R := (fine (expand (contract r%:E + e%:num)) - r)%R.
+<span class="nb">have</span> e&#39;0 : (<span class="mi">0</span> &lt; e&#39;)%R.
+  <span class="nb">rewrite</span> /e&#39; subr_gt0 -lte_fin -[<span class="kr">in</span> ltLHS](contractK r%:E).
+  <span class="bp">by</span> <span class="nb">rewrite</span> fine_expand // lt_expand <span class="nl">?inE</span> <span class="nl">?contract_le1</span> <span class="nl">?ltr_addl</span> <span class="nl">?ltW</span>.
+<span class="nb">apply</span>/nbhs_ballP; <span class="kr">exists</span> <span class="nv">e&#39;</span> =&gt; // r&#39; r&#39;e&#39;r; <span class="nb">apply</span> reA.
+<span class="bp">by</span> <span class="nb">have</span> [?|?] := lerP r r&#39;;
+  [<span class="bp">exact</span>: ball_ereal_ball_fin_le | <span class="bp">exact</span>: contract_ereal_ball_fin_lt].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nbhs_fin_out_above_below</span> <span class="nv">r</span> (<span class="nv">e</span> : {posnum R}) (<span class="nv">A</span> : <span class="nb">set</span> (\bar R)) :
+  ereal_ball r%:E e%:num `&lt;=` A -&gt;
+  (contract r%:E - e%:num &lt; -<span class="mi">1</span>)%R -&gt;
+  (<span class="mi">1</span> &lt; contract r%:E + e%:num)%R -&gt;
+  nbhs r%:E A.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; reA reN1 re1; <span class="nb">suff</span> : A = setT <span class="bp">by</span> <span class="nb">move</span>-&gt;; <span class="nb">apply</span>: filterT.
+<span class="nb">rewrite</span> predeqE =&gt; x; <span class="nb">split</span> =&gt; // _; <span class="nb">apply</span> reA.
+<span class="nb">case</span>: x =&gt; [r&#39;| |] //.
+- <span class="nb">have</span> [?|?] := lerP r r&#39;.
+  + <span class="bp">by</span> <span class="nb">apply</span>: contract_ereal_ball_fin_le =&gt; //; <span class="bp">exact</span>/ltW.
+  + <span class="bp">by</span> <span class="nb">apply</span> contract_ereal_ball_fin_lt =&gt; //; <span class="bp">exact</span>/ltW.
+- <span class="bp">exact</span>/contract_ereal_ball_pinfty.
+- <span class="nb">apply</span>/ereal_ballN/contract_ereal_ball_pinfty.
+  <span class="bp">by</span> <span class="nb">rewrite</span> EFinN contractN -(opprK <span class="mi">1</span>%R) ltr_oppl opprD opprK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nbhs_fin_inbound</span> <span class="nv">r</span> (<span class="nv">e</span> : {posnum R}) (<span class="nv">A</span> : <span class="nb">set</span> (\bar R)) :
+  ereal_ball r%:E e%:num `&lt;=` A -&gt; nbhs r%:E A.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; reA.
+<span class="nb">have</span> [|reN1] := boolP (contract r%:E - e%:num == -<span class="mi">1</span>)%R.
+  <span class="nb">rewrite</span> subr_eq addrC =&gt; /eqP reN1.
+  <span class="nb">have</span> [re1|] := boolP (contract r%:E + e%:num == <span class="mi">1</span>)%R.
+    <span class="nb">move</span>/eqP : reN1; <span class="nb">rewrite</span> -(eqP re1) opprD addrCA subrr addr0 -subr_eq0.
+    <span class="nb">rewrite</span> opprK -mulr2n mulrn_eq0 orFb contract_eq0 =&gt; /eqP[r0].
+    <span class="nb">move</span>: re1; <span class="nb">rewrite</span> r0 contract0 add0r =&gt; /eqP e1.
+    <span class="nb">apply</span>/nbhs_ballP; <span class="kr">exists</span> <span class="mi">1</span>%R =&gt; //= r&#39;; <span class="nb">rewrite</span> /ball /= sub0r normrN =&gt; r&#39;1.
+    <span class="nb">apply</span> reA.
+    <span class="bp">by</span> <span class="nb">rewrite</span> /ereal_ball r0 contract0 sub0r normrN e1 contract_lt1.
+  <span class="nb">rewrite</span> neq_lt =&gt; /orP[re1|re1].
+    <span class="bp">by</span> <span class="nb">apply</span> (@nbhs_fin_out_below _ e) =&gt; //; <span class="nb">rewrite</span> reN1 addrAC subrr sub0r.
+  <span class="nb">have</span> e1 : (<span class="mi">1</span> &lt; e%:num)%R.
+    <span class="nb">move</span>: re1; <span class="nb">rewrite</span> reN1 addrAC ltr_subr_addl -!mulr2n -(mulr_natl e%:num).
+    <span class="bp">by</span> <span class="nb">rewrite</span> -{<span class="mi">1</span>}(mulr1 <span class="mi">2</span>) =&gt; ?; <span class="nb">rewrite</span> -(@ltr_pmul2l _ <span class="mi">2</span>).
+  <span class="nb">have</span> Aoo : setT `\ -oo `&lt;=` A.
+    <span class="nb">move</span>=&gt; x [_]; <span class="nb">rewrite</span> /set1 /= =&gt; xnoo; <span class="nb">apply</span> reA.
+    <span class="nb">case</span>: x xnoo =&gt; [r&#39; _ | _ |//].
+      <span class="nb">have</span> [rr&#39;|r&#39;r] := lerP (contract r%:E) (contract r&#39;%:E).
+        <span class="nb">apply</span>: contract_ereal_ball_fin_le; <span class="nb">last</span> <span class="bp">exact</span>/ltW.
+        <span class="bp">by</span> <span class="nb">rewrite</span> -lee_fin -(contractK r%:E) -(contractK r&#39;%:E) le_expand.
+      <span class="nb">apply</span>: contract_ereal_ball_fin_lt; <span class="nb">last first</span>.
+        <span class="bp">by</span> <span class="nb">rewrite</span> reN1 addrAC subrr add0r.
+      <span class="nb">rewrite</span> -lte_fin -(contractK r%:E) -(contractK r&#39;%:E).
+      <span class="bp">by</span> <span class="nb">rewrite</span> lt_expand // inE; <span class="bp">exact</span>: contract_le1.
+    <span class="bp">exact</span>: contract_ereal_ball_pinfty.
+  <span class="nb">have</span> : nbhs r%:E (setT `\ -oo) <span class="bp">by</span> <span class="nb">apply</span>/nbhs_ballP; <span class="kr">exists</span> <span class="mi">1</span>%R =&gt; /=.
+  <span class="nb">move</span>=&gt; /nbhs_ballP[_/posnumP[e&#39;]] /=; <span class="nb">rewrite</span> /ball /= =&gt; h.
+  <span class="bp">by</span> <span class="nb">apply</span>/nbhs_ballP; <span class="kr">exists</span> <span class="nv">e&#39;</span>%:num =&gt; //= y /h; <span class="nb">apply</span>: Aoo.
+<span class="nb">move</span>: reN1; <span class="nb">rewrite</span> eq_sym neq_lt =&gt; /orP[reN1|reN1].
+  <span class="nb">have</span> [re1|re1] := eqVneq (contract r%:E + e%:num)%R <span class="mi">1</span>%R.
+    <span class="bp">by</span> <span class="nb">apply</span> (@nbhs_fin_out_above _ e) =&gt; //; <span class="nb">rewrite</span> re1.
+  <span class="nb">move</span>: re1; <span class="nb">rewrite</span> neq_lt =&gt; /orP[re1|re1].
+    <span class="nb">have</span> ? : (`|contract r%:E - e%:num| &lt; <span class="mi">1</span>)%R.
+      <span class="nb">rewrite</span> ltr_norml reN1 andTb ltr_subl_addl.
+      <span class="nb">rewrite</span> (@lt_le_trans _ _ <span class="mi">1</span>%R) // <span class="nl">?ler_addr</span>//.
+      <span class="bp">by</span> <span class="nb">case</span>/ltr_normlP : (contract_lt1 r).
+    <span class="nb">have</span> ? : (`|contract r%:E + e%:num| &lt; <span class="mi">1</span>)%R.
+      <span class="nb">rewrite</span> ltr_norml re1 andbT -(addr0 (-<span class="mi">1</span>)) ler_lt_add //.
+      <span class="bp">by</span> <span class="nb">move</span>: (contract_le1 r%:E); <span class="nb">rewrite</span> ler_norml =&gt; /andP[].
+    <span class="nb">pose</span> e&#39; : R := Num.min
+      (r - fine (expand (contract r%:E - e%:num)))%R
+      (fine (expand (contract r%:E + e%:num)) - r)%R.
+    <span class="nb">have</span> e&#39;0 : (<span class="mi">0</span> &lt; e&#39;)%R.
+      <span class="nb">rewrite</span> /e&#39; lt_minr; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+        <span class="nb">rewrite</span> subr_gt0 -lte_fin -[<span class="kr">in</span> ltRHS](contractK r%:E).
+        <span class="nb">rewrite</span> fine_expand // lt_expand// <span class="nl">?inE</span> <span class="nl">?contract_le1</span> <span class="nl">?ltW</span>//.
+        <span class="bp">by</span> <span class="nb">rewrite</span> ltr_subl_addl ltr_addr.
+      <span class="nb">rewrite</span> subr_gt0 -lte_fin -[<span class="kr">in</span> ltLHS](contractK r%:E).
+      <span class="bp">by</span> <span class="nb">rewrite</span> fine_expand// lt_expand <span class="nl">?inE</span> <span class="nl">?contract_le1</span> <span class="nl">?ltr_addl</span> <span class="nl">?ltW</span>.
+    <span class="nb">apply</span>/nbhs_ballP; <span class="kr">exists</span> <span class="nv">e&#39;</span> =&gt; // r&#39; re&#39;r&#39;; <span class="nb">apply</span> reA.
+    <span class="nb">have</span> [|r&#39;r] := lerP r r&#39;.
+      <span class="nb">move</span>=&gt; rr&#39;; <span class="nb">apply</span>: ball_ereal_ball_fin_le =&gt; //.
+      <span class="bp">by</span> <span class="nb">apply</span>: le_ball re&#39;r&#39;; <span class="nb">rewrite</span> le_minl lexx orbT.
+    <span class="nb">move</span>: re&#39;r&#39;; <span class="nb">rewrite</span> /ball /= lt_minr =&gt; /andP[].
+    <span class="nb">rewrite</span> gtr0_norm <span class="nl">?subr_gt0</span> // -ltr_subl_addl addrAC subrr add0r ltr_oppl.
+    <span class="nb">rewrite</span> opprK -lte_fin fine_expand // =&gt; r&#39;e&#39;r _.
+    <span class="bp">exact</span>: expand_ereal_ball_fin_lt.
+  <span class="bp">by</span> <span class="nb">apply</span> (@nbhs_fin_out_above _ e) =&gt; //; <span class="nb">rewrite</span> ltW.
+<span class="nb">have</span> [re1|re1] := ltrP <span class="mi">1</span> (contract r%:E + e%:num).
+  <span class="bp">exact</span>: (@nbhs_fin_out_above_below _ e).
+<span class="nb">move</span>: re1; <span class="nb">rewrite</span> le_eqVlt =&gt; /orP[re1|re1].
+  <span class="nb">have</span> {}re1 : contract r%:E = (<span class="mi">1</span> - e%:num)%R.
+    <span class="bp">by</span> <span class="nb">move</span>: re1; <span class="nb">rewrite</span> eq_sym -subr_eq =&gt; /eqP &lt;-.
+  <span class="nb">have</span> e1 : (<span class="mi">1</span> &lt; e%:num)%R.
+    <span class="nb">move</span>: reN1.
+    <span class="nb">rewrite</span> re1 -addrA -opprD ltr_subl_addl ltr_subr_addl -!mulr2n.
+    <span class="nb">rewrite</span> -(mulr_natl e%:num) -{<span class="mi">1</span>}(mulr1 <span class="mi">2</span>) =&gt; ?.
+    <span class="bp">by</span> <span class="nb">rewrite</span> -(@ltr_pmul2l _ <span class="mi">2</span>).
+  <span class="nb">have</span> Aoo : (setT `\ +oo `&lt;=` A).
+    <span class="nb">move</span>=&gt; x [_]; <span class="nb">rewrite</span> /set1 /= =&gt; xpoo; <span class="nb">apply</span> reA.
+    <span class="nb">case</span>: x xpoo =&gt; [r&#39; _ | // |_].
+      <span class="nb">rewrite</span> /ereal_ball.
+      <span class="nb">have</span> [rr&#39;|r&#39;r] := lerP (contract r%:E) (contract r&#39;%:E).
+        <span class="nb">rewrite</span> re1 opprB addrCA -[ltRHS]addr0 ltr_add2 subr_lt0.
+        <span class="bp">by</span> <span class="nb">case</span>/ltr_normlP : (contract_lt1 r&#39;).
+      <span class="nb">rewrite</span> /ereal_ball.
+      <span class="nb">rewrite</span> re1 addrAC ltr_subl_addl ltr_add // (lt_trans _ e1) // ltr_oppl.
+      <span class="bp">by</span> <span class="nb">move</span>: (contract_lt1 r&#39;); <span class="nb">rewrite</span> ltr_norml =&gt; /andP[].
+    <span class="nb">rewrite</span> /ereal_ball.
+    <span class="nb">rewrite</span> [contract -oo]/= opprK gtr0_norm <span class="nl">?subr_gt0</span>; <span class="nb">last first</span>.
+      <span class="nb">rewrite</span> -ltr_subl_addl add0r ltr_oppl.
+      <span class="bp">by</span> <span class="nb">move</span>: (contract_lt1 r); <span class="nb">rewrite</span> ltr_norml =&gt; /andP[].
+    <span class="bp">by</span> <span class="nb">rewrite</span> re1 addrAC ltr_subl_addl ltr_add.
+   <span class="nb">have</span> : nbhs r%:E (setT `\ +oo) <span class="bp">by</span> <span class="kr">exists</span> <span class="mi">1</span>%R =&gt; /=.
+   <span class="nb">case</span> =&gt; _/posnumP[x] /=; <span class="nb">rewrite</span> /ball_ =&gt; h.
+   <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">x</span>%:num =&gt; //= y /h; <span class="bp">exact</span>: Aoo.
+<span class="bp">by</span> <span class="nb">apply</span> (@nbhs_fin_out_below _ e) =&gt; //; <span class="nb">rewrite</span> ltW.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_nbhsE</span> : nbhs = nbhs_ (entourage_ (@ereal_ball R)).
+<span class="kn">Proof</span>.
+<span class="nb">set</span> diag := <span class="kr">fun</span> <span class="nv">r</span> =&gt; [<span class="nb">set</span> xy | ereal_ball xy.<span class="mi">1</span> r xy.<span class="mi">2</span>].
+<span class="nb">rewrite</span> predeq2E =&gt; x A; <span class="nb">split</span>.
+- <span class="nb">rewrite</span> {<span class="mi">1</span>}/nbhs /= /ereal_nbhs.
+  <span class="nb">case</span>: x =&gt; [/= r [_/posnumP[e] reA]| [M [/= Mreal MA]]| [M [/= Mreal MA]]].
+  + <span class="nb">pose</span> e&#39; : R := Num.min (contract r%:E - contract (r%:E - e%:num%:E))%R
+                           (contract (r%:E + e%:num%:E) - contract r%:E)%R.
+    <span class="kr">exists</span> (<span class="nv">diag</span> <span class="nv">e&#39;</span>); <span class="nb">rewrite</span> /diag.
+      <span class="kr">exists</span> <span class="nv">e&#39;</span> =&gt; //.
+      <span class="nb">rewrite</span> /= /e&#39; lt_minr; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+        <span class="bp">by</span> <span class="nb">rewrite</span> subr_gt0 lt_contract lte_fin ltr_subl_addr ltr_addl.
+      <span class="bp">by</span> <span class="nb">rewrite</span> subr_gt0 lt_contract lte_fin ltr_addl.
+    <span class="nb">case</span>=&gt; [r&#39; /= re&#39;r&#39;| |]/=.
+    * <span class="nb">rewrite</span> /ereal_ball <span class="kr">in</span> re&#39;r&#39;.
+      <span class="nb">have</span> [r&#39;r|rr&#39;] := lerP (contract r&#39;%:E) (contract r%:E).
+        <span class="nb">apply</span>: reA; <span class="nb">rewrite</span> /ball /= real_ltr_norml // <span class="nl">?num_real</span> //.
+        <span class="nb">rewrite</span> ger0_norm <span class="nl">?subr_ge0</span>// <span class="kr">in</span> re&#39;r&#39;.
+        <span class="nb">have</span> : (contract (r%:E - e%:num%:E) &lt; contract r&#39;%:E)%R.
+          <span class="nb">move</span>: re&#39;r&#39;; <span class="nb">rewrite</span> /e&#39; lt_minr =&gt; /andP[+ _].
+          <span class="nb">rewrite</span> /e&#39; ltr_subr_addl addrC -ltr_subr_addl =&gt; /lt_le_trans.
+          <span class="bp">by</span> <span class="nb">apply</span>; <span class="nb">rewrite</span> opprB addrCA subrr addr0.
+        <span class="nb">rewrite</span> -lt_expandRL <span class="nl">?inE</span> <span class="nl">?contract_le1</span> // !contractK lte_fin.
+        <span class="nb">rewrite</span> ltr_subl_addr addrC -ltr_subl_addr =&gt; -&gt;; <span class="nb">rewrite</span> andbT.
+        <span class="nb">rewrite</span> (@lt_le_trans _ _ <span class="mi">0</span>%R)// <span class="mi">1</span><span class="nl">?ltr_oppl</span> <span class="mi">1</span><span class="nl">?oppr0</span>// subr_ge0.
+        <span class="bp">by</span> <span class="nb">rewrite</span> -lee_fin -le_contract.
+      <span class="nb">apply</span>: reA; <span class="nb">rewrite</span> /ball /= real_ltr_norml // <span class="nl">?num_real</span> //.
+      <span class="nb">rewrite</span> ltr0_norm <span class="nl">?subr_lt0</span>// opprB <span class="kr">in</span> re&#39;r&#39;.
+      <span class="nb">apply</span>/andP; <span class="nb">split</span>; <span class="nb">last first</span>.
+        <span class="bp">by</span> <span class="nb">rewrite</span> (@lt_trans _ _ <span class="mi">0</span>%R) // subr_lt0 -lte_fin -lt_contract.
+      <span class="nb">rewrite</span> ltr_oppl opprB.
+      <span class="nb">rewrite</span> /e&#39; <span class="kr">in</span> re&#39;r&#39;.
+      <span class="nb">have</span> r&#39;re : (contract r&#39;%:E &lt; contract (r%:E + e%:num%:E))%R.
+        <span class="nb">move</span>: re&#39;r&#39;; <span class="nb">rewrite</span> lt_minr =&gt; /andP[_].
+        <span class="bp">by</span> <span class="nb">rewrite</span> ltr_subl_addr subrK.
+      <span class="nb">rewrite</span> ltr_subl_addr -lte_fin -(contractK (_ + r)%:E)%R.
+      <span class="bp">by</span> <span class="nb">rewrite</span> addrC -(contractK r&#39;%:E) // lt_expand <span class="nl">?inE</span> <span class="nl">?contract_le1</span>.
+    * <span class="nb">rewrite</span> /ereal_ball [contract +oo]/=.
+      <span class="nb">rewrite</span> lt_minr =&gt; /andP[re&#39;1 re&#39;2].
+      <span class="nb">have</span> [cr0|cr0] := lerP <span class="mi">0</span> (contract r%:E).
+        <span class="nb">move</span>: re&#39;2; <span class="nb">rewrite</span> ler0_norm; <span class="nb">last first</span>.
+          <span class="bp">by</span> <span class="nb">rewrite</span> subr_le0; <span class="nb">case</span>/ler_normlP : (contract_le1 r%:E).
+        <span class="nb">rewrite</span> opprB ltr_subr_addl addrCA subrr addr0 =&gt; h.
+        <span class="nb">exfalso</span>.
+        <span class="nb">move</span>: h; <span class="nb">apply</span>/negP; <span class="nb">rewrite</span> -leNgt.
+        <span class="bp">by</span> <span class="nb">case</span>/ler_normlP : (contract_le1 (r%:E + e%:num%:E)).
+      <span class="nb">move</span>: re&#39;2; <span class="nb">rewrite</span> ler0_norm; <span class="nb">last first</span>.
+        <span class="bp">by</span> <span class="nb">rewrite</span> subr_le0; <span class="nb">case</span>/ler_normlP : (contract_le1 r%:E).
+      <span class="nb">rewrite</span> opprB ltr_subr_addl addrCA subrr addr0 =&gt; h.
+      <span class="nb">exfalso</span>.
+      <span class="nb">move</span>: h; <span class="nb">apply</span>/negP; <span class="nb">rewrite</span> -leNgt.
+      <span class="bp">by</span> <span class="nb">case</span>/ler_normlP : (contract_le1 (r%:E + e%:num%:E)).
+    * <span class="nb">rewrite</span> /ereal_ball [contract -oo]/=; <span class="nb">rewrite</span> opprK.
+      <span class="nb">rewrite</span> lt_minr =&gt; /andP[re&#39;1 _].
+      <span class="nb">move</span>: re&#39;1.
+      <span class="nb">rewrite</span> ger0_norm; <span class="nb">last first</span>.
+        <span class="nb">rewrite</span> addrC -ler_subl_addl add0r.
+        <span class="bp">by</span> <span class="nb">move</span>: (contract_le1 r%:E); <span class="nb">rewrite</span> ler_norml =&gt; /andP[].
+      <span class="nb">rewrite</span> ltr_add2l =&gt; h.
+      <span class="nb">exfalso</span>.
+      <span class="nb">move</span>: h; <span class="nb">apply</span>/negP; <span class="nb">rewrite</span> -leNgt -ler_oppl.
+      <span class="bp">by</span> <span class="nb">move</span>: (contract_le1 (r%:E - e%:num%:E)); <span class="nb">rewrite</span> ler_norml =&gt; /andP[].
+  + <span class="kr">exists</span> (<span class="nv">diag</span> (<span class="mi">1</span> - contract M%:E))%R; <span class="nb">rewrite</span> /diag.
+      <span class="kr">exists</span> (<span class="mi">1</span> - contract M%:E)%R =&gt; //=.
+      <span class="bp">by</span> <span class="nb">rewrite</span> subr_gt0 (le_lt_trans _ (contract_lt1 M)) // ler_norm.
+    <span class="nb">case</span>=&gt; [r| |]/=.
+    * <span class="nb">rewrite</span> /ereal_ball [_ +oo]/= =&gt; rM1.
+      <span class="nb">apply</span>: MA; <span class="nb">rewrite</span> lte_fin.
+      <span class="nb">rewrite</span> ger0_norm <span class="kr">in</span> rM1; <span class="nb">last first</span>.
+        <span class="bp">by</span> <span class="nb">rewrite</span> subr_ge0 // (le_trans _ (contract_le1 r%:E)) // ler_norm.
+      <span class="nb">rewrite</span> ltr_subl_addr addrC addrCA addrC -ltr_subl_addr subrr <span class="kr">in</span> rM1.
+      <span class="nb">rewrite</span> subr_gt0 <span class="kr">in</span> rM1.
+      <span class="bp">by</span> <span class="nb">rewrite</span> -lte_fin -lt_contract.
+    * <span class="bp">by</span> <span class="nb">rewrite</span> /ereal_ball /= subrr normr0 =&gt; h; <span class="bp">exact</span>: MA.
+    * <span class="nb">rewrite</span> /ereal_ball /= opprK =&gt; h {MA}.
+      <span class="nb">exfalso</span>.
+      <span class="nb">move</span>: h; <span class="nb">apply</span>/negP.
+      <span class="nb">rewrite</span> -leNgt [<span class="kr">in</span> leRHS]ger0_norm // ler_subl_addr.
+      <span class="nb">rewrite</span> -/(contract M%:E) addrC -ler_subl_addr opprD addrA subrr sub0r.
+      <span class="bp">by</span> <span class="nb">move</span>: (contract_le1 M%:E); <span class="nb">rewrite</span> ler_norml =&gt; /andP[].
+  + <span class="kr">exists</span> (<span class="nv">diag</span> (<span class="mi">1</span> + contract M%:E)%R); <span class="nb">rewrite</span> /diag.
+      <span class="kr">exists</span> (<span class="mi">1</span> + contract M%:E)%R =&gt; //=.
+      <span class="nb">rewrite</span> -ltr_subl_addl sub0r.
+      <span class="bp">by</span> <span class="nb">move</span>: (contract_lt1 M); <span class="nb">rewrite</span> ltr_norml =&gt; /andP[].
+    <span class="nb">case</span>=&gt; [r| |].
+    * <span class="nb">rewrite</span> /ereal_ball =&gt; /= rM1.
+      <span class="nb">apply</span> MA.
+      <span class="nb">rewrite</span> lte_fin.
+      <span class="nb">rewrite</span> ler0_norm <span class="kr">in</span> rM1; <span class="nb">last first</span>.
+        <span class="nb">rewrite</span> ler_subl_addl addr0 ltW //.
+        <span class="bp">by</span> <span class="nb">move</span>: (contract_lt1 r); <span class="nb">rewrite</span> ltr_norml =&gt; /andP[].
+      <span class="nb">rewrite</span> opprB opprK -ltr_subl_addl addrK <span class="kr">in</span> rM1.
+      <span class="bp">by</span> <span class="nb">rewrite</span> -lte_fin -lt_contract.
+    * <span class="nb">rewrite</span> /ereal_ball /= -opprD normrN =&gt; h {MA}.
+      <span class="nb">exfalso</span>.
+      <span class="nb">move</span>: h; <span class="nb">apply</span>/negP.
+      <span class="nb">rewrite</span> -leNgt [<span class="kr">in</span> leRHS]ger0_norm// -ler_subl_addr addrAC.
+      <span class="nb">rewrite</span> subrr add0r -/(contract M%:E).
+      <span class="bp">by</span> <span class="nb">rewrite</span> (le_trans _ (ltW (contract_lt1 M))) // ler_norm.
+    * <span class="nb">rewrite</span> /ereal_ball /= =&gt; _; <span class="bp">exact</span>: MA.
+- <span class="nb">case</span>: x =&gt; [r [E [_/posnumP[e] reA] sEA] | [E [_/posnumP[e] reA] sEA] |
+               [E [_/posnumP[e] reA] sEA]] //=.
+  + <span class="bp">by</span> <span class="nb">apply</span> nbhs_fin_inbound <span class="kr">with</span> e =&gt; ? ?; <span class="bp">exact</span>/sEA/reA.
+  + <span class="nb">have</span> [|] := boolP (e%:num &lt;= <span class="mi">1</span>)%R.
+      <span class="bp">by</span> <span class="nb">move</span>/nbhs_oo_up_e1; <span class="nb">apply</span> =&gt; ? ?; <span class="bp">exact</span>/sEA/reA.
+    <span class="bp">by</span> <span class="nb">rewrite</span> -ltNge =&gt; /nbhs_oo_up_1e; <span class="nb">apply</span> =&gt; ? ?; <span class="bp">exact</span>/sEA/reA.
+  + <span class="nb">have</span> [|] := boolP (e%:num &lt;= <span class="mi">1</span>)%R.
+      <span class="bp">by</span> <span class="nb">move</span>/nbhs_oo_down_e1; <span class="nb">apply</span> =&gt; ? ?; <span class="bp">exact</span>/sEA/reA.
+    <span class="bp">by</span> <span class="nb">rewrite</span> -ltNge =&gt; /nbhs_oo_down_1e; <span class="nb">apply</span> =&gt; ? ?; <span class="bp">exact</span>/sEA/reA.
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">ereal_pseudoMetricType_mixin</span> :=
+  PseudoMetric.Mixin (@ereal_ball_center R) (@ereal_ball_sym R)
+                     (@ereal_ball_triangle R) erefl.
+
+<span class="kn">Definition</span> <span class="nf">ereal_uniformType_mixin</span> : @Uniform.mixin_of (\bar R) nbhs :=
+  uniformityOfBallMixin ereal_nbhsE ereal_pseudoMetricType_mixin.
+
+<span class="kn">Canonical</span> <span class="nf">ereal_uniformType</span> :=
+  UniformType (extended R) ereal_uniformType_mixin.
+
+<span class="kn">Canonical</span> <span class="nf">ereal_pseudoMetricType</span> :=
+  PseudoMetricType (extended R) ereal_pseudoMetricType_mixin.
+
+<span class="kn">End</span> <span class="nf">ereal_PseudoMetric</span>.
+
+<span class="c">(* TODO: generalize to numFieldType? *)</span>
+<span class="kn">Lemma</span> <span class="nf">nbhs_interval</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">P</span> : R -&gt; <span class="kt">Prop</span>) (<span class="nv">r</span> : R) (<span class="nv">a</span> <span class="nv">b</span> : \bar R) :
+  a &lt; r%:E -&gt; r%:E &lt; b -&gt;
+  (<span class="kr">forall</span> <span class="nv">y</span>, a &lt; y%:E -&gt; y%:E &lt; b -&gt; P y) -&gt;
+  nbhs r P.
+<span class="kn">Proof</span>.
+<span class="nb">move</span> =&gt; ar rb abP; <span class="nb">case</span>: (lt_ereal_nbhs ar rb) =&gt; d rd.
+<span class="kr">exists</span> <span class="nv">d</span>%:num =&gt; //= y; <span class="nb">rewrite</span> /= distrC.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /rd /andP[? ?]; <span class="nb">apply</span>: abP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_dnbhs_le</span> (<span class="nv">R</span> : numFieldType) (<span class="nv">x</span> : \bar R) :
+  ereal_dnbhs x --&gt; ereal_nbhs x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>: x =&gt; [r P [_/posnumP[e] reP] |r P|r P] //=.
+<span class="bp">by</span> <span class="kr">exists</span> <span class="nv">e</span>%:num =&gt; //= ? ? ?; <span class="nb">apply</span>: reP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_dnbhs_le_finite</span> (<span class="nv">R</span> : numFieldType) (<span class="nv">r</span> : R) :
+  ereal_dnbhs r%:E --&gt; nbhs r%:E.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; P [_/posnumP[e] reP] //=; <span class="kr">exists</span> <span class="nv">e</span>%:num =&gt; //= ? ? ?; <span class="bp">exact</span>: reP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">ereal_loc_seq</span> (<span class="nv">R</span> : numDomainType) (<span class="nv">x</span> : \bar R) (<span class="nv">n</span> : nat) :=
+  <span class="kr">match</span> x <span class="kr">with</span>
+    | x%:E =&gt; (x + (n%:R + <span class="mi">1</span>)^-<span class="mi">1</span>)%:E
+    | +oo =&gt; n%:R%:E
+    | -oo =&gt; - n%:R%:E
+  <span class="kr">end</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cvg_ereal_loc_seq</span> (<span class="nv">R</span> : realType) (<span class="nv">x</span> : \bar R) :
+  ereal_loc_seq x --&gt; ereal_dnbhs x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; P; <span class="nb">rewrite</span> /ereal_loc_seq.
+<span class="nb">case</span>: x =&gt; /= [x [_/posnumP[d] dP] |[d [dreal dP]] |[d [dreal dP]]]; <span class="nb">last</span> <span class="mi">2</span> <span class="kp">first</span>.
+    <span class="nb">have</span> /ZnatP [N Nfloor] : floor (Num.max d <span class="mi">0</span>%R) \<span class="kr">is</span> a Znat.
+      <span class="bp">by</span> <span class="nb">rewrite</span> Znat_def floor_ge0 le_maxr lexx orbC.
+    <span class="kr">exists</span> <span class="nv">N</span>.+<span class="mi">1</span> =&gt; // n ltNn; <span class="nb">apply</span>: dP.
+    <span class="nb">have</span> /le_lt_trans : (d &lt;= Num.max d <span class="mi">0</span>)%R <span class="bp">by</span> <span class="nb">rewrite</span> le_maxr lexx.
+    <span class="bp">by</span> <span class="nb">apply</span>; <span class="nb">rewrite</span> (lt_le_trans (lt_succ_floor _))// Nfloor natr1 ler_nat.
+  <span class="nb">have</span> /ZnatP [N Nfloor] : floor (Num.max (- d)%R <span class="mi">0</span>%R) \<span class="kr">is</span> a Znat.
+    <span class="bp">by</span> <span class="nb">rewrite</span> Znat_def floor_ge0 le_maxr lexx orbC.
+  <span class="kr">exists</span> <span class="nv">N</span>.+<span class="mi">1</span> =&gt; // n ltNn; <span class="nb">apply</span>: dP; <span class="nb">rewrite</span> lte_fin ltr_oppl.
+  <span class="nb">have</span> /le_lt_trans : (- d &lt;= Num.max (- d) <span class="mi">0</span>)%R <span class="bp">by</span> <span class="nb">rewrite</span> le_maxr lexx.
+  <span class="bp">by</span> <span class="nb">apply</span>; <span class="nb">rewrite</span> (lt_le_trans (lt_succ_floor _))// Nfloor natr1 ler_nat.
+<span class="nb">have</span> /ZnatP [N Nfloor] : floor (d%:num^-<span class="mi">1</span>) \<span class="kr">is</span> a Znat.
+  <span class="bp">by</span> <span class="nb">rewrite</span> Znat_def floor_ge0.
+<span class="kr">exists</span> <span class="nv">N</span> =&gt; // n leNn; <span class="nb">apply</span>: dP; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> eq_sym addrC -subr_eq subrr eq_sym; <span class="bp">exact</span>/invr_neq0/lt0r_neq0.
+<span class="nb">rewrite</span> /= opprD addrA subrr distrC subr0 gtr0_norm; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> invr_gt0.
+<span class="nb">rewrite</span> -[ltLHS]mulr1 ltr_pdivr_mull // -ltr_pdivr_mulr // div1r.
+<span class="bp">by</span> <span class="nb">rewrite</span> (lt_le_trans (lt_succ_floor _))// Nfloor ler_add// ler_nat.
+<span class="kn">Qed</span>.</span></pre></article></body></html>

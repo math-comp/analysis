@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>numfun.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)</span>
+<span class="kn">From</span> HB <span class="kn">Require Import</span> structures.
+<span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect.
+<span class="kn">From</span> mathcomp <span class="kn">Require Import</span> ssralg ssrnum ssrint interval finmap.
+<span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> boolp classical_sets fsbigop.
+<span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> functions cardinality mathcomp_extra.
+<span class="kn">Require Import</span> signed reals ereal topology normedtype sequences.
+
+<span class="sd">(******************************************************************************)</span>
+<span class="c">(* This file provides definitions and lemmas about numerical functions.       *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(*    {nnfun T &gt;-&gt; R} == type of non-negative functions                       *)</span>
+<span class="c">(*              f ^\+ == the function formed by the non-negative outputs      *)</span>
+<span class="c">(*                       of f (from a type to the type of extended real       *)</span>
+<span class="c">(*                       numbers) and 0 otherwise                             *)</span>
+<span class="c">(*                       rendered as f ⁺ with company-coq (U+207A)            *)</span>
+<span class="c">(*              f ^\- == the function formed by the non-positive outputs      *)</span>
+<span class="c">(*                       of f and 0 o.w.                                      *)</span>
+<span class="c">(*                       rendered as f ⁻ with company-coq (U+207B)            *)</span>
+<span class="c">(*              \1_ A == indicator function 1_A                               *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="sd">(******************************************************************************)</span>
+
+<span class="kn">Set Implicit Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+<span class="kn">Import</span> Order.TTheory GRing.Theory Num.Def Num.Theory.
+<span class="kn">Import</span> numFieldTopology.Exports.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+
+HB.mixin <span class="kn">Record</span> <span class="nf">isNonNegFun</span> (<span class="nv">aT</span> : <span class="kt">Type</span>) (<span class="nv">rT</span> : numDomainType) (<span class="nv">f</span> : aT -&gt; rT) := {
+  fun_ge0 : <span class="kr">forall</span> <span class="nv">x</span>, (<span class="mi">0</span> &lt;= f x)%R
+}.
+HB.structure <span class="kn">Definition</span> <span class="nf">NonNegFun</span> <span class="nv">aT</span> <span class="nv">rT</span> := {f of @isNonNegFun aT rT f}.
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;{ &#39;nnfun&#39; aT &gt;-&gt; T }&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;{ &#39;nnfun&#39;  aT  &gt;-&gt;  T }&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[ &#39;nnfun&#39; &#39;of&#39; f ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;[ &#39;nnfun&#39;  &#39;of&#39;  f ]&quot;</span>).
+<span class="kn">Notation</span> <span class="s2">&quot;{ &#39;nnfun&#39; aT &gt;-&gt; T }&quot;</span> := (@NonNegFun.type aT T) : form_scope.
+<span class="kn">Notation</span> <span class="s2">&quot;[ &#39;nnfun&#39; &#39;of&#39; f ]&quot;</span> := [the {nnfun _ &gt;-&gt; _} of f] : form_scope.
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (is_true (<span class="mi">0</span> &lt;= _)) =&gt; <span class="kp">solve</span> [<span class="nb">apply</span>: fun_ge0] : core.
+
+<span class="kn">Section</span> <span class="nf">fimfun_bin</span>.
+<span class="kn">Context</span> (<span class="nv">T</span> : <span class="kt">Type</span>) (<span class="nv">R</span> : numDomainType).
+<span class="kn">Variables</span> <span class="nv">f</span> <span class="nv">g</span> : {fimfun T &gt;-&gt; R}.
+
+<span class="kn">Lemma</span> <span class="nf">max_fimfun_subproof</span> : @FiniteImage T R (f \max g).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>; <span class="nb">apply</span>: (finite_image11 maxr). <span class="kn">Qed</span>.
+HB.instance <span class="kn">Definition</span> <span class="nf">_</span> := max_fimfun_subproof.
+
+<span class="kn">End</span> <span class="nf">fimfun_bin</span>.
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f ^\+&quot;</span> (<span class="kn">at level</span> <span class="mi">1</span>, <span class="kn">format</span> <span class="s2">&quot;f ^\+&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f ^\-&quot;</span> (<span class="kn">at level</span> <span class="mi">1</span>, <span class="kn">format</span> <span class="s2">&quot;f ^\-&quot;</span>).
+
+<span class="kn">Section</span> <span class="nf">restrict_lemmas</span>.
+<span class="kn">Context</span> {<span class="nv">aT</span> : <span class="kt">Type</span>} {<span class="nv">rT</span> : numFieldType}.
+<span class="kn">Implicit Types</span> (<span class="nv">f</span> <span class="nv">g</span> : aT -&gt; rT) (<span class="nv">D</span> : <span class="nb">set</span> aT).
+
+<span class="kn">Lemma</span> <span class="nf">restrict_set0</span> <span class="nv">f</span> : f \_ set0 = cst <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> patch_set0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">restrict_ge0</span> <span class="nv">D</span> <span class="nv">f</span> :
+  (<span class="kr">forall</span> <span class="nv">x</span>, D x -&gt; <span class="mi">0</span> &lt;= f x) -&gt; <span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= (f \_ D) x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; f0 x; <span class="nb">rewrite</span> /patch; <span class="nb">case</span>: ifP =&gt; // /set_mem/f0-&gt;. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ler_restrict</span> <span class="nv">D</span> <span class="nv">f</span> <span class="nv">g</span> :
+  (<span class="kr">forall</span> <span class="nv">x</span>, D x -&gt; f x &lt;= g x) -&gt; <span class="kr">forall</span> <span class="nv">x</span>, (f \_ D) x &lt;= (g \_ D) x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; f0 x; <span class="nb">rewrite</span> /patch; <span class="nb">case</span>: ifP =&gt; // /set_mem/f0-&gt;. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">restrict_lemmas</span>.
+
+<span class="kn">Lemma</span> <span class="nf">erestrict_ge0</span> {<span class="nv">aT</span>} {<span class="nv">rT</span> : numFieldType} (<span class="nv">D</span> : <span class="nb">set</span> aT) (<span class="nv">f</span> : aT -&gt; \bar rT) :
+  (<span class="kr">forall</span> <span class="nv">x</span>, D x -&gt; (<span class="mi">0</span> &lt;= f x)%E) -&gt; <span class="kr">forall</span> <span class="nv">x</span>, (<span class="mi">0</span> &lt;= (f \_ D) x)%E.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; f0 x; <span class="nb">rewrite</span> /patch; <span class="nb">case</span>: ifP =&gt; // /set_mem/f0-&gt;. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lee_restrict</span> {<span class="nv">aT</span>} {<span class="nv">rT</span> : numFieldType} (<span class="nv">D</span> : <span class="nb">set</span> aT) (<span class="nv">f</span> <span class="nv">g</span> : aT -&gt; \bar rT) :
+  (<span class="kr">forall</span> <span class="nv">x</span>, D x -&gt; f x &lt;= g x)%E -&gt; <span class="kr">forall</span> <span class="nv">x</span>, ((f \_ D) x &lt;= (g \_ D) x)%E.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; f0 x; <span class="nb">rewrite</span> /patch; <span class="nb">case</span>: ifP =&gt; // /set_mem/f0-&gt;. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">restrict_lee</span> {<span class="nv">aT</span>} {<span class="nv">rT</span> : numFieldType} (<span class="nv">D</span> <span class="nv">E</span> : <span class="nb">set</span> aT) (<span class="nv">f</span> : aT -&gt; \bar rT) :
+  (<span class="kr">forall</span> <span class="nv">x</span>, E x -&gt; <span class="mi">0</span> &lt;= f x)%E -&gt;
+  D `&lt;=` E -&gt; <span class="kr">forall</span> <span class="nv">x</span>, ((f \_ D) x &lt;= (f \_ E) x)%E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; f0 ED x; <span class="nb">rewrite</span> /restrict; <span class="nb">case</span>: ifPn =&gt; [xD|xD].
+  <span class="bp">by</span> <span class="nb">rewrite</span> mem_set//; <span class="nb">apply</span>: ED; <span class="nb">rewrite</span> in_setE <span class="kr">in</span> xD.
+<span class="bp">by</span> <span class="nb">case</span>: ifPn =&gt; // xE; <span class="nb">apply</span>: f0; <span class="nb">rewrite</span> in_setE <span class="kr">in</span> xE.
+<span class="kn">Qed</span>.
+
+<span class="kn">Section</span> <span class="nf">erestrict_lemmas</span>.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ereal_scope.
+<span class="kn">Variables</span> (<span class="nv">T</span> : <span class="kt">Type</span>) (<span class="nv">R</span> : realDomainType) (<span class="nv">D</span> : <span class="nb">set</span> T).
+<span class="kn">Implicit Types</span> (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; \bar R) (<span class="nv">r</span> : R).
+
+<span class="kn">Lemma</span> <span class="nf">erestrict_set0</span> <span class="nv">f</span> : f \_ set0 = cst <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> patch_set0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">erestrict0</span> : (cst <span class="mi">0</span> : T -&gt; \bar R) \_ D = cst <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; x; <span class="nb">rewrite</span> /patch/=; <span class="nb">case</span>: ifP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">erestrictD</span> <span class="nv">f</span> <span class="nv">g</span> : (f \+ g) \_ D = f \_ D \+ g \_ D.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext=&gt; x; <span class="nb">rewrite</span> /patch/=; <span class="nb">case</span>: ifP; <span class="nb">rewrite</span> <span class="nl">?adde0</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">erestrictN</span> <span class="nv">f</span> : (\- f) \_ D = \- f \_ D.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext=&gt; x; <span class="nb">rewrite</span> /patch/=; <span class="nb">case</span>: ifP; <span class="nb">rewrite</span> <span class="nl">?oppe0</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">erestrictB</span> <span class="nv">f</span> <span class="nv">g</span> : (f \- g) \_ D = f \_ D \- g \_ D.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext=&gt; x; <span class="nb">rewrite</span> /patch/=; <span class="nb">case</span>: ifP; <span class="nb">rewrite</span> <span class="nl">?sube0</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">erestrictM</span> <span class="nv">f</span> <span class="nv">g</span> : (f \* g) \_ D = f \_ D \* g \_ D.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext=&gt; x; <span class="nb">rewrite</span> /patch/=; <span class="nb">case</span>: ifP; <span class="nb">rewrite</span> <span class="nl">?mule0</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">erestrict_scale</span> <span class="nv">k</span> <span class="nv">f</span> :
+  (<span class="kr">fun</span> <span class="nv">x</span> =&gt; k%:E * f x) \_ D = (<span class="kr">fun</span> <span class="nv">x</span> =&gt; k%:E * (f \_ D) x).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext=&gt; x; <span class="nb">rewrite</span> /patch/=; <span class="nb">case</span>: ifP; <span class="nb">rewrite</span> <span class="nl">?mule0</span>. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">erestrict_lemmas</span>.
+
+<span class="kn">Section</span> <span class="nf">funposneg</span>.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ereal_scope.
+
+<span class="kn">Definition</span> <span class="nf">funepos</span> <span class="nv">T</span> (<span class="nv">R</span> : realDomainType) (<span class="nv">f</span> : T -&gt; \bar R) :=
+  <span class="kr">fun</span> <span class="nv">x</span> =&gt; maxe (f x) <span class="mi">0</span>.
+<span class="kn">Definition</span> <span class="nf">funeneg</span> <span class="nv">T</span> (<span class="nv">R</span> : realDomainType) (<span class="nv">f</span> : T -&gt; \bar R) :=
+  <span class="kr">fun</span> <span class="nv">x</span> =&gt; maxe (- f x) <span class="mi">0</span>.
+
+<span class="kn">End</span> <span class="nf">funposneg</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;f ^\+&quot;</span> := (funepos f) : ereal_scope.
+<span class="kn">Notation</span> <span class="s2">&quot;f ^\-&quot;</span> := (funeneg f) : ereal_scope.
+
+<span class="kn">Section</span> <span class="nf">funposneg_lemmas</span>.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ereal_scope.
+<span class="kn">Variables</span> (<span class="nv">T</span> : <span class="kt">Type</span>) (<span class="nv">R</span> : realDomainType) (<span class="nv">D</span> : <span class="nb">set</span> T).
+<span class="kn">Implicit Types</span> (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; \bar R) (<span class="nv">r</span> : R).
+
+<span class="kn">Lemma</span> <span class="nf">funepos_ge0</span> <span class="nv">f</span> <span class="nv">x</span> : <span class="mi">0</span> &lt;= f^\+ x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /funepos /= le_maxr lexx orbT. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">funeneg_ge0</span> <span class="nv">f</span> <span class="nv">x</span> : <span class="mi">0</span> &lt;= f^\- x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /funeneg le_maxr lexx orbT. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">funeposN</span> <span class="nv">f</span> : (\- f)^\+ = f^\-. <span class="kn">Proof</span>. <span class="bp">exact</span>/funext. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">funenegN</span> <span class="nv">f</span> : (\- f)^\- = f^\+.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; x; <span class="nb">rewrite</span> /funeneg oppeK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">funepos_restrict</span> <span class="nv">f</span> : (f \_ D)^\+ = (f^\+) \_ D.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; x; <span class="nb">rewrite</span> /patch/_^\+; <span class="nb">case</span>: ifP; <span class="nb">rewrite</span> //= maxxx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">funeneg_restrict</span> <span class="nv">f</span> : (f \_ D)^\- = (f^\-) \_ D.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; x; <span class="nb">rewrite</span> /patch/_^\-; <span class="nb">case</span>: ifP; <span class="nb">rewrite</span> //= oppr0 maxxx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ge0_funeposE</span> <span class="nv">f</span> : (<span class="kr">forall</span> <span class="nv">x</span>, D x -&gt; <span class="mi">0</span> &lt;= f x) -&gt; {<span class="kr">in</span> D, f^\+ =<span class="mi">1</span> f}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; f0 x; <span class="nb">rewrite</span> inE =&gt; Dx; <span class="nb">apply</span>/max_idPl/f0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ge0_funenegE</span> <span class="nv">f</span> : (<span class="kr">forall</span> <span class="nv">x</span>, D x -&gt; <span class="mi">0</span> &lt;= f x) -&gt; {<span class="kr">in</span> D, f^\- =<span class="mi">1</span> cst <span class="mi">0</span>}.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; f0 x; <span class="nb">rewrite</span> inE =&gt; Dx; <span class="nb">apply</span>/max_idPr; <span class="nb">rewrite</span> lee_oppl oppe0 f0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le0_funeposE</span> <span class="nv">f</span> : (<span class="kr">forall</span> <span class="nv">x</span>, D x -&gt; f x &lt;= <span class="mi">0</span>) -&gt; {<span class="kr">in</span> D, f^\+ =<span class="mi">1</span> cst <span class="mi">0</span>}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; f0 x; <span class="nb">rewrite</span> inE =&gt; Dx; <span class="bp">exact</span>/max_idPr/f0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le0_funenegE</span> <span class="nv">f</span> : (<span class="kr">forall</span> <span class="nv">x</span>, D x -&gt; f x &lt;= <span class="mi">0</span>) -&gt; {<span class="kr">in</span> D, f^\- =<span class="mi">1</span> \- f}.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; f0 x; <span class="nb">rewrite</span> inE =&gt; Dx; <span class="nb">apply</span>/max_idPl; <span class="nb">rewrite</span> lee_oppr oppe0 f0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">gt0_funeposM</span> <span class="nv">r</span> <span class="nv">f</span> : (<span class="mi">0</span> &lt; r)%R -&gt;
+  (<span class="kr">fun</span> <span class="nv">x</span> =&gt; r%:E * f x)^\+ = (<span class="kr">fun</span> <span class="nv">x</span> =&gt; r%:E * (f^\+ x)).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">rewrite</span> funeqE =&gt; x; <span class="nb">rewrite</span> /funepos maxeMr// mule0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">gt0_funenegM</span> <span class="nv">r</span> <span class="nv">f</span> : (<span class="mi">0</span> &lt; r)%R -&gt;
+  (<span class="kr">fun</span> <span class="nv">x</span> =&gt; r%:E * f x)^\- = (<span class="kr">fun</span> <span class="nv">x</span> =&gt; r%:E * (f^\- x)).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; r0; <span class="nb">rewrite</span> funeqE =&gt; x; <span class="nb">rewrite</span> /funeneg -muleN maxeMr// mule0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lt0_funeposM</span> <span class="nv">r</span> <span class="nv">f</span> : (r &lt; <span class="mi">0</span>)%R -&gt;
+  (<span class="kr">fun</span> <span class="nv">x</span> =&gt; r%:E * f x)^\+ = (<span class="kr">fun</span> <span class="nv">x</span> =&gt; - r%:E * (f^\- x)).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; r0; <span class="nb">rewrite</span> -[<span class="kr">in</span> LHS](opprK r); <span class="nb">under</span> eq_fun <span class="kp">do</span> <span class="nb">rewrite</span> EFinN mulNe.
+<span class="bp">by</span> <span class="nb">rewrite</span> funeposN gt0_funenegM -<span class="mi">1</span><span class="nl">?ltr_oppr</span> <span class="nl">?oppr0</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lt0_funenegM</span> <span class="nv">r</span> <span class="nv">f</span> : (r &lt; <span class="mi">0</span>)%R -&gt;
+  (<span class="kr">fun</span> <span class="nv">x</span> =&gt; r%:E * f x)^\- = (<span class="kr">fun</span> <span class="nv">x</span> =&gt; - r%:E * (f^\+ x)).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; r0; <span class="nb">rewrite</span> -[<span class="kr">in</span> LHS](opprK r); <span class="nb">under</span> eq_fun <span class="kp">do</span> <span class="nb">rewrite</span> EFinN mulNe.
+<span class="bp">by</span> <span class="nb">rewrite</span> funenegN gt0_funeposM -<span class="mi">1</span><span class="nl">?ltr_oppr</span> <span class="nl">?oppr0</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fune_abse</span> <span class="nv">f</span> : abse \o f = f^\+ \+ f^\-.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> funeqE =&gt; x /=; <span class="nb">have</span> [fx0|/ltW fx0] := leP (f x) <span class="mi">0</span>.
+- <span class="nb">rewrite</span> lee0_abs// /funepos /funeneg.
+  <span class="nb">move</span>/max_idPr : (fx0) =&gt; -&gt;; <span class="nb">rewrite</span> add0e.
+  <span class="bp">by</span> <span class="nb">move</span>: fx0; <span class="nb">rewrite</span> -{<span class="mi">1</span>}oppr0 EFinN lee_oppr =&gt; /max_idPl -&gt;.
+- <span class="nb">rewrite</span> gee0_abs// /funepos /funeneg; <span class="nb">move</span>/max_idPl : (fx0) =&gt; -&gt;.
+  <span class="bp">by</span> <span class="nb">move</span>: fx0; <span class="nb">rewrite</span> -{<span class="mi">1</span>}oppr0 EFinN lee_oppl =&gt; /max_idPr -&gt;; <span class="nb">rewrite</span> adde0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">funeposneg</span> <span class="nv">f</span> : f = (<span class="kr">fun</span> <span class="nv">x</span> =&gt; f^\+ x - f^\- x).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> funeqE =&gt; x; <span class="nb">rewrite</span> /funepos /funeneg; <span class="nb">have</span> [|/ltW] := leP (f x) <span class="mi">0</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -{<span class="mi">1</span>}oppe0 -lee_oppr =&gt; /max_idPl -&gt;; <span class="nb">rewrite</span> oppeK add0e.
+<span class="bp">by</span> <span class="nb">rewrite</span> -{<span class="mi">1</span>}oppe0 -lee_oppl =&gt; /max_idPr -&gt;; <span class="nb">rewrite</span> sube0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">add_def_funeposneg</span> <span class="nv">f</span> <span class="nv">x</span> : (f^\+ x +? - f^\- x).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> /funeneg /funepos; <span class="nb">case</span>: (f x) =&gt; [r| |];
+  [<span class="nb">rewrite</span> !maxEFin|<span class="nb">rewrite</span> /maxe /= ltNyr|<span class="nb">rewrite</span> /maxe /= ltNyr].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">funeD_Dpos</span> <span class="nv">f</span> <span class="nv">g</span> : f \+ g = (f \+ g)^\+ \- (f \+ g)^\-.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/funext =&gt; x; <span class="nb">rewrite</span> /funepos /funeneg; <span class="nb">have</span> [|/ltW] := leP <span class="mi">0</span> (f x + g x).
+- <span class="bp">by</span> <span class="nb">rewrite</span> -{<span class="mi">1</span>}oppe0 -lee_oppl =&gt; /max_idPr -&gt;; <span class="nb">rewrite</span> sube0.
+- <span class="bp">by</span> <span class="nb">rewrite</span> -{<span class="mi">1</span>}oppe0 -lee_oppr =&gt; /max_idPl -&gt;; <span class="nb">rewrite</span> oppeK add0e.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">funeD_posD</span> <span class="nv">f</span> <span class="nv">g</span> : f \+ g = (f^\+ \+ g^\+) \- (f^\- \+ g^\-).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/funext =&gt; x; <span class="nb">rewrite</span> /funepos /funeneg.
+<span class="nb">have</span> [|fx0] := leP <span class="mi">0</span> (f x); <span class="nb">last</span> <span class="nb">rewrite</span> add0e.
+- <span class="nb">rewrite</span> -{<span class="mi">1</span>}oppe0 lee_oppl =&gt; /max_idPr -&gt;; <span class="nb">have</span> [|/ltW] := leP <span class="mi">0</span> (g x).
+    <span class="bp">by</span> <span class="nb">rewrite</span> -{<span class="mi">1</span>}oppe0 lee_oppl =&gt; /max_idPr -&gt;; <span class="nb">rewrite</span> adde0 sube0.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -{<span class="mi">1</span>}oppe0 -lee_oppr =&gt; /max_idPl -&gt;; <span class="nb">rewrite</span> adde0 sub0e oppeK.
+- <span class="nb">move</span>/ltW : (fx0); <span class="nb">rewrite</span> -{<span class="mi">1</span>}oppe0 lee_oppr =&gt; /max_idPl -&gt;.
+  <span class="nb">have</span> [|] := leP <span class="mi">0</span> (g x); <span class="nb">last</span> <span class="nb">rewrite</span> add0e.
+    <span class="bp">by</span> <span class="nb">rewrite</span> -{<span class="mi">1</span>}oppe0 lee_oppl =&gt; /max_idPr -&gt;; <span class="nb">rewrite</span> adde0 oppeK addeC.
+  <span class="nb">move</span> gg&#39; : (g x) =&gt; g&#39;; <span class="nb">move</span>: g&#39; gg&#39; =&gt; [g&#39; gg&#39; g&#39;0|//|goo _].
+  + <span class="nb">move</span>/ltW : (g&#39;0); <span class="nb">rewrite</span> -{<span class="mi">1</span>}oppe0 -lee_oppr =&gt; /max_idPl =&gt; -&gt;.
+    <span class="bp">by</span> <span class="nb">rewrite</span> fin_num_oppeD// <span class="mi">2</span>!oppeK.
+  + <span class="bp">by</span> <span class="nb">rewrite</span> /maxe /=; <span class="nb">case</span>: (f x) fx0.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">funposneg_lemmas</span>.
+#[<span class="kn">global</span>]
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (is_true (<span class="mi">0</span> &lt;= _ ^\+ _)%E) =&gt; <span class="kp">solve</span> [<span class="nb">apply</span>: funepos_ge0] : core.
+#[<span class="kn">global</span>]
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (is_true (<span class="mi">0</span> &lt;= _ ^\- _)%E) =&gt; <span class="kp">solve</span> [<span class="nb">apply</span>: funeneg_ge0] : core.
+
+<span class="kn">Definition</span> <span class="nf">indic</span> {<span class="nv">T</span>} {<span class="nv">R</span> : ringType} (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">x</span> : T) : R := (x \<span class="kr">in</span> A)%:R.
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;\1_&#39; A&quot;</span> (<span class="kn">at level</span> <span class="mi">8</span>, A <span class="kn">at level</span> <span class="mi">2</span>, <span class="kn">format</span> <span class="s2">&quot;&#39;\1_&#39; A&quot;</span>) .
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;\1_&#39; A&quot;</span> := (indic A) : ring_scope.
+
+<span class="kn">Section</span> <span class="nf">indic_lemmas</span>.
+<span class="kn">Context</span> (<span class="nv">T</span> : <span class="kt">Type</span>) (<span class="nv">R</span> : ringType).
+<span class="kn">Implicit Types</span> <span class="nv">A</span> <span class="nv">D</span> : <span class="nb">set</span> T.
+
+<span class="kn">Lemma</span> <span class="nf">indicE</span> <span class="nv">A</span> (<span class="nv">x</span> : T) : \<span class="mi">1_</span>A x = (x \<span class="kr">in</span> A)%:R :&gt; R. <span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">indicT</span> : \<span class="mi">1_</span>[<span class="nb">set</span>: T] = cst (<span class="mi">1</span> : R).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext=&gt; x; <span class="nb">rewrite</span> indicE in_setT. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">indic0</span> : \<span class="mi">1_</span>(@set0 T) = cst (<span class="mi">0</span> : R).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext=&gt; x; <span class="nb">rewrite</span> indicE in_set0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">preimage_indic</span> <span class="nv">D</span> (<span class="nv">B</span> : <span class="nb">set</span> R) :
+  \<span class="mi">1_</span>D @^-<span class="mi">1</span>` B = <span class="kr">if</span> <span class="mi">1</span> \<span class="kr">in</span> B <span class="kr">then</span> (<span class="kr">if</span> <span class="mi">0</span> \<span class="kr">in</span> B <span class="kr">then</span> setT <span class="kr">else</span> D)
+                            <span class="kr">else</span> (<span class="kr">if</span> <span class="mi">0</span> \<span class="kr">in</span> B <span class="kr">then</span> ~` D <span class="kr">else</span> set0).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /preimage/= /indic; <span class="nb">apply</span>/seteqP; <span class="nb">split</span> =&gt; x;
+  <span class="nb">case</span>: ifPn =&gt; B1; <span class="nb">case</span>: ifPn =&gt; B0 //=.
+- <span class="nb">have</span> [|] := boolP (x \<span class="kr">in</span> D); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> inE.
+  <span class="bp">by</span> <span class="nb">rewrite</span> notin_set <span class="kr">in</span> B0.
+- <span class="nb">have</span> [|] := boolP (x \<span class="kr">in</span> D); <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> notin_set.
+  <span class="bp">by</span> <span class="nb">rewrite</span> notin_set <span class="kr">in</span> B1.
+- <span class="bp">by</span> <span class="nb">have</span> [xD|xD] := boolP (x \<span class="kr">in</span> D);
+    [<span class="nb">rewrite</span> notin_set <span class="kr">in</span> B1|<span class="nb">rewrite</span> notin_set <span class="kr">in</span> B0].
+- <span class="bp">by</span> <span class="nb">have</span> [xD|xD] := boolP (x \<span class="kr">in</span> D); [<span class="nb">rewrite</span> inE <span class="kr">in</span> B1|<span class="nb">rewrite</span> inE <span class="kr">in</span> B0].
+- <span class="nb">have</span> [xD|] := boolP (x \<span class="kr">in</span> D); <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> notin_set.
+  <span class="bp">by</span> <span class="nb">rewrite</span> inE <span class="kr">in</span> B1.
+- <span class="nb">have</span> [|xD] := boolP (x \<span class="kr">in</span> D); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> inE.
+  <span class="bp">by</span> <span class="nb">rewrite</span> inE <span class="kr">in</span> B0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">image_indic</span> <span class="nv">D</span> <span class="nv">A</span> :
+  \<span class="mi">1_</span>D @` A = (<span class="kr">if</span> A `\` D != set0 <span class="kr">then</span> [<span class="nb">set</span> <span class="mi">0</span>] <span class="kr">else</span> set0) `|`
+              (<span class="kr">if</span> A `&amp;` D != set0 <span class="kr">then</span> [<span class="nb">set</span> <span class="mi">1</span> : R] <span class="kr">else</span> set0).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /indic; <span class="nb">apply</span>/predeqP =&gt; x; <span class="nb">split</span> =&gt; [[t At /= &lt;-]|].
+  <span class="bp">by</span> <span class="nb">rewrite</span> /indic; <span class="nb">case</span>: (boolP (t \<span class="kr">in</span> D)); <span class="nb">rewrite</span> ?(inE, notin_set) =&gt; Dt;
+     [<span class="nb">right</span>|<span class="nb">left</span>]; <span class="nb">rewrite</span> ifT//=; <span class="nb">apply</span>/set0P; <span class="kr">exists</span> <span class="nv">t</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; []; <span class="nb">case</span>: ifPn; <span class="nb">rewrite</span> <span class="nl">?negbK</span>// =&gt; /set0P[t [At Dt]] -&gt;;
+   <span class="kr">exists</span> <span class="nv">t</span> =&gt; //; <span class="nb">case</span>: (boolP (t \<span class="kr">in</span> D)); <span class="nb">rewrite</span> ?(inE, notin_set).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">image_indic_sub</span> <span class="nv">D</span> <span class="nv">A</span> : \<span class="mi">1_</span>D @` A `&lt;=` ([<span class="nb">set</span> <span class="mi">0</span>; <span class="mi">1</span>] : <span class="nb">set</span> R).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> image_indic; <span class="kp">do</span> ![<span class="nb">case</span>: ifP=&gt; //= _] =&gt; // t []//= -&gt;; [<span class="nb">left</span>|<span class="nb">right</span>].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fimfunE</span> (<span class="nv">f</span> : {fimfun T &gt;-&gt; R}) <span class="nv">x</span> :
+  f x = \sum_(y \<span class="kr">in</span> range f) (y * \<span class="mi">1_</span>(f @^-<span class="mi">1</span>` [<span class="nb">set</span> y]) x).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> (fsbigD1 (f x))// /= indicE mem_set// mulr1 fsbig1 <span class="nl">?addr0</span>//.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; y [fy /= /nesym yfx]; <span class="nb">rewrite</span> indicE memNset <span class="nl">?mulr0</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">indic_lemmas</span>.
+
+<span class="kn">Lemma</span> <span class="nf">xsection_indic</span> (<span class="nv">R</span> : ringType) <span class="nv">T1</span> <span class="nv">T2</span> (<span class="nv">A</span> : <span class="nb">set</span> (T1 * T2)) <span class="nv">x</span> :
+  xsection A x = (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (\<span class="mi">1_</span>A (x, y) : R)) @^-<span class="mi">1</span>` [<span class="nb">set</span> <span class="mi">1</span>].
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/seteqP; <span class="nb">split</span> =&gt; [y/mem_set/=|y/=]; <span class="nb">rewrite</span> indicE.
+<span class="bp">by</span> <span class="nb">rewrite</span> mem_xsection =&gt; -&gt;.
+<span class="bp">by</span> <span class="nb">rewrite</span> /xsection/=; <span class="nb">case</span>: (_ \<span class="kr">in</span> _) =&gt; //= /esym/eqP /[!oner_eq0].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ysection_indic</span> (<span class="nv">R</span> : ringType) <span class="nv">T1</span> <span class="nv">T2</span> (<span class="nv">A</span> : <span class="nb">set</span> (T1 * T2)) <span class="nv">y</span> :
+  ysection A y = (<span class="kr">fun</span> <span class="nv">x</span> =&gt; (\<span class="mi">1_</span>A (x, y) : R)) @^-<span class="mi">1</span>` [<span class="nb">set</span> <span class="mi">1</span>].
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/seteqP; <span class="nb">split</span> =&gt; [x/mem_set/=|x/=]; <span class="nb">rewrite</span> indicE.
+<span class="bp">by</span> <span class="nb">rewrite</span> mem_ysection =&gt; -&gt;.
+<span class="bp">by</span> <span class="nb">rewrite</span> /ysection/=; <span class="nb">case</span>: (_ \<span class="kr">in</span> _) =&gt; //= /esym/eqP /[!oner_eq0].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">indic_restrict</span> {<span class="nv">T</span> : pointedType} {<span class="nv">R</span> : numFieldType} (<span class="nv">A</span> : <span class="nb">set</span> T) :
+  \<span class="mi">1_</span>A = <span class="mi">1</span> \_ A :&gt; (T -&gt; R).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; x; <span class="nb">rewrite</span> indicE /patch; <span class="nb">case</span>: ifP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">restrict_indic</span> <span class="nv">T</span> (<span class="nv">R</span> : numFieldType) (<span class="nv">E</span> <span class="nv">A</span> : <span class="nb">set</span> T) :
+  (\<span class="mi">1_</span>E \_ A) = \<span class="mi">1_</span>(E `&amp;` A) :&gt; (T -&gt; R).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/funext =&gt; x; <span class="nb">rewrite</span> /restrict <span class="mi">2</span>!indicE.
+<span class="nb">case</span>: ifPn =&gt; [|] xA; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> in_setI xA andbT.
+<span class="bp">by</span> <span class="nb">rewrite</span> in_setI (negbTE xA) andbF.
+<span class="kn">Qed</span>.
+
+<span class="kn">Section</span> <span class="nf">ring</span>.
+<span class="kn">Context</span> (<span class="nv">aT</span> : pointedType) (<span class="nv">rT</span> : ringType).
+
+<span class="kn">Lemma</span> <span class="nf">fimfun_mulr_closed</span> : mulr_closed (@fimfun aT rT).
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; [|f g]; <span class="nb">rewrite</span> !inE/=; <span class="kp">first</span> <span class="bp">exact</span>: finite_image_cst.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; fA gA; <span class="nb">apply</span>: (finite_image11 (<span class="kr">fun</span> <span class="nv">x</span> <span class="nv">y</span> =&gt; x * y)).
+<span class="kn">Qed</span>.
+<span class="kn">Canonical</span> <span class="nf">fimfun_mul</span> := MulrPred fimfun_mulr_closed.
+<span class="kn">Canonical</span> <span class="nf">fimfun_ring</span> := SubringPred fimfun_mulr_closed.
+<span class="kn">Definition</span> <span class="nf">fimfun_ringMixin</span> := [ringMixin of {fimfun aT &gt;-&gt; rT} <span class="bp">by</span> &lt;:].
+<span class="kn">Canonical</span> <span class="nf">fimfun_ringType</span> := RingType {fimfun aT &gt;-&gt; rT} fimfun_ringMixin.
+
+<span class="kn">Implicit Types</span> (<span class="nv">f</span> <span class="nv">g</span> : {fimfun aT &gt;-&gt; rT}).
+
+<span class="kn">Lemma</span> <span class="nf">fimfunM</span> <span class="nv">f</span> <span class="nv">g</span> : f * g = f \* g :&gt; (_ -&gt; _). <span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+<span class="kn">Lemma</span> <span class="nf">fimfun1</span> : (<span class="mi">1</span> : {fimfun aT &gt;-&gt; rT}) = cst <span class="mi">1</span> :&gt; (_ -&gt; _). <span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+<span class="kn">Lemma</span> <span class="nf">fimfun_prod</span> <span class="nv">I</span> <span class="nv">r</span> (<span class="nv">P</span> : {pred I}) (<span class="nv">f</span> : I -&gt; {fimfun aT &gt;-&gt; rT}) (<span class="nv">x</span> : aT) :
+  (\sum_(i &lt;- r | P i) f i) x = \sum_(i &lt;- r | P i) f i x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">elim</span>/big_rec2: _ =&gt; //= i y ? Pi &lt;-. <span class="kn">Qed</span>.
+<span class="kn">Lemma</span> <span class="nf">fimfunX</span> <span class="nv">f</span> <span class="nv">n</span> : f ^+ n = (<span class="kr">fun</span> <span class="nv">x</span> =&gt; f x ^+ n) :&gt; (_ -&gt; _).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; x; <span class="nb">elim</span>: n =&gt; [|n IHn]//; <span class="nb">rewrite</span> !exprS fimfunM/= IHn.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">indic_fimfun_subproof</span> <span class="nv">X</span> : @FiniteImage aT rT \<span class="mi">1_</span>X.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>; <span class="nb">apply</span>: (finite_subfset [fset <span class="mi">0</span>; <span class="mi">1</span>]%fset) =&gt; x [tt /=].
+<span class="bp">by</span> <span class="nb">rewrite</span> !inE indicE; <span class="nb">case</span>: (_ \<span class="kr">in</span> _) =&gt; _ &lt;-; <span class="nb">rewrite</span> <span class="nl">?eqxx</span> <span class="nl">?orbT</span>.
+<span class="kn">Qed</span>.
+HB.instance <span class="kn">Definition</span> <span class="nf">_</span> <span class="nv">X</span> := indic_fimfun_subproof X.
+<span class="kn">Definition</span> <span class="nf">indic_fimfun</span> (<span class="nv">X</span> : <span class="nb">set</span> aT) := [the {fimfun aT &gt;-&gt; rT} of \<span class="mi">1_</span>X].
+
+HB.instance <span class="kn">Definition</span> <span class="nf">_</span> <span class="nv">k</span> <span class="nv">f</span> := FImFun.copy (k \o* f) (f * cst_fimfun k).
+<span class="kn">Definition</span> <span class="nf">scale_fimfun</span> <span class="nv">k</span> <span class="nv">f</span> := [the {fimfun aT &gt;-&gt; rT} of k \o* f].
+
+<span class="kn">End</span> <span class="nf">ring</span>.
+<span class="kn">Arguments</span> indic_fimfun {aT rT} _.
+
+<span class="kn">Section</span> <span class="nf">comring</span>.
+<span class="kn">Context</span> (<span class="nv">aT</span> : pointedType) (<span class="nv">rT</span> : comRingType).
+<span class="kn">Definition</span> <span class="nf">fimfun_comRingMixin</span> := [comRingMixin of {fimfun aT &gt;-&gt; rT} <span class="bp">by</span> &lt;:].
+<span class="kn">Canonical</span> <span class="nf">fimfun_comRingType</span> :=
+  ComRingType {fimfun aT &gt;-&gt; rT} fimfun_comRingMixin.
+
+<span class="kn">Implicit Types</span> (<span class="nv">f</span> <span class="nv">g</span> : {fimfun aT &gt;-&gt; rT}).
+HB.instance <span class="kn">Definition</span> <span class="nf">_</span> <span class="nv">f</span> <span class="nv">g</span> := FImFun.copy (f \* g) (f * g).
+<span class="kn">End</span> <span class="nf">comring</span>.
+
+HB.factory <span class="kn">Record</span> <span class="nf">FiniteDecomp</span> (<span class="nv">T</span> : pointedType) (<span class="nv">R</span> : ringType) (<span class="nv">f</span> : T -&gt; R) :=
+  { fimfunE : <span class="kr">exists</span> (<span class="nv">r</span> : seq R) (<span class="nv">A_</span> : R -&gt; <span class="nb">set</span> T),
+      <span class="kr">forall</span> <span class="nv">x</span>, f x = \sum_(y &lt;- r) (y * \<span class="mi">1_</span>(A_ y) x) }.
+HB.builders <span class="kn">Context</span> <span class="nv">T</span> <span class="nv">R</span> <span class="nv">f</span> <span class="nv">of</span> @FiniteDecomp T R f.
+  <span class="kn">Lemma</span> <span class="nf">finite_subproof</span>: @FiniteImage T R f.
+  <span class="kn">Proof</span>.
+  <span class="nb">split</span>; <span class="nb">have</span> [r [A_ fE]] := fimfunE.
+  <span class="nb">suff</span> -&gt; : f = \sum_(y &lt;- r) cst_fimfun y * indic_fimfun (A_ y) <span class="bp">by</span> [].
+  <span class="bp">by</span> <span class="nb">apply</span>/funext=&gt; x; <span class="nb">rewrite</span> fE fimfun_sum.
+  <span class="kn">Qed</span>.
+  HB.instance <span class="kn">Definition</span> <span class="nf">_</span> := finite_subproof.
+HB.<span class="kr">end</span>.</span></pre></article></body></html>

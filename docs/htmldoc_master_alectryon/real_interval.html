@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>real_interval.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)</span>
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect ssralg ssrnum ssrint interval.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> finmap fingroup perm rat.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> boolp classical_sets functions.
+<span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> mathcomp_extra.
+<span class="kn">From</span> mathcomp.classical <span class="kn">Require Export</span> set_interval.
+<span class="kn">From</span> HB <span class="kn">Require Import</span> structures.
+<span class="kn">Require Import</span> reals ereal signed topology normedtype sequences.
+
+<span class="sd">(******************************************************************************)</span>
+<span class="c">(* This files contains lemmas about sets and intervals on reals.              *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="sd">(******************************************************************************)</span>
+
+<span class="kn">Set Implicit Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+<span class="kn">Import</span> Order.TTheory GRing.Theory Num.Def Num.Theory.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+
+<span class="kn">Section</span> <span class="nf">interval_has</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+<span class="kn">Implicit Types</span> <span class="nv">x</span> : R.
+
+<span class="kn">Lemma</span> <span class="nf">has_sup_half</span> <span class="nv">x</span> <span class="nv">b</span> (<span class="nv">i</span> : itv_bound R) : (i &lt; BSide b x)%O -&gt;
+  has_sup [<span class="nb">set</span>` Interval i (BSide b x)].
+<span class="kn">Proof</span>.
+<span class="nb">move</span>: b i =&gt; [] [[]y|[]]; <span class="nb">rewrite</span> <span class="nl">?bnd_simp</span> =&gt; xy; <span class="nb">split</span>=&gt; //; <span class="kp">do</span> <span class="mi">1</span>?[
+  <span class="bp">by</span> <span class="kr">exists</span> ((x + y) / <span class="mi">2</span>); <span class="nb">rewrite</span> !set_itvE/= addrC !(midf_le,midf_lt) //;
+    <span class="bp">exact</span>: ltW
+| <span class="bp">by</span> <span class="kr">exists</span> (<span class="nv">x</span> - <span class="mi">1</span>); <span class="nb">rewrite</span> !set_itvE/=
+    !(ltr_subl_addr, ler_subl_addr, ltr_addl,ler_addl)].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">has_inf_half</span> <span class="nv">x</span> <span class="nv">b</span> (<span class="nv">i</span> : itv_bound R) : (BSide b x &lt; i)%O -&gt;
+  has_inf [<span class="nb">set</span>` Interval (BSide b x) i].
+<span class="kn">Proof</span>.
+<span class="nb">move</span>: b i =&gt; [] [[]y|[]]; <span class="nb">rewrite</span> <span class="nl">?bnd_simp</span> =&gt; xy; <span class="kp">do</span> <span class="mi">1</span>?[
+  <span class="bp">by</span> <span class="nb">split</span>=&gt; //; <span class="kr">exists</span> ((x + y) / <span class="mi">2</span>);
+     <span class="nb">rewrite</span> !set_itvE/= !(midf_le,midf_lt) //;
+     <span class="bp">exact</span>: ltW
+ | <span class="bp">by</span> <span class="nb">split</span> =&gt; //; <span class="kr">exists</span> (<span class="nv">x</span> + <span class="mi">1</span>); <span class="nb">rewrite</span> !set_itvE/= !(ltr_addl,ler_addl)].
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">interval_has</span>.
+
+#[<span class="kn">global</span>]
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (has_sup _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: has_sup1 | <span class="bp">exact</span>: has_sup_half] : core.
+#[<span class="kn">global</span>]
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (has_inf _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: has_inf1 | <span class="bp">exact</span>: has_inf_half]: core.
+
+<span class="kn">Section</span> <span class="nf">interval_sup_inf</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+<span class="kn">Implicit Types</span> <span class="nv">x</span> <span class="nv">y</span> : R.
+
+<span class="kn">Let</span> <span class="nf">sup_itv_infty_bnd</span> <span class="nv">x</span> <span class="nv">b</span> : sup [<span class="nb">set</span>` Interval -oo%O (BSide b x)] = x.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: b; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -setUitv1// sup_setU <span class="nl">?sup1</span>// =&gt; ? ? ? -&gt;; <span class="bp">exact</span>/ltW.
+<span class="nb">set</span> s := sup _; <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+- <span class="nb">apply</span> sup_le_ub; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; ? /ltW.
+  <span class="bp">by</span> <span class="kr">exists</span> (<span class="nv">x</span> - <span class="mi">1</span>); <span class="nb">rewrite</span> !set_itvE/= ltr_subl_addr ltr_addl.
+- <span class="nb">rewrite</span> leNgt; <span class="nb">apply</span>/negP =&gt; sx; <span class="nb">pose</span> p := (s + x) / <span class="mi">2</span>.
+  <span class="nb">suff</span> /andP[?]: (p &lt; x) &amp;&amp; (s &lt; p) <span class="bp">by</span> <span class="nb">apply</span>/negP; <span class="nb">rewrite</span> -leNgt sup_ub.
+  <span class="bp">by</span> <span class="nb">rewrite</span> !midf_lt.
+<span class="kn">Qed</span>.
+
+<span class="kn">Let</span> <span class="nf">inf_itv_bnd_infty</span> <span class="nv">x</span> <span class="nv">b</span> : inf [<span class="nb">set</span>` Interval (BSide b x) +oo%O] = x.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: b; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> /inf opp_itv_bnd_infty sup_itv_infty_bnd opprK.
+<span class="nb">rewrite</span> -setU1itv// inf_setU <span class="nl">?inf1</span>// =&gt; _ b -&gt;.
+<span class="bp">by</span> <span class="nb">rewrite</span> !set_itvE =&gt; /ltW.
+<span class="kn">Qed</span>.
+
+<span class="kn">Let</span> <span class="nf">sup_itv_o_bnd</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nv">b</span> : x &lt; y -&gt;
+  sup [<span class="nb">set</span>` Interval (BRight x) (BSide b y)] = y.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: b =&gt; xy; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -setUitv1// sup_setU <span class="nl">?sup1</span>// =&gt; ? ? /andP[? /ltW ?] -&gt;.
+<span class="nb">set</span> B := [<span class="nb">set</span>` _]; <span class="nb">set</span> A := `]-oo, x]%classic.
+<span class="nb">rewrite</span> -(@sup_setU _ A B) //.
+- <span class="nb">rewrite</span> -(sup_itv_infty_bnd y true); <span class="nb">congr</span> sup.
+  <span class="nb">rewrite</span> predeqE =&gt; u; <span class="nb">split</span>=&gt; [[|/andP[]//]|yu].
+  <span class="bp">by</span> <span class="nb">rewrite</span> /A !set_itvE =&gt; /le_lt_trans; <span class="nb">apply</span>.
+  <span class="bp">by</span> <span class="nb">have</span> [xu|ux] := ltP x u; [<span class="nb">right</span>; <span class="nb">rewrite</span> /B !set_itvE/= xu| <span class="nb">left</span>].
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; u v; <span class="nb">rewrite</span> /A /B =&gt; ? /andP[xv _]; <span class="nb">rewrite</span> (le_trans _ (ltW xv)).
+<span class="kn">Qed</span>.
+
+<span class="kn">Let</span> <span class="nf">sup_itv_bounded</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nv">a</span> <span class="nv">b</span> : (BSide a x &lt; BSide b y)%O -&gt;
+  sup [<span class="nb">set</span>` Interval (BSide a x) (BSide b y)] = y.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: a =&gt; xy; <span class="nb">last</span> <span class="bp">exact</span>: sup_itv_o_bnd.
+<span class="nb">case</span>: b <span class="kr">in</span> xy *.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -setU1itv// sup_setU <span class="nl">?sup_itv_o_bnd</span>// =&gt; ? ? -&gt; /andP[/ltW].
+<span class="bp">by</span> <span class="nb">rewrite</span> -setUitv1// sup_setU <span class="nl">?sup1</span>// =&gt; ? ? /andP[_ /ltW ? -&gt;].
+<span class="kn">Qed</span>.
+
+<span class="kn">Let</span> <span class="nf">inf_itv_bnd_o</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nv">b</span> : (BSide b x &lt; BLeft y)%O -&gt;
+  inf [<span class="nb">set</span>` Interval (BSide b x) (BLeft y)] = x.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: b =&gt; xy.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -setU1itv// inf_setU <span class="nl">?inf1</span>// =&gt; _ ? -&gt; /andP[/ltW].
+<span class="bp">by</span> <span class="nb">rewrite</span> /inf opp_itv_bnd_bnd sup_itv_o_bnd <span class="nl">?opprK</span> // ltr_oppl opprK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Let</span> <span class="nf">inf_itv_bounded</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nv">a</span> <span class="nv">b</span> : (BSide a x &lt; BSide b y)%O -&gt;
+  inf [<span class="nb">set</span>` Interval (BSide a x) (BSide b y)] = x.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: b =&gt; xy; <span class="kp">first</span> <span class="bp">exact</span>: inf_itv_bnd_o.
+<span class="nb">case</span>: a <span class="kr">in</span> xy *.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -setU1itv// inf_setU <span class="nl">?inf1</span>// =&gt; ? ? -&gt; /andP[/ltW].
+<span class="bp">by</span> <span class="nb">rewrite</span> -setUitv1// inf_setU <span class="nl">?inf_itv_bnd_o</span>// =&gt; ? ? /andP[? /ltW ?] -&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sup_itv</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">x</span> : (a &lt; BSide b x)%O -&gt;
+  sup [<span class="nb">set</span>` Interval a (BSide b x)] = x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: a =&gt; [b&#39; y|[]]; <span class="nb">rewrite</span> <span class="nl">?bnd_simp</span>//= =&gt; /sup_itv_bounded-&gt;. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">inf_itv</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">x</span> : (BSide b x &lt; a)%O -&gt;
+  inf [<span class="nb">set</span>` Interval (BSide b x) a] = x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: a =&gt; [b&#39; y|[]]; <span class="nb">rewrite</span> <span class="nl">?bnd_simp</span>//= =&gt; /inf_itv_bounded-&gt;. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sup_itvcc</span> <span class="nv">x</span> <span class="nv">y</span> : x &lt;= y -&gt; sup `[x, y] = y.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; *; <span class="nb">rewrite</span> sup_itv. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">inf_itvcc</span> <span class="nv">x</span> <span class="nv">y</span> : x &lt;= y -&gt; inf `[x, y] = x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; *; <span class="nb">rewrite</span> inf_itv. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">interval_sup_inf</span>.
+
+<span class="kn">Section</span> <span class="nf">set_itv_realType</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+<span class="kn">Implicit Types</span> <span class="nv">x</span> : R.
+
+<span class="kn">Lemma</span> <span class="nf">set_itvK</span> : {<span class="kr">in</span> neitv, cancel pred_set (@Rhull R)}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; [[[] x|[]] [[] y|[]]] /neitvP //;
+  <span class="nb">rewrite</span> /Rhull /= !(in_itv, inE)/= <span class="nl">?bnd_simp</span> =&gt; xy.
+- <span class="nb">rewrite</span> asboolT// inf_itv// lexx/= xy asboolT// asboolT//=.
+  <span class="bp">by</span> <span class="nb">rewrite</span> asboolF//= sup_itv//= ltxx <span class="nl">?andbF</span>.
+- <span class="bp">by</span> <span class="nb">rewrite</span> asboolT// inf_itv// <span class="nl">?asboolT</span>// <span class="nl">?sup_itv</span>// <span class="nl">?lexx</span> <span class="nl">?xy</span>.
+- <span class="bp">by</span> <span class="nb">rewrite</span> asboolT//= inf_itv// lexx asboolT// asboolF.
+- <span class="nb">rewrite</span> asboolT// inf_itv//= ltxx asboolF// asboolT//.
+  <span class="bp">by</span> <span class="nb">rewrite</span> sup_itv// ltxx andbF asboolF.
+  <span class="nb">rewrite</span> asboolT // inf_itv // ltxx asboolF // asboolT //.
+  <span class="bp">by</span> <span class="nb">rewrite</span> sup_itv // xy lexx asboolT.
+- <span class="bp">by</span> <span class="nb">rewrite</span> asboolT // inf_itv// ltxx asboolF // asboolF.
+- <span class="bp">by</span> <span class="nb">rewrite</span> asboolF // asboolT // sup_itv// ltxx asboolF.
+- <span class="bp">by</span> <span class="nb">rewrite</span> asboolF // asboolT // sup_itv// lexx asboolT.
+- <span class="bp">by</span> <span class="nb">rewrite</span> asboolF // asboolF.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RhullT</span> : Rhull setT = `]-oo, +oo[%R :&gt; interval R.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /Rhull -set_itv_infty_infty asboolF// asboolF. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RhullK</span> : {<span class="kr">in</span> (@is_interval _ : <span class="nb">set</span> (<span class="nb">set</span> R)), cancel (@Rhull R) pred_set}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; X /asboolP iX; <span class="nb">apply</span>/esym/is_intervalP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">itv_c_inftyEbigcap</span> <span class="nv">x</span> :
+  `[x, +oo[%classic = \bigcap_k `]x - k.+<span class="mi">1</span>%:R^-<span class="mi">1</span>, +oo[%classic.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> predeqE =&gt; y; <span class="nb">split</span>=&gt; /= [|xy].
+  <span class="nb">rewrite</span> in_itv /= andbT =&gt; xy z _ /=; <span class="nb">rewrite</span> in_itv /= andbT ltr_subl_addr.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (le_lt_trans xy) // ltr_addl invr_gt0 ltr0n.
+<span class="nb">rewrite</span> in_itv /= andbT leNgt; <span class="nb">apply</span>/negP =&gt; yx.
+<span class="nb">have</span> {}[k ykx] := ltr_add_invr yx.
+<span class="nb">have</span> {xy}/= := xy k Logic.I.
+<span class="bp">by</span> <span class="nb">rewrite</span> in_itv /= andbT; <span class="nb">apply</span>/negP; <span class="nb">rewrite</span> -leNgt ler_subr_addr ltW.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">itv_bnd_inftyEbigcup</span> <span class="nv">b</span> <span class="nv">x</span> : [<span class="nb">set</span>` Interval (BSide b x) +oo%O] =
+  \bigcup_k [<span class="nb">set</span>` Interval (BSide b x) (BLeft k%:R)].
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> predeqE =&gt; y; <span class="nb">split</span>=&gt; /=; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; [n _]/=; <span class="nb">rewrite</span> in_itv =&gt; /andP[xy yn]; <span class="nb">rewrite</span> in_itv /= xy.
+<span class="nb">rewrite</span> in_itv /= andbT =&gt; xy; <span class="kr">exists</span> `|floor y|%N.+<span class="mi">1</span> =&gt; //=.
+<span class="nb">rewrite</span> in_itv /= xy /=.
+<span class="nb">have</span> [y0|y0] := ltP <span class="mi">0</span> y; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> (le_lt_trans y0)// ltr_spaddr.
+<span class="bp">by</span> <span class="nb">rewrite</span> -natr1 natr_absz ger0_norm <span class="nl">?floor_ge0</span> <span class="mi">1</span><span class="nl">?ltW</span>// lt_succ_floor.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">itv_o_inftyEbigcup</span> <span class="nv">x</span> :
+  `]x, +oo[%classic = \bigcup_k `[x + k.+<span class="mi">1</span>%:R^-<span class="mi">1</span>, +oo[%classic.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> predeqE =&gt; y; <span class="nb">split</span> =&gt; [|[n _]]/=.
+  <span class="nb">rewrite</span> in_itv /= andbT =&gt; xy.
+  <span class="nb">have</span> {}[k xky] := ltr_add_invr xy.
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">k</span> =&gt; //=; <span class="nb">rewrite</span> in_itv /= (ltW xky).
+<span class="nb">rewrite</span> in_itv /= andbT =&gt; xny.
+<span class="bp">by</span> <span class="nb">rewrite</span> in_itv /= andbT (lt_le_trans _ xny) // ltr_addl invr_gt0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">set_itv_setT</span> (<span class="nv">i</span> : interval R) : [<span class="nb">set</span>` i] = setT -&gt; i = `]-oo, +oo[.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> [i0  /(congr1 (@Rhull _))|] := boolP (neitv i).
+  <span class="bp">by</span> <span class="nb">rewrite</span> set_itvK// =&gt; -&gt;; <span class="bp">exact</span>: RhullT.
+<span class="bp">by</span> <span class="nb">rewrite</span> negbK =&gt; /eqP -&gt;; <span class="nb">rewrite</span> predeqE =&gt; /(_ <span class="mi">0</span>)[_]/(_ Logic.I).
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">set_itv_realType</span>.
+
+<span class="kn">Section</span> <span class="nf">Rhull_lemmas</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+<span class="kn">Implicit Types</span> (<span class="nv">a</span> <span class="nv">b</span> <span class="nv">t</span> <span class="nv">r</span> : R) (<span class="nv">A</span> : <span class="nb">set</span> R).
+
+<span class="kn">Lemma</span> <span class="nf">Rhull_smallest</span> <span class="nv">A</span> : [<span class="nb">set</span>` Rhull A] = smallest (@is_interval R) A.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/seteqP; <span class="nb">split</span>; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>: smallest_sub; [<span class="nb">apply</span>: interval_is_interval | <span class="nb">apply</span>: sub_Rhull].
+<span class="nb">move</span>=&gt; x /= + I [Iitv AI]; <span class="nb">rewrite</span> /Rhull.
+<span class="nb">have</span> [|] := asboolP (has_lbound A) =&gt; lA; <span class="nb">last first</span>.
+  <span class="nb">have</span> /forallNP/(_ x)/existsNP[a] := lA.
+  <span class="nb">move</span>=&gt; /existsNP[Aa /negP]; <span class="nb">rewrite</span> -ltNge =&gt; ax.
+  <span class="nb">have</span> [|]:= asboolP (has_ubound A) =&gt; uA; <span class="nb">last first</span>.
+    <span class="nb">move</span>=&gt; ?; <span class="nb">have</span> /forallNP/(_ x)/existsNP[b] := uA.
+    <span class="nb">move</span>=&gt; /existsNP[Ab /negP]; <span class="nb">rewrite</span> -ltNge =&gt; xb.
+    <span class="nb">have</span> /is_intervalPlt/(_ a b) := Iitv; <span class="nb">apply</span>; <span class="kp">do</span> <span class="nl">?by</span> <span class="nb">apply</span>: AI.
+    <span class="bp">by</span> <span class="nb">rewrite</span> ax xb.
+  <span class="nb">have</span> [<span class="kn">As</span>|NAs]/= := asboolP (A _) =&gt; xA.
+    <span class="bp">by</span> <span class="nb">apply</span>: (Iitv a (sup A)); <span class="bp">by</span> [<span class="nb">apply</span>: AI | <span class="nb">rewrite</span> ltW <span class="nl">?ax</span>].
+  <span class="nb">have</span> [||b Ab xb] := @sup_gt _ A x; <span class="kp">do</span> <span class="nl">?by</span> [<span class="kr">exists</span> <span class="nv">a</span> | <span class="nb">rewrite</span> (itvP xA)].
+  <span class="nb">have</span> /is_intervalPlt/(_ a b) := Iitv; <span class="nb">apply</span>; <span class="kp">do</span> <span class="nl">?by</span> <span class="nb">apply</span>: AI.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ax xb.
+<span class="nb">have</span> [|]:= asboolP (has_ubound A) =&gt; uA; <span class="nb">last first</span>.
+  <span class="nb">have</span> /forallNP/(_ x)/existsNP[b] := uA.
+  <span class="nb">move</span>=&gt; /existsNP[Ab /negP]; <span class="nb">rewrite</span> -ltNge =&gt; xb.
+  <span class="nb">have</span> [Ai|NAi]/= := asboolP (A _) =&gt; xA.
+    <span class="bp">by</span> <span class="nb">apply</span>: (Iitv (inf A) b); <span class="bp">by</span> [<span class="nb">apply</span>: AI | <span class="nb">rewrite</span> (ltW xb)].
+  <span class="nb">have</span> [||a Aa ax] := @inf_lt _ A x; <span class="kp">do</span> <span class="nl">?by</span> [<span class="kr">exists</span> <span class="nv">b</span> | <span class="nb">rewrite</span> (itvP xA)].
+  <span class="nb">have</span> /is_intervalPlt/(_ a b) := Iitv; <span class="nb">apply</span>; <span class="kp">do</span> <span class="nl">?by</span> <span class="nb">apply</span>: AI.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ax xb.
+<span class="nb">have</span> [Ai|NAi]/= := asboolP (A _); <span class="nb">have</span> [<span class="kn">As</span>|NAs]/= := asboolP (A _).
+- <span class="bp">by</span> <span class="nb">apply</span>: Iitv; <span class="nb">apply</span>: AI.
+- <span class="nb">move</span>=&gt; xA.
+  <span class="nb">have</span> [||b Ab xb] := @sup_gt _ A x; <span class="kp">do</span> <span class="nl">?by</span> [<span class="kr">exists</span> (<span class="nv">inf</span> <span class="nv">A</span>) | <span class="nb">rewrite</span> (itvP xA)].
+  <span class="nb">have</span> /(_ (inf A) b) := Iitv; <span class="nb">apply</span>; <span class="kp">do</span> <span class="nl">?by</span> <span class="nb">apply</span>: AI.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (itvP xA) (ltW xb).
+- <span class="nb">move</span>=&gt; xA.
+  <span class="nb">have</span> [||a Aa ax] := @inf_lt _ A x; <span class="kp">do</span> <span class="nl">?by</span> [<span class="kr">exists</span> (<span class="nv">sup</span> <span class="nv">A</span>) | <span class="nb">rewrite</span> (itvP xA)].
+  <span class="nb">have</span> /(_ a (sup A)) := Iitv; <span class="nb">apply</span>; <span class="kp">do</span> <span class="nl">?by</span> <span class="nb">apply</span>: AI.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (itvP xA) (ltW ax).
+<span class="nb">have</span> [-&gt;|/set0P AN0] := eqVneq A set0.
+  <span class="bp">by</span> <span class="nb">rewrite</span> inf0 sup0 itv_ge//= ltBSide/= ltxx.
+<span class="nb">move</span>=&gt; xA.
+<span class="nb">have</span> [||a Aa ax] := @inf_lt _ A x; <span class="kp">do</span> <span class="nl">?by</span> [|<span class="nb">rewrite</span> (itvP xA)].
+<span class="nb">have</span> [||b Ab xb] := @sup_gt _ A x; <span class="kp">do</span> <span class="nl">?by</span> [|<span class="nb">rewrite</span> (itvP xA)].
+<span class="nb">have</span> /is_intervalPlt/(_ a b) := Iitv; <span class="nb">apply</span>; <span class="kp">do</span> <span class="nl">?by</span> <span class="nb">apply</span>: AI.
+<span class="bp">by</span> <span class="nb">rewrite</span> ax xb.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_Rhull</span> : {homo (@Rhull R) : A B / (A `&lt;=` B) &gt;-&gt; {subset A &lt;= B}}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; A B AB; <span class="nb">suff</span>: [<span class="nb">set</span>` Rhull A] `&lt;=` [<span class="nb">set</span>` Rhull B] <span class="bp">by</span> [].
+<span class="nb">rewrite</span> Rhull_smallest; <span class="nb">apply</span>: smallest_sub; <span class="kp">first</span> <span class="bp">exact</span>: interval_is_interval.
+<span class="bp">by</span> <span class="nb">rewrite</span> Rhull_smallest; <span class="nb">apply</span>: sub_smallest.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">neitv_Rhull</span> <span class="nv">A</span> : ~~ neitv (Rhull A) -&gt; A = set0.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>/negPn/eqP =&gt; A0; <span class="nb">rewrite</span> predeqE =&gt; r; <span class="nb">split</span> =&gt; // /sub_Rhull.
+<span class="bp">by</span> <span class="nb">rewrite</span> A0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rhull_involutive</span> <span class="nv">A</span> : Rhull [<span class="nb">set</span>` Rhull A] = Rhull A.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> [A0|/neitv_Rhull] := boolP (neitv (Rhull A)); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> set_itvK.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt;; <span class="nb">rewrite</span> <span class="nl">?Rhull0</span> set_itvE Rhull0.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Rhull_lemmas</span>.
+
+<span class="kn">Coercion</span> <span class="nf">ereal_of_itv_bound</span> T (b : itv_bound T) : \bar T :=
+  <span class="kr">match</span> b <span class="kr">with</span> BSide _ y =&gt; y%:E | +oo%O =&gt; +oo%E | -oo%O =&gt; -oo%E <span class="kr">end</span>.
+<span class="kn">Arguments</span> ereal_of_itv_bound T !b.
+
+<span class="kn">Section</span> <span class="nf">erealDomainType</span>.
+<span class="kn">Context</span> (<span class="nv">R</span> : realDomainType).
+
+<span class="kn">Lemma</span> <span class="nf">le_bnd_ereal</span> (<span class="nv">a</span> <span class="nv">b</span> : itv_bound R) : (a &lt;= b)%O -&gt; (a &lt;= b)%E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>: a b =&gt; -[[] a|[]] [bb b|[]] //=; <span class="nb">rewrite</span> ?(leey,leNye)//.
+  <span class="bp">by</span> <span class="nb">rewrite</span> bnd_simp.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /lteifW.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lt_ereal_bnd</span> (<span class="nv">a</span> <span class="nv">b</span> : itv_bound R) : (a &lt; b)%E -&gt; (a &lt; b)%O.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>: a b =&gt; -[[] a|[]] [[] b|[]] //=;
+  <span class="nb">rewrite</span> ?(lee_pinfty,lee_ninfty,lte_fin)// =&gt; ab; <span class="nb">rewrite</span> bnd_simp ltW.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Interval_ereal_mem</span> (<span class="nv">r</span> : R) (<span class="nv">a</span> <span class="nv">b</span> : itv_bound R) :
+  r \<span class="kr">in</span> Interval a b -&gt; (a &lt;= r%:E &lt;= b)%E.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: a b =&gt; [[] a|[]] [[] b|[]] =&gt; /[dup] rab /itvP rw//=;
+<span class="bp">by</span> <span class="nb">rewrite</span> <span class="nl">?lee_fin</span> <span class="nl">?rw</span>//= <span class="nl">?leey</span> <span class="nl">?leNye</span>//; <span class="nb">move</span>: rab; <span class="nb">rewrite</span> in_itv//= andbF.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ereal_mem_Interval</span> (<span class="nv">r</span> : R) (<span class="nv">a</span> <span class="nv">b</span> : itv_bound R) :
+  (a &lt; r%:E &lt; b)%E -&gt; r \<span class="kr">in</span> Interval a b.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>: a b =&gt; [[]a|[]] [[]b|[]] //=; <span class="nb">rewrite</span> <span class="nl">?lte_fin</span> <span class="nl">?in_itv</span> //= =&gt; /andP[] //;
+<span class="bp">by</span> <span class="kp">do</span> ?[<span class="nb">move</span>-&gt;|<span class="nb">move</span>/ltW|<span class="nb">move</span>=&gt;_].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">itv_cyy</span> : `[+oo%E, +oo[%classic = [<span class="nb">set</span> +oo%E] :&gt; <span class="nb">set</span> (\bar R).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> set_itvE predeqE =&gt; t; <span class="nb">split</span> =&gt; /= [|&lt;-//]; <span class="nb">rewrite</span> leye_eq =&gt; /eqP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">itv_oyy</span> : `]+oo%E, +oo[%classic = set0 :&gt; <span class="nb">set</span> (\bar R).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> set_itvE predeqE =&gt; t; <span class="nb">split</span> =&gt; //=; <span class="nb">apply</span>/negP; <span class="nb">rewrite</span> -leNgt leey.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">itv_cNyy</span> : `[-oo%E, +oo[%classic = setT :&gt; <span class="nb">set</span> (\bar R).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> set_itvE predeqE =&gt; t; <span class="nb">split</span> =&gt; //= _; <span class="nb">rewrite</span> leNye. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">itv_oNyy</span> : `]-oo%E, +oo[%classic = ~` [<span class="nb">set</span> -oo]%E :&gt; <span class="nb">set</span> (\bar R).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> set_itvE predeqE =&gt; x; <span class="nb">split</span> =&gt; /=.
+- <span class="bp">by</span> <span class="nb">move</span>: x =&gt; [x| |]; <span class="nb">rewrite</span> <span class="nl">?ltxx</span>.
+- <span class="bp">by</span> <span class="nb">move</span>: x =&gt; [x h|//|/(_ erefl)]; <span class="nb">rewrite</span> <span class="nl">?ltNyr</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">erealDomainType</span>.
+
+<span class="kn">Lemma</span> <span class="nf">disj_itv_Rhull</span> {<span class="nv">R</span> : realType} (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> R) : A `&amp;` B = set0 -&gt;
+  is_interval A -&gt; is_interval B -&gt; disjoint_itv (Rhull A) (Rhull B).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; AB0 iA iB; <span class="nb">rewrite</span> /disjoint_itv RhullK <span class="nl">?inE</span>// RhullK <span class="nl">?inE</span>.
+<span class="kn">Qed</span>.</span></pre></article></body></html>

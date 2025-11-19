@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>xfinmap.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="c">(* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)</span>
+<span class="c">(* Copyright (c) - 2015--2018 - Inria                                   *)</span>
+<span class="c">(* Copyright (c) - 2016--2018 - Polytechnique                           *)</span>
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect all_algebra.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Export</span> finmap.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Set Implicit Arguments</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Unset Strict Implicit</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Unset Printing Implicit Defensive</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Set Asymmetric Patterns</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Import</span> Order.TTheory GRing.Theory Num.Theory.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Local</span> <span class="kn">Open Scope</span> fset_scope.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">uniq_fset_keys</span> {<span class="nv">K</span> : choiceType} (<span class="nv">J</span> : {fset K}) : uniq (enum_fset J).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>K</var><span class="hyp-type"><b>: </b><span>choiceType</span></span></span><br><span><var>J</var><span class="hyp-type"><b>: </b><span>{fset K}</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">uniq J</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>2</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">case</span>: J =&gt; J /= /canonical_uniq.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input">#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> uniq_fset_keys : core.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">enum_fset0</span> (<span class="nv">T</span> : choiceType) :
+  enum [finType of fset0] = [::] :&gt; seq (@fset0 T).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>T</var><span class="hyp-type"><b>: </b><span>choiceType</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">enum [finType of fset0] = [::]</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>a</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> enumT <span class="nb">unlock</span>.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">enum_fset1</span> (<span class="nv">T</span> : choiceType) (<span class="nv">x</span> : T) :
+  enum [finType of [fset x]] = [:: [`fset11 x]].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>d</q><br><span><var>x</var><span class="hyp-type"><b>: </b><span>T</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">enum [finType of [fset x]] = [:: [` fset11 x]]</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>11</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>/perm_small_eq=&gt; //; <span class="nb">apply</span>/uniq_perm =&gt; //.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>13</q><span class="goal-separator"><hr></span><div class="goal-conclusion">uniq (enum [finType of [fset x]])</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><q>13</q><label class="goal-separator"><hr></label><div class="goal-conclusion">enum [finType of [fset x]] =i [:: [` fset11 x]]</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span>/enum_uniq.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>13</q><span class="goal-separator"><hr></span><q>1d</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">case</span>=&gt; [y hy]; <span class="nb">rewrite</span> mem_seq1 mem_enum /in_mem /=.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>d</q><br><span><var>x, y</var><span class="hyp-type"><b>: </b><span>T</span></span></span><br><span><var>hy</var><span class="hyp-type"><b>: </b><span>y \<span class="kr">in</span> [fset x]</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">true = ([` hy] == [` fset11 x])</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> eqE /=; <span class="nb">rewrite</span> in_fset1 <span class="kr">in</span> hy.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Section</span> <span class="nf">BigFSet</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Variable</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.law idx).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Variable</span> (<span class="nv">I</span> : choiceType).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">big_fset0_cond</span> (<span class="nv">P</span> : pred _) (<span class="nv">F</span> : _ -&gt; R) :
+  \big[op/idx]_(i : @fset0 I | P i) F i = idx :&gt; R.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>R</var><span class="hyp-type"><b>: </b><span><span class="kt">Type</span></span></span></span><br><span><var>idx</var><span class="hyp-type"><b>: </b><span>R</span></span></span><br><span><var>op</var><span class="hyp-type"><b>: </b><span>Monoid.law idx</span></span></span><br><span><var>I</var><span class="hyp-type"><b>: </b><span>choiceType</span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>pred fset0</span></span></span><br><span><var>F</var><span class="hyp-type"><b>: </b><span>fset0 -&gt; R</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">\big[op/idx]_(i | P i) F i = idx</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>29</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span>: big_pred0 =&gt; -[j hj]; <span class="nb">have</span> := hj; <span class="nb">rewrite</span> in_fset0.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">big_fset0</span> (<span class="nv">F</span> : @fset0 I -&gt; R) :
+  \big[op/idx]_(i : fset0) F i = idx.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>2c</q><br><q>2d</q><br><q>2e</q><br><q>2f</q><br><q>31</q><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">\big[op/idx]_i F i = idx</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>35</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> /index_enum -enumT /= enum_fset0 big_nil.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">big_fset1</span> (<span class="nv">a</span> : I) (<span class="nv">F</span> : [fset a] -&gt; R) :
+  \big[op/idx]_(i : [fset a]) F i = F (FSetSub (fset11 a)).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>2c</q><br><q>2d</q><br><q>2e</q><br><q>2f</q><br><span><var>a</var><span class="hyp-type"><b>: </b><span>I</span></span></span><br><span><var>F</var><span class="hyp-type"><b>: </b><span>[fset a] -&gt; R</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">\big[op/idx]_i F i = (F.[fset11 a])%fmap</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>3b</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> /index_enum -enumT enum_fset1 big_seq1.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">End</span> <span class="nf">BigFSet</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Section</span> <span class="nf">BigFSetCom</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Variable</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Local</span> <span class="kn">Notation</span> <span class="s2">&quot;1&quot;</span> := idx.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Variable</span> <span class="nv">op</span> : Monoid.com_law <span class="mi">1</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Local</span> <span class="kn">Notation</span> <span class="s2">&quot;&#39;*%M&#39;&quot;</span> := op (<span class="kn">at level</span> <span class="mi">0</span>).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Local</span> <span class="kn">Notation</span> <span class="s2">&quot;x * y&quot;</span> := (op x y).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">big_fset_seq_cond</span> (<span class="nv">T</span> : choiceType) (<span class="nv">J</span> : {fset T}) <span class="nv">P</span> <span class="nv">F</span> :
+    \big[*%M/<span class="mi">1</span>]_(x : J | P (val x)) F (val x)
+  = \big[*%M/<span class="mi">1</span>]_(x &lt;- enum_fset J | P x) F x.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>2c</q><br><q>2d</q><br><span><var>op</var><span class="hyp-type"><b>: </b><span>Monoid.com_law <span class="mi">1</span></span></span></span><br><q>d</q><br><span><var>J</var><span class="hyp-type"><b>: </b><span>{fset T}</span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>T -&gt; bool</span></span></span><br><span><var>F</var><span class="hyp-type"><b>: </b><span>T -&gt; R</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">\big[*%M/<span class="mi">1</span>]_(x | P (val x)) F (val x) =
+\big[*%M/<span class="mi">1</span>]_(x &lt;- J | P x) F x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>43</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">case</span>: J=&gt; J c; <span class="nb">rewrite</span> -(big_map val) /index_enum.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>2c</q><br><q>2d</q><br><q>46</q><br><q>d</q><br><q>48</q><br><q>49</q><br><span><var>J</var><span class="hyp-type"><b>: </b><span>seq T</span></span></span><br><span><var>c</var><span class="hyp-type"><b>: </b><span>canonical_keys J</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">\big[*%M/<span class="mi">1</span>]_(i &lt;- [seq val i
+                     | i &lt;- locked_with index_enum_key
+                              (Finite.enum
+                                 (fset_sub_finType
+                                    (mkFinSet c)))] | 
+P i) F i = \big[*%M/<span class="mi">1</span>]_(x &lt;- mkFinSet c | P x) F x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> !<span class="nb">unlock</span> val_fset_sub_enum <span class="nl">?canonical_uniq</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">big_fset_seq</span> (<span class="nv">T</span> : choiceType) (<span class="nv">J</span> : {fset T}) <span class="nv">F</span> :
+    \big[*%M/<span class="mi">1</span>]_(x : J) F (val x)
+  = \big[*%M/<span class="mi">1</span>]_(x &lt;- enum_fset J) F x.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>2c</q><br><q>2d</q><br><q>46</q><br><q>d</q><br><q>47</q><br><q>49</q><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">\big[*%M/<span class="mi">1</span>]_x F (val x) = \big[*%M/<span class="mi">1</span>]_(x &lt;- J) F x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>54</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span>/big_fset_seq_cond.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">big_seq_fset_cond</span> (<span class="nv">T</span> : choiceType) (<span class="nv">s</span> : seq T) <span class="nv">P</span> <span class="nv">F</span> : uniq s -&gt;
+    \big[*%M/<span class="mi">1</span>]_(x : [fset x <span class="kr">in</span> s] | P (val x)) F (val x)
+  = \big[*%M/<span class="mi">1</span>]_(x &lt;- s | P x) F x.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>2c</q><br><q>2d</q><br><q>46</q><br><q>d</q><br><span><var>s</var><span class="hyp-type"><b>: </b><span>seq T</span></span></span><br><q>48</q><br><q>49</q><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">uniq s -&gt;
+\big[*%M/<span class="mi">1</span>]_(x | P (val x)) F (val x) =
+\big[*%M/<span class="mi">1</span>]_(x &lt;- s | P x) F x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>5a</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">move</span>=&gt; eq_s; <span class="nb">rewrite</span> big_fset_seq_cond; <span class="nb">apply</span>/perm_big.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>2c</q><br><q>2d</q><br><q>46</q><br><q>d</q><br><q>5d</q><br><q>48</q><br><q>49</q><br><span><var>eq_s</var><span class="hyp-type"><b>: </b><span>uniq s</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">perm_eq [fset x | x <span class="kr">in</span> s] s</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span>/uniq_perm=&gt; //= x; <span class="nb">rewrite</span> in_fset.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">big_seq_fset</span> (<span class="nv">T</span> : choiceType) (<span class="nv">s</span> : seq T) <span class="nv">F</span> : uniq s -&gt;
+    \big[*%M/<span class="mi">1</span>]_(x : [fset x <span class="kr">in</span> s]) F (val x)
+  = \big[*%M/<span class="mi">1</span>]_(x &lt;- s) F x.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>2c</q><br><q>2d</q><br><q>46</q><br><q>d</q><br><q>5d</q><br><q>49</q><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">uniq s -&gt;
+\big[*%M/<span class="mi">1</span>]_x F (val x) = \big[*%M/<span class="mi">1</span>]_(x &lt;- s) F x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>67</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span>/big_seq_fset_cond.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">End</span> <span class="nf">BigFSetCom</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Arguments</span> big_fset_seq_cond [R idx op T J] P F.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Arguments</span> big_fset_seq [R idx op T J] F.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Arguments</span> big_seq_fset_cond [R idx op T s] P F _.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Arguments</span> big_seq_fset [R idx op T s] F _.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Section</span> <span class="nf">BigFSetU</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Context</span> {<span class="nv">R</span> : <span class="kt">Type</span>} {<span class="nv">T</span> : choiceType} (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">big_fsetU</span> (<span class="nv">A</span> <span class="nv">B</span> : {fset T}) <span class="nv">F</span> : [disjoint A &amp; B] -&gt;
+  \big[op/idx]_(j : A `|` B) F (val j) =
+    op (\big[op/idx]_(j : A) F (val j))
+       (\big[op/idx]_(j : B) F (val j)).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>2c</q><br><q>d</q><br><q>2d</q><br><span><var>op</var><span class="hyp-type"><b>: </b><span>Monoid.com_law idx</span></span></span><br><span><var>A, B</var><span class="hyp-type"><b>: </b><span>{fset T}</span></span></span><br><q>49</q><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">[disjoint A &amp; B] -&gt;
+\big[op/idx]_j F (val j) =
+op (\big[op/idx]_j F (val j))
+  (\big[op/idx]_j F (val j))</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>6d</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">move</span>=&gt; dj_AB; <span class="nb">rewrite</span> !big_fset_seq -big_cat; <span class="nb">apply</span>/perm_big.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>2c</q><br><q>d</q><br><q>2d</q><br><q>70</q><br><q>71</q><br><q>49</q><br><span><var>dj_AB</var><span class="hyp-type"><b>: </b><span>[disjoint A &amp; B]</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">perm_eq (A `|` B) (A ++ B)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>/uniq_perm=&gt; //.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>77</q><span class="goal-separator"><hr></span><div class="goal-conclusion">uniq (A ++ B)</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><q>77</q><label class="goal-separator"><hr></label><div class="goal-conclusion">A `|` B =i A ++ B</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input">+</label><small class="alectryon-output"><div><q>7b</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> cat_uniq <span class="nl">?uniq_fset_keys</span> !(andbT, andTb); <span class="nb">apply</span>/hasPn =&gt; x /=.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>2c</q><br><q>d</q><br><q>2d</q><br><q>70</q><br><q>71</q><br><q>49</q><br><q>78</q><br><q>14</q><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">x \<span class="kr">in</span> B -&gt; x \notin A</div></blockquote><q>7e</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span>/fdisjointP; <span class="nb">rewrite</span> fdisjoint_sym.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>77</q><span class="goal-separator"><hr></span><q>80</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input">+</label><small class="alectryon-output"><div><q>88</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> mem_cat in_fsetE.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">End</span> <span class="nf">BigFSetU</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Section</span> <span class="nf">BigFSetOrder</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Variable</span> (<span class="nv">R</span> : realDomainType) (<span class="nv">T</span> : choiceType).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">big_fset_subset</span> (<span class="nv">I</span> <span class="nv">J</span> : {fset T}) (<span class="nv">F</span> : T -&gt; R) :
+  (<span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= F x) -&gt; {subset I &lt;= J} -&gt;
+    \sum_(i : I) F (val i) &lt;= \sum_(j : J) F (val j).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>R</var><span class="hyp-type"><b>: </b><span>realDomainType</span></span></span><br><q>d</q><br><span><var>I, J</var><span class="hyp-type"><b>: </b><span>{fset T}</span></span></span><br><q>49</q><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="kr">forall</span> <span class="nv">x</span> : T, <span class="mi">0</span> &lt;= F x) -&gt;
+{subset I &lt;= J} -&gt;
+\sum_i F (val i) &lt;= \sum_j F (val j)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>8c</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">move</span>=&gt; ge0_F le_IJ; <span class="nb">rewrite</span> !big_fset_seq /=.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>8f</q><br><q>d</q><br><q>90</q><br><q>49</q><br><span><var>ge0_F</var><span class="hyp-type"><b>: </b><span><span class="kr">forall</span> <span class="nv">x</span> : T, <span class="mi">0</span> &lt;= F x</span></span></span><br><span><var>le_IJ</var><span class="hyp-type"><b>: </b><span>{subset I &lt;= J}</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">\sum_(x &lt;- I) F x &lt;= \sum_(x &lt;- J) F x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> [X <span class="kr">in</span> _&lt;=X](bigID [pred j : T | j \<span class="kr">in</span> I]) /=.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>96</q><span class="goal-separator"><hr></span><div class="goal-conclusion">\sum_(x &lt;- I) F x &lt;=
+(\sum_(i &lt;- J | i \<span class="kr">in</span> I) F i +
+ \sum_(i &lt;- J | i \notin I) F i)%R</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> ler_paddr <span class="nl">?sumr_ge0</span> // -[X <span class="kr">in</span> _&lt;=X]big_filter.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>96</q><span class="goal-separator"><hr></span><div class="goal-conclusion">\sum_(x &lt;- I) F x &lt;=
+\sum_(i &lt;- [seq i &lt;- J | i \<span class="kr">in</span> I]) F i</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> le_eqVlt; <span class="nb">apply</span>/orP; <span class="nb">left</span>; <span class="nb">apply</span>/eqP/perm_big.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>96</q><span class="goal-separator"><hr></span><div class="goal-conclusion">perm_eq I [seq i &lt;- J | i \<span class="kr">in</span> I]</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>/uniq_perm; <span class="nb">rewrite</span> <span class="nl">?filter_uniq</span> //; <span class="nb">last</span> <span class="nb">move</span>=&gt; i.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>8f</q><br><q>d</q><br><q>90</q><br><q>49</q><br><q>97</q><br><q>98</q><br><span><var>i</var><span class="hyp-type"><b>: </b><span>T</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(i \<span class="kr">in</span> I) = (i \<span class="kr">in</span> [seq i &lt;- J | i \<span class="kr">in</span> I])</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> mem_filter; <span class="nb">case</span>/boolP: (_ \<span class="kr">in</span> _) =&gt; //=.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>a9</q><span class="goal-separator"><hr></span><div class="goal-conclusion">i \<span class="kr">in</span> I -&gt; true = (i \<span class="kr">in</span> J)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>/le_IJ =&gt; -&gt;.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">big_nat_mkfset</span> (<span class="nv">F</span> : nat -&gt; R) <span class="nv">n</span> :
+  \sum_(<span class="mi">0</span> &lt;= i &lt; n) F i =
+    \sum_(i : [fset x <span class="kr">in</span> (iota <span class="mi">0</span> n)]) F (val i).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>8f</q><br><q>d</q><br><span><var>F</var><span class="hyp-type"><b>: </b><span>nat -&gt; R</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">\sum_(<span class="mi">0</span> &lt;= i &lt; n) F i = \sum_i F (val i)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>b1</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> -(big_map val xpredT) /=; <span class="nb">apply</span>/perm_big.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>b3</q><span class="goal-separator"><hr></span><div class="goal-conclusion">perm_eq (index_iota <span class="mi">0</span> n)
+  [seq fsval i
+     | i &lt;- index_enum
+              (fset_sub_finType
+                 [fset x | x <span class="kr">in</span> iota <span class="mi">0</span> n])]</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>/uniq_perm; <span class="nb">rewrite</span> <span class="nl">?iota_uniq</span> //.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>b3</q><span class="goal-separator"><hr></span><div class="goal-conclusion">uniq
+  [seq fsval i
+     | i &lt;- index_enum
+              (fset_sub_finType
+                 [fset x | x <span class="kr">in</span> iota <span class="mi">0</span> n])]</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><q>b3</q><label class="goal-separator"><hr></label><div class="goal-conclusion">index_iota <span class="mi">0</span> n
+  =i [seq fsval i
+        | i &lt;- index_enum
+                 (fset_sub_finType
+                    [fset x | x <span class="kr">in</span> iota <span class="mi">0</span> n])]</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> map_inj_uniq /=; <span class="nb">last</span> <span class="nb">apply</span>/val_inj.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>b3</q><span class="goal-separator"><hr></span><div class="goal-conclusion">uniq
+  (index_enum
+     (fset_sub_finType [fset x | x <span class="kr">in</span> iota <span class="mi">0</span> n]))</div></blockquote><q>c0</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> /index_enum -enumT enum_uniq.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>b3</q><span class="goal-separator"><hr></span><q>c2</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; i; <span class="nb">rewrite</span> /index_enum -enumT -enum_fsetE in_fset /index_iota subn0.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">big_ord_mkfset</span> (<span class="nv">F</span> : nat -&gt; R) <span class="nv">n</span> :
+  \sum_(i &lt; n) F i =
+    \sum_(i : [fset x <span class="kr">in</span> (iota <span class="mi">0</span> n)]) F (val i).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>b3</q><span class="goal-separator"><hr></span><div class="goal-conclusion">\sum_(i &lt; n) F i = \sum_i F (val i)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>cb</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> -(big_mkord xpredT) big_nat_mkfset.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">End</span> <span class="nf">BigFSetOrder</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">enum_fsetT</span> {<span class="nv">I</span> : finType} :
+  perm_eq (enum [fset i | i <span class="kr">in</span> I]) (enum I).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>I</var><span class="hyp-type"><b>: </b><span>finType</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">perm_eq (enum [fset i | i <span class="kr">in</span> I]) (enum I)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>d0</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>/uniq_perm; <span class="nb">rewrite</span> <span class="nl">?enum_uniq</span> //.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>d2</q><span class="goal-separator"><hr></span><div class="goal-conclusion">enum [fset i | i <span class="kr">in</span> I] =i enum I</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; i /=; <span class="nb">rewrite</span> !mem_enum in_imfset.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+<span class="c">(* -------------------------------------------------------------------- *)</span></span></pre></article></body></html>

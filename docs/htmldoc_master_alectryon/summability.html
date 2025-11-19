@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>summability.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)</span>
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Require</span> Reals.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect ssralg ssrint ssrnum finmap matrix.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> interval zmodp.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> boolp classical_sets.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message">New coercion path [Empty.mixin; Empty.eqMixin] : Empty.class_of &gt;-&gt; Equality.mixin_of <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[Empty.base; Finite.base; Choice.base] : Empty.class_of &gt;-&gt; Equality.mixin_of.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [Empty.mixin; Empty.choiceMixin] : Empty.class_of &gt;-&gt; Choice.mixin_of <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[Empty.base; Finite.base; Choice.mixin] : Empty.class_of &gt;-&gt; Choice.mixin_of.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [Empty.mixin; Empty.countMixin] : Empty.class_of &gt;-&gt; Countable.mixin_of <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[Empty.base; Finite.mixin; Finite.mixin_base] : Empty.class_of &gt;-&gt; Countable.mixin_of.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="kn">Require Import</span> ereal reals.
+<span class="kn">Require Import</span> Rstruct signed topology normedtype.
+
+<span class="kn">Set Implicit Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+<span class="kn">Import</span> GRing.Theory Num.Def Num.Theory.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.</span></pre><div class="doc">
+For Pierre-Yves : definition of sums 
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="kn">From</span> mathcomp <span class="kn">Require</span> fintype bigop finmap.
+
+<span class="kn">Section</span> <span class="nf">totally</span>.
+
+<span class="kn">Import</span> fintype bigop finmap.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> fset_scope.
+<span class="c">(* :TODO: when eventually is generalized to any lattice *)</span>
+<span class="c">(* totally can just be replaced by eventually *)</span>
+<span class="kn">Definition</span> <span class="nf">totally</span> {<span class="nv">I</span> : choiceType} : <span class="nb">set</span> (<span class="nb">set</span> {fset I}) :=
+  filter_from setT (<span class="kr">fun</span> <span class="nv">A</span> =&gt; [<span class="nb">set</span> B | A `&lt;=` B]).
+
+<span class="kn">Canonical</span> <span class="nf">totally_filter_source</span> {I : choiceType} X :=
+  @Filtered.Source X _ {fset I} (<span class="kr">fun</span> <span class="nv">f</span> =&gt; f @ totally).
+
+<span class="kn">Instance</span> <span class="nf">totally_filter</span> {<span class="nv">I</span> : choiceType} : ProperFilter (@totally I).
+<span class="kn">Proof</span>.
+<span class="nb">eapply</span> filter_from_proper; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; A _; <span class="kr">exists</span> <span class="nv">A</span>; <span class="nb">rewrite</span> /= fsubset_refl.
+<span class="nb">apply</span>: filter_fromT_filter; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">fset0</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; A B /=; <span class="kr">exists</span> (<span class="nv">A</span> `|` B) =&gt; P /=; <span class="nb">rewrite</span> fsubUset =&gt; /andP[].
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">partial_sum</span> {<span class="nv">I</span> : choiceType} {<span class="nv">R</span> : zmodType}
+  (<span class="nv">x</span> : I -&gt; R) (<span class="nv">A</span> : {fset I}) : R := \sum_(i : A) x (val i).
+
+<span class="kn">Definition</span> <span class="nf">sum</span> (<span class="nv">I</span> : choiceType) {<span class="nv">K</span> : numDomainType} {<span class="nv">R</span> : normedModType K}
+   (<span class="nv">x</span> : I -&gt; R) : R := lim (partial_sum x).
+
+<span class="kn">Definition</span> <span class="nf">summable</span> (<span class="nv">I</span> : choiceType) {<span class="nv">K</span> : realType} {<span class="nv">R</span> : normedModType K}
+   (<span class="nv">x</span> : I -&gt; R) :=
+   \<span class="kr">forall</span> <span class="nv">M</span> \near +oo%R, \<span class="kr">forall</span> <span class="nv">J</span> \near totally,
+   (partial_sum (<span class="kr">fun</span> <span class="nv">i</span> =&gt; `|x i|) J &lt;= M)%R.
+
+<span class="kn">End</span> <span class="nf">totally</span>.</span></pre></article></body></html>

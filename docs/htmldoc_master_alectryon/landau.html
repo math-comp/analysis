@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>landau.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)</span>
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect ssralg ssrnum.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> boolp classical_sets functions.
+<span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> mathcomp_extra.
+<span class="kn">Require Import</span> ereal reals signed topology normedtype prodnormedzmodule.
+
+<span class="sd">(******************************************************************************)</span>
+<span class="c">(*              BACHMANN-LANDAU NOTATIONS : BIG AND LITTLE O                  *)</span>
+<span class="sd">(******************************************************************************)</span>
+<span class="sd">(******************************************************************************)</span>
+<span class="c">(* F is a filter, K is an absRingType and V W X Y Z are normed spaces over K  *)</span>
+<span class="c">(* alternatively, K can be equal to the reals R (from the standard library    *)</span>
+<span class="c">(* for now)                                                                   *)</span>
+<span class="c">(* This library is very asymmetric, in multiple respects:                     *)</span>
+<span class="c">(* - most rewrite rules can only be rewritten from left to right.             *)</span>
+<span class="c">(*   e.g. an equation &#39;o_F f = &#39;O_G g can be used only from LEFT TO RIGHT     *)</span>
+<span class="c">(* - conversely most small &#39;o_F f in your goal are very specific,             *)</span>
+<span class="c">(*   only &#39;a_F f is mutable                                                   *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* - most notations are either parse only or print only.                      *)</span>
+<span class="c">(*   Indeed all the &#39;O_F notations contain a function which is NOT displayed. *)</span>
+<span class="c">(*   This might be confusing as sometimes you might get &#39;O_F g = &#39;O_F g       *)</span>
+<span class="c">(*   and not be able to solve by reflexivity.                                 *)</span>
+<span class="c">(*   - In order to have a look at the hidden function, rewrite showo.         *)</span>
+<span class="c">(*   - Do not use showo during a normal proof.                                *)</span>
+<span class="c">(*   - All theorems should be stated so that when an impossible reflexivity   *)</span>
+<span class="c">(*     is encountered, it is of the form &#39;O_F g = &#39;O_F g so that you          *)</span>
+<span class="c">(*     know you should use eqOE in order to generalize your &#39;O_F g            *)</span>
+<span class="c">(*     to an arbitrary &#39;O_F g                                                 *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* To prove that f is a bigO of g near F, you should go back to filter        *)</span>
+<span class="c">(* reasoning only as a last resort. To do so, use the view eqOP. Similarly,   *)</span>
+<span class="c">(* you can use eqaddOP to prove that f is equal to g plus a bigO of e near F  *)</span>
+<span class="c">(* using filter reasoning.                                                    *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* Parsable notations:                                                        *)</span>
+<span class="c">(*    [bigO of f] == recovers the canonical structure of big-o of f           *)</span>
+<span class="c">(*                   expands to itself                                        *)</span>
+<span class="c">(*       f =O_F h == f is a bigO of h near F,                                 *)</span>
+<span class="c">(*                   this is the preferred way for statements.                *)</span>
+<span class="c">(*                   expands to the equation (f = &#39;O_F h)                     *)</span>
+<span class="c">(*                   rewrite from LEFT to RIGHT only                          *)</span>
+<span class="c">(*   f = g +O_F h == f is equal to g plus a bigO near F,                      *)</span>
+<span class="c">(*                   this is the preferred way for statements.                *)</span>
+<span class="c">(*                   expands to the equation (f = g + &#39;O_F h)                 *)</span>
+<span class="c">(*                   rewrite from LEFT to RIGHT only                          *)</span>
+<span class="c">(*                   /!\ When you have to prove                               *)</span>
+<span class="c">(*                   (f =O_F h) or (f = g +O_F h).                            *)</span>
+<span class="c">(*                   you must (apply: eqOE) as soon as possible in a proof    *)</span>
+<span class="c">(*                   in order to turn it into &#39;a_O_F f with a shelved content *)</span>
+<span class="c">(*                   /!\ under rare circumstances, a hint may do that for you *)</span>
+<span class="c">(*   [O_F h of f] == returns a function with a bigO canonical structure       *)</span>
+<span class="c">(*                   provably equal to f if f is indeed a bigO of h           *)</span>
+<span class="c">(*                   provably equal to 0 otherwise                            *)</span>
+<span class="c">(*                   expands to (&#39;O_F h)                                      *)</span>
+<span class="c">(*           &#39;O_F == pattern to match a bigO with a specific F                *)</span>
+<span class="c">(*             &#39;O == pattern to match a bigO with a generic F                 *)</span>
+<span class="c">(* f x =O_(x \near F) e x == alternative way of stating f =O_F e (provably    *)</span>
+<span class="c">(*                   equal using the lemma eqOEx                              *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* Printing only notations:                                                   *)</span>
+<span class="c">(*        {O_F f} == the type of functions that are a bigO of f near F        *)</span>
+<span class="c">(*       &#39;a_O_F f == an existential bigO, must come from (apply: eqOE)        *)</span>
+<span class="c">(*         &#39;O_F f == a generic bigO, with a function you should not rely on,  *)</span>
+<span class="c">(*                   but there is no way you can use eqOE on it.              *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* The former works exactly the same by with littleo instead of bigO.         *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* Asymptotic equivalence:                                                    *)</span>
+<span class="c">(*       f ~_ F g == function f is asymptotically equivalent to               *)</span>
+<span class="c">(*                   function g for filter F, i.e., f = g +o_ F g             *)</span>
+<span class="c">(*      f ~~_ F g == f == g +o_ F g (i.e., as a boolean relation)             *)</span>
+<span class="c">(* --&gt; asymptotic equivalence proved to be an equivalence relation            *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* Big-Omega and big-Theta notations on the model of bigO and littleo:        *)</span>
+<span class="c">(* {Omega_F f}      == the type of functions that are a big Omega of f near F *)</span>
+<span class="c">(* [bigOmega of f]  == recovers the canonical structure of big-Omega of f     *)</span>
+<span class="c">(* [Omega_F e of f] == returns a function with a bigOmega canonical structure *)</span>
+<span class="c">(*                     provably equal to f if f is indeed a bigOmega of e     *)</span>
+<span class="c">(*                     or e otherwise                                         *)</span>
+<span class="c">(* f \is &#39;Omega_F(e) == f : T -&gt; V is a bigOmega of e : T -&gt; W near F         *)</span>
+<span class="c">(* f =Omega_F h      == f : T -&gt; V is a bigOmega of h : T -&gt; V near F         *)</span>
+<span class="c">(* --&gt; lemmas: relation with big-O, transitivity, product of functions, etc.  *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* Similar notations available for big-Theta.                                 *)</span>
+<span class="c">(* --&gt; lemmas: relations with big-O and big-Omega, reflexivity, symmetry,     *)</span>
+<span class="c">(*     transitivity, product of functions, etc.                               *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* WARNING: The piece of syntax &quot;=O_(&quot; is only valid in the syntax            *)</span>
+<span class="c">(*          &quot;=O_(x \near F)&quot;, not in the syntax &quot;=O_(x : U)&quot;.                 *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="sd">(******************************************************************************)</span>
+<span class="kn">Set Implicit Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+
+<span class="kn">Declare Scope</span> R_scope.
+
+<span class="kn">Import</span> Order.TTheory GRing.Theory Num.Theory.
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;{o_ F f }&quot;</span> (<span class="kn">at level</span> <span class="mi">0</span>, F <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;{o_ F  f }&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[littleo &#39;of&#39; f &#39;for&#39; fT ]&quot;</span> (<span class="kn">at level</span> <span class="mi">0</span>, f <span class="kn">at level</span> <span class="mi">0</span>,
+  <span class="kn">format</span> <span class="s2">&quot;[littleo  &#39;of&#39;  f  &#39;for&#39;  fT ]&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[littleo &#39;of&#39; f ]&quot;</span> (<span class="kn">at level</span> <span class="mi">0</span>, f <span class="kn">at level</span> <span class="mi">0</span>,
+  <span class="kn">format</span> <span class="s2">&quot;[littleo  &#39;of&#39;  f ]&quot;</span>).
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;o_ x&quot;</span> (<span class="kn">at level</span> <span class="mi">200</span>, x <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">only parsing</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;o&quot;</span> (<span class="kn">at level</span> <span class="mi">200</span>, <span class="kn">only parsing</span>).
+<span class="c">(* Parsing *)</span>
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[o_ x e &#39;of&#39; f ]&quot;</span> (<span class="kn">at level</span> <span class="mi">0</span>, x, e <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">only parsing</span>).
+<span class="c">(*Printing*)</span>
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[o &#39;_&#39; x e &#39;of&#39; f ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, e <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;[o &#39;_&#39; x  e  &#39;of&#39;  f ]&quot;</span>).
+<span class="c">(* These notations are printing only in order to display &#39;o</span>
+<span class="c">   without looking at the contents, use showo to display *)</span>
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;o_&#39; x e &quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, e <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;o_&#39; x  e &quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;a_o_&#39; x e &quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, e <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;a_o_&#39; x  e &quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;o&#39; &#39;_&#39; x&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;o&#39; &#39;_&#39; x&quot;</span>).
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f = g &#39;+o_&#39; F h&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   g <span class="kn">at next level</span>, F <span class="kn">at level</span> <span class="mi">0</span>, h <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;f  =  g  &#39;+o_&#39; F  h&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f &#39;=o_&#39; F h&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   F <span class="kn">at level</span> <span class="mi">0</span>, h <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;f  &#39;=o_&#39; F  h&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f == g &#39;+o_&#39; F h&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   g <span class="kn">at next level</span>, F <span class="kn">at level</span> <span class="mi">0</span>, h <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;f  ==  g  &#39;+o_&#39; F  h&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f &#39;==o_&#39; F h&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   F <span class="kn">at level</span> <span class="mi">0</span>, h <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;f  &#39;==o_&#39; F  h&quot;</span>).
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[o_( x \near F ) ex &#39;of&#39; fx ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, ex <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">only parsing</span>).
+<span class="c">(*Printing*)</span>
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[o &#39;_(&#39; x \near F &#39;)&#39; ex &#39;of&#39; fx ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, ex <span class="kn">at level</span> <span class="mi">0</span>,
+   <span class="kn">format</span> <span class="s2">&quot;[o &#39;_(&#39; x  \near  F &#39;)&#39;  ex  &#39;of&#39;  fx ]&quot;</span>).
+<span class="c">(* These notations are printing only in order to display &#39;o</span>
+<span class="c">   without looking at the contents, use showo to display *)</span>
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;o_(&#39; x \near F &#39;)&#39; ex&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, ex <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;o_(&#39; x  \near  F &#39;)&#39;  ex&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;a_o_(&#39; x \near F &#39;)&#39; ex&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, ex <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;a_o_(&#39; x  \near  F &#39;)&#39;  ex&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;o&#39; &#39;_(&#39; x \near F &#39;)&#39; ex&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, ex <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;o&#39; &#39;_(&#39; x  \near  F &#39;)&#39;  ex&quot;</span>).
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;fx = gx &#39;+o_(&#39; x \near F &#39;)&#39; hx&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   gx <span class="kn">at next level</span>, F <span class="kn">at level</span> <span class="mi">0</span>, hx <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;fx  =  gx  &#39;+o_(&#39; x  \near  F &#39;)&#39;  hx&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;fx &#39;=o_(&#39; x \near F &#39;)&#39; hx&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   F <span class="kn">at level</span> <span class="mi">0</span>, hx <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;fx  &#39;=o_(&#39; x  \near  F &#39;)&#39;  hx&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;fx == gx &#39;+o_(&#39; x \near F &#39;)&#39; hx&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   gx <span class="kn">at next level</span>, F <span class="kn">at level</span> <span class="mi">0</span>, hx <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;fx  ==  gx  &#39;+o_(&#39; x  \near  F &#39;)&#39;  hx&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;fx &#39;==o_(&#39; x \near F &#39;)&#39; hx&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   F <span class="kn">at level</span> <span class="mi">0</span>, hx <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;fx  &#39;==o_(&#39; x  \near  F &#39;)&#39;  hx&quot;</span>).
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;{O_ F f }&quot;</span> (<span class="kn">at level</span> <span class="mi">0</span>, F <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;{O_ F  f }&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[bigO &#39;of&#39; f &#39;for&#39; fT ]&quot;</span> (<span class="kn">at level</span> <span class="mi">0</span>, f <span class="kn">at level</span> <span class="mi">0</span>,
+  <span class="kn">format</span> <span class="s2">&quot;[bigO  &#39;of&#39;  f  &#39;for&#39;  fT ]&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[bigO &#39;of&#39; f ]&quot;</span> (<span class="kn">at level</span> <span class="mi">0</span>, f <span class="kn">at level</span> <span class="mi">0</span>,
+  <span class="kn">format</span> <span class="s2">&quot;[bigO  &#39;of&#39;  f ]&quot;</span>).
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;O_ x&quot;</span> (<span class="kn">at level</span> <span class="mi">200</span>, x <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">only parsing</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;O&quot;</span> (<span class="kn">at level</span> <span class="mi">200</span>, <span class="kn">only parsing</span>).
+<span class="c">(* Parsing *)</span>
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[O_ x e &#39;of&#39; f ]&quot;</span> (<span class="kn">at level</span> <span class="mi">0</span>, x, e <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">only parsing</span>).
+<span class="c">(*Printing*)</span>
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[O &#39;_&#39; x e &#39;of&#39; f ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, e <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;[O &#39;_&#39; x  e  &#39;of&#39;  f ]&quot;</span>).
+<span class="c">(* These notations are printing only in order to display &#39;O</span>
+<span class="c">   without looking at the contents, use showo to display *)</span>
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;O_&#39; x e &quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, e <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;O_&#39; x  e &quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;a_O_&#39; x e &quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, e <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;a_O_&#39; x  e &quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;O&#39; &#39;_&#39; x&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;O&#39; &#39;_&#39; x&quot;</span>).
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f = g &#39;+O_&#39; F h&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   g <span class="kn">at next level</span>, F <span class="kn">at level</span> <span class="mi">0</span>, h <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;f  =  g  &#39;+O_&#39; F  h&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f &#39;=O_&#39; F h&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   F <span class="kn">at level</span> <span class="mi">0</span>, h <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;f  &#39;=O_&#39; F  h&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f == g &#39;+O_&#39; F h&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   g <span class="kn">at next level</span>, F <span class="kn">at level</span> <span class="mi">0</span>, h <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;f  ==  g  &#39;+O_&#39; F  h&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f &#39;==O_&#39; F h&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   F <span class="kn">at level</span> <span class="mi">0</span>, h <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;f  &#39;==O_&#39; F  h&quot;</span>).
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[O_( x \near F ) ex &#39;of&#39; fx ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, ex <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">only parsing</span>).
+<span class="c">(*Printing*)</span>
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[O &#39;_(&#39; x \near F &#39;)&#39; ex &#39;of&#39; fx ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, ex <span class="kn">at level</span> <span class="mi">0</span>,
+   <span class="kn">format</span> <span class="s2">&quot;[O &#39;_(&#39; x  \near  F &#39;)&#39;  ex  &#39;of&#39;  fx ]&quot;</span>).
+<span class="c">(* These notations are printing only in order to display &#39;o</span>
+<span class="c">   without looking at the contents, use showo to display *)</span>
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;O_(&#39; x \near F &#39;)&#39; ex&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, ex <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;O_(&#39; x  \near  F &#39;)&#39;  ex&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;a_O_(&#39; x \near F &#39;)&#39; ex&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, ex <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;a_O_(&#39; x  \near  F &#39;)&#39;  ex&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;O&#39; &#39;_(&#39; x \near F &#39;)&#39; ex&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, ex <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;O&#39; &#39;_(&#39; x  \near  F &#39;)&#39;  ex&quot;</span>).
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;fx = gx &#39;+O_(&#39; x \near F &#39;)&#39; hx&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   gx <span class="kn">at next level</span>, F <span class="kn">at level</span> <span class="mi">0</span>, hx <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;fx  =  gx  &#39;+O_(&#39; x  \near  F &#39;)&#39;  hx&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;fx &#39;=O_(&#39; x \near F &#39;)&#39; hx&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   F <span class="kn">at level</span> <span class="mi">0</span>, hx <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;fx  &#39;=O_(&#39; x  \near  F &#39;)&#39;  hx&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;fx == gx &#39;+O_(&#39; x \near F &#39;)&#39; hx&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   gx <span class="kn">at next level</span>, F <span class="kn">at level</span> <span class="mi">0</span>, hx <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;fx  ==  gx  &#39;+O_(&#39; x  \near  F &#39;)&#39;  hx&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;fx &#39;==O_(&#39; x \near F &#39;)&#39; hx&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   F <span class="kn">at level</span> <span class="mi">0</span>, hx <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;fx  &#39;==O_(&#39; x  \near  F &#39;)&#39;  hx&quot;</span>).
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f &#39;~_&#39; F g&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, F <span class="kn">at level</span> <span class="mi">0</span>, g <span class="kn">at next level</span>, <span class="kn">format</span> <span class="s2">&quot;f  &#39;~_&#39; F  g&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f &#39;~~_&#39; F g&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, F <span class="kn">at level</span> <span class="mi">0</span>, g <span class="kn">at next level</span>, <span class="kn">format</span> <span class="s2">&quot;f  &#39;~~_&#39; F  g&quot;</span>).
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;{Omega_ F f }&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, F <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;{Omega_ F  f }&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[bigOmega &#39;of&#39; f &#39;for&#39; fT ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, f <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;[bigOmega  &#39;of&#39;  f  &#39;for&#39;  fT ]&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[bigOmega &#39;of&#39; f ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, f <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;[bigOmega  &#39;of&#39;  f ]&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[Omega_ x e &#39;of&#39; f ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, e <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">only parsing</span>).
+<span class="c">(* Printing *)</span>
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[Omega &#39;_&#39; x e &#39;of&#39; f ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, e <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;[Omega &#39;_&#39; x  e  &#39;of&#39;  f ]&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;Omega_ F g&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, F <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;Omega_&#39; F g&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f &#39;=Omega_&#39; F h&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   F <span class="kn">at level</span> <span class="mi">0</span>, h <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;f  &#39;=Omega_&#39; F  h&quot;</span>).
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;{Theta_ F g }&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, F <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;{Theta_  F  g }&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[bigTheta &#39;of&#39; f &#39;for&#39; fT ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, f <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;[bigTheta  &#39;of&#39;  f  &#39;for&#39;  fT ]&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[bigTheta &#39;of&#39; f ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, f <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;[bigTheta  &#39;of&#39;  f ]&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[Theta_ x e &#39;of&#39; f ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, e <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">only parsing</span>).
+<span class="c">(*Printing*)</span>
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[Theta &#39;_&#39; x e &#39;of&#39; f ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, x, e <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;[Theta &#39;_&#39; x  e  &#39;of&#39;  f ]&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;Theta_ F g&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, F <span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;Theta_&#39; F g&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f &#39;=Theta_&#39; F h&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>,
+   F <span class="kn">at level</span> <span class="mi">0</span>, h <span class="kn">at next level</span>,
+   <span class="kn">format</span> <span class="s2">&quot;f  &#39;=Theta_&#39; F  h&quot;</span>).
+
+<span class="kn">Delimit Scope</span> R_scope <span class="kr">with</span> coqR.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+
+<span class="c">(* tags for littleo and bigO notations *)</span>
+<span class="kn">Definition</span> <span class="nf">the_tag</span> : unit := tt.
+<span class="kn">Definition</span> <span class="nf">gen_tag</span> : unit := tt.
+<span class="kn">Definition</span> <span class="nf">a_tag</span> : unit := tt.
+<span class="kn">Lemma</span> <span class="nf">showo</span> : (gen_tag = tt) * (the_tag = tt) * (a_tag = tt). <span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="c">(* Tentative to handle small o and big O notations *)</span>
+<span class="kn">Section</span> <span class="nf">Domination</span>.
+<span class="kn">Context</span> {<span class="nv">K</span> : numDomainType} {<span class="nv">T</span> : <span class="kt">Type</span>} {<span class="nv">V</span> <span class="nv">W</span> : normedModType K}.
+
+<span class="kn">Let</span> <span class="nf">littleo_def</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">g</span> : T -&gt; W) :=
+  <span class="kr">forall</span> <span class="nv">eps</span>, <span class="mi">0</span> &lt; eps -&gt; \<span class="kr">forall</span> <span class="nv">x</span> \near F, `|f x| &lt;= eps * `|g x|.
+
+<span class="kn">Structure</span> <span class="nf">littleo_type</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) := Littleo {
+  littleo_fun :&gt; T -&gt; V;
+  _ : `[&lt; littleo_def F littleo_fun g &gt;]
+}.
+<span class="kn">Notation</span> <span class="s2">&quot;{o_ F f }&quot;</span> := (littleo_type F f).
+
+<span class="kn">Canonical</span> <span class="nf">littleo_subtype</span> (F : <span class="nb">set</span> (<span class="nb">set</span> T)) (g : T -&gt; W) :=
+  [subType <span class="kr">for</span> (@littleo_fun F g)].
+
+<span class="kn">Lemma</span> <span class="nf">littleo_class</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : {o_F g}) :
+  `[&lt; littleo_def F f g &gt;].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: f =&gt; ?. <span class="kn">Qed</span>.
+<span class="kn">Hint Resolve</span> littleo_class : core.
+
+<span class="kn">Definition</span> <span class="nf">littleo_clone</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">fT</span> : {o_F g}) <span class="nv">c</span>
+  <span class="nv">of</span> <span class="nv">phant_id</span> (<span class="nv">littleo_class</span> <span class="nv">fT</span>) <span class="nv">c</span> := @Littleo F g f c.
+<span class="kn">Notation</span> <span class="s2">&quot;[littleo &#39;of&#39; f &#39;for&#39; fT ]&quot;</span> := (@littleo_clone _ _ f fT _ idfun).
+<span class="kn">Notation</span> <span class="s2">&quot;[littleo &#39;of&#39; f ]&quot;</span> := (@littleo_clone _ _ f _ _ idfun).
+
+<span class="kn">Lemma</span> <span class="nf">littleo0_subproof</span> <span class="nv">F</span> (<span class="nv">g</span> : T -&gt; W) :
+  Filter F -&gt; littleo_def F (<span class="mi">0</span> : T -&gt; V) g.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; FF _/posnumP[eps] /=; <span class="nb">apply</span>: filterE =&gt; x; <span class="nb">rewrite</span> normr0.
+<span class="bp">by</span> <span class="nb">rewrite</span> mulr_ge0 // ltrW.
+<span class="kn">Qed</span>.
+
+<span class="kn">Canonical</span> <span class="nf">littleo0</span> (F : filter_on T) g :=
+  Littleo (asboolT (@littleo0_subproof F g _)).
+
+<span class="kn">Definition</span> <span class="nf">the_littleo</span> (<span class="nv">_</span> : unit) (<span class="nv">F</span> : filter_on T)
+  (<span class="nv">phF</span> : phantom (<span class="nb">set</span> (<span class="nb">set</span> T)) F) <span class="nv">f</span> <span class="nv">h</span> := littleo_fun (insubd (littleo0 F h) f).
+<span class="kn">Notation</span> <span class="nf">PhantomF</span> := (Phantom (<span class="nb">set</span> (<span class="nb">set</span> T))).
+<span class="kn">Arguments</span> the_littleo : <span class="nb">simpl</span> never, <span class="kn">clear implicits</span>.
+
+<span class="kn">Notation</span> <span class="nf">mklittleo</span> tag x := (the_littleo tag _ (PhantomF x)).
+<span class="c">(* Parsing *)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;[o_ x e &#39;of&#39; f ]&quot;</span> := (mklittleo gen_tag x f e).
+<span class="c">(*Printing*)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;[o &#39;_&#39; x e &#39;of&#39; f ]&quot;</span> := (the_littleo _ _ (PhantomF x) f e).
+<span class="c">(* These notations are printing only in order to display &#39;o</span>
+<span class="c">   without looking at the contents, use showo to display *)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;o_&#39; x e &quot;</span> := (the_littleo the_tag _ (PhantomF x) _ e).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;a_o_&#39; x e &quot;</span> := (the_littleo a_tag _ (PhantomF x) _ e).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;o&#39; &#39;_&#39; x&quot;</span> := (the_littleo gen_tag _ (PhantomF x) _).
+
+<span class="kn">Notation</span> <span class="s2">&quot;f = g &#39;+o_&#39; F h&quot;</span> :=
+  (f%function = g%function + mklittleo the_tag F (f \- g) h).
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;=o_&#39; F h&quot;</span> := (f%function = (mklittleo the_tag F f h)).
+<span class="kn">Notation</span> <span class="s2">&quot;f == g &#39;+o_&#39; F h&quot;</span> :=
+  (f%function == g%function + mklittleo the_tag F (f \- g) h).
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;==o_&#39; F h&quot;</span> := (f%function == (mklittleo the_tag F f h)).
+
+<span class="kn">Notation</span> <span class="s2">&quot;[o_( x \near F ) ex &#39;of&#39; f ]&quot;</span> :=
+  (mklittleo gen_tag F (<span class="kr">fun</span> <span class="nv">x</span> =&gt; f) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; ex) x).
+<span class="kn">Notation</span> <span class="s2">&quot;[o &#39;_(&#39; x \near F &#39;)&#39; ex &#39;of&#39; f ]&quot;</span> :=
+  (the_littleo _ _ (PhantomF F) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; f) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; ex) x).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;o_(&#39; x \near F &#39;)&#39; ex&quot;</span> :=
+  (the_littleo the_tag _ (PhantomF F) _ (<span class="kr">fun</span> <span class="nv">x</span> =&gt; ex) x).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;a_o_(&#39; x \near F &#39;)&#39; ex&quot;</span> :=
+  (the_littleo a_tag _ (PhantomF F) _ (<span class="kr">fun</span> <span class="nv">x</span> =&gt; ex) x).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;o&#39; &#39;_(&#39; x \near F &#39;)&#39; ex&quot;</span> :=
+  (the_littleo gen_tag _ (PhantomF F) _ (<span class="kr">fun</span> <span class="nv">x</span> =&gt; ex) x).
+
+<span class="kn">Notation</span> <span class="s2">&quot;fx = gx &#39;+o_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx = gx + mklittleo the_tag F
+                  ((<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) \- (<span class="kr">fun</span> <span class="nv">x</span> =&gt; gx%R)) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x).
+<span class="kn">Notation</span> <span class="s2">&quot;fx &#39;=o_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx = (mklittleo the_tag F (<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x)).
+<span class="kn">Notation</span> <span class="s2">&quot;fx == gx &#39;+o_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx == gx + mklittleo the_tag F
+                  ((<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) \- (<span class="kr">fun</span> <span class="nv">x</span> =&gt; gx%R)) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x).
+<span class="kn">Notation</span> <span class="s2">&quot;fx &#39;==o_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx == (mklittleo the_tag F (<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x)).
+
+<span class="kn">Lemma</span> <span class="nf">littleoP</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : {o_F g}) : littleo_def F f g.
+<span class="kn">Proof</span>. <span class="bp">exact</span>/asboolP. <span class="kn">Qed</span>.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (littleo_def _ _ _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: littleoP] : core.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (nbhs _ _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: littleoP] : core.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (prop_near1 _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: littleoP] : core.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (prop_near2 _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: littleoP] : core.
+
+<span class="kn">Lemma</span> <span class="nf">littleoE</span> (<span class="nv">tag</span> : unit) (<span class="nv">F</span> : filter_on T)
+   (<span class="nv">phF</span> : phantom (<span class="nb">set</span> (<span class="nb">set</span> T)) F) <span class="nv">f</span> <span class="nv">h</span> :
+   littleo_def F f h -&gt; the_littleo tag F phF f h = f.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /asboolP?; <span class="nb">rewrite</span> /the_littleo /insubd insubT. <span class="kn">Qed</span>.
+
+<span class="kn">Canonical</span> <span class="nf">the_littleo_littleo</span> (tag : unit) (F : filter_on T)
+  (phF : phantom (<span class="nb">set</span> (<span class="nb">set</span> T)) F) f h := [littleo of the_littleo tag F phF f h].
+
+<span class="kn">Variant</span> <span class="nf">littleo_spec</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) : (T -&gt; V) -&gt; <span class="kt">Type</span> :=
+  LittleoSpec f of littleo_def F f g : littleo_spec F g f.
+
+<span class="kn">Lemma</span> <span class="nf">littleo</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : {o_F g}) : littleo_spec F g f.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">constructor</span>; <span class="nb">apply</span>/(@littleoP F). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">opp_littleo_subproof</span> (<span class="nv">F</span> : filter_on T) <span class="nv">e</span> (<span class="nv">df</span> : {o_F e}) :
+   littleo_def F (- (df : _ -&gt; _)) e.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; _/posnumP[eps]; near <span class="kp">do</span> <span class="nb">rewrite</span> normrN; <span class="nb">apply</span>: littleoP.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Canonical</span> <span class="nf">opp_littleo</span> (F : filter_on T) e (df : {o_F e}) :=
+  Littleo (asboolT (opp_littleo_subproof df)).
+
+<span class="kn">Lemma</span> <span class="nf">oppo</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) <span class="nv">e</span> : - [o_F e of f] =o_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> [RHS]littleoE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">oppox</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) <span class="nv">e</span> <span class="nv">x</span> :
+  - [o_F e of f] x = [o_F e of - [o_F e of f]] x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>: x; <span class="nb">rewrite</span> -/(- _ =<span class="mi">1</span> _) {<span class="mi">1</span>}oppo. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqadd_some_oP</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) (<span class="nv">e</span> : T -&gt; W) <span class="nv">h</span> :
+  f = g + [o_F e of h] -&gt; littleo_def F (f - g) e.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /the_littleo /insubd=&gt; -&gt;.
+<span class="nb">case</span>: insubP =&gt; /= [u /asboolP fg_o_e -&gt;|_] eps  /=.
+  <span class="bp">by</span> <span class="nb">rewrite</span> addrAC subrr add0r; <span class="nb">apply</span>: fg_o_e.
+<span class="bp">by</span> <span class="nb">rewrite</span> addrC addKr; <span class="nb">apply</span>: littleoP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqaddoP</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) (<span class="nv">e</span> : T -&gt; W) :
+   (f = g +o_ F e) &lt;-&gt; (littleo_def F (f - g) e).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">split</span>=&gt; [/eqadd_some_oP|fg_o_e]; <span class="nb">rewrite</span> <span class="nl">?littleoE</span> // addrC addrNK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqoP</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">e</span> : T -&gt; W) (<span class="nv">f</span> : T -&gt; V) :
+   (f =o_ F e) &lt;-&gt; (littleo_def F f e).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -[f]subr0 -eqaddoP -[f \- <span class="mi">0</span>]/(f - <span class="mi">0</span>) subr0 add0r. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_some_oP</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">e</span> : T -&gt; W) (<span class="nv">f</span> : T -&gt; V) <span class="nv">h</span> :
+   f = [o_F e of h] -&gt; littleo_def F f e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">have</span> := @eqadd_some_oP F f <span class="mi">0</span> e h; <span class="nb">rewrite</span> add0r subr0. <span class="kn">Qed</span>.
+
+<span class="c">(* replaces a &#39;o_F e by a &quot;canonical one&quot; *)</span>
+<span class="c">(* mostly to prevent problems with dependent types *)</span>
+<span class="kn">Lemma</span> <span class="nf">eqaddoE</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) <span class="nv">h</span> (<span class="nv">e</span> : T -&gt; W) :
+  f = g + mklittleo a_tag F h e -&gt; f = g +o_ F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /eqadd_some_oP /eqaddoP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqoE</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) <span class="nv">h</span> (<span class="nv">e</span> : T -&gt; W) :
+  f = mklittleo a_tag F h e -&gt; f =o_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /eq_some_oP /eqoP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqoEx</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) <span class="nv">h</span> (<span class="nv">e</span> : T -&gt; W) :
+  (<span class="kr">forall</span> <span class="nv">x</span>, f x = mklittleo a_tag F h e x) -&gt;
+  (<span class="kr">forall</span> <span class="nv">x</span>, f x =o_(x \near F) e x).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">have</span> := @eqoE F f h e; <span class="nb">rewrite</span> !funeqE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqaddoEx</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) <span class="nv">h</span> (<span class="nv">e</span> : T -&gt; W) :
+  (<span class="kr">forall</span> <span class="nv">x</span>, f x = g x + mklittleo a_tag F h e x) -&gt;
+  (<span class="kr">forall</span> <span class="nv">x</span>, f x = g x +o_(x \near F) (e x)).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">have</span> := @eqaddoE F f g h e; <span class="nb">rewrite</span> !funeqE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">littleo_eqo</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : {o_F g}) :
+   (f : _ -&gt; _) =o_F g.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/eqoP. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Domination</span>.
+
+<span class="kn">Section</span> <span class="nf">Domination_numFieldType</span>.
+<span class="kn">Context</span> {<span class="nv">K</span> : numFieldType} {<span class="nv">T</span> : <span class="kt">Type</span>} {<span class="nv">V</span> <span class="nv">W</span> : normedModType K}.
+
+<span class="kn">Let</span> <span class="nf">bigO_def</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">g</span> : T -&gt; W) :=
+  \<span class="kr">forall</span> <span class="nv">k</span> \near +oo, \<span class="kr">forall</span> <span class="nv">x</span> \near F, `|f x| &lt;= k * `|g x|.
+
+<span class="kn">Let</span> <span class="nf">bigO_ex_def</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">g</span> : T -&gt; W) :=
+  <span class="kr">exists2</span> k, k &gt; <span class="mi">0</span> &amp; \<span class="kr">forall</span> <span class="nv">x</span> \near F, `|f x| &lt;= k * `|g x|.
+
+<span class="kn">Lemma</span> <span class="nf">bigO_exP</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">g</span> : T -&gt; W) :
+  Filter F -&gt; bigO_ex_def F f g &lt;-&gt; bigO_def F f g.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; [[k k0 fOg] | [k [kreal fOg]]].
+  <span class="kr">exists</span> <span class="nv">k</span>; <span class="nb">rewrite</span> realE (ltW k0) /=; <span class="nb">split</span>=&gt; // l ltkl; <span class="nb">move</span>: fOg.
+  <span class="bp">by</span> <span class="nb">apply</span>: filter_app; near=&gt; x =&gt; /le_trans; <span class="nb">apply</span>; <span class="nb">rewrite</span> ler_wpmul2r // ltW.
+<span class="kr">exists</span> (<span class="nv">Num</span>.max <span class="mi">1</span> `|k + <span class="mi">1</span>|) =&gt; //.
+<span class="nb">apply</span>: fOg; <span class="nb">rewrite</span> (@lt_le_trans _ _ `|k + <span class="mi">1</span>|) //.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (@lt_le_trans _ _ (k + <span class="mi">1</span>)) <span class="nl">?ltr_addl</span> // real_ler_norm <span class="nl">?realD</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> comparable_le_maxr <span class="nl">?real_comparable</span>// lexx orbT.
+<span class="kn">Unshelve</span>. end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Structure</span> <span class="nf">bigO_type</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) := BigO {
+  bigO_fun :&gt; T -&gt; V;
+  _ : `[&lt; bigO_def F bigO_fun g &gt;]
+}.
+<span class="kn">Notation</span> <span class="s2">&quot;{O_ F f }&quot;</span> := (bigO_type F f).
+
+<span class="kn">Canonical</span> <span class="nf">bigO_subtype</span> (F : <span class="nb">set</span> (<span class="nb">set</span> T)) (g : T -&gt; W) :=
+  [subType <span class="kr">for</span> (@bigO_fun F g)].
+
+<span class="kn">Lemma</span> <span class="nf">bigO_class</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : {O_F g}) :
+  `[&lt; bigO_def F f g &gt;].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: f =&gt; ?. <span class="kn">Qed</span>.
+<span class="kn">Hint Resolve</span> bigO_class : core.
+
+<span class="kn">Definition</span> <span class="nf">bigO_clone</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">fT</span> : {O_F g}) <span class="nv">c</span>
+  <span class="nv">of</span> <span class="nv">phant_id</span> (<span class="nv">bigO_class</span> <span class="nv">fT</span>) <span class="nv">c</span> := @BigO F g f c.
+<span class="kn">Notation</span> <span class="s2">&quot;[bigO &#39;of&#39; f &#39;for&#39; fT ]&quot;</span> := (@bigO_clone _ _ f fT _ idfun).
+<span class="kn">Notation</span> <span class="s2">&quot;[bigO &#39;of&#39; f ]&quot;</span> := (@bigO_clone _ _ f _ _ idfun).
+
+<span class="kn">Lemma</span> <span class="nf">bigO0_subproof</span> <span class="nv">F</span> (<span class="nv">g</span> : T -&gt; W) : Filter F -&gt; bigO_def F (<span class="mi">0</span> : T -&gt; V) g.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; FF; near <span class="kp">do</span> [<span class="nb">apply</span>: filterE =&gt; x;
+   <span class="nb">rewrite</span> normr0 pmulr_rge0 <span class="nl">?normr_ge0</span>//]; <span class="kr">exists</span> <span class="mi">0</span>.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Canonical</span> <span class="nf">bigO0</span> (F : filter_on T) g := BigO (asboolT (@bigO0_subproof F g _)).
+
+<span class="kn">Definition</span> <span class="nf">the_bigO</span> (<span class="nv">u</span> : unit) (<span class="nv">F</span> : filter_on T)
+  (<span class="nv">phF</span> : phantom (<span class="nb">set</span> (<span class="nb">set</span> T)) F) <span class="nv">f</span> <span class="nv">h</span> := bigO_fun (insubd (bigO0 F h) f).
+<span class="kn">Arguments</span> the_bigO : <span class="nb">simpl</span> never, <span class="kn">clear implicits</span>.
+
+<span class="c">(* duplicate from Section Domination *)</span>
+<span class="kn">Notation</span> <span class="nf">PhantomF</span> := (Phantom (<span class="nb">set</span> (<span class="nb">set</span> T))).
+<span class="kn">Notation</span> <span class="nf">mkbigO</span> tag x := (the_bigO tag _ (PhantomF x)).
+<span class="c">(* Parsing *)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;[O_ x e &#39;of&#39; f ]&quot;</span> := (mkbigO gen_tag x f e).
+<span class="c">(*Printing*)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;[O &#39;_&#39; x e &#39;of&#39; f ]&quot;</span> := (the_bigO _ _ (PhantomF x) f e).
+<span class="c">(* These notations are printing only in order to display &#39;o</span>
+<span class="c">   without looking at the contents, use showo to display *)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;O_&#39; x e &quot;</span> := (the_bigO the_tag _ (PhantomF x) _ e).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;a_O_&#39; x e &quot;</span> := (the_bigO a_tag _ (PhantomF x) _ e).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;O&#39; &#39;_&#39; x&quot;</span> := (the_bigO gen_tag _ (PhantomF x) _).
+
+<span class="kn">Notation</span> <span class="s2">&quot;[O_( x \near F ) e &#39;of&#39; f ]&quot;</span> :=
+  (mkbigO gen_tag F (<span class="kr">fun</span> <span class="nv">x</span> =&gt; f) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; e) x).
+<span class="kn">Notation</span> <span class="s2">&quot;[O &#39;_(&#39; x \near F &#39;)&#39; e &#39;of&#39; f ]&quot;</span> :=
+  (the_bigO _ _ (PhantomF F) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; f) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; e) x).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;O_(&#39; x \near F &#39;)&#39; e&quot;</span> :=
+  (the_bigO the_tag _ (PhantomF F) _ (<span class="kr">fun</span> <span class="nv">x</span> =&gt; e) x).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;a_O_(&#39; x \near F &#39;)&#39; e&quot;</span> :=
+  (the_bigO a_tag _ (PhantomF F) _ (<span class="kr">fun</span> <span class="nv">x</span> =&gt; e) x).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;O&#39; &#39;_(&#39; x \near F &#39;)&#39; e&quot;</span> :=
+  (the_bigO gen_tag _ (PhantomF F) _ (<span class="kr">fun</span> <span class="nv">x</span> =&gt; e) x).
+
+<span class="kn">Notation</span> <span class="s2">&quot;f = g &#39;+O_&#39; F h&quot;</span> :=
+  (f%function = g%function + mkbigO the_tag F (f \- g) h).
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;=O_&#39; F h&quot;</span> := (f%function = mkbigO the_tag F f h).
+<span class="kn">Notation</span> <span class="s2">&quot;f == g &#39;+O_&#39; F h&quot;</span> :=
+  (f%function == g%function + mkbigO the_tag F (f \- g) h).
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;==O_&#39; F h&quot;</span> := (f%function == mkbigO the_tag F f h).
+
+<span class="kn">Notation</span> <span class="s2">&quot;fx = gx &#39;+O_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx = gx + mkbigO the_tag F
+                  ((<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) \- (<span class="kr">fun</span> <span class="nv">x</span> =&gt; gx%R)) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x).
+<span class="kn">Notation</span> <span class="s2">&quot;fx &#39;=O_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx = (mkbigO the_tag F (<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x)).
+<span class="kn">Notation</span> <span class="s2">&quot;fx == gx &#39;+O_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx == gx + mkbigO the_tag F
+                  ((<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) \- (<span class="kr">fun</span> <span class="nv">x</span> =&gt; gx%R)) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x).
+<span class="kn">Notation</span> <span class="s2">&quot;fx &#39;==O_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx == (mkbigO the_tag F (<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x)).
+
+<span class="kn">Lemma</span> <span class="nf">bigOP</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : {O_F g}) : bigO_def F f g.
+<span class="kn">Proof</span>. <span class="bp">exact</span>/asboolP. <span class="kn">Qed</span>.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (bigO_def _ _ _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigOP] : core.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (nbhs _ _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigOP] : core.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (prop_near1 _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigOP] : core.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (prop_near2 _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigOP] : core.
+
+<span class="kn">Lemma</span> <span class="nf">bigOE</span> (<span class="nv">tag</span> : unit) (<span class="nv">F</span> : filter_on T) (<span class="nv">phF</span> : phantom (<span class="nb">set</span> (<span class="nb">set</span> T)) F) <span class="nv">f</span> <span class="nv">h</span> :
+   bigO_def F f h -&gt; the_bigO tag F phF f h = f.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /asboolP?; <span class="nb">rewrite</span> /the_bigO /insubd insubT. <span class="kn">Qed</span>.
+
+<span class="kn">Canonical</span> <span class="nf">the_bigO_bigO</span> (tag : unit) (F : filter_on T)
+  (phF : phantom (<span class="nb">set</span> (<span class="nb">set</span> T)) F) f h := [bigO of the_bigO tag F phF f h].
+
+<span class="kn">Variant</span> <span class="nf">bigO_spec</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) : (T -&gt; V) -&gt; <span class="kt">Prop</span> :=
+  BigOSpec f (k : {posnum K})
+    of (\<span class="kr">forall</span> <span class="nv">x</span> \near F, `|f x| &lt;= k%:num * `|g x|) :
+      bigO_spec F g f.
+
+<span class="kn">Lemma</span> <span class="nf">bigO</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : {O_F g}) : bigO_spec F g f.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">have</span> /bigO_exP [_/posnumP[k] kP] := bigOP f; <span class="kr">exists</span> <span class="nv">k</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">opp_bigO_subproof</span> (<span class="nv">F</span> : filter_on T) <span class="nv">e</span> (<span class="nv">df</span> : {O_F e}) :
+   bigO_def F (- (df : _ -&gt; _)) e.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> := bigOP [bigO of df]; <span class="nb">apply</span>: filter_app; near=&gt; k.
+<span class="bp">by</span> <span class="nb">apply</span>: filter_app; near=&gt; x; <span class="nb">rewrite</span> normrN.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Canonical</span> <span class="nf">Opp_bigO</span> (F : filter_on T) e (df : {O_F e}) :=
+  BigO (asboolT (opp_bigO_subproof df)).
+
+<span class="kn">Lemma</span> <span class="nf">oppO</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) <span class="nv">e</span> : - [O_F e of f] =O_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> [RHS]bigOE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">oppOx</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) <span class="nv">e</span> <span class="nv">x</span> :
+  - [O_F e of f] x = [O_F e of - [O_F e of f]] x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>: x; <span class="nb">rewrite</span> -/(- _ =<span class="mi">1</span> _) {<span class="mi">1</span>}oppO. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">add_bigO_subproof</span> (<span class="nv">F</span> : filter_on T) <span class="nv">e</span> (<span class="nv">df</span> <span class="nv">dg</span> : {O_F e}) :
+  bigO_def F (df \+ dg) e.
+<span class="kn">Proof</span>.
+near=&gt; k; near=&gt; x; <span class="nb">apply</span>: le_trans (ler_norm_add _ _) _.
+<span class="bp">by</span> <span class="nb">rewrite</span> (splitr k) mulrDl ler_add //; near: x; near: k;
+  [<span class="nb">apply</span>: near_pinfty_div2 (bigOP df)|<span class="nb">apply</span>: near_pinfty_div2 (bigOP dg)].
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Canonical</span> <span class="nf">add_bigO</span> (F : filter_on T) e (df dg : {O_F e}) :=
+  @BigO _ _ (_ + _) (asboolT (add_bigO_subproof df dg)).
+<span class="kn">Canonical</span> <span class="nf">addfun_bigO</span> (F : filter_on T) e (df dg : {O_F e}) :=
+  BigO (asboolT (add_bigO_subproof df dg)).
+
+<span class="kn">Lemma</span> <span class="nf">addO</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span>: T -&gt; V) <span class="nv">e</span> :
+  [O_F e of f] + [O_F e of g] =O_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> [RHS]bigOE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">addOx</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span>: T -&gt; V) <span class="nv">e</span> <span class="nv">x</span> :
+  [O_F e of f] x + [O_F e of g] x =
+  [O_F e of [O_F e of f] + [O_F e of g]] x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>: x; <span class="nb">rewrite</span> -/(_ + _ =<span class="mi">1</span> _) {<span class="mi">1</span>}addO. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqadd_some_OP</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) (<span class="nv">e</span> : T -&gt; W) <span class="nv">h</span> :
+  f = g + [O_F e of h] -&gt; bigO_def F (f - g) e.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /the_bigO /insubd=&gt; -&gt;.
+<span class="nb">case</span>: insubP =&gt; /= [u /asboolP fg_o_e -&gt;|_].
+  <span class="bp">by</span> <span class="nb">rewrite</span> addrAC subrr add0r; <span class="nb">apply</span>: fg_o_e.
+<span class="bp">by</span> <span class="nb">rewrite</span> addrC addKr; <span class="nb">apply</span>: bigOP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqaddOP</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) (<span class="nv">e</span> : T -&gt; W) :
+   (f = g +O_ F e) &lt;-&gt; (bigO_def F (f - g) e).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>=&gt; [/eqadd_some_OP|fg_O_e]; <span class="nb">rewrite</span> <span class="nl">?bigOE</span> // addrC addrNK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqOP</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">e</span> : T -&gt; W) (<span class="nv">f</span> : T -&gt; V) :
+   (f =O_ F e) &lt;-&gt; (bigO_def F f e).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -[f]subr0 -eqaddOP -[f \- <span class="mi">0</span>]/(f - <span class="mi">0</span>) subr0 add0r. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqO_exP</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">e</span> : T -&gt; W) (<span class="nv">f</span> : T -&gt; V) :
+   (f =O_ F e) &lt;-&gt; (bigO_ex_def F f e).
+<span class="kn">Proof</span>. <span class="nb">apply</span>: iff_trans (iff_sym (bigO_exP _ _ _)); <span class="nb">apply</span>: eqOP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_some_OP</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">e</span> : T -&gt; W) (<span class="nv">f</span> : T -&gt; V) <span class="nv">h</span> :
+   f = [O_F e of h] -&gt; bigO_def F f e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">have</span> := @eqadd_some_OP F f <span class="mi">0</span> e h; <span class="nb">rewrite</span> add0r subr0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">bigO_eqO</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : {O_F g}) :
+   (f : _ -&gt; _) =O_F g.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/eqOP; <span class="nb">apply</span>: bigOP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqO_bigO</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">e</span> : T -&gt; W) (<span class="nv">f</span> : T -&gt; V) :
+   f =O_ F e -&gt; bigO_def F f e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> eqOP. <span class="kn">Qed</span>.
+
+<span class="c">(* replaces a &#39;O_F e by a &quot;canonical one&quot; *)</span>
+<span class="c">(* mostly to prevent problems with dependent types *)</span>
+<span class="kn">Lemma</span> <span class="nf">eqaddOE</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) <span class="nv">h</span> (<span class="nv">e</span> : T -&gt; W) :
+  f = g + mkbigO a_tag F h e -&gt; f = g +O_ F e.
+<span class="kn">Proof</span>.  <span class="bp">by</span> <span class="nb">move</span>=&gt; /eqadd_some_OP /eqaddOP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqOE</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) <span class="nv">h</span> (<span class="nv">e</span> : T -&gt; W) :
+  f = mkbigO a_tag F h e -&gt; f =O_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /eq_some_OP /eqOP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqOEx</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) <span class="nv">h</span> (<span class="nv">e</span> : T -&gt; W) :
+  (<span class="kr">forall</span> <span class="nv">x</span>, f x = mkbigO a_tag F h e x) -&gt;
+  (<span class="kr">forall</span> <span class="nv">x</span>, f x =O_(x \near F) e x).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">have</span> := @eqOE F f h e; <span class="nb">rewrite</span> !funeqE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqaddOEx</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) <span class="nv">h</span> (<span class="nv">e</span> : T -&gt; W) :
+  (<span class="kr">forall</span> <span class="nv">x</span>, f x = g x + mkbigO a_tag F h e x) -&gt;
+  (<span class="kr">forall</span> <span class="nv">x</span>, f x = g x +O_(x \near F) (e x)).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">have</span> := @eqaddOE F f g h e; <span class="nb">rewrite</span> !funeqE. <span class="kn">Qed</span>.
+
+<span class="c">(* duplicate from Section Domination *)</span>
+<span class="kn">Notation</span> <span class="nf">mklittleo</span> tag x := (the_littleo tag (PhantomF x)).
+<span class="c">(* Parsing *)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;[o_ x e &#39;of&#39; f ]&quot;</span> := (mklittleo gen_tag x f e).
+<span class="c">(*Printing*)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;[o &#39;_&#39; x e &#39;of&#39; f ]&quot;</span> := (the_littleo _ _ (PhantomF x) f e).
+
+<span class="kn">Lemma</span> <span class="nf">eqoO</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">e</span> : T -&gt; W) :
+  [o_F e of f] =O_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/eqOP; <span class="kr">exists</span> <span class="mi">0</span>; <span class="nb">split</span> =&gt; // k kgt0; <span class="nb">apply</span>: littleoP. <span class="kn">Qed</span>.
+<span class="kn">Hint Resolve</span> eqoO : core.
+
+<span class="c">(* NB: duplicate from Section Domination *)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;{o_ F f }&quot;</span> := (littleo_type F f).
+
+<span class="kn">Lemma</span> <span class="nf">littleo_eqO</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">e</span> : T -&gt; W) (<span class="nv">f</span> : {o_F e}) :
+   (f : _ -&gt; _) =O_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: eqOE; <span class="nb">rewrite</span> littleo_eqo. <span class="kn">Qed</span>.
+
+<span class="kn">Canonical</span> <span class="nf">littleo_is_bigO</span> (F : filter_on T) (e : T -&gt; W) (f : {o_F e}) :=
+  BigO (asboolT (eqO_bigO (littleo_eqO f))).
+<span class="kn">Canonical</span> <span class="nf">the_littleo_bigO</span> (tag : unit) (F : filter_on T)
+  (phF : phantom (<span class="nb">set</span> (<span class="nb">set</span> T)) F) f h := [bigO of the_littleo tag phF f h].
+
+<span class="kn">End</span> <span class="nf">Domination_numFieldType</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;{o_ F f }&quot;</span> := (@littleo_type _ _ _ _ F f).
+<span class="kn">Notation</span> <span class="s2">&quot;{O_ F f }&quot;</span> := (@bigO_type _ _ _ _ F f).
+
+<span class="kn">Notation</span> <span class="s2">&quot;[littleo &#39;of&#39; f &#39;for&#39; fT ]&quot;</span> :=
+  (@littleo_clone _ _ _ _ _ _ f fT _ idfun).
+<span class="kn">Notation</span> <span class="s2">&quot;[littleo &#39;of&#39; f ]&quot;</span> := (@littleo_clone _ _ _ _ _ _ f _ _ idfun).
+
+<span class="kn">Notation</span> <span class="s2">&quot;[bigO &#39;of&#39; f &#39;for&#39; fT ]&quot;</span> := (@bigO_clone _ _ _ _ _ _ f fT _ idfun).
+<span class="kn">Notation</span> <span class="s2">&quot;[bigO &#39;of&#39; f ]&quot;</span> := (@bigO_clone _ _ _ _ _ _ f _ _ idfun).
+
+<span class="kn">Arguments</span> the_littleo {_ _ _ _} _ _ _ _ _ : <span class="nb">simpl</span> never.
+<span class="kn">Arguments</span> the_bigO {_ _ _ _} _ _ _ _ _ : <span class="nb">simpl</span> never.
+<span class="kn">Local Notation</span> <span class="nf">PhantomF</span> x := (Phantom _ [filter of x]).
+
+<span class="kn">Notation</span> <span class="nf">mklittleo</span> tag x := (the_littleo tag _ (PhantomF x)).
+<span class="c">(* Parsing *)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;[o_ x e &#39;of&#39; f ]&quot;</span> := (mklittleo gen_tag x f e).
+<span class="kn">Notation</span> <span class="s2">&quot;[o_( x \near F ) e &#39;of&#39; f ]&quot;</span> :=
+  (mklittleo gen_tag F (<span class="kr">fun</span> <span class="nv">x</span> =&gt; f) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; e) x).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;o_ x&quot;</span> := (the_littleo _ _ (PhantomF x) _).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;o&quot;</span> := (the_littleo _ _ _ _).
+<span class="c">(*Printing*)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;[o &#39;_(&#39; x \near F &#39;)&#39; e &#39;of&#39; f ]&quot;</span> :=
+  (the_littleo _ _ (PhantomF F) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; f) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; e) x).
+<span class="kn">Notation</span> <span class="s2">&quot;[o &#39;_&#39; x e &#39;of&#39; f ]&quot;</span> := (the_littleo _ _ (Phantom _ x) f e).
+<span class="c">(* These notations are printing only in order to display &#39;o</span>
+<span class="c">   without looking at the contents, use showo to display *)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;o_&#39; x e &quot;</span> := (the_littleo the_tag _ (Phantom _ x) _ e).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;a_o_&#39; x e &quot;</span> := (the_littleo a_tag _ (Phantom _ x) _ e).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;o&#39; &#39;_&#39; x&quot;</span> := (the_littleo gen_tag _ (Phantom _ x) _).
+
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;o_(&#39; x \near F &#39;)&#39; e&quot;</span> :=
+  (the_littleo the_tag _ (PhantomF F) _ (<span class="kr">fun</span> <span class="nv">x</span> =&gt; e) x).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;a_o_(&#39; x \near F &#39;)&#39; e&quot;</span> :=
+  (the_littleo a_tag _ (PhantomF F) _ (<span class="kr">fun</span> <span class="nv">x</span> =&gt; e) x).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;o&#39; &#39;_(&#39; x \near F &#39;)&#39; e&quot;</span> :=
+  (the_littleo gen_tag _ (PhantomF F) _ (<span class="kr">fun</span> <span class="nv">x</span> =&gt; e) x).
+
+<span class="kn">Notation</span> <span class="nf">mkbigO</span> tag x := (the_bigO tag _ (PhantomF x)).
+<span class="c">(* Parsing *)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;[O_ x e &#39;of&#39; f ]&quot;</span> := (mkbigO gen_tag x f e).
+<span class="kn">Notation</span> <span class="s2">&quot;[O_( x \near F ) e &#39;of&#39; f ]&quot;</span> :=
+  (mkbigO gen_tag F (<span class="kr">fun</span> <span class="nv">x</span> =&gt; f) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; e) x).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;O_ x&quot;</span> := (the_bigO _ _ (PhantomF x) _).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;O&quot;</span> := (the_bigO _ _ _ _).
+<span class="c">(*Printing*)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;[O &#39;_&#39; x e &#39;of&#39; f ]&quot;</span> := (the_bigO _ _ (Phantom _ x) f e).
+<span class="kn">Notation</span> <span class="s2">&quot;[O &#39;_(&#39; x \near F &#39;)&#39; e &#39;of&#39; f ]&quot;</span> :=
+  (the_bigO _ _ (PhantomF F) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; f) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; e) x).
+<span class="c">(* These notations are printing only in order to display &#39;o</span>
+<span class="c">   without looking at the contents, use showo to display *)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;O_&#39; x e &quot;</span> := (the_bigO the_tag _ (Phantom _ x) _ e).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;a_O_&#39; x e &quot;</span> := (the_bigO a_tag _ (Phantom _ x) _ e).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;O&#39; &#39;_&#39; x&quot;</span> := (the_bigO gen_tag _ (Phantom _ x) _).
+
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;O_(&#39; x \near F &#39;)&#39; e&quot;</span> :=
+  (the_bigO the_tag _ (PhantomF F) _ (<span class="kr">fun</span> <span class="nv">x</span> =&gt; e) x).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;a_O_(&#39; x \near F &#39;)&#39; e&quot;</span> :=
+  (the_bigO a_tag _ (PhantomF F) _ (<span class="kr">fun</span> <span class="nv">x</span> =&gt; e) x).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;O&#39; &#39;_(&#39; x \near F &#39;)&#39; e&quot;</span> :=
+  (the_bigO gen_tag _ (PhantomF F) _ (<span class="kr">fun</span> <span class="nv">x</span> =&gt; e) x).
+
+<span class="kn">Notation</span> <span class="s2">&quot;f = g &#39;+o_&#39; F h&quot;</span> :=
+  (f%function = g%function + mklittleo the_tag F (f \- g) h).
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;=o_&#39; F h&quot;</span> := (f%function = (mklittleo the_tag F f h)).
+<span class="kn">Notation</span> <span class="s2">&quot;f == g &#39;+o_&#39; F h&quot;</span> :=
+  (f%function == g%function + mklittleo the_tag F (f \- g) h).
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;==o_&#39; F h&quot;</span> := (f%function == (mklittleo the_tag F f h)).
+<span class="kn">Notation</span> <span class="s2">&quot;fx = gx &#39;+o_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx = gx + mklittleo the_tag F
+                  ((<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) \- (<span class="kr">fun</span> <span class="nv">x</span> =&gt; gx%R)) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x).
+<span class="kn">Notation</span> <span class="s2">&quot;fx &#39;=o_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx = (mklittleo the_tag F (<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x)).
+<span class="kn">Notation</span> <span class="s2">&quot;fx == gx &#39;+o_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx == gx + mklittleo the_tag F
+                  ((<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) \- (<span class="kr">fun</span> <span class="nv">x</span> =&gt; gx%R)) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x).
+<span class="kn">Notation</span> <span class="s2">&quot;fx &#39;==o_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx == (mklittleo the_tag F (<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x)).
+
+<span class="kn">Notation</span> <span class="s2">&quot;f = g &#39;+O_&#39; F h&quot;</span> :=
+  (f%function = g%function + mkbigO the_tag F (f \- g) h).
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;=O_&#39; F h&quot;</span> := (f%function = mkbigO the_tag F f h).
+<span class="kn">Notation</span> <span class="s2">&quot;f == g &#39;+O_&#39; F h&quot;</span> :=
+  (f%function == g%function + mkbigO the_tag F (f \- g) h).
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;==O_&#39; F h&quot;</span> := (f%function == mkbigO the_tag F f h).
+<span class="kn">Notation</span> <span class="s2">&quot;fx = gx &#39;+O_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx = gx + mkbigO the_tag F
+                  ((<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) \- (<span class="kr">fun</span> <span class="nv">x</span> =&gt; gx%R)) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x).
+<span class="kn">Notation</span> <span class="s2">&quot;fx &#39;=O_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx = (mkbigO the_tag F (<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x)).
+<span class="kn">Notation</span> <span class="s2">&quot;fx == gx &#39;+O_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx == gx + mkbigO the_tag F
+                  ((<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) \- (<span class="kr">fun</span> <span class="nv">x</span> =&gt; gx%R)) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x).
+<span class="kn">Notation</span> <span class="s2">&quot;fx &#39;==O_(&#39; x \near F &#39;)&#39; hx&quot;</span> :=
+  (fx == (mkbigO the_tag F (<span class="kr">fun</span> <span class="nv">x</span> =&gt; fx) (<span class="kr">fun</span> <span class="nv">x</span> =&gt; hx) x)).
+
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (_ = &#39;o__ _) =&gt; <span class="nb">apply</span>: eqoE; <span class="bp">reflexivity</span> : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (_ = &#39;O__ _) =&gt; <span class="nb">apply</span>: eqOE; <span class="bp">reflexivity</span> : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (_ = &#39;O__ _) =&gt; <span class="nb">apply</span>: eqoO; <span class="bp">reflexivity</span> : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (_ = _ + &#39;o__ _) =&gt; <span class="nb">apply</span>: eqaddoE; <span class="bp">reflexivity</span> : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (_ = _ + &#39;O__ _) =&gt; <span class="nb">apply</span>: eqaddOE; <span class="bp">reflexivity</span> : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (\<span class="kr">forall</span> <span class="nv">k</span> \near +oo, \<span class="kr">forall</span> <span class="nv">x</span> \near _,
+  is_true (`|_ x| &lt;= k * `|_ x|)) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigOP] : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (nbhs _ _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigOP] : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (prop_near1 _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigOP] : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (prop_near2 _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigOP] : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (<span class="kr">forall</span> <span class="nv">e</span>, is_true (<span class="mi">0</span> &lt; e) -&gt; \<span class="kr">forall</span> <span class="nv">x</span> \near _,
+  is_true (`|_ x| &lt;= e * `|_ x|)) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: littleoP] : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (nbhs _ _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: littleoP] : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (prop_near1 _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: littleoP] : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (prop_near2 _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: littleoP] : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> littleo_class : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> bigO_class : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> littleo_eqO : core.
+
+<span class="kn">Arguments</span> bigO {_ _ _ _}.
+
+<span class="kn">Section</span> <span class="nf">Domination_numFieldType</span>.
+<span class="kn">Context</span> {<span class="nv">K</span> : numFieldType} {<span class="nv">T</span> : <span class="kt">Type</span>} {<span class="nv">V</span> <span class="nv">W</span> : normedModType K}.
+
+<span class="c">(* duplicate from Section Domination *)</span>
+<span class="kn">Let</span> <span class="nf">littleo_def</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">g</span> : T -&gt; W) :=
+  <span class="kr">forall</span> <span class="nv">eps</span>, <span class="mi">0</span> &lt; eps -&gt; \<span class="kr">forall</span> <span class="nv">x</span> \near F, `|f x| &lt;= eps * `|g x|.
+
+<span class="kn">Lemma</span> <span class="nf">add_littleo_subproof</span> (<span class="nv">F</span> : filter_on T) <span class="nv">e</span> (<span class="nv">df</span> <span class="nv">dg</span> : {o_F e}) :
+  littleo_def F (df \+ dg) e.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; _/posnumP[eps]; near <span class="kp">do</span> [
+   <span class="nb">rewrite</span> [eps%:num]splitr mulrDl (le_trans (ler_norm_add _ _)) // ler_add //];
+   <span class="nb">apply</span>: littleoP.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Canonical</span> <span class="nf">add_littleo</span> (F : filter_on T) e (df dg : {o_F e}) :=
+  @Littleo _ _ _ _ _ _ (_ + _) (asboolT (add_littleo_subproof df dg)).
+<span class="kn">Canonical</span> <span class="nf">addfun_littleo</span> (F : filter_on T) e (df dg : {o_F e}) :=
+  @Littleo _ _ _ _ _ _ (_ \+ _) (asboolT (add_littleo_subproof df dg)).
+
+<span class="kn">Lemma</span> <span class="nf">addo</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span>: T -&gt; V) (<span class="nv">e</span> : _ -&gt; W) :
+  [o_F e of f] + [o_F e of g] =o_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> [RHS]littleoE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">addox</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span>: T -&gt; V) (<span class="nv">e</span> : _ -&gt; W) <span class="nv">x</span> :
+  [o_F e of f] x + [o_F e of g] x =
+  [o_F e of [o_F e of f] + [o_F e of g]] x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>: x; <span class="nb">rewrite</span> -/(_ + _ =<span class="mi">1</span> _) {<span class="mi">1</span>}addo. <span class="kn">Qed</span>.
+
+<span class="c">(* duplicate from Section Domination *)</span>
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (littleo_def _ _ _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: littleoP] : core.
+
+<span class="kn">Lemma</span> <span class="nf">scale_littleo_subproof</span> (<span class="nv">F</span> : filter_on T) <span class="nv">e</span> (<span class="nv">df</span> : {o_F e}) <span class="nv">a</span> :
+  littleo_def F (a *: (df : _ -&gt; _)) e.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> [-&gt;|a0] := eqVneq a <span class="mi">0</span>; <span class="kp">first</span>  <span class="bp">by</span> <span class="nb">rewrite</span> scale0r.
+<span class="nb">move</span>=&gt; _ /posnumP[eps]; <span class="nb">have</span> aa := normr_eq0 a; near=&gt; x =&gt; /=.
+<span class="nb">rewrite</span> normrZ -ler_pdivl_mull <span class="nl">?lt_def</span> <span class="nl">?aa</span> <span class="nl">?a0</span> //= mulrA; near: x.
+<span class="bp">by</span> <span class="nb">apply</span>: littleoP; <span class="nb">rewrite</span> mulr_gt0 // invr_gt0 <span class="nl">?lt_def</span> <span class="nl">?aa</span> <span class="nl">?a0</span> /=.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Canonical</span> <span class="nf">scale_littleo</span> (F : filter_on T) e a (df : {o_F e}) :=
+  Littleo (asboolT (scale_littleo_subproof df a)).
+
+<span class="kn">Lemma</span> <span class="nf">scaleo</span> (<span class="nv">F</span> : filter_on T) <span class="nv">a</span> (<span class="nv">f</span> : T -&gt; V) (<span class="nv">e</span> : _ -&gt; W) :
+  a *: [o_F e of f] = [o_F e of a *: [o_F e of f]].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> [RHS]littleoE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">scaleox</span> (<span class="nv">F</span> : filter_on T) <span class="nv">a</span> (<span class="nv">f</span> : T -&gt; V) (<span class="nv">e</span> : _ -&gt; W) <span class="nv">x</span> :
+  a *: ([o_F e of f] x) = [o_F e of a *: [o_F e of f]] x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>: x; <span class="nb">rewrite</span> -/(_ *: _ =<span class="mi">1</span> _) {<span class="mi">1</span>}scaleo. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Domination_numFieldType</span>.
+
+<span class="c">(* NB: see also scaleox *)</span>
+<span class="kn">Lemma</span> <span class="nf">scaleolx</span> (<span class="nv">K</span> : numFieldType) (<span class="nv">V</span> <span class="nv">W</span> : normedModType K) {<span class="nv">T</span> : <span class="kt">Type</span>}
+  (<span class="nv">F</span> : filter_on T) (<span class="nv">a</span> : W) (<span class="nv">k</span> : T -&gt; K^o) (<span class="nv">e</span> : T -&gt; V) (<span class="nv">x</span> : T) :
+  ([o_F e of k] x) *: a = [o_F e of (<span class="kr">fun</span> <span class="nv">y</span> =&gt; [o_F e of k] y *: a)] x.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> [<span class="kr">in</span> RHS]littleoE //.
+<span class="nb">have</span> [-&gt;|a0] := eqVneq a <span class="mi">0</span>.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; ??; <span class="nb">apply</span>: filterE =&gt; ?; <span class="nb">rewrite</span> scaler0 normr0 pmulr_rge0.
+<span class="nb">move</span>=&gt; _/posnumP[eps].
+<span class="nb">have</span> ea : <span class="mi">0</span> &lt; eps%:num / `| a | <span class="bp">by</span> <span class="nb">rewrite</span> divr_gt0 // normr_gt0.
+<span class="nb">have</span> [g /(_ _ ea) ?] := littleo; near=&gt; y.
+<span class="nb">rewrite</span> normrZ -ler_pdivl_mulr; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> mulrAC; near: y.
+<span class="bp">by</span> <span class="nb">rewrite</span> lt_def normr_eq0 a0 normr_ge0.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Section</span> <span class="nf">Limit</span>.
+<span class="kn">Context</span> {<span class="nv">K</span> : numFieldType} {<span class="nv">T</span> : <span class="kt">Type</span>} {<span class="nv">V</span> <span class="nv">W</span> <span class="nv">X</span> : normedModType K}.
+
+<span class="kn">Lemma</span> <span class="nf">eqolimP</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">l</span> : V) :
+  f @ F --&gt; l &lt;-&gt; f = cst l +o_F (cst (<span class="mi">1</span> : K^o)).
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; fFl.
+  <span class="nb">apply</span>/eqaddoP =&gt; _/posnumP[eps]; near <span class="kp">do</span> <span class="nb">rewrite</span> /cst ltW//.
+  <span class="bp">by</span> <span class="nb">apply</span>: cvgr_distC_lt; <span class="nb">rewrite</span> // mulr_gt0 // normr1.
+<span class="nb">apply</span>/cvgrPdist_lt=&gt; _/posnumP[eps].
+<span class="nb">have</span> lt_eps x : x &lt;= (eps%:num / <span class="mi">2</span>%:R) * `|<span class="mi">1</span> : K^o|%real -&gt; x &lt; eps%:num.
+  <span class="nb">rewrite</span> normr1 mulr1 =&gt; /le_lt_trans; <span class="nb">apply</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ltr_pdivr_mulr // ltr_pmulr // ltr1n.
+near=&gt; x <span class="kp">do</span> <span class="nb">rewrite</span> [X <span class="kr">in</span> X x]fFl opprD addNKr normrN lt_eps //.
+<span class="bp">by</span> <span class="nb">rewrite</span> /= !near_simpl; <span class="nb">apply</span>: littleoP; <span class="nb">rewrite</span> divr_gt0.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqolim</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">l</span> : V) <span class="nv">e</span> :
+  f = cst l + [o_F (cst (<span class="mi">1</span> : K^o)) of e] -&gt; f @ F --&gt; l.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /eqaddoE /eqolimP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqolim0P</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) :
+  f @ F --&gt; (<span class="mi">0</span> : V) &lt;-&gt; f =o_F (cst (<span class="mi">1</span> : K^o)).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> eqolimP add0r -[f \- cst <span class="mi">0</span>]/(f - <span class="mi">0</span>) subr0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqolim0</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) :
+  f =o_F (cst (<span class="mi">1</span> : K^o)) -&gt; f @ F --&gt; (<span class="mi">0</span> : V).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /eqoE /eqolim0P. <span class="kn">Qed</span>.
+
+<span class="c">(* ideally the precondition should be f = &#39;[O_F g of f&#39;] with a *)</span>
+<span class="c">(* universally quantified f&#39; which is irrelevant and replaced by *)</span>
+<span class="c">(* a hole, on the fly, by ssreflect rewrite *)</span>
+
+<span class="kn">Lemma</span> <span class="nf">littleo_bigO_eqo</span> {<span class="nv">F</span> : filter_on T}
+  (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">h</span> : T -&gt; X) :
+  f =O_F g -&gt; [o_F f of h] =o_F g.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>-&gt;; <span class="nb">apply</span>/eqoP =&gt; _/posnumP[e]; <span class="nb">have</span> [k c] := bigO _ g.
+<span class="nb">apply</span>: filter_app; near=&gt; x <span class="kp">do</span> [
+  <span class="nb">rewrite</span> -!ler_pdivr_mull//; <span class="nb">apply</span>: le_trans; <span class="nb">rewrite</span> ler_pdivr_mull// mulrA].
+<span class="bp">exact</span>: littleoP.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+<span class="kn">Arguments</span> littleo_bigO_eqo {F}.
+
+<span class="kn">Lemma</span> <span class="nf">bigO_littleo_eqo</span> {<span class="nv">F</span> : filter_on T} (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">h</span> : T -&gt; X) :
+  f =o_F g -&gt; [O_F f of h] =o_F g.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>-&gt;; <span class="nb">apply</span>/eqoP =&gt; _/posnumP[e]; <span class="nb">have</span> [k c] := bigO.
+<span class="nb">apply</span>: filter_app; near=&gt; x =&gt; /le_trans; <span class="nb">apply</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> -ler_pdivl_mull // mulrA; near: x; <span class="nb">apply</span>: littleoP.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+<span class="kn">Arguments</span> bigO_littleo_eqo {F}.
+
+<span class="kn">Lemma</span> <span class="nf">add2o</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) (<span class="nv">e</span> : T -&gt; W) :
+  f =o_F e -&gt; g =o_F e -&gt; f + g =o_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt; -&gt;; <span class="nb">rewrite</span> addo. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">addfo</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">h</span> <span class="nv">f</span> : T -&gt; V) (<span class="nv">e</span> : T -&gt; W) :
+  f =o_F e -&gt; f + [o_F e of h] =o_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>-&gt;; <span class="nb">rewrite</span> addo. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">oppfo</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">h</span> <span class="nv">f</span> : T -&gt; V) (<span class="nv">e</span> : T -&gt; W) :
+  f =o_F e -&gt; - f =o_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>-&gt;; <span class="nb">rewrite</span> oppo. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">add2O</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) (<span class="nv">e</span> : T -&gt; W) :
+  f =O_F e -&gt; g =O_F e -&gt; f + g =O_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt; -&gt;; <span class="nb">rewrite</span> addO. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">addfO</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">h</span> <span class="nv">f</span> : T -&gt; V) (<span class="nv">e</span> : T -&gt; W) :
+  f =O_F e -&gt; f + [O_F e of h] =O_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>-&gt;; <span class="nb">rewrite</span> addO. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">oppfO</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">h</span> <span class="nv">f</span> : T -&gt; V) (<span class="nv">e</span> : T -&gt; W) :
+  f =O_F e -&gt; - f =O_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>-&gt;; <span class="nb">rewrite</span> oppO. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">idO</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">e</span> : T -&gt; W) : e =O_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/eqO_exP; <span class="kr">exists</span> <span class="mi">1</span> =&gt; //; <span class="nb">apply</span>: filterE=&gt; x; <span class="nb">rewrite</span> mul1r. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">littleo_littleo</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">h</span> : T -&gt; X) :
+  f =o_F g -&gt; [o_F f of h] =o_F g.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt;; <span class="nb">apply</span>: eqoE; <span class="nb">rewrite</span> (littleo_bigO_eqo g). <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Limit</span>.
+<span class="kn">Arguments</span> littleo_bigO_eqo {K T V W X F}.
+<span class="kn">Arguments</span> bigO_littleo_eqo {K T V W X F}.
+
+<span class="kn">Section</span> <span class="nf">Limit_realFieldType</span>.
+<span class="kn">Context</span> {<span class="nv">K</span> : realFieldType} (*TODO: <span class="nb">generalize</span> to numFieldType?*)
+  {<span class="nv">T</span> : <span class="kt">Type</span>} {<span class="nv">V</span> <span class="nv">W</span> <span class="nv">X</span> : normedModType K}.
+
+<span class="kn">Lemma</span> <span class="nf">bigO_bigO_eqO</span> {<span class="nv">F</span> : filter_on T} (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">h</span> : T -&gt; X) :
+  f =O_F g -&gt; ([O_F f of h] : _ -&gt; _) =O_F g.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>-&gt;; <span class="nb">apply</span>/eqOP; <span class="nb">have</span> [k c1 kOg] := bigO _ g. <span class="nb">have</span> [k&#39; c2 k&#39;Ok] := bigO _ k.
+near=&gt; c; <span class="nb">move</span>: k&#39;Ok kOg; <span class="nb">apply</span>: filter_app2; near=&gt; x =&gt; lek&#39;c2k.
+<span class="nb">rewrite</span> -(@ler_pmul2l _ c2%:num) // mulrA =&gt; /(le_trans lek&#39;c2k) /le_trans.
+<span class="bp">by</span> <span class="nb">apply</span>; <span class="nb">rewrite</span> ler_pmul//; near: c; <span class="bp">exact</span>: nbhs_pinfty_ge.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+<span class="kn">Arguments</span> bigO_bigO_eqO {F}.
+
+<span class="kn">End</span> <span class="nf">Limit_realFieldType</span>.
+<span class="kn">Arguments</span> littleo_bigO_eqo {K T V W X F}.
+<span class="kn">Arguments</span> bigO_littleo_eqo {K T V W X F}.
+<span class="kn">Arguments</span> bigO_bigO_eqO {K T V W X F}.
+
+<span class="kn">Section</span> <span class="nf">littleo_bigO_transitivity</span>.
+
+<span class="kn">Context</span> {<span class="nv">K</span> : numFieldType} {<span class="nv">T</span> : <span class="kt">Type</span>} {<span class="nv">V</span> <span class="nv">W</span> <span class="nv">Z</span> : normedModType K}.
+
+<span class="kn">Lemma</span> <span class="nf">eqaddo_trans</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> <span class="nv">h</span> : T -&gt; V) <span class="nv">fg</span> <span class="nv">gh</span> (<span class="nv">e</span> : T -&gt; W):
+  f = g + [o_ F e of fg] -&gt; g = h + [o_F e of gh] -&gt; f = h +o_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt; -&gt;; <span class="nb">rewrite</span> -addrA addo. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">littleo_bigO_transitivity</span>.
+
+<span class="kn">Section</span> <span class="nf">littleo_bigO_transitivity</span>.
+<span class="kn">Context</span> {<span class="nv">K</span> : numFieldType} {<span class="nv">T</span> : <span class="kt">Type</span>} {<span class="nv">V</span> <span class="nv">W</span> <span class="nv">Z</span> : normedModType K}.
+
+<span class="kn">Lemma</span> <span class="nf">eqaddO_trans</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> <span class="nv">h</span> : T -&gt; V) <span class="nv">fg</span> <span class="nv">gh</span> (<span class="nv">e</span> : T -&gt; W):
+  f = g + [O_ F e of fg] -&gt; g = h + [O_F e of gh] -&gt; f = h +O_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt; -&gt;; <span class="nb">rewrite</span> -addrA addO. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqaddoO_trans</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> <span class="nv">h</span> : T -&gt; V) <span class="nv">fg</span> <span class="nv">gh</span> (<span class="nv">e</span> : T -&gt; W):
+  f = g + [o_ F e of fg] -&gt; g = h + [O_F e of gh] -&gt; f = h +O_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt; -&gt;; <span class="nb">rewrite</span> addrAC -addrA addfO. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqaddOo_trans</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> <span class="nv">h</span> : T -&gt; V) <span class="nv">fg</span> <span class="nv">gh</span> (<span class="nv">e</span> : T -&gt; W):
+  f = g + [O_ F e of fg] -&gt; g = h + [o_F e of gh] -&gt; f = h +O_F e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt; -&gt;; <span class="nb">rewrite</span> -addrA addfO. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqo_trans</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) <span class="nv">f&#39;</span> (<span class="nv">g</span> : T -&gt; W) <span class="nv">g&#39;</span> (<span class="nv">h</span> : T -&gt; Z) :
+  f = [o_F g of f&#39;] -&gt; g = [o_F h of g&#39;] -&gt; f =o_F h.
+<span class="kn">Proof</span>.  <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt; -&gt;; <span class="nb">rewrite</span> (littleo_bigO_eqo h). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqOo_trans</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) <span class="nv">f&#39;</span> (<span class="nv">g</span> : T -&gt; W) <span class="nv">g&#39;</span> (<span class="nv">h</span> : T -&gt; Z) :
+  f = [O_F g of f&#39;] -&gt; g = [o_F h of g&#39;] -&gt; f =o_F h.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt; -&gt;; <span class="nb">rewrite</span> (bigO_littleo_eqo h). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqoO_trans</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) <span class="nv">f&#39;</span> (<span class="nv">g</span> : T -&gt; W) <span class="nv">g&#39;</span> (<span class="nv">h</span> : T -&gt; Z) :
+  f = [o_F g of f&#39;] -&gt; g = [O_F h of g&#39;] -&gt; f =o_F h.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt; -&gt;; <span class="nb">rewrite</span> (littleo_bigO_eqo h). <span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">littleo_bigO_transitivity</span>.
+
+<span class="kn">Section</span> <span class="nf">littleo_bigO_transitivity_realFieldType</span>.
+<span class="kn">Context</span> {<span class="nv">K</span> : realFieldType} (*TODO: <span class="nb">generalize</span> to numFieldType?*) {<span class="nv">T</span> : <span class="kt">Type</span>}
+  {<span class="nv">V</span> <span class="nv">W</span> <span class="nv">Z</span> : normedModType K}.
+
+<span class="kn">Lemma</span> <span class="nf">eqO_trans</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) <span class="nv">f&#39;</span> (<span class="nv">g</span> : T -&gt; W) <span class="nv">g&#39;</span> (<span class="nv">h</span> : T -&gt; Z) :
+  f = [O_F g of f&#39;] -&gt; g = [O_F h of g&#39;] -&gt; f =O_F h.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt; -&gt;; <span class="nb">rewrite</span> (bigO_bigO_eqO h). <span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">littleo_bigO_transitivity_realFieldType</span>.
+
+<span class="kn">Section</span> <span class="nf">rule_of_products_rcfType</span>.
+
+<span class="kn">Variables</span> (<span class="nv">R</span> : rcfType) (<span class="nv">pT</span> : pointedType).
+<span class="c">(* TODO: generalize to R : numDomainType? *)</span>
+
+<span class="kn">Lemma</span> <span class="nf">mulo</span> (<span class="nv">F</span> : filter_on pT) (<span class="nv">h1</span> <span class="nv">h2</span> <span class="nv">f</span> <span class="nv">g</span> : pT -&gt; R^o) :
+  [o_F h1 of f] * [o_F h2 of g] =o_F (h1 * h2).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> [<span class="kr">in</span> RHS]littleoE // =&gt; _/posnumP[e]; near=&gt; x.
+<span class="nb">rewrite</span> [`|_|]normrM -(sqr_sqrtr (ge0 e)) expr2.
+<span class="nb">rewrite</span> (@normrM _ (h1 x) (h2 x)) mulrACA ler_pmul //; near: x;
+<span class="bp">by</span> <span class="nb">have</span> [/= h] := littleo; <span class="nb">apply</span>.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">mulO</span> (<span class="nv">F</span> : filter_on pT) (<span class="nv">h1</span> <span class="nv">h2</span> <span class="nv">f</span> <span class="nv">g</span> : pT -&gt; R^o) :
+  [O_F h1 of f] * [O_F h2 of g] =O_F (h1 * h2).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> [RHS]bigOE//; <span class="nb">have</span> [ O1 k1 Oh1] := bigO; <span class="nb">have</span> [ O2 k2 Oh2] := bigO.
+near=&gt; k; <span class="nb">move</span>: Oh1 Oh2; <span class="nb">apply</span>: filter_app2; near=&gt; x =&gt; leOh1 leOh2.
+<span class="nb">rewrite</span> [`|_|]normrM (le_trans (ler_pmul _ _ leOh1 leOh2)) //.
+<span class="bp">by</span> <span class="nb">rewrite</span> mulrACA [`|_| <span class="kr">in</span> leRHS]normrM ler_wpmul2r // <span class="nl">?mulr_ge0</span>.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">rule_of_products_rcfType</span>.
+
+<span class="c">(* NB: almost a duplicate of Section rule_of_products_rcfType *)</span>
+<span class="kn">Section</span> <span class="nf">rule_of_products_numClosedFieldType</span>.
+
+<span class="kn">Variables</span> (<span class="nv">R</span> : numClosedFieldType) (<span class="nv">pT</span> : pointedType).
+
+<span class="kn">Lemma</span> <span class="nf">mulo_numClosedFieldType</span> (<span class="nv">F</span> : filter_on pT) (<span class="nv">h1</span> <span class="nv">h2</span> <span class="nv">f</span> <span class="nv">g</span> : pT -&gt; R^o) :
+  [o_F h1 of f] * [o_F h2 of g] =o_F (h1 * h2).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> [<span class="kr">in</span> RHS]littleoE // =&gt; _/posnumP[e]; near=&gt; x.
+<span class="nb">rewrite</span> [`|_|]normrM -(sqrCK (ge0 e)) expr2 sqrtCM <span class="nl">?qualifE</span>//.
+<span class="nb">rewrite</span> (@normrM _ (h1 x) (h2 x)) mulrACA ler_pmul //; near: x;
+<span class="bp">by</span> <span class="nb">have</span> [/= h] := littleo; <span class="nb">apply</span>.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">mulO_numClosedFieldType</span> (<span class="nv">F</span> : filter_on pT) (<span class="nv">h1</span> <span class="nv">h2</span> <span class="nv">f</span> <span class="nv">g</span> : pT -&gt; R^o) :
+  [O_F h1 of f] * [O_F h2 of g] =O_F (h1 * h2).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> [RHS]bigOE//; <span class="nb">have</span> [ O1 k1 Oh1] := bigO; <span class="nb">have</span> [ O2 k2 Oh2] := bigO.
+near=&gt; k; <span class="nb">move</span>: Oh1 Oh2; <span class="nb">apply</span>: filter_app2; near=&gt; x =&gt; leOh1 leOh2.
+<span class="nb">rewrite</span> [`|_|]normrM (le_trans (ler_pmul _ _ leOh1 leOh2)) //.
+<span class="bp">by</span> <span class="nb">rewrite</span> mulrACA [`|_| <span class="kr">in</span> leRHS]normrM ler_wpmul2r // <span class="nl">?mulr_ge0</span>.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">rule_of_products_numClosedFieldType</span>.
+
+<span class="kn">Section</span> <span class="nf">Linear3</span>.
+<span class="kn">Context</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">U</span> : normedModType R) (<span class="nv">V</span> : normedModType R)
+        (<span class="nv">s</span> : R -&gt; V -&gt; V) (<span class="nv">s_law</span> : GRing.Scale.law s).
+<span class="kn">Hypothesis</span> (<span class="nv">normm_s</span> : <span class="kr">forall</span> <span class="nv">k</span> <span class="nv">x</span>, `|s k x| = `|k| * `|x|).
+
+<span class="c">(* Split in multiple bits *)</span>
+<span class="c">(* - Locally bounded =&gt; locally lipschitz *)</span>
+<span class="c">(* - locally lipschitz + linear =&gt; lipschitz *)</span>
+<span class="c">(* - locally lipschitz =&gt; continuous at a point *)</span>
+<span class="c">(* - lipschitz =&gt; uniformly continous *)</span>
+
+<span class="kn">Local</span> <span class="kn">Notation</span> <span class="s2">&quot;&#39;+oo&#39;&quot;</span> := (@pinfty_nbhs R).
+
+<span class="kn">Lemma</span> <span class="nf">linear_for_continuous</span> (<span class="nv">f</span> : {linear U -&gt; V | GRing.Scale.op s_law}) :
+  (f : _ -&gt; _) =O_ (<span class="mi">0</span> : U) (cst (<span class="mi">1</span> : R^o)) -&gt; continuous f.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /eqO_exP [_/posnumP[k0] Of1] x.
+<span class="nb">apply</span>/cvgrPdist_lt =&gt; _/posnumP[e]; <span class="nb">rewrite</span> !near_simpl.
+<span class="nb">rewrite</span> (near_shift <span class="mi">0</span>) /= subr0; near=&gt; y =&gt; /=.
+<span class="nb">rewrite</span> -linearB opprD addrC addrNK linearN normrN; near: y.
+<span class="nb">suff</span> flip : \<span class="kr">forall</span> <span class="nv">k</span> \near +oo, <span class="kr">forall</span> <span class="nv">x</span>, `|f x| &lt;= k * `|x|.
+  near +oo =&gt; k; near=&gt; y.
+  <span class="nb">rewrite</span> (le_lt_trans (near flip k _ _)) // -ltr_pdivl_mull; <span class="nb">last first</span>.
+    <span class="bp">by</span> near: k; <span class="kr">exists</span> <span class="mi">0</span>.
+  near: y; <span class="nb">apply</span>/nbhs_normP.
+  <span class="nb">eexists</span>; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">rewrite</span> /= sub0r normrN; <span class="nb">apply</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> /= mulr_gt0 // invr_gt0; near: k; <span class="kr">exists</span> <span class="mi">0</span>.
+<span class="nb">have</span> /nbhs_normP [_/posnumP[d]] := Of1.
+<span class="nb">rewrite</span> /cst [X <span class="kr">in</span> _ * X]normr1 mulr1 =&gt; fk; near=&gt; k =&gt; y.
+<span class="nb">case</span>: (ler0P `|y|) =&gt; [|y0].
+  <span class="bp">by</span> <span class="nb">rewrite</span> normr_le0 =&gt; /eqP-&gt;; <span class="nb">rewrite</span> linear0 !normr0 mulr0.
+<span class="nb">have</span> ky0 : <span class="mi">0</span> &lt;= k0%:num / (k * `|y|).
+  <span class="bp">by</span> <span class="nb">rewrite</span> pmulr_rge0 // invr_ge0 mulr_ge0 // ltW //; near: k; <span class="kr">exists</span> <span class="mi">0</span>.
+<span class="nb">rewrite</span> -[leRHS]mulr1 -ler_pdivr_mull <span class="nl">?pmulr_rgt0</span> //.
+<span class="nb">rewrite</span> -(ler_pmul2l [gt0 of k0%:num]) mulr1 mulrA -[_ / _]ger0_norm //.
+<span class="nb">rewrite</span> -normm_s.
+<span class="nb">have</span> &lt;- : GRing.Scale.op s_law =<span class="mi">2</span> s <span class="bp">by</span> <span class="nb">rewrite</span> GRing.Scale.opE.
+<span class="nb">rewrite</span> -linearZ fk //= distrC subr0 normrZ ger0_norm //.
+<span class="nb">rewrite</span> invfM mulrA mulfVK <span class="nl">?lt0r_neq0</span> // ltr_pdivr_mulr //.
+<span class="bp">by</span> <span class="nb">rewrite</span> -ltr_pdivr_mull//.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Linear3</span>.
+
+<span class="kn">Arguments</span> linear_for_continuous {R U V s s_law normm_s} f _.
+
+<span class="kn">Lemma</span> <span class="nf">linear_continuous</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">U</span> : normedModType R)
+  (<span class="nv">V</span> : normedModType R) (<span class="nv">f</span> : {linear U -&gt; V}) :
+  (f : _ -&gt; _) =O_ (<span class="mi">0</span> : U) (cst (<span class="mi">1</span> : R^o)) -&gt; continuous f.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: linear_for_continuous =&gt; ? ?; <span class="nb">rewrite</span> normrZ. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">linear_for_mul_continuous</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">U</span> : normedModType R)
+  (<span class="nv">f</span> : {linear U -&gt; R | (@GRing.mul [ringType of R^o])}) :
+  (f : _ -&gt; _) =O_ (<span class="mi">0</span> : U) (cst (<span class="mi">1</span> : R^o)) -&gt; continuous f.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: linear_for_continuous =&gt; ? ?; <span class="nb">rewrite</span> normrZ. <span class="kn">Qed</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;~_&#39; F g&quot;</span> := (f = g +o_ F g).
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;~~_&#39; F g&quot;</span> := (f == g +o_ F g).
+
+<span class="kn">Section</span> <span class="nf">asymptotic_equivalence</span>.
+
+<span class="kn">Context</span> {<span class="nv">K</span> : realFieldType} {<span class="nv">T</span> : <span class="kt">Type</span>} {<span class="nv">V</span> <span class="nv">W</span> : normedModType K}.
+<span class="kn">Implicit Types</span> <span class="nv">F</span> : filter_on T.
+
+<span class="kn">Lemma</span> <span class="nf">equivOLR</span> <span class="nv">F</span> (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) : f ~_F g -&gt; f =O_F g.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt;; <span class="nb">apply</span>: eqOE; <span class="nb">rewrite</span> {<span class="mi">1</span>}[g](idO F) addrC addfO. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">equiv_refl</span> <span class="nv">F</span> (<span class="nv">f</span> : T -&gt; V) : f ~_F f.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/eqaddoP; <span class="nb">rewrite</span> subrr. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">equivoRL</span> (<span class="nv">W&#39;</span> : normedModType K) <span class="nv">F</span> (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) (<span class="nv">h</span> : T -&gt; W&#39;) :
+  f ~_F g -&gt; [o_F g of h] =o_F f.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; -&gt;; <span class="nb">apply</span>/eqoP; <span class="nb">move</span>=&gt; _/posnumP[eps]; near=&gt; x.
+<span class="nb">rewrite</span> -ler_pdivr_mull // -[X <span class="kr">in</span> g + X]opprK oppo.
+<span class="nb">rewrite</span> (le_trans _ (ler_dist_dist _ _)) //.
+<span class="nb">rewrite</span> [leRHS]ger0_norm <span class="nl">?ler_subr_addr</span> <span class="nl">?add0r</span>; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -[leRHS]mul1r; near: x; <span class="nb">apply</span>: littleoP.
+<span class="nb">rewrite</span> [leRHS]splitr [_ / <span class="mi">2</span>]mulrC.
+<span class="bp">by</span> <span class="nb">rewrite</span> ler_add <span class="nl">?ler_pdivr_mull</span> <span class="nl">?mulrA</span> //; near: x; <span class="nb">apply</span>: littleoP.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">equiv_sym</span> <span class="nv">F</span> (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) : f ~_F g -&gt; g ~_F f.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fg; <span class="nb">have</span> /(canLR (addrK _))&lt;- := fg.
+<span class="bp">by</span> <span class="nb">apply</span>:eqaddoE; <span class="nb">rewrite</span> oppo (equivoRL _ fg).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">equivoLR</span> (<span class="nv">W&#39;</span> : normedModType K) <span class="nv">F</span> (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) (<span class="nv">h</span> : T -&gt; W&#39;) :
+  f ~_F g -&gt; [o_F f of h] =o_F g.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>/equiv_sym/equivoRL. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">equivORL</span> <span class="nv">F</span> (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) : f ~_F g -&gt; g =O_F f.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>/equiv_sym/equivOLR. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqoaddo</span> (<span class="nv">W&#39;</span> : normedModType K) <span class="nv">F</span> (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) (<span class="nv">h</span> : T -&gt; W&#39;) :
+  [o_F f + [o_F f of g] of h] =o_F f.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: equivoLR. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">equiv_trans</span> <span class="nv">F</span> (<span class="nv">f</span> <span class="nv">g</span> <span class="nv">h</span> : T -&gt; V) : f ~_F g -&gt; g ~_F h -&gt; f ~_F h.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt; -&gt;; <span class="nb">apply</span>: eqaddoE; <span class="nb">rewrite</span> eqoaddo -addrA addo. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">equivalence_rel_equiv</span> <span class="nv">F</span> :
+  equivalence_rel [rel f g : T -&gt; V | f ~~_F g].
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; f g h; <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>/eqP/equiv_refl.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /eqP fg /=; <span class="nb">apply</span>/eqP/eqP; <span class="nb">apply</span>/equiv_trans =&gt; //; <span class="nb">apply</span>/equiv_sym.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">asymptotic_equivalence</span>.
+
+<span class="kn">Section</span> <span class="nf">big_omega</span>.
+
+<span class="kn">Context</span> {<span class="nv">K</span> : realFieldType} {<span class="nv">T</span> : <span class="kt">Type</span>} {<span class="nv">V</span> : normedModType K}.
+<span class="kn">Implicit Types</span> <span class="nv">W</span> : normedModType K.
+
+<span class="kn">Let</span> <span class="nf">bigOmega_def</span> <span class="nv">W</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">g</span> : T -&gt; W) :=
+  <span class="kr">exists2</span> k, k &gt; <span class="mi">0</span> &amp; \<span class="kr">forall</span> <span class="nv">x</span> \near F, `|f x| &gt;= k * `|g x|.
+
+<span class="kn">Structure</span> <span class="nf">bigOmega_type</span> {<span class="nv">W</span>} (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) := BigOmega {
+  bigOmega_fun :&gt; T -&gt; V;
+  _ : `[&lt; bigOmega_def F bigOmega_fun g &gt;]
+}.
+
+<span class="kn">Notation</span> <span class="s2">&quot;{Omega_ F g }&quot;</span> := (@bigOmega_type _ F g).
+
+<span class="kn">Canonical</span> <span class="nf">bigOmega_subtype</span> {W} (F : <span class="nb">set</span> (<span class="nb">set</span> T)) (g : T -&gt; W) :=
+  [subType <span class="kr">for</span> (@bigOmega_fun W F g)].
+
+<span class="kn">Lemma</span> <span class="nf">bigOmega_class</span> {<span class="nv">W</span>} (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : {Omega_F g}) :
+  `[&lt; bigOmega_def F f g &gt;].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: f =&gt; ?. <span class="kn">Qed</span>.
+<span class="kn">Hint Resolve</span> bigOmega_class : core.
+
+<span class="kn">Definition</span> <span class="nf">bigOmega_clone</span> {<span class="nv">W</span>} (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : T -&gt; V)
+  (<span class="nv">fT</span> : {Omega_F g}) <span class="nv">c</span> <span class="nv">of</span> <span class="nv">phant_id</span> (<span class="nv">bigOmega_class</span> <span class="nv">fT</span>) <span class="nv">c</span> := @BigOmega W F g f c.
+<span class="kn">Notation</span> <span class="s2">&quot;[bigOmega &#39;of&#39; f &#39;for&#39; fT ]&quot;</span> := (@bigOmega_clone _ _ _ f fT _ idfun).
+<span class="kn">Notation</span> <span class="s2">&quot;[bigOmega &#39;of&#39; f ]&quot;</span> := (@bigOmega_clone _ _ _ f _ _ idfun).
+
+<span class="kn">Lemma</span> <span class="nf">bigOmega_refl_subproof</span> <span class="nv">F</span> (<span class="nv">g</span> : T -&gt; V) : Filter F -&gt; bigOmega_def F g g.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; FF; <span class="kr">exists</span> <span class="mi">1</span> =&gt; //; near=&gt; x; <span class="nb">rewrite</span> mul1r.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">bigOmega_refl</span> (<span class="nv">F</span> : filter_on T) <span class="nv">g</span> :=
+  BigOmega (asboolT (@bigOmega_refl_subproof F g _)).
+
+<span class="kn">Definition</span> <span class="nf">the_bigOmega</span> (<span class="nv">u</span> : unit) (<span class="nv">F</span> : filter_on T)
+  (<span class="nv">phF</span> : phantom (<span class="nb">set</span> (<span class="nb">set</span> T)) F) <span class="nv">f</span> <span class="nv">g</span> :=
+  bigOmega_fun (insubd (bigOmega_refl F g) f).
+<span class="kn">Arguments</span> the_bigOmega : <span class="nb">simpl</span> never, <span class="kn">clear implicits</span>.
+
+<span class="kn">Notation</span> <span class="nf">mkbigOmega</span> tag x := (the_bigOmega tag _ (PhantomF x)).
+<span class="kn">Notation</span> <span class="s2">&quot;[Omega_ x e &#39;of&#39; f ]&quot;</span> := (mkbigOmega gen_tag x f e). <span class="c">(* parsing *)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;[Omega &#39;_&#39; x e &#39;of&#39; f ]&quot;</span> := (the_bigOmega _ _ (PhantomF x) f e).
+
+<span class="kn">Definition</span> <span class="nf">is_bigOmega</span> {<span class="nv">W</span>} (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) :=
+  [qualify f : T -&gt; V | `[&lt; bigOmega_def F f g &gt;] ].
+<span class="kn">Fact</span> <span class="nf">is_bigOmega_key</span> {<span class="nv">W</span>} (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) : pred_key (is_bigOmega F g).
+<span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+<span class="kn">Canonical</span> <span class="nf">is_bigOmega_keyed</span> {W} (F : <span class="nb">set</span> (<span class="nb">set</span> T)) (g : T -&gt; W) :=
+  KeyedQualifier (is_bigOmega_key F g).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;Omega_ F g&quot;</span> := (is_bigOmega F g).
+
+<span class="kn">Lemma</span> <span class="nf">bigOmegaP</span> {<span class="nv">W</span>} (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : {Omega_F g}) :
+  bigOmega_def F f g.
+<span class="kn">Proof</span>. <span class="bp">exact</span>/asboolP. <span class="kn">Qed</span>.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (bigOmega_def _ _ _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigOmegaP] : core.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (nbhs _ _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigOmegaP] : core.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (prop_near1 _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigOmegaP] : core.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (prop_near2 _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigOmegaP] : core.
+
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;=Omega_&#39; F h&quot;</span> := (f%function = mkbigOmega the_tag F f h).
+
+<span class="kn">Canonical</span> <span class="nf">the_bigOmega_bigOmega</span> (tag : unit) (F : filter_on T)
+  (phF : phantom (<span class="nb">set</span> (<span class="nb">set</span> T)) F) f h := [bigOmega of the_bigOmega tag F phF f h].
+
+<span class="kn">Variant</span> <span class="nf">bigOmega_spec</span> {<span class="nv">W</span>} (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) : (T -&gt; V) -&gt; <span class="kt">Prop</span> :=
+  BigOmegaSpec f (k : {posnum K}) of
+    (\<span class="kr">forall</span> <span class="nv">x</span> \near F, `|f x| &gt;= k%:num * `|g x|) :
+  bigOmega_spec F g f.
+
+<span class="kn">Lemma</span> <span class="nf">bigOmega</span> {<span class="nv">W</span>} (<span class="nv">F</span> : filter_on T) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : {Omega_F g}) :
+  bigOmega_spec F g f.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">have</span> [_/posnumP[k]] := bigOmegaP f; <span class="kr">exists</span> <span class="nv">k</span>. <span class="kn">Qed</span>.
+
+<span class="c">(* properties of big Omega *)</span>
+
+<span class="kn">Lemma</span> <span class="nf">eqOmegaO</span> {<span class="nv">W</span>} (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">e</span> : T -&gt; W) :
+  (f \<span class="kr">is</span> &#39;Omega_F(e)) = (e =O_F f) :&gt; <span class="kt">Prop</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> propeqE; <span class="nb">split</span> =&gt; [| /eqO_exP[x x0 Hx] ];
+[<span class="nb">rewrite</span> qualifE =&gt; /asboolP[x x0 Hx]; <span class="nb">apply</span>/eqO_exP |
+<span class="nb">rewrite</span> qualifE; <span class="nb">apply</span>/asboolP];
+<span class="kr">exists</span> <span class="nv">x</span>^-<span class="mi">1</span>; <span class="nb">rewrite</span> <span class="nl">?invr_gt0</span> //; near=&gt; y.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ler_pdivl_mull //; near: y.
+<span class="bp">by</span> <span class="nb">rewrite</span> ler_pdivr_mull //; near: y.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqOmegaE</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">e</span> : T -&gt; V) :
+  (f =Omega_F(e)) = (f \<span class="kr">is</span> &#39;Omega_F(e)).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> propeqE; <span class="nb">split</span>=&gt; [-&gt;|]; <span class="nb">rewrite</span> qualifE; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; H; <span class="nb">rewrite</span> /the_bigOmega val_insubd H.
+<span class="bp">by</span> <span class="nb">apply</span>/asboolP; <span class="nb">rewrite</span> /the_bigOmega val_insubd; <span class="nb">case</span>: ifPn =&gt; // /asboolP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqOmega_trans</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> <span class="nv">h</span> : T -&gt; V) :
+  f =Omega_F(g) -&gt; g =Omega_F(h) -&gt; f =Omega_F(h).
+<span class="kn">Proof</span>. <span class="nb">rewrite</span> !eqOmegaE !eqOmegaO =&gt; fg gh; <span class="bp">exact</span>: (eqO_trans gh fg). <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">big_omega</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;{Omega_ F f }&quot;</span> := (@bigOmega_type _ _ _ _ F f).
+<span class="kn">Notation</span> <span class="s2">&quot;[bigOmega &#39;of&#39; f ]&quot;</span> := (@bigOmega_clone _ _ _ _ _ _ f _ _ idfun).
+<span class="kn">Notation</span> <span class="nf">mkbigOmega</span> tag x := (the_bigOmega tag (PhantomF x)).
+<span class="kn">Notation</span> <span class="s2">&quot;[Omega_ x e &#39;of&#39; f ]&quot;</span> := (mkbigOmega gen_tag x f e).
+<span class="kn">Notation</span> <span class="s2">&quot;[Omega &#39;_&#39; x e &#39;of&#39; f ]&quot;</span> := (the_bigOmega _ _ (PhantomF x) f e).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;Omega_ F g&quot;</span> := (is_bigOmega F g).
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;=Omega_&#39; F h&quot;</span> := (f%function = mkbigOmega the_tag F f h).
+<span class="kn">Arguments</span> bigOmega {_ _ _ _}.
+
+<span class="kn">Section</span> <span class="nf">big_omega_in_R</span>.
+
+<span class="kn">Variable</span> <span class="nv">pT</span> : pointedType.
+
+<span class="kn">Lemma</span> <span class="nf">addOmega</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">F</span> : filter_on pT) (<span class="nv">f</span> <span class="nv">g</span> <span class="nv">h</span> : _ -&gt; R^o)
+  (<span class="nv">f_nonneg</span> : <span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= f x) (<span class="nv">g_nonneg</span> : <span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= g x) :
+  f =Omega_F h -&gt; f + g =Omega_F h.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> <span class="mi">2</span>!eqOmegaE !eqOmegaO =&gt; /eqOP hOf; <span class="nb">apply</span>/eqOP.
+<span class="nb">apply</span>: filter_app hOf; near=&gt; k; <span class="nb">apply</span>: filter_app; near=&gt; x =&gt; /le_trans.
+<span class="bp">by</span> <span class="nb">apply</span>; <span class="nb">rewrite</span> ler_pmul2l // !ger0_norm // <span class="nl">?addr_ge0</span> // ler_addl.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">mulOmega</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">F</span> : filter_on pT) (<span class="nv">h1</span> <span class="nv">h2</span> <span class="nv">f</span> <span class="nv">g</span> : pT -&gt; R^o) :
+  [Omega_F h1 of f] * [Omega_F h2 of g] =Omega_F (h1 * h2).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> eqOmegaE eqOmegaO [<span class="kr">in</span> RHS]bigOE //.
+<span class="nb">have</span> [W1 k1 ?] := bigOmega; <span class="nb">have</span> [W2 k2 ?] := bigOmega.
+near=&gt; k; near=&gt; x; <span class="nb">rewrite</span> [`|_|]normrM.
+<span class="nb">rewrite</span> (@le_trans _ _ ((k2%:num * k1%:num)^-<span class="mi">1</span> * `|(W1 * W2) x|)) //.
+  <span class="nb">rewrite</span> invrM <span class="nl">?unitfE</span> <span class="nl">?gtr_eqF</span> // -mulrA ler_pdivl_mull //.
+  <span class="nb">rewrite</span> ler_pdivl_mull // (mulrA k1%:num) mulrCA (@normrM _ (W1 x)).
+  <span class="bp">by</span> <span class="nb">rewrite</span> ler_pmul <span class="nl">?mulr_ge0</span> //; near: x.
+<span class="bp">by</span> <span class="nb">rewrite</span> ler_wpmul2r // ltW //.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">big_omega_in_R</span>.
+
+<span class="kn">Section</span> <span class="nf">big_theta</span>.
+
+<span class="kn">Context</span> {<span class="nv">K</span> : realFieldType} {<span class="nv">T</span> : <span class="kt">Type</span>} {<span class="nv">V</span> : normedModType K}.
+<span class="kn">Implicit Types</span> <span class="nv">W</span> : normedModType K.
+
+<span class="kn">Let</span> <span class="nf">bigTheta_def</span> <span class="nv">W</span> (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">g</span> : T -&gt; W) :=
+  <span class="kr">exists2</span> k, (k.<span class="mi">1</span> &gt; <span class="mi">0</span>) &amp;&amp; (k.<span class="mi">2</span> &gt; <span class="mi">0</span>) &amp;
+  \<span class="kr">forall</span> <span class="nv">x</span> \near F, k.<span class="mi">1</span> * `|g x| &lt;= `|f x| /\ `|f x| &lt;= k.<span class="mi">2</span> * `|g x|.
+
+<span class="kn">Structure</span> <span class="nf">bigTheta_type</span> {<span class="nv">W</span>} (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) := BigTheta {
+  bigTheta_fun :&gt; T -&gt; V;
+  _ : `[&lt; bigTheta_def F bigTheta_fun g &gt;]
+}.
+
+<span class="kn">Notation</span> <span class="s2">&quot;{Theta_ F g }&quot;</span> := (@bigTheta_type _ F g).
+
+<span class="kn">Canonical</span> <span class="nf">bigTheta_subtype</span> {W} (F : <span class="nb">set</span> (<span class="nb">set</span> T)) (g : T -&gt; W) :=
+  [subType <span class="kr">for</span> (@bigTheta_fun W F g)].
+
+<span class="kn">Lemma</span> <span class="nf">bigTheta_class</span> {<span class="nv">W</span>} (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : {Theta_F g}) :
+  `[&lt; bigTheta_def F f g &gt;].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: f =&gt; ?. <span class="kn">Qed</span>.
+<span class="kn">Hint Resolve</span> bigTheta_class : core.
+
+<span class="kn">Definition</span> <span class="nf">bigTheta_clone</span> {<span class="nv">W</span>} (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : T -&gt; V)
+  (<span class="nv">fT</span> : {Theta_F g}) <span class="nv">c</span> <span class="nv">of</span> <span class="nv">phant_id</span> (<span class="nv">bigTheta_class</span> <span class="nv">fT</span>) <span class="nv">c</span> := @BigTheta W F g f c.
+<span class="kn">Notation</span> <span class="s2">&quot;[bigTheta &#39;of&#39; f &#39;for&#39; fT ]&quot;</span> := (@bigTheta_clone _ _ _ f fT _ idfun).
+<span class="kn">Notation</span> <span class="s2">&quot;[bigTheta &#39;of&#39; f ]&quot;</span> := (@bigTheta_clone _ _ _ f _ _ idfun).
+
+<span class="kn">Lemma</span> <span class="nf">bigTheta_refl_subproof</span> <span class="nv">F</span> (<span class="nv">g</span> : T -&gt; V) : Filter F -&gt; bigTheta_def F g g.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; FF; <span class="kr">exists</span> <span class="mi">1</span> =&gt; /=; <span class="nb">rewrite</span> <span class="nl">?ltr01</span> //; near=&gt; x; <span class="bp">by</span> <span class="nb">rewrite</span> mul1r.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">bigTheta_refl</span> (<span class="nv">F</span> : filter_on T) <span class="nv">g</span> :=
+  BigTheta (asboolT (@bigTheta_refl_subproof F g _)).
+
+<span class="kn">Definition</span> <span class="nf">the_bigTheta</span> (<span class="nv">u</span> : unit) (<span class="nv">F</span> : filter_on T)
+  (<span class="nv">phF</span> : phantom (<span class="nb">set</span> (<span class="nb">set</span> T)) F) <span class="nv">f</span> <span class="nv">g</span> :=
+  bigTheta_fun (insubd (bigTheta_refl F g) f).
+<span class="kn">Arguments</span> the_bigOmega : <span class="nb">simpl</span> never, <span class="kn">clear implicits</span>.
+
+<span class="kn">Notation</span> <span class="nf">mkbigTheta</span> tag x := (@the_bigTheta tag _ (PhantomF x)).
+<span class="kn">Notation</span> <span class="s2">&quot;[Theta_ x e &#39;of&#39; f ]&quot;</span> := (mkbigTheta gen_tag x f e). <span class="c">(* parsing *)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;[Theta &#39;_&#39; x e &#39;of&#39; f ]&quot;</span> := (the_bigTheta _ _ (PhantomF x) f e).
+
+<span class="kn">Definition</span> <span class="nf">is_bigTheta</span> {<span class="nv">W</span>} (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) :=
+  [qualify f : T -&gt; V | `[&lt; bigTheta_def F f g &gt;] ].
+<span class="kn">Fact</span> <span class="nf">is_bigTheta_key</span> {<span class="nv">W</span>} (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) : pred_key (is_bigTheta F g).
+<span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+<span class="kn">Canonical</span> <span class="nf">is_bigTheta_keyed</span> {W} (F : <span class="nb">set</span> (<span class="nb">set</span> T)) (g : T -&gt; W) :=
+  KeyedQualifier (is_bigTheta_key F g).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;Theta_ F g&quot;</span> := (@is_bigTheta _ F g).
+
+<span class="kn">Lemma</span> <span class="nf">bigThetaP</span> {<span class="nv">W</span>} (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : {Theta_F g}) :
+  bigTheta_def F f g.
+<span class="kn">Proof</span>. <span class="bp">exact</span>/asboolP. <span class="kn">Qed</span>.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (bigTheta_def _ _ _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigThetaP] : core.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (nbhs _ _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigThetaP] : core.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (prop_near1 _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigThetaP] : core.
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (prop_near2 _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: bigThetaP] : core.
+
+<span class="kn">Canonical</span> <span class="nf">the_bigTheta_bigTheta</span> (tag : unit) (F : filter_on T)
+  (phF : phantom (<span class="nb">set</span> (<span class="nb">set</span> T)) F) f h := [bigTheta of @the_bigTheta tag F phF f h].
+
+<span class="kn">Variant</span> <span class="nf">bigTheta_spec</span> {<span class="nv">W</span>} (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T)) (<span class="nv">g</span> : T -&gt; W) : (T -&gt; V) -&gt; <span class="kt">Prop</span> :=
+    BigThetaSpec f (k1 : {posnum K}) (k2 : {posnum K}) of
+      (\<span class="kr">forall</span> <span class="nv">x</span> \near F, k1%:num * `|g x| &lt;= `|f x|) &amp;
+      (\<span class="kr">forall</span> <span class="nv">x</span> \near F, `|f x| &lt;= k2%:num * `|g x|) :
+  bigTheta_spec F g f.
+
+<span class="kn">Lemma</span> <span class="nf">bigTheta</span> {<span class="nv">W</span>} (<span class="nv">F</span> : filter_on T) (<span class="nv">g</span> : T -&gt; W) (<span class="nv">f</span> : {Theta_F g}) :
+  bigTheta_spec F g f.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> [[_ _] /andP[/posnumP[k] /posnumP[k&#39;]]] := bigThetaP f.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /near_andP[]; <span class="kr">exists</span> <span class="nv">k</span> <span class="nv">k&#39;</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;=Theta_&#39; F h&quot;</span> := (f%function = mkbigTheta the_tag F f h).
+
+<span class="kn">Lemma</span> <span class="nf">bigThetaE</span> {<span class="nv">W</span>} (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) (<span class="nv">g</span> : T -&gt; W) :
+  (f \<span class="kr">is</span> &#39;Theta_F(g)) = (f =O_F g /\ f \<span class="kr">is</span> &#39;Omega_F(g)) :&gt; <span class="kt">Prop</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> propeqE; <span class="nb">split</span>.
+- <span class="nb">rewrite</span> qualifE =&gt; /asboolP[[/= k1 k2] /andP[k10 k20]] /near_andP[Hx1 Hx2].
+  <span class="bp">by</span> <span class="nb">split</span>; [<span class="nb">rewrite</span> eqO_exP; <span class="kr">exists</span> <span class="nv">k2</span>|
+    <span class="nb">rewrite</span> qualifE; <span class="nb">apply</span>/asboolP; <span class="kr">exists</span> <span class="nv">k1</span>].
+- <span class="nb">case</span>; <span class="nb">rewrite</span> eqO_exP qualifE =&gt; -[k1 k10 H1] /asboolP[k2 k20 H2].
+  <span class="nb">rewrite</span> qualifE; <span class="nb">apply</span>/asboolP; <span class="kr">exists</span> (<span class="nv">k2</span>, k1) =&gt; /=; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> k20.
+  <span class="bp">by</span> <span class="nb">apply</span>/near_andP; <span class="nb">split</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqThetaE</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">e</span> : T -&gt; V) :
+  (f =Theta_F(e)) = (f \<span class="kr">is</span> &#39;Theta_F(e)).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> propeqE; <span class="nb">split</span>=&gt; [-&gt;|]; <span class="nb">rewrite</span> qualifE; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; H; <span class="nb">rewrite</span> /the_bigTheta val_insubd H.
+<span class="bp">by</span> <span class="nb">apply</span>/asboolP; <span class="nb">rewrite</span> /the_bigTheta val_insubd; <span class="nb">case</span>: ifPn =&gt; // /asboolP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqThetaO</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) : [Theta_F g of f] =O_F g.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">have</span> [T1 k1 k2 ? ?] := bigTheta; <span class="nb">apply</span>/eqO_exP; <span class="kr">exists</span> <span class="nv">k2</span>%:num. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">idTheta</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> : T -&gt; V) : f =Theta_F f.
+<span class="kn">Proof</span>. <span class="nb">rewrite</span> eqThetaE bigThetaE eqOmegaO; <span class="nb">split</span>; <span class="bp">exact</span>/idO. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Theta_sym</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; V) :
+  (f =Theta_F g) = (g =Theta_F f).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> !eqThetaE propeqE !bigThetaE !eqOmegaO; <span class="nb">split</span> =&gt; -[]. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqTheta_trans</span> (<span class="nv">F</span> : filter_on T) (<span class="nv">f</span> <span class="nv">g</span> <span class="nv">h</span> : T -&gt; V) :
+  f =Theta_F g -&gt; g =Theta_F h -&gt; f =Theta_F h.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> !eqThetaE !bigThetaE -!eqOmegaE =&gt; -[fg gf] [gh hg]; <span class="nb">split</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> fg (bigO_bigO_eqO _ _ _ gh).
+<span class="bp">exact</span>: (eqOmega_trans gf hg).
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">big_theta</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;{Theta_ F g }&quot;</span> := (@bigTheta_type _ F g).
+<span class="kn">Notation</span> <span class="s2">&quot;[bigTheta &#39;of&#39; f ]&quot;</span> := (@bigTheta_clone _ _ _ _ _ _ f _ _ idfun).
+<span class="kn">Notation</span> <span class="nf">mkbigTheta</span> tag x := (the_bigTheta tag (PhantomF x)).
+<span class="kn">Notation</span> <span class="s2">&quot;[Theta_ x e &#39;of&#39; f ]&quot;</span> := (mkbigTheta gen_tag x f e).
+<span class="kn">Notation</span> <span class="s2">&quot;[Theta &#39;_&#39; x e &#39;of&#39; f ]&quot;</span> := (the_bigTheta _ _ (PhantomF x) f e).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;Theta_ F g&quot;</span> := (is_bigTheta F g).
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;=Theta_&#39; F h&quot;</span> := (f%function = mkbigTheta the_tag F f h).
+
+<span class="kn">Section</span> <span class="nf">big_theta_in_R</span>.
+
+<span class="kn">Variables</span> (<span class="nv">R</span> : rcfType (*realType*)) (<span class="nv">pT</span> : pointedType).
+
+<span class="kn">Lemma</span> <span class="nf">addTheta</span> (<span class="nv">F</span> : filter_on pT) (<span class="nv">f</span> <span class="nv">g</span> <span class="nv">h</span> : _ -&gt; R^o)
+  (<span class="nv">f0</span> : <span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= f x) (<span class="nv">g0</span> : <span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= g x) (<span class="nv">h0</span> : <span class="kr">forall</span> <span class="nv">x</span>, <span class="mi">0</span> &lt;= h x) :
+  [Theta_F h of f] + [O_F h of g] =Theta_F h.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> eqThetaE bigThetaE; <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> eqThetaO addO.
+<span class="nb">rewrite</span> -eqOmegaE; <span class="nb">apply</span>: addOmega.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">rewrite</span> /the_bigTheta val_insubd /=; <span class="nb">case</span>: ifP.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">rewrite</span> /the_bigO val_insubd /=; <span class="nb">case</span>: ifP.
+- <span class="nb">rewrite</span> eqOmegaE eqOmegaO; <span class="nb">have</span> [T1 k1 k2 ? ?] := bigTheta.
+  <span class="nb">rewrite</span> bigOE //; <span class="nb">apply</span>/bigO_exP; <span class="kr">exists</span> <span class="nv">k1</span>%:num^-<span class="mi">1</span> =&gt; //.
+  <span class="bp">by</span> near <span class="kp">do</span> <span class="nb">rewrite</span> ler_pdivl_mull //.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">mulTheta</span> (<span class="nv">F</span> : filter_on pT) (<span class="nv">h1</span> <span class="nv">h2</span> <span class="nv">f</span> <span class="nv">g</span> : pT -&gt; R^o) :
+  [Theta_F h1 of f] * [Theta_F h2 of g] =Theta_F h1 * h2.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> eqThetaE bigThetaE; <span class="nb">split</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (eqThetaO _ f) (eqThetaO _ g) mulO.
+<span class="nb">rewrite</span> eqOmegaO [<span class="kr">in</span> RHS]bigOE //.
+<span class="nb">have</span> [T1 k1 l1 P1 ?] := bigTheta; <span class="nb">have</span> [T2 k2 l2 P2 ?] := bigTheta.
+near=&gt; k; <span class="kp">first</span> near=&gt; x.
+<span class="nb">rewrite</span> [`|_|]normrM (@le_trans _ _ ((k2%:num * k1%:num)^-<span class="mi">1</span> * `|(T1 * T2) x|)) //.
+  <span class="nb">rewrite</span> invrM <span class="nl">?unitfE</span> <span class="nl">?gtr_eqF</span> // -mulrA ler_pdivl_mull //.
+  <span class="nb">rewrite</span> ler_pdivl_mull // (mulrA k1%:num) mulrCA (@normrM _ (T1 x)) ler_pmul //;
+  <span class="bp">by</span> [<span class="nb">rewrite</span> mulr_ge0 //|near: x].
+<span class="bp">by</span> <span class="nb">rewrite</span> ler_wpmul2r // ltW //.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">big_theta_in_R</span>.</span></pre></article></body></html>

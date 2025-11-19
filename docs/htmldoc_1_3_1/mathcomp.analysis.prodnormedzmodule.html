@@ -1,0 +1,163 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Module mathcomp.analysis.prodnormedzmodule</title>
+<meta name="description" content="Documentation of Coq module mathcomp.analysis.prodnormedzmodule" />
+<link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+<link href="coq2html.css" rel="stylesheet" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="coq2html.js"> </script>
+</head>
+
+<body onload="init('proofscript')">
+
+  <main>
+    <div class="sidebar">
+      <h2>Files</h2>
+      <li><details id="mathcomp"><summary>mathcomp</summary>
+          <ul>
+          <li><details id="mathcomp.analysis"><summary>analysis</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.all_analysis.html">all_analysis</a></li>
+<li><a href="mathcomp.analysis.cantor.html">cantor</a></li>
+<li><a href="mathcomp.analysis.charge.html">charge</a></li>
+<li><a href="mathcomp.analysis.constructive_ereal.html">constructive_ereal</a></li>
+<li><a href="mathcomp.analysis.convex.html">convex</a></li>
+<li><a href="mathcomp.analysis.derive.html">derive</a></li>
+<li><a href="mathcomp.analysis.ereal.html">ereal</a></li>
+<li><a href="mathcomp.analysis.esum.html">esum</a></li>
+<li><a href="mathcomp.analysis.exp.html">exp</a></li>
+<li><a href="mathcomp.analysis.forms.html">forms</a></li>
+<li><a href="mathcomp.analysis.ftc.html">ftc</a></li>
+<li><a href="mathcomp.analysis.function_spaces.html">function_spaces</a></li>
+<li><a href="mathcomp.analysis.hoelder.html">hoelder</a></li>
+<li><a href="mathcomp.analysis.itv.html">itv</a></li>
+<li><a href="mathcomp.analysis.kernel.html">kernel</a></li>
+<li><a href="mathcomp.analysis.landau.html">landau</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral.html">lebesgue_integral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></li>
+<li><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html">lebesgue_stieltjes_measure</a></li>
+<li><a href="mathcomp.analysis.measure.html">measure</a></li>
+<li><a href="mathcomp.analysis.normedtype.html">normedtype</a></li>
+<li><a href="mathcomp.analysis.nsatz_realtype.html">nsatz_realtype</a></li>
+<li><a href="mathcomp.analysis.numfun.html">numfun</a></li>
+<li><a href="mathcomp.analysis.probability.html">probability</a></li>
+<li><a href="mathcomp.analysis.prodnormedzmodule.html">prodnormedzmodule</a></li>
+<li><a href="mathcomp.analysis.real_interval.html">real_interval</a></li>
+<li><a href="mathcomp.analysis.realfun.html">realfun</a></li>
+<li><a href="mathcomp.analysis.reals.html">reals</a></li>
+<li><a href="mathcomp.analysis.Rstruct.html">Rstruct</a></li>
+<li><a href="mathcomp.analysis.sequences.html">sequences</a></li>
+<li><a href="mathcomp.analysis.signed.html">signed</a></li>
+<li><a href="mathcomp.analysis.summability.html">summability</a></li>
+<li><a href="mathcomp.analysis.topology.html">topology</a></li>
+<li><a href="mathcomp.analysis.trigo.html">trigo</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.classical"><summary>classical</summary>
+          <ul>
+          <li><a href="mathcomp.classical.all_classical.html">all_classical</a></li>
+<li><a href="mathcomp.classical.boolp.html">boolp</a></li>
+<li><a href="mathcomp.classical.cardinality.html">cardinality</a></li>
+<li><a href="mathcomp.classical.classical_sets.html">classical_sets</a></li>
+<li><a href="mathcomp.classical.contra.html">contra</a></li>
+<li><a href="mathcomp.classical.fsbigop.html">fsbigop</a></li>
+<li><a href="mathcomp.classical.functions.html">functions</a></li>
+<li><a href="mathcomp.classical.mathcomp_extra.html">mathcomp_extra</a></li>
+<li><a href="mathcomp.classical.set_interval.html">set_interval</a></li>
+<li><a href="mathcomp.classical.wochoice.html">wochoice</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+    </div>
+
+  <div class="coq">
+
+    <div class="content">
+      <p><a href="./index.html">Top</a></p>
+      <h1 class="title">Module mathcomp.analysis.prodnormedzmodule</h1>
+<span class="vernacular">From</span><span class="id"> HB</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for HB.structures">structures</a></span><span class="id">.</span><br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.fingroup.fingroup">fingroup</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html">ssralg</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.poly.html">poly</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html">ssrnum</a></span><span class="id">.</span><br/>
+<span class="vernacular">Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.signed.html">signed</a></span><span class="id">.</span><br/>
+<br/>
+<div class="ssrdoc md">
+This file equips the product of two normedZmodTypes with a canonical
+normedZmodType structure. It is a short file that has been added here for
+convenience during the rebase of MathComp-Analysis on top of MathComp 1.1.
+The contents is likely to be moved elsewhere.
+</div>
+<br/>
+<span class="gallina-kwd">Set</span><span class="vernacular"> Implicit</span><span class="vernacular"> Arguments.</span><br/>
+<span class="vernacular">Unset</span><span class="vernacular"> Strict</span><span class="vernacular"> Implicit.</span><br/>
+<span class="vernacular">Unset</span><span class="vernacular"> Printing</span><span class="vernacular"> Implicit</span><span class="vernacular"> Defensive.</span><br/>
+<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope.</span><br/>
+<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.order.html#Order.TTheory">Order.TTheory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory">GRing.Theory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.Theory">Num.Theory</a></span><span class="id">.</span><br/>
+<br/>
+<span class="vernacular">Module</span><span class="id"> </span><span id="ProdNormedZmodule" class="id"><a name="ProdNormedZmodule" class="">ProdNormedZmodule</a></span><span class="id">.</span><br/>
+<span class="vernacular">Section</span><span class="id"> </span><span id="ProdNormedZmodule.ProdNormedZmodule" class="id"><a name="ProdNormedZmodule.ProdNormedZmodule" class="">ProdNormedZmodule</a></span><span class="id">.</span><br/>
+<span class="vernacular">Context</span><span class="id"> {</span><span id="ProdNormedZmodule.ProdNormedZmodule.R" class="id"><a name="ProdNormedZmodule.ProdNormedZmodule.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span><span class="id">}</span><span class="id"> {</span><span id="ProdNormedZmodule.ProdNormedZmodule.U" class="id"><a name="ProdNormedZmodule.ProdNormedZmodule.U" class="">U</a></span><span class="id"> </span><span id="ProdNormedZmodule.ProdNormedZmodule.V" class="id"><a name="ProdNormedZmodule.ProdNormedZmodule.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.NormedZmodule.Exports.normedZmodType">normedZmodType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#R:1">R</a></span><span class="id">}.</span><br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ProdNormedZmodule.norm" class="id"><a name="ProdNormedZmodule.norm" class="">norm</a></span> (<span id="x:4" class="id"><a name="x:4" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.U">U</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.V">V</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.R">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.max">Num.max</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#x:4">x</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.ssr.ssrfun.html#::pair_scope:x_'.1'">.1</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#x:4">x</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.ssr.ssrfun.html#::pair_scope:x_'.2'">.2</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id">.</span><br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="ProdNormedZmodule.normD" class="id"><a name="ProdNormedZmodule.normD" class="">normD</a></span><span class="id"> </span><span id="x:5" class="id"><a name="x:5" class="">x</a></span><span class="id"> </span><span id="y:6" class="id"><a name="y:6" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span> (<span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#x:5">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#y:6">y</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#x:5">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#y:6">y</a></span><span class="id">.</span><br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof1')">Proof.</span></div>
+<div class="proofscript" id="proof1">
+<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.signed.html#num_ge_max">num_ge_max</a></span><span class="id"> !</span>(<span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.order.html#Order.POrderTheory.le_trans">le_trans</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.Theory.ler_normD">ler_normD</a></span><span class="id"> _</span><span class="id"> _</span>))<span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.Theory.lerD">lerD</a></span><span class="id">//;</span><br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.order.html#Order.POrderTheory.comparable_le_max">comparable_le_max</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.order.html#Order.POrderTheory.lexx">lexx</a></span><span class="id"> ?</span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.ssr.ssrbool.html#orbT">orbT</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.Theory.real_comparable">real_comparable</a></span><span class="id">.</span><br/>
+Qed.</div>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="ProdNormedZmodule.norm_eq0" class="id"><a name="ProdNormedZmodule.norm_eq0" class="">norm_eq0</a></span><span class="id"> </span><span id="x:7" class="id"><a name="x:7" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#x:7">x</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#x:7">x</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0.</span><br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof2')">Proof.</span></div>
+<div class="proofscript" id="proof2">
+<span class="id">case:</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> x1</span><span class="id"> x2</span><span class="id"> /</span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.eqtype.html#eqP">eqP</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.order.html#Order.POrderTheory.eq_le">eq_le</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.signed.html#num_ge_max">num_ge_max</a></span><span class="id"> 2!</span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.Theory.normr_le0">normr_le0</a></span><span class="id"> -</span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.ssr.ssrbool.html#andbA">andbA</a></span><span class="id">/=.</span><br/>
+<span class="gallina-kwd">by</span><span class="id"> case/</span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.ssr.ssrbool.html#and3P">and3P</a></span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.eqtype.html#eqP">eqP</a></span><span class="id"> -&gt;</span><span class="id"> /</span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.eqtype.html#eqP">eqP</a></span><span class="id"> -&gt;.</span><br/>
+Qed.</div>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="ProdNormedZmodule.normMn" class="id"><a name="ProdNormedZmodule.normMn" class="">normMn</a></span><span class="id"> </span><span id="x:8" class="id"><a name="x:8" class="">x</a></span><span class="id"> </span><span id="n:9" class="id"><a name="n:9" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span> (<span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#x:8">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#n:9">n</a></span>)<span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span> (<span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#x:8">x</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#n:9">n</a></span><span class="id">.</span><br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof3')">Proof.</span></div>
+<div class="proofscript" id="proof3">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#pairMnE">pairMnE</a></span><span class="id"> -</span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory.mulr_natl">mulr_natl</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.Theory.maxr_pMr">maxr_pMr</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory.mulr_natl">mulr_natl</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.Theory.normrMn">normrMn</a></span><span class="id">.</span> Qed.</div>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="ProdNormedZmodule.normrN" class="id"><a name="ProdNormedZmodule.normrN" class="">normrN</a></span><span class="id"> </span><span id="x:10" class="id"><a name="x:10" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#x:10">x</a></span>)<span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#x:10">x</a></span><span class="id">.</span><br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof4')">Proof.</span></div>
+<div class="proofscript" id="proof4">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id">/=</span><span class="id"> !</span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.Theory.normrN">normrN</a></span><span class="id">.</span> Qed.</div>
+<br/>
+<span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_1" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="">#[export]</a></span></span><br/>
+<span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_1" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="hierarchy-builder">HB.instance</a></span></span><span class="vernacular"> Definition</span><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_1" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class=""> _</a></span></span><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_1" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class=""> :=</a></span></span><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_1" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class=""> Num.Zmodule_isNormed.Build</a></span></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.R">R</a></span> (<span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.U">U</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.V">V</a></span>)<span class="id">%type</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.normD">normD</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm_eq0">norm_eq0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.normMn">normMn</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.normrN">normrN</a></span><span class="id">.</span><br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="ProdNormedZmodule.prod_normE" class="id"><a name="ProdNormedZmodule.prod_normE" class="">prod_normE</a></span> (<span id="x:11" class="id"><a name="x:11" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.ssr.ssreflect.html#dd4e793ea9d0dbe0a320346aa74c809d">[the</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.ssr.ssreflect.html#dd4e793ea9d0dbe0a320346aa74c809d"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.NormedZmodule.Exports.normedZmodType">normedZmodType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.R">R</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.ssr.ssreflect.html#dd4e793ea9d0dbe0a320346aa74c809d"> of</a></span> (<span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.U">U</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.V">V</a></span>)<span class="id">%type</span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.ssr.ssreflect.html#dd4e793ea9d0dbe0a320346aa74c809d">]</a></span>)<span class="id"> :</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#x:11">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.max">Num.max</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#x:11">x</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.ssr.ssrfun.html#::pair_scope:x_'.1'">.1</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#x:11">x</a></span><span class="id"><a href="https://coq.inria.fr/doc/V8.19.2/stdlib/Coq.ssr.ssrfun.html#::pair_scope:x_'.2'">.2</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id">.</span><br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof5')">Proof.</span></div>
+<div class="proofscript" id="proof5">
+<span class="gallina-kwd"> by</span><span class="id"> [].</span> Qed.</div>
+<br/>
+<span class="vernacular">End</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule">ProdNormedZmodule</a></span><span class="id">.</span><br/>
+<br/>
+<span class="vernacular">Module</span><span class="vernacular"> Exports.</span><br/>
+<span class="id">HB.reexport.</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ProdNormedZmodule.Exports.prod_normE" class="id"><a name="ProdNormedZmodule.Exports.prod_normE" class="">prod_normE</a></span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.prod_normE">prod_normE</a></span><span class="id">.</span><br/>
+<span class="vernacular">End</span><span class="vernacular"> Exports.</span><br/>
+<br/>
+<span class="vernacular">End</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule">ProdNormedZmodule</a></span><span class="id">.</span><br/>
+<span class="vernacular">Export</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.Exports">ProdNormedZmodule.Exports</a></span><span class="id">.</span><br/>
+
+      <div class="footer"><hr/>Generated by <a href="https://github.com/yoshihiro503/coq2html/">a fork of coq2html</a></div>
+    </div>
+  </div>
+    </main>
+</body>
+</html>

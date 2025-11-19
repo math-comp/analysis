@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>exp.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)</span>
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect ssralg ssrint ssrnum matrix.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> interval rat.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> boolp classical_sets functions.
+<span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> mathcomp_extra.
+<span class="kn">Require Import</span> reals ereal nsatz_realtype.
+<span class="kn">Require Import</span> signed topology normedtype landau sequences derive realfun.
+
+<span class="sd">(******************************************************************************)</span>
+<span class="c">(*               Theory of exponential/logarithm functions                    *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* This file defines exponential and logarithm functions and develops their   *)</span>
+<span class="c">(* theory.                                                                    *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* * Differentiability of series (Section PseriesDiff)                        *)</span>
+<span class="c">(*   This formalization is inspired by HOL-Light (transc.ml). This part is    *)</span>
+<span class="c">(*   temporary: it should be subsumed by a proper theory of power series.     *)</span>
+<span class="c">(*         pseries f x == [series f n * x ^ n]_n                              *)</span>
+<span class="c">(*   pseries_diffs f i == (i + 1) * f (i + 1)                                 *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(*                ln x == the natural logarithm                               *)</span>
+<span class="c">(*              a `^ x == exponential functions                               *)</span>
+<span class="c">(*          riemannR a == sequence n |-&gt; 1 / (n.+1) `^ a where a has a type   *)</span>
+<span class="c">(*                        of type realType                                    *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="sd">(******************************************************************************)</span>
+
+<span class="kn">Set Implicit Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+<span class="kn">Import</span> Order.TTheory GRing.Theory Num.Def Num.Theory.
+<span class="kn">Import</span> numFieldNormedType.Exports.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+
+<span class="c">(* PR to mathcomp in progress *)</span>
+<span class="kn">Lemma</span> <span class="nf">normr_nneg</span> (<span class="nv">R</span> : numDomainType) (<span class="nv">x</span> : R) : `|x| \<span class="kr">is</span> Num.nneg.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> qualifE. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> normr_nneg : core.
+<span class="c">(* /PR to mathcomp in progress *)</span>
+
+<span class="kn">Section</span> <span class="nf">PseriesDiff</span>.
+
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+
+<span class="kn">Definition</span> <span class="nf">pseries</span> <span class="nv">f</span> (<span class="nv">x</span> : R) := [series f i * x ^+ i]_i.
+
+<span class="kn">Fact</span> <span class="nf">is_cvg_pseries_inside_norm</span> <span class="nv">f</span> (<span class="nv">x</span> <span class="nv">z</span> : R) :
+  cvg (pseries f x) -&gt; `|z| &lt; `|x| -&gt; cvg (pseries (<span class="kr">fun</span> <span class="nv">i</span> =&gt; `|f i|) z).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Cx zLx; <span class="nb">have</span> [K [Kreal Kf]] := cvg_series_bounded Cx.
+<span class="nb">have</span> Kzxn n : <span class="mi">0</span> &lt;= `|K + <span class="mi">1</span>| * `|z ^+ n| / `|x ^+ n|  <span class="bp">by</span> <span class="nb">rewrite</span> !mulr_ge0.
+<span class="nb">apply</span>: normed_cvg.
+<span class="nb">apply</span>: series_le_cvg Kzxn _ _ =&gt; [//=| /= n|].
+  <span class="nb">rewrite</span> (_ : `|_ * _| = `|f n * x ^+ n| * `|z ^+ n| / `|x ^+ n|); <span class="nb">last first</span>.
+    <span class="nb">rewrite</span> !normrM normr_id mulrAC mulfK // normr_eq0 expf_eq0 andbC.
+    <span class="bp">by</span> <span class="nb">case</span>: ltrgt0P zLx; <span class="nb">rewrite</span> //= normr_lt0.
+  <span class="kp">do</span>! (<span class="nb">apply</span>: ler_pmul || <span class="nb">apply</span>: mulr_ge0 || <span class="nb">rewrite</span> invr_ge0) =&gt; //.
+  <span class="bp">by</span> <span class="nb">apply</span> Kf =&gt; //; <span class="nb">rewrite</span> (lt_le_trans _ (ler_norm _))// ltr_addl.
+<span class="nb">have</span> F : `|z / x| &lt; <span class="mi">1</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> normrM normfV ltr_pdivr_mulr <span class="nl">?mul1r</span> // (le_lt_trans _ zLx).
+<span class="nb">rewrite</span> (_ : (<span class="kr">fun</span> <span class="nv">_</span> =&gt; _) = geometric `|K + <span class="mi">1</span>| `|z / x|); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i /=; <span class="nb">rewrite</span> normrM exprMn mulrA normfV !normrX exprVn.
+<span class="bp">by</span> <span class="nb">apply</span>: is_cvg_geometric_series; <span class="nb">rewrite</span> normr_id.
+<span class="kn">Qed</span>.
+
+<span class="kn">Fact</span> <span class="nf">is_cvg_pseries_inside</span> <span class="nv">f</span> (<span class="nv">x</span> <span class="nv">z</span> : R) :
+  cvg (pseries f x) -&gt; `|z| &lt; `|x| -&gt; cvg (pseries f z).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Cx zLx.
+<span class="nb">apply</span>: normed_cvg; <span class="nb">rewrite</span> /normed_series_of /=.
+<span class="nb">rewrite</span> (_ : (<span class="kr">fun</span> <span class="nv">_</span> =&gt; _) = (<span class="kr">fun</span> <span class="nv">i</span> =&gt; `|f i| * `|z| ^+ i)); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> normrM normrX.
+<span class="bp">by</span> <span class="nb">apply</span>: is_cvg_pseries_inside_norm Cx _; <span class="nb">rewrite</span> normr_id.
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">pseries_diffs</span> (<span class="nv">f</span> : nat -&gt; R) <span class="nv">i</span> := i.+<span class="mi">1</span>%:R * f i.+<span class="mi">1</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pseries_diffsN</span> (<span class="nv">f</span> : nat -&gt; R) :  pseries_diffs (- f) = -(pseries_diffs f).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> /pseries_diffs /= -mulrN. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pseries_diffs_inv_fact</span> :
+  pseries_diffs (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (n`!%:R)^-<span class="mi">1</span>) = (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (n`!%:R)^-<span class="mi">1</span> : R).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/funext =&gt; i.
+<span class="bp">by</span> <span class="nb">rewrite</span> /pseries_diffs factS natrM invfM mulrA mulfV <span class="nl">?mul1r</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pseries_diffs_sumE</span> <span class="nv">n</span> <span class="nv">f</span> <span class="nv">x</span> :
+  \sum_(<span class="mi">0</span> &lt;= i &lt; n)  pseries_diffs f i * x ^+ i =
+  (\sum_(<span class="mi">0</span> &lt;= i &lt; n) i%:R * f i * x ^+ i.-<span class="mi">1</span>) + n%:R * f n * x ^+ n.-<span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: n =&gt; [|n]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> !big_nil !mul0r add0r.
+<span class="nb">under</span> eq_bigr <span class="kp">do</span> <span class="nb">unfold</span> pseries_diffs.
+<span class="bp">by</span> <span class="nb">rewrite</span> big_nat_recr //= big_nat_recl //= !mul0r add0r.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pseries_diffs_equiv</span> <span class="nv">f</span> <span class="nv">x</span> :
+  <span class="kr">let</span> <span class="nv">s</span> <span class="nv">i</span> := i%:R * f i * x ^+ i.-<span class="mi">1</span> <span class="kr">in</span>
+  cvg (pseries (pseries_diffs f) x) -&gt; series s --&gt;
+  lim (pseries (pseries_diffs f) x).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; s Cx; <span class="nb">rewrite</span> -[lim _]subr0 /pseries [X <span class="kr">in</span> X --&gt; _]/series /=.
+<span class="nb">rewrite</span> [X <span class="kr">in</span> X --&gt; _](_ : _ = (<span class="kr">fun</span> <span class="nv">n</span> =&gt; \sum_(<span class="mi">0</span> &lt;= i &lt; n)
+    pseries_diffs f i * x ^+ i - n%:R * f n * x ^+ n.-<span class="mi">1</span>)); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> funeqE =&gt; n; <span class="nb">rewrite</span> pseries_diffs_sumE addrK.
+<span class="bp">by</span> <span class="nb">apply</span>: cvgB =&gt; //; <span class="nb">rewrite</span> -cvg_shiftS; <span class="bp">exact</span>: cvg_series_cvg_0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">is_cvg_pseries_diffs_equiv</span> <span class="nv">f</span> <span class="nv">x</span> :
+  cvg (pseries (pseries_diffs f) x) -&gt; cvg [series i%:R * f i * x ^+ i.-<span class="mi">1</span>]_i.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; Cx; <span class="nb">have</span> := pseries_diffs_equiv Cx; <span class="nb">move</span>/(cvg_lim _) =&gt; -&gt; //.
+<span class="kn">Qed</span>.
+
+<span class="kn">Let</span> <span class="nf">pseries_diffs_P1</span> <span class="nv">m</span> (<span class="nv">z</span> <span class="nv">h</span> : R) :
+  \sum_(<span class="mi">0</span> &lt;= i &lt; m) ((h + z) ^+ (m - i) * z ^+ i - z ^+ m) =
+  \sum_(<span class="mi">0</span> &lt;= i &lt; m) z ^+ i * ((h + z) ^+ (m - i) - z ^+ (m - i)).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> !big_mkord; <span class="nb">apply</span>: eq_bigr =&gt; i _.
+<span class="bp">by</span> <span class="nb">rewrite</span> mulrDr mulrN -exprD mulrC addnC subnK // ltnW.
+<span class="kn">Qed</span>.
+
+<span class="kn">Let</span> <span class="nf">pseries_diffs_P2</span> <span class="nv">n</span> (<span class="nv">z</span> <span class="nv">h</span> : R) :
+  h != <span class="mi">0</span> -&gt;
+  ((h + z) ^+ n - (z ^+ n)) / h - n%:R * z ^+ n.-<span class="mi">1</span> =
+  h * \sum_(<span class="mi">0</span> &lt;= i &lt; n.-<span class="mi">1</span>) z ^+ i *
+      \sum_(<span class="mi">0</span> &lt;= j &lt; n.-<span class="mi">1</span> - i) (h + z) ^+ j * z ^+ (n.-<span class="mi">2</span> - i - j).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; hNZ; <span class="nb">apply</span>: (mulfI hNZ).
+<span class="nb">rewrite</span> mulrBr mulrC divfK //.
+<span class="nb">case</span>: n =&gt; [|n].
+  <span class="bp">by</span> <span class="nb">rewrite</span> !expr0 !(mul0r, mulr0, subr0, subrr, big_geq).
+<span class="nb">rewrite</span> subrXX addrK -mulrBr; <span class="nb">congr</span> (_ * _).
+<span class="nb">rewrite</span> -(big_mkord xpredT (<span class="kr">fun</span> <span class="nv">i</span> =&gt; (h + z) ^+ (n - i) * z ^+ i)).
+<span class="nb">rewrite</span> big_nat_recr //= subnn expr0 -addrA -mulrBl.
+<span class="nb">rewrite</span> -nat1r opprD addrA subrr sub0r mulNr.
+<span class="nb">rewrite</span> mulr_natl -[<span class="kr">in</span> X <span class="kr">in</span> _ *+ X](subn0 n) -sumr_const_nat -sumrB.
+<span class="nb">rewrite</span> pseries_diffs_P1 mulr_sumr !big_mkord; <span class="nb">apply</span>: eq_bigr =&gt; i _.
+<span class="nb">rewrite</span> mulrCA; <span class="nb">congr</span> (_ * _).
+<span class="nb">rewrite</span> subrXX addrK big_nat_rev /= big_mkord; <span class="nb">congr</span> (_ * _).
+<span class="bp">by</span> <span class="nb">apply</span>: eq_bigr =&gt; k _; <span class="nb">rewrite</span> -!predn_sub subKn // -subnS.
+<span class="kn">Qed</span>.
+
+<span class="kn">Let</span> <span class="nf">pseries_diffs_P3</span> (<span class="nv">z</span> <span class="nv">h</span> : R) <span class="nv">n</span> <span class="nv">K</span> :
+  h != <span class="mi">0</span> -&gt; `|z| &lt;= K -&gt; `|h + z| &lt;= K -&gt;
+    `|((h +z) ^+ n - z ^+ n) / h - n%:R * z ^+ n.-<span class="mi">1</span>|
+      &lt;= n%:R * n.-<span class="mi">1</span>%:R * K ^+ n.-<span class="mi">2</span> * `|h|.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; hNZ zLK zhLk.
+<span class="nb">rewrite</span> pseries_diffs_P2// normrM mulrC.
+<span class="nb">rewrite</span> ler_pmul2r <span class="nl">?normr_gt0</span>//.
+<span class="nb">rewrite</span> (le_trans (ler_norm_sum _ _ _))//.
+<span class="nb">rewrite</span> -mulrA mulrC -mulrA mulr_natl -[X <span class="kr">in</span> _ *+ X]subn0 -sumr_const_nat.
+<span class="nb">apply</span> ler_sum_nat =&gt; i /=.
+<span class="nb">case</span>: n =&gt; //= n ni.
+<span class="nb">rewrite</span> normrM.
+<span class="nb">pose</span> d := (n.-<span class="mi">1</span> - i)%nat.
+<span class="nb">rewrite</span> -[(n - i)%nat]prednK <span class="nl">?subn_gt0</span>// predn_sub -/d.
+<span class="nb">rewrite</span> -(subnK (_ : i &lt;= n.-<span class="mi">1</span>)%nat) -/d; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -ltnS prednK// (leq_ltn_trans _ ni).
+<span class="nb">rewrite</span> addnC exprD mulrAC -mulrA.
+<span class="nb">apply</span>: ler_pmul =&gt; //.
+  <span class="bp">by</span> <span class="nb">rewrite</span> normrX ler_expn2r// qualifE (le_trans _ zLK).
+<span class="nb">apply</span>: le_trans (_ : d.+<span class="mi">1</span>%:R * K ^+ d &lt;= _); <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> ler_wpmul2r //; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> exprn_ge0 // (le_trans _ zLK).
+  <span class="bp">by</span> <span class="nb">rewrite</span> ler_nat ltnS /d -subn1 -subnDA leq_subr.
+<span class="nb">rewrite</span> (le_trans (ler_norm_sum _ _ _))//.
+<span class="nb">rewrite</span> mulr_natl -[X <span class="kr">in</span> _ *+ X]subn0 -sumr_const_nat ler_sum_nat//= =&gt; j jd1.
+<span class="nb">rewrite</span> -[<span class="kr">in</span> leRHS](subnK (_ : j &lt;= d)%nat) -<span class="mi">1</span><span class="nl">?ltnS</span> // addnC exprD normrM.
+<span class="bp">by</span> <span class="nb">rewrite</span> ler_pmul// normrX ler_expn2r// qualifE (le_trans _ zLK).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pseries_snd_diffs</span> (<span class="nv">c</span> : R^nat) <span class="nv">K</span> <span class="nv">x</span> :
+  cvg (pseries c K) -&gt;
+  cvg (pseries (pseries_diffs c) K) -&gt;
+  cvg (pseries (pseries_diffs (pseries_diffs c)) K) -&gt;
+  `|x| &lt; `|K| -&gt;
+  is_derive x <span class="mi">1</span>
+    (<span class="kr">fun</span> <span class="nv">x</span> =&gt; lim (pseries c x))
+    (lim (pseries (pseries_diffs c) x)).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Ck CdK CddK xLK; <span class="nb">rewrite</span> /pseries.
+<span class="nb">set</span> s := (<span class="kr">fun</span> <span class="nv">n</span> : nat =&gt; _); <span class="nb">set</span> (f := <span class="kr">fun</span> <span class="nv">x0</span> =&gt; _).
+<span class="nb">suff</span> hfxs : h^-<span class="mi">1</span> *: (f (h + x) - f x) @[h --&gt; <span class="mi">0</span>^&#39;] --&gt; lim (series s).
+  <span class="nb">have</span> F : f^`() x = lim (series s) <span class="bp">by</span> <span class="nb">apply</span>: cvg_lim hfxs.
+  <span class="nb">have</span> Df : derivable f x <span class="mi">1</span>.
+    <span class="nb">move</span>: hfxs; <span class="nb">rewrite</span> /derivable [X <span class="kr">in</span> X @ _](_ : _ =
+        (<span class="kr">fun</span> <span class="nv">h</span> =&gt; h^-<span class="mi">1</span> *: (f (h%:A + x) - f x))) /=; <span class="nb">last first</span>.
+      <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i //=; <span class="nb">rewrite</span> [i%:A]mulr1.
+    <span class="bp">by</span> <span class="nb">move</span>=&gt; /(cvg_lim _) -&gt; //.
+  <span class="bp">by</span> <span class="nb">constructor</span>; [<span class="bp">exact</span>: Df|<span class="nb">rewrite</span> -derive1E].
+<span class="nb">pose</span> sx := <span class="kr">fun</span> <span class="nv">n</span> : nat =&gt; c n * x ^+ n.
+<span class="nb">have</span> Csx : cvg (pseries c x) <span class="bp">by</span> <span class="nb">apply</span>: is_cvg_pseries_inside Ck _.
+<span class="nb">pose</span> shx := <span class="kr">fun</span> <span class="nv">h</span> (<span class="nv">n</span> : nat) =&gt; c n * (h + x) ^+ n.
+<span class="nb">suff</span> Cc : lim (h^-<span class="mi">1</span> *: (series (shx h - sx))) @[h --&gt; <span class="mi">0</span>^&#39;] --&gt; lim (series s).
+  <span class="nb">apply</span>: cvg_sub0 Cc.
+  <span class="nb">apply</span>/cvgrPdist_lt =&gt; eps eps_gt0 /=.
+  near=&gt; h; <span class="nb">rewrite</span> sub0r normrN /=.
+  <span class="nb">rewrite</span> (le_lt_trans _ eps_gt0)//.
+  <span class="nb">rewrite</span> normr_le0 subr_eq0 -/sx -/(shx _); <span class="nb">apply</span>/eqP.
+  <span class="nb">have</span> Cshx&#39; : cvg (series (shx h)).
+    <span class="nb">apply</span>: is_cvg_pseries_inside Ck _.
+    <span class="nb">rewrite</span> (le_lt_trans (ler_norm_add _ _))// -(subrK  `|x| `|K|) ltr_add2r.
+    near: h.
+    <span class="nb">apply</span>/nbhs_ballP =&gt; /=; <span class="kr">exists</span> ((`|K| - `|x|) /<span class="mi">2</span>) =&gt; /=.
+      <span class="bp">by</span> <span class="nb">rewrite</span> divr_gt0 // subr_gt0.
+    <span class="nb">move</span>=&gt; t; <span class="nb">rewrite</span> /ball /= sub0r normrN =&gt; H tNZ.
+    <span class="nb">rewrite</span> (lt_le_trans H)// ler_pdivr_mulr // mulr2n mulrDr mulr1.
+    <span class="bp">by</span> <span class="nb">rewrite</span> ler_paddr // subr_ge0 ltW.
+  <span class="bp">by</span> <span class="nb">rewrite</span> limZr; [<span class="nb">rewrite</span> lim_seriesB|<span class="bp">exact</span>: is_cvg_seriesB].
+<span class="nb">apply</span>: cvg_zero =&gt; /=.
+<span class="nb">suff</span> Cc : lim
+    (series (<span class="kr">fun</span> <span class="nv">n</span> =&gt; c n * (((h + x) ^+ n - x ^+ n) / h - n%:R * x ^+ n.-<span class="mi">1</span>)))
+    @[h --&gt; <span class="mi">0</span>^&#39;] --&gt; (<span class="mi">0</span> : R).
+  <span class="nb">apply</span>: cvg_sub0 Cc.
+  <span class="nb">apply</span>/cvgrPdist_lt =&gt; eps eps_gt0 /=.
+  near=&gt; h; <span class="nb">rewrite</span> sub0r normrN /=.
+  <span class="nb">rewrite</span> (le_lt_trans _ eps_gt0)// normr_le0 subr_eq0; <span class="nb">apply</span>/eqP.
+  <span class="nb">have</span> Cs : cvg (series s) <span class="bp">by</span> <span class="nb">apply</span>: is_cvg_pseries_inside CdK _.
+  <span class="nb">have</span> Cs1 := is_cvg_pseries_diffs_equiv Cs.
+  <span class="nb">have</span> Fs1 := pseries_diffs_equiv Cs.
+  <span class="nb">set</span> s1 := (<span class="kr">fun</span> <span class="nv">i</span> =&gt; _) <span class="kr">in</span> Cs1.
+  <span class="nb">have</span> Cshx : cvg (series (shx h)).
+    <span class="nb">apply</span>: is_cvg_pseries_inside Ck _.
+    <span class="nb">rewrite</span> (le_lt_trans (ler_norm_add _ _))// -(subrK  `|x| `|K|) ltr_add2r.
+    near: h.
+    <span class="nb">apply</span>/nbhs_ballP =&gt; /=; <span class="kr">exists</span> ((`|K| - `|x|) /<span class="mi">2</span>) =&gt; /=.
+      <span class="bp">by</span> <span class="nb">rewrite</span> divr_gt0 // subr_gt0.
+    <span class="nb">move</span>=&gt; t; <span class="nb">rewrite</span> /ball /= sub0r normrN =&gt; H tNZ.
+    <span class="nb">rewrite</span> (lt_le_trans H)// ler_pdivr_mulr // mulr2n mulrDr mulr1.
+    <span class="bp">by</span> <span class="nb">rewrite</span> ler_paddr // subr_ge0 ltW.
+  <span class="nb">have</span> C1 := is_cvg_seriesB Cshx Csx.
+  <span class="nb">have</span> Ckf := @is_cvg_seriesZ _ _ h^-<span class="mi">1</span> C1.
+  <span class="nb">have</span> Cu : (series (h^-<span class="mi">1</span> *: (shx h - sx)) - series s1) x0 @[x0 --&gt; \oo] --&gt;
+      lim (series (h^-<span class="mi">1</span> *: (shx h - sx))) - lim (series s).
+    <span class="bp">by</span> <span class="nb">apply</span>: cvgB.
+  <span class="nb">set</span> w := (<span class="kr">fun</span> <span class="nv">n</span> : nat =&gt; _ <span class="kr">in</span> RHS).
+  <span class="nb">have</span> -&gt; : w = h^-<span class="mi">1</span> *: (shx h - sx)  - s1.
+    <span class="nb">apply</span>: funext =&gt; i; <span class="nb">rewrite</span> !fctE.
+    <span class="nb">rewrite</span> /w /shx /sx /s1 /= mulrBr; <span class="nb">congr</span> (_ - _); <span class="nb">last first</span>.
+      <span class="bp">by</span> <span class="nb">rewrite</span> mulrCA !mulrA.
+    <span class="bp">by</span> <span class="nb">rewrite</span> -mulrBr [RHS]mulrCA [_^-<span class="mi">1</span> * _]mulrC.
+  <span class="nb">rewrite</span> [X <span class="kr">in</span> X h = _]/+%R /= [X <span class="kr">in</span> _ + X h = _]/-%R /=.
+  <span class="nb">have</span> -&gt; : series (h^-<span class="mi">1</span> *: (shx h - sx) - s1) =
+           series (h^-<span class="mi">1</span> *: (shx h - sx)) - (series s1).
+    <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> /series /= sumrB.
+  <span class="nb">have</span> -&gt; : h^-<span class="mi">1</span> *: series (shx h - sx) = series (h^-<span class="mi">1</span> *: (shx h - sx)).
+    <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> /series /= -scaler_sumr.
+  <span class="bp">exact</span>/esym/cvg_lim.
+<span class="nb">pose</span> r := (`|x| + `|K|) / <span class="mi">2</span>.
+<span class="nb">have</span> xLr : `|x| &lt; r <span class="bp">by</span> <span class="nb">rewrite</span> ltr_pdivl_mulr // mulr2n mulrDr mulr1 ltr_add2l.
+<span class="nb">have</span> rLx : r &lt; `|K| <span class="bp">by</span> <span class="nb">rewrite</span> ltr_pdivr_mulr // mulr2n mulrDr mulr1 ltr_add2r.
+<span class="nb">have</span> r_gt0 : <span class="mi">0</span> &lt; r <span class="bp">by</span> <span class="nb">apply</span>: le_lt_trans xLr.
+<span class="nb">have</span> rNZ : r != <span class="mi">0</span>by <span class="nb">case</span>: ltrgt0P r_gt0.
+<span class="nb">apply</span>: (@lim_cvg_to_0_linear _
+  (<span class="kr">fun</span> <span class="nv">n</span> =&gt; `|c n| * n%:R * (n.-<span class="mi">1</span>)%:R * r ^+ n.-<span class="mi">2</span>)
+  (<span class="kr">fun</span> <span class="nv">h</span> <span class="nv">n</span> =&gt; c n * (((h + x) ^+ n - x ^+ n) / h - n%:R * x ^+ n.-<span class="mi">1</span>))
+  (r - `|x|)); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> subr_gt0.
+- <span class="nb">have</span> : cvg [series `|pseries_diffs (pseries_diffs c) n| * r ^+ n]_n.
+    <span class="nb">apply</span>: is_cvg_pseries_inside_norm CddK _.
+    <span class="bp">by</span> <span class="nb">rewrite</span> ger0_norm // ltW // (le_lt_trans _ xLr).
+  <span class="nb">have</span> -&gt; : (<span class="kr">fun</span> <span class="nv">n</span> =&gt; `|pseries_diffs (pseries_diffs c) n| * r ^+ n) =
+            (<span class="kr">fun</span> <span class="nv">n</span> =&gt; pseries_diffs (pseries_diffs
+                                      (<span class="kr">fun</span> <span class="nv">m</span> =&gt; `|c m|)) n * r ^+ n).
+    <span class="nb">apply</span>/funext =&gt; i.
+    <span class="bp">by</span> <span class="nb">rewrite</span> /pseries_diffs !normrM !mulrA ger0_norm // ger0_norm.
+  <span class="nb">move</span>=&gt; /is_cvg_pseries_diffs_equiv.
+  <span class="nb">rewrite</span> /pseries_diffs.
+  <span class="nb">have</span> -&gt; : (<span class="kr">fun</span> <span class="nv">n</span> =&gt; n%:R * ((n.+<span class="mi">1</span>)%:R * `|c n.+<span class="mi">1</span>|) * r ^+ n.-<span class="mi">1</span>) =
+           (<span class="kr">fun</span> <span class="nv">n</span> =&gt; pseries_diffs
+             (<span class="kr">fun</span> <span class="nv">m</span> =&gt; (m.-<span class="mi">1</span>)%:R * `|c m| * r^-<span class="mi">1</span>) n * r ^+ n).
+    <span class="nb">apply</span>/funext =&gt; n.
+    <span class="nb">rewrite</span> /pseries_diffs /= mulrA.
+    <span class="nb">case</span>: n =&gt; [|n /=]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> !(mul0r, mulr0).
+    <span class="nb">rewrite</span> [_%:R *_]mulrC !mulrA -[RHS]mulrA exprS.
+    <span class="bp">by</span> <span class="nb">rewrite</span> [_^-<span class="mi">1</span> * _]mulrA mulVf <span class="nl">?mul1r</span>.
+  <span class="nb">move</span>/is_cvg_pseries_diffs_equiv.
+  <span class="nb">have</span> -&gt;// : (<span class="kr">fun</span> <span class="nv">n</span> =&gt; n%:R * (n.-<span class="mi">1</span>%:R * `|c n| / r) * r ^+ n.-<span class="mi">1</span>) =
+              (<span class="kr">fun</span> <span class="nv">n</span> =&gt; `|c n| * n%:R * n.-<span class="mi">1</span>%:R * r ^+ n.-<span class="mi">2</span>).
+  <span class="nb">apply</span>/funext =&gt; [] [|[|i]]; <span class="nb">rewrite</span> ?(mul0r, mulr0) //=.
+  <span class="nb">rewrite</span> mulrA -mulrA exprS [_^-<span class="mi">1</span> * _]mulrA mulVf //.
+  <span class="nb">rewrite</span> mul1r !mulrA; <span class="nb">congr</span> (_ * _).
+  <span class="bp">by</span> <span class="nb">rewrite</span> mulrC mulrA.
+- <span class="nb">move</span>=&gt; h /andP[h_gt0 hLrBx] n.
+  <span class="nb">rewrite</span> normrM -!mulrA ler_wpmul2l //.
+  <span class="nb">rewrite</span> (le_trans (pseries_diffs_P3 _ _ (ltW xLr) _))// <span class="nl">?mulrA</span> -<span class="nl">?normr_gt0</span>//.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (le_trans (ler_norm_add _ _))// -(subrK `|x| r) ler_add2r ltW.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">PseriesDiff</span>.
+
+<span class="kn">Section</span> <span class="nf">expR</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+<span class="kn">Implicit Types</span> <span class="nv">x</span> : R.
+
+<span class="kn">Lemma</span> <span class="nf">expR0</span> : expR <span class="mi">0</span> = <span class="mi">1</span> :&gt; R.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: lim_near_cst =&gt; //.
+near=&gt; m; <span class="nb">rewrite</span> -[m]prednK; <span class="nb">last</span> <span class="bp">by</span> near: m.
+<span class="nb">rewrite</span> -addn1 series_addn series_exp_coeff0 big_add1 big1 <span class="nl">?addr0</span>//.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; i _; <span class="nb">rewrite</span> /exp_coeff /= expr0n mul0r.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expR_ge1Dx</span> <span class="nv">x</span> : <span class="mi">0</span> &lt;= x -&gt; <span class="mi">1</span> + x &lt;= expR x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x_gt0; <span class="nb">rewrite</span> /expR.
+<span class="nb">pose</span> f (x : R) i := (i == <span class="mi">0</span>%nat)%:R + x *+ (i == <span class="mi">1</span>%nat).
+<span class="nb">have</span> F n : (<span class="mi">1</span> &lt; n)%nat -&gt; \sum_(<span class="mi">0</span> &lt;= i &lt; n) (f x i) = <span class="mi">1</span> + x.
+  <span class="nb">move</span>=&gt; /subnK&lt;-.
+  <span class="bp">by</span> <span class="nb">rewrite</span> addn2 !big_nat_recl //= /f /= mulr1n !mulr0n big1 <span class="nl">?add0r</span> <span class="nl">?addr0</span>.
+<span class="nb">have</span> -&gt; : <span class="mi">1</span> + x = lim (series (f x)).
+  <span class="bp">by</span> <span class="nb">apply</span>/esym/lim_near_cst =&gt; //; near=&gt; n; <span class="nb">apply</span>: F; near: n.
+<span class="nb">apply</span>: ler_lim; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>: is_cvg_near_cst; near=&gt; n; <span class="nb">apply</span>: F; near: n.
+  <span class="bp">exact</span>: is_cvg_series_exp_coeff.
+<span class="bp">by</span> near=&gt; n; <span class="nb">apply</span>: ler_sum =&gt; [] [|[|i]] _;
+  <span class="nb">rewrite</span> /f /exp_coeff /= !(mulr0n, mulr1n, expr0, expr1, divr1, addr0, add0r)
+          // exp_coeff_ge0.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">exp_coeffE</span> <span class="nv">x</span> : exp_coeff x = (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (n`!%:R)^-<span class="mi">1</span>) n * x ^+ n).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> /exp_coeff /= mulrC. <span class="kn">Qed</span>.
+
+<span class="kn">Import</span> GRing.Theory.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+
+<span class="kn">Lemma</span> <span class="nf">expRE</span> :
+  expR = <span class="kr">fun</span> <span class="nv">x</span> =&gt; lim (pseries (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (<span class="kr">fun</span> <span class="nv">n</span> =&gt; (n`!%:R)^-<span class="mi">1</span>) n) x).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; x; <span class="nb">rewrite</span> /pseries -exp_coeffE. <span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_derive_expR</span> <span class="nv">x</span> : is_derive x <span class="mi">1</span> expR (expR x).
+<span class="kn">Proof</span>.
+<span class="nb">pose</span> s1 n := pseries_diffs (<span class="kr">fun</span> <span class="nv">n</span> =&gt; n`!%:R^-<span class="mi">1</span>) n * x ^+ n.
+<span class="nb">rewrite</span> expRE /= /pseries (_ : (<span class="kr">fun</span> <span class="nv">_</span> =&gt; _) = s1); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> /s1 pseries_diffs_inv_fact.
+<span class="nb">apply</span>: (@pseries_snd_diffs _ _ (`|x| + <span class="mi">1</span>)); <span class="nb">rewrite</span> /pseries.
+- <span class="bp">by</span> <span class="nb">rewrite</span> -exp_coeffE; <span class="nb">apply</span>: is_cvg_series_exp_coeff.
+- <span class="nb">rewrite</span> (_ : (<span class="kr">fun</span> <span class="nv">_</span> =&gt; _) = exp_coeff (`|x| + <span class="mi">1</span>)).
+    <span class="bp">exact</span>: is_cvg_series_exp_coeff.
+  <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> pseries_diffs_inv_fact exp_coeffE.
+- <span class="nb">rewrite</span> (_ : (<span class="kr">fun</span> <span class="nv">_</span> =&gt; _) = exp_coeff (`|x| + <span class="mi">1</span>)).
+    <span class="bp">exact</span>: is_cvg_series_exp_coeff.
+  <span class="bp">by</span> <span class="nb">apply</span>/funext =&gt; i; <span class="nb">rewrite</span> !pseries_diffs_inv_fact exp_coeffE.
+<span class="bp">by</span> <span class="nb">rewrite</span> [ltRHS]ger0_norm// addrC -subr_gt0 addrK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivable_expR</span> <span class="nv">x</span> : derivable expR x <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: ex_derive; <span class="nb">apply</span>: is_derive_exp. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">continuous_expR</span> : continuous (@expR R).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="bp">exact</span>/differentiable_continuous/derivable1_diffP/derivable_expR.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expRxDyMexpx</span> <span class="nv">x</span> <span class="nv">y</span> : expR (x + y) * expR (- x) = expR y.
+<span class="kn">Proof</span>.
+<span class="nb">set</span> v := LHS; <span class="nb">pattern</span> x <span class="kr">in</span> v; <span class="nb">move</span>: @v; <span class="nb">set</span> f := (X <span class="kr">in</span> <span class="kr">let</span> <span class="nv">_</span> := X x <span class="kr">in</span> _) =&gt; /=.
+<span class="nb">apply</span>: etrans (_ : f x = f <span class="mi">0</span>) _; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> /f add0r oppr0 expR0 mulr1.
+<span class="nb">apply</span>: is_derive_0_is_cst =&gt; x1.
+<span class="nb">apply</span>: trigger_derive.
+<span class="bp">by</span> <span class="nb">rewrite</span> /GRing.scale /= mulrN1 addr0 mulr1 mulrN addrC mulrC subrr.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expRxMexpNx_1</span> <span class="nv">x</span> : expR x * expR (- x) = <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -[X <span class="kr">in</span> _ X * _ = _]addr0 expRxDyMexpx expR0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pexpR_gt1</span> <span class="nv">x</span> : <span class="mi">0</span> &lt; x -&gt; <span class="mi">1</span> &lt; expR x.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x_gt0; <span class="nb">rewrite</span> (lt_le_trans _ (expR_ge1Dx (ltW x_gt0)))// ltr_addl.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expR_gt0</span> <span class="nv">x</span> : <span class="mi">0</span> &lt; expR x.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: (ltrgt0P x) =&gt; [x_gt0|x_gt0|-&gt;]; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> expR0.
+- <span class="bp">exact</span>: lt_trans (pexpR_gt1 x_gt0).
+- <span class="nb">have</span> F : <span class="mi">0</span> &lt; expR (- x) <span class="bp">by</span> <span class="nb">rewrite</span> (lt_trans _ (pexpR_gt1 _))// oppr_gt0.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -(pmulr_lgt0 _ F) expRxMexpNx_1.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expR_ge0</span> <span class="nv">x</span> : <span class="mi">0</span> &lt;= expR x. <span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> ltW// expR_gt0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expRN</span> <span class="nv">x</span> : expR (- x) = (expR x)^-<span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: (mulfI (lt0r_neq0 (expR_gt0 x))).
+<span class="bp">by</span> <span class="nb">rewrite</span> expRxMexpNx_1 mulfV // (lt0r_neq0 (expR_gt0 x)).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expRD</span> <span class="nv">x</span> <span class="nv">y</span> : expR (x + y) = expR x * expR y.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: (mulIf (lt0r_neq0 (expR_gt0 (- x)))).
+<span class="nb">rewrite</span> expRxDyMexpx expRN [_ * expR y]mulrC mulfK //.
+<span class="bp">by</span> <span class="nb">case</span>: ltrgt0P (expR_gt0 x).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expRMm</span> <span class="nv">n</span> <span class="nv">x</span> : expR (n%:R * x) = expR x ^+ n.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>: n x =&gt; [x|n IH x] /=; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> mul0r expr0 expR0.
+<span class="bp">by</span> <span class="nb">rewrite</span> exprS -nat1r mulrDl mul1r expRD IH.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expR_gt1</span> <span class="nv">x</span>:  (<span class="mi">1</span> &lt; expR x) = (<span class="mi">0</span> &lt; x).
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: ltrgt0P =&gt; [x_gt0| xN|-&gt;]; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> expR0.
+- <span class="bp">by</span> <span class="nb">rewrite</span> (pexpR_gt1 x_gt0).
+- <span class="nb">apply</span>/idP/negP.
+  <span class="nb">rewrite</span> -[x]opprK expRN -leNgt invf_cp1 <span class="nl">?expR_gt0</span> //.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ltW // pexpR_gt1 // lter_oppE.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expR_lt1</span> <span class="nv">x</span>:  (expR x &lt; <span class="mi">1</span>) = (x &lt; <span class="mi">0</span>).
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: ltrgt0P =&gt; [x_gt0|xN|-&gt;]; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> expR0.
+- <span class="bp">by</span> <span class="nb">apply</span>/idP/negP; <span class="nb">rewrite</span> -leNgt ltW // expR_gt1.
+- <span class="bp">by</span> <span class="nb">rewrite</span> -[x]opprK expRN invf_cp1 <span class="nl">?expR_gt0</span> // expR_gt1 lter_oppE.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expRB</span> <span class="nv">x</span> <span class="nv">y</span> : expR (x - y) = expR x / expR y.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> expRD expRN. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ltr_expR</span> : {mono (@expR R) : x y / x &lt; y}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x y.
+<span class="bp">by</span>  <span class="nb">rewrite</span> -[<span class="kr">in</span> LHS](subrK x y) expRD ltr_pmull <span class="nl">?expR_gt0</span> // expR_gt1 subr_gt0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ler_expR</span> : {mono (@expR R) : x y / x &lt;= y}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x y.
+<span class="nb">case</span>: (ltrgtP x y) =&gt; [xLy|yLx|&lt;-]; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> lexx.
+- <span class="bp">by</span> <span class="nb">rewrite</span> ltW // ltr_expR.
+- <span class="bp">by</span> <span class="nb">rewrite</span> leNgt ltr_expR yLx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expR_inj</span> : injective (@expR R).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x y exE.
+<span class="bp">by</span> <span class="nb">have</span> [] := (ltr_expR x y, ltr_expR y x); <span class="nb">rewrite</span> exE ltxx; <span class="nb">case</span>: ltrgtP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expR_total_gt1</span> <span class="nv">x</span> :
+  <span class="mi">1</span> &lt;= x -&gt; <span class="kr">exists</span> <span class="nv">y</span>, [/\ <span class="mi">0</span> &lt;= y, <span class="mi">1</span> + y &lt;= x &amp; expR y = x].
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x_ge1; <span class="nb">have</span> x_ge0 : <span class="mi">0</span> &lt;= x <span class="bp">by</span> <span class="nb">apply</span>: le_trans x_ge1.
+<span class="nb">have</span> [x1 x1Ix| |x1 _ /eqP] := @IVT _ (<span class="kr">fun</span> <span class="nv">y</span> =&gt; expR y - x) _ _ <span class="mi">0</span> x_ge0.
+- <span class="nb">apply</span>: continuousB =&gt; // y1; <span class="nb">last</span> <span class="bp">exact</span>: cst_continuous.
+  <span class="bp">by</span> <span class="nb">apply</span>/continuous_subspaceT=&gt; ?; <span class="bp">exact</span>: continuous_expR.
+- <span class="nb">rewrite</span> expR0; <span class="nb">have</span> [_| |] := ltrgtP (<span class="mi">1</span>- x) (expR x - x).
+  + <span class="bp">by</span> <span class="nb">rewrite</span> subr_le0 x_ge1 subr_ge0 (le_trans _ (expR_ge1Dx _)) <span class="nl">?ler_addr</span>.
+  + <span class="bp">by</span> <span class="nb">rewrite</span> ltr_add2r expR_lt1 ltNge x_ge0.
+  + <span class="nb">rewrite</span> subr_le0 x_ge1 =&gt; -&gt; /=; <span class="nb">rewrite</span> subr_ge0.
+    <span class="bp">by</span> <span class="nb">rewrite</span> (le_trans _ (expR_ge1Dx x_ge0)) <span class="nl">?ler_addr</span>.
+- <span class="nb">rewrite</span> subr_eq0 =&gt; /eqP x1_x; <span class="kr">exists</span> <span class="nv">x1</span>; <span class="nb">split</span> =&gt; //.
+  + <span class="bp">by</span> <span class="nb">rewrite</span> -ler_expR expR0 x1_x.
+  + <span class="bp">by</span> <span class="nb">rewrite</span> -x1_x expR_ge1Dx // -ler_expR x1_x expR0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expR_total</span> <span class="nv">x</span> : <span class="mi">0</span> &lt; x -&gt; <span class="kr">exists</span> <span class="nv">y</span>, expR y = x.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: (lerP <span class="mi">1</span> x) =&gt; [/expR_total_gt1[y [_ _ Hy]]|x_lt1 x_gt0].
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">y</span>.
+<span class="nb">have</span> /expR_total_gt1[y [H1y H2y H3y]] : <span class="mi">1</span> &lt;= x^-<span class="mi">1</span> <span class="bp">by</span> <span class="nb">rewrite</span> ltW // !invf_cp1.
+<span class="bp">by</span> <span class="kr">exists</span> (-y); <span class="nb">rewrite</span> expRN H3y invrK.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">expR</span>.
+
+<span class="kn">Section</span> <span class="nf">Ln</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+<span class="kn">Implicit Types</span> <span class="nv">x</span> : R.
+
+<span class="kn">Notation</span> <span class="nf">exp</span> := (@expR R).
+
+<span class="kn">Definition</span> <span class="nf">ln</span> <span class="nv">x</span> : R := xget <span class="mi">0</span> [<span class="nb">set</span> y | exp y == x ].
+
+<span class="kn">Fact</span> <span class="nf">ln0</span> <span class="nv">x</span> : x &lt;= <span class="mi">0</span> -&gt; ln x = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /ln; <span class="nb">case</span>: xgetP =&gt; //= y _ /eqP yx x0.
+<span class="bp">by</span> <span class="nb">have</span> := expR_gt0 y; <span class="nb">rewrite</span> yx =&gt; /(le_lt_trans x0); <span class="nb">rewrite</span> ltxx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expK</span> : cancel exp ln.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> /ln; <span class="nb">case</span>: xgetP =&gt; [x1 _ /eqP/expR_inj //|/(_ x)[]/=].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lnK</span> : {<span class="kr">in</span> Num.pos, cancel ln exp}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> qualifE =&gt; x_gt0.
+<span class="nb">rewrite</span> /ln; <span class="nb">case</span>: xgetP=&gt; [x1 _ /eqP// |H].
+<span class="bp">by</span> <span class="nb">case</span>: (expR_total x_gt0) =&gt; y /eqP Hy; <span class="nb">case</span>: (H y).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lnK_eq</span> <span class="nv">x</span> : (exp (ln x) == x) = (<span class="mi">0</span> &lt; x).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">apply</span>/eqP/idP=&gt; [&lt;-|x0]; [<span class="bp">exact</span>: expR_gt0|<span class="nb">rewrite</span> lnK// in_itv/= x0].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ln1</span> : ln <span class="mi">1</span> = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/expR_inj; <span class="nb">rewrite</span> lnK// <span class="nl">?expR0</span>// qualifE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lnM</span> : {<span class="kr">in</span> Num.pos &amp;, {morph ln : x y / x * y &gt;-&gt; x + y}}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x y x0 y0; <span class="nb">apply</span>: expR_inj; <span class="nb">rewrite</span> expRD !lnK//.
+<span class="bp">by</span> <span class="nb">move</span>: x0 y0; <span class="nb">rewrite</span> !qualifE; <span class="bp">exact</span>: mulr_gt0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ln_inj</span> : {<span class="kr">in</span> Num.pos &amp;, injective ln}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x y /lnK {<span class="mi">2</span>}&lt;- /lnK {<span class="mi">2</span>}&lt;- -&gt;. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lnV</span> : {<span class="kr">in</span> Num.pos, {morph ln : x / x ^-<span class="mi">1</span> &gt;-&gt; - x}}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x x0; <span class="nb">apply</span>: expR_inj; <span class="nb">rewrite</span> lnK// <span class="nl">?expRN</span> <span class="nl">?lnK</span>//.
+<span class="bp">by</span> <span class="nb">move</span>: x0; <span class="nb">rewrite</span> !qualifE invr_gt0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ln_div</span> : {<span class="kr">in</span> Num.pos &amp;, {morph ln : x y / x / y &gt;-&gt; x - y}}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x y x0 y0; <span class="nb">rewrite</span> (lnM x0) <span class="nl">?lnV</span>//.
+<span class="bp">by</span> <span class="nb">move</span>: y0; <span class="nb">rewrite</span> !qualifE/= invr_gt0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ltr_ln</span> : {<span class="kr">in</span> Num.pos &amp;, {mono ln : x y / x &lt; y}}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x y x_gt0 y_gt0; <span class="nb">rewrite</span> -ltr_expR !lnK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ler_ln</span> : {<span class="kr">in</span> Num.pos &amp;, {mono ln : x y / x &lt;= y}}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x y x_gt0 y_gt0; <span class="nb">rewrite</span> -ler_expR !lnK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lnX</span> <span class="nv">n</span> <span class="nv">x</span> : <span class="mi">0</span> &lt; x -&gt; ln(x ^+ n) = ln x *+ n.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x_gt0; <span class="nb">elim</span>: n =&gt; [|n ih] /=; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> expr0 ln1 mulr0n.
+<span class="bp">by</span> <span class="nb">rewrite</span> !exprS lnM <span class="nl">?qualifE</span>// <span class="nl">?exprn_gt0</span>// mulrS ih.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le_ln1Dx</span> <span class="nv">x</span> : <span class="mi">0</span> &lt;= x -&gt; ln (<span class="mi">1</span> + x) &lt;= x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x_ge0; <span class="nb">rewrite</span> -ler_expR lnK <span class="nl">?expR_ge1Dx</span> //.
+<span class="bp">by</span> <span class="nb">apply</span>: lt_le_trans (_ : <span class="mi">0</span> &lt; <span class="mi">1</span>) _; <span class="nb">rewrite</span> // ler_addl.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ln_sublinear</span> <span class="nv">x</span> : <span class="mi">0</span> &lt; x -&gt; ln x &lt; x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x_gt0; <span class="nb">apply</span>: lt_le_trans (_ : ln (<span class="mi">1</span> + x) &lt;= _).
+  <span class="bp">by</span> <span class="nb">rewrite</span> -ltr_expR !lnK <span class="nl">?qualifE</span> <span class="nl">?addr_gt0</span> // ltr_addr.
+<span class="bp">by</span> <span class="nb">rewrite</span> -ler_expR lnK <span class="nl">?qualifE</span> <span class="nl">?addr_gt0</span>// expR_ge1Dx // ltW.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ln_ge0</span> <span class="nv">x</span> : <span class="mi">1</span> &lt;= x -&gt; <span class="mi">0</span> &lt;= ln x.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x_ge1; <span class="nb">rewrite</span> -ler_expR expR0 lnK// qualifE (lt_le_trans _ x_ge1).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ln_gt0</span> <span class="nv">x</span> : <span class="mi">1</span> &lt; x -&gt; <span class="mi">0</span> &lt; ln x.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x_gt1; <span class="nb">rewrite</span> -ltr_expR expR0 lnK // qualifE (lt_trans _ x_gt1).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">continuous_ln</span> <span class="nv">x</span> : <span class="mi">0</span> &lt; x -&gt; {<span class="kr">for</span> x, continuous ln}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x_gt0; <span class="nb">rewrite</span> -[x]lnK//.
+<span class="nb">apply</span>: nbhs_singleton (near_can_continuous _ _); near=&gt; z; <span class="kp">first</span> <span class="bp">exact</span>: expK.
+<span class="bp">by</span> <span class="nb">apply</span>: continuous_expR.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_derive1_ln</span> (<span class="nv">x</span> : R) : <span class="mi">0</span> &lt; x -&gt; is_derive x <span class="mi">1</span> ln x^-<span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x_gt0; <span class="nb">rewrite</span> -[x]lnK//.
+<span class="nb">apply</span>: (@is_derive_inverse R expR); <span class="kp">first</span> <span class="bp">by</span> near=&gt; z; <span class="nb">apply</span>: expK.
+  <span class="bp">by</span> near=&gt;z; <span class="nb">apply</span>: continuous_expR.
+<span class="bp">by</span> <span class="nb">rewrite</span> lnK // lt0r_neq0.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Ln</span>.
+
+<span class="kn">Section</span> <span class="nf">ExpFun</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+<span class="kn">Implicit Types</span> <span class="nv">a</span> <span class="nv">x</span> : R.
+
+<span class="kn">Definition</span> <span class="nf">exp_fun</span> <span class="nv">a</span> <span class="nv">x</span> := expR (x * ln a).
+
+<span class="kn">Local</span> <span class="kn">Notation</span> <span class="s2">&quot;a `^ x&quot;</span> := (exp_fun a x).
+
+<span class="kn">Lemma</span> <span class="nf">exp_fun_gt0</span> <span class="nv">a</span> <span class="nv">x</span> : <span class="mi">0</span> &lt; a `^ x. <span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> expR_gt0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">exp_funr1</span> <span class="nv">a</span> : <span class="mi">0</span> &lt; a -&gt; a `^ <span class="mi">1</span> = a.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; a0; <span class="nb">rewrite</span> /exp_fun mul1r lnK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">exp_funr0</span> <span class="nv">a</span> : <span class="mi">0</span> &lt; a -&gt; a `^ <span class="mi">0</span> = <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; a0; <span class="nb">rewrite</span> /exp_fun mul0r expR0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">exp_fun1</span> : exp_fun <span class="mi">1</span> = <span class="kr">fun</span>=&gt; <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> funeqE =&gt; x; <span class="nb">rewrite</span> /exp_fun ln1 mulr0 expR0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ler_exp_fun</span> <span class="nv">a</span> : <span class="mi">1</span> &lt; a -&gt; {homo exp_fun a : x y / x &lt;= y}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; a1 x y xy; <span class="nb">rewrite</span> /exp_fun ler_expR ler_pmul2r // ln_gt0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">exp_funD</span> <span class="nv">a</span> : <span class="mi">0</span> &lt; a -&gt; {morph exp_fun a : x y / x + y &gt;-&gt; x * y}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; a0 x y; <span class="nb">rewrite</span> [<span class="kr">in</span> LHS]/exp_fun mulrDl expRD. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">exp_fun_inv</span> <span class="nv">a</span> : <span class="mi">0</span> &lt; a -&gt; a `^ (-<span class="mi">1</span>) = a ^-<span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; a0.
+<span class="nb">apply</span>/(@mulrI _ a); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> unitfE gt_eqF.
+<span class="nb">rewrite</span> -[X <span class="kr">in</span> X * _ = _](exp_funr1 a0) -exp_funD // subrr exp_funr0 //.
+<span class="bp">by</span> <span class="nb">rewrite</span> divrr // unitfE gt_eqF.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">exp_fun_mulrn</span> <span class="nv">a</span> <span class="nv">n</span> : <span class="mi">0</span> &lt; a -&gt; exp_fun a n%:R = a ^+ n.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; a0; <span class="nb">elim</span>: n =&gt; [|n ih]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> mulr0n expr0 exp_funr0.
+<span class="bp">by</span> <span class="nb">rewrite</span> -natr1 exprSr exp_funD// ih exp_funr1.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">ExpFun</span>.
+<span class="kn">Notation</span> <span class="s2">&quot;a `^ x&quot;</span> := (exp_fun a x).
+
+<span class="kn">Section</span> <span class="nf">riemannR_series</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+<span class="kn">Implicit Types</span> <span class="nv">a</span> : R.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+
+<span class="kn">Definition</span> <span class="nf">riemannR</span> <span class="nv">a</span> : R ^nat := <span class="kr">fun</span> <span class="nv">n</span> =&gt; (n.+<span class="mi">1</span>%:R `^ a)^-<span class="mi">1</span>.
+<span class="kn">Arguments</span> riemannR a n /.
+
+<span class="kn">Lemma</span> <span class="nf">riemannR_gt0</span> <span class="nv">a</span> <span class="nv">i</span> : <span class="mi">0</span> &lt; a -&gt; <span class="mi">0</span> &lt; riemannR a i.
+<span class="kn">Proof</span>. <span class="nb">move</span>=&gt; ?; <span class="bp">by</span> <span class="nb">rewrite</span> /riemannR invr_gt0 exp_fun_gt0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">dvg_riemannR</span> <span class="nv">a</span> : <span class="mi">0</span> &lt; a &lt;= <span class="mi">1</span> -&gt; ~ cvg (series (riemannR a)).
+<span class="kn">Proof</span>.
+<span class="nb">case</span>/andP =&gt; a0; <span class="nb">rewrite</span> le_eqVlt =&gt; /orP[/eqP -&gt;|a1].
+  <span class="nb">rewrite</span> (_ : riemannR <span class="mi">1</span> = harmonic); <span class="kp">first</span> <span class="bp">exact</span>: dvg_harmonic.
+  <span class="bp">by</span> <span class="nb">rewrite</span> funeqE =&gt; i /=; <span class="nb">rewrite</span> exp_funr1.
+<span class="nb">have</span> : <span class="kr">forall</span> <span class="nv">n</span>, harmonic n &lt;= riemannR a n.
+  <span class="nb">case</span>=&gt; /= [|n]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> exp_fun1 invr1.
+  <span class="nb">rewrite</span> -[leRHS]div1r ler_pdivl_mulr <span class="nl">?exp_fun_gt0</span> // mulrC ler_pdivr_mulr //.
+  <span class="bp">by</span> <span class="nb">rewrite</span> mul1r -[leRHS]exp_funr1 // (ler_exp_fun) // <span class="nl">?ltr1n</span> // ltW.
+<span class="nb">move</span>/(series_le_cvg harmonic_ge0 (<span class="kr">fun</span> <span class="nv">i</span> =&gt; ltW (riemannR_gt0 i a0))).
+<span class="bp">by</span> <span class="nb">move</span>/contra_not; <span class="nb">apply</span>; <span class="bp">exact</span>: dvg_harmonic.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">riemannR_series</span>.</span></pre></article></body></html>

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>fsbigop.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)</span>
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect ssralg ssrnum ssrint interval finmap.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="kn">Require Import</span> mathcomp_extra boolp classical_sets functions cardinality.
+
+<span class="sd">(******************************************************************************)</span>
+<span class="c">(*                     Finitely-supported big operators                       *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(*     finite_support idx D F := D `&amp;` F @^-1` [set~ idx]                     *)</span>
+<span class="c">(* \big[op/idx]_(i \in A) F i == iterated application of the operator op      *)</span>
+<span class="c">(*                               with neutral idx over finite_support idx A F *)</span>
+<span class="c">(*         \sum_(i \in A) F i == iterated addition, in ring_scope             *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="sd">(******************************************************************************)</span>
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;\big [ op / idx ]_ ( i &#39;\in&#39; A ) F&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">36</span>, F <span class="kn">at level</span> <span class="mi">36</span>, op, idx <span class="kn">at level</span> <span class="mi">10</span>, i, A <span class="kn">at level</span> <span class="mi">50</span>,
+           <span class="kn">format</span> <span class="s2">&quot;&#39;[&#39; \big [ op / idx ]_ ( i  &#39;\in&#39;  A ) &#39;/  &#39;  F &#39;]&#39;&quot;</span>).
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;\sum_ ( i &#39;\in&#39; A ) F&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">41</span>, F <span class="kn">at level</span> <span class="mi">41</span>, i, A <span class="kn">at level</span> <span class="mi">50</span>,
+    <span class="kn">format</span> <span class="s2">&quot;&#39;[&#39; \sum_ ( i  &#39;\in&#39;  A ) &#39;/  &#39;  F &#39;]&#39;&quot;</span>).
+
+<span class="kn">Set Implicit Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+<span class="kn">Import</span> Order.TTheory GRing.Theory Num.Def Num.Theory.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+
+<span class="kn">Notation</span> <span class="s2">&quot;\big [ op / idx ]_ ( i &#39;\in&#39; A ) F&quot;</span> :=
+  (\big[op/idx]_(i &lt;- fset_set (A `&amp;` ((<span class="kr">fun</span> <span class="nv">i</span> =&gt; F) @^-<span class="mi">1</span>` [<span class="nb">set</span>~ idx]))) F)
+    (<span class="kn">only parsing</span>) : big_scope.
+
+<span class="kn">Lemma</span> <span class="nf">finite_index_key</span> : unit. <span class="kn">Proof</span>. <span class="bp">exact</span>: tt. <span class="kn">Qed</span>.
+<span class="kn">Definition</span> <span class="nf">finite_support</span> {<span class="nv">I</span> : choiceType} {<span class="nv">T</span> : <span class="kt">Type</span>} (<span class="nv">idx</span> : T) (<span class="nv">D</span> : <span class="nb">set</span> I)
+    (<span class="nv">F</span> : I -&gt; T) : seq I :=
+  locked_with finite_index_key (fset_set (D `&amp;` F @^-<span class="mi">1</span>` [<span class="nb">set</span>~ idx] : <span class="nb">set</span> I)).
+<span class="kn">Notation</span> <span class="s2">&quot;\big [ op / idx ]_ ( i &#39;\in&#39; D ) F&quot;</span> :=
+    (\big[op/idx]_(i &lt;- finite_support idx D (<span class="kr">fun</span> <span class="nv">i</span> =&gt; F)) F)
+  : big_scope.
+
+<span class="kn">Lemma</span> <span class="nf">in_finite_support</span> (<span class="nv">T</span> : <span class="kt">Type</span>) (<span class="nv">J</span> : choiceType) (<span class="nv">i</span> : T) (<span class="nv">P</span> : <span class="nb">set</span> J)
+    (<span class="nv">F</span> : J -&gt; T) : finite_set (P `&amp;` F @^-<span class="mi">1</span>` [<span class="nb">set</span>~ i]) -&gt;
+  finite_support i P F =i P `&amp;` F @^-<span class="mi">1</span>` [<span class="nb">set</span>~ i].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; finF j; <span class="nb">rewrite</span> /finite_support <span class="nb">unlock</span> in_fset_set. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_support_uniq</span> (<span class="nv">T</span> : <span class="kt">Type</span>) (<span class="nv">J</span> : choiceType) (<span class="nv">i</span> : T) (<span class="nv">P</span> : <span class="nb">set</span> J)
+    (<span class="nv">F</span> : J -&gt; T) : uniq (finite_support i P F).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /finite_support <span class="nb">unlock</span>; <span class="bp">exact</span>: fset_uniq. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> finite_support_uniq : core.
+
+<span class="kn">Lemma</span> <span class="nf">no_finite_support</span> (<span class="nv">T</span> : <span class="kt">Type</span>) (<span class="nv">J</span> : choiceType) (<span class="nv">i</span> : T) (<span class="nv">P</span> : <span class="nb">set</span> J)
+    (<span class="nv">F</span> : J -&gt; T) : infinite_set (P `&amp;` F @^-<span class="mi">1</span>` [<span class="nb">set</span>~ i]) -&gt;
+  finite_support i P F = [::].
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; infinF; <span class="nb">rewrite</span> /finite_support <span class="nb">unlock</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> /fset_set/=; <span class="nb">case</span>: pselect =&gt; //.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_finite_support</span> {<span class="nv">I</span> : choiceType} {<span class="nv">T</span> : <span class="kt">Type</span>} (<span class="nv">idx</span> : T) (<span class="nv">D</span> : <span class="nb">set</span> I)
+    (<span class="nv">F</span> <span class="nv">G</span> : I -&gt; T) : {<span class="kr">in</span> D, F =<span class="mi">1</span> G} -&gt;
+  finite_support idx D F = finite_support idx D G.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; eqFG; <span class="nb">rewrite</span> /finite_support !<span class="nb">unlock</span>// (eq_preimage _ eqFG).
+<span class="kn">Qed</span>.
+
+<span class="kn">Variant</span> <span class="nf">finite_support_spec</span> <span class="nv">R</span> (<span class="nv">T</span> : choiceType)
+  (<span class="nv">P</span> : <span class="nb">set</span> T) (<span class="nv">F</span> : T -&gt; R) (<span class="nv">idx</span> : R) : seq T -&gt; <span class="kt">Type</span> :=
+| NoFiniteSupport of infinite_set (P `&amp;` F @^-<span class="mi">1</span>` [<span class="nb">set</span>~ idx]) :
+    finite_support_spec P F idx [::]
+| FiniteSupport (X : {fset T}) of [<span class="nb">set</span>` X] `&lt;=` P
+   &amp; (<span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; i \notin X -&gt; F i = idx)
+   &amp; [<span class="nb">set</span>` X] = (P `&amp;` F @^-<span class="mi">1</span>` [<span class="nb">set</span>~ idx]) :
+    finite_support_spec P F idx X.
+
+<span class="kn">Lemma</span> <span class="nf">finite_supportP</span> <span class="nv">R</span> (<span class="nv">T</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> T) (<span class="nv">F</span> : T -&gt; R) (<span class="nv">idx</span> : R) :
+  finite_support_spec P F idx (finite_support idx P F).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /finite_support <span class="nb">unlock</span>/= /fset_set.
+<span class="nb">case</span>: pselect=&gt; // Xfin; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">constructor</span>.
+<span class="nb">case</span>: cid =&gt; //= X eqX; <span class="nb">constructor</span>; <span class="nb">rewrite</span> -<span class="nl">?eqX</span>//.
+<span class="nb">move</span>=&gt; i Pi NXi /=; <span class="nb">have</span> : (P `\` [<span class="nb">set</span>` X]) i <span class="bp">by</span> <span class="nb">split</span>=&gt; //=; <span class="nb">apply</span>/negP.
+<span class="bp">by</span> <span class="nb">rewrite</span> -eqX /= =&gt; -[_]; <span class="nb">apply</span>: contra_notP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;\sum_ ( i &#39;\in&#39; A ) F&quot;</span> := (\big[+%R/<span class="mi">0</span>%R]_(i \<span class="kr">in</span> A) F) : ring_scope.
+
+<span class="kn">Lemma</span> <span class="nf">eq_fsbigl</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : R -&gt; R -&gt; R)
+    (<span class="nv">T</span> : choiceType) (<span class="nv">f</span> : T -&gt; R) (<span class="nv">P</span> <span class="nv">Q</span> : <span class="nb">set</span> T) :
+  P = Q -&gt; \big[op/idx]_(x \<span class="kr">in</span> P) f x = \big[op/idx]_(x \<span class="kr">in</span> Q) f x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt;. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_fsbigr</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx)
+    (<span class="nv">T</span> : choiceType) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; R) (<span class="nv">P</span> : <span class="nb">set</span> T) :
+  {<span class="kr">in</span> P, f =<span class="mi">1</span> g} -&gt; (\big[op/idx]_(x \<span class="kr">in</span> P) f x = \big[op/idx]_(x \<span class="kr">in</span> P) g x).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fg; <span class="nb">rewrite</span> (eq_finite_support _ fg); <span class="nb">apply</span>: eq_big_seq =&gt; x.
+<span class="bp">by</span> <span class="nb">case</span>: finite_supportP =&gt; //= X XP _ gidx xX; <span class="nb">rewrite</span> fg // <span class="nl">?inE</span>; <span class="nb">apply</span>/XP.
+<span class="kn">Qed</span>.
+<span class="kn">Arguments</span> eq_fsbigr {R idx op T f} g.
+
+<span class="kn">Lemma</span> <span class="nf">fsbigTE</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx) (<span class="nv">T</span> : choiceType)
+    (<span class="nv">A</span> : {fset T}) (<span class="nv">f</span> : T -&gt; R) :
+    (<span class="kr">forall</span> <span class="nv">i</span>, i \notin A -&gt; f i = idx) -&gt;
+  \big[op/idx]_(i \<span class="kr">in</span> [<span class="nb">set</span>: T]) f i = \big[op/idx]_(i &lt;- A) f i.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Peq: R =&gt; R <span class="kr">in</span> idx op f *.
+<span class="nb">move</span>=&gt; Af; <span class="nb">have</span> Afin : finite_set (f @^-<span class="mi">1</span>` [<span class="nb">set</span>~ idx]).
+  <span class="bp">by</span> <span class="nb">apply</span>: (finite_subfset A) =&gt; x; <span class="nb">apply</span>: contra_notT =&gt; /Af.
+<span class="nb">rewrite</span> [<span class="kr">in</span> RHS](big_fsetID _ [pred x | f x == idx])/=.
+<span class="nb">rewrite</span> [X <span class="kr">in</span> _ = op X _]big_fset [X <span class="kr">in</span> _ = op X _]big1 <span class="nl">?Monoid</span>.simpm//; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; i /= /eqP.
+<span class="nb">apply</span> eq_fbigl =&gt; r.
+<span class="nb">rewrite</span> in_finite_support// <span class="nl">?setTI</span>// /preimage/=; <span class="nb">apply</span>/idP/idP =&gt; /=.
+  <span class="nb">rewrite</span> !inE/=; <span class="nb">apply</span>: contra_notP =&gt; /negP.
+  <span class="bp">by</span> <span class="nb">rewrite</span> negb_and negbK =&gt; /orP[|/eqP//]; <span class="bp">exact</span>: Af.
+<span class="bp">by</span> <span class="nb">rewrite</span> !inE/= =&gt; /andP[_ /eqP].
+<span class="kn">Qed</span>.
+<span class="kn">Arguments</span> fsbigTE {R idx op T} A f.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_mkcond</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx)
+    (<span class="nv">T</span> : choiceType) (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">f</span> : T -&gt; R) :
+  \big[op/idx]_(i \<span class="kr">in</span> A) f i =
+  \big[op/idx]_(i \<span class="kr">in</span> [<span class="nb">set</span>: T]) patch (<span class="kr">fun</span>=&gt; idx) A f i.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Peq: R =&gt; R <span class="kr">in</span> idx op f *.
+<span class="nb">rewrite</span> -big_mkcond/= -[<span class="kr">in</span> RHS]big_filter; <span class="nb">apply</span>: perm_big.
+<span class="nb">rewrite</span> uniq_perm <span class="nl">?filter_uniq</span>//= =&gt; i; <span class="nb">rewrite</span> mem_filter.
+<span class="nb">set</span> g := <span class="kr">fun</span> <span class="nv">i</span> =&gt; <span class="kr">if</span> i \<span class="kr">in</span> A <span class="kr">then</span> f i <span class="kr">else</span> idx.
+<span class="nb">have</span> gAf : setT `&amp;` g @^-<span class="mi">1</span>` [<span class="nb">set</span>~ idx] = (A `&amp;` f @^-<span class="mi">1</span>` [<span class="nb">set</span>~ idx]).
+  <span class="nb">rewrite</span> setTI; <span class="nb">apply</span>/predeqP =&gt; x; <span class="nb">split</span>; <span class="nb">rewrite</span> /preimage/g/=.
+    <span class="bp">by</span> <span class="nb">case</span>: ifPn; <span class="nb">rewrite</span> (inE, notin_set).
+  <span class="bp">by</span> <span class="nb">case</span>: ifPn; <span class="nb">rewrite</span> (inE, notin_set) =&gt; ? [].
+<span class="nb">case</span>: finite_supportP =&gt; //.
+  <span class="nb">rewrite</span> -gAf; <span class="nb">case</span>: finite_supportP=&gt; //=; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> <span class="nl">?inE</span> andbF.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; X _ gidx &lt;-//.
+<span class="nb">move</span>=&gt; X XA fidx XE; <span class="nb">case</span>: finite_supportP; <span class="nb">rewrite</span> gAf -<span class="nl">?XE</span>//=.
+<span class="nb">move</span>=&gt; Y _ gidx /predeqP/=/(_ _)/propext YX.
+<span class="bp">by</span> <span class="nb">apply</span>/idP/andP =&gt; [|[]]; <span class="nb">rewrite</span> YX// inE =&gt; Xi; <span class="nb">split</span>=&gt; //; <span class="nb">apply</span>: XA.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_mkcondr</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx)
+    (<span class="nv">T</span> : choiceType) (<span class="nv">I</span> <span class="nv">J</span> : <span class="nb">set</span> T) (<span class="nv">a</span> : T -&gt; R) :
+  \big[op/idx]_(i \<span class="kr">in</span> I `&amp;` J) a i =
+  \big[op/idx]_(i \<span class="kr">in</span> I) <span class="kr">if</span> i \<span class="kr">in</span> J <span class="kr">then</span> a i <span class="kr">else</span> idx.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> fsbig_mkcond [RHS]fsbig_mkcond.
+<span class="bp">by</span> <span class="nb">under</span> eq_fsbigr <span class="kp">do</span> <span class="nb">rewrite</span> patch_setI.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_mkcondl</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx)
+    (<span class="nv">T</span> : choiceType) (<span class="nv">I</span> <span class="nv">J</span> : <span class="nb">set</span> T) (<span class="nv">a</span> : T -&gt; R) :
+  \big[op/idx]_(i \<span class="kr">in</span> I `&amp;` J) a i =
+  \big[op/idx]_(i \<span class="kr">in</span> J) <span class="kr">if</span> i \<span class="kr">in</span> I <span class="kr">then</span> a i <span class="kr">else</span> idx.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> fsbig_mkcond [RHS]fsbig_mkcond setIC.
+<span class="bp">by</span> <span class="nb">under</span> eq_fsbigr <span class="kp">do</span> <span class="nb">rewrite</span> patch_setI.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">bigfs</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx) (<span class="nv">T</span> : choiceType)
+    (<span class="nv">r</span> : seq T) (<span class="nv">P</span> : {pred T}) (<span class="nv">f</span> : T -&gt; R) : uniq r -&gt;
+    (<span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; i \notin r -&gt; f i = idx) -&gt;
+  \big[op/idx]_(i &lt;- r | P i) f i = \big[op/idx]_(i \<span class="kr">in</span> [<span class="nb">set</span>` P]) f i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; r_uniq fidx; <span class="nb">rewrite</span> fsbig_mkcond.
+<span class="nb">rewrite</span> (fsbigTE [fset x | x <span class="kr">in</span> r]%fset); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; i; <span class="nb">rewrite</span> inE/= /patch mem_setE; <span class="nb">case</span>: ifP=&gt; // + /fidx-&gt;.
+<span class="nb">rewrite</span> -big_mkcond; <span class="nb">under</span> [RHS]eq_bigl <span class="kp">do</span> <span class="nb">rewrite</span> mem_setE.
+<span class="bp">by</span> <span class="nb">apply</span>: perm_big; <span class="nb">rewrite</span> uniq_perm// =&gt; i; <span class="nb">rewrite</span> !inE.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbigE</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx) (<span class="nv">T</span> : choiceType)
+    (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">r</span> : seq T) (<span class="nv">f</span> : T -&gt; R) :
+    uniq r -&gt;
+    [<span class="nb">set</span>` r] `&lt;=` A -&gt;
+    (<span class="kr">forall</span> <span class="nv">i</span>, A i -&gt; i \notin r -&gt; f i = idx) -&gt;
+  \big[op/idx]_(i \<span class="kr">in</span> A) f i = \big[op/idx]_(i &lt;- r | i \<span class="kr">in</span> A) f i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; r_uniq rQ fidx; <span class="nb">rewrite</span> [RHS]bigfs <span class="nl">?set_mem_set</span>//=.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; i; <span class="nb">rewrite</span> inE; <span class="nb">apply</span>: fidx.
+<span class="kn">Qed</span>.
+<span class="kn">Arguments</span> fsbigE {R idx op T A}.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_seq</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx)
+    (<span class="nv">I</span> : choiceType) (<span class="nv">r</span> : seq I) (<span class="nv">F</span> : I -&gt; R) :
+  uniq r -&gt;
+  \big[op/idx]_(a &lt;- r) F a = \big[op/idx]_(a \<span class="kr">in</span> [<span class="nb">set</span>` r]) F a.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; ur; <span class="nb">rewrite</span> (fsbigE r)//=; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; + -&gt;.
+<span class="bp">by</span> <span class="nb">rewrite</span> mem_setE big_seq_cond big_mkcondr.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig1</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.law idx) (<span class="nv">I</span> : choiceType)
+    (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; R) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; F i = idx) -&gt; \big[op/idx]_(i \<span class="kr">in</span> P) F i = idx.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; PF0; <span class="nb">rewrite</span> big1_seq// =&gt; i/=; <span class="nb">case</span>: finite_supportP=&gt; //=.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; X XP _ _ Xi; <span class="nb">rewrite</span> PF0//; <span class="nb">apply</span>/XP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_dflt</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.law idx) (<span class="nv">I</span> : choiceType)
+    (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; R) :
+  infinite_set (P `&amp;` F @^-<span class="mi">1</span>` [<span class="nb">set</span>~ idx])-&gt; \big[op/idx]_(i \<span class="kr">in</span> P) F i = idx.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>: finite_supportP; <span class="nb">rewrite</span> <span class="nl">?big_nil</span>// =&gt; X _ _ &lt;-. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_widen</span> (<span class="nv">T</span> : choiceType) [R : <span class="kt">Type</span>] [idx : R]
+    (op : Monoid.com_law idx) (P D : <span class="nb">set</span> T) (f : T -&gt; R) :
+    P `&lt;=` D -&gt;
+    D `\` P `&lt;=` f @^-<span class="mi">1</span>` [<span class="nb">set</span> idx] -&gt;
+  \big[op/idx]_(i \<span class="kr">in</span> P) f i = \big[op/idx]_(i \<span class="kr">in</span> D) f i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; PD DPf; <span class="nb">rewrite</span> fsbig_mkcond [RHS]fsbig_mkcond.
+<span class="nb">apply</span>: eq_fsbigr =&gt; x _; <span class="nb">rewrite</span> /patch; <span class="nb">case</span>: ifPn; <span class="nb">rewrite</span> (inE, notin_set).
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; Px; <span class="nb">rewrite</span> ifT// inE; <span class="nb">apply</span>: PD.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; Px; <span class="nb">case</span>: ifP =&gt; //; <span class="nb">rewrite</span> inE =&gt; Dx; <span class="nb">rewrite</span> DPf.
+<span class="kn">Qed</span>.
+<span class="kn">Arguments</span> fsbig_widen {T R idx op} P D f.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_supp</span> (<span class="nv">T</span> : choiceType) [R : <span class="kt">Type</span>] [idx : R]
+    (op : Monoid.com_law idx) (P : <span class="nb">set</span> T) (f : T -&gt; R) :
+  \big[op/idx]_(i \<span class="kr">in</span> P) f i = \big[op/idx]_(i \<span class="kr">in</span> P `&amp;` f @^-<span class="mi">1</span>` [<span class="nb">set</span>~ idx]) f i.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/esym/fsbig_widen =&gt; // x [Px /not_andP[]//=]; <span class="nb">rewrite</span> notK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_fwiden</span> (<span class="nv">T</span> : choiceType) [R : eqType] [idx : R]
+    (op : Monoid.com_law idx)
+    (r : seq T) (P : <span class="nb">set</span> T) (f : T -&gt; R) :
+  P `&lt;=` [<span class="nb">set</span>` r] -&gt;
+  uniq r -&gt;
+  [<span class="nb">set</span> i | i \<span class="kr">in</span> r] `\` P `&lt;=` f @^-<span class="mi">1</span>` [<span class="nb">set</span> idx] -&gt;
+  \big[op/idx]_(i \<span class="kr">in</span> P) f i = \big[op/idx]_(i &lt;- r) f i.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; *; <span class="nb">rewrite</span> (fsbig_widen _ [<span class="nb">set</span>` r])// [RHS]fsbig_seq. <span class="kn">Qed</span>.
+<span class="kn">Arguments</span> fsbig_fwiden {T R idx op} r P f.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_set0</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx) (<span class="nv">T</span> : choiceType)
+  (<span class="nv">F</span> : T -&gt; R) : \big[op/idx]_(x \<span class="kr">in</span> set0) F x = idx.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> (fsbigE [::])// big_nil. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_set1</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx) (<span class="nv">T</span> : choiceType) <span class="nv">x</span>
+  (<span class="nv">F</span> : T -&gt; R) : \big[op/idx]_(y \<span class="kr">in</span> [<span class="nb">set</span> x]) F y = F x.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> (fsbigE [:: x])//= <span class="nl">?big_cons</span> <span class="nl">?big_nil</span> <span class="nl">?ifT</span> <span class="nl">?inE</span> <span class="nl">?Monoid</span>.simpm//.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; y /=; <span class="nb">rewrite</span> inE =&gt; /eqP.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; i -&gt;; <span class="nb">rewrite</span> inE eqxx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">__deprecated__full_fsbigID</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx)
+    (<span class="nv">I</span> : choiceType) (<span class="nv">B</span> : <span class="nb">set</span> I) (<span class="nv">A</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; R) :
+  finite_set (A `&amp;` F @^-<span class="mi">1</span>` [<span class="nb">set</span>~ idx]) -&gt;
+  \big[op/idx]_(i \<span class="kr">in</span> A) F i = op (\big[op/idx]_(i \<span class="kr">in</span> A `&amp;` B) F i)
+                                  (\big[op/idx]_(i \<span class="kr">in</span> A `&amp;` ~` B) F i).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; finF.
+<span class="nb">have</span> fsbig_setI C : \big[op/idx]_(i &lt;-
+      [fset x | x <span class="kr">in</span> fset_set (A `&amp;` F @^-<span class="mi">1</span>` [<span class="nb">set</span>~ idx]) &amp; x \<span class="kr">in</span> C]%fset) F i =
+    \big[op/idx]_(i \<span class="kr">in</span> A `&amp;` C) F i.
+  <span class="nb">apply</span>: eq_fbigl =&gt; i /=; <span class="nb">apply</span>/idP/idP.
+    <span class="nb">rewrite</span> !inE/= =&gt; /andP[+ Bi]; <span class="nb">rewrite</span> in_fset_set// inE =&gt; -[Ai Fi].
+    <span class="nb">rewrite</span> <span class="nb">unlock</span> in_fset_set <span class="nl">?inE</span>// setIAC; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> inE <span class="kr">in</span> Bi.
+    <span class="bp">exact</span>/finite_setIl.
+  <span class="nb">rewrite</span> <span class="nb">unlock</span> in_fset_set; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> setIAC; <span class="bp">exact</span>/finite_setIl.
+  <span class="bp">by</span> <span class="nb">rewrite</span> inE =&gt; -[[Ai Bi] Fi0]; <span class="nb">rewrite</span> !inE/= in_fset_set// !mem_set.
+<span class="nb">rewrite</span> (big_fsetID _ [pred i | i \<span class="kr">in</span> B])/= [locked_with _ _]<span class="nb">unlock</span>.
+<span class="nb">rewrite</span> fsbig_setI; <span class="nb">congr</span> (op _ _); <span class="nb">rewrite</span> -fsbig_setI.
+<span class="bp">by</span> <span class="nb">apply</span> eq_fbigl =&gt; i; <span class="nb">rewrite</span> !inE in_setC.
+<span class="kn">Qed</span>.
+<span class="kn">Arguments</span> __deprecated__full_fsbigID {R idx op I} B.
+
+<span class="kn">Lemma</span> <span class="nf">fsbigID</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx)
+    (<span class="nv">I</span> : choiceType) (<span class="nv">B</span> : <span class="nb">set</span> I) (<span class="nv">A</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; R) :
+    finite_set A -&gt;
+  \big[op/idx]_(i \<span class="kr">in</span> A) F i = op (\big[op/idx]_(i \<span class="kr">in</span> A `&amp;` B) F i)
+                                  (\big[op/idx]_(i \<span class="kr">in</span> A `&amp;` ~` B) F i).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; Afin; <span class="nb">apply</span>: __deprecated__full_fsbigID; <span class="nb">apply</span>: finite_setIl. <span class="kn">Qed</span>.
+<span class="kn">Arguments</span> fsbigID {R idx op I} B.
+
+#[deprecated(note=<span class="s2">&quot;Use fsbigID instead&quot;</span>)]
+<span class="kn">Notation</span> <span class="nf">full_fsbigID</span> := __deprecated__full_fsbigID.
+
+<span class="kn">Lemma</span> <span class="nf">fsbigU</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx)
+    (<span class="nv">I</span> : choiceType) (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; R) :
+    finite_set A -&gt; finite_set B -&gt; A `&amp;` B `&lt;=` F @^-<span class="mi">1</span>` [<span class="nb">set</span> idx] -&gt;
+  \big[op/idx]_(i \<span class="kr">in</span> A `|` B) F i =
+     op (\big[op/idx]_(i \<span class="kr">in</span> A) F i) (\big[op/idx]_(i \<span class="kr">in</span> B) F i).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Afin Bfin AB0; <span class="nb">rewrite</span> (fsbigID A) <span class="nl">?finite_setU</span>; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">split</span>.
+<span class="nb">rewrite</span> setUK -setDE; <span class="nb">congr</span> (op _ _); <span class="nb">rewrite</span> setDE setIUl setICr set0U.
+<span class="bp">by</span> <span class="nb">apply</span>: fsbig_widen =&gt; //; <span class="nb">rewrite</span> -setDE setDD setIC.
+<span class="kn">Qed</span>.
+<span class="kn">Arguments</span> fsbigU {R idx op I} [A B F].
+
+<span class="kn">Lemma</span> <span class="nf">fsbigU0</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx)
+    (<span class="nv">I</span> : choiceType) (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; R) :
+    finite_set A -&gt; finite_set B -&gt; A `&amp;` B `&lt;=` set0 -&gt;
+  \big[op/idx]_(i \<span class="kr">in</span> A `|` B) F i =
+     op (\big[op/idx]_(i \<span class="kr">in</span> A) F i) (\big[op/idx]_(i \<span class="kr">in</span> B) F i).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; Af Bf AB0; <span class="nb">rewrite</span> fsbigU// =&gt; x /AB0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbigD1</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx)
+    (<span class="nv">I</span> : choiceType) (<span class="nv">i</span> : I) (<span class="nv">A</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; R) :
+     finite_set A -&gt; A i -&gt;
+  \big[op/idx]_(j \<span class="kr">in</span> A) F j = op (F i) (\big[op/idx]_(j \<span class="kr">in</span> A `\ i) F j).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; *; <span class="nb">rewrite</span> (fsbigID [<span class="nb">set</span> i]) <span class="nl">?setI1</span> <span class="nl">?ifT</span> <span class="nl">?inE</span> <span class="nl">?fsbig_set1</span>. <span class="kn">Qed</span>.
+<span class="kn">Arguments</span> fsbigD1 {R idx op I} i A F.
+
+<span class="kn">Lemma</span> <span class="nf">full_fsbig_distrr</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">zero</span> : R) (<span class="nv">times</span> : Monoid.mul_law zero)
+    (<span class="nv">plus</span> : Monoid.add_law zero times) (<span class="nv">I</span> : choiceType) (<span class="nv">a</span> : R) (<span class="nv">P</span> : <span class="nb">set</span> I)
+    (<span class="nv">F</span> : I -&gt; R) :
+  finite_set (P `&amp;` F @^-<span class="mi">1</span>` [<span class="nb">set</span>~ zero]) <span class="c">(*NB: not needed in the integral case*)</span>-&gt;
+  times a (\big[plus/zero]_(i \<span class="kr">in</span> P) F i) =
+  \big[plus/zero]_(i \<span class="kr">in</span> P) times a (F i).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; finF; <span class="nb">elim</span>/Peq : R =&gt; R <span class="kr">in</span> zero times plus a F finF *.
+<span class="nb">have</span> [-&gt;|a0] := eqVneq a zero.
+  <span class="bp">by</span> <span class="nb">rewrite</span> Monoid.mul0m fsbig1//; <span class="nb">move</span>=&gt; i _; <span class="nb">rewrite</span> Monoid.mul0m.
+<span class="nb">rewrite</span> big_distrr [RHS](full_fsbigID (F @^-<span class="mi">1</span>` [<span class="nb">set</span> zero])); <span class="nb">last first</span>.
+  <span class="nb">apply</span>: sub_finite_set finF =&gt; x /= [Px aFN0].
+  <span class="bp">by</span> <span class="nb">split</span>=&gt; //; <span class="nb">apply</span>: contra_not aFN0 =&gt; -&gt;; <span class="nb">rewrite</span> Monoid.simpm.
+<span class="nb">rewrite</span> [X <span class="kr">in</span> plus X _](_ : _ = zero) <span class="nl">?Monoid</span>.simpm; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> fsbig1// =&gt; i [_ -&gt;]; <span class="nb">rewrite</span> Monoid.simpm.
+<span class="nb">apply</span>/esym/fsbig_fwiden =&gt; //.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; x [Px Fx0]; <span class="nb">rewrite</span> /= in_finite_support// inE.
+<span class="nb">move</span>=&gt; i []; <span class="nb">rewrite</span> /preimage/= in_finite_support //.
+<span class="bp">by</span> <span class="nb">rewrite</span> !inE =&gt; -[Pi]; <span class="nb">rewrite</span> /preimage/= =&gt; Fi0; <span class="bp">tauto</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_distrr</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">zero</span> : R) (<span class="nv">times</span> : Monoid.mul_law zero)
+    (<span class="nv">plus</span> : Monoid.add_law zero times) (<span class="nv">I</span> : choiceType) (<span class="nv">a</span> : R) (<span class="nv">P</span> : <span class="nb">set</span> I)
+    (<span class="nv">F</span> : I -&gt; R) :
+  finite_set P <span class="c">(*NB: not needed in the integral case*)</span> -&gt;
+  times a (\big[plus/zero]_(i \<span class="kr">in</span> P) F i) =
+  \big[plus/zero]_(i \<span class="kr">in</span> P) times a (F i).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; Pf; <span class="nb">apply</span>: full_fsbig_distrr; <span class="nb">apply</span>: finite_setIl. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">mulr_fsumr</span> (<span class="nv">R</span> : idomainType) (<span class="nv">I</span> : choiceType) <span class="nv">a</span> (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; R) :
+   a * (\sum_(i \<span class="kr">in</span> P) F i) = \sum_(i \<span class="kr">in</span> P) a * F i.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> [-&gt;|aN0] := eqVneq a <span class="mi">0</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> mul0r big1// =&gt; i; <span class="nb">rewrite</span> mul0r.
+<span class="nb">case</span>: (pselect (finite_set (P `&amp;` F @^-<span class="mi">1</span>` [<span class="nb">set</span>~ <span class="mi">0</span>]))) =&gt; PFfin.
+  <span class="bp">exact</span>: full_fsbig_distrr.
+<span class="nb">rewrite</span> !fsbig_dflt <span class="nl">?mulr0</span>//; <span class="nb">apply</span>: contra_not PFfin; <span class="nb">apply</span>: sub_finite_set.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x [Px /eqP Fx0]; <span class="nb">split</span>=&gt; //=; <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> mulf_neq0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">mulr_fsuml</span> (<span class="nv">R</span> : idomainType) (<span class="nv">I</span> : choiceType) <span class="nv">a</span> (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; R) :
+   (\sum_(i \<span class="kr">in</span> P) F i) * a = \sum_(i \<span class="kr">in</span> P) (F i * a).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> mulrC mulr_fsumr; <span class="nb">under</span> eq_fsbigr <span class="kp">do</span> <span class="nb">rewrite</span> mulrC. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_ord</span> <span class="nv">R</span> (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx) <span class="nv">n</span> (<span class="nv">F</span> : nat -&gt; R) :
+  \big[op/idx]_(a &lt; n) F a = \big[op/idx]_(a \<span class="kr">in</span> `I_n) F a.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> -(big_mkord xpredT) [LHS]fsbig_seq <span class="nl">?iota_uniq</span>//.
+<span class="bp">by</span> <span class="nb">apply</span>: eq_fsbigl; <span class="nb">rewrite</span> -Iiota /index_iota subn0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_finite</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx) (<span class="nv">T</span> : choiceType)
+    (<span class="nv">D</span> : <span class="nb">set</span> T) (<span class="nv">F</span> : T -&gt; R) : finite_set D -&gt;
+  \big[op/idx]_(x \<span class="kr">in</span> D) F x = \big[op/idx]_(x &lt;- fset_set D) F x.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Peq: R =&gt; R <span class="kr">in</span> idx op F * =&gt; Dfin.
+<span class="bp">by</span> <span class="nb">apply</span>: fsbig_fwiden; <span class="nb">rewrite</span> <span class="nl">?fset_setK</span>// setDv.
+<span class="kn">Qed</span>.
+
+<span class="kn">Section</span> <span class="nf">fsbig2</span>.
+<span class="kn">Variables</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx).
+
+<span class="c">(* Lemma reindex_inside I F P ...  : finite_set (P `&amp;` F @` [set~ id]) -&gt; ... *)</span>
+<span class="c">(* Isn&#39;t this reversed compared to reindex in bigop? *)</span>
+<span class="kn">Lemma</span> <span class="nf">reindex_fsbig</span> {<span class="nv">I</span> <span class="nv">J</span> : choiceType} (<span class="nv">h</span> : I -&gt; J) <span class="nv">P</span> <span class="nv">Q</span>
+    (<span class="nv">F</span> : J -&gt; R) : set_bij P Q h -&gt;
+  \big[op/idx]_(j \<span class="kr">in</span> Q) F j = \big[op/idx]_(i \<span class="kr">in</span> P) F (h i).
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/choicePpointed: I =&gt; I <span class="kr">in</span> h P *.
+  <span class="nb">rewrite</span> !emptyE =&gt; /Pbij[{}h -&gt;].
+  <span class="bp">by</span> <span class="nb">rewrite</span> -[<span class="kr">in</span> LHS](image_eq h) image_set0 !fsbig_set0.
+<span class="nb">elim</span>/choicePpointed: J =&gt; J <span class="kr">in</span> F h Q *; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">have</span> := no (h point).
+<span class="nb">move</span>=&gt; /(@pPbij _ _ _)[{}h -&gt;].
+<span class="nb">pose</span> A := P `&amp;` (F \o h) @^-<span class="mi">1</span>` [<span class="nb">set</span>~ idx].
+<span class="nb">pose</span> B := Q `&amp;` F @^-<span class="mi">1</span>` [<span class="nb">set</span>~ idx].
+<span class="nb">have</span> /(@pPbij _ _ _)[g gh] : set_bij A B h.
+  <span class="nb">apply</span>: splitbij_sub; <span class="nb">rewrite</span> /A /B /preimage //=.
+    <span class="bp">by</span> <span class="nb">move</span>=&gt; x [Px Fhx]; <span class="nb">split</span>=&gt; //; <span class="nb">apply</span>: funS.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; x [Qx Fx]; <span class="nb">split</span>; <span class="nb">rewrite</span> <span class="nl">?invK</span> <span class="nl">?inE</span>//; <span class="nb">apply</span>: funS.
+<span class="nb">case</span>: finite_supportP; <span class="nb">rewrite</span> <span class="nl">?big_nil</span>//=.
+  <span class="nb">case</span>: finite_supportP; <span class="nb">rewrite</span> <span class="nl">?big_nil</span>//=.
+  <span class="nb">move</span>=&gt; X XP _ XE []; <span class="nb">rewrite</span> -/B -(image_eq g) /A.
+  <span class="bp">by</span> <span class="nb">apply</span>: finite_image; <span class="nb">rewrite</span> -XE.
+<span class="nb">move</span>=&gt; Y YQ Fidx YE; <span class="nb">case</span>: finite_supportP.
+  <span class="nb">move</span>=&gt; []; <span class="nb">rewrite</span> -/A -(image_eq [bij of g^-<span class="mi">1</span>%FUN]).
+  <span class="bp">by</span> <span class="nb">apply</span>: finite_image; <span class="nb">rewrite</span> /B -YE.
+<span class="nb">move</span>=&gt; X XP Fhidx XE; <span class="nb">suff</span> -&gt; : Y = (h @` X)%fset.
+  <span class="bp">by</span> <span class="nb">rewrite</span> big_imfset// =&gt; ? ? ? ? /inj; <span class="nb">apply</span>; <span class="nb">rewrite</span> inE; <span class="nb">apply</span>: XP.
+<span class="nb">have</span> BY j : (B j) = (j \<span class="kr">in</span> Y) <span class="bp">by</span> <span class="nb">rewrite</span> -[RHS]/([<span class="nb">set</span>` Y] j) YE.
+<span class="nb">have</span> AX i : (A i) = (i \<span class="kr">in</span> X) <span class="bp">by</span> <span class="nb">rewrite</span> -[RHS]/([<span class="nb">set</span>` X] i) XE.
+<span class="nb">rewrite</span> gh; <span class="nb">apply</span>/fsetP=&gt; j; <span class="nb">apply</span>/idP/imfsetP =&gt; [Yj | [i iX -&gt;]]; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -BY; <span class="nb">apply</span>: funS; <span class="nb">rewrite</span> AX.
+<span class="bp">by</span> <span class="kr">exists</span> (<span class="nv">g</span>^-<span class="mi">1</span>%FUN j); <span class="nb">rewrite</span> <span class="nl">?invK</span> <span class="nl">?inE</span> <span class="nl">?BY</span>// -AX; <span class="nb">apply</span>: funS; <span class="nb">rewrite</span> BY.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_image</span> {<span class="nv">I</span> <span class="nv">J</span> : choiceType} <span class="nv">P</span> (<span class="nv">h</span> : I -&gt; J) (<span class="nv">F</span> : J -&gt; R) : set_inj P h -&gt;
+  \big[op/idx]_(j \<span class="kr">in</span> h @` P) F j = \big[op/idx]_(i \<span class="kr">in</span> P) F (h i).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /inj_bij; <span class="nb">apply</span>: reindex_fsbig. <span class="kn">Qed</span>.
+
+<span class="c">(* Lemma reindex_inside I F P ...  : finite_set (P `&amp;` F @` [set~ id]) -&gt; ... *)</span>
+<span class="kn">Lemma</span> <span class="nf">__deprecated__reindex_inside</span> {<span class="nv">I</span> <span class="nv">J</span> : choiceType} <span class="nv">P</span> <span class="nv">Q</span> (<span class="nv">h</span> : I -&gt; J) (<span class="nv">F</span> : J -&gt; R) :
+  bijective h -&gt; P `&lt;=` h @` Q -&gt; Q `&lt;=` h @^-<span class="mi">1</span>` P -&gt;
+  \big[op/idx]_(j \<span class="kr">in</span> P) F j = \big[op/idx]_(i \<span class="kr">in</span> Q) F (h i).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; hbij PQ QP; <span class="nb">apply</span>: reindex_fsbig; <span class="nb">split</span>=&gt; //.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x y _ _ /(bij_inj hbij).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">reindex_fsbigT</span> {<span class="nv">I</span> <span class="nv">J</span> : choiceType} (<span class="nv">h</span> : I -&gt; J) (<span class="nv">F</span> : J -&gt; R) :
+  bijective h -&gt;
+  \big[op/idx]_(j \<span class="kr">in</span> [<span class="nb">set</span>: J]) F j = \big[op/idx]_(i \<span class="kr">in</span> [<span class="nb">set</span>: I]) F (h i).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -setTT_bijective =&gt; -[? ? ?]; <span class="nb">apply</span>: reindex_fsbig. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">fsbig2</span>.
+<span class="kn">Arguments</span> reindex_fsbig {R idx op I J} _ _ _.
+<span class="kn">Arguments</span> fsbig_image {R idx op I J} _ _.
+<span class="kn">Arguments</span> __deprecated__reindex_inside {R idx op I J} _ _.
+<span class="kn">Arguments</span> reindex_fsbigT {R idx op I J} _ _.
+#[deprecated(note=<span class="s2">&quot;use reindex_fsbig, fsbig_image or reindex_fsbigT instead&quot;</span>)]
+<span class="kn">Notation</span> <span class="nf">reindex_inside</span> := __deprecated__reindex_inside.
+#[deprecated(note=<span class="s2">&quot;use reindex_fsbigT instead&quot;</span>)]
+<span class="kn">Notation</span> <span class="nf">reindex_inside_setT</span> := reindex_fsbigT.
+
+<span class="kn">Lemma</span> <span class="nf">fsbigN1</span> (<span class="nv">R</span> : eqType) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx)
+    (<span class="nv">T1</span> <span class="nv">T2</span> : choiceType) (<span class="nv">Q</span> : <span class="nb">set</span> T2) (<span class="nv">f</span> : T1 -&gt; T2 -&gt; R) (<span class="nv">x</span> : T1) :
+  \big[op/idx]_(y \<span class="kr">in</span> Q) f x y != idx -&gt; <span class="kr">exists2</span> y, Q y &amp; f x y != idx.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: contra_neqP =&gt; /forall2NP Qf; <span class="nb">apply</span>/fsbig1 =&gt; y Qy.
+<span class="bp">by</span> <span class="nb">case</span>: (Qf y) =&gt; // /negP/negPn/eqP-&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_split</span> (<span class="nv">T</span> : choiceType) (<span class="nv">R</span> : eqType) (<span class="nv">idx</span> : R)
+    (<span class="nv">op</span> : Monoid.com_law idx) (<span class="nv">P</span> : <span class="nb">set</span> T) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; R) : finite_set P -&gt;
+  \big[op/idx]_(x \<span class="kr">in</span> P) op (f x) (g x) =
+  op (\big[op/idx]_(x \<span class="kr">in</span> P) f x) (\big[op/idx]_(x \<span class="kr">in</span> P) g x).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; Pfin; <span class="nb">rewrite</span> !fsbig_finite// big_split. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsumr_ge0</span> (<span class="nv">R</span> : numDomainType) (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; R) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; <span class="mi">0</span> &lt;= F i) -&gt; <span class="mi">0</span> &lt;= \sum_(i \<span class="kr">in</span> P) F i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; PF; <span class="nb">case</span>: finite_supportP; <span class="nb">rewrite</span> <span class="nl">?big_nil</span>// =&gt; X XP F0 _.
+<span class="bp">by</span> <span class="nb">rewrite</span> big_seq_cond big_mkcondr sumr_ge0// =&gt; i /XP/PF.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsumr_le0</span> (<span class="nv">R</span> : numDomainType) (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; R) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; F i &lt;= <span class="mi">0</span>) -&gt; \sum_(i \<span class="kr">in</span> P) F i &lt;= <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; PF; <span class="nb">case</span>: finite_supportP; <span class="nb">rewrite</span> <span class="nl">?big_nil</span>// =&gt; X XP F0 _.
+<span class="bp">by</span> <span class="nb">rewrite</span> big_seq_cond big_mkcondr sumr_le0// =&gt; i /XP/PF.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsumr_gt0</span> (<span class="nv">R</span> : realDomainType) (<span class="nv">I</span> : choiceType) (<span class="nv">r</span> : seq I) (<span class="nv">P</span> : <span class="nb">set</span> I)
+    (<span class="nv">F</span> : I -&gt; R) :
+  <span class="mi">0</span> &lt; \sum_(i \<span class="kr">in</span> P) F i -&gt; <span class="kr">exists2</span> i, P i &amp; <span class="mi">0</span> &lt; F i.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: contraPP =&gt; /forall2NP xNPF; <span class="nb">rewrite</span> le_gtF// fsumr_le0// =&gt; i Pi.
+<span class="bp">by</span> <span class="nb">case</span>: (xNPF i) =&gt; // /negP; <span class="nb">case</span>: ltP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsumr_lt0</span> (<span class="nv">R</span> : realDomainType) (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I)
+    (<span class="nv">F</span> : I -&gt; R) :
+  \sum_(i \<span class="kr">in</span> P) F i &lt; <span class="mi">0</span> -&gt; <span class="kr">exists2</span> i, P i &amp; F i &lt; <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: contraPP =&gt; /forall2NP xNPF; <span class="nb">rewrite</span> le_gtF// fsumr_ge0// =&gt; i Pi.
+<span class="bp">by</span> <span class="nb">case</span>: (xNPF i) =&gt; // /negP; <span class="nb">case</span>: ltP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pfsumr_eq0</span> (<span class="nv">R</span> : realDomainType) (<span class="nv">I</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I)
+    (<span class="nv">F</span> : I -&gt; R) :
+  finite_set P -&gt;
+  (<span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; <span class="mi">0</span> &lt;= F i) -&gt;
+  \sum_(i \<span class="kr">in</span> P) F i = <span class="mi">0</span> -&gt; <span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; F i = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Pfin F0 /eqP; <span class="nb">apply</span>: contraTP =&gt; /existsPNP[i Pi /eqP Fi0].
+<span class="nb">rewrite</span> (fsbigD1 i)//= paddr_eq0 <span class="nl">?F0</span> <span class="nl">?negb_and</span> <span class="nl">?Fi0</span>//.
+<span class="bp">by</span> <span class="nb">rewrite</span> fsumr_ge0// =&gt; j [/F0-&gt;].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_setU</span> {<span class="nv">T</span>} {<span class="nv">I</span> : choiceType} (<span class="nv">A</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; <span class="nb">set</span> T) :
+  finite_set A -&gt;
+  \big[setU/set0]_(i \<span class="kr">in</span> A) F i = \bigcup_(i <span class="kr">in</span> A) F i.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; Afin; <span class="nb">rewrite</span> fsbig_finite// bigsetU_fset_set. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fsbig_setU_set1</span> {<span class="nv">T</span> : choiceType} (<span class="nv">A</span> : <span class="nb">set</span> T) :
+  finite_set A -&gt; \big[setU/set0]_(x \<span class="kr">in</span> A) [<span class="nb">set</span> x] = A.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fA; <span class="nb">rewrite</span> fsbig_setU//.
+<span class="bp">by</span> <span class="nb">apply</span>/seteqP; <span class="nb">split</span>=&gt; [t [x Ax -&gt;]//|t At]; <span class="kr">exists</span> <span class="nv">t</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pair_fsbig</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx)
+    (<span class="nv">I</span> <span class="nv">J</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">Q</span> : <span class="nb">set</span> J) (<span class="nv">F</span> : I -&gt; J -&gt; R) :
+  finite_set P -&gt; finite_set Q -&gt;
+  \big[op/idx]_(i \<span class="kr">in</span> P) \big[op/idx]_(j \<span class="kr">in</span> Q) F i j
+  = \big[op/idx]_(p \<span class="kr">in</span> P `*` Q) F p.<span class="mi">1</span> p.<span class="mi">2</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Pfin Qfin; <span class="nb">have</span> PQfin : finite_set (P `*` Q) <span class="bp">by</span> <span class="nb">apply</span>: finite_setM.
+<span class="nb">rewrite</span> !fsbig_finite//=; <span class="nb">under</span> eq_bigr <span class="kp">do</span> <span class="nb">rewrite</span> fsbig_finite//=.
+<span class="nb">rewrite</span> pair_big_dep_cond/= fset_setM//.
+<span class="nb">apply</span>: eq_fbigl =&gt; -[i j] //=; <span class="nb">apply</span>/imfset2P/idP; <span class="nb">rewrite</span> inE //=.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; [x + [y + [-&gt; -&gt;]]]; <span class="nb">rewrite</span> <span class="mi">4</span>!inE/= !andbT/= =&gt; -&gt; -&gt;.
+<span class="nb">move</span>=&gt; /andP[Pi Qi]; <span class="kr">exists</span> <span class="nv">i</span>; <span class="nb">rewrite</span> <span class="mi">2</span><span class="nl">?inE</span> <span class="nl">?andbT</span>//.
+<span class="bp">by</span> <span class="kr">exists</span> <span class="nv">j</span>; <span class="nb">rewrite</span> <span class="mi">2</span><span class="nl">?inE</span> <span class="nl">?andbT</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">exchange_fsbig</span> (<span class="nv">R</span> : <span class="kt">Type</span>) (<span class="nv">idx</span> : R) (<span class="nv">op</span> : Monoid.com_law idx)
+    (<span class="nv">I</span> <span class="nv">J</span> : choiceType) (<span class="nv">P</span> : <span class="nb">set</span> I) (<span class="nv">Q</span> : <span class="nb">set</span> J) (<span class="nv">F</span> : I -&gt; J -&gt; R) :
+  finite_set P -&gt; finite_set Q -&gt;
+  \big[op/idx]_(i \<span class="kr">in</span> P) \big[op/idx]_(j \<span class="kr">in</span> Q) F i j
+  = \big[op/idx]_(j \<span class="kr">in</span> Q) \big[op/idx]_(i \<span class="kr">in</span> P) F i j.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Pfin Qfin; <span class="nb">rewrite</span> <span class="mi">2</span><span class="nl">?pair_fsbig</span>//; <span class="nb">pose</span> <span class="nb">swap</span> (x : I * J) := (x.<span class="mi">2</span>, x.<span class="mi">1</span>).
+<span class="nb">apply</span>/esym/(reindex_fsbig <span class="nb">swap</span>).
+<span class="nb">split</span>=&gt; [? [? ?]//|[? ?] [? ?] /set_mem[? ?] /set_mem[? ?] [-&gt; -&gt;]//|].
+<span class="bp">by</span> <span class="nb">move</span>=&gt; [i j] [? ?]; <span class="kr">exists</span> (<span class="nv">j</span>, i).
+<span class="kn">Qed</span>.</span></pre></article></body></html>

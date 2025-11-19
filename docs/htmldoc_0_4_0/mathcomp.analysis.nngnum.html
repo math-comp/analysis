@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>mathcomp.analysis.nngnum</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library mathcomp.analysis.nngnum</h1>
+
+<div class="code">
+<span class="comment">(*&nbsp;mathcomp&nbsp;analysis&nbsp;(c)&nbsp;2017&nbsp;Inria&nbsp;and&nbsp;AIST.&nbsp;License:&nbsp;CeCILL-C.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*)</span><br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">mathcomp</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">all_ssreflect</span> <span class="id" title="library">fingroup</span> <span class="id" title="library">ssralg</span> <span class="id" title="library">poly</span> <span class="id" title="library">ssrnum</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="mathcomp.analysis.boolp.html#"><span class="id" title="library">boolp</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="mathcomp.analysis.signed.html#"><span class="id" title="library">signed</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+ This file develops tools to make the manipulation of non-negative numbers  
+ easier, on the model of posnum.v. This is WIP.                             
+
+<div class="paragraph"> </div>
+
+   {nonneg R} == interface types for elements in R that are non-negative; R 
+                 must have a numDomainType structure. Automatically solves  
+                 goals of the form x &gt;= 0. {nonneg R} is stable by          
+                 addition, multiplication. All natural numbers n%:R are     
+                 also canonically in {nonneg R}.                            
+                 This type is also shown to be a latticeType, a             
+                 distrLatticeType, and an orderType,                        
+  NngNum xge0 == packs the proof xge0 : x &gt;= 0, for x : R, to build a       
+                 {nonneg R}                                                 
+       x%:nng == explicitly casts x to {nonneg R}, triggers the inference   
+                 of a {nngum R} structure for x                             
+    x%:nngnum == explicit cast from {nonneg R} to R                         
+
+<div class="paragraph"> </div>
+
+ The module BigmaxrNonneg contains a theory about bigops of the form        
+ \big[maxr/x](i | P i) F i where F : I -&gt; {nonneg R} which is used in      
+ normedtype.v to develop the topology of matrices.                          
+                                                                             
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">ring_scope</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="module">Order.TTheory</span> <span class="id" title="module">GRing.Theory</span> <span class="id" title="module">Num.Theory</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;x %:nngnum" (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 2, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="var">format</span> "x %:nngnum").<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="nngnum" class="idref" href="#nngnum"><span class="id" title="abbreviation">nngnum</span></a> := (@<a class="idref" href="mathcomp.analysis.signed.html#Signed.Exports.num"><span class="id" title="abbreviation">num</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span> 0 <a class="idref" href="mathcomp.analysis.signed.html#bc1ebd4038e9d7afd4fc6aff32c3dd9a"><span class="id" title="notation">?</span></a>=0 <a class="idref" href="mathcomp.analysis.signed.html#f1caef69e1bef41a6b6764969723a144"><span class="id" title="notation">&gt;=0</span></a>).<br/>
+<span class="id" title="keyword">Notation</span> <a id="cf7530d73709ad62952ab1c39b298da5" class="idref" href="#cf7530d73709ad62952ab1c39b298da5"><span class="id" title="notation">&quot;</span></a>x %:nngnum" := (<a class="idref" href="mathcomp.analysis.nngnum.html#nngnum"><span class="id" title="abbreviation">nngnum</span></a> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="module">Num.Def</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

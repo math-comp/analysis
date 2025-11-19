@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>cardinality.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)</span>
+<span class="kn">From</span> HB <span class="kn">Require Import</span> structures.
+<span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect finmap ssralg ssrnum ssrint rat.
+<span class="kn">From</span> mathcomp <span class="kn">Require Import</span> finset.
+<span class="kn">Require Import</span> mathcomp_extra boolp classical_sets functions.
+
+<span class="sd">(******************************************************************************)</span>
+<span class="c">(*                              Cardinality                                   *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* This file provides an account of cardinality properties of classical sets. *)</span>
+<span class="c">(* This includes standard results of set theory such as the Pigeon Hole       *)</span>
+<span class="c">(* principle, the Cantor-Bernstein Theorem, or lemmas about the cardinal of   *)</span>
+<span class="c">(* nat, nat * nat, and rat.                                                   *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* Since universe polymorphism is not yet available in our framework, we      *)</span>
+<span class="c">(* develop a relational theory of cardinals: there is no type for cardinals   *)</span>
+<span class="c">(* only relations A #&lt;= B and A #= B to compare the cardinals of two sets     *)</span>
+<span class="c">(* (on two possibly different types).                                         *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(*           A #&lt;= B == the cardinal of A is smaller or equal to the one of B *)</span>
+<span class="c">(*           A #&gt;= B := B #&lt;= A                                               *)</span>
+<span class="c">(*            A #= B == the cardinal of A is equal to the cardinal of B       *)</span>
+<span class="c">(*           A #!= B := ~~ (A #= B)                                           *)</span>
+<span class="c">(*      finite_set A == the set A is finite                                   *)</span>
+<span class="c">(*                   := exists n, A #= `I_n                                   *)</span>
+<span class="c">(*                   &lt;-&gt; exists X : {fset T}, A = [set` X]                    *)</span>
+<span class="c">(*                   &lt;-&gt; ~ ([set: nat] #&lt;= A)                                 *)</span>
+<span class="c">(*    infinite_set A := ~ finite_set A                                        *)</span>
+<span class="c">(*       countable A &lt;-&gt; A is countable                                       *)</span>
+<span class="c">(*                   := A #&lt;= [set: nat]                                      *)</span>
+<span class="c">(*        fset_set A == the finite set corresponding if A : set T is finite,  *)</span>
+<span class="c">(*                      set0 otherwise (T : choiceType)                       *)</span>
+<span class="c">(*              A.`1 := [fset x.1 | x in A]                                   *)</span>
+<span class="c">(*              A.`2 := [fset x.2 | x in A]                                   *)</span>
+<span class="c">(* {fimfun aT &gt;-&gt; T} == type of functions with a finite image                 *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="sd">(******************************************************************************)</span>
+
+<span class="kn">Set Implicit Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;A &#39;#&lt;=&#39; B&quot;</span> (<span class="kn">at level</span> <span class="mi">79</span>, <span class="kn">format</span> <span class="s2">&quot;A  &#39;#&lt;=&#39;  B&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;A &#39;#&gt;=&#39; B&quot;</span> (<span class="kn">at level</span> <span class="mi">79</span>, <span class="kn">format</span> <span class="s2">&quot;A  &#39;#&gt;=&#39;  B&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;A &#39;#=&#39; B&quot;</span> (<span class="kn">at level</span> <span class="mi">79</span>, <span class="kn">format</span> <span class="s2">&quot;A  &#39;#=&#39;  B&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;A &#39;#!=&#39; B&quot;</span> (<span class="kn">at level</span> <span class="mi">79</span>, <span class="kn">format</span> <span class="s2">&quot;A  &#39;#!=&#39;  B&quot;</span>).
+
+<span class="kn">Import</span> Order.Theory GRing.Theory.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> function_scope.
+
+<span class="kn">Declare Scope</span> card_scope.
+<span class="kn">Delimit Scope</span> card_scope <span class="kr">with</span> card.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> card_scope.
+
+<span class="kn">Definition</span> <span class="nf">card_le</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) :=
+  `[&lt; $|{injfun [<span class="nb">set</span>: A] &gt;-&gt; [<span class="nb">set</span>: B]}| &gt;].
+<span class="kn">Notation</span> <span class="s2">&quot;A &#39;#&lt;=&#39; B&quot;</span> := (card_le A B) : card_scope.
+<span class="kn">Notation</span> <span class="s2">&quot;A &#39;#&gt;=&#39; B&quot;</span> := (card_le B A) (<span class="kn">only parsing</span>) : card_scope.
+
+<span class="kn">Definition</span> <span class="nf">card_eq</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) :=
+  `[&lt; $|{bij [<span class="nb">set</span>: A] &gt;-&gt; [<span class="nb">set</span>: B]}| &gt;].
+<span class="kn">Notation</span> <span class="s2">&quot;A &#39;#=&#39; B&quot;</span> := (card_eq A B) : card_scope.
+<span class="kn">Notation</span> <span class="s2">&quot;A &#39;#!=&#39; B&quot;</span> := (~~ (card_eq A B)) : card_scope.
+
+<span class="kn">Definition</span> <span class="nf">finite_set</span> {<span class="nv">T</span>} (<span class="nv">A</span> : <span class="nb">set</span> T) := <span class="kr">exists</span> <span class="nv">n</span>, A #= `I_n.
+<span class="kn">Notation</span> <span class="nf">infinite_set</span> A := (~ finite_set A).
+
+<span class="kn">Lemma</span> <span class="nf">injPex</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} :
+   $|{inj A &gt;-&gt; U}| &lt;-&gt; <span class="kr">exists</span> <span class="nv">f</span> : T -&gt; U, set_inj A f.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>=&gt; [[f]|[_ /Pinj[f _]]]; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">f</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">surjPex</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+  $|{surj A &gt;-&gt; B}| &lt;-&gt; <span class="kr">exists</span> <span class="nv">f</span>, set_surj A B f.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>=&gt; [[f]|[_ /Psurj[f _]]]; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">f</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">bijPex</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+  $|{bij A &gt;-&gt; B}| &lt;-&gt; <span class="kr">exists</span> <span class="nv">f</span>, set_bij A B f.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>=&gt; [[f]|[_ /Pbij[f _]]]; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">f</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">surjfunPex</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+  $|{surjfun A &gt;-&gt; B}| &lt;-&gt; <span class="kr">exists</span> <span class="nv">f</span>, B = f @` A.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; [[f]|[f -&gt;]]; <span class="nb">last</span> <span class="bp">by</span> squash [<span class="kr">fun</span> <span class="nv">f</span> <span class="nv">in</span> <span class="nv">A</span>].
+<span class="bp">by</span> <span class="kr">exists</span> <span class="nv">f</span>; <span class="nb">apply</span>/seteqP; <span class="nb">split</span>=&gt; //; <span class="nb">apply</span>: surj.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">injfunPex</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U}:
+   $|{injfun A &gt;-&gt; B}| &lt;-&gt; <span class="kr">exists2</span> f : T -&gt; U, set_fun A B f &amp; set_inj A f.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>=&gt; [[f]|[_ /Pfun[? -&gt;] /funPinj[f]]]; [<span class="kr">exists</span> <span class="nv">f</span> | squash f]. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_leP</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+  reflect $|{injfun [<span class="nb">set</span>: A] &gt;-&gt; [<span class="nb">set</span>: B]}| (A #&lt;= B).
+<span class="kn">Proof</span>. <span class="bp">exact</span>: asboolP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">inj_card_le</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} : {injfun A &gt;-&gt; B} -&gt; (A #&lt;= B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; f; <span class="nb">apply</span>/card_leP; squash (sigLR f). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pcard_leP</span> {<span class="nv">T</span>} {<span class="nv">U</span> : pointedType} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+   reflect $|{injfun A &gt;-&gt; B}| (A #&lt;= B).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">apply</span>: (iffP card_leP) =&gt; -[f]; [squash (valLR point f) | squash (sigLR f)].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pcard_leTP</span> {<span class="nv">T</span>} {<span class="nv">U</span> : pointedType} {<span class="nv">A</span> : <span class="nb">set</span> T} :
+  reflect $|{inj A &gt;-&gt; U}| (A #&lt;= [<span class="nb">set</span>: U]).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">apply</span>: (iffP pcard_leP) =&gt; -[f]; [squash f | squash (&#39;totalfun_A f)].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pcard_injP</span> {<span class="nv">T</span>} {<span class="nv">U</span> : pointedType} {<span class="nv">A</span> : <span class="nb">set</span> T} :
+  reflect (<span class="kr">exists</span> <span class="nv">f</span> : T -&gt; U, {<span class="kr">in</span> A &amp;, injective f}) (A #&lt;= [<span class="nb">set</span>: U]).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: (iffP pcard_leTP); <span class="nb">rewrite</span> injPex. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ppcard_leP</span> {<span class="nv">T</span> <span class="nv">U</span> : pointedType} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+   reflect $|{splitinjfun A &gt;-&gt; B}| (A #&lt;= B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: (iffP pcard_leP) =&gt; -[f]; squash (<span class="nb">split</span> f). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_ge0</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">S</span> : <span class="nb">set</span> U) : @set0 T #&lt;= S.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/card_leP; squash set0fun. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> card_ge0 : core.
+
+<span class="kn">Lemma</span> <span class="nf">card_le0P</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) : reflect (A = set0) (A #&lt;= @set0 U).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: (iffP idP) =&gt; [/card_leP[f]|-&gt;//].
+<span class="bp">by</span> <span class="nb">rewrite</span> -subset0 =&gt; a /mem_set aA; <span class="nb">have</span> [x /set_mem] := f (SigSub aA).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_le0</span>  <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) : (A #&lt;= @set0 U) = (A == set0).
+<span class="kn">Proof</span>. <span class="bp">exact</span>/card_le0P/eqP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eqP</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+  reflect $|{bij [<span class="nb">set</span>: A] &gt;-&gt; [<span class="nb">set</span>: B]}| (A #= B).
+<span class="kn">Proof</span>. <span class="bp">exact</span>: asboolP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pcard_eq</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} : {bij A &gt;-&gt; B} -&gt; A #= B.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; f; <span class="nb">apply</span>/card_eqP; squash (sigLR f). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pcard_eqP</span> {<span class="nv">T</span>} {<span class="nv">U</span> : pointedType} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+   reflect $| {bij A &gt;-&gt; B} | (A #= B).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">apply</span>: (iffP card_eqP) =&gt; -[f]; [squash (valLR point f) | squash (sigLR f)].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_bijP</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+   reflect (<span class="kr">exists</span> <span class="nv">f</span> : A -&gt; B, bijective f) (A #= B).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">apply</span>: (iffP card_eqP) =&gt; [[f]|[_ /PbijTT[f _]]]; [<span class="kr">exists</span> <span class="nv">f</span>|squash f].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eqVP</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+   reflect $|{splitbij [<span class="nb">set</span>: A] &gt;-&gt; [<span class="nb">set</span>: B]}| (A #= B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: (iffP card_bijP) =&gt; [[_ /PbijTT[f _]]//|[f]]; <span class="kr">exists</span> <span class="nv">f</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_set_bijP</span> {<span class="nv">T</span>} {<span class="nv">U</span> : pointedType} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+   reflect (<span class="kr">exists</span> <span class="nv">f</span>, set_bij A B f) (A #= B).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">apply</span>: (iffP pcard_eqP) =&gt; [[f]|[_ /Pbij[f _]]]; [<span class="kr">exists</span> <span class="nv">f</span>|squash f].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ppcard_eqP</span> {<span class="nv">T</span> <span class="nv">U</span> : pointedType} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+   reflect $| {splitbij A &gt;-&gt; B} | (A #= B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: (iffP pcard_eqP) =&gt; -[f]; [squash (<span class="nb">split</span> f)|squash f]. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eqxx</span> <span class="nv">T</span> (<span class="nv">A</span> : <span class="nb">set</span> T) : A #= A.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/card_eqP; squash idfun. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> card_eqxx : core.
+
+<span class="kn">Lemma</span> <span class="nf">card_eq00</span> <span class="nv">T</span> <span class="nv">U</span> : @set0 T #= @set0 U.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/card_eqP/squash; <span class="nb">apply</span>: @bijection_of_bijective set0fun _.
+<span class="bp">by</span> <span class="kr">exists</span> <span class="nv">set0fun</span> =&gt; -[x x0]; <span class="nb">have</span> := set_mem x0.
+<span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> card_eq00 : core.
+
+<span class="kn">Section</span> <span class="nf">empty1</span>.
+<span class="kn">Implicit Types</span> (<span class="nv">T</span> : emptyType).
+<span class="kn">Lemma</span> <span class="nf">empty_eq0</span> <span class="nv">T</span> : all_equal_to (set0 : <span class="nb">set</span> T).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; X; <span class="nb">apply</span>/setF_eq0/no. <span class="kn">Qed</span>.
+<span class="kn">Lemma</span> <span class="nf">card_le_emptyl</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) : A #&lt;= B.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> empty_eq0. <span class="kn">Qed</span>.
+<span class="kn">Lemma</span> <span class="nf">card_le_emptyr</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) : (B #&lt;= A) = (B == set0).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> empty_eq0; <span class="nb">apply</span>/idP/eqP=&gt; [/card_le0P|-&gt;//]. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">emptyE_subdef</span> := (empty_eq0, card_le_emptyl, card_le_emptyr, eq_opE).
+<span class="kn">End</span> <span class="nf">empty1</span>.
+
+<span class="kn">Theorem</span> <span class="nf">Cantor_Bernstein</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) :
+  A #&lt;= B -&gt; B #&lt;= A -&gt; A #= B.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Ppointed: T =&gt; T <span class="kr">in</span> A *; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> !emptyE_subdef =&gt; _ -&gt;.
+<span class="nb">elim</span>/Ppointed: U =&gt; U <span class="kr">in</span> B *; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> !emptyE_subdef =&gt; -&gt;.
+<span class="nb">suff</span> {A B} card_eq (A B : <span class="nb">set</span> U) : B `&lt;=` A -&gt; A #&lt;= B -&gt; A #= B.
+  <span class="nb">move</span>=&gt; /ppcard_leP[f] /ppcard_leP[g].
+  <span class="nb">have</span> /(_ _)/ppcard_eqP[|h] := card_eq _ _ (fun_image_sub f).
+    <span class="bp">by</span> <span class="nb">apply</span>/pcard_leP; squash ([<span class="kr">fun</span> <span class="nv">f</span> <span class="nv">in</span> <span class="nv">A</span>] \o g).
+  <span class="bp">by</span> <span class="nb">apply</span>/pcard_eqP; squash ((<span class="nb">split</span> h)^-<span class="mi">1</span> \o [<span class="kr">fun</span> <span class="nv">f</span> <span class="nv">in</span> <span class="nv">A</span>]).
+<span class="nb">move</span>=&gt; BA /ppcard_leP[u]; <span class="nb">have</span> uAB := &#39;funS_u.
+<span class="nb">pose</span> C_ := <span class="kr">fix</span> C n := <span class="kr">if</span> n <span class="kr">is</span> n.+<span class="mi">1</span> <span class="kr">then</span> u @` C n <span class="kr">else</span> A `\` B.
+<span class="nb">pose</span> C := \bigcup_n C_ n; <span class="nb">have</span> CA : C `&lt;=` A.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; + [] =&gt; /[<span class="nb">swap</span>]; <span class="nb">elim</span>=&gt; [|i IH] y _ []// x /IH/uAB/BA + &lt;-; <span class="nb">apply</span>.
+<span class="nb">have</span> uC: {homo u : x / x \<span class="kr">in</span> C}.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> !inE =&gt; -[i _ Cix]; <span class="kr">exists</span> <span class="nv">i</span>.+<span class="mi">1</span> =&gt; //; <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="nb">apply</span>/card_set_bijP; <span class="kr">exists</span> (<span class="nv">fun</span> <span class="nv">x</span> =&gt; <span class="kr">if</span> x \<span class="kr">in</span> C <span class="kr">then</span> u x <span class="kr">else</span> x); <span class="nb">split</span>.
+- <span class="nb">move</span>=&gt; x Ax; <span class="nb">case</span>: ifPn; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; _; <span class="nb">apply</span>: uAB.
+  <span class="bp">by</span> <span class="nb">move</span>/negP; <span class="nb">apply</span>: contra_notP =&gt; NBx; <span class="nb">rewrite</span> inE; <span class="kr">exists</span> <span class="mi">0</span>%N.
+- <span class="nb">move</span>=&gt; x y xA yA; <span class="nb">have</span> := &#39;inj_u xA yA.
+  <span class="nb">have</span> [xC|] := boolP (x \<span class="kr">in</span> C); <span class="nb">have</span> [yC|] := boolP (y \<span class="kr">in</span> C) =&gt; // + _.
+    <span class="bp">by</span> <span class="nb">move</span>=&gt; /[<span class="nb">swap</span>]&lt;-; <span class="nb">rewrite</span> uC// xC.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; /[<span class="nb">swap</span>]-&gt;; <span class="nb">rewrite</span> uC// yC.
+- <span class="nb">move</span>=&gt; y /[dup] By /BA Ay/=.
+  <span class="nb">case</span>: (boolP (y \<span class="kr">in</span> C)); <span class="nb">last</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">y</span>; <span class="nb">rewrite</span> // ifN.
+  <span class="nb">rewrite</span> inE =&gt; -[[|i]/= _ []// x Cix &lt;-]; <span class="nb">have</span> Cx : C x <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">i</span>.
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">x</span>; [<span class="bp">exact</span>: CA|<span class="nb">rewrite</span> ifT// inE].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_esym</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) : A #= B -&gt; B #= A.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /card_eqVP[f]; <span class="nb">apply</span>/card_eqP; squash f^-<span class="mi">1</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eq_le</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) :
+  (A #= B) = (A #&lt;= B) &amp;&amp; (B #&lt;= A).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/idP/andP =&gt; [/card_eqVP[f]|[]]; <span class="nb">last</span> <span class="bp">exact</span>: Cantor_Bernstein.
+<span class="bp">by</span> <span class="nb">split</span>; <span class="nb">apply</span>/card_leP; [squash f|squash f^-<span class="mi">1</span>].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eqPle</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) :
+  (A #= B) &lt;-&gt; (A #&lt;= B) /\ (B #&lt;= A).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> card_eq_le (rwP andP). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_lexx</span> <span class="nv">T</span> (<span class="nv">A</span> : <span class="nb">set</span> T) : A #&lt;= A.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/card_leP; squash idfun. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> card_lexx : core.
+
+<span class="kn">Lemma</span> <span class="nf">card_leT</span> <span class="nv">T</span> (<span class="nv">S</span> : <span class="nb">set</span> T) : S #&lt;= [<span class="nb">set</span>: T].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/card_leP; squash (to_setT \o inclT _ \o val). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">subset_card_le</span> <span class="nv">T</span> (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> T) : A `&lt;=` B -&gt; A #&lt;= B.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; AB; <span class="nb">apply</span>/card_leP; squash (inclT _ \o subfun AB). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_image_le</span> {<span class="nv">T</span> <span class="nv">U</span>} (<span class="nv">f</span> : T -&gt; U) (<span class="nv">A</span> : <span class="nb">set</span> T) : f @` A #&lt;= A.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Ppointed: T =&gt; T <span class="kr">in</span> A f *; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> !emptyE_subdef image_set0.
+<span class="bp">by</span> <span class="nb">apply</span>/pcard_leP; squash (pinv A f).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">inj_card_eq</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span>} {<span class="nv">f</span> : T -&gt; U} : {<span class="kr">in</span> A &amp;, injective f} -&gt; f @` A #= A.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /inj_bij/pcard_eq/card_esym. <span class="kn">Qed</span>.
+<span class="kn">Arguments</span> inj_card_eq {T U A f}.
+
+<span class="kn">Lemma</span> <span class="nf">card_some</span> {<span class="nv">T</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} : some @` A #= A.
+<span class="kn">Proof</span>. <span class="bp">exact</span>: inj_card_eq. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_image</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} (<span class="nv">f</span> : {inj A &gt;-&gt; U}) : f @` A #= A.
+<span class="kn">Proof</span>. <span class="bp">exact</span>: inj_card_eq. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_imsub</span> {<span class="nv">T</span> <span class="nv">U</span>} (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">f</span> : {inj A &gt;-&gt; U}) <span class="nv">X</span> : X `&lt;=` A -&gt; f @` X #= X.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; XA; <span class="nb">rewrite</span> (card_image [inj of f \o incl XA]). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_le_trans</span> (<span class="nv">T</span> <span class="nv">U</span> <span class="nv">V</span> : <span class="kt">Type</span>) (<span class="nv">B</span> : <span class="nb">set</span> U) (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">C</span> : <span class="nb">set</span> V) :
+  A #&lt;= B -&gt; B #&lt;= C -&gt; A #&lt;= C.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /card_leP[f]/card_leP[g]; <span class="nb">apply</span>/card_leP; squash (g \o f). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eq_sym</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) : (A #= B) = (B #= A).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> !card_eq_le andbC. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eq_trans</span> <span class="nv">T</span> <span class="nv">U</span> <span class="nv">V</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) (<span class="nv">C</span> : <span class="nb">set</span> V) :
+  A #= B -&gt; B #= C -&gt; A #= C.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /card_eqP[f]/card_eqP[g]; <span class="nb">apply</span>/card_eqP; squash (g \o f). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_le_eql</span> <span class="nv">T</span> <span class="nv">T&#39;</span> <span class="nv">T&#39;&#39;</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> T&#39;) [C : <span class="nb">set</span> T&#39;&#39;] :
+   A #= B -&gt; (A #&lt;= C) = (B #&lt;= C).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /card_eqPle[*]; <span class="nb">apply</span>/idP/idP; <span class="nb">apply</span>: card_le_trans. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_le_eqr</span> <span class="nv">T</span> <span class="nv">T&#39;</span> <span class="nv">T&#39;&#39;</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> T&#39;) [C : <span class="nb">set</span> T&#39;&#39;] :
+   A #= B -&gt; (C #&lt;= A) = (C #&lt;= B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /card_eqPle[*]; <span class="nb">apply</span>/idP/idP =&gt; /card_le_trans; <span class="nb">apply</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eql</span> <span class="nv">T</span> <span class="nv">T&#39;</span> <span class="nv">T&#39;&#39;</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> T&#39;) [C : <span class="nb">set</span> T&#39;&#39;] :
+   A #= B -&gt; (A #= C) = (B #= C).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; e; <span class="nb">rewrite</span> !card_eq_le (card_le_eql e) (card_le_eqr e). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eqr</span> <span class="nv">T</span> <span class="nv">T&#39;</span> <span class="nv">T&#39;&#39;</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> T&#39;) [C : <span class="nb">set</span> T&#39;&#39;] :
+   A #= B -&gt; (C #= A) = (C #= B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; e; <span class="nb">rewrite</span> !card_eq_le (card_le_eql e) (card_le_eqr e). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_ge_image</span> {<span class="nv">T</span> <span class="nv">U</span> <span class="nv">V</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} (<span class="nv">f</span> : {inj A &gt;-&gt; U}) <span class="nv">X</span> (<span class="nv">Y</span> : <span class="nb">set</span> V) :
+  X `&lt;=` A -&gt; (f @` X #&lt;= Y) = (X #&lt;= Y).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; XA; <span class="nb">rewrite</span> (card_le_eql (card_imsub _ _)). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_le_image</span> {<span class="nv">T</span> <span class="nv">U</span> <span class="nv">V</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} (<span class="nv">f</span> : {inj A &gt;-&gt; U}) <span class="nv">X</span> (<span class="nv">Y</span> : <span class="nb">set</span> V) :
+  X `&lt;=` A -&gt; (Y #&lt;= f @` X) = (Y #&lt;= X).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; XA; <span class="nb">rewrite</span> (card_le_eqr (card_imsub _ _)). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_le_image2</span> {<span class="nv">T</span> <span class="nv">U</span>} (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">f</span> : {inj A &gt;-&gt; U}) <span class="nv">X</span> <span class="nv">Y</span> :
+   X `&lt;=` A -&gt; Y `&lt;=` A -&gt;
+   (f @` X #&lt;= f @` Y) = (X #&lt;= Y).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; *; <span class="nb">rewrite</span> card_ge_image// card_le_image. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eq_image</span> {<span class="nv">T</span> <span class="nv">U</span> <span class="nv">V</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} (<span class="nv">f</span> : {inj A &gt;-&gt; U}) <span class="nv">X</span> (<span class="nv">Y</span> : <span class="nb">set</span> V) :
+  X `&lt;=` A -&gt; (f @` X #= Y) = (X #= Y).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; XA; <span class="nb">rewrite</span> (card_eql (card_imsub _ _)). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eq_imager</span> {<span class="nv">T</span> <span class="nv">U</span> <span class="nv">V</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} (<span class="nv">f</span> : {inj A &gt;-&gt; U}) <span class="nv">X</span> (<span class="nv">Y</span> : <span class="nb">set</span> V) :
+  X `&lt;=` A -&gt; (Y #= f @` X) = (Y #= X).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; XA; <span class="nb">rewrite</span> (card_eqr (card_imsub _ _)). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eq_image2</span> {<span class="nv">T</span> <span class="nv">U</span>} (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">f</span> : {inj A &gt;-&gt; U}) <span class="nv">X</span> <span class="nv">Y</span> :
+   X `&lt;=` A -&gt; Y `&lt;=` A -&gt;
+   (f @` X #= f @` Y) = (X #= Y).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; *; <span class="nb">rewrite</span> card_eq_image// card_eq_imager. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_ge_some</span> {<span class="nv">T</span> <span class="nv">T&#39;</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> T&#39;} :
+  (some @` A #&lt;= B) = (A #&lt;= B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> (card_le_eql card_some). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_le_some</span> {<span class="nv">T</span> <span class="nv">T&#39;</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> T&#39;} :
+  (A #&lt;= some @` B) = (A #&lt;= B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> (card_le_eqr card_some). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_le_some2</span> {<span class="nv">T</span> <span class="nv">T&#39;</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> T&#39;} :
+  (some @` A #&lt;= some @` B) = (A #&lt;= B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> card_ge_some card_le_some. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eq_somel</span> {<span class="nv">T</span> <span class="nv">T&#39;</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> T&#39;} :
+  (some @` A #= B) = (A #= B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> (card_eql card_some). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eq_somer</span> {<span class="nv">T</span> <span class="nv">T&#39;</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> T&#39;} :
+  (A #= some @` B) = (A #= B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> (card_eqr card_some). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eq_some2</span> {<span class="nv">T</span> <span class="nv">T&#39;</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> T&#39;} :
+  (some @` A #= some @` B) = (A #= B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> card_eq_somel card_eq_somer. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eq0</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} : (A #= @set0 U) = (A == set0).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> card_eq_le card_le0 card_ge0 andbT. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_set1</span> {<span class="nv">T</span>} {<span class="nv">x</span> : T} : [<span class="nb">set</span> x] #= `I_1.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/pcard_eqP; <span class="nb">suff</span> /Pbij[f]: set_bij [<span class="nb">set</span> x] `I_1 (<span class="kr">fun</span>=&gt; <span class="mi">0</span>%N) <span class="bp">by</span> squash f.
+<span class="bp">by</span> <span class="nb">split</span>=&gt; [//|y z /[!in_setE]-&gt; -&gt;//|[]//]; <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_card1</span> {<span class="nv">T</span> <span class="nv">U</span>} (<span class="nv">x</span> : T) (<span class="nv">y</span> : U) : [<span class="nb">set</span> x] #= [<span class="nb">set</span> y].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> (card_eql card_set1) (card_eqr card_set1). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eq_emptyr</span> (<span class="nv">T</span> : emptyType) <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) :
+  (B #= A) = (B == set0).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> empty_eq0; <span class="bp">exact</span>: card_eq0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eq_emptyl</span> (<span class="nv">T</span> : emptyType) <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) :
+  (A #= B) = (B == set0).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> card_eq_sym card_eq_emptyr. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">emptyE</span> := (emptyE_subdef, card_eq_emptyr, card_eq_emptyl).
+
+<span class="kn">Lemma</span> <span class="nf">card_setT</span> <span class="nv">T</span> (<span class="nv">A</span> : <span class="nb">set</span> T) : [<span class="nb">set</span>: A] #= A.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/card_esym/card_eqP; squash to_setT. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> card_setT : core.
+
+<span class="kn">Lemma</span> <span class="nf">card_setT_sym</span> <span class="nv">T</span> (<span class="nv">A</span> : <span class="nb">set</span> T) : A #= [<span class="nb">set</span>: A].
+<span class="kn">Proof</span>. <span class="bp">exact</span>/card_esym/card_setT. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> card_setT : core.
+
+<span class="kn">Lemma</span> <span class="nf">surj_card_ge</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} : {surj B &gt;-&gt; A} -&gt; A #&lt;= B.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; g; <span class="nb">rewrite</span> (card_le_trans (subset_card_le &#39;surj_g)) <span class="nl">?card_image_le</span>.
+<span class="kn">Qed</span>.
+<span class="kn">Arguments</span> surj_card_ge {T U A B} g.
+
+<span class="kn">Lemma</span> <span class="nf">pcard_surjP</span> {<span class="nv">T</span> : pointedType} {<span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+  reflect (<span class="kr">exists</span> <span class="nv">g</span>, set_surj B A g) (A #&lt;= B).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: (iffP idP) =&gt; [|[_ /Psurj[g _]]]; <span class="nb">last</span> <span class="bp">exact</span>: surj_card_ge.
+<span class="nb">elim</span>/Ppointed: U =&gt; U <span class="kr">in</span> B *; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> <span class="nl">?emptyE</span> =&gt; -&gt;; <span class="kr">exists</span> <span class="nv">any</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /pcard_leP[f]; <span class="kr">exists</span> (<span class="nv">pinv</span> <span class="nv">A</span> <span class="nv">f</span>); <span class="nb">apply</span>: subl_surj surj.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pcard_geP</span> {<span class="nv">T</span> : pointedType} {<span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+  reflect $|{surj B &gt;-&gt; A}| (A #&lt;= B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: (iffP pcard_surjP); <span class="nb">rewrite</span> surjPex. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ocard_geP</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+  reflect $|{surj B &gt;-&gt; some @` A}| (A #&lt;= B).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">elim</span>/Pchoice: T =&gt; T <span class="kr">in</span> A *; <span class="nb">rewrite</span> -card_ge_some; <span class="nb">apply</span>: pcard_geP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">pfcard_geP</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+  reflect (A = set0 \/ $|{surjfun B &gt;-&gt; A}|) (A #&lt;= B).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: (iffP idP); <span class="nb">last</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; [-&gt;//|[f]]; <span class="nb">apply</span>: surj_card_ge; <span class="bp">exact</span>: f.
+<span class="nb">elim</span>/Ppointed: T =&gt; T <span class="kr">in</span> A *; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> !emptyE; <span class="nb">left</span>.
+<span class="nb">elim</span>/Ppointed: U =&gt; U <span class="kr">in</span> B *; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> !emptyE =&gt; -&gt;; <span class="nb">right</span>; squash any.
+<span class="nb">move</span>=&gt; /pcard_geP[f]; <span class="nb">case</span>: (eqVneq A set0); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">left</span>.
+<span class="nb">move</span>=&gt; /set0P[x Ax]; <span class="nb">right</span>; <span class="nb">apply</span>/surjfunPex.
+<span class="kr">exists</span> (<span class="nv">fun</span> <span class="nv">y</span> =&gt; <span class="kr">if</span> f y \<span class="kr">in</span> A <span class="kr">then</span> f y <span class="kr">else</span> x).
+<span class="nb">apply</span>/seteqP; <span class="nb">split</span>.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; x&#39; /[dup] /= /&#39;surj_f [y By &lt;-] Afy; <span class="kr">exists</span> <span class="nv">y</span>; <span class="nb">rewrite</span> <span class="nl">?ifT</span>// inE.
+<span class="bp">by</span> <span class="nb">apply</span>/image_subP =&gt; y By; <span class="nb">case</span>: ifPn; <span class="nb">rewrite</span> (inE, notin_set).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_le_II</span> <span class="nv">n</span> <span class="nv">m</span> : (`I_n #&lt;= `I_m) = (n &lt;= m)%N.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/idP/idP=&gt; [/card_leP[f]|?];
+  <span class="nb">last</span> <span class="bp">by</span> <span class="nb">apply</span>/subset_card_le =&gt; k /leq_trans; <span class="nb">apply</span>.
+<span class="bp">by</span> <span class="nb">have</span> /leq_card := in2TT &#39;inj_(IIord \o f \o IIord^-<span class="mi">1</span>); <span class="nb">rewrite</span> !card_ord.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ocard_eqP</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+  reflect $|{bij A &gt;-&gt; some @` B}| (A #= B).
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Pchoice: U =&gt; U <span class="kr">in</span> B *.
+<span class="bp">by</span> <span class="nb">rewrite</span> -(card_eqr card_some); <span class="bp">exact</span>: (iffP pcard_eqP).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">oocard_eqP</span> {<span class="nv">T</span> <span class="nv">U</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} {<span class="nv">B</span> : <span class="nb">set</span> U} :
+  reflect $|{splitbij some @` A &gt;-&gt; some @` B}| (A #= B).
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Pchoice: U =&gt; U <span class="kr">in</span> B *; <span class="nb">elim</span>/Pchoice: T =&gt; T <span class="kr">in</span> A *.
+<span class="nb">rewrite</span> -(card_eql card_some) -(card_eqr card_some).
+<span class="bp">exact</span>: (iffP ppcard_eqP).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eq_II</span> {<span class="nv">n</span> <span class="nv">m</span>} : reflect (n = m) (`I_n #= `I_m).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> card_eq_le !card_le_II -eqn_leq; <span class="nb">apply</span>: eqP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sub_setP</span>  {<span class="nv">T</span>} {<span class="nv">A</span> : <span class="nb">set</span> T} (<span class="nv">X</span> : <span class="nb">set</span> A) : set_val @` X `&lt;=` A.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x [/= a Xa &lt;-]; <span class="nb">apply</span>: set_valP. <span class="kn">Qed</span>.
+<span class="kn">Arguments</span> sub_setP {T A}.
+<span class="kn">Arguments</span> image_subset {aT rT} f [A B].
+
+<span class="kn">Lemma</span> <span class="nf">card_subP</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) :
+  reflect (<span class="kr">exists2</span> C, C #= A &amp; C `&lt;=` B) (A #&lt;= B).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: (iffP idP) =&gt; [/card_leP[f]|[C CA CB]]; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -(card_le_eql CA); <span class="nb">apply</span>/card_leP; squash (inclT _ \o subfun CB).
+<span class="kr">exists</span> (<span class="nv">set_val</span> @` range f); <span class="nb">last</span> <span class="bp">exact</span>: (subset_trans (sub_setP _)).
+<span class="bp">by</span> <span class="nb">rewrite</span> ?(card_eql (inj_card_eq _))//; <span class="nb">apply</span>: in2W; <span class="nb">apply</span>: in2TT; <span class="nb">apply</span>: inj.
+<span class="kn">Qed</span>.
+
+<span class="c">(* remove *)</span>
+<span class="kn">Lemma</span> <span class="nf">pigeonhole</span> <span class="nv">m</span> <span class="nv">n</span> (<span class="nv">f</span> : nat -&gt; nat) : {<span class="kr">in</span> `I_m &amp;, injective f} -&gt;
+  f @` `I_m `&lt;=` `I_n -&gt; (m &lt;= n)%N.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /Pinj[{}f-&gt;] /subset_card_le.
+<span class="bp">by</span> <span class="nb">rewrite</span> (card_le_eql (inj_card_eq _))// card_le_II.
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">countable</span> <span class="nv">T</span> (<span class="nv">A</span> : <span class="nb">set</span> T) := A #&lt;= @setT nat.
+
+<span class="kn">Lemma</span> <span class="nf">eq_countable</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) :
+  A #= B -&gt; countable A = countable B.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /card_le_eql leA; <span class="nb">rewrite</span> /countable leA. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">countable_setT_countMixin</span> (<span class="nv">T</span> : <span class="kt">Type</span>) :
+  countable (@setT T) -&gt; Countable.mixin_of T.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /pcard_leP/unsquash f; <span class="kr">exists</span> <span class="nv">f</span> <span class="nv">&#39;oinv_f</span>; <span class="nb">apply</span>: in1TT &#39;funoK_f.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">countableP</span> (<span class="nv">T</span> : countType) (<span class="nv">A</span> : <span class="nb">set</span> T) : countable A.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/card_leP; squash (to_setT \o choice.pickle). <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> countableP : core.
+
+<span class="kn">Lemma</span> <span class="nf">countable0</span> <span class="nv">T</span> : countable (@set0 T). <span class="kn">Proof</span>. <span class="bp">exact</span>: card_ge0. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> countable0 : core.
+
+<span class="kn">Lemma</span> <span class="nf">countable_injP</span> <span class="nv">T</span> (<span class="nv">A</span> : <span class="nb">set</span> T) :
+  reflect (<span class="kr">exists</span> <span class="nv">f</span> : T -&gt; nat, {<span class="kr">in</span> A &amp;, injective f}) (countable A).
+<span class="kn">Proof</span>. <span class="bp">exact</span>: pcard_injP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">countable_bijP</span> <span class="nv">T</span> (<span class="nv">A</span> : <span class="nb">set</span> T) :
+  reflect (<span class="kr">exists</span> <span class="nv">B</span> : <span class="nb">set</span> nat, (A #= B)%card) (countable A).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: (iffP idP); <span class="nb">last</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; [B] /eq_countable -&gt;.
+<span class="nb">move</span>=&gt; /pcard_leP[f]; <span class="kr">exists</span> (<span class="nv">f</span> @` A).
+<span class="bp">by</span> <span class="nb">apply</span>/pcard_eqP; squash [<span class="kr">fun</span> <span class="nv">f</span> <span class="nv">in</span> <span class="nv">A</span>].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sub_countable</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) : A #&lt;= B -&gt;
+  countable B -&gt; countable A.
+<span class="kn">Proof</span>. <span class="bp">exact</span>: card_le_trans. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_setP</span> <span class="nv">T</span> (<span class="nv">A</span> : <span class="nb">set</span> T) : finite_set A &lt;-&gt; <span class="kr">exists</span> <span class="nv">n</span>, A #= `I_n.
+<span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_II</span> <span class="nv">n</span> : finite_set `I_n. <span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/finite_setP; <span class="kr">exists</span> <span class="nv">n</span>. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> finite_II : core.
+
+<span class="kn">Lemma</span> <span class="nf">card_II</span> {<span class="nv">n</span>} : `I_n #= [<span class="nb">set</span>: &#39;I_n].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/card_esym/pcard_eqP/bijPex; <span class="kr">exists</span> <span class="nv">val</span>; <span class="nb">split</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_fsetP</span> {<span class="nv">T</span> : choiceType} {<span class="nv">A</span> : <span class="nb">set</span> T} :
+  finite_set A &lt;-&gt; <span class="kr">exists</span> <span class="nv">X</span> : {fset T}, A = [<span class="nb">set</span>` X].
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> finite_setP; <span class="nb">split</span>=&gt; [[n]|[X {A}-&gt;]]; <span class="nb">last first</span>.
+  <span class="kr">exists</span> #|{: X}|; <span class="nb">rewrite</span> (card_eqr card_II).
+  <span class="bp">by</span> <span class="nb">apply</span>/card_eqP; squash (to_setT \o enum_rank \o val_finset).
+<span class="nb">rewrite</span> (card_eqr card_II) =&gt; /card_esym/card_eqVP[f]; <span class="nb">pose</span> g := f \o to_setT.
+<span class="kr">exists</span> [fset val (g i) | i <span class="kr">in</span> &#39;I_n]%fset.
+<span class="nb">apply</span>/seteqP; <span class="nb">split</span>=&gt; [x /mem_set Ax|_ /imfsetP[i _ -&gt;]]; <span class="nb">last</span> <span class="bp">exact</span>: set_valP.
+<span class="bp">by</span> <span class="nb">apply</span>/imfsetP; <span class="kr">exists</span> (<span class="nv">g</span>^-<span class="mi">1</span> (SigSub Ax)); <span class="nb">rewrite</span> ?[g _]invK//= inE.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_subfset</span> {<span class="nv">T</span> : choiceType} (<span class="nv">X</span> : {fset T}) {<span class="nv">A</span> : <span class="nb">set</span> T} :
+  A `&lt;=` [<span class="nb">set</span>` X] -&gt; finite_set A.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; AX; <span class="nb">apply</span>/finite_fsetP; <span class="kr">exists</span> [fset x <span class="kr">in</span> X | x \<span class="kr">in</span> A]%fset.
+<span class="nb">apply</span>/seteqP; <span class="nb">split</span>=&gt; x; <span class="nb">rewrite</span> /= <span class="nl">?inE</span>; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; /andP[_ /set_mem].
+<span class="bp">by</span> <span class="nb">move</span>=&gt; Ax; <span class="nb">rewrite</span> mem_set <span class="nl">?andbT</span>//; <span class="nb">apply</span>: AX.
+<span class="kn">Qed</span>.
+<span class="kn">Arguments</span> finite_subfset {T} X {A}.
+
+<span class="kn">Lemma</span> <span class="nf">finite_set0</span> <span class="nv">T</span> : finite_set (set0 : <span class="nb">set</span> T).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/finite_setP; <span class="kr">exists</span> <span class="mi">0</span>%N; <span class="nb">rewrite</span> II0. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> finite_set0 : core.
+
+<span class="kn">Lemma</span> <span class="nf">finite_seqP</span> {<span class="nv">T</span> : eqType} <span class="nv">A</span> :
+   finite_set A &lt;-&gt; <span class="kr">exists</span> <span class="nv">s</span> : seq T, A = [<span class="nb">set</span>` s].
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/eqPchoice: T =&gt; T <span class="kr">in</span> A *; <span class="nb">rewrite</span> finite_fsetP.
+<span class="nb">split</span>=&gt; [[X -&gt;]|[s -&gt;]]; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">X</span>.
+<span class="bp">by</span> <span class="kr">exists</span> [fset x | x <span class="kr">in</span> s]%fset; <span class="nb">apply</span>/seteqP; <span class="nb">split</span>=&gt; x /=; <span class="nb">rewrite</span> inE.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_seq</span> {<span class="nv">T</span> : eqType} (<span class="nv">s</span> : seq T) : finite_set [<span class="nb">set</span>` s].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/finite_seqP; <span class="kr">exists</span> <span class="nv">s</span>. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> finite_seq : core.
+
+<span class="kn">Lemma</span> <span class="nf">finite_fset</span> {<span class="nv">T</span> : choiceType} (<span class="nv">X</span> : {fset T}) : finite_set [<span class="nb">set</span>` X].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/finite_fsetP; <span class="kr">exists</span> <span class="nv">X</span>. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> finite_fset : core.
+
+<span class="kn">Lemma</span> <span class="nf">finite_finpred</span> {<span class="nv">T</span> : finType} {<span class="nv">pT</span> : predType T} (<span class="nv">P</span> : pT) :
+  finite_set [<span class="nb">set</span>` P].
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> finite_seqP; <span class="kr">exists</span> (<span class="nv">enum</span> <span class="nv">P</span>).
+<span class="bp">by</span> <span class="nb">apply</span>/seteqP; <span class="nb">split</span>=&gt; x/=; <span class="nb">rewrite</span> mem_enum.
+<span class="kn">Qed</span>.
+#[<span class="kn">global</span>]
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (finite_set [<span class="nb">set</span>` _]) =&gt; <span class="kp">solve</span> [<span class="nb">apply</span>: finite_finpred] : core.
+
+<span class="kn">Lemma</span> <span class="nf">finite_finset</span> {<span class="nv">T</span> : finType} {<span class="nv">X</span> : <span class="nb">set</span> T} : finite_set X.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">have</span> -&gt; : X = [<span class="nb">set</span>` mem X] <span class="bp">by</span> <span class="nb">apply</span>/seteqP; <span class="nb">split</span>=&gt; x /=; <span class="nb">rewrite</span> <span class="nl">?inE</span>.
+<span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> finite_finset : core.
+
+<span class="kn">Lemma</span> <span class="nf">finite_set_countable</span> <span class="nv">T</span> (<span class="nv">A</span> : <span class="nb">set</span> T) : finite_set A -&gt; countable A.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /finite_setP[n /eq_countable-&gt;]. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">infiniteP</span> <span class="nv">T</span> (<span class="nv">A</span> : <span class="nb">set</span> T) : infinite_set A &lt;-&gt; [<span class="nb">set</span>: nat] #&lt;= A.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Ppointed: T =&gt; T <span class="kr">in</span> A *.
+  <span class="bp">by</span> <span class="nb">rewrite</span> !emptyE; <span class="nb">split</span>=&gt; // /(congr1 (@^~ <span class="mi">0</span>%N))/=; <span class="nb">rewrite</span> propeqE =&gt; -[].
+<span class="nb">split</span>=&gt; [Ainfinite| + /finite_setP[n eqAI]]; <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> (card_le_eqr eqAI) =&gt; le_nat_n.
+  <span class="nb">suff</span>: `I_n.+<span class="mi">1</span> #&lt;= `I_n <span class="bp">by</span> <span class="nb">rewrite</span> card_le_II ltnn.
+  <span class="bp">exact</span>: card_le_trans (subset_card_le _) le_nat_n.
+<span class="nb">have</span> /all_sig2[f Af fX] : <span class="kr">forall</span> <span class="nv">X</span> : {fset T}, {x | x \<span class="kr">in</span> A &amp; x \notin X}.
+  <span class="nb">move</span>=&gt; X; <span class="nb">apply</span>/sig2W; <span class="nb">apply</span>: contra_notP Ainfinite =&gt; nAX; <span class="nb">apply</span>/finite_fsetP.
+  <span class="kr">exists</span> [fset x <span class="kr">in</span> X | x \<span class="kr">in</span> A]%fset; <span class="nb">rewrite</span> eqEsubset; <span class="nb">split</span>; <span class="nb">last first</span>.
+    <span class="bp">by</span> <span class="nb">move</span>=&gt; x/=; <span class="nb">rewrite</span> !inE =&gt; /andP[_]; <span class="nb">rewrite</span> inE.
+  <span class="nb">move</span>=&gt; x Ax /=; <span class="nb">rewrite</span> !inE/=; <span class="nb">apply</span>/andP; <span class="nb">split</span>; <span class="nb">rewrite</span> <span class="nl">?inE</span>//.
+  <span class="bp">by</span> <span class="nb">apply</span>: contra_notT nAX =&gt; xNX; <span class="kr">exists</span> <span class="nv">x</span>; <span class="nb">rewrite</span> <span class="nl">?inE</span>.
+<span class="kp">do</span> [<span class="nb">under</span> [<span class="kr">forall</span> <span class="nv">x</span> : {fset _}, _]eq_forall <span class="kp">do</span> <span class="nb">rewrite</span> inE] <span class="kr">in</span> Af *.
+<span class="nb">suff</span> [g gE] : <span class="kr">exists</span> <span class="nv">g</span> : nat -&gt; T,
+    <span class="kr">forall</span> <span class="nv">n</span>, g n = f [fset g k | k <span class="kr">in</span> iota <span class="mi">0</span> n]%fset.
+  <span class="nb">have</span> /Pinj[h hE] : {<span class="kr">in</span> setT &amp;, injective g}.
+    <span class="nb">move</span>=&gt; i j _ _; <span class="nb">apply</span>: contra_eq; <span class="nb">wlog</span> lt_ij : i j / (i &lt; j)%N =&gt; [hwlog|_].
+    <span class="bp">by</span> <span class="nb">case</span>: ltngtP =&gt; // ij _; [|<span class="nb">rewrite</span> eq_sym];
+       <span class="nb">apply</span>: hwlog=&gt; //; <span class="nb">rewrite</span> lt_eqF//.
+    <span class="nb">rewrite</span> [g j]gE; <span class="nb">set</span> X := (X <span class="kr">in</span> f X); <span class="nb">have</span> := fX X.
+    <span class="bp">by</span> <span class="nb">apply</span>: contraNneq =&gt; &lt;-; <span class="nb">apply</span>/imfsetP; <span class="kr">exists</span> <span class="nv">i</span> =&gt; //=; <span class="nb">rewrite</span> mem_iota.
+  <span class="nb">have</span>/injPfun[i _] : {homo h : x / setT x &gt;-&gt; A x} <span class="bp">by</span> <span class="nb">move</span>=&gt; i; <span class="nb">rewrite</span> -hE gE.
+  <span class="bp">by</span> <span class="nb">apply</span>/pcard_leP; squash i.
+<span class="nb">pose</span> g := <span class="kr">fix</span> g n k := <span class="kr">if</span> n <span class="kr">isn&#39;t</span> n&#39;.+<span class="mi">1</span> <span class="kr">then</span> f fset0
+                       <span class="kr">else</span> f [fset g n&#39; i | i <span class="kr">in</span> iota <span class="mi">0</span> k]%fset.
+<span class="kr">exists</span> (<span class="nv">fun</span> <span class="nv">n</span> =&gt; g n n) =&gt; n.
+<span class="nb">suff</span> {n} gn n k : (k &lt;= n)%N -&gt; g n k = f [fset g k k | k <span class="kr">in</span> iota <span class="mi">0</span> k]%fset.
+  <span class="bp">by</span> <span class="nb">rewrite</span> gn//; <span class="nb">congr</span> f; <span class="nb">apply</span>/fsetP =&gt; k.
+<span class="nb">have</span> [m] := ubnP n; <span class="nb">elim</span>: m n k =&gt; //= m IHm [|n] k /=.
+  <span class="nb">rewrite</span> leqn0 =&gt; _ /eqP-&gt;/=.
+  <span class="nb">congr</span> f; <span class="nb">apply</span>/fsetP =&gt; x; <span class="nb">rewrite</span> !inE; <span class="nb">symmetry</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>/imfsetP =&gt; /= -[].
+<span class="nb">rewrite</span> ltnS =&gt; ltmn lekSn /=; <span class="nb">congr</span> f; <span class="nb">apply</span>/fsetP =&gt; i.
+<span class="bp">by</span> <span class="nb">apply</span>/imfsetP/imfsetP =&gt; /= -[j]; <span class="nb">rewrite</span> mem_iota/= =&gt; jk -&gt;;
+   <span class="kr">exists</span> <span class="nv">j</span>; <span class="nb">rewrite</span> <span class="nl">?mem_iota</span>//= <span class="nl">?add0n</span> <span class="nl">?IHm</span>//;
+   <span class="bp">by</span> [<span class="nb">rewrite</span> (leq_trans jk)// (leq_trans lekSn)|<span class="nb">rewrite</span> -ltnS (leq_trans jk)].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_setPn</span> <span class="nv">T</span> (<span class="nv">A</span> : <span class="nb">set</span> T) : finite_set A &lt;-&gt; ~ ([<span class="nb">set</span>: nat] #&lt;= A).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> -infiniteP notK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_le_finite</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) :
+  A #&lt;= B -&gt; finite_set B -&gt; finite_set A.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">rewrite</span> !finite_setPn; <span class="nb">apply</span>: contra_not =&gt; /card_le_trans; <span class="nb">apply</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sub_finite_set</span> <span class="nv">T</span> (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> T) : A `&lt;=` B -&gt;
+  finite_set B -&gt; finite_set A.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">apply</span>/card_le_finite/subset_card_le. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_set_leP</span> <span class="nv">T</span> (<span class="nv">A</span> : <span class="nb">set</span> T) : finite_set A &lt;-&gt; <span class="kr">exists</span> <span class="nv">n</span>, A #&lt;= `I_n.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; [[n /card_eqPle[]]|[n leAn]]; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">n</span>.
+<span class="bp">by</span> <span class="nb">apply</span>: card_le_finite leAn _; <span class="kr">exists</span> <span class="nv">n</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_ge_preimage</span> {<span class="nv">T</span> <span class="nv">U</span>} (<span class="nv">B</span> : <span class="nb">set</span> U) (<span class="nv">f</span> : T -&gt; U) :
+  {<span class="kr">in</span> f @^-<span class="mi">1</span>` B &amp;, injective f} -&gt; f @^-<span class="mi">1</span>` B #&lt;= B.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /Pinj[g eqg]; <span class="nb">rewrite</span> -(card_le_eql (card_image g)) -eqg.
+<span class="bp">by</span> <span class="nb">apply</span>: subset_card_le; <span class="nb">apply</span>: image_preimage_subset.
+<span class="kn">Qed</span>.
+
+<span class="kn">Corollary</span> <span class="nf">finite_preimage</span> {<span class="nv">T</span> <span class="nv">U</span>} (<span class="nv">B</span> : <span class="nb">set</span> U) (<span class="nv">f</span> : T -&gt; U) :
+  {<span class="kr">in</span> f @^-<span class="mi">1</span>` B &amp;, injective f} -&gt; finite_set B -&gt; finite_set (f @^-<span class="mi">1</span>` B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /card_ge_preimage fB; <span class="nb">apply</span>: card_le_finite. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_finite_set</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> U) :
+  A #= B -&gt; finite_set A = finite_set B.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; eqAB; <span class="nb">apply</span>/propeqP.
+<span class="bp">by</span> <span class="nb">split</span>=&gt; -[n Xn]; <span class="kr">exists</span> <span class="nv">n</span>; <span class="nb">move</span>: Xn; <span class="nb">rewrite</span> (card_eql eqAB).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_le_setD</span> <span class="nv">T</span> (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> T) : A `\` B #&lt;= A.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: subset_card_le; <span class="nb">rewrite</span> setDE; <span class="nb">apply</span>: subIset; <span class="nb">left</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_image</span> <span class="nv">T</span> <span class="nv">T&#39;</span> <span class="nv">A</span> (<span class="nv">f</span> : T -&gt; T&#39;) : finite_set A -&gt; finite_set (f @` A).
+<span class="kn">Proof</span>. <span class="bp">exact</span>/card_le_finite/card_image_le. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_set1</span> <span class="nv">T</span> (<span class="nv">x</span> : T) : finite_set [<span class="nb">set</span> x].
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Pchoice: T =&gt; T <span class="kr">in</span> x *.
+<span class="bp">by</span> <span class="nb">apply</span>/finite_fsetP; <span class="kr">exists</span> (<span class="nv">fset1</span> <span class="nv">x</span>); <span class="nb">rewrite</span> set_fset1.
+<span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> finite_set1 : core.
+
+<span class="kn">Lemma</span> <span class="nf">finite_setD</span> <span class="nv">T</span> (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> T) : finite_set A -&gt; finite_set (A `\` B).
+<span class="kn">Proof</span>. <span class="bp">exact</span>/card_le_finite/card_le_setD. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_setU</span> <span class="nv">T</span> (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> T) :
+  finite_set (A `|` B) = (finite_set A /\ finite_set B).
+<span class="kn">Proof</span>.
+<span class="nb">pose</span> fP := @finite_fsetP [choiceType of {classic T}]; <span class="nb">rewrite</span> propeqE; <span class="nb">split</span>.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; finAUB; <span class="nb">split</span>; <span class="nb">apply</span>: sub_finite_set finAUB.
+<span class="bp">by</span> <span class="nb">case</span>=&gt; /fP[X-&gt;]/fP[Y-&gt;]; <span class="nb">apply</span>/fP; <span class="kr">exists</span> (<span class="nv">X</span> `|` Y)%fset; <span class="nb">rewrite</span> set_fsetU.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_set2</span> <span class="nv">T</span> (<span class="nv">x</span> <span class="nv">y</span> : T) : finite_set [<span class="nb">set</span> x; y].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> !finite_setU; <span class="nb">split</span>; <span class="nb">apply</span>: finite_set1. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> finite_set2 : core.
+
+<span class="kn">Lemma</span> <span class="nf">finite_set3</span> <span class="nv">T</span> (<span class="nv">x</span> <span class="nv">y</span> <span class="nv">z</span> : T) : finite_set [<span class="nb">set</span> x; y; z].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> !finite_setU; <span class="kp">do</span> !<span class="nb">split</span>; <span class="nb">apply</span>: finite_set1. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> finite_set3 : core.
+
+<span class="kn">Lemma</span> <span class="nf">finite_set4</span> <span class="nv">T</span> (<span class="nv">x</span> <span class="nv">y</span> <span class="nv">z</span> <span class="nv">t</span> : T) : finite_set [<span class="nb">set</span> x; y; z; t].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> !finite_setU; <span class="kp">do</span> !<span class="nb">split</span>; <span class="nb">apply</span>: finite_set1. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> finite_set4 : core.
+
+<span class="kn">Lemma</span> <span class="nf">finite_set5</span> <span class="nv">T</span> (<span class="nv">x</span> <span class="nv">y</span> <span class="nv">z</span> <span class="nv">t</span> <span class="nv">u</span> : T) : finite_set [<span class="nb">set</span> x; y; z; t; u].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> !finite_setU; <span class="kp">do</span> !<span class="nb">split</span>; <span class="nb">apply</span>: finite_set1. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> finite_set5 : core.
+
+<span class="kn">Lemma</span> <span class="nf">finite_set6</span> <span class="nv">T</span> (<span class="nv">x</span> <span class="nv">y</span> <span class="nv">z</span> <span class="nv">t</span> <span class="nv">u</span> <span class="nv">v</span> : T) : finite_set [<span class="nb">set</span> x; y; z; t; u; v].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> !finite_setU; <span class="kp">do</span> !<span class="nb">split</span>; <span class="nb">apply</span>: finite_set1. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> finite_set6 : core.
+
+<span class="kn">Lemma</span> <span class="nf">finite_set7</span> <span class="nv">T</span> (<span class="nv">x</span> <span class="nv">y</span> <span class="nv">z</span> <span class="nv">t</span> <span class="nv">u</span> <span class="nv">v</span> <span class="nv">w</span> : T) : finite_set [<span class="nb">set</span> x; y; z; t; u; v; w].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> !finite_setU; <span class="kp">do</span> !<span class="nb">split</span>; <span class="nb">apply</span>: finite_set1. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> finite_set7 : core.
+
+<span class="kn">Lemma</span> <span class="nf">finite_setI</span> <span class="nv">T</span> (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> T) :
+  (finite_set A \/ finite_set B) -&gt; finite_set (A `&amp;` B).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">case</span>; <span class="nb">apply</span>: contraPP; <span class="nb">rewrite</span> !infiniteP =&gt; /card_le_trans; <span class="nb">apply</span>;
+   <span class="nb">apply</span>: subset_card_le.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_setIl</span> <span class="nv">T</span> (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> T) : finite_set A -&gt; finite_set (A `&amp;` B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">apply</span>: finite_setI; <span class="nb">left</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_setIr</span> <span class="nv">T</span> (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> T) : finite_set B -&gt; finite_set (A `&amp;` B).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">apply</span>: finite_setI; <span class="nb">right</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_setM</span> <span class="nv">T</span> <span class="nv">T&#39;</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> T&#39;) :
+  finite_set A -&gt; finite_set B -&gt; finite_set (A `*` B).
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Pchoice: T =&gt; T <span class="kr">in</span> A *; <span class="nb">elim</span>/Pchoice: T&#39; =&gt; T&#39; <span class="kr">in</span> B *.
+<span class="nb">move</span>=&gt; /finite_fsetP[{}A -&gt;] /finite_fsetP[{}B -&gt;].
+<span class="nb">apply</span>/finite_fsetP; <span class="kr">exists</span> (<span class="nv">A</span> `*` B)%fset; <span class="nb">apply</span>/predeqP =&gt; x.
+<span class="bp">by</span> <span class="nb">split</span>; <span class="nb">rewrite</span> /= inE =&gt; /andP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_image2</span> [aT bT rT : <span class="kt">Type</span>] [A : <span class="nb">set</span> aT] [B : <span class="nb">set</span> bT] (f : aT -&gt; bT -&gt; rT) :
+  finite_set A -&gt; finite_set B -&gt; finite_set [<span class="nb">set</span> f x y | x <span class="kr">in</span> A &amp; y <span class="kr">in</span> B]%classic.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; fA fB; <span class="nb">rewrite</span> image2E; <span class="nb">apply</span>/finite_image/finite_setM. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_image11</span> [xT aT bT rT : <span class="kt">Type</span>] [X : <span class="nb">set</span> xT]
+    (g : aT -&gt; bT -&gt; rT) (fa : xT -&gt; aT) (fb : xT -&gt; bT) :
+    finite_set (fa @` X) -&gt; finite_set (fb @` X) -&gt;
+  finite_set [<span class="nb">set</span> g (fa x) (fb x) | x <span class="kr">in</span> X]%classic.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /(finite_image2 g) /[<span class="nb">apply</span>]; <span class="nb">apply</span>: sub_finite_set; <span class="nb">rewrite</span> image2E.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; r/= [x Xx &lt;-]; <span class="kr">exists</span> (<span class="nv">fa</span> <span class="nv">x</span>, fb x) =&gt; //; <span class="nb">split</span>; <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">fset_set</span> (<span class="nv">T</span> : choiceType) (<span class="nv">A</span> : <span class="nb">set</span> T) :=
+  <span class="kr">if</span> pselect (finite_set A) <span class="kr">is</span> <span class="nb">left</span> Afin
+  <span class="kr">then</span> projT1 (cid (finite_fsetP.<span class="mi">1</span> Afin)) <span class="kr">else</span> fset0.
+
+<span class="kn">Lemma</span> <span class="nf">fset_setK</span> (<span class="nv">T</span> : choiceType) (<span class="nv">A</span> : <span class="nb">set</span> T) : finite_set A -&gt;
+  [<span class="nb">set</span>` fset_set A] = A.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /fset_set; <span class="nb">case</span>: pselect =&gt; // Afin _; <span class="nb">case</span>: cid. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">in_fset_set</span> (<span class="nv">T</span> : choiceType) (<span class="nv">A</span> : <span class="nb">set</span> T) : finite_set A -&gt;
+  fset_set A =i A.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; fA x; <span class="nb">rewrite</span> -[A <span class="kr">in</span> RHS]fset_setK//; <span class="nb">apply</span>/idP/idP; <span class="nb">rewrite</span> <span class="nl">?inE</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fset_set_sub</span> (<span class="nv">T</span> : choiceType) (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> T) :
+  finite_set A -&gt; finite_set B -&gt; A `&lt;=` B = (fset_set A `&lt;=` fset_set B)%fset.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; finA finB; <span class="nb">apply</span>/propext; <span class="nb">split</span>=&gt; [AB|/fsubsetP AB t].
+  <span class="bp">by</span> <span class="nb">apply</span>/fsubsetP =&gt; t; <span class="nb">rewrite</span> in_fset_set// in_fset_set// <span class="mi">2</span>!inE =&gt; /AB.
+<span class="bp">by</span> <span class="nb">have</span> := AB t; <span class="nb">rewrite</span> !in_fset_set// !inE.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fset_set_set0</span> (<span class="nv">T</span> : choiceType) (<span class="nv">A</span> : <span class="nb">set</span> T) : finite_set A -&gt;
+  fset_set A = fset0 -&gt; A = set0.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; finA; <span class="nb">rewrite</span> /fset_set; <span class="nb">case</span>: pselect =&gt; // {}finA.
+<span class="bp">by</span> <span class="nb">case</span>: cid =&gt; _/= -&gt; -&gt;; <span class="nb">rewrite</span> set_fset0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fset_set0</span> {<span class="nv">T</span> : choiceType} : fset_set (set0 : <span class="nb">set</span> T) = fset0.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">apply</span>/fsetP=&gt; x; <span class="nb">rewrite</span> in_fset_set <span class="nl">?inE</span>//; <span class="nb">apply</span>/negP; <span class="nb">rewrite</span> inE.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fset_set1</span> {<span class="nv">T</span> : choiceType} (<span class="nv">x</span> : T) : fset_set [<span class="nb">set</span> x] = [fset x]%fset.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/fsetP=&gt; y; <span class="nb">rewrite</span> in_fset_set <span class="nl">?inE</span>//.
+<span class="bp">by</span> <span class="nb">apply</span>/idP/idP; <span class="nb">rewrite</span> inE =&gt; /eqP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fset_setU</span> {<span class="nv">T</span> : choiceType} (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> T) :
+  finite_set A -&gt; finite_set B -&gt;
+  fset_set (A `|` B) = (fset_set A `|` fset_set B)%fset.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fA fB; <span class="nb">apply</span>/fsetP=&gt; x.
+<span class="nb">rewrite</span> ?(inE, in_fset_set)//; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> finite_setU.
+<span class="bp">by</span> <span class="nb">apply</span>/idP/orP; <span class="nb">rewrite</span> <span class="nl">?inE</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fset_setI</span> {<span class="nv">T</span> : choiceType} (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> T) :
+  finite_set A -&gt; finite_set B -&gt;
+  fset_set (A `&amp;` B) = (fset_set A `&amp;` fset_set B)%fset.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fA fB; <span class="nb">apply</span>/fsetP=&gt; x.
+<span class="nb">rewrite</span> ?(inE, in_fset_set)//; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">apply</span>: finite_setI; <span class="nb">left</span>.
+<span class="bp">by</span> <span class="nb">apply</span>/idP/andP; <span class="nb">rewrite</span> <span class="nl">?inE</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fset_setU1</span> {<span class="nv">T</span> : choiceType} (<span class="nv">x</span> : T) (<span class="nv">A</span> : <span class="nb">set</span> T) :
+  finite_set A -&gt; fset_set (x |` A) = (x |` fset_set A)%fset.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; fA; <span class="nb">rewrite</span> fset_setU// fset_set1. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fset_setD</span> {<span class="nv">T</span> : choiceType} (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> T) :
+  finite_set A -&gt; finite_set B -&gt;
+  fset_set (A `\` B) = (fset_set A `\` fset_set B)%fset.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fA fB; <span class="nb">apply</span>/fsetP=&gt; x.
+<span class="nb">rewrite</span> ?(inE, in_fset_set)//; <span class="nb">last</span> <span class="bp">exact</span>: finite_setD.
+<span class="bp">by</span> <span class="nb">apply</span>/idP/andP; <span class="nb">rewrite</span> <span class="nl">?inE</span> =&gt; -[]; <span class="nb">rewrite</span> <span class="nl">?notin_set</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fset_setD1</span> {<span class="nv">T</span> : choiceType} (<span class="nv">x</span> : T) (<span class="nv">A</span> : <span class="nb">set</span> T) :
+  finite_set A -&gt; fset_set (A `\ x) = (fset_set A `\ x)%fset.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; fA; <span class="nb">rewrite</span> fset_setD// fset_set1. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fset_setM</span> {<span class="nv">T1</span> <span class="nv">T2</span> : choiceType} (<span class="nv">A</span> : <span class="nb">set</span> T1) (<span class="nv">B</span> : <span class="nb">set</span> T2) :
+    finite_set A -&gt; finite_set B -&gt;
+  fset_set (A `*` B) = (fset_set A `*` fset_set B)%fset.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Afin Bfin; <span class="nb">have</span> ABfin : finite_set (A `*` B) <span class="bp">by</span> <span class="nb">apply</span>: finite_setM.
+<span class="nb">apply</span>/fsetP =&gt; i; <span class="nb">apply</span>/idP/idP; <span class="nb">rewrite</span> !(inE, in_fset_set)//=.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; [/mem_set-&gt; /mem_set-&gt;].
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /andP[]; <span class="nb">rewrite</span> !inE.
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">fst_fset</span> (<span class="nv">T1</span> <span class="nv">T2</span> : choiceType) (<span class="nv">A</span> : {fset (T1 * T2)}) : {fset T1} :=
+  [fset x.<span class="mi">1</span> | x <span class="kr">in</span> A]%fset.
+<span class="kn">Definition</span> <span class="nf">snd_fset</span> (<span class="nv">T1</span> <span class="nv">T2</span> : choiceType) (<span class="nv">A</span> : {fset (T1 * T2)}) : {fset T2} :=
+  [fset x.<span class="mi">2</span> | x <span class="kr">in</span> A]%fset.
+<span class="kn">Notation</span> <span class="s2">&quot;A .`1&quot;</span> := (fst_fset A) : fset_scope.
+<span class="kn">Notation</span> <span class="s2">&quot;A .`2&quot;</span> := (snd_fset A) : fset_scope.
+
+<span class="kn">Lemma</span> <span class="nf">finite_set_fst</span> (<span class="nv">T1</span> <span class="nv">T2</span> : choiceType) (<span class="nv">A</span> : <span class="nb">set</span> (T1 * T2)) :
+  finite_set A -&gt; finite_set A.`<span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /finite_fsetP[B A_B]; <span class="nb">apply</span>/finite_fsetP; <span class="kr">exists</span> (<span class="nv">B</span>.`<span class="mi">1</span>)%fset.
+<span class="bp">by</span> <span class="nb">apply</span>/seteqP; <span class="nb">split</span>=&gt; [x/= [y]|_/= /imfsetP[[x1 x2]/= +] -&gt;]; <span class="nb">rewrite</span> A_B;
+  [<span class="nb">move</span>=&gt; xyB; <span class="nb">apply</span>/imfsetP; <span class="kr">exists</span> (<span class="nv">x</span>, y)|<span class="nb">move</span>=&gt; ?; <span class="kr">exists</span> <span class="nv">x2</span>].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_set_snd</span> (<span class="nv">T1</span> <span class="nv">T2</span> : choiceType) (<span class="nv">A</span> : <span class="nb">set</span> (T1 * T2)) :
+  finite_set A -&gt; finite_set A.`<span class="mi">2</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /finite_fsetP[B A_B]; <span class="nb">apply</span>/finite_fsetP; <span class="kr">exists</span> (<span class="nv">B</span>.`<span class="mi">2</span>)%fset.
+<span class="nb">apply</span>/seteqP; <span class="nb">split</span>=&gt; [y/= [x]|_/= /imfsetP[[x1 x2]/= +] -&gt;]; <span class="nb">rewrite</span> A_B;
+  <span class="bp">by</span> [<span class="nb">move</span>=&gt; xyB; <span class="nb">apply</span>/imfsetP; <span class="kr">exists</span> (<span class="nv">x</span>, y)|<span class="nb">move</span>=&gt; ?; <span class="kr">exists</span> <span class="nv">x1</span>].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">bigcup_finite</span> {<span class="nv">I</span> <span class="nv">T</span>} (<span class="nv">D</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; <span class="nb">set</span> T) :
+    finite_set D -&gt; (<span class="kr">forall</span> <span class="nv">i</span>, D i -&gt; finite_set (F i)) -&gt;
+  finite_set (\bigcup_(i <span class="kr">in</span> D) F i).
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Pchoice: I =&gt; I <span class="kr">in</span> D F *.
+<span class="nb">elim</span>/Ppointed: T =&gt; T <span class="kr">in</span> F *; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> emptyE.
+<span class="nb">move</span>=&gt; Dfin Ffin; <span class="nb">pose</span> G (i : fset_set D) := fset_set (F (val i)).
+<span class="nb">suff</span>: (\bigcup_(i <span class="kr">in</span> D) F i #&lt;= [<span class="nb">set</span>: {i &amp; G i}])%card.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; /card_le_finite; <span class="nb">apply</span>; <span class="nb">apply</span>: finite_finset.
+<span class="nb">apply</span>/pcard_geP/surjPex.
+<span class="kr">exists</span> (<span class="nv">fun</span> (k : {i : fset_set D &amp; G i}) =&gt; val (projT2 k)).
+<span class="nb">move</span>=&gt; y [i Di Fky]/=.
+<span class="nb">have</span> Dk : i \<span class="kr">in</span> fset_set D <span class="bp">by</span> <span class="nb">rewrite</span> in_fset_set// inE.
+<span class="nb">pose</span> k : fset_set D := [` Dk]%fset.
+<span class="nb">have</span> Gy : y \<span class="kr">in</span> G k <span class="bp">by</span> <span class="nb">rewrite</span> in_fset_set <span class="nl">?inE</span>//; <span class="nb">apply</span>: Ffin.
+<span class="bp">by</span> <span class="kr">exists</span> (<span class="nv">Tagged</span> <span class="nv">G</span> [` Gy]%fset).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">trivIset_sum_card</span> (<span class="nv">T</span> : choiceType) (<span class="nv">F</span> : nat -&gt; <span class="nb">set</span> T) <span class="nv">n</span> :
+  (<span class="kr">forall</span> <span class="nv">n</span>, finite_set (F n)) -&gt; trivIset [<span class="nb">set</span>: nat] F -&gt;
+  (\sum_(i &lt; n) #|` fset_set (F i)| =
+   #|` fset_set (\big[setU/set0]_(k &lt; n) F k)|)%N.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; finF tF; <span class="nb">elim</span>: n =&gt; [|n ih]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> !big_ord0 fset_set0.
+<span class="nb">rewrite</span> big_ord_recr//= ih big_ord_recr/= fset_setU//; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -bigcup_mkord; <span class="bp">exact</span>: bigcup_finite.
+<span class="nb">rewrite</span> cardfsU [X <span class="kr">in</span> (_ - X)%N](_ : _  = O) <span class="nl">?subn0</span>// <span class="nl">?EFinD</span> <span class="nl">?natrD</span>//.
+<span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> cardfs_eq0 -fset_setI//; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -bigcup_mkord; <span class="bp">exact</span>: bigcup_finite.
+<span class="nb">rewrite</span> (@trivIset_bigsetUI _ xpredT)// <span class="nl">?fset_set0</span>//.
+<span class="bp">by</span> <span class="nb">rewrite</span> [X <span class="kr">in</span> trivIset X F](_ : _ = [<span class="nb">set</span>: nat])//; <span class="bp">exact</span>/seteqP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_setMR</span> (<span class="nv">T</span> <span class="nv">T&#39;</span> : choiceType) (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : T -&gt; <span class="nb">set</span> T&#39;) :
+  finite_set A -&gt; (<span class="kr">forall</span> <span class="nv">x</span>, A x -&gt; finite_set (B x)) -&gt; finite_set (A `*`` B).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Afin Bfin; <span class="nb">rewrite</span> -bigcupM1l.
+<span class="bp">by</span> <span class="nb">apply</span>: bigcup_finite =&gt; // i Ai; <span class="nb">apply</span>/finite_setM/Bfin.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_setML</span> (<span class="nv">T</span> <span class="nv">T&#39;</span> : choiceType) (<span class="nv">A</span> : T&#39; -&gt; <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> T&#39;) :
+  (<span class="kr">forall</span> <span class="nv">x</span>, B x -&gt; finite_set (A x)) -&gt; finite_set B -&gt; finite_set (A ``*` B).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Afin Bfin; <span class="nb">rewrite</span> -bigcupM1r.
+<span class="bp">by</span> <span class="nb">apply</span>: bigcup_finite =&gt; // i Ai; <span class="nb">apply</span>/finite_setM=&gt; //; <span class="nb">apply</span>: Afin.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fset_set_II</span> <span class="nv">n</span> : fset_set `I_n = [fset val i | i <span class="kr">in</span> &#39;I_n]%fset.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/fsetP =&gt; i; <span class="nb">rewrite</span> /= <span class="nl">?inE</span> in_fset_set//.
+<span class="nb">apply</span>/idP/imfsetP; <span class="nb">rewrite</span> <span class="nl">?inE</span>/=.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; lt_in; <span class="kr">exists</span> (<span class="nv">Ordinal</span> <span class="nv">lt_in</span>).
+<span class="bp">by</span> <span class="nb">move</span>=&gt; [j _ -&gt;].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">set_fsetK</span> (<span class="nv">T</span> : choiceType) (<span class="nv">A</span> : {fset T}) : fset_set [<span class="nb">set</span>` A] = A.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/fsetP =&gt; x; <span class="nb">rewrite</span> in_fset_set//=.
+<span class="bp">by</span> <span class="nb">apply</span>/idP/idP; <span class="nb">rewrite</span> <span class="nl">?inE</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fset_set_image</span> {<span class="nv">T</span> <span class="nv">U</span> : choiceType} (<span class="nv">f</span> : T -&gt; U) (<span class="nv">A</span> : <span class="nb">set</span> T) :
+  finite_set A -&gt; fset_set (f @` A) = (f @` fset_set A)%fset.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Afset; <span class="nb">apply</span>/fsetP=&gt; i.
+<span class="nb">rewrite</span> !in_fset_set; <span class="nb">last</span> <span class="bp">exact</span>: finite_image.
+<span class="nb">apply</span>/idP/imfsetP; <span class="nb">rewrite</span> !inE/=.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; [x Ax &lt;-]; <span class="kr">exists</span> <span class="nv">x</span>; <span class="nb">rewrite</span> <span class="nl">?in_fset_set</span> <span class="nl">?inE</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; [x + -&gt;]; <span class="nb">rewrite</span> in_fset_set// inE; <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fset_set_inj</span> {<span class="nv">T</span> : choiceType} (<span class="nv">A</span> <span class="nv">B</span> : <span class="nb">set</span> T) :
+  finite_set A -&gt; finite_set B -&gt; fset_set A = fset_set B -&gt; A = B.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; Afin Bfin /(congr1 pred_set); <span class="nb">rewrite</span> !fset_setK. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">bigsetU_fset_set</span> <span class="nv">T</span> (<span class="nv">I</span> : choiceType) (<span class="nv">A</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; <span class="nb">set</span> T) :
+  finite_set A -&gt; \big[setU/set0]_(i &lt;- fset_set A) F i =\bigcup_(i <span class="kr">in</span> A) F i.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; finA; <span class="nb">rewrite</span> -bigcup_fset /fset_set; <span class="nb">case</span>: pselect =&gt; [{}finA|//].
+<span class="nb">apply</span>/seteqP; <span class="nb">split</span>=&gt; [x [i /=]|x [i Ai Fix]].
+  <span class="bp">by</span> <span class="nb">case</span>: cid =&gt; /= B -&gt; iB Fix; <span class="kr">exists</span> <span class="nv">i</span>.
+<span class="bp">by</span> <span class="kr">exists</span> <span class="nv">i</span> =&gt; //; <span class="nb">case</span>: cid =&gt; // B AB /=; <span class="nb">move</span>: Ai; <span class="nb">rewrite</span> AB.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">__deprecated__bigcup_fset_set</span> <span class="nv">T</span> (<span class="nv">I</span> : choiceType) (<span class="nv">A</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; <span class="nb">set</span> T) :
+  finite_set A -&gt; \bigcup_(i <span class="kr">in</span> A) F i = \big[setU/set0]_(i &lt;- fset_set A) F i.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /bigsetU_fset_set-&gt;. <span class="kn">Qed</span>.
+#[deprecated(note=<span class="s2">&quot;Use -bigsetU_fset_set instead&quot;</span>)]
+<span class="kn">Notation</span> <span class="nf">bigcup_fset_set</span> := __deprecated__bigcup_fset_set.
+
+<span class="kn">Lemma</span> <span class="nf">bigsetU_fset_set_cond</span> <span class="nv">T</span> (<span class="nv">I</span> : choiceType) (<span class="nv">A</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; <span class="nb">set</span> T)
+    (<span class="nv">P</span> : pred I) : finite_set A -&gt;
+  \big[setU/set0]_(i &lt;- fset_set A | P i) F i = \bigcup_(i <span class="kr">in</span> A `&amp;` P) F i.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; *; <span class="nb">rewrite</span> bigcup_mkcondr big_mkcond -bigsetU_fset_set <span class="nl">?mem_setE</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">__deprecated__bigcup_fset_set_cond</span> <span class="nv">T</span> (<span class="nv">I</span> : choiceType) (<span class="nv">A</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; <span class="nb">set</span> T)
+    (<span class="nv">P</span> : pred I) : finite_set A -&gt;
+  \bigcup_(i <span class="kr">in</span> A `&amp;` P) F i = \big[setU/set0]_(i &lt;- fset_set A | P i) F i.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /bigsetU_fset_set_cond-&gt;. <span class="kn">Qed</span>.
+#[deprecated(note=<span class="s2">&quot;Use -bigsetU_fset_set_cond instead&quot;</span>)]
+<span class="kn">Notation</span> <span class="nf">bigcup_fset_set_cond</span> := __deprecated__bigcup_fset_set_cond.
+
+<span class="kn">Lemma</span> <span class="nf">bigsetI_fset_set</span> <span class="nv">T</span> (<span class="nv">I</span> : choiceType) (<span class="nv">A</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; <span class="nb">set</span> T) :
+  finite_set A -&gt; \big[setI/setT]_(i &lt;- fset_set A) F i =\bigcap_(i <span class="kr">in</span> A) F i.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; *; <span class="nb">apply</span>: setC_inj; <span class="nb">rewrite</span> setC_bigcap setC_bigsetI bigsetU_fset_set.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">__deprecated__bigcap_fset_set</span> <span class="nv">T</span> (<span class="nv">I</span> : choiceType) (<span class="nv">A</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; <span class="nb">set</span> T) :
+  finite_set A -&gt; \bigcap_(i <span class="kr">in</span> A) F i = \big[setI/setT]_(i &lt;- fset_set A) F i.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /bigsetI_fset_set-&gt;. <span class="kn">Qed</span>.
+#[deprecated(note=<span class="s2">&quot;Use -bigsetI_fset_set instead&quot;</span>)]
+<span class="kn">Notation</span> <span class="nf">bigcap_fset_set</span> := __deprecated__bigcap_fset_set.
+
+<span class="kn">Lemma</span> <span class="nf">bigsetI_fset_set_cond</span> <span class="nv">T</span> (<span class="nv">I</span> : choiceType) (<span class="nv">A</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; <span class="nb">set</span> T)
+    (<span class="nv">P</span> : pred I) : finite_set A -&gt;
+  \big[setI/setT]_(i &lt;- fset_set A | P i) F i = \bigcap_(i <span class="kr">in</span> A `&amp;` P) F i.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; *; <span class="nb">rewrite</span> bigcap_mkcondr big_mkcond -bigsetI_fset_set <span class="nl">?mem_setE</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">super_bij</span> <span class="nv">T</span> <span class="nv">U</span> (<span class="nv">X</span> <span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">Y</span> <span class="nv">B</span> : <span class="nb">set</span> U) (<span class="nv">f</span> : {bij X &gt;-&gt; Y}) :
+  X `&lt;=` A -&gt; Y `&lt;=` B -&gt; A `\` X #= B `\` Y -&gt;
+  <span class="kr">exists</span> <span class="nv">g</span> : {bij A &gt;-&gt; B}, {<span class="kr">in</span> X, g =<span class="mi">1</span> f}.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Ppointed: U =&gt; U <span class="kr">in</span> Y B f *.
+  <span class="nb">rewrite</span> !emptyE <span class="kr">in</span> f * =&gt; XA _; <span class="nb">rewrite</span> setD_eq0 =&gt; AX.
+  <span class="bp">by</span> <span class="nb">suff</span> /seteqP-&gt;// : A `&lt;=&gt;` X <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">f</span>.
+<span class="nb">move</span>=&gt; XA YB /pcard_eqP[g].
+<span class="nb">rewrite</span> -(joinIB X A) -(joinIB Y B) !meetEset.
+<span class="nb">have</span> /disj_set2P AX : (A `&amp;` X) `&amp;` (A `\` X) = set0 <span class="bp">by</span> <span class="nb">apply</span>: meetIB.
+<span class="nb">have</span> /disj_set2P BY : (B `&amp;` Y) `&amp;` (B `\` Y) = set0 <span class="bp">by</span> <span class="nb">apply</span>: meetIB.
+<span class="nb">rewrite</span> !(setIidr XA) !(setIidr YB) <span class="kr">in</span> AX BY *.
+<span class="bp">by</span> <span class="kr">exists</span> [bij of glue AX BY f g] =&gt; x /= xX; <span class="nb">rewrite</span> glue1.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_eq_fsetP</span> {<span class="nv">T</span> : choiceType} {<span class="nv">A</span> : {fset T}} {<span class="nv">n</span>} :
+  reflect (#|` A| = n) ([<span class="nb">set</span>` A] #= `I_n).
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/choicePpointed: T =&gt; T <span class="kr">in</span> A *.
+  <span class="nb">rewrite</span> -{<span class="mi">1</span>}[A]set_fsetK !emptyE fset_set0 cardfs0.
+  <span class="bp">by</span> <span class="nb">apply</span>: (iffP eqP) =&gt; [/IIn_eq0-&gt;//|&lt;-]; <span class="nb">rewrite</span> II0.
+<span class="nb">rewrite</span> (card_eqr card_II) card_eq_sym.
+<span class="nb">apply</span>: (iffP pcard_eqP) =&gt; [[f]|]; <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> cardfE =&gt; eqAn.
+  <span class="bp">by</span> squash (set_val \o finset_val \o enum_val \o cast_ord (esym eqAn)).
+<span class="nb">suff</span> -&gt; : A = [fset f i | i <span class="kr">in</span> &#39;I_n]%fset <span class="bp">by</span> <span class="nb">rewrite</span> card_imfset <span class="nl">?size_enum_ord</span>.
+<span class="nb">apply</span>/fsetP =&gt; x; <span class="nb">apply</span>/idP/imfsetP =&gt; /= [xA|[i _ -&gt;]].
+  <span class="bp">by</span> <span class="nb">have</span> [i _ &lt;-] := &#39;surj_f xA; <span class="kr">exists</span> <span class="nv">i</span>.
+<span class="bp">by</span> <span class="nb">have</span> /(_ i I) := &#39;funS_f.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_fset_set</span> {<span class="nv">T</span> : choiceType} (<span class="nv">A</span> : <span class="nb">set</span> T) <span class="nv">n</span> :
+  A #= `I_n -&gt; #|`fset_set A| = n.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; An; <span class="nb">apply</span>/card_eq_fsetP; <span class="nb">rewrite</span> fset_setK//.
+<span class="bp">by</span> <span class="nb">apply</span>/finite_setP; <span class="kr">exists</span> <span class="nv">n</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">geq_card_fset_set</span> {<span class="nv">T</span> : choiceType} (<span class="nv">A</span> : <span class="nb">set</span> T) <span class="nv">n</span> :
+  A #&lt;= `I_n -&gt; (#|`fset_set A| &lt;= n)%N.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; An; <span class="nb">have</span> /finite_setP[m Am] : finite_set A
+  <span class="bp">by</span> <span class="nb">apply</span>/finite_set_leP; <span class="kr">exists</span> <span class="nv">n</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> (card_fset_set Am) -card_le_II -(card_le_eql Am).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">leq_card_fset_set</span> {<span class="nv">T</span> : choiceType} (<span class="nv">A</span> : <span class="nb">set</span> T) <span class="nv">n</span> :
+  finite_set A -&gt; A #&gt;= `I_n -&gt; (#|`fset_set A| &gt;= n)%N.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /finite_setP[m Am]; <span class="nb">rewrite</span> (card_fset_set Am).
+<span class="bp">by</span> <span class="nb">rewrite</span> (card_le_eqr Am) card_le_II.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">infinite_set_fset</span> {<span class="nv">T</span> : choiceType} (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">n</span> : nat) :
+  infinite_set A -&gt;
+    <span class="kr">exists2</span> B : {fset T}, [<span class="nb">set</span>` B] `&lt;=` A &amp; (#|` B| &gt;= n)%N.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/choicePpointed: T =&gt; T <span class="kr">in</span> A *; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> emptyE.
+<span class="nb">move</span>=&gt; /infiniteP/ppcard_leP[f]; <span class="kr">exists</span> (<span class="nv">fset_set</span> [<span class="nb">set</span> f i | i <span class="kr">in</span> `I_n]).
+  <span class="nb">rewrite</span> fset_setK//; <span class="nb">last</span> <span class="bp">exact</span>: finite_image.
+  <span class="bp">by</span> <span class="nb">apply</span>: subset_trans (fun_image_sub f); <span class="nb">apply</span>: image_subset.
+<span class="nb">rewrite</span> fset_set_image// card_imfset//= fset_set_II/=.
+<span class="bp">by</span> <span class="nb">rewrite</span> card_imfset//= <span class="nl">?size_enum_ord</span>//; <span class="nb">apply</span>: val_inj.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">infinite_set_fsetP</span> {<span class="nv">T</span> : choiceType} (<span class="nv">A</span> : <span class="nb">set</span> T) :
+  infinite_set A &lt;-&gt;
+   <span class="kr">forall</span> <span class="nv">n</span>, <span class="kr">exists2</span> B : {fset T}, [<span class="nb">set</span>` B] `&lt;=` A &amp; (#|` B| &gt;= n)%N.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; ? ?; <span class="nb">apply</span>: infinite_set_fset.
+<span class="nb">elim</span>/choicePpointed: T =&gt; T <span class="kr">in</span> A *.
+  <span class="nb">move</span>=&gt; /(_ <span class="mi">1</span>%N)[B _]; <span class="nb">rewrite</span> cardfs_gt0 =&gt; /fset0Pn[x xB].
+  <span class="bp">by</span> <span class="nb">have</span>: [<span class="nb">set</span>` B] x <span class="bp">by</span> []; <span class="nb">rewrite</span> emptyE.
+<span class="nb">move</span>=&gt; Bge /finite_setP[n An]; <span class="nb">have</span> [B BA] := Bge n.+<span class="mi">1</span>.
+<span class="nb">apply</span>/negP; <span class="nb">rewrite</span> -leqNgt -(card_fset_set An) fsubset_leq_card//.
+<span class="nb">apply</span>/fsubsetP =&gt; x /BA; <span class="nb">rewrite</span> in_fset_set <span class="nl">?inE</span>//.
+<span class="bp">by</span> <span class="nb">apply</span>/finite_setP; <span class="kr">exists</span> <span class="nv">n</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fcard_eq</span> {<span class="nv">T</span> <span class="nv">T&#39;</span> : choiceType} (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> T&#39;) :
+    finite_set A -&gt; finite_set B -&gt;
+  reflect (#|`fset_set A| = #|`fset_set B|) (A #= B).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /finite_setP/cid[n An] /finite_setP/cid[m Bm].
+<span class="nb">rewrite</span> (card_fset_set An) (card_fset_set Bm).
+<span class="bp">by</span> <span class="nb">rewrite</span> (card_eql An) (card_eqr Bm); <span class="nb">apply</span>: card_eq_II.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_IID</span> {<span class="nv">n</span> <span class="nv">k</span>} : `I_n `\` `I_k #= `I_(n - k)%N.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/fcard_eq =&gt; //; <span class="kp">first</span> <span class="bp">exact</span>: finite_setD.
+<span class="nb">rewrite</span> fset_setD//= cardfsD/= -fset_setI// setI_II.
+<span class="nb">rewrite</span> !fset_set_II !card_imfset// /= !size_enum_ord.
+<span class="bp">by</span> <span class="nb">case</span>: leqP; <span class="nb">rewrite</span> // subnn =&gt; /eqP-&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">finite_set_bij</span> <span class="nv">T</span> (<span class="nv">A</span> : <span class="nb">set</span> T) <span class="nv">n</span> <span class="nv">S</span> : A != set0 -&gt;
+    A #= `I_n -&gt; S `&lt;=` A -&gt;
+  <span class="kr">exists</span> (<span class="nv">f</span> : {bij `I_n &gt;-&gt; A}) <span class="nv">k</span>, (k &lt;= n)%N /\ `I_n `&amp;` (f @^-<span class="mi">1</span>` S) = `I_k.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Ppointed: T =&gt; T <span class="kr">in</span> A S *; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> !emptyE eqxx.
+<span class="nb">move</span>=&gt; AN0 An SA; <span class="nb">have</span> [k kn Sk] : <span class="kr">exists2</span> k, (k &lt;= n)%N &amp; S #= `I_k.
+  <span class="nb">have</span> /finite_setP[k Sk]: finite_set S <span class="bp">by</span> <span class="nb">apply</span>: sub_finite_set SA _; <span class="kr">exists</span> <span class="nv">n</span>.
+  <span class="kr">exists</span> <span class="nv">k</span> =&gt; //; <span class="nb">rewrite</span> -card_le_II.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -(card_le_eqr An) -(card_le_eql Sk); <span class="nb">apply</span>: subset_card_le.
+<span class="nb">have</span> /card_esym/ppcard_eqP[f] := Sk.
+<span class="nb">have</span> eqAS : A `\` S #= `I_n `\` `I_k.
+  <span class="nb">have</span> An&#39; := An; <span class="nb">have</span> Sk&#39; := Sk.
+  <span class="kp">do</span> [<span class="nb">have</span> /finite_fsetP[{An&#39;}A -&gt;] : finite_set A <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">n</span>] <span class="kr">in</span> An AN0 SA *.
+  <span class="kp">do</span> [<span class="nb">have</span> /finite_fsetP[{Sk&#39;}S -&gt;] : finite_set S <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">k</span>] <span class="kr">in</span> Sk f SA *.
+  <span class="nb">have</span> [/card_eq_fsetP {}An /card_eq_fsetP {}Sk] := (An, Sk).
+  <span class="nb">rewrite</span> -set_fsetD (card_eqr card_IID); <span class="nb">apply</span>/card_eq_fsetP.
+  <span class="bp">by</span> <span class="nb">rewrite</span> cardfsD (fsetIidPr _) <span class="nl">?An</span> <span class="nl">?Sk</span> //; <span class="nb">apply</span>/fsubsetP.
+<span class="nb">case</span>: (super_bij [bij of f^-<span class="mi">1</span>] SA _ eqAS) =&gt; [x /= /leq_trans-&gt;// | g].
+<span class="nb">have</span> [{}g -&gt;] := pPbij &#39;bij_g =&gt; /= gE.
+<span class="kr">exists</span> [bij of g^-<span class="mi">1</span>], k; <span class="nb">split</span>=&gt; //=; <span class="nb">rewrite</span> -inv_sub_image //= invV.
+<span class="bp">by</span> <span class="nb">under</span> eq_imagel <span class="kp">do</span> <span class="nb">rewrite</span> /= gE <span class="nl">?inE</span>//; <span class="nb">rewrite</span> image_eq.
+<span class="kn">Qed</span>.
+
+#[deprecated(note=<span class="s2">&quot;use countable0 instead&quot;</span>)]
+<span class="kn">Notation</span> <span class="nf">countable_set0</span> := countable0.
+
+<span class="kn">Lemma</span> <span class="nf">countable1</span> <span class="nv">T</span> (<span class="nv">x</span> : T) : countable [<span class="nb">set</span> x].
+<span class="kn">Proof</span>. <span class="bp">exact</span>: finite_set_countable. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> countable1 : core.
+
+<span class="kn">Lemma</span> <span class="nf">countable_fset</span> (<span class="nv">T</span> : choiceType) (<span class="nv">X</span> : {fset T}) : countable [<span class="nb">set</span>` X].
+<span class="kn">Proof</span>. <span class="bp">exact</span>: finite_set_countable. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> countable_fset : core.
+
+<span class="kn">Lemma</span> <span class="nf">countable_finpred</span> (<span class="nv">T</span> : finType) (<span class="nv">pT</span> : predType T) (<span class="nv">P</span> : pT) : countable [<span class="nb">set</span>` P].
+<span class="kn">Proof</span>. <span class="bp">exact</span>: finite_set_countable. <span class="kn">Qed</span>.
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (is_true (countable [<span class="nb">set</span>` _])) =&gt; <span class="kp">solve</span> [<span class="nb">apply</span>: countable_finpred] : core.
+
+<span class="kn">Lemma</span> <span class="nf">eq_card_nat</span> <span class="nv">T</span> (<span class="nv">A</span> : <span class="nb">set</span> T):
+  countable A -&gt; ~ finite_set A -&gt; A #= [<span class="nb">set</span>: nat].
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; Acnt /infiniteP leNA; <span class="nb">rewrite</span> card_eq_le leNA andbT. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">infinite_nat</span> : ~ finite_set [<span class="nb">set</span>: nat].
+<span class="kn">Proof</span>. <span class="bp">exact</span>/infiniteP/card_lexx. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">infinite_prod_nat</span> : infinite_set [<span class="nb">set</span>: nat * nat].
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">apply</span>/infiniteP/pcard_leTP/injPex; <span class="kr">exists</span> (<span class="nv">pair</span> <span class="mi">0</span>%N) =&gt; // m n _ _ [].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_nat2</span> : [<span class="nb">set</span>: nat * nat] #= [<span class="nb">set</span>: nat].
+<span class="kn">Proof</span>. <span class="bp">exact</span>/eq_card_nat/infinite_prod_nat/countableP. <span class="kn">Qed</span>.
+
+<span class="kn">Canonical</span> <span class="nf">rat_pointedType</span> := PointedType rat <span class="mi">0</span>.
+
+<span class="kn">Lemma</span> <span class="nf">infinite_rat</span> : infinite_set [<span class="nb">set</span>: rat].
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/infiniteP/pcard_leTP/injPex; <span class="kr">exists</span> (<span class="nv">GRing</span>.natmul <span class="mi">1</span>) =&gt; // m n _ _.
+<span class="bp">exact</span>/Num.Theory.mulrIn/oner_neq0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">card_rat</span> : [<span class="nb">set</span>: rat] #= [<span class="nb">set</span>: nat].
+<span class="kn">Proof</span>. <span class="bp">exact</span>/eq_card_nat/infinite_rat/countableP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">choicePcountable</span> {<span class="nv">T</span> : choiceType} : countable [<span class="nb">set</span>: T] -&gt;
+  {T&#39; : countType | T = T&#39; :&gt; <span class="kt">Type</span>}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /pcard_leP/unsquash f.
+<span class="bp">by</span> <span class="kr">exists</span> (<span class="nv">CountType</span> <span class="nv">T</span> (CountMixin (in1TT &#39;funoK_f))).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqPcountable</span> {<span class="nv">T</span> : eqType} : countable [<span class="nb">set</span>: T] -&gt;
+  {T&#39; : countType | T = T&#39; :&gt; <span class="kt">Type</span>}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">elim</span>/eqPchoice: T =&gt; T /choicePcountable. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Pcountable</span> {<span class="nv">T</span> : <span class="kt">Type</span>} : countable [<span class="nb">set</span>: T] -&gt;
+  {T&#39; : countType | T = T&#39; :&gt; <span class="kt">Type</span>}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">elim</span>/Pchoice: T =&gt; T /choicePcountable. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">bigcup_countable</span> {<span class="nv">I</span> <span class="nv">T</span>} (<span class="nv">D</span> : <span class="nb">set</span> I) (<span class="nv">F</span> : I -&gt; <span class="nb">set</span> T) :
+    countable D -&gt; (<span class="kr">forall</span> <span class="nv">i</span>, D i -&gt; countable (F i)) -&gt;
+  countable (\bigcup_(i <span class="kr">in</span> D) F i).
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Ppointed: T =&gt; T <span class="kr">in</span> F *; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> emptyE.
+<span class="nb">rewrite</span> -(eq_countable (card_setT _)) =&gt; cD cF; <span class="nb">rewrite</span> bigcup_set_type.
+<span class="nb">set</span> G := (<span class="kr">fun</span> <span class="nv">i</span> : D =&gt; F (val i)).
+<span class="nb">have</span> {cF}cG i : countable (G i) <span class="bp">by</span> <span class="nb">apply</span>: cF; <span class="nb">apply</span>: set_valP.
+<span class="nb">move</span>: (D : <span class="kt">Type</span>) cD G cG =&gt; {F I}_ /Pcountable[{}D -&gt;] G cG.
+<span class="nb">suff</span>: (\bigcup_i G i #&lt;= [<span class="nb">set</span>: {i &amp; G i}])%card.
+  <span class="nb">have</span> cGT i : countable [<span class="nb">set</span>: G i] <span class="bp">by</span> <span class="nb">rewrite</span> (eq_countable (card_setT _)).
+  <span class="nb">have</span> /all_sig[H GE] := <span class="kr">fun</span> <span class="nv">i</span> =&gt; Pcountable (cGT i).
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; /sub_countable-&gt;//; <span class="nb">rewrite</span> (eq_fun GE).
+<span class="nb">apply</span>/pcard_geP/surjPex; <span class="kr">exists</span> (<span class="nv">fun</span> (k : {i &amp; G i}) =&gt; val (projT2 k)).
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x [i _] Gix/=; <span class="kr">exists</span> (<span class="nv">Tagged</span> <span class="nv">G</span> (SigSub (mem_set Gix))).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">countableMR</span> <span class="nv">T</span> <span class="nv">T&#39;</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : T -&gt; <span class="nb">set</span> T&#39;) :
+  countable A -&gt; (<span class="kr">forall</span> <span class="nv">i</span>, A i -&gt; countable (B i)) -&gt; countable (A `*`` B).
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Ppointed: T =&gt; T <span class="kr">in</span> A B *; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> emptyE -bigcupM1l bigcup_set0.
+<span class="nb">elim</span>/Ppointed: T&#39; =&gt; T&#39; <span class="kr">in</span> B *.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -bigcupM1l bigcup0// =&gt; i; <span class="nb">rewrite</span> emptyE setM0.
+<span class="nb">move</span>=&gt; Ac Bc; <span class="nb">rewrite</span> -bigcupM1l bigcup_countable// =&gt; i Ai.
+<span class="nb">have</span> /ppcard_leP[f] := Bc i Ai; <span class="nb">apply</span>/pcard_geP/surjPex.
+<span class="kr">exists</span> (<span class="nv">fun</span> <span class="nv">k</span> =&gt; (i, f^-<span class="mi">1</span>%FUN k)) =&gt; -[_ j]/= [-&gt; dj].
+<span class="bp">by</span> <span class="kr">exists</span> (<span class="nv">f</span> <span class="nv">j</span>) =&gt; //=; <span class="nb">rewrite</span> funK <span class="nl">?inE</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">countableM</span> <span class="nv">T1</span> <span class="nv">T2</span> (<span class="nv">D1</span> : <span class="nb">set</span> T1) (<span class="nv">D2</span> : <span class="nb">set</span> T2) :
+  countable D1 -&gt; countable D2 -&gt; countable (D1 `*` D2).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; D1c D2c; <span class="nb">apply</span>: countableMR (<span class="kr">fun</span> <span class="nv">_</span> <span class="nv">_</span> =&gt; D2c). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">countableML</span> <span class="nv">T</span> <span class="nv">T&#39;</span> (<span class="nv">A</span> : T&#39; -&gt; <span class="nb">set</span> T) (<span class="nv">B</span> : <span class="nb">set</span> T&#39;) :
+  countable B -&gt; (<span class="kr">forall</span> <span class="nv">i</span>, B i -&gt; countable (A i)) -&gt; countable (A ``*` B).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Bc Ac; <span class="nb">rewrite</span> -bigcupM1r; <span class="nb">apply</span>: bigcup_countable =&gt; // i Bi.
+<span class="bp">by</span> <span class="nb">apply</span>: countableM =&gt; //; <span class="nb">apply</span>: Ac.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">infiniteMRl</span> <span class="nv">T</span> <span class="nv">T&#39;</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : T -&gt; <span class="nb">set</span> T&#39;) :
+  infinite_set A -&gt; (<span class="kr">forall</span> <span class="nv">i</span>, B i !=set0) -&gt; infinite_set (A `*`` B).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /infiniteP/pcard_geP[f] /(_ _)/cid-/all_sig[b Bb].
+<span class="nb">apply</span>/infiniteP/pcard_geP/surjPex; <span class="kr">exists</span> (<span class="nv">fun</span> <span class="nv">x</span> =&gt; f x.<span class="mi">1</span>).
+<span class="bp">by</span> <span class="nb">move</span>=&gt; i iT; <span class="nb">have</span> [a Aa fa] := &#39;oinvP_f iT; <span class="kr">exists</span> (<span class="nv">a</span>, b a) =&gt; /=.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cardMR_eq_nat</span> <span class="nv">T</span> <span class="nv">T&#39;</span> (<span class="nv">A</span> : <span class="nb">set</span> T) (<span class="nv">B</span> : T -&gt; <span class="nb">set</span> T&#39;) :
+    (A #= [<span class="nb">set</span>: nat] -&gt; (<span class="kr">forall</span> <span class="nv">i</span>, countable (B i) /\ B i !=set0) -&gt;
+   A `*`` B #= [<span class="nb">set</span>: nat])%card.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> !card_eq_le =&gt; /andP[Acnt /infiniteP Ainfty] /all_and2[Bcnt Bn0].
+<span class="bp">by</span> <span class="nb">rewrite</span> [(_ #&lt;= _)%card]countableMR//=; <span class="nb">apply</span>/infiniteP/infiniteMRl.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_cardSP</span> {<span class="nv">T</span> : <span class="kt">Type</span>} (<span class="nv">A</span> : <span class="nb">set</span> T) <span class="nv">n</span> :
+  reflect (<span class="kr">exists2</span> x, A x &amp; A `\ x #= `I_n) (A #= `I_n.+<span class="mi">1</span>).
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Ppointed: T A =&gt; T A.
+  <span class="nb">rewrite</span> !emptyE; <span class="nb">apply</span>: (iffP eqP) =&gt; [|[]//].
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; /(congr1 (@^~ <span class="mi">0</span>%N))/=; <span class="nb">rewrite</span> -falseE ltnS leq0n =&gt; /is_true_inj.
+<span class="nb">apply</span>: (iffP idP) =&gt; [|[x Ax]].
+  <span class="nb">move</span>=&gt; /ppcard_eqP[f]; <span class="kr">exists</span> (<span class="nv">f</span>^-<span class="mi">1</span> n); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>: funS =&gt; /=.
+  <span class="bp">by</span> <span class="nb">apply</span>/card_esym/card_set_bijP; <span class="kr">exists</span> <span class="nv">f</span>^-<span class="mi">1</span>; <span class="nb">apply</span>: bij_II_D1.
+<span class="nb">move</span>=&gt; /pcard_eqP[f]; <span class="nb">have</span> [//|||g _] := @super_bij _ _ _ A _ `I_n.+<span class="mi">1</span> f.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; k /=; <span class="nb">apply</span>: leq_trans.
+- <span class="bp">by</span> <span class="nb">rewrite</span> setDD (card_eqr card_IID) subSnn// setIidr <span class="nl">?card_set1</span>// =&gt; ? -&gt;.
+- <span class="bp">by</span> <span class="nb">apply</span>/pcard_eqP; squash g.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">countable_n_subset</span> {<span class="nv">T</span> : <span class="kt">Type</span>} (<span class="nv">D</span> : <span class="nb">set</span> T) <span class="nv">n</span> :
+  countable D -&gt; countable [<span class="nb">set</span> A | A `&lt;=` D /\ A #= `I_n].
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Dcnt; <span class="nb">elim</span>: n =&gt; [|n].
+  <span class="nb">rewrite</span> [X <span class="kr">in</span> countable X]( _ : _ = [<span class="nb">set</span> set0])// eqEsubset II0.
+  <span class="bp">by</span> <span class="nb">split</span>=&gt; A /=; [<span class="nb">rewrite</span> card_eq0; <span class="nb">case</span>=&gt; _ /eqP | <span class="nb">move</span>-&gt;; <span class="nb">split</span>].
+<span class="nb">move</span>=&gt; /(countableM Dcnt); <span class="nb">apply</span>: sub_countable.
+<span class="nb">apply</span>: card_le_trans (card_image_le (<span class="kr">fun</span> <span class="nv">u</span> =&gt; u.<span class="mi">1</span> |` u.<span class="mi">2</span>) _).
+<span class="nb">apply</span>: subset_card_le =&gt; B [BD] /eq_cardSP [x Bx BDx].
+<span class="kr">exists</span> (<span class="nv">x</span>, B `\ x) =&gt; /=; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">apply</span>: setDUK =&gt; ? -&gt;.
+<span class="bp">by</span> <span class="kp">do</span> !<span class="nb">split</span>=&gt; //; [<span class="bp">exact</span>: BD | <span class="nb">apply</span>: subset_trans _ BD; <span class="nb">apply</span>: subDsetl].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">countable_finite_subset</span> {<span class="nv">T</span> : <span class="kt">Type</span>} (<span class="nv">D</span> : <span class="nb">set</span> T) :
+  countable D -&gt; countable [<span class="nb">set</span> A | A `&lt;=` D /\ finite_set A ].
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Dcnt; <span class="nb">suff</span> -&gt; : [<span class="nb">set</span> A | A `&lt;=` D /\ finite_set A ] =
+    \bigcup_n [<span class="nb">set</span> A | A `&lt;=` D /\ A #= `I_n ].
+  <span class="bp">by</span> <span class="nb">apply</span>: bigcup_countable =&gt; // ? _; <span class="bp">exact</span>: countable_n_subset.
+<span class="nb">rewrite</span> eqEsubset; <span class="nb">split</span>=&gt; [A [AD /finite_setP[n An]]|A]; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">n</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; [n _ [AD An]]; <span class="nb">split</span>=&gt; //; <span class="nb">apply</span>/finite_setP; <span class="kr">exists</span> <span class="nv">n</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_card_fset_subset</span> {<span class="nv">T</span> : pointedType} (<span class="nv">D</span> : <span class="nb">set</span> T) :
+  [<span class="nb">set</span> A | A `&lt;=` D /\ finite_set A ] #= [<span class="nb">set</span> A : {fset T} | {subset A &lt;= D}] .
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/card_set_bijP; <span class="kr">exists</span> (@fset_set T); <span class="nb">split</span>.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; A [AD fsetA] /= x; <span class="nb">rewrite</span> in_fset_set // <span class="nl">?inE</span>; <span class="bp">exact</span>: AD.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; ? ? /set_mem [_ +] /set_mem [_ +]; <span class="bp">exact</span>: fset_set_inj.
+- <span class="nb">move</span>=&gt; B /= BD; <span class="kr">exists</span> [<span class="nb">set</span>` B]; <span class="nb">rewrite</span> <span class="nl">?set_fsetK</span> //.
+  <span class="bp">by</span> <span class="nb">split</span>; [<span class="bp">by</span> <span class="nb">move</span> =&gt; x /= /BD /set_mem | <span class="bp">exact</span>: finite_fset].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fset_subset_countable</span> {<span class="nv">T</span> : pointedType} (<span class="nv">D</span> : <span class="nb">set</span> T) :
+  countable D -&gt; countable [<span class="nb">set</span> A : {fset T} | {subset A &lt;= D}].
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> -(eq_countable (eq_card_fset_subset _)) =&gt; ?.
+<span class="bp">exact</span>: countable_finite_subset.
+<span class="kn">Qed</span>.
+
+HB.mixin <span class="kn">Record</span> <span class="nf">FiniteImage</span> <span class="nv">aT</span> <span class="nv">rT</span> (<span class="nv">f</span> : aT -&gt; rT) := {
+  fimfunP : finite_set (range f)
+}.
+HB.structure <span class="kn">Definition</span> <span class="nf">FImFun</span> <span class="nv">aT</span> <span class="nv">rT</span> := {f of @FiniteImage aT rT f}.
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;{ &#39;fimfun&#39; aT &gt;-&gt; T }&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;{ &#39;fimfun&#39;  aT  &gt;-&gt;  T }&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;[ &#39;fimfun&#39; &#39;of&#39; f ]&quot;</span>
+  (<span class="kn">at level</span> <span class="mi">0</span>, <span class="kn">format</span> <span class="s2">&quot;[ &#39;fimfun&#39;  &#39;of&#39;  f ]&quot;</span>).
+<span class="kn">Notation</span> <span class="s2">&quot;{ &#39;fimfun&#39; aT &gt;-&gt; T }&quot;</span> := (@FImFun.type aT T) : form_scope.
+<span class="kn">Notation</span> <span class="s2">&quot;[ &#39;fimfun&#39; &#39;of&#39; f ]&quot;</span> := [the {fimfun _ &gt;-&gt; _} of f] : form_scope.
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> fimfunP : core.
+
+<span class="kn">Lemma</span> <span class="nf">fimfun_inP</span> {<span class="nv">aT</span> <span class="nv">rT</span>} (<span class="nv">f</span> : {fimfun aT &gt;-&gt; rT}) (<span class="nv">D</span> : <span class="nb">set</span> aT) :
+  finite_set (f @` D).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: (@sub_finite_set _ _ (range f)) =&gt; // y [x]; <span class="kr">exists</span> <span class="nv">x</span>. <span class="kn">Qed</span>.
+
+#[<span class="kn">global</span>] <span class="kn">Hint Resolve</span> fimfun_inP : core.
+
+<span class="kn">Section</span> <span class="nf">fimfun_pred</span>.
+<span class="kn">Context</span> {<span class="nv">aT</span> <span class="nv">rT</span> : <span class="kt">Type</span>}.
+<span class="kn">Definition</span> <span class="nf">fimfun</span> : {pred aT -&gt; rT} := mem [<span class="nb">set</span> f | finite_set (range f)].
+<span class="kn">Definition</span> <span class="nf">fimfun_key</span> : pred_key fimfun.
+<span class="kn">Proof</span>. <span class="bp">exact</span>. <span class="kn">Qed</span>.
+<span class="kn">Canonical</span> <span class="nf">fimfun_keyed</span> := KeyedPred fimfun_key.
+<span class="kn">End</span> <span class="nf">fimfun_pred</span>.
+
+<span class="kn">Section</span> <span class="nf">fimfun</span>.
+<span class="kn">Context</span> {<span class="nv">aT</span> <span class="nv">rT</span> : <span class="kt">Type</span>}.
+<span class="kn">Notation</span> <span class="nf">T</span> := {fimfun aT &gt;-&gt; rT}.
+<span class="kn">Notation</span> <span class="nf">fimfun</span> := (@fimfun aT rT).
+<span class="kn">Section</span> <span class="nf">Sub</span>.
+<span class="kn">Context</span> (<span class="nv">f</span> : aT -&gt; rT) (<span class="nv">fP</span> : f \<span class="kr">in</span> fimfun).
+<span class="kn">Definition</span> <span class="nf">fimfun_Sub_subproof</span> := @FiniteImage.Build aT rT f (set_mem fP).
+#[local] HB.instance <span class="kn">Definition</span> <span class="nf">_</span> := fimfun_Sub_subproof.
+<span class="kn">Definition</span> <span class="nf">fimfun_Sub</span> := [fimfun of f].
+<span class="kn">End</span> <span class="nf">Sub</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fimfun_rect</span> (<span class="nv">K</span> : T -&gt; <span class="kt">Type</span>) :
+  (<span class="kr">forall</span> <span class="nv">f</span> (<span class="nv">Pf</span> : f \<span class="kr">in</span> fimfun), K (fimfun_Sub Pf)) -&gt; <span class="kr">forall</span> <span class="nv">u</span> : T, K u.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Ksub [f [[Pf]]]/=.
+<span class="bp">by</span> <span class="nb">suff</span> -&gt; : Pf = (set_mem (@mem_set _ [<span class="nb">set</span> f | _] f Pf)) <span class="bp">by</span> <span class="nb">apply</span>: Ksub.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fimfun_valP</span> <span class="nv">f</span> (<span class="nv">Pf</span> : f \<span class="kr">in</span> fimfun) : fimfun_Sub Pf = f :&gt; (_ -&gt; _).
+<span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="kn">Canonical</span> <span class="nf">fimfun_subType</span> := SubType T _ _ fimfun_rect fimfun_valP.
+<span class="kn">End</span> <span class="nf">fimfun</span>.
+
+<span class="kn">Lemma</span> <span class="nf">fimfuneqP</span> <span class="nv">aT</span> <span class="nv">rT</span> (<span class="nv">f</span> <span class="nv">g</span> : {fimfun aT &gt;-&gt; rT}) :
+  f = g &lt;-&gt; f =<span class="mi">1</span> g.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>=&gt; [-&gt;//|fg]; <span class="nb">apply</span>/val_inj/funext. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">fimfuneqMixin</span> <span class="nv">aT</span> (<span class="nv">rT</span> : eqType) :=
+  [eqMixin of {fimfun aT &gt;-&gt; rT} <span class="bp">by</span> &lt;:].
+<span class="kn">Canonical</span> <span class="nf">fimfuneqType</span> aT (rT : eqType) :=
+  EqType {fimfun aT &gt;-&gt; rT} (fimfuneqMixin aT rT).
+<span class="kn">Definition</span> <span class="nf">fimfunchoiceMixin</span> <span class="nv">aT</span> (<span class="nv">rT</span> : choiceType) :=
+  [choiceMixin of {fimfun aT &gt;-&gt; rT} <span class="bp">by</span> &lt;:].
+<span class="kn">Canonical</span> <span class="nf">fimfunchoiceType</span> aT (rT : choiceType) :=
+  ChoiceType {fimfun aT &gt;-&gt; rT} (fimfunchoiceMixin aT rT).
+
+<span class="kn">Lemma</span> <span class="nf">finite_image_cst</span> {<span class="nv">aT</span> <span class="nv">rT</span> : <span class="kt">Type</span>} (<span class="nv">x</span> : rT) :
+  finite_set (range (cst x : aT -&gt; _)).
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/Ppointed: aT =&gt; aT; <span class="nb">rewrite</span> <span class="nl">?emptyE</span> <span class="nl">?image_set0</span>//.
+<span class="nb">suff</span> -&gt; : cst x @` [<span class="nb">set</span>: aT] = [<span class="nb">set</span> x] <span class="bp">by</span> <span class="nb">apply</span>: finite_set1.
+<span class="bp">by</span> <span class="nb">apply</span>/predeqP =&gt; y; <span class="nb">split</span>=&gt; [[t&#39; _ &lt;-]//|-&gt;//] /=; <span class="kr">exists</span> <span class="nv">point</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cst_fimfun_subproof</span> <span class="nv">aT</span> <span class="nv">rT</span> <span class="nv">x</span> : @FiniteImage aT rT (cst x).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>; <span class="bp">exact</span>: finite_image_cst. <span class="kn">Qed</span>.
+HB.instance <span class="kn">Definition</span> <span class="nf">_</span> <span class="nv">aT</span> <span class="nv">rT</span> <span class="nv">x</span> := @cst_fimfun_subproof aT rT x.
+<span class="kn">Definition</span> <span class="nf">cst_fimfun</span> {<span class="nv">aT</span> <span class="nv">rT</span>} <span class="nv">x</span> := [the {fimfun aT &gt;-&gt; rT} of cst x].
+
+<span class="kn">Lemma</span> <span class="nf">fimfun_cst</span> <span class="nv">aT</span> <span class="nv">rT</span> <span class="nv">x</span> : @cst_fimfun aT rT x =<span class="mi">1</span> cst x. <span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">comp_fimfun_subproof</span> <span class="nv">aT</span> <span class="nv">rT</span> <span class="nv">sT</span>
+   (<span class="nv">f</span> : {fimfun aT &gt;-&gt; rT}) (<span class="nv">g</span> : rT -&gt; sT) : @FiniteImage aT sT (g \o f).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>; <span class="nb">rewrite</span> -(image_comp f g); <span class="nb">apply</span>: finite_image. <span class="kn">Qed</span>.
+HB.instance <span class="kn">Definition</span> <span class="nf">_</span> <span class="nv">aT</span> <span class="nv">rT</span> <span class="nv">sT</span> <span class="nv">f</span> <span class="nv">g</span> := @comp_fimfun_subproof aT rT sT f g.
+
+<span class="kn">Section</span> <span class="nf">zmod</span>.
+<span class="kn">Context</span> (<span class="nv">aT</span> : <span class="kt">Type</span>) (<span class="nv">rT</span> : zmodType).
+<span class="kn">Lemma</span> <span class="nf">fimfun_zmod_closed</span> : zmod_closed (@fimfun aT rT).
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; [|f g]; <span class="nb">rewrite</span> !inE/=; <span class="kp">first</span> <span class="bp">exact</span>: finite_image_cst.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; fA gA; <span class="nb">apply</span>: (finite_image11 (<span class="kr">fun</span> <span class="nv">x</span> <span class="nv">y</span> =&gt; x - y)).
+<span class="kn">Qed</span>.
+<span class="kn">Canonical</span> <span class="nf">fimfun_add</span> := AddrPred fimfun_zmod_closed.
+<span class="kn">Canonical</span> <span class="nf">fimfun_zmod</span> := ZmodPred fimfun_zmod_closed.
+<span class="kn">Definition</span> <span class="nf">fimfun_zmodMixin</span> := [zmodMixin of {fimfun aT &gt;-&gt; rT} <span class="bp">by</span> &lt;:].
+<span class="kn">Canonical</span> <span class="nf">fimfun_zmodType</span> := ZmodType {fimfun aT &gt;-&gt; rT} fimfun_zmodMixin.
+
+<span class="kn">Implicit Types</span> (<span class="nv">f</span> <span class="nv">g</span> : {fimfun aT &gt;-&gt; rT}).
+
+<span class="kn">Lemma</span> <span class="nf">fimfunD</span> <span class="nv">f</span> <span class="nv">g</span> : f + g = f \+ g :&gt; (_ -&gt; _). <span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+<span class="kn">Lemma</span> <span class="nf">fimfunN</span> <span class="nv">f</span> : - f = \- f :&gt; (_ -&gt; _). <span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+<span class="kn">Lemma</span> <span class="nf">fimfunB</span> <span class="nv">f</span> <span class="nv">g</span> : f - g = f \- g :&gt; (_ -&gt; _). <span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+<span class="kn">Lemma</span> <span class="nf">fimfun0</span> : (<span class="mi">0</span> : {fimfun aT &gt;-&gt; rT}) = cst <span class="mi">0</span> :&gt; (_ -&gt; _). <span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+<span class="kn">Lemma</span> <span class="nf">fimfun_sum</span> <span class="nv">I</span> <span class="nv">r</span> (<span class="nv">P</span> : {pred I}) (<span class="nv">f</span> : I -&gt; {fimfun aT &gt;-&gt; rT}) (<span class="nv">x</span> : aT) :
+  (\sum_(i &lt;- r | P i) f i) x = \sum_(i &lt;- r | P i) f i x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">elim</span>/big_rec2: _ =&gt; //= i y ? Pi &lt;-. <span class="kn">Qed</span>.
+
+HB.instance <span class="kn">Definition</span> <span class="nf">_</span> <span class="nv">f</span> <span class="nv">g</span> := FImFun.copy (f \+ g) (f + g).
+HB.instance <span class="kn">Definition</span> <span class="nf">_</span> <span class="nv">f</span> <span class="nv">g</span> := FImFun.copy (\- f) (- f).
+HB.instance <span class="kn">Definition</span> <span class="nf">_</span> <span class="nv">f</span> <span class="nv">g</span> := FImFun.copy (f \- g) (f - g).
+<span class="kn">End</span> <span class="nf">zmod</span>.</span></pre></article></body></html>

@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>derive.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)</span>
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect ssralg ssrnum matrix interval.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> boolp classical_sets functions.
+<span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> mathcomp_extra.
+<span class="kn">Require Import</span> reals signed topology prodnormedzmodule normedtype landau forms.
+
+<span class="sd">(******************************************************************************)</span>
+<span class="c">(* This file provides a theory of differentiation. It includes the standard   *)</span>
+<span class="c">(* rules of differentiation (differential of a sum, of a product, of          *)</span>
+<span class="c">(* exponentiation, of the inverse, etc.) as well as standard theorems (the    *)</span>
+<span class="c">(* Extreme Value Theorem, Rolle&#39;s theorem, the Mean Value Theorem).           *)</span>
+<span class="c">(*                                                                            *)</span>
+<span class="c">(* Parsable notations (in all of the following, f is not supposed to be       *)</span>
+<span class="c">(* differentiable):                                                           *)</span>
+<span class="c">(*               &#39;d f x == the differential of a function f at a point x      *)</span>
+<span class="c">(*   differentiable f x == the function f is differentiable at a point x      *)</span>
+<span class="c">(*               &#39;J f x == the Jacobian of f at a point x                     *)</span>
+<span class="c">(*               &#39;D_v f == the directional derivative of f along v            *)</span>
+<span class="c">(*               f^`()  == the derivative of f of domain R                    *)</span>
+<span class="c">(*               f^`(n) == the nth derivative of f of domain R                *)</span>
+<span class="sd">(******************************************************************************)</span>
+
+<span class="kn">Set Implicit Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+<span class="kn">Import</span> Order.TTheory GRing.Theory Num.Theory.
+<span class="kn">Import</span> numFieldNormedType.Exports.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;d&#39; f x&quot;</span> (<span class="kn">at level</span> <span class="mi">0</span>, f <span class="kn">at level</span> <span class="mi">0</span>, x <span class="kn">at level</span> <span class="mi">0</span>,
+  <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;d&#39;  f  x&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;is_diff&#39; F&quot;</span> (<span class="kn">at level</span> <span class="mi">0</span>, F <span class="kn">at level</span> <span class="mi">0</span>,
+  <span class="kn">format</span> <span class="s2">&quot;&#39;is_diff&#39;  F&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;J&#39; f p&quot;</span> (<span class="kn">at level</span> <span class="mi">10</span>, p, f <span class="kn">at next level</span>,
+  <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;J&#39;  f  p&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;D_&#39; v f&quot;</span> (<span class="kn">at level</span> <span class="mi">10</span>, v, f <span class="kn">at next level</span>,
+  <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;D_&#39; v  f&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;&#39;&#39;D_&#39; v f c&quot;</span> (<span class="kn">at level</span> <span class="mi">10</span>, v, f <span class="kn">at next level</span>,
+  <span class="kn">format</span> <span class="s2">&quot;&#39;&#39;D_&#39; v  f  c&quot;</span>). <span class="c">(* printing *)</span>
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f ^` ()&quot;</span> (<span class="kn">at level</span> <span class="mi">8</span>, <span class="kn">format</span> <span class="s2">&quot;f ^` ()&quot;</span>).
+<span class="kn">Reserved Notation</span> <span class="s2">&quot;f ^` ( n )&quot;</span> (<span class="kn">at level</span> <span class="mi">8</span>, <span class="kn">format</span> <span class="s2">&quot;f ^` ( n )&quot;</span>).
+
+<span class="kn">Section</span> <span class="nf">Differential</span>.
+<span class="kn">Context</span> {<span class="nv">K</span> : numDomainType} {<span class="nv">V</span> <span class="nv">W</span> : normedModType K}.
+
+<span class="kn">Definition</span> <span class="nf">diff</span> (<span class="nv">F</span> : filter_on V) (<span class="nv">_</span> : phantom (<span class="nb">set</span> (<span class="nb">set</span> V)) F) (<span class="nv">f</span> : V -&gt; W) :=
+  (get (<span class="kr">fun</span> (<span class="nv">df</span> : {linear V -&gt; W}) =&gt; continuous df /\ <span class="kr">forall</span> <span class="nv">x</span>,
+      f x = f (lim F) + df (x - lim F) +o_(x \near F) (x - lim F))).
+
+<span class="kn">Local</span> <span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;d&#39; f x&quot;</span> := (@diff _ (Phantom _ [filter of x]) f).
+
+<span class="kn">Fact</span> <span class="nf">diff_key</span> : <span class="kr">forall</span> <span class="nv">T</span>, T -&gt; unit. <span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">constructor</span>. <span class="kn">Qed</span>.
+<span class="kn">CoInductive</span> <span class="nf">differentiable_def</span> (<span class="nv">f</span> : V -&gt; W) (<span class="nv">x</span> : filter_on V)
+  (<span class="nv">phF</span> : phantom (<span class="nb">set</span> (<span class="nb">set</span> V)) x) : <span class="kt">Prop</span> := DifferentiableDef of
+  (continuous (&#39;d f x) /\
+  f = cst (f (lim x)) + &#39;d f x \o center (lim x) +o_x (center (lim x))).
+
+<span class="kn">Local Notation</span> <span class="nf">differentiable</span> f F := (@differentiable_def f _ (Phantom _ [filter of F])).
+
+<span class="kn">Class</span> <span class="nf">is_diff_def</span> (<span class="nv">x</span> : filter_on V) (<span class="nv">Fph</span> : phantom (<span class="nb">set</span> (<span class="nb">set</span> V)) x) (<span class="nv">f</span> : V -&gt; W)
+  (<span class="nv">df</span> : V -&gt; W) := DiffDef {
+    ex_diff : differentiable f x ;
+    diff_val : &#39;d f x = df :&gt; (V -&gt; W)
+  }.
+<span class="kn">Hint Mode</span> is_diff_def - - ! - : typeclass_instances.
+
+<span class="kn">Lemma</span> <span class="nf">diffP</span> (<span class="nv">F</span> : filter_on V) (<span class="nv">f</span> : V -&gt; W) :
+  differentiable f F &lt;-&gt;
+  continuous (&#39;d f F) /\
+  (<span class="kr">forall</span> <span class="nv">x</span>, f x = f (lim F) + &#39;d f F (x - lim F) +o_(x \near F) (x - lim F)).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>=&gt; [[] |]; <span class="nb">last</span> <span class="nb">constructor</span>; <span class="nb">rewrite</span> funeqE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diff_continuous</span> (<span class="nv">x</span> : filter_on V) (<span class="nv">f</span> : V -&gt; W) :
+  differentiable f x -&gt; continuous (&#39;d f x).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /diffP []. <span class="kn">Qed</span>.
+<span class="c">(* We should have a continuous class or structure *)</span>
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (continuous _) =&gt; <span class="bp">exact</span>: diff_continuous : core.
+
+<span class="kn">Lemma</span> <span class="nf">diffE</span> (<span class="nv">F</span> : filter_on V) (<span class="nv">f</span> : V -&gt; W) :
+  differentiable f F -&gt;
+  <span class="kr">forall</span> <span class="nv">x</span>, f x = f (lim F) + &#39;d f F (x - lim F) +o_(x \near F) (x - lim F).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /diffP []. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">littleo_center0</span> (<span class="nv">x</span> : V) (<span class="nv">f</span> : V -&gt; W) (<span class="nv">e</span> : V -&gt; V) :
+  [o_x e of f] = [o_ (<span class="mi">0</span> : V) (e \o shift x) of f \o shift x] \o center x.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /the_littleo /insubd /=; <span class="nb">have</span> [g /= _ &lt;-{f}|/asboolP Nfe] /= := insubP.
+  <span class="nb">rewrite</span> insubT //= <span class="nl">?comp_shiftK</span> //; <span class="nb">apply</span>/asboolP =&gt; _/posnumP[eps].
+  <span class="nb">rewrite</span> [\<span class="kr">forall</span> <span class="nv">x</span> \near _, _ &lt;= _](near_shift x) sub0r; near=&gt; y.
+  <span class="bp">by</span> <span class="nb">rewrite</span> /= subrK; near: y; <span class="nb">have</span> /eqoP := littleo_eqo g; <span class="nb">apply</span>.
+<span class="nb">rewrite</span> insubF //; <span class="nb">apply</span>/asboolP =&gt; fe; <span class="nb">apply</span>: Nfe =&gt; _/posnumP[eps].
+<span class="bp">by</span> <span class="nb">rewrite</span> [\<span class="kr">forall</span> <span class="nv">x</span> \near _, _ &lt;= _](near_shift <span class="mi">0</span>) subr0; <span class="nb">apply</span>: fe.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Differential</span>.
+
+<span class="kn">Section</span> <span class="nf">Differential_numFieldType</span>.
+<span class="kn">Context</span> {<span class="nv">K</span> : numFieldType <span class="c">(*TODO: to numDomainType?*)</span>} {<span class="nv">V</span> <span class="nv">W</span> : normedModType K}.
+
+<span class="c">(* duplicate from Section Differential *)</span>
+<span class="kn">Local Notation</span> <span class="nf">differentiable</span> f F := (@differentiable_def _ _ _ f _ (Phantom _ [filter of F])).
+<span class="kn">Local</span> <span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;d&#39; f x&quot;</span> := (@diff _ _ _ _ (Phantom _ [filter of x]) f).
+<span class="kn">Hint Extern</span> <span class="mi">0</span> (continuous _) =&gt; <span class="bp">exact</span>: diff_continuous : core.
+
+<span class="kn">Lemma</span> <span class="nf">diff_locallyxP</span> (<span class="nv">x</span> : V) (<span class="nv">f</span> : V -&gt; W) :
+  differentiable f x &lt;-&gt; continuous (&#39;d f x) /\
+  <span class="kr">forall</span> <span class="nv">h</span>, f (h + x) = f x + &#39;d f x h +o_(h \near <span class="mi">0</span> : V) h.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; [dxf|[dfc dxf]].
+  <span class="nb">split</span> =&gt; //; <span class="nb">apply</span>: eqaddoEx =&gt; h; <span class="nb">have</span> /diffE -&gt; := dxf.
+  <span class="nb">rewrite</span> lim_id // addrK; <span class="nb">congr</span> (_ + _); <span class="nb">rewrite</span> littleo_center0 /= addrK.
+  <span class="bp">by</span> <span class="nb">congr</span> (&#39;o); <span class="nb">rewrite</span> funeqE =&gt; k /=; <span class="nb">rewrite</span> addrK.
+<span class="nb">apply</span>/diffP; <span class="nb">split</span>=&gt; //; <span class="nb">apply</span>: eqaddoEx; <span class="nb">move</span>=&gt; y.
+<span class="nb">rewrite</span> lim_id // -[<span class="kr">in</span> LHS](subrK x y) dxf; <span class="nb">congr</span> (_ + _).
+<span class="nb">rewrite</span> -(comp_centerK x id) -[X <span class="kr">in</span> the_littleo _ _ _ X](comp_centerK x).
+<span class="bp">by</span> <span class="nb">rewrite</span> -[_ (y - x)]/((_ \o (center x)) y) -littleo_center0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diff_locallyx</span> (<span class="nv">x</span> : V) (<span class="nv">f</span> : V -&gt; W) : differentiable f x -&gt;
+  <span class="kr">forall</span> <span class="nv">h</span>, f (h + x) = f x + &#39;d f x h +o_(h \near <span class="mi">0</span> : V) h.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /diff_locallyxP []. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diff_locallyxC</span> (<span class="nv">x</span> : V) (<span class="nv">f</span> : V -&gt; W) : differentiable f x -&gt;
+  <span class="kr">forall</span> <span class="nv">h</span>, f (x + h) = f x + &#39;d f x h +o_(h \near <span class="mi">0</span> : V) h.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">apply</span>/eqaddoEx =&gt; h; <span class="nb">rewrite</span> [x + h]addrC diff_locallyx. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diff_locallyP</span> (<span class="nv">x</span> : V) (<span class="nv">f</span> : V -&gt; W) :
+  differentiable f x &lt;-&gt;
+  continuous (&#39;d f x) /\ (f \o shift x = cst (f x) + &#39;d f x +o_ (<span class="mi">0</span> : V) id).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>: iff_trans (diff_locallyxP _ _) _; <span class="nb">rewrite</span> funeqE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diff_locally</span> (<span class="nv">x</span> : V) (<span class="nv">f</span> : V -&gt; W) : differentiable f x -&gt;
+  (f \o shift x = cst (f x) + &#39;d f x +o_ (<span class="mi">0</span> : V) id).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /diff_locallyP []. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Differential_numFieldType</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;d&#39; f F&quot;</span> := (@diff _ _ _ _ (Phantom _ [filter of F]) f).
+<span class="kn">Notation</span> <span class="nf">differentiable</span> f F := (@differentiable_def _ _ _ f _ (Phantom _ [filter of F])).
+
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;is_diff&#39; F&quot;</span> := (is_diff_def (Phantom _ [filter of F])).
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (differentiable _ _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: ex_diff] : core.
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> ({<span class="kr">for</span> _, continuous _}) =&gt; <span class="bp">exact</span>: diff_continuous : core.
+
+<span class="kn">Lemma</span> <span class="nf">differentiableP</span> (<span class="nv">R</span> : numDomainType) (<span class="nv">V</span> <span class="nv">W</span> : normedModType R) (<span class="nv">f</span> : V -&gt; W) <span class="nv">x</span> :
+  differentiable f x -&gt; is_diff x f (&#39;d f x).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">apply</span>: DiffDef. <span class="kn">Qed</span>.
+
+<span class="kn">Section</span> <span class="nf">jacobian</span>.
+
+<span class="kn">Definition</span> <span class="nf">jacobian</span> <span class="nv">n</span> <span class="nv">m</span> (<span class="nv">R</span> : numFieldType) (<span class="nv">f</span> : &#39;rV[R]_n.+<span class="mi">1</span> -&gt; &#39;rV[R]_m.+<span class="mi">1</span>) <span class="nv">p</span> :=
+  lin1_mx (&#39;d f p).
+
+<span class="kn">End</span> <span class="nf">jacobian</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;J&#39; f p&quot;</span> := (jacobian f p).
+
+<span class="kn">Section</span> <span class="nf">DifferentialR</span>.
+
+<span class="kn">Context</span> {<span class="nv">R</span> : numFieldType} {<span class="nv">V</span> <span class="nv">W</span> : normedModType R}.
+
+<span class="c">(* split in multiple bits:</span>
+<span class="c">- a linear map which is locally bounded is a little o of 1</span>
+<span class="c">- the identity is a littleo of 1</span>
+<span class="c">*)</span>
+<span class="kn">Lemma</span> <span class="nf">differentiable_continuous</span> (<span class="nv">x</span> : V) (<span class="nv">f</span> : V -&gt; W) :
+  differentiable f x -&gt; {<span class="kr">for</span> x, continuous f}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /diff_locallyP [dfc]; <span class="nb">rewrite</span> -addrA.
+<span class="nb">rewrite</span> (littleo_bigO_eqo (cst (<span class="mi">1</span> : R))); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>/eqOP; near=&gt; k; <span class="nb">rewrite</span> /cst [`|<span class="mi">1</span>|]normr1 mulr1; near <span class="kp">do</span> <span class="bp">by</span> [].
+<span class="nb">rewrite</span> addfo; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; /eqolim; <span class="nb">rewrite</span> cvg_comp_shift add0r.
+<span class="bp">by</span> <span class="nb">apply</span>/eqolim0P; <span class="nb">apply</span>: (cvg_trans (dfc <span class="mi">0</span>)); <span class="nb">rewrite</span> linear0.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Section</span> <span class="nf">littleo_lemmas</span>.
+
+<span class="kn">Variables</span> (<span class="nv">X</span> <span class="nv">Y</span> <span class="nv">Z</span> : normedModType R).
+
+<span class="kn">Lemma</span> <span class="nf">normm_littleo</span> <span class="nv">x</span> (<span class="nv">f</span> : X -&gt; Y) : `| [o_(x \near x) (<span class="mi">1</span> : R) of f x]| = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /cst /=; <span class="nb">have</span> [e /(_ (`|e x|/<span class="mi">2</span>) _)/nbhs_singleton /=] := littleo.
+<span class="nb">rewrite</span> pmulr_lgt0 // [`|<span class="mi">1</span>|]normr1 mulr1 [leLHS]splitr ger_addr pmulr_lle0 //.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /implyP; <span class="nb">case</span> : real_ltgtP; <span class="nb">rewrite</span> <span class="nl">?realE</span> <span class="nl">?normrE</span> //= lexx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">littleo_lim0</span> (<span class="nv">f</span> : X -&gt; Y) (<span class="nv">h</span> : _ -&gt; Z) (<span class="nv">x</span> : X) :
+  f @ x --&gt; (<span class="mi">0</span> : Y) -&gt; [o_x f of h] x = <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>/eqolim0P =&gt; -&gt;; <span class="nb">have</span> [k /(_ _ [gt0 of <span class="mi">1</span> : R])/=] := littleo.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /nbhs_singleton; <span class="nb">rewrite</span> mul1r normm_littleo normr_le0 =&gt; /eqP.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">littleo_lemmas</span>.
+
+<span class="kn">Section</span> <span class="nf">diff_locally_converse_tentative</span>.
+<span class="c">(* if there exist A and B s.t. f(a + h) = A + B h + o(h) then</span>
+<span class="c">   f is differentiable at a, A = f(a) and B = f&#39;(a) *)</span>
+<span class="c">(* this is a consequence of diff_continuous and eqolim0 *)</span>
+<span class="c">(* indeed the differential being b *: idfun is locally bounded *)</span>
+<span class="c">(* and thus a littleo of 1, and so is id *)</span>
+<span class="c">(* This can be generalized to any dimension *)</span>
+<span class="kn">Lemma</span> <span class="nf">diff_locally_converse_part1</span> (<span class="nv">f</span> : R -&gt; R) (<span class="nv">a</span> <span class="nv">b</span> <span class="nv">x</span> : R) :
+  f \o shift x = cst a + b *: idfun +o_ (<span class="mi">0</span> : R) id -&gt; f x = a.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> funeqE =&gt; /(_ <span class="mi">0</span>) /=; <span class="nb">rewrite</span> add0r =&gt; -&gt;.
+<span class="bp">by</span> <span class="nb">rewrite</span> -[LHS]/(_ <span class="mi">0</span> + _ <span class="mi">0</span> + _ <span class="mi">0</span>) /cst [X <span class="kr">in</span> a + X]scaler0 littleo_lim0 <span class="nl">?addr0</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">diff_locally_converse_tentative</span>.
+
+<span class="kn">Definition</span> <span class="nf">derive</span> (<span class="nv">f</span> : V -&gt; W) <span class="nv">a</span> <span class="nv">v</span> :=
+  lim ((<span class="kr">fun</span> <span class="nv">h</span> =&gt; h^-<span class="mi">1</span> *: ((f \o shift a) (h *: v) - f a)) @ <span class="mi">0</span>^&#39;).
+
+<span class="kn">Local</span> <span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;D_&#39; v f&quot;</span> := (derive f ^~ v).
+<span class="kn">Local</span> <span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;D_&#39; v f c&quot;</span> := (derive f c v). <span class="c">(* printing *)</span>
+
+<span class="kn">Definition</span> <span class="nf">derivable</span> (<span class="nv">f</span> : V -&gt; W) <span class="nv">a</span> <span class="nv">v</span> :=
+  cvg ((<span class="kr">fun</span> <span class="nv">h</span> =&gt; h^-<span class="mi">1</span> *: ((f \o shift a) (h *: v) - f a)) @ <span class="mi">0</span>^&#39;).
+
+<span class="kn">Class</span> <span class="nf">is_derive</span> (<span class="nv">a</span> <span class="nv">v</span> : V) (<span class="nv">f</span> : V -&gt; W) (<span class="nv">df</span> : W) := DeriveDef {
+  ex_derive : derivable f a v;
+  derive_val : &#39;D_v f a = df
+}.
+
+<span class="kn">Lemma</span> <span class="nf">derivable_nbhs</span> (<span class="nv">f</span> : V -&gt; W) <span class="nv">a</span> <span class="nv">v</span> :
+  derivable f a v -&gt;
+  (<span class="kr">fun</span> <span class="nv">h</span> =&gt; (f \o shift a) (h *: v)) = (cst (f a)) +
+    (<span class="kr">fun</span> <span class="nv">h</span> =&gt; h *: (&#39;D_v f a)) +o_ (nbhs (<span class="mi">0</span> :R)) id.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df; <span class="nb">apply</span>/eqaddoP =&gt; _/posnumP[e].
+<span class="nb">rewrite</span> -nbhs_nearE nbhs_simpl /= dnbhsE; <span class="nb">split</span>; <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> /at_point opprD -![(_ + _ : _ -&gt; _) _]/(_ + _) scale0r add0r.
+  <span class="bp">by</span> <span class="nb">rewrite</span> addrA subrr add0r normrN scale0r !normr0 mulr0.
+<span class="nb">have</span> /eqolimP := df; <span class="nb">rewrite</span> -[lim _]/(derive _ _ _).
+<span class="nb">move</span>=&gt; /eqaddoP /(_ e%:num) /(_ [gt0 of e%:num]).
+<span class="nb">apply</span>: filter_app; <span class="nb">rewrite</span> /= !near_simpl near_withinE; near=&gt; h =&gt; hN0.
+<span class="nb">rewrite</span> /= opprD -![(_ + _ : _ -&gt; _) _]/(_ + _) -![(- _ : _ -&gt; _) _]/(- _).
+<span class="nb">rewrite</span> /cst /= [`|<span class="mi">1</span>|]normr1 mulr1 =&gt; dfv.
+<span class="nb">rewrite</span> addrA -[X <span class="kr">in</span> X + _]scale1r -(@mulVf _ h) //.
+<span class="nb">rewrite</span> mulrC -scalerA -scalerBr normrZ.
+<span class="nb">rewrite</span> -ler_pdivl_mull; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> normr_gt0.
+<span class="bp">by</span> <span class="nb">rewrite</span> mulrCA mulVf <span class="nl">?mulr1</span>; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> normr_eq0.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivable_nbhsP</span> (<span class="nv">f</span> : V -&gt; W) <span class="nv">a</span> <span class="nv">v</span> :
+  derivable f a v &lt;-&gt;
+  (<span class="kr">fun</span> <span class="nv">h</span> =&gt; (f \o shift a) (h *: v)) = (cst (f a)) +
+    (<span class="kr">fun</span> <span class="nv">h</span> =&gt; h *: (&#39;D_v f a)) +o_ (nbhs (<span class="mi">0</span> : R)) id.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>; <span class="kp">first</span> <span class="bp">exact</span>: derivable_nbhs.
+<span class="nb">move</span>=&gt; df; <span class="nb">apply</span>/cvg_ex; <span class="kr">exists</span> (&#39;D_v f a).
+<span class="nb">apply</span>/(@eqolimP _ _ _ (dnbhs_filter_on _))/eqaddoP =&gt; _/posnumP[e].
+<span class="nb">have</span> /eqaddoP /(_ e%:num) /(_ [gt0 of e%:num]) := df.
+<span class="nb">rewrite</span> /= !(near_simpl, near_withinE); <span class="nb">apply</span>: filter_app; near=&gt; h.
+<span class="nb">rewrite</span> /= opprD -![(_ + _ : _ -&gt; _) _]/(_ + _) -![(- _ : _ -&gt; _) _]/(- _).
+<span class="nb">rewrite</span> /cst /= [`|<span class="mi">1</span>|]normr1 mulr1 addrA =&gt; dfv hN0.
+<span class="nb">rewrite</span> -[X <span class="kr">in</span> _ - X]scale1r -(@mulVf _ h) //.
+<span class="nb">rewrite</span> -scalerA -scalerBr normrZ normfV ler_pdivr_mull <span class="nl">?normr_gt0</span> //.
+<span class="bp">by</span> <span class="nb">rewrite</span> mulrC.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivable_nbhsx</span> (<span class="nv">f</span> : V -&gt; W) <span class="nv">a</span> <span class="nv">v</span> :
+  derivable f a v -&gt; <span class="kr">forall</span> <span class="nv">h</span>, f (a + h *: v) = f a + h *: &#39;D_v f a
+  +o_(h \near (nbhs (<span class="mi">0</span> : R))) h.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /derivable_nbhs; <span class="nb">rewrite</span> funeqE =&gt; df.
+<span class="bp">by</span> <span class="nb">apply</span>: eqaddoEx =&gt; h; <span class="nb">have</span> /= := (df h); <span class="nb">rewrite</span> addrC =&gt; -&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivable_nbhsxP</span> (<span class="nv">f</span> : V -&gt; W) <span class="nv">a</span> <span class="nv">v</span> :
+  derivable f a v &lt;-&gt; <span class="kr">forall</span> <span class="nv">h</span>, f (a + h *: v) = f a + h *: &#39;D_v f a
+  +o_(h \near (nbhs (<span class="mi">0</span> :R))) h.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>; <span class="kp">first</span> <span class="bp">exact</span>: derivable_nbhsx.
+<span class="nb">move</span>=&gt; df; <span class="nb">apply</span>/derivable_nbhsP; <span class="nb">apply</span>/eqaddoE; <span class="nb">rewrite</span> funeqE =&gt; h.
+<span class="bp">by</span> <span class="nb">rewrite</span> /= addrC df.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">DifferentialR</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;D_&#39; v f&quot;</span> := (derive f ^~ v).
+<span class="kn">Notation</span> <span class="s2">&quot;&#39;&#39;D_&#39; v f c&quot;</span> := (derive f c v). <span class="c">(* printing *)</span>
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (derivable _ _ _) =&gt; <span class="kp">solve</span>[<span class="nb">apply</span>: ex_derive] : core.
+
+<span class="kn">Section</span> <span class="nf">DifferentialR_numFieldType</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : numFieldType} {<span class="nv">V</span> <span class="nv">W</span> : normedModType R}.
+
+<span class="kn">Lemma</span> <span class="nf">deriveE</span> (<span class="nv">f</span> : V -&gt; W) (<span class="nv">a</span> <span class="nv">v</span> : V) :
+  differentiable f a -&gt; &#39;D_v f a = &#39;d f a v.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /derive =&gt; /diff_locally -&gt; /=; <span class="nb">set</span> k := &#39;o _.
+<span class="nb">evar</span> (g : R -&gt; W); <span class="nb">rewrite</span> [X <span class="kr">in</span> X @ _](_ : _ = g) /=; <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> funeqE=&gt; h; <span class="nb">rewrite</span> !scalerDr scalerN /cst /=.
+  <span class="bp">by</span> <span class="nb">rewrite</span> addrC !addrA addNr add0r linearZ /= scalerA /g.
+<span class="nb">apply</span>: cvg_lim =&gt; //.
+<span class="nb">pose</span> g1 : R -&gt; W := <span class="kr">fun</span> <span class="nv">h</span> =&gt; (h^-<span class="mi">1</span> * h) *: &#39;d f a v.
+<span class="nb">pose</span> g2 : R -&gt; W := <span class="kr">fun</span> <span class="nv">h</span> : R =&gt; h^-<span class="mi">1</span> *: k (h *: v ).
+<span class="nb">rewrite</span> (_ : g = g1 + g2) <span class="nl">?funeqE</span> // -(addr0 (_ _ v)); <span class="nb">apply</span>: cvgD.
+  <span class="nb">rewrite</span> -(scale1r (_ _ v)); <span class="nb">apply</span>: cvgZl =&gt; /= X [e e0].
+  <span class="nb">rewrite</span> /ball_ /= =&gt; eX.
+  <span class="nb">apply</span>/nbhs_ballP.
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">e</span> =&gt; //= x _ x0; <span class="nb">apply</span> eX; <span class="nb">rewrite</span> mulVr // <span class="nl">?unitfE</span> //= subrr normr0.
+<span class="nb">rewrite</span> /g2.
+<span class="nb">have</span> [/eqP -&gt;|v0] := boolP (v == <span class="mi">0</span>).
+  <span class="nb">rewrite</span> (_ : (<span class="kr">fun</span> <span class="nv">_</span> =&gt; _) = cst <span class="mi">0</span>); <span class="kp">first</span> <span class="bp">exact</span>: cvg_cst.
+  <span class="bp">by</span> <span class="nb">rewrite</span> funeqE =&gt; ?; <span class="nb">rewrite</span> scaler0 /k littleo_lim0 // scaler0.
+<span class="nb">apply</span>/cvgrPdist_lt =&gt; e e0.
+<span class="nb">rewrite</span> nearE /=; <span class="nb">apply</span>/nbhs_ballP.
+<span class="nb">have</span> /(littleoP [littleo of k]) /nbhs_ballP[i i0 Hi] : <span class="mi">0</span> &lt; e / (<span class="mi">2</span> * `|v|).
+  <span class="bp">by</span> <span class="nb">rewrite</span> divr_gt0 // pmulr_rgt0 // normr_gt0.
+<span class="kr">exists</span> (<span class="nv">i</span> / `|v|); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> /= divr_gt0 // normr_gt0.
+<span class="nb">move</span>=&gt; /= j; <span class="nb">rewrite</span> /ball /= /ball_ add0r normrN.
+<span class="nb">rewrite</span> ltr_pdivl_mulr <span class="nl">?normr_gt0</span> // =&gt; jvi j0.
+<span class="nb">rewrite</span> add0r normrN normrZ -ltr_pdivl_mull <span class="nl">?normr_gt0</span> <span class="nl">?invr_neq0</span> //.
+<span class="nb">have</span> /Hi/le_lt_trans -&gt; // : ball <span class="mi">0</span> i (j *: v).
+   <span class="bp">by</span> <span class="nb">rewrite</span> -ball_normE/= add0r normrN (le_lt_trans _ jvi) // normrZ.
+<span class="nb">rewrite</span> -(mulrC e) -mulrA -ltr_pdivl_mull // mulrA mulVr <span class="nl">?unitfE</span> <span class="nl">?gt_eqF</span> //.
+<span class="nb">rewrite</span> normrV <span class="nl">?unitfE</span> // div1r invrK ltr_pdivr_mull; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> pmulr_rgt0 // normr_gt0.
+<span class="nb">rewrite</span> normrZ mulrC -mulrA.
+<span class="bp">by</span> <span class="nb">rewrite</span> ltr_pmull <span class="nl">?ltr1n</span> // pmulr_rgt0 <span class="nl">?normm_gt0</span> // normr_gt0.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">DifferentialR_numFieldType</span>.
+
+<span class="kn">Section</span> <span class="nf">DifferentialR2</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : numFieldType.
+<span class="kn">Implicit Type</span> (V : normedModType R).
+
+<span class="kn">Lemma</span> <span class="nf">derivemxE</span> <span class="nv">m</span> <span class="nv">n</span> (<span class="nv">f</span> : &#39;rV[R]_m.+<span class="mi">1</span> -&gt; &#39;rV[R]_n.+<span class="mi">1</span>) (<span class="nv">a</span> <span class="nv">v</span> : &#39;rV[R]_m.+<span class="mi">1</span>) :
+  differentiable f a -&gt; &#39;D_ v f a = v *m jacobian f a.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /deriveE-&gt;; <span class="nb">rewrite</span> /jacobian mul_rV_lin1. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">derive1</span> <span class="nv">V</span> (<span class="nv">f</span> : R -&gt; V) (<span class="nv">a</span> : R) :=
+   lim ((<span class="kr">fun</span> <span class="nv">h</span> =&gt; h^-<span class="mi">1</span> *: (f (h + a) - f a)) @ <span class="mi">0</span>^&#39;).
+
+<span class="kn">Local</span> <span class="kn">Notation</span> <span class="s2">&quot;f ^` ()&quot;</span> := (derive1 f).
+
+<span class="kn">Lemma</span> <span class="nf">derive1E</span> <span class="nv">V</span> (<span class="nv">f</span> : R -&gt; V) <span class="nv">a</span> : f^`() a = &#39;D_1 f a.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /derive1 /derive; <span class="nb">set</span> d := (<span class="kr">fun</span> <span class="nv">_</span> : R =&gt; _); <span class="nb">set</span> d&#39; := (<span class="kr">fun</span> <span class="nv">_</span> : R =&gt; _).
+<span class="bp">by</span> <span class="nb">suff</span> -&gt; : d = d&#39; <span class="bp">by</span> []; <span class="nb">rewrite</span> funeqE=&gt; h; <span class="nb">rewrite</span> /d /d&#39; /= [h%:A](mulr1).
+<span class="kn">Qed</span>.
+
+<span class="c">(* Is it necessary? *)</span>
+<span class="kn">Lemma</span> <span class="nf">derive1E&#39;</span> <span class="nv">V</span> <span class="nv">f</span> <span class="nv">a</span> : differentiable (f : R -&gt; V) a -&gt;
+  f^`() a = &#39;d f a <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">rewrite</span> derive1E deriveE. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">derive1n</span> <span class="nv">V</span> <span class="nv">n</span> (<span class="nv">f</span> : R -&gt; V) := iter n (@derive1 V) f.
+
+<span class="kn">Local</span> <span class="kn">Notation</span> <span class="s2">&quot;f ^` ( n )&quot;</span> := (derive1n n f).
+
+<span class="kn">Lemma</span> <span class="nf">derive1n0</span> <span class="nv">V</span> (<span class="nv">f</span> : R -&gt; V) : f^`(<span class="mi">0</span>) = f.
+<span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derive1n1</span> <span class="nv">V</span> (<span class="nv">f</span> : R -&gt; V) : f^`(<span class="mi">1</span>) = f^`().
+<span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derive1nS</span> <span class="nv">V</span> (<span class="nv">f</span> : R -&gt; V) <span class="nv">n</span> : f^`(n.+<span class="mi">1</span>) = f^`(n)^`().
+<span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derive1Sn</span> <span class="nv">V</span> (<span class="nv">f</span> : R -&gt; V) <span class="nv">n</span> : f^`(n.+<span class="mi">1</span>) = f^`()^`(n).
+<span class="kn">Proof</span>. <span class="bp">exact</span>: iterSr. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">DifferentialR2</span>.
+
+<span class="kn">Notation</span> <span class="s2">&quot;f ^` ()&quot;</span> := (derive1 f).
+<span class="kn">Notation</span> <span class="s2">&quot;f ^` ( n )&quot;</span> := (derive1n n f).
+
+<span class="kn">Section</span> <span class="nf">DifferentialR3</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : numFieldType.
+
+<span class="kn">Fact</span> <span class="nf">dcst</span> (<span class="nv">V</span> <span class="nv">W</span> : normedModType R) (<span class="nv">a</span> : W) (<span class="nv">x</span> : V) : continuous (<span class="mi">0</span> : V -&gt; W) /\
+  cst a \o shift x = cst (cst a x) + \<span class="mi">0</span> +o_ (<span class="mi">0</span> : V) id.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>; <span class="kp">first</span> <span class="bp">exact</span>: cst_continuous.
+<span class="nb">apply</span>/eqaddoE; <span class="nb">rewrite</span> addr0 funeqE =&gt; ? /=; <span class="nb">rewrite</span> -[LHS]addr0; <span class="nb">congr</span> (_ + _).
+<span class="bp">by</span> <span class="nb">rewrite</span> littleoE; <span class="nb">last</span> <span class="bp">exact</span>: littleo0_subproof.
+<span class="kn">Qed</span>.
+
+<span class="kn">Variables</span> (<span class="nv">V</span> <span class="nv">W</span> : normedModType R).
+
+<span class="kn">Fact</span> <span class="nf">dadd</span> (<span class="nv">f</span> <span class="nv">g</span> : V -&gt; W) <span class="nv">x</span> :
+  differentiable f x -&gt; differentiable g x -&gt;
+  continuous (&#39;d f x \+ &#39;d g x) /\
+  (f + g) \o shift x = cst ((f + g) x) + (&#39;d f x \+ &#39;d g x) +o_ (<span class="mi">0</span> : V) id.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df dg; <span class="nb">split</span> =&gt; [?|]; <span class="kp">do</span> <span class="nl">?exact</span>: continuousD.
+<span class="nb">apply</span>/(@eqaddoE R); <span class="nb">rewrite</span> funeqE =&gt; y /=; <span class="nb">rewrite</span> -[(f + g) _]/(_ + _).
+<span class="bp">by</span> <span class="nb">rewrite</span> ![_ (_ + x)]diff_locallyx// addrACA addox addrACA.
+<span class="kn">Qed</span>.
+
+<span class="kn">Fact</span> <span class="nf">dopp</span> (<span class="nv">f</span> : V -&gt; W) <span class="nv">x</span> :
+  differentiable f x -&gt; continuous (- (&#39;d f x : V -&gt; W)) /\
+  (- f) \o shift x = cst (- f x) \- &#39;d f x +o_ (<span class="mi">0</span> : V) id.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df; <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">apply</span>: continuousN.
+<span class="nb">apply</span>/eqaddoE; <span class="nb">rewrite</span> funeqE =&gt; y /=.
+<span class="bp">by</span> <span class="nb">rewrite</span> -[(- f) _]/(- (_ _)) diff_locallyx// !opprD oppox.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">is_diff_eq</span> (<span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> <span class="nv">f&#39;</span> <span class="nv">g</span> : V&#39; -&gt; W&#39;) (<span class="nv">x</span> : V&#39;) :
+  is_diff x f f&#39; -&gt; f&#39; = g -&gt; is_diff x f g.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ? &lt;-. <span class="kn">Qed</span>.
+
+<span class="kn">Fact</span> <span class="nf">dscale</span> (<span class="nv">f</span> : V -&gt; W) <span class="nv">k</span> <span class="nv">x</span> :
+  differentiable f x -&gt; continuous (k \*: &#39;d f x) /\
+  (k *: f) \o shift x = cst ((k *: f) x) + k \*: &#39;d f x +o_ (<span class="mi">0</span> : V) id.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df; <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">apply</span>: continuousZr.
+<span class="nb">apply</span>/eqaddoE; <span class="nb">rewrite</span> funeqE =&gt; y /=.
+<span class="bp">by</span> <span class="nb">rewrite</span> -[(k *: f) _]/(_ *: _) diff_locallyx // !scalerDr scaleox.
+<span class="kn">Qed</span>.
+
+<span class="c">(* NB: could be generalized with K : absRingType instead of R; DONE? *)</span>
+<span class="kn">Fact</span> <span class="nf">dscalel</span> (<span class="nv">k</span> : V -&gt; R) (<span class="nv">f</span> : W) <span class="nv">x</span> :
+  differentiable k x -&gt;
+  continuous (<span class="kr">fun</span> <span class="nv">z</span> : V =&gt; &#39;d k x z *: f) /\
+  (<span class="kr">fun</span> <span class="nv">z</span> =&gt; k z *: f) \o shift x =
+    cst (k x *: f) + (<span class="kr">fun</span> <span class="nv">z</span> =&gt; &#39;d k x z *: f) +o_ (<span class="mi">0</span> : V) id.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df; <span class="nb">split</span>.
+  <span class="nb">move</span>=&gt; ?; <span class="bp">exact</span>/continuousZl/diff_continuous.
+<span class="nb">apply</span>/eqaddoE; <span class="nb">rewrite</span> funeqE =&gt; y /=.
+<span class="bp">by</span> <span class="nb">rewrite</span> diff_locallyx //= !scalerDl scaleolx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Fact</span> <span class="nf">dlin</span> (<span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : {linear V&#39; -&gt; W&#39;}) <span class="nv">x</span> :
+  continuous f -&gt; f \o shift x = cst (f x) + f +o_ (<span class="mi">0</span> : V&#39;) id.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df; <span class="nb">apply</span>: eqaddoE; <span class="nb">rewrite</span> funeqE =&gt; y /=.
+<span class="nb">rewrite</span> linearD addrC -[LHS]addr0; <span class="nb">congr</span> (_ + _).
+<span class="bp">by</span> <span class="nb">rewrite</span> littleoE; <span class="nb">last</span> <span class="bp">exact</span>: littleo0_subproof. <span class="c">(*fixme*)</span>
+<span class="kn">Qed</span>.
+
+<span class="c">(* TODO: generalize *)</span>
+<span class="kn">Lemma</span> <span class="nf">compoO_eqo</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : U -&gt; V&#39;)
+  (<span class="nv">g</span> : V&#39; -&gt; W&#39;) :
+  [o_ (<span class="mi">0</span> : V&#39;) id of g] \o [O_ (<span class="mi">0</span> : U) id of f] =o_ (<span class="mi">0</span> : U) id.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/eqoP =&gt; _ /posnumP[e].
+<span class="nb">have</span> /bigO_exP [_ /posnumP[k]] := bigOP [bigO of [O_ (<span class="mi">0</span> : U) id of f]].
+<span class="nb">have</span> := littleoP [littleo of [o_ (<span class="mi">0</span> : V&#39;) id of g]].
+<span class="nb">move</span>=&gt;  /(_ (e%:num / k%:num)) /(_ _) /nbhs_ballP [//|_ /posnumP[d] hd].
+<span class="nb">apply</span>: filter_app; near=&gt; x =&gt; leOxkx; <span class="nb">apply</span>: le_trans (hd _ _) _; <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> -ler_pdivl_mull //; <span class="nb">apply</span>: le_trans leOxkx _.
+  <span class="bp">by</span> <span class="nb">rewrite</span> invf_div mulrA -[_ / _ * _]mulrA mulVf // mulr1.
+<span class="bp">by</span> <span class="nb">rewrite</span> -ball_normE /= distrC subr0 (le_lt_trans leOxkx) // -ltr_pdivl_mull.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">compoO_eqox</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : U -&gt; V&#39;)
+  (<span class="nv">g</span> : V&#39; -&gt; W&#39;) :
+  <span class="kr">forall</span> <span class="nv">x</span> : U, [o_ (<span class="mi">0</span> : V&#39;) id of g] ([O_ (<span class="mi">0</span> : U) id of f] x) =o_(x \near <span class="mi">0</span> : U) x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> -[LHS]/((_ \o _) x) compoO_eqo. <span class="kn">Qed</span>.
+
+<span class="c">(* TODO: generalize *)</span>
+<span class="kn">Lemma</span> <span class="nf">compOo_eqo</span>  (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : U -&gt; V&#39;)
+  (<span class="nv">g</span> : V&#39; -&gt; W&#39;) :
+  [O_ (<span class="mi">0</span> : V&#39;) id of g] \o [o_ (<span class="mi">0</span> : U) id of f] =o_ (<span class="mi">0</span> : U) id.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/eqoP =&gt; _ /posnumP[e].
+<span class="nb">have</span> /bigO_exP [_ /posnumP[k]] := bigOP [bigO of [O_ (<span class="mi">0</span> : V&#39;) id of g]].
+<span class="nb">move</span>=&gt; /nbhs_ballP [_ /posnumP[d] hd].
+<span class="nb">have</span> ekgt0 : e%:num / k%:num &gt; <span class="mi">0</span> <span class="bp">by</span> [].
+<span class="nb">have</span> /(_ _ ekgt0) := littleoP [littleo of [o_ (<span class="mi">0</span> : U) id of f]].
+<span class="nb">apply</span>: filter_app; near=&gt; x =&gt; leoxekx; <span class="nb">apply</span>: le_trans (hd _ _) _; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -ler_pdivl_mull // mulrA [_^-<span class="mi">1</span> * _]mulrC.
+<span class="bp">by</span> <span class="nb">rewrite</span> -ball_normE /= distrC subr0 (le_lt_trans leoxekx)// -ltr_pdivl_mull //.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">DifferentialR3</span>.
+
+<span class="kn">Section</span> <span class="nf">DifferentialR3_numFieldType</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : numFieldType.
+
+<span class="kn">Lemma</span> <span class="nf">littleo_linear0</span> (<span class="nv">V</span> <span class="nv">W</span> : normedModType R) (<span class="nv">f</span> : {linear V -&gt; W}) :
+  (f : V -&gt; W) =o_ (<span class="mi">0</span> : V) id -&gt; f = cst <span class="mi">0</span> :&gt; (V -&gt; W).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>/eqoP =&gt; oid.
+<span class="nb">rewrite</span> funeqE =&gt; x; <span class="nb">apply</span>/eqP; <span class="nb">have</span> [|xn0] := real_le0P (normr_real x).
+  <span class="bp">by</span> <span class="nb">rewrite</span> normr_le0 =&gt; /eqP -&gt;; <span class="nb">rewrite</span> linear0.
+<span class="nb">rewrite</span> -normr_le0 -(mul0r `|x|) -ler_pdivr_mulr //.
+<span class="nb">apply</span>/ler_gtP =&gt; _ /posnumP[e]; <span class="nb">rewrite</span> ler_pdivr_mulr //.
+<span class="nb">have</span> /oid /nbhs_ballP [_ /posnumP[d] dfe] := !! gt0 e.
+<span class="nb">set</span> k := ((d%:num / <span class="mi">2</span>) / (PosNum xn0)%:num)^-<span class="mi">1</span>.
+<span class="nb">rewrite</span> -{<span class="mi">1</span>}(@scalerKV _ _ k _ x) /k // linearZZ normrZ.
+<span class="nb">rewrite</span> -ler_pdivl_mull; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> gtr0_norm.
+<span class="nb">rewrite</span> mulrCA (@le_trans _ _ (e%:num * `|k^-<span class="mi">1</span> *: x|)) //; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ler_pmul // normrZ normfV.
+<span class="nb">apply</span>: dfe; <span class="nb">rewrite</span> -ball_normE /= sub0r normrN normrZ.
+<span class="nb">rewrite</span> invrK -ltr_pdivl_mulr // ger0_norm // ltr_pdivr_mulr //.
+<span class="bp">by</span> <span class="nb">rewrite</span> -mulrA mulVf <span class="nl">?lt0r_neq0</span> // mulr1 [ltRHS]splitr ltr_addl.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diff_unique</span> (<span class="nv">V</span> <span class="nv">W</span> : normedModType R) (<span class="nv">f</span> : V -&gt; W)
+  (<span class="nv">df</span> : {linear V -&gt; W}) <span class="nv">x</span> :
+  continuous df -&gt; f \o shift x = cst (f x) + df +o_ (<span class="mi">0</span> : V) id -&gt;
+  &#39;d f x = df :&gt; (V -&gt; W).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; dfc dxf; <span class="nb">apply</span>/subr0_eq; <span class="nb">rewrite</span> -[LHS]/(_ \- _).
+<span class="nb">apply</span>/littleo_linear0/eqoP/eq_some_oP =&gt; /=; <span class="nb">rewrite</span> funeqE =&gt; y /=.
+<span class="nb">have</span> hdf h :
+  (f \o shift x = cst (f x) + h +o_ (<span class="mi">0</span> : V) id) -&gt;
+  h = f \o shift x - cst (f x) +o_ (<span class="mi">0</span> : V) id.
+  <span class="nb">move</span>=&gt; hdf; <span class="nb">apply</span>: eqaddoE.
+  <span class="nb">rewrite</span> hdf addrAC (addrC _ h) addrK.
+  <span class="nb">rewrite</span> -[LHS]addr0 -addrA; <span class="nb">congr</span> (_ + _).
+  <span class="bp">by</span> <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_sym addrC addr_eq0 oppo.
+<span class="nb">rewrite</span> (hdf _ dxf).
+<span class="nb">suff</span> /diff_locally /hdf -&gt; : differentiable f x.
+  <span class="bp">by</span> <span class="nb">rewrite</span> opprD addrCA -(addrA (_ - _)) addKr oppox addox.
+<span class="nb">apply</span>/diffP; <span class="nb">apply</span>: (@getPex _ (<span class="kr">fun</span> (<span class="nv">df</span> : {linear V -&gt; W}) =&gt; continuous df /\
+  <span class="kr">forall</span> <span class="nv">y</span>, f y = f (lim x) + df (y - lim x) +o_(y \near x) (y - lim x))).
+<span class="kr">exists</span> <span class="nv">df</span>; <span class="nb">split</span>=&gt; //; <span class="nb">apply</span>: eqaddoEx =&gt; z.
+<span class="nb">rewrite</span> (hdf _ dxf) !addrA lim_id // /(_ \o _) /= subrK [f _ + _]addrC addrK.
+<span class="nb">rewrite</span> -addrA -[LHS]addr0; <span class="nb">congr</span> (_ + _).
+<span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_sym addrC addr_eq0 oppox; <span class="nb">apply</span>/eqP.
+<span class="bp">by</span> <span class="nb">rewrite</span> littleo_center0 (comp_centerK x id) -[- _ <span class="kr">in</span> RHS](comp_centerK x).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diff_cst</span> (<span class="nv">V</span> <span class="nv">W</span> : normedModType R) <span class="nv">a</span> <span class="nv">x</span> : (&#39;d (cst a) x : V -&gt; W) = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/diff_unique; <span class="nb">have</span> [] := dcst a x. <span class="kn">Qed</span>.
+
+<span class="kn">Variables</span> (<span class="nv">V</span> <span class="nv">W</span> : normedModType R).
+
+<span class="kn">Lemma</span> <span class="nf">differentiable_cst</span> (<span class="nv">W&#39;</span> : normedModType R) (<span class="nv">a</span> : W&#39;) (<span class="nv">x</span> : V) :
+  differentiable (cst a) x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/diff_locallyP; <span class="nb">rewrite</span> diff_cst; <span class="nb">have</span> := dcst a x. <span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_diff_cst</span> (<span class="nv">a</span> : W) (<span class="nv">x</span> : V) : is_diff x (cst a) <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">exact</span>: DiffDef (differentiable_cst _ _) (diff_cst _ _). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diffD</span> (<span class="nv">f</span> <span class="nv">g</span> : V -&gt; W) <span class="nv">x</span> :
+  differentiable f x -&gt; differentiable g x -&gt;
+  &#39;d (f + g) x = &#39;d f x \+ &#39;d g x :&gt; (V -&gt; W).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; df dg; <span class="nb">apply</span>/diff_unique; <span class="nb">have</span> [] := dadd df dg. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">differentiableD</span> (<span class="nv">f</span> <span class="nv">g</span> : V -&gt; W) <span class="nv">x</span> :
+  differentiable f x -&gt; differentiable g x -&gt; differentiable (f + g) x.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; df dg; <span class="nb">apply</span>/diff_locallyP; <span class="nb">rewrite</span> diffD //; <span class="nb">have</span> := dadd df dg.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_diffD</span> (<span class="nv">f</span> <span class="nv">g</span> <span class="nv">df</span> <span class="nv">dg</span> : V -&gt; W) <span class="nv">x</span> :
+  is_diff x f df -&gt; is_diff x g dg -&gt; is_diff x (f + g) (df + dg).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; dfx dgx; <span class="nb">apply</span>: DiffDef; <span class="kp">first</span> <span class="bp">exact</span>: differentiableD.
+<span class="bp">by</span> <span class="nb">rewrite</span> diffD // !diff_val.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">differentiable_sum</span> <span class="nv">n</span> (<span class="nv">f</span> : &#39;I_n -&gt; V -&gt; W) (<span class="nv">x</span> : V) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, differentiable (f i) x) -&gt; differentiable (\sum_(i &lt; n) f i) x.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>: n f =&gt; [f _| n IH f H]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> big_ord0.
+<span class="nb">rewrite</span> big_ord_recr /=; <span class="nb">apply</span>/differentiableD; [<span class="nb">apply</span>/IH =&gt; ? |]; <span class="bp">exact</span>: H.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diffN</span> (<span class="nv">f</span> : V -&gt; W) <span class="nv">x</span> :
+  differentiable f x -&gt; &#39;d (- f) x = - (&#39;d f x : V -&gt; W) :&gt; (V -&gt; W).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df; <span class="nb">rewrite</span> -[RHS]/(@GRing.opp _ \o _); <span class="nb">apply</span>/diff_unique;
+<span class="bp">by</span> <span class="nb">have</span> [] := dopp df.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">differentiableN</span> (<span class="nv">f</span> : V -&gt; W) <span class="nv">x</span> :
+  differentiable f x -&gt; differentiable (- f) x.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; df; <span class="nb">apply</span>/diff_locallyP; <span class="nb">rewrite</span> diffN //; <span class="nb">have</span> := dopp df.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_diffN</span> (<span class="nv">f</span> <span class="nv">df</span> : V -&gt; W) <span class="nv">x</span> :
+  is_diff x f df -&gt; is_diff x (- f) (- df).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; dfx; <span class="nb">apply</span>: DiffDef; <span class="kp">first</span> <span class="bp">exact</span>: differentiableN.
+<span class="bp">by</span> <span class="nb">rewrite</span> diffN // diff_val.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_diffB</span> (<span class="nv">f</span> <span class="nv">g</span> <span class="nv">df</span> <span class="nv">dg</span> : V -&gt; W) <span class="nv">x</span> :
+  is_diff x f df -&gt; is_diff x g dg -&gt; is_diff x (f - g) (df - dg).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; dfx dgx; <span class="nb">apply</span>: is_diff_eq. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diffB</span> (<span class="nv">f</span> <span class="nv">g</span> : V -&gt; W) <span class="nv">x</span> :
+  differentiable f x -&gt; differentiable g x -&gt;
+  &#39;d (f - g) x = &#39;d f x \- &#39;d g x :&gt; (V -&gt; W).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /differentiableP df /differentiableP dg; <span class="nb">rewrite</span> diff_val. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">differentiableB</span> (<span class="nv">f</span> <span class="nv">g</span> : V -&gt; W) <span class="nv">x</span> :
+  differentiable f x -&gt; differentiable g x -&gt; differentiable (f \- g) x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /differentiableP df /differentiableP dg. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diffZ</span> (<span class="nv">f</span> : V -&gt; W) <span class="nv">k</span> <span class="nv">x</span> :
+  differentiable f x -&gt; &#39;d (k *: f) x = k \*: &#39;d f x :&gt; (V -&gt; W).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; df; <span class="nb">apply</span>/diff_unique; <span class="nb">have</span> [] := dscale k df. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">differentiableZ</span> (<span class="nv">f</span> : V -&gt; W) <span class="nv">k</span> <span class="nv">x</span> :
+  differentiable f x -&gt; differentiable (k *: f) x.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; df; <span class="nb">apply</span>/diff_locallyP; <span class="nb">rewrite</span> diffZ //; <span class="nb">have</span> := dscale k df.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_diffZ</span> (<span class="nv">f</span> <span class="nv">df</span> : V -&gt; W) <span class="nv">k</span> <span class="nv">x</span> :
+  is_diff x f df -&gt; is_diff x (k *: f) (k *: df).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; dfx; <span class="nb">apply</span>: DiffDef; <span class="kp">first</span> <span class="bp">exact</span>: differentiableZ.
+<span class="bp">by</span> <span class="nb">rewrite</span> diffZ // diff_val.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diffZl</span> (<span class="nv">k</span> : V -&gt; R) (<span class="nv">f</span> : W) <span class="nv">x</span> : differentiable k x -&gt;
+  &#39;d (<span class="kr">fun</span> <span class="nv">z</span> =&gt; k z *: f) x = (<span class="kr">fun</span> <span class="nv">z</span> =&gt; &#39;d k x z *: f) :&gt; (_ -&gt; _).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df; <span class="nb">set</span> g := RHS; <span class="nb">have</span> glin : linear g.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; a u v; <span class="nb">rewrite</span> /g linearP /= scalerDl -scalerA.
+<span class="bp">by</span> <span class="nb">apply</span>:(@diff_unique _ _ _ (Linear glin)); <span class="nb">have</span> [] := dscalel f df.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">differentiableZl</span> (<span class="nv">k</span> : V -&gt; R) (<span class="nv">f</span> : W) <span class="nv">x</span> :
+  differentiable k x -&gt; differentiable (<span class="kr">fun</span> <span class="nv">z</span> =&gt; k z *: f) x.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; df; <span class="nb">apply</span>/diff_locallyP; <span class="nb">rewrite</span> diffZl //; <span class="nb">have</span> [] := dscalel f df.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diff_lin</span> (<span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : {linear V&#39; -&gt; W&#39;}) <span class="nv">x</span> :
+  continuous f -&gt; &#39;d f x = f :&gt; (V&#39; -&gt; W&#39;).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; fcont; <span class="nb">apply</span>/diff_unique =&gt; //; <span class="nb">apply</span>: dlin. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">linear_differentiable</span> (<span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : {linear V&#39; -&gt; W&#39;})
+  <span class="nv">x</span> : continuous f -&gt; differentiable f x.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; fcont; <span class="nb">apply</span>/diff_locallyP; <span class="nb">rewrite</span> diff_lin //; <span class="nb">have</span> := dlin x fcont.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_diff_id</span> (<span class="nv">x</span> : V) : is_diff x id id.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: DiffDef.
+  <span class="bp">by</span> <span class="nb">apply</span>: (@linear_differentiable _ _ [linear of idfun]) =&gt; ? //.
+<span class="bp">by</span> <span class="nb">rewrite</span> (@diff_lin _ _ [linear of idfun]) // =&gt; ? //.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_diff_scaler</span> (<span class="nv">k</span> : R) (<span class="nv">x</span> : V) : is_diff x ( *:%R k) ( *:%R k).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: DiffDef; <span class="kp">first</span> <span class="bp">exact</span>/linear_differentiable/scaler_continuous.
+<span class="bp">by</span> <span class="nb">rewrite</span> diff_lin //; <span class="nb">apply</span>: scaler_continuous.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_diff_scalel</span> (<span class="nv">k</span> : R) (<span class="nv">x</span> : V) :
+  is_diff k ( *:%R ^~ x) ( *:%R ^~ x).
+<span class="kn">Proof</span>.
+<span class="nb">have</span> sx_lin : linear ( *:%R ^~ x) <span class="bp">by</span> <span class="nb">move</span>=&gt; u y z; <span class="nb">rewrite</span> scalerDl scalerA.
+<span class="nb">have</span> -&gt; : *:%R ^~ x = Linear sx_lin <span class="bp">by</span> <span class="nb">rewrite</span> funeqE.
+<span class="nb">apply</span>: DiffDef; <span class="kp">first</span> <span class="bp">exact</span>/linear_differentiable/scalel_continuous.
+<span class="bp">by</span> <span class="nb">rewrite</span> diff_lin//; <span class="nb">apply</span>: scalel_continuous.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">differentiable_coord</span> <span class="nv">m</span> <span class="nv">n</span> (<span class="nv">M</span> : &#39;M[R]_(m.+<span class="mi">1</span>, n.+<span class="mi">1</span>)) <span class="nv">i</span> <span class="nv">j</span> :
+  differentiable (<span class="kr">fun</span> <span class="nv">N</span> : &#39;M[R]_(m.+<span class="mi">1</span>, n.+<span class="mi">1</span>) =&gt; N i j : R ) M.
+<span class="kn">Proof</span>.
+<span class="nb">have</span> @f : {linear &#39;M[R]_(m.+<span class="mi">1</span>, n.+<span class="mi">1</span>) -&gt; R}.
+  <span class="bp">by</span> <span class="kr">exists</span> (<span class="nv">fun</span> <span class="nv">N</span> : &#39;M[R]_(_, _) =&gt; N i j); <span class="nb">eexists</span>; <span class="nb">move</span>=&gt; ? ?; <span class="nb">rewrite</span> !mxE.
+<span class="nb">rewrite</span> (_ : (<span class="kr">fun</span> <span class="nv">_</span> =&gt; _) = f) //; <span class="bp">exact</span>/linear_differentiable/coord_continuous.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">linear_lipschitz</span> (<span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : {linear V&#39; -&gt; W&#39;}) :
+  continuous f -&gt; <span class="kr">exists2</span> k, k &gt; <span class="mi">0</span> &amp; <span class="kr">forall</span> <span class="nv">x</span>, `|f x| &lt;= k * `|x|.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /(_ <span class="mi">0</span>); <span class="nb">rewrite</span> linear0 =&gt; /(_ _ (nbhsx_ballx <span class="mi">0</span> <span class="mi">1</span>%:pos)).
+<span class="nb">move</span>=&gt; /nbhs_ballP [_ /posnumP[e] he]; <span class="kr">exists</span> (<span class="mi">2</span> / e%:num) =&gt; // x.
+<span class="nb">have</span> [|xn0] := real_le0P (normr_real x).
+  <span class="bp">by</span> <span class="nb">rewrite</span> normr_le0 =&gt; /eqP-&gt;; <span class="nb">rewrite</span> linear0 !normr0 mulr0.
+<span class="nb">set</span> k := <span class="mi">2</span> / e%:num * (PosNum xn0)%:num.
+<span class="nb">have</span> kn0 : k != <span class="mi">0</span> <span class="bp">by</span> <span class="nb">rewrite</span> /k.
+<span class="nb">have</span> abskgt0 : `|k| &gt; <span class="mi">0</span> <span class="bp">by</span> <span class="nb">rewrite</span> normr_gt0.
+<span class="nb">rewrite</span> -[x <span class="kr">in</span> leLHS](scalerKV kn0) linearZZ normrZ -ler_pdivl_mull //.
+<span class="nb">suff</span> /he : ball <span class="mi">0</span> e%:num (k^-<span class="mi">1</span> *: x).
+  <span class="nb">rewrite</span> -ball_normE /= distrC subr0 =&gt; /ltW /le_trans; <span class="nb">apply</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ger0_norm /k // mulVf.
+<span class="nb">rewrite</span> -ball_normE /= distrC subr0 normrZ.
+<span class="nb">rewrite</span> normfV ger0_norm /k // invrM <span class="nl">?unitfE</span> // mulrAC mulVf //.
+<span class="bp">by</span> <span class="nb">rewrite</span> invf_div mul1r [ltRHS]splitr; <span class="nb">apply</span>: ltr_spaddr.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">linear_eqO</span> (<span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : {linear V&#39; -&gt; W&#39;}) :
+  continuous f -&gt; (f : V&#39; -&gt; W&#39;) =O_ (<span class="mi">0</span> : V&#39;) id.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /linear_lipschitz [k kgt0 flip]; <span class="nb">apply</span>/eqO_exP; <span class="kr">exists</span> <span class="nv">k</span> =&gt; //.
+<span class="bp">exact</span>: filterE.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diff_eqO</span> (<span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">x</span> : filter_on V&#39;) (<span class="nv">f</span> : V&#39; -&gt; W&#39;) :
+  differentiable f x -&gt; (&#39;d f x : V&#39; -&gt; W&#39;) =O_ (<span class="mi">0</span> : V&#39;) id.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /diff_continuous /linear_eqO; <span class="nb">apply</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">compOo_eqox</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : U -&gt; V&#39;)
+  (<span class="nv">g</span> : V&#39; -&gt; W&#39;) : <span class="kr">forall</span> <span class="nv">x</span>,
+  [O_ (<span class="mi">0</span> : V&#39;) id of g] ([o_ (<span class="mi">0</span> : U) id of f] x) =o_(x \near <span class="mi">0</span> : U) x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> -[LHS]/((_ \o _) x) compOo_eqo. <span class="kn">Qed</span>.
+
+<span class="kn">Fact</span> <span class="nf">dcomp</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : U -&gt; V&#39;) (<span class="nv">g</span> : V&#39; -&gt; W&#39;) <span class="nv">x</span> :
+  differentiable f x -&gt; differentiable g (f x) -&gt;
+  continuous (&#39;d g (f x) \o &#39;d f x) /\ <span class="kr">forall</span> <span class="nv">y</span>,
+  g (f (y + x)) = g (f x) + (&#39;d g (f x) \o &#39;d f x) y +o_(y \near <span class="mi">0</span> : U) y.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df dg; <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">apply</span>: continuous_comp.
+<span class="nb">apply</span>: eqaddoEx =&gt; y; <span class="nb">rewrite</span> diff_locallyx// -addrA diff_locallyxC// linearD.
+<span class="nb">rewrite</span> addrA -addrA; <span class="nb">congr</span> (_ + _ + _).
+<span class="nb">rewrite</span> diff_eqO // [&#39;d f x : _ -&gt; _]diff_eqO //.
+<span class="bp">by</span> <span class="nb">rewrite</span> {<span class="mi">2</span>}eqoO addOx compOo_eqox compoO_eqox addox.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diff_comp</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : U -&gt; V&#39;) (<span class="nv">g</span> : V&#39; -&gt; W&#39;) <span class="nv">x</span> :
+  differentiable f x -&gt; differentiable g (f x) -&gt;
+  &#39;d (g \o f) x = &#39;d g (f x) \o &#39;d f x :&gt; (U -&gt; W&#39;).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; df dg; <span class="nb">apply</span>/diff_unique; <span class="nb">have</span> [? /funext] := dcomp df dg. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">differentiable_comp</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : U -&gt; V&#39;)
+  (<span class="nv">g</span> : V&#39; -&gt; W&#39;) <span class="nv">x</span> : differentiable f x -&gt; differentiable g (f x) -&gt;
+  differentiable (g \o f) x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df dg; <span class="nb">apply</span>/diff_locallyP; <span class="nb">rewrite</span> diff_comp //;
+<span class="bp">by</span> <span class="nb">have</span> [? /funext]:= dcomp df dg.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_diff_comp</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> <span class="nv">df</span> : U -&gt; V&#39;)
+  (<span class="nv">g</span> <span class="nv">dg</span> : V&#39; -&gt; W&#39;) <span class="nv">x</span> : is_diff x f df -&gt; is_diff (f x) g dg -&gt;
+  is_diff x (g \o f) (dg \o df) | <span class="mi">99</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; dfx dgfx; <span class="nb">apply</span>: DiffDef; <span class="kp">first</span> <span class="bp">exact</span>: differentiable_comp.
+<span class="bp">by</span> <span class="nb">rewrite</span> diff_comp // !diff_val.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">bilinear_schwarz</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R)
+  (<span class="nv">f</span> : {bilinear U -&gt; V&#39; -&gt; W&#39;}) : continuous (<span class="kr">fun</span> <span class="nv">p</span> =&gt; f p.<span class="mi">1</span> p.<span class="mi">2</span>) -&gt;
+  <span class="kr">exists2</span> k, k &gt; <span class="mi">0</span> &amp; <span class="kr">forall</span> <span class="nv">u</span> <span class="nv">v</span>, `|f u v| &lt;= k * `|u| * `|v|.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /(_ <span class="mi">0</span>); <span class="nb">rewrite</span> linear0r =&gt; /(_ _ (nbhsx_ballx <span class="mi">0</span> <span class="mi">1</span>%:pos)).
+<span class="nb">move</span>=&gt; /nbhs_ballP [_ /posnumP[e] he]; <span class="kr">exists</span> ((<span class="mi">2</span> / e%:num) ^+<span class="mi">2</span>) =&gt; // u v.
+<span class="nb">have</span> [|un0] := real_le0P (normr_real u).
+  <span class="bp">by</span> <span class="nb">rewrite</span> normr_le0 =&gt; /eqP-&gt;; <span class="nb">rewrite</span> linear0l !normr0 mulr0 mul0r.
+<span class="nb">have</span> [|vn0] := real_le0P (normr_real v).
+  <span class="bp">by</span> <span class="nb">rewrite</span> normr_le0 =&gt; /eqP-&gt;; <span class="nb">rewrite</span> linear0r !normr0 mulr0.
+<span class="nb">rewrite</span> -[`|u|]/((PosNum un0)%:num) -[`|v|]/((PosNum vn0)%:num).
+<span class="nb">set</span> ku := <span class="mi">2</span> / e%:num * (PosNum un0)%:num.
+<span class="nb">set</span> kv := <span class="mi">2</span> / e%:num * (PosNum vn0)%:num.
+<span class="nb">rewrite</span> -[X <span class="kr">in</span> f X](@scalerKV _ _ ku) /ku // linearZl_LR normrZ.
+<span class="nb">rewrite</span> gtr0_norm // -ler_pdivl_mull //.
+<span class="nb">rewrite</span> -[X <span class="kr">in</span> f _ X](@scalerKV _ _ kv) /kv // linearZr_LR normrZ.
+<span class="nb">rewrite</span> gtr0_norm // -ler_pdivl_mull //.
+<span class="nb">suff</span> /he : ball <span class="mi">0</span> e%:num (ku^-<span class="mi">1</span> *: u, kv^-<span class="mi">1</span> *: v).
+  <span class="nb">rewrite</span> -ball_normE /= distrC subr0 =&gt; /ltW /le_trans; <span class="nb">apply</span>.
+  <span class="nb">rewrite</span> ler_pdivl_mull <span class="mi">1</span><span class="nl">?pmulr_lgt0</span>// mulr1 ler_pdivl_mull <span class="mi">1</span><span class="nl">?pmulr_lgt0</span>//.
+  <span class="bp">by</span> <span class="nb">rewrite</span> mulrA [ku * _]mulrAC expr2.
+<span class="nb">rewrite</span> -ball_normE /= distrC subr0.
+<span class="nb">have</span> -&gt; : (ku^-<span class="mi">1</span> *: u, kv^-<span class="mi">1</span> *: v) =
+  (e%:num / <span class="mi">2</span>) *: ((PosNum un0)%:num ^-<span class="mi">1</span> *: u, (PosNum vn0)%:num ^-<span class="mi">1</span> *: v).
+  <span class="nb">rewrite</span> invrM <span class="nl">?unitfE</span> // [kv ^-<span class="mi">1</span>]invrM <span class="nl">?unitfE</span> //.
+  <span class="nb">rewrite</span> mulrC -[_ *: u]scalerA [X <span class="kr">in</span> X *: v]mulrC -[_ *: v]scalerA.
+  <span class="bp">by</span> <span class="nb">rewrite</span> invf_div.
+<span class="nb">rewrite</span> normrZ ger0_norm // -mulrA gtr_pmulr // ltr_pdivr_mull // mulr1.
+<span class="bp">by</span> <span class="nb">rewrite</span> prod_normE/= !normrZ !normfV !normr_id !mulVf <span class="nl">?gt_eqF</span>// maxxx ltr1n.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">bilinear_eqo</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : {bilinear U -&gt; V&#39; -&gt; W&#39;}) :
+  continuous (<span class="kr">fun</span> <span class="nv">p</span> =&gt; f p.<span class="mi">1</span> p.<span class="mi">2</span>) -&gt; (<span class="kr">fun</span> <span class="nv">p</span> =&gt; f p.<span class="mi">1</span> p.<span class="mi">2</span>) =o_ (<span class="mi">0</span> : U * V&#39;) id.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fc; <span class="nb">have</span> [_ /posnumP[k] fschwarz] := bilinear_schwarz fc.
+<span class="nb">apply</span>/eqoP=&gt; _ /posnumP[e]; near=&gt; x; <span class="nb">rewrite</span> (le_trans (fschwarz _ _))//.
+<span class="nb">rewrite</span> ler_pmul <span class="nl">?pmulr_rge0</span> //; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> num_le_maxr /= lexx orbT.
+<span class="nb">rewrite</span> -ler_pdivl_mull //.
+<span class="nb">suff</span> : `|x| &lt;= k%:num ^-<span class="mi">1</span> * e%:num <span class="bp">by</span> <span class="nb">apply</span>: le_trans; <span class="nb">rewrite</span> num_le_maxr /= lexx.
+near: x; <span class="nb">rewrite</span> !near_simpl; <span class="nb">apply</span>/nbhs_le_nbhs_norm.
+<span class="bp">by</span> <span class="kr">exists</span> (<span class="nv">k</span>%:num ^-<span class="mi">1</span> * e%:num) =&gt; //= ? /=; <span class="nb">rewrite</span> /= distrC subr0 =&gt; /ltW.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Fact</span> <span class="nf">dbilin</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : {bilinear U -&gt; V&#39; -&gt; W&#39;}) <span class="nv">p</span> :
+  continuous (<span class="kr">fun</span> <span class="nv">p</span> =&gt; f p.<span class="mi">1</span> p.<span class="mi">2</span>) -&gt;
+  continuous (<span class="kr">fun</span> <span class="nv">q</span> =&gt; (f p.<span class="mi">1</span> q.<span class="mi">2</span> + f q.<span class="mi">1</span> p.<span class="mi">2</span>)) /\
+  (<span class="kr">fun</span> <span class="nv">q</span> =&gt; f q.<span class="mi">1</span> q.<span class="mi">2</span>) \o shift p = cst (f p.<span class="mi">1</span> p.<span class="mi">2</span>) +
+    (<span class="kr">fun</span> <span class="nv">q</span> =&gt; f p.<span class="mi">1</span> q.<span class="mi">2</span> + f q.<span class="mi">1</span> p.<span class="mi">2</span>) +o_ (<span class="mi">0</span> : U * V&#39;) id.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fc; <span class="nb">split</span>=&gt; [q|].
+  <span class="bp">by</span> <span class="nb">apply</span>: (@continuousD _ _ _ (<span class="kr">fun</span> <span class="nv">q</span> =&gt; f p.<span class="mi">1</span> q.<span class="mi">2</span>) (<span class="kr">fun</span> <span class="nv">q</span> =&gt; f q.<span class="mi">1</span> p.<span class="mi">2</span>));
+    <span class="nb">move</span>=&gt; A /(fc (_.<span class="mi">1</span>, _.<span class="mi">2</span>)) /= /nbhs_ballP [_ /posnumP[e] fpqe_A];
+    <span class="nb">apply</span>/nbhs_ballP; <span class="kr">exists</span> <span class="nv">e</span>%:num =&gt; //= r [? ?]; <span class="bp">exact</span>: (fpqe_A (_.<span class="mi">1</span>, _.<span class="mi">2</span>)).
+<span class="nb">apply</span>/eqaddoE; <span class="nb">rewrite</span> funeqE =&gt; q /=.
+<span class="nb">rewrite</span> linearDl !linearDr addrA addrC.
+<span class="nb">rewrite</span> -[f q.<span class="mi">1</span> _ + _ + _]addrA [f q.<span class="mi">1</span> _ + _]addrC addrA [f q.<span class="mi">1</span> _ + _]addrC.
+<span class="bp">by</span> <span class="nb">congr</span> (_ + _); <span class="nb">rewrite</span> -[LHS]/((<span class="kr">fun</span> <span class="nv">p</span> =&gt; f p.<span class="mi">1</span> p.<span class="mi">2</span>) q) bilinear_eqo.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diff_bilin</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : {bilinear U -&gt; V&#39; -&gt; W&#39;}) <span class="nv">p</span> :
+  continuous (<span class="kr">fun</span> <span class="nv">p</span> =&gt; f p.<span class="mi">1</span> p.<span class="mi">2</span>) -&gt; &#39;d (<span class="kr">fun</span> <span class="nv">q</span> =&gt; f q.<span class="mi">1</span> q.<span class="mi">2</span>) p =
+  (<span class="kr">fun</span> <span class="nv">q</span> =&gt; f p.<span class="mi">1</span> q.<span class="mi">2</span> + f q.<span class="mi">1</span> p.<span class="mi">2</span>) :&gt; (U * V&#39; -&gt; W&#39;).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fc; <span class="nb">have</span> lind : linear (<span class="kr">fun</span> <span class="nv">q</span> =&gt; f p.<span class="mi">1</span> q.<span class="mi">2</span> + f q.<span class="mi">1</span> p.<span class="mi">2</span>).
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; ???; <span class="nb">rewrite</span> linearPr linearPl scalerDr addrACA.
+<span class="nb">have</span> -&gt; : (<span class="kr">fun</span> <span class="nv">q</span> =&gt; f p.<span class="mi">1</span> q.<span class="mi">2</span> + f q.<span class="mi">1</span> p.<span class="mi">2</span>) = Linear lind <span class="bp">by</span> [].
+<span class="bp">by</span> <span class="nb">apply</span>/diff_unique; <span class="nb">have</span> [] := dbilin p fc.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">differentiable_bilin</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R)
+  (<span class="nv">f</span> : {bilinear U -&gt; V&#39; -&gt; W&#39;}) <span class="nv">p</span> :
+  continuous (<span class="kr">fun</span> <span class="nv">p</span> =&gt; f p.<span class="mi">1</span> p.<span class="mi">2</span>) -&gt; differentiable (<span class="kr">fun</span> <span class="nv">p</span> =&gt; f p.<span class="mi">1</span> p.<span class="mi">2</span>) p.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; fc; <span class="nb">apply</span>/diff_locallyP; <span class="nb">rewrite</span> diff_bilin //; <span class="nb">apply</span>: dbilin p fc.
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">Rmult_rev</span> (<span class="nv">y</span> <span class="nv">x</span> : R) := x * y.
+<span class="kn">Canonical</span> <span class="nf">rev_Rmult</span> := @RevOp _ _ _ Rmult_rev (@GRing.mul [ringType of R])
+  (<span class="kr">fun</span> <span class="nv">_</span> <span class="nv">_</span> =&gt; erefl).
+
+<span class="kn">Lemma</span> <span class="nf">Rmult_is_linear</span> <span class="nv">x</span> : linear (@GRing.mul [ringType of R] x : R -&gt; R).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ???; <span class="nb">rewrite</span> mulrDr scalerAr. <span class="kn">Qed</span>.
+<span class="kn">Canonical</span> <span class="nf">Rmult_linear</span> x := Linear (Rmult_is_linear x).
+
+<span class="kn">Lemma</span> <span class="nf">Rmult_rev_is_linear</span> <span class="nv">y</span> : linear (Rmult_rev y : R -&gt; R).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ???; <span class="nb">rewrite</span> /Rmult_rev mulrDl scalerAl. <span class="kn">Qed</span>.
+<span class="kn">Canonical</span> <span class="nf">Rmult_rev_linear</span> y := Linear (Rmult_rev_is_linear y).
+
+<span class="kn">Canonical</span> <span class="nf">Rmult_bilinear</span> :=
+  [bilinear of (@GRing.mul [ringType of [lmodType R of R]])].
+
+<span class="kn">Global Instance</span> <span class="nf">is_diff_Rmult</span> (<span class="nv">p</span> : R*R ) :
+  is_diff p (<span class="kr">fun</span> <span class="nv">q</span> =&gt; q.<span class="mi">1</span> * q.<span class="mi">2</span>) (<span class="kr">fun</span> <span class="nv">q</span> =&gt; p.<span class="mi">1</span> * q.<span class="mi">2</span> + q.<span class="mi">1</span> * p.<span class="mi">2</span>).
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: DiffDef; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> diff_bilin // =&gt; ?; <span class="nb">apply</span>: mul_continuous.
+<span class="bp">by</span> <span class="nb">apply</span>: differentiable_bilin =&gt;?; <span class="nb">apply</span>: mul_continuous.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eqo_pair</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">F</span> : filter_on U)
+  (<span class="nv">f</span> : U -&gt; V&#39;) (<span class="nv">g</span> : U -&gt; W&#39;) :
+  (<span class="kr">fun</span> <span class="nv">t</span> =&gt; ([o_F id of f] t, [o_F id of g] t)) =o_F id.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/eqoP =&gt; _/posnumP[e]; near=&gt; x; <span class="nb">rewrite</span> num_le_maxl /=.
+<span class="bp">by</span> <span class="nb">apply</span>/andP; <span class="nb">split</span>; near: x; <span class="nb">apply</span>: littleoP.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Fact</span> <span class="nf">dpair</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : U -&gt; V&#39;) (<span class="nv">g</span> : U -&gt; W&#39;) <span class="nv">x</span> :
+  differentiable f x -&gt; differentiable g x -&gt;
+  continuous (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (&#39;d f x y, &#39;d g x y)) /\
+  (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (f y, g y)) \o shift x = cst (f x, g x) +
+  (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (&#39;d f x y, &#39;d g x y)) +o_ (<span class="mi">0</span> : U) id.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df dg; <span class="nb">split</span>=&gt; [?|]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>: cvg_pair; <span class="nb">apply</span>: diff_continuous.
+<span class="nb">apply</span>/eqaddoE; <span class="nb">rewrite</span> funeqE =&gt; y /=.
+<span class="nb">rewrite</span> ![_ (_ + x)]diff_locallyx//.
+<span class="c">(* fixme *)</span>
+<span class="nb">have</span> -&gt; : <span class="kr">forall</span> <span class="nv">h</span> <span class="nv">e</span>, (f x + &#39;d f x y + [o_ (<span class="mi">0</span> : U) id of h] y,
+  g x + &#39;d g x y + [o_ (<span class="mi">0</span> : U) id of e] y) =
+  (f x, g x) + (&#39;d f x y, &#39;d g x y) +
+  ([o_ (<span class="mi">0</span> : U) id of h] y, [o_ (<span class="mi">0</span> : U) id of e] y) <span class="bp">by</span> [].
+<span class="bp">by</span> <span class="nb">congr</span> (_ + _); <span class="nb">rewrite</span> -[LHS]/((<span class="kr">fun</span> <span class="nv">y</span> =&gt; (_ y, _ y)) y) eqo_pair.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diff_pair</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : U -&gt; V&#39;) (<span class="nv">g</span> : U -&gt; W&#39;) <span class="nv">x</span> :
+  differentiable f x -&gt; differentiable g x -&gt; &#39;d (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (f y, g y)) x =
+  (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (&#39;d f x y, &#39;d g x y)) :&gt; (U -&gt; V&#39; * W&#39;).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df dg.
+<span class="nb">have</span> lin_pair : linear (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (&#39;d f x y, &#39;d g x y)).
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; ???; <span class="nb">rewrite</span> !linearPZ.
+<span class="nb">have</span> -&gt; : (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (&#39;d f x y, &#39;d g x y)) = Linear lin_pair <span class="bp">by</span> [].
+<span class="bp">by</span> <span class="nb">apply</span>: diff_unique; <span class="nb">have</span> [] := dpair df dg.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">differentiable_pair</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> : U -&gt; V&#39;)
+  (<span class="nv">g</span> : U -&gt; W&#39;) <span class="nv">x</span> : differentiable f x -&gt; differentiable g x -&gt;
+  differentiable (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (f y, g y)) x.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; df dg; <span class="nb">apply</span>/diff_locallyP; <span class="nb">rewrite</span> diff_pair //; <span class="nb">apply</span>: dpair.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_diff_pair</span> (<span class="nv">U</span> <span class="nv">V&#39;</span> <span class="nv">W&#39;</span> : normedModType R) (<span class="nv">f</span> <span class="nv">df</span> : U -&gt; V&#39;)
+  (<span class="nv">g</span> <span class="nv">dg</span> : U -&gt; W&#39;) <span class="nv">x</span> : is_diff x f df -&gt; is_diff x g dg -&gt;
+   is_diff x (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (f y, g y)) (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (df y, dg y)).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; dfx dgx; <span class="nb">apply</span>: DiffDef; <span class="kp">first</span> <span class="bp">exact</span>: differentiable_pair.
+<span class="bp">by</span> <span class="nb">rewrite</span> diff_pair // !diff_val.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_diffM</span> (<span class="nv">f</span> <span class="nv">g</span> <span class="nv">df</span> <span class="nv">dg</span> : V -&gt; R) <span class="nv">x</span> :
+  is_diff x f df -&gt; is_diff x g dg -&gt; is_diff x (f * g) (f x *: dg + g x *: df).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; dfx dgx.
+<span class="nb">have</span> -&gt; : f * g = (<span class="kr">fun</span> <span class="nv">p</span> =&gt; p.<span class="mi">1</span> * p.<span class="mi">2</span>) \o (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (f y, g y)) <span class="bp">by</span> [].
+<span class="c">(* TODO: type class inference should succeed or fail, not leave an evar *)</span>
+<span class="nb">apply</span>: is_diff_eq; <span class="kp">do</span> <span class="nl">?exact</span>: is_diff_comp.
+<span class="bp">by</span> <span class="nb">rewrite</span> funeqE =&gt; ?; <span class="nb">rewrite</span> /= [_ * g _]mulrC.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diffM</span> (<span class="nv">f</span> <span class="nv">g</span> : V -&gt; R) <span class="nv">x</span> :
+  differentiable f x -&gt; differentiable g x -&gt;
+  &#39;d (f * g) x = f x \*: &#39;d g x + g x \*: &#39;d f x :&gt; (V -&gt; R).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /differentiableP df /differentiableP dg; <span class="nb">rewrite</span> diff_val. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">differentiableM</span> (<span class="nv">f</span> <span class="nv">g</span> : V -&gt; R) <span class="nv">x</span> :
+  differentiable f x -&gt; differentiable g x -&gt; differentiable (f * g) x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /differentiableP df /differentiableP dg. <span class="kn">Qed</span>.
+
+<span class="c">(* fixme using *)</span>
+<span class="c">(* (1 / (h + x) - 1 / x) / h = - 1 / (h + x) x = -1/x^2 + o(1) *)</span>
+<span class="kn">Fact</span> <span class="nf">dinv</span> (<span class="nv">x</span> : R) :
+  x != <span class="mi">0</span> -&gt; continuous (<span class="kr">fun</span> <span class="nv">h</span> : R =&gt; - x ^- <span class="mi">2</span> *: h) /\
+  (<span class="kr">fun</span> <span class="nv">x</span> =&gt; x^-<span class="mi">1</span>)%R \o shift x = cst (x^-<span class="mi">1</span>)%R +
+  (<span class="kr">fun</span> <span class="nv">h</span> : R =&gt; - x ^- <span class="mi">2</span> *: h) +o_ (<span class="mi">0</span> : R) id.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; xn0; <span class="nb">suff</span>: continuous (<span class="kr">fun</span> <span class="nv">h</span> : R =&gt; - (<span class="mi">1</span> / x) ^+ <span class="mi">2</span> *: h) /\
+  (<span class="kr">fun</span> <span class="nv">x</span> =&gt; <span class="mi">1</span> / x ) \o shift x = cst (<span class="mi">1</span> / x) +
+  (<span class="kr">fun</span> <span class="nv">h</span> : R =&gt; - (<span class="mi">1</span> / x) ^+ <span class="mi">2</span> *: h) +o_ (<span class="mi">0</span> : R) id.
+  <span class="nb">rewrite</span> !mul1r !GRing.exprVn.
+  <span class="nb">rewrite</span> (_ : (<span class="kr">fun</span> <span class="nv">x</span> =&gt; x^-<span class="mi">1</span>) =  (<span class="kr">fun</span> <span class="nv">x</span> =&gt; <span class="mi">1</span> / x ))//.
+  <span class="bp">by</span> <span class="nb">rewrite</span> funeqE =&gt; y; <span class="nb">rewrite</span> mul1r.
+<span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">apply</span>: continuousZr.
+<span class="nb">apply</span>/eqaddoP =&gt; _ /posnumP[e]; near=&gt; h.
+<span class="nb">rewrite</span> -[(_ + _ : R -&gt; R) h]/(_ + _) -[(- _ : R -&gt; R) h]/(- _) /=.
+<span class="nb">rewrite</span> opprD scaleNr opprK /cst /=.
+<span class="nb">rewrite</span> -[- _]mulr1 -[X <span class="kr">in</span> - _ * X](mulfVK xn0) mulrA mulNr -expr2 mulNr.
+<span class="nb">rewrite</span> [- _ + _]addrC -mulrBr.
+<span class="nb">rewrite</span> -[X <span class="kr">in</span> X + _]mulr1 -[X <span class="kr">in</span> <span class="mi">1</span> / _ * X](@mulfVK _ (x ^+ <span class="mi">2</span>)); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> sqrf_eq0.
+<span class="nb">rewrite</span> mulrA mulf_div mulr1.
+<span class="nb">have</span> hDx_neq0 : h + x != <span class="mi">0</span>.
+  near: h; <span class="nb">rewrite</span> !nbhs_simpl; <span class="nb">apply</span>/nbhs_normP.
+  <span class="kr">exists</span> `|x|; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> /= normr_gt0.
+  <span class="nb">move</span>=&gt; h /=; <span class="nb">rewrite</span> /= distrC subr0 -subr_gt0 =&gt; lthx.
+  <span class="nb">rewrite</span> -(normr_gt0 (h + x)) addrC -[h]opprK.
+  <span class="nb">apply</span>: lt_le_trans (ler_dist_dist _ _).
+  <span class="bp">by</span> <span class="nb">rewrite</span> ger0_norm normrN //; <span class="nb">apply</span>: ltW.
+<span class="nb">rewrite</span> addrC -[X <span class="kr">in</span> X * _]mulr1 -{<span class="mi">2</span>}[<span class="mi">1</span>](@mulfVK _ (h + x)) //.
+<span class="nb">rewrite</span> mulrA expr_div_n expr1n mulf_div mulr1 [_ ^+ <span class="mi">2</span> * _]mulrC -mulrA.
+<span class="nb">rewrite</span> -mulrDr mulrBr [<span class="mi">1</span> / _ * _]mulrC normrM.
+<span class="nb">rewrite</span> mulrDl mulrDl opprD addrACA addrA [x * _]mulrC expr2.
+<span class="kp">do</span> <span class="mi">2</span> ?[<span class="nb">rewrite</span> -addrA [- _ + _]addrC subrr addr0].
+<span class="nb">rewrite</span> div1r normfV [X <span class="kr">in</span> _ / X]normrM invfM [X <span class="kr">in</span> _ * X]mulrC.
+<span class="nb">rewrite</span> mulrA mulrAC ler_pdivr_mulr <span class="nl">?normr_gt0</span> <span class="nl">?mulf_neq0</span> //.
+<span class="nb">rewrite</span> mulrAC ler_pdivr_mulr <span class="nl">?normr_gt0</span> //.
+<span class="nb">have</span> : `|h * h| &lt;= `|x / <span class="mi">2</span>| * (e%:num * `|x * x| * `|h|).
+  <span class="nb">rewrite</span> !mulrA; near: h; <span class="kr">exists</span> (`|x / <span class="mi">2</span>| * e%:num * `|x * x|).
+    <span class="bp">by</span> <span class="nb">rewrite</span> /= !pmulr_rgt0 // normr_gt0 mulf_neq0.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; h /ltW; <span class="nb">rewrite</span> distrC subr0 [`|h * _|]normrM =&gt; /ler_pmul; <span class="nb">apply</span>.
+<span class="nb">move</span>=&gt; /le_trans-&gt; //; <span class="nb">rewrite</span> [leLHS]mulrC ler_pmul <span class="nl">?mulr_ge0</span> //.
+near: h; <span class="kr">exists</span> (`|x| / <span class="mi">2</span>); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> /= divr_gt0 <span class="nl">?normr_gt0</span>.
+<span class="nb">move</span>=&gt; h; <span class="nb">rewrite</span> /= distrC subr0 =&gt; lthhx; <span class="nb">rewrite</span> addrC -[h]opprK.
+<span class="nb">apply</span>: le_trans (@ler_dist_dist  _ R  _ _).
+<span class="nb">rewrite</span> normrN [leRHS]ger0_norm; <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> subr_ge0; <span class="nb">apply</span>: ltW; <span class="nb">apply</span>: lt_le_trans lthhx _.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ler_pdivr_mulr // -{<span class="mi">1</span>}(mulr1 `|x|) ler_pmul // ler1n.
+<span class="nb">rewrite</span> ler_subr_addr -ler_subr_addl (splitr `|x|).
+<span class="bp">by</span> <span class="nb">rewrite</span> normrM normfV (@ger0_norm _ <span class="mi">2</span>) // -addrA subrr addr0; <span class="nb">apply</span>: ltW.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diff_Rinv</span> (<span class="nv">x</span> : R) : x != <span class="mi">0</span> -&gt;
+  &#39;d GRing.inv x = (<span class="kr">fun</span> <span class="nv">h</span> : R =&gt; - x ^- <span class="mi">2</span> *: h) :&gt; (R -&gt; R).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; xn0; <span class="nb">have</span> -&gt; : (<span class="kr">fun</span> <span class="nv">h</span> : R =&gt; - x ^- <span class="mi">2</span> *: h) =
+  GRing.scale_linear _ (- x ^- <span class="mi">2</span>) <span class="bp">by</span> [].
+<span class="bp">by</span> <span class="nb">apply</span>: diff_unique; <span class="nb">have</span> [] := dinv xn0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">differentiable_Rinv</span> (<span class="nv">x</span> : R) : x != <span class="mi">0</span> -&gt;
+  differentiable (GRing.inv : R -&gt; R) x.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; xn0; <span class="nb">apply</span>/diff_locallyP; <span class="nb">rewrite</span> diff_Rinv //; <span class="nb">apply</span>: dinv.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diffV</span> (<span class="nv">f</span> : V -&gt; R) <span class="nv">x</span> : differentiable f x -&gt; f x != <span class="mi">0</span> -&gt;
+  &#39;d (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (f y)^-<span class="mi">1</span>) x = - (f x) ^- <span class="mi">2</span> \*: &#39;d f x :&gt; (V -&gt; R).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df fxn0.
+<span class="bp">by</span> <span class="nb">rewrite</span> [LHS](diff_comp df (differentiable_Rinv fxn0)) diff_Rinv.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">differentiableV</span> (<span class="nv">f</span> : V -&gt; R) <span class="nv">x</span> :
+  differentiable f x -&gt; f x != <span class="mi">0</span> -&gt; differentiable (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (f y)^-<span class="mi">1</span>) x.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; df fxn0; <span class="nb">apply</span>: differentiable_comp _ (differentiable_Rinv fxn0).
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_diffX</span> (<span class="nv">f</span> <span class="nv">df</span> : V -&gt; R) <span class="nv">n</span> <span class="nv">x</span> :
+  is_diff x f df -&gt; is_diff x (f ^+ n.+<span class="mi">1</span>) (n.+<span class="mi">1</span>%:R * f x ^+ n *: df).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; dfx; <span class="nb">elim</span>: n =&gt; [|n ihn]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> expr1 expr0 mulr1 scale1r.
+<span class="nb">rewrite</span> exprS; <span class="nb">apply</span>: is_diff_eq.
+<span class="nb">rewrite</span> scalerA mulrCA -exprS -scalerDl.
+<span class="bp">by</span> <span class="nb">rewrite</span> [<span class="kr">in</span> LHS]mulr_natl exprfctE -mulrSr mulr_natl.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">differentiableX</span> (<span class="nv">f</span> : V -&gt; R) <span class="nv">n</span> <span class="nv">x</span> :
+  differentiable f x -&gt; differentiable (f ^+ n.+<span class="mi">1</span>) x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /differentiableP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diffX</span> (<span class="nv">f</span> : V -&gt; R) <span class="nv">n</span> <span class="nv">x</span> :
+  differentiable f x -&gt;
+  &#39;d (f ^+ n.+<span class="mi">1</span>) x = n.+<span class="mi">1</span>%:R * f x ^+ n \*: &#39;d f x :&gt; (V -&gt; R).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /differentiableP df; <span class="nb">rewrite</span> diff_val. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">DifferentialR3_numFieldType</span>.
+
+<span class="kn">Section</span> <span class="nf">DeriveRU</span>.
+<span class="kn">Variables</span> (<span class="nv">R</span> : numFieldType) (<span class="nv">U</span> : normedModType R).
+<span class="kn">Implicit Types</span> <span class="nv">f</span> : R -&gt; U.
+
+<span class="kn">Let</span> <span class="nf">der1</span> <span class="nv">f</span> <span class="nv">x</span> : derivable f x <span class="mi">1</span> -&gt;
+  f \o shift x = cst (f x) + ( *:%R^~ (f^`() x)) +o_ (<span class="mi">0</span> : R) id.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df; <span class="nb">apply</span>/eqaddoE; <span class="nb">have</span> /derivable_nbhsP := df.
+<span class="nb">have</span> -&gt; : (<span class="kr">fun</span> <span class="nv">h</span> =&gt; (f \o shift x) h%:A) = f \o shift x.
+  <span class="bp">by</span> <span class="nb">rewrite</span> funeqE=&gt; ?; <span class="nb">rewrite</span> [_%:A]mulr1.
+<span class="bp">by</span> <span class="nb">rewrite</span> derive1E =&gt;-&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">deriv1E</span> <span class="nv">f</span> <span class="nv">x</span> : derivable f x <span class="mi">1</span> -&gt; &#39;d f x = ( *:%R^~ (f^`() x)) :&gt; (R -&gt; U).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df; <span class="nb">have</span> lin_scal : linear (<span class="kr">fun</span> <span class="nv">h</span> : R =&gt; h *: f^`() x).
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; ? ? ?; <span class="nb">rewrite</span> scalerDl scalerA.
+<span class="nb">have</span> -&gt; : (<span class="kr">fun</span> <span class="nv">h</span> =&gt; h *: f^`() x) = Linear lin_scal <span class="bp">by</span> [].
+<span class="bp">by</span> <span class="nb">apply</span>: diff_unique; [<span class="nb">apply</span>: scalel_continuous|<span class="nb">apply</span>: der1].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diff1E</span> <span class="nv">f</span> <span class="nv">x</span> :
+  differentiable f x -&gt; &#39;d f x = (<span class="kr">fun</span> <span class="nv">h</span> =&gt; h *: f^`() x) :&gt; (R -&gt; U).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df; <span class="nb">have</span> lin_scal : linear (<span class="kr">fun</span> <span class="nv">h</span> : R =&gt; h *: &#39;d f x <span class="mi">1</span>).
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; ? ? ?; <span class="nb">rewrite</span> scalerDl scalerA.
+<span class="nb">have</span> -&gt; : (<span class="kr">fun</span> <span class="nv">h</span> =&gt; h *: f^`() x) = Linear lin_scal.
+  <span class="bp">by</span> <span class="nb">rewrite</span> derive1E&#39;.
+<span class="nb">apply</span>: diff_unique; <span class="kp">first</span> <span class="bp">exact</span>: scalel_continuous.
+<span class="nb">apply</span>/eqaddoE; <span class="nb">have</span> /diff_locally -&gt; := df; <span class="nb">congr</span> (_ + _ + _).
+<span class="bp">by</span> <span class="nb">rewrite</span> funeqE =&gt; h /=; <span class="nb">rewrite</span> -{<span class="mi">1</span>}[h]mulr1 linearZ.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivable1_diffP</span> <span class="nv">f</span> <span class="nv">x</span> : derivable f x <span class="mi">1</span> &lt;-&gt; differentiable f x.
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; dfx.
+  <span class="bp">by</span> <span class="nb">apply</span>/diff_locallyP; <span class="nb">rewrite</span> deriv1E //; <span class="nb">split</span>;
+    [<span class="nb">apply</span>: scalel_continuous|<span class="nb">apply</span>: der1].
+<span class="nb">apply</span>/derivable_nbhsP/eqaddoE.
+<span class="nb">have</span> -&gt; : (<span class="kr">fun</span> <span class="nv">h</span> =&gt; (f \o shift x) h%:A) = f \o shift x.
+  <span class="bp">by</span> <span class="nb">rewrite</span> funeqE=&gt; ?; <span class="nb">rewrite</span> [_%:A]mulr1.
+<span class="bp">by</span> <span class="nb">have</span> /diff_locally := dfx; <span class="nb">rewrite</span> diff1E // derive1E =&gt;-&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">DeriveRU</span>.
+
+<span class="kn">Section</span> <span class="nf">DeriveVW</span>.
+<span class="kn">Variables</span> (<span class="nv">R</span> : numFieldType) (<span class="nv">V</span> <span class="nv">W</span> : normedModType R).
+<span class="kn">Implicit Types</span> <span class="nv">f</span> : V -&gt; W.
+
+<span class="kn">Lemma</span> <span class="nf">derivable1P</span> <span class="nv">f</span> <span class="nv">x</span> <span class="nv">v</span> :
+  derivable f x v &lt;-&gt; derivable (<span class="kr">fun</span> <span class="nv">h</span> : R =&gt; f (h *: v + x)) <span class="mi">0</span> <span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /derivable; <span class="nb">set</span> g1 := <span class="kr">fun</span> <span class="nv">h</span> =&gt; h^-<span class="mi">1</span> *: _; <span class="nb">set</span> g2 := <span class="kr">fun</span> <span class="nv">h</span> =&gt; h^-<span class="mi">1</span> *: _.
+<span class="nb">suff</span> -&gt; : g1 = g2 <span class="bp">by</span> [].
+<span class="bp">by</span> <span class="nb">rewrite</span> funeqE /g1 /g2 =&gt; h /=; <span class="nb">rewrite</span> addr0 scale0r add0r [_%:A]mulr1.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivableP</span> <span class="nv">f</span> <span class="nv">x</span> <span class="nv">v</span> : derivable f x v -&gt; is_derive x v f (&#39;D_v f x).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; df; <span class="nb">apply</span>: DeriveDef. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">diff_derivable</span> <span class="nv">f</span> <span class="nv">a</span> <span class="nv">v</span> : differentiable f a -&gt; derivable f a v.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; dfa; <span class="nb">apply</span>/derivable1P/derivable1_diffP.
+<span class="bp">by</span> <span class="nb">apply</span>: differentiable_comp; <span class="nb">rewrite</span> <span class="nl">?scale0r</span> <span class="nl">?add0r</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_derive_cst</span> (<span class="nv">a</span> : W) (<span class="nv">x</span> <span class="nv">v</span> : V) : is_derive x v (cst a) <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: DeriveDef; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> deriveE // diff_val.
+<span class="bp">exact</span>/diff_derivable.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">is_derive_eq</span> <span class="nv">f</span> (<span class="nv">x</span> <span class="nv">v</span> : V) (<span class="nv">df</span> <span class="nv">f&#39;</span> : W) :
+  is_derive x v f f&#39; -&gt; f&#39; = df -&gt; is_derive x v f df.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ? &lt;-. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">DeriveVW</span>.
+
+<span class="kn">Section</span> <span class="nf">Derive_lemmasVW</span>.
+<span class="kn">Variables</span> (<span class="nv">R</span> : numFieldType) (<span class="nv">V</span> <span class="nv">W</span> : normedModType R).
+<span class="kn">Implicit Types</span> <span class="nv">f</span> <span class="nv">g</span> : V -&gt; W.
+
+<span class="kn">Fact</span> <span class="nf">der_add</span> <span class="nv">f</span> <span class="nv">g</span> (<span class="nv">x</span> <span class="nv">v</span> : V) : derivable f x v -&gt; derivable g x v -&gt;
+  (<span class="kr">fun</span> <span class="nv">h</span> =&gt; h^-<span class="mi">1</span> *: (((f + g) \o shift x) (h *: v) - (f + g) x)) @
+  <span class="mi">0</span>^&#39;  --&gt; &#39;D_v f x + &#39;D_v g x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df dg.
+<span class="nb">evar</span> (fg : R -&gt; W); <span class="nb">rewrite</span> [X <span class="kr">in</span> X @ _](_ : _ = fg) /=; <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> funeqE =&gt; h.
+  <span class="bp">by</span> <span class="nb">rewrite</span> !scalerDr scalerN scalerDr opprD addrACA -!scalerBr /fg.
+<span class="bp">exact</span>: cvgD.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">deriveD</span> <span class="nv">f</span> <span class="nv">g</span> (<span class="nv">x</span> <span class="nv">v</span> : V) : derivable f x v -&gt; derivable g x v -&gt;
+  &#39;D_v (f + g) x = &#39;D_v f x + &#39;D_v g x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; df dg; <span class="nb">apply</span>: cvg_lim (der_add df dg). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivableD</span> <span class="nv">f</span> <span class="nv">g</span> (<span class="nv">x</span> <span class="nv">v</span> : V) :
+  derivable f x v -&gt; derivable g x v -&gt; derivable (f + g) x v.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df dg; <span class="nb">apply</span>/cvg_ex; <span class="kr">exists</span> (<span class="nv">derive</span> <span class="nv">f</span> <span class="nv">x</span> <span class="nv">v</span> + derive g x v).
+<span class="bp">exact</span>: der_add.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_deriveD</span> <span class="nv">f</span> <span class="nv">g</span> (<span class="nv">x</span> <span class="nv">v</span> : V) (<span class="nv">df</span> <span class="nv">dg</span> : W) :
+  is_derive x v f df -&gt; is_derive x v g dg -&gt; is_derive x v (f + g) (df + dg).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; dfx dgx; <span class="nb">apply</span>: DeriveDef; <span class="kp">first</span> <span class="bp">exact</span>: derivableD.
+<span class="bp">by</span> <span class="nb">rewrite</span> deriveD // !derive_val.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_derive_sum</span> <span class="nv">n</span> (<span class="nv">h</span> : &#39;I_n -&gt; V -&gt; W) (<span class="nv">x</span> <span class="nv">v</span> : V)
+  (<span class="nv">dh</span> : &#39;I_n -&gt; W) : (<span class="kr">forall</span> <span class="nv">i</span>, is_derive x v (h i) (dh i)) -&gt;
+  is_derive x v (\sum_(i &lt; n) h i) (\sum_(i &lt; n) dh i).
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>: n h dh =&gt; [h dh dhx|h dh dhx n ihn].
+  <span class="bp">by</span> <span class="nb">rewrite</span> !big_ord0 //; <span class="nb">apply</span>: is_derive_cst.
+<span class="bp">by</span> <span class="nb">rewrite</span> !big_ord_recr /=; <span class="nb">apply</span>: is_deriveD.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivable_sum</span> <span class="nv">n</span> (<span class="nv">h</span> : &#39;I_n -&gt; V -&gt; W) (<span class="nv">x</span> <span class="nv">v</span> : V) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, derivable (h i) x v) -&gt; derivable (\sum_(i &lt; n) h i) x v.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df; <span class="nb">suff</span> : <span class="kr">forall</span> <span class="nv">i</span>, is_derive x v (h i) (&#39;D_v (h i) x) <span class="bp">by</span> [].
+<span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">apply</span>: derivableP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derive_sum</span> <span class="nv">n</span> (<span class="nv">h</span> : &#39;I_n -&gt; V -&gt; W) (<span class="nv">x</span> <span class="nv">v</span> : V) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, derivable (h i) x v) -&gt;
+  &#39;D_v (\sum_(i &lt; n) h i) x = \sum_(i &lt; n) &#39;D_v (h i) x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df; <span class="nb">suff</span> dfx : <span class="kr">forall</span> <span class="nv">i</span>, is_derive x v (h i) (&#39;D_v (h i) x).
+  <span class="bp">by</span> <span class="nb">rewrite</span> derive_val.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">apply</span>: derivableP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Fact</span> <span class="nf">der_opp</span> <span class="nv">f</span> (<span class="nv">x</span> <span class="nv">v</span> : V) : derivable f x v -&gt;
+  (<span class="kr">fun</span> <span class="nv">h</span> =&gt; h^-<span class="mi">1</span> *: (((- f) \o shift x) (h *: v) - (- f) x)) @
+  <span class="mi">0</span>^&#39; --&gt; - &#39;D_v f x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df; <span class="nb">evar</span> (g : R -&gt; W); <span class="nb">rewrite</span> [X <span class="kr">in</span> X @ _](_ : _ = g) /=; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> funeqE =&gt; h; <span class="nb">rewrite</span> !scalerDr !scalerN -opprD -scalerBr /g.
+<span class="bp">exact</span>: cvgN.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">deriveN</span> <span class="nv">f</span> (<span class="nv">x</span> <span class="nv">v</span> : V) : derivable f x v -&gt;
+  &#39;D_v (- f) x = - &#39;D_v f x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; df; <span class="nb">apply</span>: cvg_lim (der_opp df). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivableN</span> <span class="nv">f</span> (<span class="nv">x</span> <span class="nv">v</span> : V) :
+  derivable f x v -&gt; derivable (- f) x v.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; df; <span class="nb">apply</span>/cvg_ex; <span class="kr">exists</span> (- &#39;D_v f x); <span class="nb">apply</span>: der_opp. <span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_deriveN</span> <span class="nv">f</span> (<span class="nv">x</span> <span class="nv">v</span> : V) (<span class="nv">df</span> : W) :
+  is_derive x v f df -&gt; is_derive x v (- f) (- df).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; dfx; <span class="nb">apply</span>: DeriveDef; <span class="kp">first</span> <span class="bp">exact</span>: derivableN.
+<span class="bp">by</span> <span class="nb">rewrite</span> deriveN // derive_val.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_deriveB</span> <span class="nv">f</span> <span class="nv">g</span> (<span class="nv">x</span> <span class="nv">v</span> : V) (<span class="nv">df</span> <span class="nv">dg</span> : W) :
+  is_derive x v f df -&gt; is_derive x v g dg -&gt; is_derive x v (f - g) (df - dg).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ??; <span class="nb">apply</span>: is_derive_eq. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">deriveB</span> <span class="nv">f</span> <span class="nv">g</span> (<span class="nv">x</span> <span class="nv">v</span> : V) : derivable f x v -&gt; derivable g x v -&gt;
+  &#39;D_v (f - g) x = &#39;D_v f x - &#39;D_v g x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /derivableP df /derivableP dg; <span class="nb">rewrite</span> derive_val. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivableB</span> <span class="nv">f</span> <span class="nv">g</span> (<span class="nv">x</span> <span class="nv">v</span> : V) :
+  derivable f x v -&gt; derivable g x v -&gt; derivable (f - g) x v.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /derivableP df /derivableP dg. <span class="kn">Qed</span>.
+
+<span class="kn">Fact</span> <span class="nf">der_scal</span> <span class="nv">f</span> (<span class="nv">k</span> : R) (<span class="nv">x</span> <span class="nv">v</span> : V) : derivable f x v -&gt;
+  (<span class="kr">fun</span> <span class="nv">h</span> =&gt; h^-<span class="mi">1</span> *: ((k \*: f \o shift x) (h *: v) - (k \*: f) x)) @
+  (<span class="mi">0</span> : R)^&#39; --&gt; k *: &#39;D_v f x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df; <span class="nb">evar</span> (h : R -&gt; W); <span class="nb">rewrite</span> [X <span class="kr">in</span> X @ _](_ : _ = h) /=; <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> funeqE =&gt; r.
+  <span class="bp">by</span> <span class="nb">rewrite</span> scalerBr !scalerA mulrC -!scalerA -!scalerBr /h.
+<span class="bp">exact</span>: cvgZr.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">deriveZ</span> <span class="nv">f</span> (<span class="nv">k</span> : R) (<span class="nv">x</span> <span class="nv">v</span> : V) : derivable f x v -&gt;
+  &#39;D_v (k \*: f) x = k *: &#39;D_v f x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; df; <span class="nb">apply</span>: cvg_lim (der_scal df). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivableZ</span> <span class="nv">f</span> (<span class="nv">k</span> : R) (<span class="nv">x</span> <span class="nv">v</span> : V) :
+  derivable f x v -&gt; derivable (k \*: f) x v.
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; df; <span class="nb">apply</span>/cvg_ex; <span class="kr">exists</span> (<span class="nv">k</span> *: &#39;D_v f x); <span class="nb">apply</span>: der_scal.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_deriveZ</span> <span class="nv">f</span> (<span class="nv">k</span> : R) (<span class="nv">x</span> <span class="nv">v</span> : V) (<span class="nv">df</span> : W) :
+  is_derive x v f df -&gt; is_derive x v (k \*: f) (k *: df).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; dfx; <span class="nb">apply</span>: DeriveDef; <span class="kp">first</span> <span class="bp">exact</span>: derivableZ.
+<span class="bp">by</span> <span class="nb">rewrite</span> deriveZ // derive_val.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Derive_lemmasVW</span>.
+
+<span class="kn">Section</span> <span class="nf">Derive_lemmasVR</span>.
+<span class="kn">Variables</span> (<span class="nv">R</span> : numFieldType) (<span class="nv">V</span> : normedModType R).
+<span class="kn">Implicit Types</span> <span class="nv">f</span> <span class="nv">g</span> : V -&gt; R.
+
+<span class="kn">Fact</span> <span class="nf">der_mult</span> <span class="nv">f</span> <span class="nv">g</span> (<span class="nv">x</span> <span class="nv">v</span> : V) :
+  derivable f x v -&gt; derivable g x v -&gt;
+  (<span class="kr">fun</span> <span class="nv">h</span> =&gt; h^-<span class="mi">1</span> *: (((f * g) \o shift x) (h *: v) - (f * g) x)) @
+  (<span class="mi">0</span> : R)^&#39; --&gt; f x *: &#39;D_v g x + g x *: &#39;D_v f x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df dg.
+<span class="nb">evar</span> (fg : R -&gt; R); <span class="nb">rewrite</span> [X <span class="kr">in</span> X @ _](_ : _ = fg) /=; <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> funeqE =&gt; h.
+  <span class="nb">have</span> -&gt; : (f * g) (h *: v + x) - (f * g) x =
+    f (h *: v + x) *: (g (h *: v + x) - g x) + g x *: (f (h *: v + x) - f x).
+    <span class="bp">by</span> <span class="nb">rewrite</span> !scalerBr -addrA ![g x *: _]mulrC addKr.
+  <span class="nb">rewrite</span> scalerDr scalerA mulrC -scalerA.
+  <span class="bp">by</span> <span class="nb">rewrite</span> [_ *: (g x *: _)]scalerA mulrC -scalerA /fg.
+<span class="nb">apply</span>: cvgD; <span class="nb">last</span> <span class="bp">exact</span>: cvgZr df.
+<span class="nb">apply</span>: cvg_comp2 (@mul_continuous _ (_, _)) =&gt; /=; <span class="nb">last</span> <span class="bp">exact</span>: dg.
+<span class="nb">suff</span> : {<span class="kr">for</span> <span class="mi">0</span>, continuous (<span class="kr">fun</span> <span class="nv">h</span> : R =&gt; f(h *: v + x))}.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; /continuous_withinNx; <span class="nb">rewrite</span> scale0r add0r.
+<span class="bp">exact</span>/differentiable_continuous/derivable1_diffP/(derivable1P _ _ _).<span class="mi">1</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">deriveM</span> <span class="nv">f</span> <span class="nv">g</span> (<span class="nv">x</span> <span class="nv">v</span> : V) : derivable f x v -&gt; derivable g x v -&gt;
+  &#39;D_v (f * g) x = f x *: &#39;D_v g x + g x *: &#39;D_v f x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; df dg; <span class="nb">apply</span>: cvg_lim (der_mult df dg). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivableM</span> <span class="nv">f</span> <span class="nv">g</span> (<span class="nv">x</span> <span class="nv">v</span> : V) :
+  derivable f x v -&gt; derivable g x v -&gt; derivable (f * g) x v.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df dg; <span class="nb">apply</span>/cvg_ex; <span class="kr">exists</span> (<span class="nv">f</span> <span class="nv">x</span> *: &#39;D_v g x + g x *: &#39;D_v f x).
+<span class="bp">exact</span>: der_mult.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_deriveM</span> <span class="nv">f</span> <span class="nv">g</span> (<span class="nv">x</span> <span class="nv">v</span> : V) (<span class="nv">df</span> <span class="nv">dg</span> : R) :
+  is_derive x v f df -&gt; is_derive x v g dg -&gt;
+  is_derive x v (f * g) (f x *: dg + g x *: df).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; dfx dgx; <span class="nb">apply</span>: DeriveDef; <span class="kp">first</span> <span class="bp">exact</span>: derivableM.
+<span class="bp">by</span> <span class="nb">rewrite</span> deriveM // !derive_val.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_deriveX</span> <span class="nv">f</span> <span class="nv">n</span> (<span class="nv">x</span> <span class="nv">v</span> : V) (<span class="nv">df</span> : R) :
+  is_derive x v f df -&gt; is_derive x v (f ^+ n.+<span class="mi">1</span>) ((n.+<span class="mi">1</span>%:R * f x ^+n) *: df).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; dfx; <span class="nb">elim</span>: n =&gt; [|n ihn]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> expr1 expr0 mulr1 scale1r.
+<span class="nb">rewrite</span> exprS; <span class="nb">apply</span>: is_derive_eq.
+<span class="nb">rewrite</span> scalerA -scalerDl mulrCA -[f x * _]exprS.
+<span class="bp">by</span> <span class="nb">rewrite</span> [<span class="kr">in</span> LHS]mulr_natl exprfctE -mulrSr mulr_natl.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivableX</span> <span class="nv">f</span> <span class="nv">n</span> (<span class="nv">x</span> <span class="nv">v</span> : V) : derivable f x v -&gt; derivable (f ^+ n.+<span class="mi">1</span>) x v.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>/derivableP. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">deriveX</span> <span class="nv">f</span> <span class="nv">n</span> (<span class="nv">x</span> <span class="nv">v</span> : V) : derivable f x v -&gt;
+  &#39;D_v (f ^+ n.+<span class="mi">1</span>) x = (n.+<span class="mi">1</span>%:R * f x ^+ n) *: &#39;D_v f x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /derivableP df; <span class="nb">rewrite</span> derive_val. <span class="kn">Qed</span>.
+
+<span class="kn">Fact</span> <span class="nf">der_inv</span> <span class="nv">f</span> (<span class="nv">x</span> <span class="nv">v</span> : V) : f x != <span class="mi">0</span> -&gt; derivable f x v -&gt;
+  (<span class="kr">fun</span> <span class="nv">h</span> =&gt; h^-<span class="mi">1</span> *: (((<span class="kr">fun</span> <span class="nv">y</span> =&gt; (f y)^-<span class="mi">1</span>) \o shift x) (h *: v) - (f x)^-<span class="mi">1</span>)) @
+  (<span class="mi">0</span> : R)^&#39; --&gt; - (f x) ^-<span class="mi">2</span> *: &#39;D_v f x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fxn0 df.
+<span class="nb">have</span> /derivable1P/derivable1_diffP/differentiable_continuous := df.
+<span class="nb">move</span>=&gt; /continuous_withinNx; <span class="nb">rewrite</span> scale0r add0r =&gt; fc.
+<span class="nb">have</span> fn0 : (<span class="mi">0</span> : R)^&#39; [<span class="nb">set</span> h | f (h *: v + x) != <span class="mi">0</span>].
+  <span class="nb">apply</span>: (fc [<span class="nb">set</span> x | x != <span class="mi">0</span>]); <span class="kr">exists</span> `|f x|; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> /= normr_gt0.
+  <span class="nb">move</span>=&gt; y; <span class="nb">rewrite</span> /= =&gt; yltfx.
+  <span class="bp">by</span> <span class="nb">apply</span>/eqP =&gt; y0; <span class="nb">move</span>: yltfx; <span class="nb">rewrite</span> y0 subr0 ltxx.
+<span class="nb">have</span> : (<span class="kr">fun</span> <span class="nv">h</span> =&gt; - ((f x)^-<span class="mi">1</span> * (f (h *: v + x))^-<span class="mi">1</span>) *:
+  (h^-<span class="mi">1</span> *: (f (h *: v + x) - f x))) @ (<span class="mi">0</span> : R)^&#39; --&gt;
+  - (f x) ^- <span class="mi">2</span> *: &#39;D_v f x.
+  <span class="bp">by</span> <span class="nb">apply</span>: cvgM =&gt; //; <span class="nb">apply</span>: cvgN; <span class="nb">rewrite</span> expr2 invfM; <span class="nb">apply</span>: cvgM;
+     [<span class="bp">exact</span>: cvg_cst|  <span class="bp">exact</span>: cvgV].
+<span class="nb">apply</span>: cvg_trans =&gt; A [_/posnumP[e] /= Ae].
+<span class="nb">move</span>: fn0; <span class="nb">apply</span>: filter_app; near=&gt; h =&gt; /= fhvxn0.
+<span class="nb">have</span> he : ball <span class="mi">0</span> e%:num (h : R) <span class="bp">by</span> near: h; <span class="kr">exists</span> <span class="nv">e</span>%:num =&gt; /=.
+<span class="nb">have</span> hn0 : h != <span class="mi">0</span> <span class="bp">by</span> near: h; <span class="kr">exists</span> <span class="nv">e</span>%:num =&gt; /=.
+<span class="nb">suff</span> &lt;- :
+  - ((f x)^-<span class="mi">1</span> * (f (h *: v + x))^-<span class="mi">1</span>) *: (h^-<span class="mi">1</span> *: (f (h *: v + x) - f x)) =
+  h^-<span class="mi">1</span> *: ((f (h *: v + x))^-<span class="mi">1</span> - (f x)^-<span class="mi">1</span>) <span class="bp">by</span> <span class="bp">exact</span>: Ae.
+<span class="nb">rewrite</span> scalerA mulrC -scalerA; <span class="nb">congr</span> (_ *: _).
+<span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> scaleNr eqr_oppLR opprB scalerBr.
+<span class="nb">rewrite</span> -scalerA [_ *: f _]mulVf // [_%:A]mulr1.
+<span class="bp">by</span> <span class="nb">rewrite</span> mulrC -scalerA [_ *: f _]mulVf // [_%:A]mulr1.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">deriveV</span> <span class="nv">f</span> <span class="nv">x</span> <span class="nv">v</span> : f x != <span class="mi">0</span> -&gt; derivable f x v -&gt;
+  &#39;D_v (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (f y)^-<span class="mi">1</span>) x = - (f x) ^- <span class="mi">2</span> *: &#39;D_v f x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; fxn0 df; <span class="nb">apply</span>: cvg_lim (der_inv fxn0 df). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivableV</span> <span class="nv">f</span> (<span class="nv">x</span> <span class="nv">v</span> : V) :
+  f x != <span class="mi">0</span> -&gt; derivable f x v -&gt; derivable (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (f y)^-<span class="mi">1</span>) x v.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; df dg; <span class="nb">apply</span>/cvg_ex; <span class="kr">exists</span> (- (f x) ^- <span class="mi">2</span> *: &#39;D_v f x).
+<span class="bp">exact</span>: der_inv.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derive1_cst</span> (<span class="nv">k</span> : V) <span class="nv">t</span> : (cst k)^`() t = <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> derive1E derive_val. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">Derive_lemmasVR</span>.
+
+<span class="kn">Lemma</span> <span class="nf">EVT_max</span> (<span class="nv">R</span> : realType) (<span class="nv">f</span> : R -&gt; R) (<span class="nv">a</span> <span class="nv">b</span> : R) : <span class="c">(* TODO : Filter not infered *)</span>
+  a &lt;= b -&gt; {within `[a, b], continuous f} -&gt; <span class="kr">exists2</span> c, c \<span class="kr">in</span> `[a, b]%R &amp;
+  <span class="kr">forall</span> <span class="nv">t</span>, t \<span class="kr">in</span> `[a, b]%R -&gt; f t &lt;= f c.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; leab fcont; <span class="nb">set</span> imf := f @` `[a, b].
+<span class="nb">have</span> imf_sup : has_sup imf.
+  <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> (<span class="nv">f</span> <span class="nv">a</span>); <span class="nb">apply</span>/imageP; <span class="nb">rewrite</span> /= in_itv /= lexx.
+  <span class="nb">have</span> [M [Mreal imfltM]] : bounded_set (f @` `[a, b]).
+    <span class="bp">by</span> <span class="nb">apply</span>/compact_bounded/continuous_compact =&gt; //; <span class="bp">exact</span>: segment_compact.
+  <span class="kr">exists</span> (<span class="nv">M</span> + <span class="mi">1</span>) =&gt; y /imfltM yleM.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (le_trans _ (yleM _ _)) <span class="nl">?ler_norm</span> <span class="nl">?ltr_addl</span>.
+<span class="nb">have</span> [|imf_ltsup] := pselect (<span class="kr">exists2</span> c, c \<span class="kr">in</span> `[a, b]%R &amp; f c = sup imf).
+  <span class="nb">move</span>=&gt; [c cab fceqsup]; <span class="kr">exists</span> <span class="nv">c</span> =&gt; // t tab; <span class="nb">rewrite</span> fceqsup.
+  <span class="bp">by</span> <span class="nb">apply</span>/sup_upper_bound =&gt; //; <span class="bp">exact</span>/imageP.
+<span class="nb">have</span> {}imf_ltsup t : t \<span class="kr">in</span> `[a, b]%R -&gt; f t &lt; sup imf.
+  <span class="nb">move</span>=&gt; tab; <span class="nb">case</span>: (ltrP (f t) (sup imf)) =&gt; // supleft.
+  <span class="nb">rewrite</span> falseE; <span class="nb">apply</span>: imf_ltsup; <span class="kr">exists</span> <span class="nv">t</span> =&gt; //; <span class="nb">apply</span>/eqP.
+  <span class="bp">by</span> <span class="nb">rewrite</span> eq_le supleft andbT sup_upper_bound//; <span class="bp">exact</span>/imageP.
+<span class="nb">pose</span> g t : R := (sup imf - f t)^-<span class="mi">1</span>.
+<span class="nb">have</span> invf_continuous : {within `[a, b], continuous g}.
+  <span class="nb">rewrite</span> continuous_subspace_in =&gt; t tab; <span class="nb">apply</span>: cvgV =&gt; //=.
+    <span class="bp">by</span> <span class="nb">rewrite</span> subr_eq0 gt_eqF // imf_ltsup //; <span class="nb">rewrite</span> inE <span class="kr">in</span> tab.
+  <span class="bp">by</span> <span class="nb">apply</span>: cvgD; [<span class="bp">exact</span>: cst_continuous | <span class="nb">apply</span>: cvgN; <span class="bp">exact</span>: (fcont t)].
+<span class="nb">have</span> /ex_strict_bound_gt0 [k k_gt0 /= imVfltk] : bounded_set (g @` `[a, b]).
+  <span class="nb">apply</span>/compact_bounded/continuous_compact; <span class="nb">last</span> <span class="bp">exact</span>: segment_compact.
+  <span class="bp">exact</span>: invf_continuous.
+<span class="nb">have</span> [_ [t tab &lt;-]] : <span class="kr">exists2</span> y, imf y &amp; sup imf - k^-<span class="mi">1</span> &lt; y.
+  <span class="bp">by</span> <span class="nb">apply</span>: sup_adherent =&gt; //; <span class="nb">rewrite</span> invr_gt0.
+<span class="nb">rewrite</span> ltr_subl_addr -ltr_subl_addl.
+<span class="nb">suff</span> : sup imf - f t &gt; k^-<span class="mi">1</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; /ltW; <span class="nb">rewrite</span> leNgt =&gt; /negbTE -&gt;.
+<span class="nb">rewrite</span> -[ltRHS]invrK ltf_pinv// <span class="nl">?qualifE</span> <span class="nl">?invr_gt0</span> <span class="nl">?subr_gt0</span> <span class="nl">?imf_ltsup</span>//.
+<span class="bp">by</span> <span class="nb">rewrite</span> (le_lt_trans (ler_norm _) _) <span class="nl">?imVfltk</span>//; <span class="bp">exact</span>: imageP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">EVT_min</span> (<span class="nv">R</span> : realType) (<span class="nv">f</span> : R -&gt; R) (<span class="nv">a</span> <span class="nv">b</span> : R) :
+  a &lt;= b -&gt; {within `[a, b], continuous f} -&gt; <span class="kr">exists2</span> c, c \<span class="kr">in</span> `[a, b]%R &amp;
+  <span class="kr">forall</span> <span class="nv">t</span>, t \<span class="kr">in</span> `[a, b]%R -&gt; f c &lt;= f t.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; leab fcont.
+<span class="nb">have</span> /(EVT_max leab) [c clr fcmax] : {within `[a, b], continuous (- f)}.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; ?; <span class="nb">apply</span>: continuousN =&gt; ?; <span class="bp">exact</span>: fcont.
+<span class="bp">by</span> <span class="kr">exists</span> <span class="nv">c</span> =&gt; // ? /fcmax; <span class="nb">rewrite</span> ler_opp2.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cvg_at_rightE</span> (<span class="nv">R</span> : numFieldType) (<span class="nv">V</span> : normedModType R) (<span class="nv">f</span> : R -&gt; V) <span class="nv">x</span> :
+  cvg (f @ x^&#39;) -&gt; lim (f @ x^&#39;) = lim (f @ at_right x).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; cvfx; <span class="nb">apply</span>/Logic.eq_sym.
+<span class="c">(* should be inferred *)</span>
+<span class="nb">have</span> atrF := at_right_proper_filter x.
+<span class="nb">apply</span>: (@cvg_lim _ _ _ (at_right _)) =&gt; // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
+<span class="bp">by</span> <span class="kr">exists</span> <span class="nv">e</span>%:num =&gt; //= y xe_y; <span class="nb">rewrite</span> lt_def =&gt; /andP [xney _]; <span class="nb">apply</span>: xe_A.
+<span class="kn">Qed</span>.
+<span class="kn">Arguments</span> cvg_at_rightE {R V} f x.
+
+<span class="kn">Lemma</span> <span class="nf">cvg_at_leftE</span> (<span class="nv">R</span> : numFieldType) (<span class="nv">V</span> : normedModType R) (<span class="nv">f</span> : R -&gt; V) <span class="nv">x</span> :
+  cvg (f @ x^&#39;) -&gt; lim (f @ x^&#39;) = lim (f @ at_left x).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; cvfx; <span class="nb">apply</span>/Logic.eq_sym.
+<span class="c">(* should be inferred *)</span>
+<span class="nb">have</span> atrF := at_left_proper_filter x.
+<span class="nb">apply</span>: (@cvg_lim _ _ _ (at_left _)) =&gt; // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
+<span class="kr">exists</span> <span class="nv">e</span>%:num =&gt; //= y xe_y; <span class="nb">rewrite</span> lt_def =&gt; /andP [xney _].
+<span class="bp">by</span> <span class="nb">apply</span>: xe_A =&gt; //; <span class="nb">rewrite</span> eq_sym.
+<span class="kn">Qed</span>.
+<span class="kn">Arguments</span> cvg_at_leftE {R V} f x.
+
+<span class="kn">Lemma</span> <span class="nf">__deprecated__le0r_cvg_map</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">T</span> : topologicalType) (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T))
+  (<span class="nv">FF</span> : ProperFilter F) (<span class="nv">f</span> : T -&gt; R) :
+  (\<span class="kr">forall</span> <span class="nv">x</span> \near F, <span class="mi">0</span> &lt;= f x) -&gt; cvg (f @ F) -&gt; <span class="mi">0</span> &lt;= lim (f @ F).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ? ?; <span class="nb">rewrite</span> limr_ge. <span class="kn">Qed</span>.
+#[deprecated(since=<span class="s2">&quot;mathcomp-analysis 0.6.0&quot;</span>,
+  note=<span class="s2">&quot;generalized by `limr_ge`&quot;</span>)]
+<span class="kn">Notation</span> <span class="nf">le0r_cvg_map</span> := __deprecated__le0r_cvg_map.
+
+<span class="kn">Lemma</span> <span class="nf">__deprecated__ler0_cvg_map</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">T</span> : topologicalType) (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T))
+  (<span class="nv">FF</span> : ProperFilter F) (<span class="nv">f</span> : T -&gt; R) :
+  (\<span class="kr">forall</span> <span class="nv">x</span> \near F, f x &lt;= <span class="mi">0</span>) -&gt; cvg (f @ F) -&gt; lim (f @ F) &lt;= <span class="mi">0</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ? ?; <span class="nb">rewrite</span> limr_le. <span class="kn">Qed</span>.
+#[deprecated(since=<span class="s2">&quot;mathcomp-analysis 0.6.0&quot;</span>,
+  note=<span class="s2">&quot;generalized by `limr_le`&quot;</span>)]
+<span class="kn">Notation</span> <span class="nf">ler0_cvg_map</span> := __deprecated__ler0_cvg_map.
+
+<span class="kn">Lemma</span> <span class="nf">__deprecated__ler_cvg_map</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">T</span> : topologicalType) (<span class="nv">F</span> : <span class="nb">set</span> (<span class="nb">set</span> T))
+    (<span class="nv">FF</span> : ProperFilter F) (<span class="nv">f</span> <span class="nv">g</span> : T -&gt; R) :
+  (\<span class="kr">forall</span> <span class="nv">x</span> \near F, f x &lt;= g x) -&gt; cvg (f @ F) -&gt; cvg (g @ F) -&gt;
+  lim (f @ F) &lt;= lim (g @ F).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ? ? ?; <span class="nb">rewrite</span> ler_lim. <span class="kn">Qed</span>.
+#[deprecated(since=<span class="s2">&quot;mathcomp-analysis 0.6.0&quot;</span>,
+  note=<span class="s2">&quot;subsumed by `ler_lim`&quot;</span>)]
+<span class="kn">Notation</span> <span class="nf">ler_cvg_map</span> := __deprecated__ler_cvg_map.
+
+<span class="kn">Lemma</span> <span class="nf">derive1_at_max</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">f</span> : R -&gt; R) (<span class="nv">a</span> <span class="nv">b</span> <span class="nv">c</span> : R) :
+  a &lt;= b -&gt; (<span class="kr">forall</span> <span class="nv">t</span>, t \<span class="kr">in</span> `]a, b[%R -&gt; derivable f t <span class="mi">1</span>) -&gt; c \<span class="kr">in</span> `]a, b[%R -&gt;
+  (<span class="kr">forall</span> <span class="nv">t</span>, t \<span class="kr">in</span> `]a, b[%R -&gt; f t &lt;= f c) -&gt; is_derive c <span class="mi">1</span> f <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; leab fdrvbl cab cmax; <span class="nb">apply</span>: DeriveDef; <span class="kp">first</span> <span class="bp">exact</span>: fdrvbl.
+<span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+  <span class="nb">rewrite</span> [&#39;D_1 f c]cvg_at_rightE; <span class="nb">last</span> <span class="bp">exact</span>: fdrvbl.
+  <span class="nb">apply</span>: limr_le.
+    <span class="nb">have</span> /fdrvbl dfc := cab.
+    <span class="nb">rewrite</span> -(cvg_at_rightE (<span class="kr">fun</span> <span class="nv">h</span> : R =&gt; h^-<span class="mi">1</span> *: ((f \o shift c) _ - f c))) //.
+    <span class="nb">apply</span>: cvg_trans dfc; <span class="nb">apply</span>: cvg_app.
+    <span class="nb">move</span>=&gt; A [e egt0 Ae]; <span class="kr">exists</span> <span class="nv">e</span> =&gt; // x xe xgt0; <span class="nb">apply</span>: Ae =&gt; //.
+    <span class="bp">exact</span>/lt0r_neq0.
+  near=&gt; h; <span class="nb">apply</span>: mulr_ge0_le0.
+    <span class="bp">by</span> <span class="nb">rewrite</span> invr_ge0; <span class="nb">apply</span>: ltW; near: h; <span class="kr">exists</span> <span class="mi">1</span> =&gt; /=.
+  <span class="nb">rewrite</span> subr_le0 [_%:A]mulr1; <span class="nb">apply</span>: cmax; near: h.
+  <span class="kr">exists</span> (<span class="nv">b</span> - c); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> /= subr_gt0 (itvP cab).
+  <span class="nb">move</span>=&gt; h; <span class="nb">rewrite</span> /= distrC subr0 /= in_itv /= -ltr_subr_addr.
+  <span class="nb">move</span>=&gt; /(le_lt_trans (ler_norm _)) -&gt; /ltr_spsaddl -&gt; //.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (itvP cab).
+<span class="nb">rewrite</span> [&#39;D_1 f c]cvg_at_leftE; <span class="nb">last</span> <span class="bp">exact</span>: fdrvbl.
+<span class="nb">apply</span>: limr_ge.
+  <span class="nb">have</span> /fdrvbl dfc := cab; <span class="nb">rewrite</span> -(cvg_at_leftE (<span class="kr">fun</span> <span class="nv">h</span> =&gt; h^-<span class="mi">1</span> *: ((f \o shift c) _ - f c))) //.
+  <span class="nb">apply</span>: cvg_trans dfc; <span class="nb">apply</span>: cvg_app.
+  <span class="nb">move</span>=&gt; A [e egt0 Ae]; <span class="kr">exists</span> <span class="nv">e</span> =&gt; // x xe xgt0; <span class="nb">apply</span>: Ae =&gt; //.
+  <span class="bp">exact</span>/ltr0_neq0.
+near=&gt; h; <span class="nb">apply</span>: mulr_le0.
+  <span class="bp">by</span> <span class="nb">rewrite</span> invr_le0; <span class="nb">apply</span>: ltW; near: h; <span class="kr">exists</span> <span class="mi">1</span> =&gt; /=.
+<span class="nb">rewrite</span> subr_le0 [_%:A]mulr1; <span class="nb">apply</span>: cmax; near: h.
+<span class="kr">exists</span> (<span class="nv">c</span> - a); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> /= subr_gt0 (itvP cab).
+<span class="nb">move</span>=&gt; h; <span class="nb">rewrite</span> /= distrC subr0.
+<span class="nb">move</span>=&gt; /ltr_normlP []; <span class="nb">rewrite</span> ltr_subr_addl ltr_subl_addl in_itv /= =&gt; -&gt; _.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /ltr_snsaddl -&gt; //; <span class="nb">rewrite</span> (itvP cab).
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derive1_at_min</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">f</span> : R -&gt; R) (<span class="nv">a</span> <span class="nv">b</span> <span class="nv">c</span> : R) :
+  a &lt;= b -&gt; (<span class="kr">forall</span> <span class="nv">t</span>, t \<span class="kr">in</span> `]a, b[%R -&gt; derivable f t <span class="mi">1</span>) -&gt; c \<span class="kr">in</span> `]a, b[%R -&gt;
+  (<span class="kr">forall</span> <span class="nv">t</span>, t \<span class="kr">in</span> `]a, b[%R -&gt; f c &lt;= f t) -&gt; is_derive c <span class="mi">1</span> f <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; leab fdrvbl cab cmin; <span class="nb">apply</span>: DeriveDef; <span class="kp">first</span> <span class="bp">exact</span>: fdrvbl.
+<span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> -oppr_eq0; <span class="nb">apply</span>/eqP.
+<span class="nb">rewrite</span> -deriveN; <span class="nb">last</span> <span class="bp">exact</span>: fdrvbl.
+<span class="nb">suff</span> df : is_derive c <span class="mi">1</span> (- f) <span class="mi">0</span> <span class="bp">by</span> <span class="nb">rewrite</span> derive_val.
+<span class="nb">apply</span>: derive1_at_max leab _ (cab) _ =&gt; t tab; <span class="kp">first</span> <span class="bp">exact</span>/derivableN/fdrvbl.
+<span class="bp">by</span> <span class="nb">rewrite</span> ler_opp2; <span class="nb">apply</span>: cmin.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rolle</span> (<span class="nv">R</span> : realType) (<span class="nv">f</span> : R -&gt; R) (<span class="nv">a</span> <span class="nv">b</span> : R) :
+  a &lt; b -&gt; (<span class="kr">forall</span> <span class="nv">x</span>, x \<span class="kr">in</span> `]a, b[%R -&gt; derivable f x <span class="mi">1</span>) -&gt;
+  {within `[a, b], continuous f} -&gt; f a = f b -&gt;
+  <span class="kr">exists2</span> c, c \<span class="kr">in</span> `]a, b[%R &amp; is_derive c <span class="mi">1</span> f <span class="mi">0</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; ltab fdrvbl fcont faefb.
+<span class="nb">have</span> [cmax cmaxab fcmax] := EVT_max (ltW ltab) fcont.
+<span class="nb">have</span> [cmaxeaVb|] := boolP (cmax \<span class="kr">in</span> [<span class="nb">set</span> a; b]); <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> notin_set =&gt; /not_orP[/eqP cnea /eqP cneb].
+  <span class="nb">have</span> {}cmaxab : cmax \<span class="kr">in</span> `]a, b[%R.
+    <span class="bp">by</span> <span class="nb">rewrite</span> in_itv /= !lt_def !(itvP cmaxab) cnea eq_sym cneb.
+  <span class="kr">exists</span> <span class="nv">cmax</span> =&gt; //; <span class="nb">apply</span>: derive1_at_max (ltW ltab) fdrvbl cmaxab _ =&gt; t tab.
+  <span class="bp">by</span> <span class="nb">apply</span>: fcmax; <span class="nb">rewrite</span> in_itv /= !ltW // (itvP tab).
+<span class="nb">have</span> [cmin cminab fcmin] := EVT_min (ltW ltab) fcont.
+<span class="nb">have</span> [cmineaVb|] := boolP (cmin \<span class="kr">in</span> [<span class="nb">set</span> a; b]); <span class="nb">last first</span>.
+  <span class="nb">rewrite</span> notin_set =&gt; /not_orP[/eqP cnea /eqP cneb].
+  <span class="nb">have</span> {}cminab : cmin \<span class="kr">in</span> `]a, b[%R.
+    <span class="bp">by</span> <span class="nb">rewrite</span> in_itv /= !lt_def !(itvP cminab) cnea eq_sym cneb.
+  <span class="kr">exists</span> <span class="nv">cmin</span> =&gt; //; <span class="nb">apply</span>: derive1_at_min (ltW ltab) fdrvbl cminab _ =&gt; t tab.
+  <span class="bp">by</span> <span class="nb">apply</span>: fcmin; <span class="nb">rewrite</span> in_itv /= !ltW // (itvP tab).
+<span class="nb">have</span> midab : (a + b) / <span class="mi">2</span> \<span class="kr">in</span> `]a, b[%R <span class="bp">by</span> <span class="nb">apply</span>: mid_in_itvoo.
+<span class="kr">exists</span> ((a + b) / <span class="mi">2</span>) =&gt; //; <span class="nb">apply</span>: derive1_at_max (ltW ltab) fdrvbl (midab) _.
+<span class="nb">move</span>=&gt; t tab.
+<span class="nb">suff</span> fcst s : s \<span class="kr">in</span> `]a, b[%R -&gt; f s = f cmax <span class="bp">by</span> <span class="nb">rewrite</span> !fcst.
+<span class="nb">move</span>=&gt; sab.
+<span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> eq_le fcmax; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> in_itv /= !ltW ?(itvP sab).
+<span class="nb">suff</span> -&gt; : f cmax = f cmin <span class="bp">by</span> <span class="nb">rewrite</span> fcmin // in_itv /= !ltW ?(itvP sab).
+<span class="bp">by</span> <span class="nb">move</span>: cmaxeaVb cmineaVb; <span class="nb">rewrite</span> <span class="mi">2</span>!inE =&gt; -[|] -&gt; [|] -&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">MVT</span> (<span class="nv">R</span> : realType) (<span class="nv">f</span> <span class="nv">df</span> : R -&gt; R) (<span class="nv">a</span> <span class="nv">b</span> : R) :
+  a &lt; b -&gt; (<span class="kr">forall</span> <span class="nv">x</span>, x \<span class="kr">in</span> `]a, b[%R -&gt; is_derive x <span class="mi">1</span> f (df x)) -&gt;
+  {within `[a, b], continuous f} -&gt;
+  <span class="kr">exists2</span> c, c \<span class="kr">in</span> `]a, b[%R &amp; f b - f a = df c * (b - a).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; altb fdrvbl fcont.
+<span class="nb">set</span> g := f + (- ( *:%R^~ ((f b - f a) / (b - a)) : R -&gt; R)).
+<span class="nb">have</span> gdrvbl x : x \<span class="kr">in</span> `]a, b[%R -&gt; derivable g x <span class="mi">1</span>.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; /fdrvbl dfx; <span class="nb">apply</span>: derivableB =&gt; //; <span class="bp">exact</span>/derivable1_diffP.
+<span class="nb">have</span> gcont : {within `[a, b], continuous g}.
+  <span class="nb">move</span>=&gt; x; <span class="nb">apply</span>: continuousD _ ; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">move</span>=&gt;?; <span class="bp">exact</span>: fcont.
+  <span class="bp">by</span> <span class="nb">apply</span>/continuousN/continuous_subspaceT=&gt; ?; <span class="bp">exact</span>: scalel_continuous.
+<span class="nb">have</span> gaegb : g a = g b.
+  <span class="nb">rewrite</span> /g -![(_ - _ : _ -&gt; _) _]/(_ - _).
+  <span class="nb">apply</span>/eqP; <span class="nb">rewrite</span> -subr_eq /= opprK addrAC -addrA -scalerBl.
+  <span class="nb">rewrite</span> [_ *: _]mulrA mulrC mulrA mulVf.
+    <span class="bp">by</span> <span class="nb">rewrite</span> mul1r addrCA subrr addr0.
+  <span class="bp">by</span> <span class="nb">apply</span>: lt0r_neq0; <span class="nb">rewrite</span> subr_gt0.
+<span class="nb">have</span> [c cab dgc0] := Rolle altb gdrvbl gcont gaegb.
+<span class="kr">exists</span> <span class="nv">c</span>; <span class="kp">first</span> <span class="bp">exact</span>: cab.
+<span class="nb">have</span> /fdrvbl dfc := cab; <span class="nb">move</span>/@derive_val: dgc0; <span class="nb">rewrite</span> deriveB //; <span class="nb">last first</span>.
+  <span class="bp">exact</span>/derivable1_diffP.
+<span class="nb">move</span>/eqP; <span class="nb">rewrite</span> [X <span class="kr">in</span> _ - X]deriveE // derive_val diff_val scale1r subr_eq0.
+<span class="nb">move</span>/eqP-&gt;; <span class="nb">rewrite</span> -mulrA mulVf <span class="nl">?mulr1</span> //; <span class="nb">apply</span>: lt0r_neq0.
+<span class="bp">by</span> <span class="nb">rewrite</span> subr_gt0.
+<span class="kn">Qed</span>.
+
+<span class="c">(* Weakens MVT to work when the interval is a single point. *)</span>
+<span class="kn">Lemma</span> <span class="nf">MVT_segment</span> (<span class="nv">R</span> : realType) (<span class="nv">f</span> <span class="nv">df</span> : R -&gt; R) (<span class="nv">a</span> <span class="nv">b</span> : R) :
+  a &lt;= b -&gt; (<span class="kr">forall</span> <span class="nv">x</span>, x \<span class="kr">in</span> `]a, b[%R -&gt; is_derive x <span class="mi">1</span> f (df x)) -&gt;
+  {within `[a, b], continuous f} -&gt;
+  <span class="kr">exists2</span> c, c \<span class="kr">in</span> `[a, b]%R &amp; f b - f a = df c * (b - a).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; leab fdrvbl fcont; <span class="nb">case</span>: ltgtP leab =&gt; // [altb|aeb]; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">a</span>; [<span class="nb">rewrite</span> inE/= aeb lexx|<span class="nb">rewrite</span> aeb !subrr mulr0].
+<span class="nb">have</span> [c cab D] := MVT altb fdrvbl fcont.
+<span class="bp">by</span> <span class="kr">exists</span> <span class="nv">c</span> =&gt; //; <span class="nb">rewrite</span> in_itv /= ltW (itvP cab).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ler0_derive1_nincr</span> (<span class="nv">R</span> : realType) (<span class="nv">f</span> : R -&gt; R) (<span class="nv">a</span> <span class="nv">b</span> : R) :
+  (<span class="kr">forall</span> <span class="nv">x</span>, x \<span class="kr">in</span> `]a, b[%R -&gt; derivable f x <span class="mi">1</span>) -&gt;
+  (<span class="kr">forall</span> <span class="nv">x</span>, x \<span class="kr">in</span> `]a, b[%R -&gt; f^`() x &lt;= <span class="mi">0</span>) -&gt;
+  {within `[a,b], continuous f} -&gt;
+  <span class="kr">forall</span> <span class="nv">x</span> <span class="nv">y</span>, a &lt;= x -&gt; x &lt;= y -&gt; y &lt;= b -&gt; f y &lt;= f x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fdrvbl dfle0 ctsf x y leax lexy leyb; <span class="nb">rewrite</span> -subr_ge0.
+<span class="nb">case</span>: ltgtP lexy =&gt; // [xlty|-&gt;]; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> subrr.
+<span class="nb">have</span> itvW : {subset `[x, y]%R &lt;= `[a, b]%R}.
+  <span class="bp">by</span> <span class="nb">apply</span>/subitvP; <span class="nb">rewrite</span> /&lt;=%O /= /&lt;=%O /= leyb leax.
+<span class="nb">have</span> itvWlt : {subset `]x, y[%R &lt;= `]a, b[%R}.
+  <span class="bp">by</span> <span class="nb">apply</span> subitvP; <span class="nb">rewrite</span> /&lt;=%O /= /&lt;=%O /= leyb leax.
+<span class="nb">have</span> fdrv z : z \<span class="kr">in</span> `]x, y[%R -&gt; is_derive z <span class="mi">1</span> f (f^`()z).
+  <span class="nb">rewrite</span> in_itv/= =&gt; /andP[xz zy]; <span class="nb">apply</span>: DeriveDef; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> derive1E.
+  <span class="bp">by</span> <span class="nb">apply</span>: fdrvbl; <span class="nb">rewrite</span> in_itv/= (le_lt_trans _ xz)// (lt_le_trans zy).
+<span class="nb">have</span> [] := @MVT _ f (f^`()) x y xlty fdrv.
+  <span class="nb">apply</span>: (@continuous_subspaceW _ _ _ `[a,b]); <span class="kp">first</span> <span class="bp">exact</span>: itvW.
+  <span class="bp">by</span> <span class="nb">rewrite</span> continuous_subspace_in.
+<span class="nb">move</span>=&gt; t /itvWlt dft dftxy _; <span class="nb">rewrite</span> -oppr_le0 opprB dftxy.
+<span class="bp">by</span> <span class="nb">apply</span>: mulr_le0_ge0 =&gt; //; [<span class="bp">exact</span>: dfle0|<span class="bp">by</span> <span class="nb">rewrite</span> subr_ge0 ltW].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">le0r_derive1_ndecr</span> (<span class="nv">R</span> : realType) (<span class="nv">f</span> : R -&gt; R) (<span class="nv">a</span> <span class="nv">b</span> : R) :
+  (<span class="kr">forall</span> <span class="nv">x</span>, x \<span class="kr">in</span> `]a, b[%R -&gt; derivable f x <span class="mi">1</span>) -&gt;
+  (<span class="kr">forall</span> <span class="nv">x</span>, x \<span class="kr">in</span> `]a, b[%R -&gt; <span class="mi">0</span> &lt;= f^`() x) -&gt;
+  {within `[a,b], continuous f} -&gt;
+  <span class="kr">forall</span> <span class="nv">x</span> <span class="nv">y</span>, a &lt;= x -&gt; x &lt;= y -&gt; y &lt;= b -&gt; f x &lt;= f y.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fdrvbl dfge0 fcont x y; <span class="nb">rewrite</span> -[f _ &lt;= _]ler_opp2.
+<span class="nb">apply</span> (@ler0_derive1_nincr _ (- f)) =&gt; t tab; <span class="kp">first</span> <span class="bp">exact</span>/derivableN/fdrvbl.
+  <span class="nb">rewrite</span> derive1E deriveN; <span class="nb">last</span> <span class="bp">exact</span>: fdrvbl.
+  <span class="bp">by</span> <span class="nb">rewrite</span> oppr_le0 -derive1E; <span class="nb">apply</span>: dfge0.
+<span class="bp">by</span> <span class="nb">apply</span>: continuousN; <span class="bp">exact</span>: fcont.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derive1_comp</span> (<span class="nv">R</span> : realFieldType) (<span class="nv">f</span> <span class="nv">g</span> : R -&gt; R) <span class="nv">x</span> :
+  derivable f x <span class="mi">1</span> -&gt; derivable g (f x) <span class="mi">1</span> -&gt;
+  (g \o f)^`() x = g^`() (f x) * f^`() x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /derivable1_diffP df /derivable1_diffP dg.
+<span class="nb">rewrite</span> derive1E&#39;; <span class="nb">last</span> <span class="bp">exact</span>/differentiable_comp.
+<span class="nb">rewrite</span> diff_comp // !derive1E&#39; //= -[X <span class="kr">in</span> &#39;d  _ _ X = _]mulr1.
+<span class="bp">by</span> <span class="nb">rewrite</span> [LHS]linearZ mulrC.
+<span class="kn">Qed</span>.
+
+<span class="kn">Section</span> <span class="nf">is_derive_instances</span>.
+<span class="kn">Variables</span> (<span class="nv">R</span> : numFieldType) (<span class="nv">V</span> : normedModType R).
+
+<span class="kn">Lemma</span> <span class="nf">derivable_cst</span> (<span class="nv">x</span> : V) : derivable (<span class="kr">fun</span>=&gt; x) <span class="mi">0</span> <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">exact</span>/diff_derivable. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">derivable_id</span> (<span class="nv">x</span> <span class="nv">v</span> : V) : derivable id x v.
+<span class="kn">Proof</span>. <span class="bp">exact</span>/diff_derivable. <span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_derive_id</span> (<span class="nv">x</span> <span class="nv">v</span> : V) : is_derive x v id v.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: (DeriveDef (@derivable_id _ _)).
+<span class="bp">by</span> <span class="nb">rewrite</span> deriveE// (@diff_lin _ _ _ [linear of idfun]).
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_deriveNid</span> (<span class="nv">x</span> <span class="nv">v</span> : V) : is_derive x v -%R (- v).
+<span class="kn">Proof</span>. <span class="bp">exact</span>: is_deriveN. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">is_derive_instances</span>.
+
+<span class="c">(* Trick to trigger type class resolution *)</span>
+<span class="kn">Lemma</span> <span class="nf">trigger_derive</span> (<span class="nv">R</span> : realType) (<span class="nv">f</span> : R -&gt; R) <span class="nv">x</span> <span class="nv">x1</span> <span class="nv">y1</span> :
+  is_derive x <span class="mi">1</span> f x1 -&gt; x1 = y1 -&gt; is_derive x <span class="mi">1</span> f y1.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; Hi &lt;-. <span class="kn">Qed</span>.</span></pre></article></body></html>

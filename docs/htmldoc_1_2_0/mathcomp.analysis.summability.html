@@ -1,0 +1,144 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Module mathcomp.analysis.summability</title>
+<meta name="description" content="Documentation of Coq module mathcomp.analysis.summability" />
+<link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+<link href="coq2html.css" rel="stylesheet" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="coq2html.js"> </script>
+</head>
+
+<body onload="init('proofscript')">
+
+  <main>
+    <div class="sidebar">
+      <h2>Files</h2>
+      <li><details id="mathcomp"><summary>mathcomp</summary>
+          <ul>
+          <li><details id="mathcomp.analysis"><summary>analysis</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.all_analysis.html">all_analysis</a></li>
+<li><a href="mathcomp.analysis.cantor.html">cantor</a></li>
+<li><a href="mathcomp.analysis.charge.html">charge</a></li>
+<li><a href="mathcomp.analysis.constructive_ereal.html">constructive_ereal</a></li>
+<li><a href="mathcomp.analysis.convex.html">convex</a></li>
+<li><a href="mathcomp.analysis.derive.html">derive</a></li>
+<li><a href="mathcomp.analysis.ereal.html">ereal</a></li>
+<li><a href="mathcomp.analysis.esum.html">esum</a></li>
+<li><a href="mathcomp.analysis.exp.html">exp</a></li>
+<li><a href="mathcomp.analysis.forms.html">forms</a></li>
+<li><a href="mathcomp.analysis.ftc.html">ftc</a></li>
+<li><a href="mathcomp.analysis.function_spaces.html">function_spaces</a></li>
+<li><a href="mathcomp.analysis.hoelder.html">hoelder</a></li>
+<li><a href="mathcomp.analysis.itv.html">itv</a></li>
+<li><a href="mathcomp.analysis.kernel.html">kernel</a></li>
+<li><a href="mathcomp.analysis.landau.html">landau</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral.html">lebesgue_integral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></li>
+<li><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html">lebesgue_stieltjes_measure</a></li>
+<li><a href="mathcomp.analysis.measure.html">measure</a></li>
+<li><a href="mathcomp.analysis.normedtype.html">normedtype</a></li>
+<li><a href="mathcomp.analysis.nsatz_realtype.html">nsatz_realtype</a></li>
+<li><a href="mathcomp.analysis.numfun.html">numfun</a></li>
+<li><a href="mathcomp.analysis.probability.html">probability</a></li>
+<li><a href="mathcomp.analysis.prodnormedzmodule.html">prodnormedzmodule</a></li>
+<li><a href="mathcomp.analysis.real_interval.html">real_interval</a></li>
+<li><a href="mathcomp.analysis.realfun.html">realfun</a></li>
+<li><a href="mathcomp.analysis.reals.html">reals</a></li>
+<li><a href="mathcomp.analysis.Rstruct.html">Rstruct</a></li>
+<li><a href="mathcomp.analysis.sequences.html">sequences</a></li>
+<li><a href="mathcomp.analysis.signed.html">signed</a></li>
+<li><a href="mathcomp.analysis.summability.html">summability</a></li>
+<li><a href="mathcomp.analysis.topology.html">topology</a></li>
+<li><a href="mathcomp.analysis.trigo.html">trigo</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.classical"><summary>classical</summary>
+          <ul>
+          <li><a href="mathcomp.classical.all_classical.html">all_classical</a></li>
+<li><a href="mathcomp.classical.boolp.html">boolp</a></li>
+<li><a href="mathcomp.classical.cardinality.html">cardinality</a></li>
+<li><a href="mathcomp.classical.classical_sets.html">classical_sets</a></li>
+<li><a href="mathcomp.classical.contra.html">contra</a></li>
+<li><a href="mathcomp.classical.fsbigop.html">fsbigop</a></li>
+<li><a href="mathcomp.classical.functions.html">functions</a></li>
+<li><a href="mathcomp.classical.mathcomp_extra.html">mathcomp_extra</a></li>
+<li><a href="mathcomp.classical.set_interval.html">set_interval</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+    </div>
+
+  <div class="coq">
+
+    <div class="content">
+      <p><a href="./index.html">Top</a></p>
+      <h1 class="title">Module mathcomp.analysis.summability</h1>
+<span class="vernacular">From</span> <span class="id">HB</span> <span class="vernacular">Require</span> <span class="vernacular">Import</span> <span class="id"><a href="NOTFOUND the module url for HB.structures">structures</a></span>.<br/>
+<span class="vernacular">Require</span> <span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.Reals.Reals.html">Reals</a></span>.<br/>
+<span class="vernacular">From</span> <span class="id">mathcomp</span> <span class="vernacular">Require</span> <span class="vernacular">Import</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html">ssralg</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrint.html">ssrint</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html">ssrnum</a></span> <span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap">finmap</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.matrix.html">matrix</a></span>.<br/>
+<span class="vernacular">From</span> <span class="id">mathcomp</span> <span class="vernacular">Require</span> <span class="vernacular">Import</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.interval.html">interval</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.zmodp.html">zmodp</a></span>.<br/>
+<span class="vernacular">From</span> <span class="id">mathcomp</span> <span class="vernacular">Require</span> <span class="vernacular">Import</span> <span class="id"><a href="mathcomp.classical.boolp.html">boolp</a></span> <span class="id"><a href="mathcomp.classical.classical_sets.html">classical_sets</a></span>.<br/>
+<span class="vernacular">Require</span> <span class="vernacular">Import</span> <span class="id"><a href="mathcomp.analysis.ereal.html">ereal</a></span> <span class="id"><a href="mathcomp.analysis.reals.html">reals</a></span> <span class="id"><a href="mathcomp.analysis.Rstruct.html">Rstruct</a></span> <span class="id"><a href="mathcomp.analysis.signed.html">signed</a></span> <span class="id"><a href="mathcomp.analysis.topology.html">topology</a></span> <span class="id"><a href="mathcomp.analysis.normedtype.html">normedtype</a></span>.<br/>
+<br/>
+<div class="ssrdoc md">
+(undocumented experiment)                                                   
+</div>
+<br/>
+<span class="gallina-kwd">Set</span> <span class="vernacular">Implicit</span> <span class="vernacular">Arguments</span>.<br/>
+<span class="vernacular">Unset</span> <span class="vernacular">Strict</span> <span class="vernacular">Implicit</span>.<br/>
+<span class="vernacular">Unset</span> <span class="vernacular">Printing</span> <span class="vernacular">Implicit</span> <span class="vernacular">Defensive</span>.<br/>
+<span class="vernacular">Import</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Theory">GRing.Theory</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.Def">Num.Def</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.Theory">Num.Theory</a></span>.<br/>
+<br/>
+<span class="vernacular">Local</span> <span class="vernacular">Open</span> <span class="vernacular">Scope</span> <span class="id">classical_set_scope</span>.<br/>
+<br/>
+<div class="doc">For Pierre-Yves : definition of sums </div>
+<br/>
+<span class="vernacular">From</span> <span class="id">mathcomp</span> <span class="vernacular">Require</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.fintype.html">fintype</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.bigop.html">bigop</a></span> <span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap">finmap</a></span>.<br/>
+<br/>
+<span class="vernacular">Section</span> <span id="totally" class="id"><a name="totally" class="">totally</a></span>.<br/>
+<br/>
+<span class="vernacular">Import</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.fintype.html">fintype</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.bigop.html#bigop">bigop</a></span> <span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap">finmap</a></span>.<br/>
+<span class="vernacular">Local</span> <span class="vernacular">Open</span> <span class="vernacular">Scope</span> <span class="id">fset_scope</span>.<br/>
+<span class="vernacular">Definition</span> <span id="totally" class="id"><a name="totally" class="">totally</a></span> <span class="id">{I</span> <span class="id">:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.choice.html#Choice.Exports.choiceType">choiceType}</a></span> <span class="id">:</span> <span class="id"><a href="mathcomp.analysis.topology.html#set_system">set_system</a></span> <span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c">{fset</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#I:1">I}</a></span> <span class="id">:=</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology.html#filter_from">filter_from</a></span> <span class="id"><a href="mathcomp.classical.classical_sets.html#setT">setT</a></span> (<span class="gallina-kwd">fun</span> <span id="A:2" class="id"><a name="A:2" class="">A</a></span> <span class="id">=&gt;</span> <span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span> <span id="B:3" class="id"><a name="B:3" class="">B</a></span> <span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">|</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#A:2">A</a></span> <span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#f9284c16902c91de4e173819f07da301">`&lt;=`</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#B:3">B]</a></span>).<br/>
+<br/>
+<span class="vernacular">Instance</span> <span id="totally_filter" class="id"><a name="totally_filter" class="">totally_filter</a></span> <span class="id">{I</span> <span class="id">:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.choice.html#Choice.Exports.choiceType">choiceType}</a></span> <span class="id">:</span> <span class="id"><a href="mathcomp.analysis.topology.html#ProperFilter">ProperFilter</a></span> (@<span class="id"><a href="mathcomp.analysis.summability.html#totally">totally</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#I:4">I</a></span>).<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof1')">Proof.</span></div>
+<div class="proofscript" id="proof1">
+<span class="id">eapply</span> <span class="id"><a href="mathcomp.analysis.topology.html#filter_from_proper">filter_from_proper;</a></span> <span class="id">last</span> <span class="gallina-kwd">by</span> <span class="id">move=&gt;</span> <span class="id">A</span> <span class="id">_;</span> <span class="gallina-kwd">exists</span> <span class="id">A;</span> <span class="id">rewrite</span> <span class="id">/=</span> <span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#fsubset_refl">fsubset_refl</a></span>.<br/>
+<span class="id">apply:</span> <span class="id"><a href="mathcomp.analysis.topology.html#filter_fromT_filter">filter_fromT_filter;</a></span> <span class="id">first</span> <span class="gallina-kwd">by</span> <span class="gallina-kwd">exists</span> <span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#fset0">fset0</a></span>.<br/>
+<span class="gallina-kwd">by</span> <span class="id">move=&gt;</span> <span class="id">A</span> <span class="id">B</span> <span class="id">/=;</span> <span class="gallina-kwd">exists</span> (<span class="id">A</span> <span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#3a82faa09aad0915fec111c4e72ba9ee">`|`</a></span> <span class="id">B</span>) <span class="id">=&gt;</span> <span class="id">P</span> <span class="id">/=;</span> <span class="id">rewrite</span> <span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#fsubUset">fsubUset</a></span> <span class="id">=&gt;</span> <span class="id">/andP[]</span>.<br/>
+Qed.</div>
+<br/>
+<span class="vernacular">Definition</span> <span id="partial_sum" class="id"><a name="partial_sum" class="">partial_sum</a></span> <span class="id">{I</span> <span class="id">:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.choice.html#Choice.Exports.choiceType">choiceType}</a></span> <span class="id">{R</span> <span class="id">:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#GRing.Zmodule.Exports.zmodType">zmodType}</a></span><br/>
+&nbsp;&nbsp;(<span id="x:7" class="id"><a name="x:7" class="">x</a></span> <span class="id">:</span> <span class="id"><a href="mathcomp.analysis.summability.html#I:5">I</a></span> <span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x">-&gt;</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#R:6">R</a></span>) (<span id="A:8" class="id"><a name="A:8" class="">A</a></span> <span class="id">:</span> <span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c">{fset</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#I:5">I}</a></span>) <span class="id">:</span> <span class="id"><a href="mathcomp.analysis.summability.html#R:6">R</a></span> <span class="id">:=</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#210141cbb4af7051facf94762acee6df">\sum_</a></span>(<span id="i:11" class="id"><span id="i:10" class="id"><span id="i:9" class="id"><a name="i:11" class="">i</a></span></span></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssralg.html#210141cbb4af7051facf94762acee6df">:</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#A:8">A</a></span>) <span class="id"><a href="mathcomp.analysis.summability.html#x:7">x</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.eqtype.html#val">val</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#i:9">i</a></span>).<br/>
+<br/>
+<span class="vernacular">Definition</span> <span id="sum" class="id"><a name="sum" class="">sum</a></span> (<span id="I:12" class="id"><a name="I:12" class="">I</a></span> <span class="id">:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.choice.html#Choice.Exports.choiceType">choiceType</a></span>) <span class="id">{K</span> <span class="id">:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#Num.NumDomain.Exports.numDomainType">numDomainType}</a></span> <span class="id">{R</span> <span class="id">:</span> <span class="id"><a href="mathcomp.analysis.normedtype.html#NormedModule.Exports.normedModType">normedModType</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#K:13">K}</a></span><br/>
+&nbsp;&nbsp;&nbsp;(<span id="x:15" class="id"><a name="x:15" class="">x</a></span> <span class="id">:</span> <span class="id"><a href="mathcomp.analysis.summability.html#I:12">I</a></span> <span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x">-&gt;</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#R:14">R</a></span>) <span class="id">:</span> <span class="id"><a href="mathcomp.analysis.summability.html#R:14">R</a></span> <span class="id">:=</span> <span class="id"><a href="mathcomp.analysis.topology.html#lim">lim</a></span> (<span class="id"><a href="mathcomp.analysis.summability.html#partial_sum">partial_sum</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#x:15">x</a></span> @ <span class="id"><a href="mathcomp.analysis.summability.html#totally">totally</a></span>).<br/>
+<br/>
+<span class="vernacular">Definition</span> <span id="summable" class="id"><a name="summable" class="">summable</a></span> (<span id="I:16" class="id"><a name="I:16" class="">I</a></span> <span class="id">:</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.ssreflect.choice.html#Choice.Exports.choiceType">choiceType</a></span>) <span class="id">{K</span> <span class="id">:</span> <span class="id"><a href="mathcomp.analysis.reals.html#Real.Exports.realType">realType}</a></span> <span class="id">{R</span> <span class="id">:</span> <span class="id"><a href="mathcomp.analysis.normedtype.html#NormedModule.Exports.normedModType">normedModType</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#K:17">K}</a></span><br/>
+&nbsp;&nbsp;&nbsp;(<span id="x:19" class="id"><a name="x:19" class="">x</a></span> <span class="id">:</span> <span class="id"><a href="mathcomp.analysis.summability.html#I:16">I</a></span> <span class="id"><a href="https://coq.inria.fr/doc/V8.18.0/stdlib/Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x">-&gt;</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#R:18">R</a></span>) <span class="id">:=</span><br/>
+&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology.html#be9d045413b70f39126ce7af3de2a77f">\forall</a></span> <span id="M:20" class="id"><a name="M:20" class="">M</a></span> <span class="id"><a href="mathcomp.analysis.topology.html#be9d045413b70f39126ce7af3de2a77f">\near</a></span> <span class="id"><a href="mathcomp.analysis.normedtype.html#423d7544dbaa8438f698fe5437adc41f">+oo</a></span>%<span class="id">R,</span> <span class="id"><a href="mathcomp.analysis.topology.html#be9d045413b70f39126ce7af3de2a77f">\forall</a></span> <span id="J:21" class="id"><a name="J:21" class="">J</a></span> <span class="id"><a href="mathcomp.analysis.topology.html#be9d045413b70f39126ce7af3de2a77f">\near</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#totally">totally,</a></span><br/>
+&nbsp;&nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.summability.html#partial_sum">partial_sum</a></span> (<span class="gallina-kwd">fun</span> <span id="i:22" class="id"><a name="i:22" class="">i</a></span> <span class="id">=&gt;</span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#55297ec87c6b3f98c14c99daeafb55d3">`|x</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#i:22">i|</a></span>) <span class="id"><a href="mathcomp.analysis.summability.html#J:21">J</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc/mathcomp.algebra.ssrnum.html#cb42ec59ad57b25928e1718b4e69e031">&lt;=</a></span> <span class="id"><a href="mathcomp.analysis.summability.html#M:20">M</a></span>)%<span class="id">R</span>.<br/>
+<br/>
+<span class="vernacular">End</span> <span class="id"><a href="mathcomp.analysis.summability.html#totally">totally</a></span>.<br/>
+
+      <div class="footer"><hr/>Generated by <a href="https://github.com/yoshihiro503/coq2html/">a fork of coq2html</a></div>
+    </div>
+  </div>
+    </main>
+</body>
+</html>

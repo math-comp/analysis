@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>mathcomp.analysis.prodnormedzmodule</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library mathcomp.analysis.prodnormedzmodule</h1>
+
+<div class="code">
+<span class="id" title="keyword">From</span> <span class="id" title="var">mathcomp</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">all_ssreflect</span> <span class="id" title="library">fingroup</span> <span class="id" title="library">ssralg</span> <span class="id" title="library">poly</span> <span class="id" title="library">ssrnum</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="mathcomp.analysis.signed.html#"><span class="id" title="library">signed</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+ This file equips the product of two normedZmodTypes with a canonical       
+ normedZmodType structure. It is a short file that has been added here for  
+ convenience during the rebase of MathComp-Analysis on top of MathComp 1.1. 
+ The contents is likely to be moved elsewhere.                               
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">ring_scope</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="module">Order.TTheory</span> <span class="id" title="module">GRing.Theory</span> <span class="id" title="module">Num.Theory</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="ProdNormedZmodule" class="idref" href="#ProdNormedZmodule"><span class="id" title="module">ProdNormedZmodule</span></a>.<br/>
+<span class="id" title="keyword">Section</span> <a id="ProdNormedZmodule.ProdNormedZmodule" class="idref" href="#ProdNormedZmodule.ProdNormedZmodule"><span class="id" title="section">ProdNormedZmodule</span></a>.<br/>
+<span class="id" title="keyword">Context</span> {<a id="R:1" class="idref" href="#R:1"><span class="id" title="binder">R</span></a> : <span class="id" title="abbreviation">numDomainType</span>} {<a id="U:2" class="idref" href="#U:2"><span class="id" title="binder">U</span></a> <a id="V:3" class="idref" href="#V:3"><span class="id" title="binder">V</span></a> : <span class="id" title="abbreviation">normedZmodType</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#R:1"><span class="id" title="variable">R</span></a>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="ProdNormedZmodule.norm" class="idref" href="#ProdNormedZmodule.norm"><span class="id" title="definition">norm</span></a> (<a id="x:4" class="idref" href="#x:4"><span class="id" title="binder">x</span></a> : <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.U"><span class="id" title="variable">U</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"><span class="id" title="notation">×</span></a> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.V"><span class="id" title="variable">V</span></a>) : <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.R"><span class="id" title="variable">R</span></a> := <span class="id" title="abbreviation">Num.max</span> <span class="id" title="notation">`|</span><a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#x:4"><span class="id" title="variable">x</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.ssr.ssrfun.html#::pair_scope:x_'.1'"><span class="id" title="notation">.1</span></a><span class="id" title="notation">|</span> <span class="id" title="notation">`|</span><a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#x:4"><span class="id" title="variable">x</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.ssr.ssrfun.html#::pair_scope:x_'.2'"><span class="id" title="notation">.2</span></a><span class="id" title="notation">|</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="ProdNormedZmodule.normD" class="idref" href="#ProdNormedZmodule.normD"><span class="id" title="lemma">normD</span></a> <a id="x:5" class="idref" href="#x:5"><span class="id" title="binder">x</span></a> <a id="y:6" class="idref" href="#y:6"><span class="id" title="binder">y</span></a> : <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm"><span class="id" title="definition">norm</span></a> (<a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#x:5"><span class="id" title="variable">x</span></a> <span class="id" title="notation">+</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#y:6"><span class="id" title="variable">y</span></a>) <span class="id" title="notation">≤</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm"><span class="id" title="definition">norm</span></a> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#x:5"><span class="id" title="variable">x</span></a> <span class="id" title="notation">+</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm"><span class="id" title="definition">norm</span></a> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#y:6"><span class="id" title="variable">y</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="ProdNormedZmodule.norm_eq0" class="idref" href="#ProdNormedZmodule.norm_eq0"><span class="id" title="lemma">norm_eq0</span></a> <a id="x:7" class="idref" href="#x:7"><span class="id" title="binder">x</span></a> : <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm"><span class="id" title="definition">norm</span></a> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#x:7"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#x:7"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> 0.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="ProdNormedZmodule.normMn" class="idref" href="#ProdNormedZmodule.normMn"><span class="id" title="lemma">normMn</span></a> <a id="x:8" class="idref" href="#x:8"><span class="id" title="binder">x</span></a> <a id="n:9" class="idref" href="#n:9"><span class="id" title="binder">n</span></a> : <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm"><span class="id" title="definition">norm</span></a> (<a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#x:8"><span class="id" title="variable">x</span></a> <span class="id" title="notation">*+</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#n:9"><span class="id" title="variable">n</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <span class="id" title="notation">(</span><a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm"><span class="id" title="definition">norm</span></a> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#x:8"><span class="id" title="variable">x</span></a><span class="id" title="notation">)</span> <span class="id" title="notation">*+</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#n:9"><span class="id" title="variable">n</span></a>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="ProdNormedZmodule.normrN" class="idref" href="#ProdNormedZmodule.normrN"><span class="id" title="lemma">normrN</span></a> <a id="x:10" class="idref" href="#x:10"><span class="id" title="binder">x</span></a> : <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm"><span class="id" title="definition">norm</span></a> (<span class="id" title="notation">-</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#x:10"><span class="id" title="variable">x</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm"><span class="id" title="definition">norm</span></a> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#x:10"><span class="id" title="variable">x</span></a>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="ProdNormedZmodule.normedZmodMixin" class="idref" href="#ProdNormedZmodule.normedZmodMixin"><span class="id" title="definition">normedZmodMixin</span></a> :<br/>
+&nbsp;&nbsp;@<span class="id" title="record">Num.normed_mixin_of</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.R"><span class="id" title="variable">R</span></a> <span class="id" title="notation">[</span><span class="id" title="notation">zmodType</span> <span class="id" title="notation">of</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.U"><span class="id" title="variable">U</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"><span class="id" title="notation">×</span></a> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.V"><span class="id" title="variable">V</span></a><span class="id" title="notation">]</span> (<span class="id" title="definition">Num.NumDomain.class</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.R"><span class="id" title="variable">R</span></a>) :=<br/>
+&nbsp;&nbsp;@<span class="id" title="constructor">Num.NormedMixin</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm"><span class="id" title="definition">norm</span></a> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.normD"><span class="id" title="lemma">normD</span></a> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.norm_eq0"><span class="id" title="lemma">norm_eq0</span></a> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.normMn"><span class="id" title="lemma">normMn</span></a> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.normrN"><span class="id" title="lemma">normrN</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Canonical</span> <a id="ProdNormedZmodule.normedZmodType" class="idref" href="#ProdNormedZmodule.normedZmodType"><span class="id" title="definition">normedZmodType</span></a> := <span class="id" title="abbreviation">NormedZmodType</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.R"><span class="id" title="variable">R</span></a> (<a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.U"><span class="id" title="variable">U</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"><span class="id" title="notation">×</span></a> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.V"><span class="id" title="variable">V</span></a>) <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.normedZmodMixin"><span class="id" title="definition">normedZmodMixin</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="ProdNormedZmodule.prod_normE" class="idref" href="#ProdNormedZmodule.prod_normE"><span class="id" title="lemma">prod_normE</span></a> (<a id="x:11" class="idref" href="#x:11"><span class="id" title="binder">x</span></a> : <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.normedZmodType"><span class="id" title="definition">normedZmodType</span></a>) : <span class="id" title="notation">`|</span><a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#x:11"><span class="id" title="variable">x</span></a><span class="id" title="notation">|</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <span class="id" title="abbreviation">Num.max</span> <span class="id" title="notation">`|</span><a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#x:11"><span class="id" title="variable">x</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.ssr.ssrfun.html#::pair_scope:x_'.1'"><span class="id" title="notation">.1</span></a><span class="id" title="notation">|</span> <span class="id" title="notation">`|</span><a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#x:11"><span class="id" title="variable">x</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.15.2/stdlib//Coq.ssr.ssrfun.html#::pair_scope:x_'.2'"><span class="id" title="notation">.2</span></a><span class="id" title="notation">|</span>.<br/>
+ 
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule"><span class="id" title="section">ProdNormedZmodule</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="ProdNormedZmodule.Exports" class="idref" href="#ProdNormedZmodule.Exports"><span class="id" title="module">Exports</span></a>.<br/>
+<span class="id" title="keyword">Canonical</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.normedZmodType"><span class="id" title="definition">normedZmodType</span></a>.<br/>
+<span class="id" title="keyword">Definition</span> <a id="ProdNormedZmodule.Exports.prod_normE" class="idref" href="#ProdNormedZmodule.Exports.prod_normE"><span class="id" title="definition">prod_normE</span></a> := @<a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.prod_normE"><span class="id" title="lemma">prod_normE</span></a>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.Exports"><span class="id" title="module">Exports</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule"><span class="id" title="module">ProdNormedZmodule</span></a>.<br/>
+<span class="id" title="keyword">Export</span> <a class="idref" href="mathcomp.analysis.prodnormedzmodule.html#ProdNormedZmodule.Exports"><span class="id" title="module">ProdNormedZmodule.Exports</span></a>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

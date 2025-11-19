@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>realseq.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="c">(* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)</span>
+<span class="c">(* Copyright (c) - 2015--2018 - Inria                                   *)</span>
+<span class="c">(* Copyright (c) - 2016--2018 - Polytechnique                           *)</span>
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect all_algebra.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Require Import</span> mathcomp.bigenough.bigenough.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> boolp classical_sets functions.
+<span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> mathcomp_extra.
+<span class="kn">Require Import</span> xfinmap ereal reals discrete topology.
+
+<span class="kn">Set Implicit Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+<span class="kn">Unset SsrOldRewriteGoalsOrder</span>.
+
+<span class="kn">Import</span> Order.TTheory GRing.Theory Num.Theory BigEnough.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;&lt;=1&#39; g&quot;</span> := (<span class="kr">forall</span> <span class="nv">x</span>, f x &lt;= g x)
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>).
+
+<span class="kn">Notation</span> <span class="s2">&quot;f &#39;&lt;=2&#39; g&quot;</span> := (<span class="kr">forall</span> <span class="nv">x</span> <span class="nv">y</span>, f x y &lt;= g x y)
+  (<span class="kn">at level</span> <span class="mi">70</span>, <span class="kn">no associativity</span>).
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">FFTheory</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realDomainType} (<span class="nv">T</span> : <span class="kt">Type</span>).
+
+<span class="kn">Implicit Types</span> (<span class="nv">f</span> <span class="nv">g</span> <span class="nv">h</span> : T -&gt; R).
+
+<span class="kn">Lemma</span> <span class="nf">leff</span> <span class="nv">f</span> : f &lt;=<span class="mi">1</span> f.
+<span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">lef_trans</span> <span class="nv">g</span> <span class="nv">f</span> <span class="nv">h</span> : f &lt;=<span class="mi">1</span> g -&gt; g &lt;=<span class="mi">1</span> h -&gt; f &lt;=<span class="mi">1</span> h.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; h1 h2 x; <span class="nb">apply</span>/(le_trans (h1 x)). <span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">FFTheory</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">Nbh</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType}.
+
+<span class="kn">Inductive</span> <span class="nf">nbh</span> : \bar R -&gt; predArgType :=
+| NFin  (c e : R) of (<span class="mi">0</span> &lt; e) : nbh c%:E
+| NPInf (M   : R) : nbh +oo
+| NNInf (M   : R) : nbh -oo.
+
+<span class="kn">Coercion</span> <span class="nf">pred_of_nbh</span> l (v : nbh l) :=
+  <span class="kr">match</span> v <span class="kr">with</span>
+  | @NFin  l e _ =&gt; [pred x : R | `|x - l| &lt; e]
+  | @NPInf M     =&gt; [pred x : R | x &gt; M]
+  | @NNInf M     =&gt; [pred x : R | x &lt; M]
+  <span class="kr">end</span>.
+<span class="kn">End</span> <span class="nf">Nbh</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">NbhElim</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType}.
+
+<span class="kn">Lemma</span> <span class="nf">nbh_finW</span> <span class="nv">c</span> (<span class="nv">P</span> : <span class="kr">forall</span> <span class="nv">x</span>, nbh x -&gt; <span class="kt">Prop</span>) :
+    (<span class="kr">forall</span> <span class="nv">e</span> (<span class="nv">h</span> : <span class="mi">0</span> &lt; e), P _ (@NFin R c e h))
+  -&gt; <span class="kr">forall</span> (<span class="nv">v</span> : nbh c%:E), P _ v.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; ih; <span class="nb">move</span>: {-<span class="mi">2</span>}c%:E (erefl c%:E).
+<span class="bp">by</span> <span class="nb">move</span>=&gt; e eE v; <span class="nb">case</span>: v eE =&gt; // c&#39; e&#39; h [-&gt;].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nbh_pinfW</span> (<span class="nv">P</span> : <span class="kr">forall</span> <span class="nv">x</span>, nbh x -&gt; <span class="kt">Prop</span>) :
+  (<span class="kr">forall</span> <span class="nv">M</span>, P _ (@NPInf R M)) -&gt; <span class="kr">forall</span> (<span class="nv">v</span> : nbh +oo), P _ v.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; ih; <span class="nb">move</span>: {-<span class="mi">2</span>}+oo%E (erefl (@EPInf R)).
+<span class="bp">by</span> <span class="nb">move</span>=&gt; e eE v; <span class="nb">case</span>: v eE =&gt; // c&#39; e&#39; h [-&gt;].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nbh_ninfW</span> (<span class="nv">P</span> : <span class="kr">forall</span> <span class="nv">x</span>, nbh x -&gt; <span class="kt">Prop</span>) :
+  (<span class="kr">forall</span> <span class="nv">M</span>, P _ (@NNInf R M)) -&gt; <span class="kr">forall</span> (<span class="nv">v</span> : nbh -oo), P _ v.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; ih ; <span class="nb">move</span>: {-<span class="mi">2</span>}-oo%E (erefl (@ENInf R)).
+<span class="bp">by</span> <span class="nb">move</span>=&gt; e eE v; <span class="nb">case</span>: v eE =&gt; // c&#39; e&#39; h [-&gt;].
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">NbhElim</span>.
+
+<span class="kn">Arguments</span> nbh_finW  : <span class="kn">clear implicits</span>.
+<span class="kn">Arguments</span> nbh_pinfW : <span class="kn">clear implicits</span>.
+<span class="kn">Arguments</span> nbh_ninfW : <span class="kn">clear implicits</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Definition</span> <span class="nf">eclamp</span> {<span class="nv">R</span> : realType} (<span class="nv">e</span> : R) :=
+  <span class="kr">if</span> e &lt;= <span class="mi">0</span> <span class="kr">then</span> <span class="mi">1</span> <span class="kr">else</span> e.
+
+<span class="kn">Lemma</span> <span class="nf">gt0_clamp</span> {<span class="nv">R</span> : realType} (<span class="nv">e</span> : R) : <span class="mi">0</span> &lt; eclamp e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /eclamp; <span class="nb">case</span>: (lerP e <span class="mi">0</span>) =&gt; h //; <span class="nb">apply</span>/ltr01. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eclamp_id</span> {<span class="nv">R</span> : realType} (<span class="nv">e</span> : R) : <span class="mi">0</span> &lt; e -&gt; eclamp e = e.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> ltNge /eclamp =&gt; /negbTE -&gt;. <span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">B1</span> {<span class="nv">R</span> : realType} (<span class="nv">x</span> : R) :=
+  @NFin R x <span class="mi">1</span> ltr01.
+
+<span class="kn">Definition</span> <span class="nf">B</span> {<span class="nv">R</span> : realType} (<span class="nv">x</span> <span class="nv">e</span> : R) :=
+  @NFin R x (eclamp e) (gt0_clamp e).
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Lemma</span> <span class="nf">separable_le</span> {<span class="nv">R</span> : realType} (<span class="nv">l1</span> <span class="nv">l2</span> : \bar R) :
+  (l1 &lt; l2)%E -&gt; <span class="kr">exists</span> (<span class="nv">v1</span> : nbh l1) (<span class="nv">v2</span> : nbh l2),
+    <span class="kr">forall</span> <span class="nv">x</span> <span class="nv">y</span>, x \<span class="kr">in</span> v1 -&gt; y \<span class="kr">in</span> v2 -&gt; x &lt; y.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: l1 l2 =&gt; [l1||] [l2||] //= lt_l12; <span class="nb">last first</span>.
++ <span class="kr">exists</span> (<span class="nv">NNInf</span> <span class="mi">0</span>), (NPInf <span class="mi">1</span>) =&gt; x y; <span class="nb">rewrite</span> !inE =&gt; lt1 lt2.
+  <span class="bp">by</span> <span class="nb">apply</span>/(lt_trans lt1)/(lt_trans ltr01).
++ <span class="kr">exists</span> (<span class="nv">NNInf</span> (l2-<span class="mi">1</span>)), (B1 l2) =&gt; x y; <span class="nb">rewrite</span> !inE.
+  <span class="nb">rewrite</span> ltr_norml [-<span class="mi">1</span> &lt; _]ltr_subr_addl.
+  <span class="bp">by</span> <span class="nb">move</span> =&gt; lt1 /andP[lt2 _]; <span class="nb">apply</span>/(lt_trans lt1).
++ <span class="kr">exists</span> (<span class="nv">B1</span> <span class="nv">l1</span>), (NPInf (l1+<span class="mi">1</span>)) =&gt; x y; <span class="nb">rewrite</span> !inE.
+  <span class="nb">rewrite</span> ltr_norml ltr_subl_addr [<span class="mi">1</span>+_]addrC =&gt; /andP[_].
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; lt1 lt2; <span class="nb">apply</span>/(lt_trans lt1).
+<span class="nb">pose</span> e := l2 - l1; <span class="kr">exists</span> (<span class="nv">B</span> <span class="nv">l1</span> (e/<span class="mi">2</span>%:R)), (B l2 (e/<span class="mi">2</span>%:R)).
+<span class="nb">have</span> gt0_e: <span class="mi">0</span> &lt; e <span class="bp">by</span> <span class="nb">rewrite</span> subr_gt0.
+<span class="nb">move</span>=&gt; x y; <span class="nb">rewrite</span> !inE/= /eclamp pmulr_rle0 // invr_le0.
+<span class="nb">rewrite</span> lern0 /= !ltr_distl =&gt; /andP[_ lt1] /andP[lt2 _].
+<span class="nb">apply</span>/(lt_trans lt1)/(le_lt_trans _ lt2).
+<span class="nb">rewrite</span> ler_subr_addl addrCA -mulrDl -mulr2n -mulr_natr.
+<span class="bp">by</span> <span class="nb">rewrite</span> mulfK <span class="nl">?pnatr_eq0</span> //= /e addrCA subrr addr0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">separable</span> {<span class="nv">R</span> : realType} (<span class="nv">l1</span> <span class="nv">l2</span> : \bar R) :
+  l1 != l2 -&gt; <span class="kr">exists</span> (<span class="nv">v1</span> : nbh l1) (<span class="nv">v2</span> : nbh l2),
+    <span class="kr">forall</span> <span class="nv">x</span>, x \notin [predI v1 &amp; v2].
+<span class="kn">Proof</span>.
+<span class="nb">wlog</span>: l1 l2 / (l1 &lt; l2)%E =&gt; [<span class="nb">wlog</span> ne_l12|le_l12 _].
+  <span class="nb">case</span>/boolP: (l1 &lt; l2)%E =&gt; [/<span class="nb">wlog</span>/(_ ne_l12)//|].
+  <span class="nb">rewrite</span> -leNgt le_eqVlt eq_sym (negbTE ne_l12) /=.
+  <span class="nb">case</span>/<span class="nb">wlog</span>=&gt; [|x [y h]]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> eq_sym.
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">y</span>, x=&gt; z; <span class="nb">rewrite</span> inE andbC /= (h z).
+<span class="nb">case</span>/separable_le: le_l12 =&gt; [v1] [v2] h; <span class="kr">exists</span> <span class="nv">v1</span>, v2.
+<span class="nb">move</span>=&gt; x; <span class="nb">apply</span>/negP; <span class="nb">rewrite</span> inE/= =&gt; /andP[] xv1 xv2.
+<span class="bp">by</span> <span class="nb">have</span> := h _ _ xv1 xv2; <span class="nb">rewrite</span> ltxx.
+<span class="kn">Qed</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">SequenceLim</span>.
+<span class="kn">Variable</span> (<span class="nv">R</span> : realType).
+
+<span class="kn">Implicit Types</span> (<span class="nv">u</span> <span class="nv">v</span> : nat -&gt; R).
+
+<span class="kn">Definition</span> <span class="nf">ncvg</span> <span class="nv">u</span> <span class="nv">l</span> :=
+  <span class="kr">forall</span> <span class="nv">v</span> : nbh l, <span class="kr">exists</span> <span class="nv">K</span>, <span class="kr">forall</span> <span class="nv">n</span>, (K &lt;= n)%N -&gt; u n \<span class="kr">in</span> v.
+
+<span class="kn">Definition</span> <span class="nf">iscvg</span> (<span class="nv">u</span> : nat -&gt; R) := <span class="kr">exists</span> <span class="nv">l</span>, ncvg u l%:E.
+
+<span class="kn">Definition</span> <span class="nf">nbounded</span> <span class="nv">u</span> :=
+  <span class="kr">exists</span> <span class="nv">v</span> : nbh <span class="mi">0</span>%:E, <span class="kr">forall</span> <span class="nv">n</span>, u n \<span class="kr">in</span> v.
+
+<span class="kn">Lemma</span> <span class="nf">nboundedP</span> <span class="nv">u</span> :
+  reflect (<span class="kr">exists2</span> M, <span class="mi">0</span> &lt; M &amp; <span class="kr">forall</span> <span class="nv">n</span>, `|u n| &lt; M) `[&lt; nbounded u &gt;].
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>: (iffP idP) =&gt; [/asboolP[]|]; <span class="kp">first</span> <span class="nb">elim</span>/nbh_finW.
+  <span class="nb">move</span>=&gt; M /= gt0_M cv; <span class="kr">exists</span> <span class="nv">M</span> =&gt; [|n] //.
+  <span class="bp">by</span> <span class="nb">have</span> := cv n; <span class="nb">rewrite</span> inE subr0.
+<span class="nb">case</span>=&gt; M _ cv; <span class="nb">apply</span>/asboolP; <span class="kr">exists</span> (<span class="nv">B</span> <span class="mi">0</span> <span class="nv">M</span>) =&gt; n; <span class="nb">rewrite</span> inE subr0.
+<span class="bp">by</span> <span class="nb">rewrite</span> eclamp_id // (@le_lt_trans _ _ `|u <span class="mi">0</span>%N|).
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">SequenceLim</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Notation</span> <span class="s2">&quot;c %:S&quot;</span> := (<span class="kr">fun</span> <span class="nv">_</span> : nat =&gt; c) (<span class="kn">at level</span> <span class="mi">2</span>, <span class="kn">format</span> <span class="s2">&quot;c %:S&quot;</span>).
+
+<span class="kn">Section</span> <span class="nf">SeqLimTh</span>.
+<span class="kn">Variable</span> (<span class="nv">R</span> : realType).
+
+<span class="kn">Implicit Types</span> (<span class="nv">u</span> <span class="nv">v</span> : nat -&gt; R) (<span class="nv">c</span> : R) (<span class="nv">l</span> : \bar R).
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_uniq</span> <span class="nv">u</span> <span class="nv">l1</span> <span class="nv">l2</span> : ncvg u l1 -&gt; ncvg u l2 -&gt; l1 = l2.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; cv1 cv2; <span class="nb">apply</span>/eqP; <span class="nb">case</span>: (l1 =P l2) =&gt; // /eqP.
+<span class="nb">case</span>/separable=&gt; [n1] [n2] h; <span class="nb">move</span>: (cv1 n1) (cv2 n2).
+<span class="nb">case</span>=&gt; [K1 c1] [K2 c2]; <span class="nb">pose</span> K := maxn K1 K2.
+<span class="nb">move</span>/(_ (u K)): h; <span class="nb">rewrite</span> !inE/= !(c1, c2) //.
+  <span class="bp">by</span> <span class="nb">apply</span>/leq_maxl. <span class="bp">by</span> <span class="nb">apply</span>/leq_maxr.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_eq_from</span> <span class="nv">K</span> <span class="nv">v</span> <span class="nv">u</span> <span class="nv">l</span> :
+  (<span class="kr">forall</span> <span class="nv">n</span>, (K &lt;= n)%N -&gt; u n = v n) -&gt; ncvg v l -&gt; ncvg u l.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; eq cu nb; <span class="nb">case</span>: (cu nb) =&gt; Ku {}cu; <span class="kr">exists</span> (<span class="nv">maxn</span> <span class="nv">K</span> <span class="nv">Ku</span>) =&gt; n.
+<span class="bp">by</span> <span class="nb">rewrite</span> geq_max =&gt; /andP[leK leKu]; <span class="nb">rewrite</span> eq // cu.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_eq</span> <span class="nv">v</span> <span class="nv">u</span> <span class="nv">l</span> : u =<span class="mi">1</span> v -&gt; ncvg v l -&gt; ncvg u l.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; eq; <span class="nb">apply</span>: (@ncvg_eq_from <span class="mi">0</span>). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_le_from</span> <span class="nv">K</span> <span class="nv">v</span> <span class="nv">u</span> (<span class="nv">lv</span> <span class="nv">lu</span> : \bar R) :
+  (<span class="kr">forall</span> <span class="nv">n</span>, (K &lt;= n)%N -&gt; u n &lt;= v n) -&gt; ncvg v lv -&gt; ncvg u lu -&gt; (lu &lt;= lv)%E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; le_uv cv cu; <span class="nb">rewrite</span> leNgt; <span class="nb">apply</span>/negP=&gt; /separable_le.
+<span class="nb">case</span>=&gt; [v1] [v2] h; <span class="nb">have</span> [] := (cv v1, cu v2).
+<span class="nb">case</span>=&gt; [K1 vv1] [K2 uv2]; pose_big_enough K&#39;.
+<span class="nb">have</span> []// := And3 (le_uv K&#39; _) (vv1 K&#39; _) (uv2 K&#39; _). <span class="mi">2</span>: <span class="bp">by</span> close.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; le h1 h2; <span class="nb">have</span> := h _ _ h1 h2; <span class="nb">rewrite</span> ltNge le.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_le</span> <span class="nv">v</span> <span class="nv">u</span> (<span class="nv">lv</span> <span class="nv">lu</span> : \bar R) :
+  u &lt;=<span class="mi">1</span> v -&gt; ncvg v lv -&gt; ncvg u lu -&gt; (lu &lt;= lv)%E.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; le_uv; <span class="nb">apply</span>/(@ncvg_le_from <span class="mi">0</span>). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_nbounded</span> <span class="nv">u</span> <span class="nv">x</span> : ncvg u x%:E -&gt; nbounded u.
+<span class="kn">Proof</span>.                   <span class="c">(* FIXME: factor out `sup` of a finite set *)</span>
+<span class="nb">case</span>/(_ (B x <span class="mi">1</span>)) =&gt; K cu; <span class="nb">pose</span> S := [seq `|u n| | n &lt;- iota <span class="mi">0</span> K].
+<span class="nb">pose</span> M : R := sup [<span class="nb">set</span> x : R | x \<span class="kr">in</span> S]; <span class="nb">pose</span> e := Num.max (`|x| + <span class="mi">1</span>) (M + <span class="mi">1</span>).
+<span class="nb">apply</span>/asboolP/nboundedP; <span class="kr">exists</span> <span class="nv">e</span> =&gt; [|n]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> lt_maxr ltr_paddl.
+<span class="nb">case</span>: (ltnP n K); <span class="nb">last first</span>.
+  <span class="nb">move</span>/cu; <span class="nb">rewrite</span> inE eclamp_id <span class="nl">?ltr01</span> // =&gt; ltunBx1.
+  <span class="nb">rewrite</span> lt_maxr; <span class="nb">apply</span>/orP; <span class="nb">left</span>; <span class="nb">rewrite</span> -[u n](addrK x) addrAC.
+  <span class="bp">by</span> <span class="nb">apply</span>/(le_lt_trans (ler_norm_add _ _)); <span class="nb">rewrite</span> addrC ltr_add2l.
+<span class="nb">move</span>=&gt; lt_nK; <span class="nb">have</span>: `|u n| \<span class="kr">in</span> S; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>/map_f; <span class="nb">rewrite</span> mem_iota.
+<span class="nb">move</span>=&gt; un_S; <span class="nb">rewrite</span> lt_maxr; <span class="nb">apply</span>/orP; <span class="nb">right</span>.
+<span class="nb">case</span> E: {+}K lt_nK =&gt; [|k] // lt_nSk; <span class="nb">apply</span>/ltr_spaddr; <span class="kp">first</span> <span class="nb">apply</span>/ltr01.
+<span class="nb">suff</span> : has_sup (<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; x \<span class="kr">in</span> S) <span class="bp">by</span> <span class="nb">move</span>/sup_upper_bound/ubP =&gt; -&gt;.
+<span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> `|u <span class="mi">0</span>%N|; <span class="nb">rewrite</span> /S E inE eqxx.
+<span class="nb">elim</span>: {+}S =&gt; [|v s [ux /ubP hux]]; <span class="kp">first</span> <span class="bp">by</span> <span class="kr">exists</span> <span class="mi">0</span>; <span class="nb">apply</span>/ubP.
+<span class="kr">exists</span> (<span class="nv">Num</span>.max v ux); <span class="nb">apply</span>/ubP=&gt; y; <span class="nb">rewrite</span> inE =&gt; /orP[/eqP-&gt;|].
+  <span class="bp">by</span> <span class="nb">rewrite</span> le_maxr lexx.
+<span class="bp">by</span> <span class="nb">move</span>/hux=&gt; le_yux; <span class="nb">rewrite</span> le_maxr le_yux orbT.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nboundedC</span> <span class="nv">c</span> : nbounded c%:S.
+<span class="kn">Proof</span>.
+<span class="nb">apply</span>/asboolP/nboundedP; <span class="kr">exists</span> (`|c| + <span class="mi">1</span>).
+  <span class="bp">by</span> <span class="nb">rewrite</span> ltr_spaddr. <span class="bp">by</span> <span class="nb">move</span>=&gt; _; <span class="nb">rewrite</span> ltr_addl.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvgC</span> <span class="nv">c</span> : ncvg c%:S c%:E.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>/nbh_finW =&gt; e /= gt0_e; <span class="kr">exists</span> <span class="mi">0</span>%N =&gt; n _.
+<span class="bp">by</span> <span class="nb">rewrite</span> inE subrr normr0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvgD</span> <span class="nv">u</span> <span class="nv">v</span> <span class="nv">lu</span> <span class="nv">lv</span> : ncvg u lu%:E -&gt; ncvg v lv%:E -&gt;
+  ncvg (u \+ v) (lu + lv)%:E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; cu cv; <span class="nb">elim</span>/nbh_finW =&gt; e /= gt0_e; <span class="nb">pose</span> z := e / <span class="mi">2</span>%:R.
+<span class="nb">case</span>: (cu (B lu z)) (cv (B lv z)) =&gt; [ku {}cu] [kv {}cv].
+<span class="kr">exists</span> (<span class="nv">maxn</span> <span class="nv">ku</span> <span class="nv">kv</span>) =&gt; n; <span class="nb">rewrite</span> geq_max =&gt; /andP[leu lev].
+<span class="nb">rewrite</span> inE opprD addrACA (le_lt_trans (ler_norm_add _ _)) //.
+<span class="nb">move</span>: (cu _ leu) (cv _ lev); <span class="nb">rewrite</span> !inE eclamp_id.
+  <span class="bp">by</span> <span class="nb">rewrite</span> mulr_gt0 // invr_gt0 ltr0Sn.
+<span class="nb">move</span>=&gt; cu&#39; cv&#39;; <span class="nb">suff</span> -&gt;: e = z + z <span class="bp">by</span> <span class="nb">rewrite</span> ltr_add.
+<span class="bp">by</span> <span class="nb">rewrite</span> -mulrDl -mulr2n -mulr_natr mulfK <span class="nl">?pnatr_eq0</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvgN</span> <span class="nv">u</span> <span class="nv">lu</span> : ncvg u lu -&gt; ncvg (- u) (- lu).
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: lu =&gt; [lu||] cu /=; <span class="kp">first</span> <span class="nb">last</span>.
++ <span class="nb">elim</span>/nbh_pinfW=&gt; M; <span class="nb">case</span>: (cu (NNInf (-M))) =&gt; K {}cu.
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">K</span> =&gt; n /cu; <span class="nb">rewrite</span> !inE ltr_oppr.
++ <span class="nb">elim</span>/nbh_ninfW=&gt; M; <span class="nb">case</span>: (cu (NPInf (-M))) =&gt; K {}cu.
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">K</span> =&gt; n /cu; <span class="nb">rewrite</span> !inE ltr_oppl.
+<span class="nb">elim</span>/nbh_finW =&gt; e /= gt0_e; <span class="nb">case</span>: (cu (B lu e)).
+<span class="bp">by</span> <span class="nb">move</span>=&gt; K {}cu; <span class="kr">exists</span> <span class="nv">K</span>=&gt; n /cu; <span class="nb">rewrite</span> !inE -opprD normrN eclamp_id.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvgN_fin</span> <span class="nv">u</span> <span class="nv">lu</span> : ncvg u lu%:E -&gt; ncvg (- u) (- lu)%:E.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/ncvgN. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvgB</span> <span class="nv">u</span> <span class="nv">v</span> <span class="nv">lu</span> <span class="nv">lv</span> : ncvg u lu%:E -&gt; ncvg v lv%:E -&gt;
+  ncvg (u \- v) (lu - lv)%:E.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; cu cv; <span class="nb">apply</span>/ncvgD/ncvgN_fin. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_abs</span> <span class="nv">u</span> <span class="nv">lu</span> : ncvg u lu%:E -&gt; ncvg (<span class="kr">fun</span> <span class="nv">n</span> =&gt; `|u n|) `|lu|%:E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; cu; <span class="nb">elim</span>/nbh_finW =&gt; e /= gt0_e; <span class="nb">case</span>: (cu (B lu e)).
+<span class="nb">move</span>=&gt; K {}cu; <span class="kr">exists</span> <span class="nv">K</span>=&gt; n /cu; <span class="nb">rewrite</span> !inE eclamp_id //.
+<span class="bp">by</span> <span class="nb">move</span>/(le_lt_trans (ler_dist_dist _ _)).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_abs0</span> <span class="nv">u</span> : ncvg (<span class="kr">fun</span> <span class="nv">n</span> =&gt; `|u n|) <span class="mi">0</span>%:E -&gt; ncvg u <span class="mi">0</span>%:E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; cu; <span class="nb">elim</span>/nbh_finW =&gt; e /= gt0_e; <span class="nb">case</span>: (cu (B <span class="mi">0</span> e)).
+<span class="bp">by</span> <span class="nb">move</span>=&gt; K {}cu; <span class="kr">exists</span> <span class="nv">K</span>=&gt; n /cu; <span class="nb">rewrite</span> !inE !subr0 eclamp_id // normr_id.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvgMl</span> <span class="nv">u</span> <span class="nv">v</span> : ncvg u <span class="mi">0</span>%:E -&gt; nbounded v -&gt; ncvg (u \* v) <span class="mi">0</span>%:E.
+<span class="nb">move</span>=&gt; cu /asboolP/nboundedP [M gt0_M ltM]; <span class="nb">elim</span>/nbh_finW =&gt; e /= gt0_e.
+<span class="nb">case</span>: (cu (B <span class="mi">0</span> (e / (M + <span class="mi">1</span>)))) =&gt; K {}cu; <span class="kr">exists</span> <span class="nv">K</span> =&gt; n le_Kn.
+<span class="nb">rewrite</span> inE subr0 normrM; <span class="nb">apply</span>/(@lt_trans _ _ (e / (M + <span class="mi">1</span>) * M)).
+  <span class="nb">apply</span>/ltr_pmul =&gt; //; <span class="nb">have</span> /cu := le_Kn; <span class="nb">rewrite</span> inE subr0 eclamp_id //.
+  <span class="bp">by</span> <span class="nb">rewrite</span> mulr_gt0 // invr_gt0 addr_gt0.
+<span class="nb">rewrite</span> -mulrAC -mulrA gtr_pmulr // ltr_pdivr_mulr <span class="nl">?addr_gt0</span> //.
+<span class="bp">by</span> <span class="nb">rewrite</span> mul1r ltr_addl.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvgMr</span> <span class="nv">u</span> <span class="nv">v</span> : ncvg v <span class="mi">0</span>%:E -&gt; nbounded u -&gt; ncvg (u \* v) <span class="mi">0</span>%:E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; cv bu; <span class="nb">apply</span>/(@ncvg_eq (v \* u)).
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> /= mulrC.
+<span class="bp">by</span> <span class="nb">apply</span>/ncvgMl.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvgM</span> <span class="nv">u</span> <span class="nv">v</span> <span class="nv">lu</span> <span class="nv">lv</span> : ncvg u lu%:E -&gt; ncvg v lv%:E -&gt;
+  ncvg (u \* v) (lu * lv)%:E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; cu cv; <span class="nb">pose</span> a := u \- lu%:S; <span class="nb">pose</span> b := v \- lv%:S.
+<span class="nb">have</span> eq: (u \* v) =<span class="mi">1</span> (lu * lv)%:S \+ ((lu%:S \* b) \+ (a \* v)).
+  <span class="nb">move</span>=&gt; n; <span class="nb">rewrite</span> {}/a {}/b /= [u n+_]addrC [(_+_)*(v n)]mulrDl.
+  <span class="nb">rewrite</span> !addrA -[LHS]add0r; <span class="nb">congr</span> (_ + _); <span class="nb">rewrite</span> mulrDr.
+  <span class="bp">by</span> <span class="nb">rewrite</span> !(mulrN, mulNr) (addrCA (lu * lv)) subrr addr0 subrr.
+<span class="nb">apply</span>/(ncvg_eq eq); <span class="nb">rewrite</span> -[X <span class="kr">in</span> X%:E]addr0; <span class="nb">apply</span>/ncvgD.
+  <span class="bp">by</span> <span class="nb">apply</span>/ncvgC. <span class="nb">rewrite</span> -[X <span class="kr">in</span> X%:E]addr0; <span class="nb">apply</span>/ncvgD.
++ <span class="nb">apply</span>/ncvgMr; <span class="kp">first</span> <span class="nb">rewrite</span> -[X <span class="kr">in</span> X%:E](subrr lv).
+    <span class="bp">by</span> <span class="nb">apply</span>/ncvgB/ncvgC. <span class="bp">by</span> <span class="nb">apply</span>/nboundedC.
++ <span class="nb">apply</span>/ncvgMl; <span class="kp">first</span> <span class="nb">rewrite</span> -[X <span class="kr">in</span> X%:E](subrr lu).
+    <span class="bp">by</span> <span class="nb">apply</span>/ncvgB/ncvgC. <span class="bp">by</span> <span class="nb">apply</span>/(ncvg_nbounded cv).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvgZ</span> <span class="nv">c</span> <span class="nv">u</span> <span class="nv">lu</span> : ncvg u lu%:E -&gt; ncvg (c \*o u) (c * lu)%:E.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; cu; <span class="nb">apply</span>/ncvgM =&gt; //; <span class="nb">apply</span>/ncvgC. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_leC</span> <span class="nv">c</span> <span class="nv">u</span> (<span class="nv">lu</span> : \bar R) :
+  (<span class="kr">forall</span> <span class="nv">n</span>, u n &lt;= c) -&gt; ncvg u lu -&gt; (lu &lt;= c%:E)%E.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; le cu; <span class="nb">apply</span>/(@ncvg_le c%:S u)=&gt; //; <span class="nb">apply</span>/ncvgC. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_geC</span> <span class="nv">c</span> <span class="nv">u</span> (<span class="nv">lu</span> : \bar R) :
+  (<span class="kr">forall</span> <span class="nv">n</span>, c &lt;= u n) -&gt; ncvg u lu -&gt; (c%:E &lt;= lu)%E.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; le cu; <span class="nb">apply</span>/(@ncvg_le u c%:S)=&gt; //; <span class="nb">apply</span>/ncvgC. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">iscvgC</span> <span class="nv">c</span> : iscvg c%:S.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">c</span>; <span class="nb">apply</span>/ncvgC. <span class="kn">Qed</span>.
+
+<span class="kn">Hint Resolve</span> iscvgC : core.
+
+<span class="kn">Lemma</span> <span class="nf">iscvgD</span> (<span class="nv">u</span> <span class="nv">v</span> : nat -&gt; R) : iscvg u -&gt; iscvg v -&gt; iscvg (u \+ v).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">case</span>=&gt; [lu cu] [lv cv]; <span class="kr">exists</span> (<span class="nv">lu</span> + lv); <span class="nb">apply</span>/ncvgD. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">iscvg_sum</span> {<span class="nv">I</span> : eqType} (<span class="nv">u</span> : I -&gt; nat -&gt; R) <span class="nv">r</span> :
+  (<span class="kr">forall</span> <span class="nv">i</span>, i \<span class="kr">in</span> r -&gt; iscvg (u i)) -&gt;
+    iscvg (<span class="kr">fun</span> <span class="nv">n</span> =&gt; \sum_(i &lt;- r) u i n).
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>: r =&gt; [|i r ih] h.
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="mi">0</span>; <span class="nb">apply</span>/(@ncvg_eq <span class="mi">0</span>%:S)/ncvgC =&gt; n; <span class="nb">rewrite</span> big_nil.
+<span class="nb">case</span>: ih =&gt; [j jr|c cv]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>/h; <span class="nb">rewrite</span> inE jr orbT.
+<span class="nb">have</span> [l cl]: iscvg (u i) <span class="bp">by</span> <span class="nb">apply</span>/h; <span class="nb">rewrite</span> inE eqxx.
+<span class="kr">exists</span> (<span class="nv">c</span> + l); <span class="nb">have</span> := ncvgD cv cl; <span class="nb">apply</span>/ncvg_eq.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; n; <span class="nb">rewrite</span> big_cons addrC.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">iscvg_eq</span> (<span class="nv">u</span> <span class="nv">v</span> : nat -&gt; R) :
+  u =<span class="mi">1</span> v -&gt; iscvg v -&gt; iscvg u.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; equv [l h]; <span class="kr">exists</span> <span class="nv">l</span>; <span class="nb">apply</span>/(ncvg_eq equv). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_sub</span> <span class="nv">h</span> <span class="nv">u</span> <span class="nv">lu</span> :
+     {homo h : x y / (x &lt; y)%N}
+  -&gt; ncvg u lu -&gt; ncvg (<span class="kr">fun</span> <span class="nv">n</span> =&gt; u (h n)) lu.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; mono_h cvu v; <span class="nb">case</span>: (cvu v)=&gt; K {}cvu; <span class="kr">exists</span> <span class="nv">K</span>.
+<span class="nb">move</span>=&gt; n le_Kn; <span class="nb">apply</span>/cvu; <span class="nb">apply</span>/(leq_trans le_Kn).
+<span class="nb">elim</span>: {le_Kn} n =&gt; [|n ih] //; <span class="nb">apply</span>/(leq_ltn_trans ih).
+<span class="bp">by</span> <span class="nb">rewrite</span> mono_h.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">iscvg_sub</span> <span class="nv">σ</span> <span class="nv">u</span> :
+  {homo σ : x y / (x &lt; y)%N} -&gt; iscvg u -&gt; iscvg (u \o σ).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; homoσ [l h]; <span class="kr">exists</span> <span class="nv">l</span>; <span class="nb">apply</span>/ncvg_sub. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_shift</span> <span class="nv">k</span> (<span class="nv">u</span> : nat -&gt; R) <span class="nv">l</span> :
+  ncvg u l &lt;-&gt; ncvg (<span class="kr">fun</span> <span class="nv">n</span> =&gt; u (n + k)%N) l.
+<span class="kn">Proof</span>. <span class="nb">split</span> =&gt; h v; <span class="nb">move</span>/(_ v): h =&gt; [K h].
++ <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">K</span> =&gt; n leKn; <span class="nb">apply</span>/h/(leq_trans leKn)/leq_addr.
++ <span class="kr">exists</span> (<span class="nv">K</span> + k)%N =&gt; n leKkn; <span class="nb">rewrite</span> -[n](@subnK k).
+  * <span class="bp">by</span> <span class="nb">apply</span>/(leq_trans _ leKkn)/leq_addl.
+  <span class="nb">apply</span>/h/(@leq_trans ((K+k) - k))/leq_sub2r =&gt; //.
+  <span class="bp">by</span> <span class="nb">rewrite</span> addnK.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">iscvg_shift</span> <span class="nv">k</span> (<span class="nv">u</span> : nat -&gt; R) :
+  iscvg u &lt;-&gt; iscvg (<span class="kr">fun</span> <span class="nv">n</span> =&gt; u (n + k)%N).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>=&gt; -[l h]; <span class="kr">exists</span> <span class="nv">l</span>; <span class="nb">apply</span>/(ncvg_shift _ u). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_gt</span> (<span class="nv">u</span> : nat -&gt; R) (<span class="nv">l1</span> <span class="nv">l2</span> : \bar R) :
+  (l1 &lt; l2)%E -&gt; ncvg u l2 -&gt;
+    <span class="kr">exists</span> <span class="nv">K</span>, <span class="kr">forall</span> <span class="nv">n</span>, (K &lt;= n)%N -&gt; (l1 &lt; (u n)%:E)%E.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: l1 l2 =&gt; [l1||] [l2||] //=; <span class="kp">first</span> <span class="nb">last</span>.
++ <span class="bp">by</span> <span class="nb">move</span>=&gt; _ _; <span class="kr">exists</span> <span class="mi">0</span>%N =&gt; ? ?; <span class="bp">exact</span>: ltNyr.
++ <span class="bp">by</span> <span class="nb">move</span>=&gt; _ _; <span class="kr">exists</span> <span class="mi">0</span>%N =&gt; ? ?; <span class="bp">exact</span>: ltNyr.
++ <span class="bp">by</span> <span class="nb">move</span>=&gt; _ /(_ (NPInf l1)) [K cv]; <span class="kr">exists</span> <span class="nv">K</span> =&gt; n /cv.
+<span class="nb">move</span>=&gt; lt_12; <span class="nb">pose</span> e := l2 - l1 =&gt; /(_ (B l2 e)).
+<span class="nb">case</span>=&gt; K cv; <span class="kr">exists</span> <span class="nv">K</span> =&gt; n /cv; <span class="nb">rewrite</span> !inE eclamp_id <span class="nl">?subr_gt0</span> //.
+<span class="nb">rewrite</span> ltr_distl =&gt; /andP[] /(le_lt_trans _) h _; <span class="nb">apply</span>: h.
+<span class="bp">by</span> <span class="nb">rewrite</span> {cv}/e opprB addrCA subrr addr0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_lt</span> (<span class="nv">u</span> : nat -&gt; R) (<span class="nv">l1</span> <span class="nv">l2</span> : \bar R) :
+  (l1 &lt; l2)%E -&gt; ncvg u l1 -&gt;
+    <span class="kr">exists</span> <span class="nv">K</span>, <span class="kr">forall</span> <span class="nv">n</span>, (K &lt;= n)%N -&gt; ((u n)%:E &lt; l2)%E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; lt_12 cv_u_l1; <span class="nb">case</span>: (@ncvg_gt (- u) (-l2) (-l1)).
+  <span class="bp">by</span> <span class="nb">rewrite</span> lte_opp2. <span class="bp">by</span> <span class="nb">apply</span>/ncvgN.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; K cv; <span class="kr">exists</span> <span class="nv">K</span> =&gt; n /cv; <span class="nb">rewrite</span> (@lte_opp2 _ _ (u n)%:E).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_homo_lt</span> (<span class="nv">u</span> : nat -&gt; R) (<span class="nv">l1</span> <span class="nv">l2</span> : \bar R) :
+    (<span class="kr">forall</span> <span class="nv">m</span> <span class="nv">n</span>, (m &lt;= n)%N -&gt; u m &lt;= u n)
+  -&gt; (l1 &lt; l2)%E -&gt; ncvg u l1 -&gt; <span class="kr">forall</span> <span class="nv">n</span>, ((u n)%:E &lt; l2)%E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; homo_u lt_12 cvu n; <span class="nb">have</span> [K {cvu}cv] := ncvg_lt lt_12 cvu.
+<span class="nb">case</span>: (leqP n K) =&gt; [/homo_u|/ltnW /cv //].
+<span class="bp">by</span> <span class="nb">move</span>/lee_tofin/le_lt_trans; <span class="nb">apply</span>; <span class="nb">apply</span>/cv.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">ncvg_homo_le</span> (<span class="nv">u</span> : nat -&gt; R) (<span class="nv">l</span> : \bar R) :
+    (<span class="kr">forall</span> <span class="nv">m</span> <span class="nv">n</span>, (m &lt;= n)%N -&gt; u m &lt;= u n)
+  -&gt; ncvg u l -&gt; <span class="kr">forall</span> <span class="nv">n</span>, ((u n)%:E &lt;= l)%E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; homo_u cvu n; <span class="nb">rewrite</span> leNgt.
+<span class="bp">by</span> <span class="nb">apply</span>/negP =&gt; /ncvg_homo_lt /(_ cvu) -/(_ homo_u n); <span class="nb">rewrite</span> ltxx.
+<span class="kn">Qed</span>.
+<span class="kn">End</span> <span class="nf">SeqLimTh</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span>
+<span class="kn">Section</span> <span class="nf">LimOp</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realType}.
+
+<span class="kn">Implicit Types</span> (<span class="nv">u</span> <span class="nv">v</span> : nat -&gt; R).
+
+<span class="kn">Definition</span> <span class="nf">nlim</span> <span class="nv">u</span> : \bar R :=
+  <span class="kr">if</span> @idP `[&lt; <span class="kr">exists</span> <span class="nv">l</span>, `[&lt; ncvg u l &gt;] &gt;] <span class="kr">is</span> ReflectT Px <span class="kr">then</span>
+    xchoose (asboolP _ Px) <span class="kr">else</span> -oo.
+
+<span class="kn">Lemma</span> <span class="nf">nlim_ncvg</span> <span class="nv">u</span> : (<span class="kr">exists</span> <span class="nv">l</span>, ncvg u l) -&gt; ncvg u (nlim u).
+<span class="kn">Proof</span>.
+<span class="nb">case</span>=&gt; l cv_u_l; <span class="nb">rewrite</span> /nlim; <span class="nb">case</span>: {-}_ / idP; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">case</span>; <span class="nb">apply</span>/asboolP; <span class="kr">exists</span> <span class="nv">l</span>; <span class="nb">apply</span>/asboolP.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; p; <span class="nb">apply</span>/asboolP/(xchooseP (asboolP _ p)).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nlim_out</span> <span class="nv">u</span> : ~ (<span class="kr">exists</span> <span class="nv">l</span>, ncvg u l) -&gt; nlim u = -oo%E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; h; <span class="nb">rewrite</span> /nlim; <span class="nb">case</span>: {-}_ / idP =&gt; // p.
+<span class="bp">by</span> <span class="nb">case</span>: h; <span class="nb">case</span>/asboolP: p =&gt; l /asboolP; <span class="kr">exists</span> <span class="nv">l</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">CoInductive</span> <span class="nf">nlim_spec</span> (<span class="nv">u</span> : nat -&gt; R) : \bar R -&gt; <span class="kt">Type</span> :=
+| NLimCvg l : ncvg u l -&gt; nlim_spec u l
+| NLimOut   : ~ (<span class="kr">exists</span> <span class="nv">l</span>, ncvg u l) -&gt; nlim_spec u -oo.
+
+<span class="kn">Lemma</span> <span class="nf">nlimP</span> <span class="nv">u</span> : nlim_spec u (nlim u).
+<span class="kn">Proof</span>.
+<span class="nb">case</span>/boolP: `[&lt; <span class="kr">exists</span> <span class="nv">l</span>, `[&lt; ncvg u l &gt;] &gt;] =&gt; /asboolP/exists_asboolP/asboolP.
+  <span class="bp">by</span> <span class="nb">move</span>/nlim_ncvg=&gt; h; <span class="nb">apply</span>/NLimCvg.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; h; <span class="nb">rewrite</span> nlim_out //; <span class="nb">apply</span>/NLimOut.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nlimE</span> (<span class="nv">u</span> : nat -&gt; R) (<span class="nv">l</span> : \bar R) : ncvg u l -&gt; nlim u = l.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; cu; <span class="nb">have</span>: (ncvg u (nlim u)).
+  <span class="bp">by</span> <span class="nb">apply</span>/nlim_ncvg; <span class="kr">exists</span> <span class="nv">l</span>. <span class="bp">by</span> <span class="nb">move</span>/(ncvg_uniq cu) =&gt; -&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nlimC</span> <span class="nv">c</span> : nlim c%:S = c%:E :&gt; \bar R.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>/nlimE: (@ncvgC R c). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nlimD</span> (<span class="nv">u</span> <span class="nv">v</span> : nat -&gt; R) : iscvg u -&gt; iscvg v -&gt;
+  nlim (u \+ v) = (nlim u + nlim v)%E.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>=&gt; [lu cu] [lv cv]; <span class="nb">rewrite</span> (nlimE cu) (nlimE cv) /=.
+<span class="bp">by</span> <span class="nb">rewrite</span> (nlimE (ncvgD cu cv)).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_from_nlim</span> <span class="nv">K</span> (<span class="nv">v</span> <span class="nv">u</span> : nat -&gt; R) :
+  (<span class="kr">forall</span> <span class="nv">n</span>, (K &lt;= n)%N -&gt; u n = v n) -&gt; nlim u = nlim v.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; eq; <span class="nb">have</span> h := ncvg_eq_from eq; <span class="nb">case</span>: (nlimP v).
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; l cv; <span class="nb">have</span> cu := h _ cv; <span class="nb">rewrite</span> (nlimE cu).
+<span class="nb">move</span>=&gt; Ncv; <span class="nb">rewrite</span> nlim_out //; <span class="nb">case</span>=&gt; l cu.
+<span class="nb">apply</span>: Ncv; <span class="kr">exists</span> <span class="nv">l</span>; <span class="nb">apply</span>/(@ncvg_eq_from _ K u) =&gt; //.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; n /eq /esym.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">eq_nlim</span> (<span class="nv">v</span> <span class="nv">u</span> : nat -&gt; R) : u =<span class="mi">1</span> v -&gt; nlim u = nlim v.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; eq; <span class="nb">apply</span>/(@eq_from_nlim <span class="mi">0</span>) =&gt; n _; <span class="nb">apply</span>/eq. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nlim_bump</span> (<span class="nv">u</span> : nat -&gt; R) : nlim (<span class="kr">fun</span> <span class="nv">n</span> =&gt; u n.+<span class="mi">1</span>) = nlim u.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: (nlimP u) =&gt; [l cu|Ncu].
+  <span class="nb">suff</span>: ncvg (<span class="kr">fun</span> <span class="nv">n</span> =&gt; u n.+<span class="mi">1</span>) l <span class="bp">by</span> <span class="nb">move</span>/nlimE.
+  <span class="nb">move</span>=&gt; v; <span class="nb">case</span>/(_ v): cu =&gt; K cu; <span class="kr">exists</span> <span class="nv">K</span> =&gt; n le_Kn.
+  <span class="bp">by</span> <span class="nb">apply</span>/cu; <span class="nb">apply</span>/(leq_trans le_Kn).
+<span class="nb">rewrite</span> nlim_out //; <span class="nb">case</span>=&gt; l cu; <span class="nb">apply</span>/Ncu; <span class="kr">exists</span> <span class="nv">l</span>.
+<span class="nb">move</span>=&gt; v; <span class="nb">case</span>/(_ v): cu =&gt; K cu; <span class="kr">exists</span> <span class="nv">K</span>.+<span class="mi">1</span> =&gt; n le_Kn.
+<span class="nb">rewrite</span> -[n]prednK; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>/(leq_trans _ le_Kn).
+<span class="bp">by</span> <span class="nb">apply</span>/cu; <span class="nb">rewrite</span> -ltnS prednK ?(leq_trans _ le_Kn).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nlim_lift</span> (<span class="nv">u</span> : nat -&gt; R) <span class="nv">p</span> : nlim (<span class="kr">fun</span> <span class="nv">n</span> =&gt; u (n + p)%N) = nlim u.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>: p =&gt; [|p ih]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>/eq_nlim=&gt; k; <span class="nb">rewrite</span> addn0.
+<span class="nb">rewrite</span> -ih -[<span class="kr">in</span> RHS]nlim_bump; <span class="nb">apply</span>/eq_nlim=&gt; k /=.
+<span class="bp">by</span> <span class="nb">rewrite</span> addSnnS.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nlim_sum</span> {<span class="nv">I</span> : eqType} (<span class="nv">u</span> : I -&gt; nat -&gt; R) (<span class="nv">r</span> : seq I) :
+  (<span class="kr">forall</span> <span class="nv">i</span>, i \<span class="kr">in</span> r -&gt; iscvg (u i)) -&gt;
+      nlim (<span class="kr">fun</span> <span class="nv">n</span> =&gt; \sum_(i &lt;- r) (u i) n)
+    = (\sum_(i &lt;- r) nlim (u i))%E.
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>: r =&gt; /= [|i r ih] h; <span class="kp">first</span> <span class="nb">rewrite</span> big_nil.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (@eq_nlim <span class="mi">0</span>%:S) <span class="nl">?nlimC</span> //= =&gt; n; <span class="nb">rewrite</span> big_nil.
+<span class="nb">rewrite</span> big_cons -ih -<span class="nl">?nlimD</span>.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; j jr; <span class="nb">apply</span>/h; <span class="nb">rewrite</span> inE jr orbT.
+  <span class="bp">by</span> <span class="nb">apply</span>/h; <span class="nb">rewrite</span> inE eqxx.
+  <span class="bp">by</span> <span class="nb">apply</span>/iscvg_sum=&gt; j jr; <span class="nb">apply</span>/h; <span class="nb">rewrite</span> inE jr orbT.
+<span class="bp">by</span> <span class="nb">apply</span>/eq_nlim=&gt; n /=; <span class="nb">rewrite</span> big_cons.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nlim_sumR</span> {<span class="nv">I</span> : eqType} (<span class="nv">u</span> : I -&gt; nat -&gt; R) (<span class="nv">r</span> : seq I) :
+    (<span class="kr">forall</span> <span class="nv">i</span>, i \<span class="kr">in</span> r -&gt; iscvg (u i)) -&gt;
+  nlim (<span class="kr">fun</span> <span class="nv">n</span> =&gt; \sum_(i &lt;- r) (u i) n) = (\sum_(i &lt;- r)
+    (fine (nlim (u i)) : R))%:E.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; h; <span class="nb">rewrite</span> nlim_sum //; <span class="nb">elim</span>: r h =&gt; [|i r ih] h.
+  <span class="bp">by</span> <span class="nb">rewrite</span> !big_nil.
+<span class="nb">rewrite</span> !big_cons; <span class="nb">case</span>: (h i); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> inE eqxx.
+<span class="nb">move</span>=&gt; c /nlimE -&gt;; <span class="nb">rewrite</span> ih // =&gt; j jr.
+<span class="bp">by</span> <span class="nb">apply</span>/h; <span class="nb">rewrite</span> inE jr orbT.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nlim_sup</span> (<span class="nv">u</span> : nat -&gt; R) <span class="nv">l</span> :
+    (<span class="kr">forall</span> <span class="nv">n</span> <span class="nv">m</span>, (n &lt;= m)%N -&gt; u n &lt;= u m)
+  -&gt; ncvg u l%:E
+  -&gt; sup [<span class="nb">set</span> r | <span class="kr">exists</span> <span class="nv">n</span>, r = u n] = l.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; mn_u cv_ul; <span class="nb">set</span> S := (X <span class="kr">in</span> sup X); <span class="nb">suff</span>: ncvg u (sup S)%:E.
+  <span class="bp">by</span> <span class="nb">move</span>/nlimE; <span class="nb">move</span>/nlimE: cv_ul =&gt; -&gt; [-&gt;].
+<span class="nb">elim</span>/nbh_finW=&gt; /= e gt0_e; <span class="nb">have</span> sS: has_sup S.
+  <span class="nb">split</span>; <span class="kp">first</span> <span class="kr">exists</span> (<span class="nv">u</span> <span class="mi">0</span>%N).
+    <span class="bp">by</span> <span class="kr">exists</span> <span class="mi">0</span>%N.
+  <span class="kr">exists</span> <span class="nv">l</span>; <span class="nb">apply</span>/ubP =&gt; _ [n -&gt;].
+  <span class="bp">by</span> <span class="nb">rewrite</span> -lee_fin; <span class="nb">apply</span>/ncvg_homo_le.
+<span class="nb">have</span> /sup_adherent := sS =&gt; /(_ _ gt0_e) [r] [N -&gt;] lt_uN.
+<span class="kr">exists</span> <span class="nv">N</span> =&gt; n le_Nn; <span class="nb">rewrite</span> !inE distrC ger0_norm <span class="nl">?subr_ge0</span>.
+  <span class="bp">by</span> <span class="nb">move</span>/ubP : (sup_upper_bound sS) =&gt; -&gt; //; <span class="kr">exists</span> <span class="nv">n</span>.
+<span class="bp">by</span> <span class="nb">rewrite</span> ltr_subl_addr -ltr_subl_addl (lt_le_trans lt_uN) <span class="nl">?mn_u</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">LimOp</span>.
+
+<span class="c">(* -------------------------------------------------------------------- *)</span></span></pre></article></body></html>

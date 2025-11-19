@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>realfun.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)</span>
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect ssralg ssrint ssrnum finmap.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> matrix interval zmodp vector fieldext falgebra.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> boolp classical_sets.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message">New coercion path [Empty.mixin; Empty.eqMixin] : Empty.class_of &gt;-&gt; Equality.mixin_of <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[Empty.base; Finite.base; Choice.base] : Empty.class_of &gt;-&gt; Equality.mixin_of.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [Empty.mixin; Empty.choiceMixin] : Empty.class_of &gt;-&gt; Choice.mixin_of <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[Empty.base; Finite.base; Choice.mixin] : Empty.class_of &gt;-&gt; Choice.mixin_of.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [Empty.mixin; Empty.countMixin] : Empty.class_of &gt;-&gt; Countable.mixin_of <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[Empty.base; Finite.mixin; Finite.mixin_base] : Empty.class_of &gt;-&gt; Countable.mixin_of.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> functions cardinality mathcomp_extra.
+<span class="kn">Require Import</span> ereal reals signed topology prodnormedzmodule.
+<span class="kn">Require Import</span> normedtype derive real_interval.
+<span class="kn">From</span> HB <span class="kn">Require Import</span> structures.
+
+<span class="sd">(******************************************************************************)</span>
+<span class="c">(* This file provides properties of standard real-valued functions over real  *)</span>
+<span class="c">(* numbers (e.g., the continuity of the inverse of a continuous function).    *)</span>
+<span class="sd">(******************************************************************************)</span>
+
+<span class="kn">Set Implicit Arguments</span>.
+<span class="kn">Unset Strict Implicit</span>.
+<span class="kn">Unset Printing Implicit Defensive</span>.
+
+<span class="kn">Import</span> Order.TTheory GRing.Theory Num.Def Num.Theory.
+<span class="kn">Import</span> numFieldTopology.Exports.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+<span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.
+
+<span class="kn">Import</span> numFieldNormedType.Exports.
+
+<span class="kn">Section</span> <span class="nf">real_inverse_functions</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+<span class="kn">Implicit Types</span> (<span class="nv">a</span> <span class="nv">b</span> : R) (<span class="nv">f</span> <span class="nv">g</span> : R -&gt; R).
+
+<span class="c">(* This lemma should be used with caution. Generally `{within I, continuous f}`</span>
+<span class="c">   is what one would intend. So having `{in I, continuous f}` as a condition</span>
+<span class="c">   may indicate potential issues at the endpoints of the interval.</span>
+<span class="c">*)</span>
+<span class="kn">Lemma</span> <span class="nf">continuous_subspace_itv</span> (<span class="nv">I</span> : interval R) (<span class="nv">f</span> : R -&gt; R) :
+  {<span class="kr">in</span> I, continuous f} -&gt; {within [<span class="nb">set</span>` I], continuous f}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; ctsf; <span class="nb">apply</span>: continuous_in_subspaceT =&gt; x Ix; <span class="nb">apply</span>: ctsf.
+<span class="bp">by</span> <span class="nb">move</span>: Ix; <span class="nb">rewrite</span> inE.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">itv_continuous_inj_le</span> <span class="nv">f</span> (<span class="nv">I</span> : interval R) :
+  (<span class="kr">exists</span> <span class="nv">x</span> <span class="nv">y</span>, [/\ x \<span class="kr">in</span> I, y \<span class="kr">in</span> I, x &lt; y &amp; f x &lt;= f y]) -&gt;
+  {within [<span class="nb">set</span>` I], continuous f} -&gt; {<span class="kr">in</span> I &amp;, injective f} -&gt;
+  {<span class="kr">in</span> I &amp;, {mono f : x y / x &lt;= y}}.
+<span class="kn">Proof</span>.
+<span class="nb">gen have</span> fxy : f / {<span class="kr">in</span> I &amp;, injective f} -&gt;
+    {<span class="kr">in</span> I &amp;, <span class="kr">forall</span> <span class="nv">x</span> <span class="nv">y</span>, x &lt; y -&gt; f x != f y}.
+  <span class="nb">move</span>=&gt; fI x y xI yI xLy; <span class="nb">apply</span>/negP =&gt; /eqP /fI =&gt; /(_ xI yI) xy.
+  <span class="bp">by</span> <span class="nb">move</span>: xLy; <span class="nb">rewrite</span> xy ltxx.
+<span class="nb">gen have</span> main : f / <span class="kr">forall</span> <span class="nv">c</span>, {within [<span class="nb">set</span>` I], continuous f} -&gt;
+    {<span class="kr">in</span> I &amp;, injective f} -&gt;
+    {<span class="kr">in</span> I &amp;, <span class="kr">forall</span> <span class="nv">a</span> <span class="nv">b</span>, f a &lt; f b -&gt; a &lt; c -&gt; c &lt; b -&gt; f a &lt; f c /\ f c &lt; f b}.
+  <span class="nb">move</span>=&gt; c fC fI a b aI bI faLfb aLc cLb.
+  <span class="nb">have</span> intP := interval_is_interval aI bI.
+  <span class="nb">have</span> cI : c \<span class="kr">in</span> I <span class="bp">by</span> <span class="nb">rewrite</span> intP// (ltW aLc) ltW.
+  <span class="nb">have</span> ctsACf : {within `[a, c], continuous f}.
+    <span class="nb">apply</span>: (continuous_subspaceW _ fC) =&gt; x; <span class="nb">rewrite</span> /= inE =&gt; /itvP axc.
+    <span class="bp">by</span> <span class="nb">rewrite</span> intP// axc/= (le_trans _ (ltW cLb))// axc.
+  <span class="nb">have</span> ctsCBf : {within `[c, b], continuous f}.
+    <span class="nb">apply</span>: (continuous_subspaceW _ fC) =&gt; x /=; <span class="nb">rewrite</span> inE =&gt; /itvP axc.
+    <span class="bp">by</span> <span class="nb">rewrite</span> intP// axc andbT (le_trans (ltW aLc)) <span class="nl">?axc</span>.
+  <span class="nb">have</span> [aLb alb&#39;] : a &lt; b /\ a &lt;= b <span class="bp">by</span> <span class="nb">rewrite</span> ltW (lt_trans aLc).
+  <span class="nb">have</span> [faLfc|fcLfa|/eqP faEfc] /= := ltrgtP (f a) (f c).
+  - <span class="nb">split</span>; <span class="nb">rewrite</span> // lt_neqAle fxy // leNgt; <span class="nb">apply</span>/negP =&gt; fbLfc.
+    <span class="nb">have</span> := fbLfc; <span class="nb">suff</span> /eqP -&gt; : c == b <span class="bp">by</span> <span class="nb">rewrite</span> ltxx.
+    <span class="nb">rewrite</span> eq_le (ltW cLb) /=.
+    <span class="nb">have</span> [d /andP[ad dc] fdEfb] : <span class="kr">exists2</span> d, a &lt;= d &lt;= c &amp; f d = f b.
+      <span class="nb">have</span> aLc&#39; : a &lt;= c <span class="bp">by</span> <span class="nb">rewrite</span> ltW.
+      <span class="nb">apply</span>: IVT =&gt; //; <span class="nb">last first</span>.
+        <span class="bp">by</span> <span class="nb">case</span>: ltrgtP faLfc; <span class="nb">rewrite</span> // (ltW faLfb) // ltW.
+    <span class="nb">rewrite</span> -(fI _ _ _ _ fdEfb) //.
+    <span class="nb">move</span>: ad dc; <span class="nb">rewrite</span> le_eqVlt =&gt;/predU1P[&lt;-//| /ltW L] dc.
+    <span class="bp">by</span> <span class="nb">rewrite</span> intP// L (le_trans _ (ltW cLb)).
+  - <span class="nb">have</span> [fbLfc | fcLfb | fbEfc] /= := ltrgtP (f b) (f c).
+    + <span class="bp">by</span> <span class="nb">have</span> := lt_trans fbLfc fcLfa; <span class="nb">rewrite</span> ltNge (ltW faLfb).
+    + <span class="nb">have</span> [d /andP[cLd dLb] /eqP] : <span class="kr">exists2</span> d, c &lt;= d &lt;= b &amp; f d = f a.
+        <span class="nb">have</span> cLb&#39; : c &lt;= b <span class="bp">by</span> <span class="nb">rewrite</span> ltW.
+        <span class="nb">apply</span>: IVT =&gt; //; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">case</span>: ltrgtP fcLfb; <span class="nb">rewrite</span> // !ltW.
+      <span class="nb">have</span> /(fxy f fI) : a &lt; d <span class="bp">by</span> <span class="nb">rewrite</span> (lt_le_trans aLc).
+      <span class="nb">suff</span> dI&#39; : d \<span class="kr">in</span> I <span class="bp">by</span> <span class="nb">rewrite</span> eq_sym=&gt; /(_ aI dI&#39;) =&gt; /negbTE -&gt;.
+      <span class="nb">move</span>: dLb; <span class="nb">rewrite</span> le_eqVlt =&gt; /predU1P[-&gt;//|/ltW db].
+      <span class="bp">by</span> <span class="nb">rewrite</span> intP// db  (le_trans (ltW aLc)).
+    + <span class="bp">by</span> <span class="nb">move</span>: fcLfa; <span class="nb">rewrite</span> -fbEfc ltNge (ltW faLfb).
+  <span class="bp">by</span> <span class="nb">move</span>/(fxy _ fI) : aLc=&gt; /(_ aI cI); <span class="nb">rewrite</span> faEfc.
+<span class="nb">move</span>=&gt; [u [v [uI vI ulv +]]] fC fI; <span class="nb">rewrite</span> le_eqVlt =&gt; /predU1P[fufv|fuLfv].
+  <span class="bp">by</span> <span class="nb">move</span>/fI: fufv =&gt; /(_ uI vI) uv; <span class="nb">move</span>: ulv; <span class="nb">rewrite</span> uv ltxx.
+<span class="nb">have</span> aux a c b : a \<span class="kr">in</span> I -&gt; b \<span class="kr">in</span> I -&gt; a &lt; c -&gt; c &lt; b -&gt;
+   (f a &lt; f c -&gt; f a &lt; f b /\ f c &lt; f b) /\
+   (f c &lt; f b -&gt; f a &lt; f b /\ f a &lt; f c).
+  <span class="nb">move</span>=&gt; aI bI aLc cLb; <span class="nb">have</span> aLb := lt_trans aLc cLb.
+  <span class="nb">have</span> cI : c \<span class="kr">in</span> I <span class="bp">by</span> <span class="nb">rewrite</span> (interval_is_interval aI bI)// (ltW aLc)/= ltW.
+  <span class="nb">have</span> fanfb : f a != f b <span class="bp">by</span> <span class="nb">apply</span>: (fxy f fI).
+  <span class="nb">have</span> decr : f b  &lt; f a -&gt; f b &lt; f c /\ f c &lt; f a.
+    <span class="nb">have</span> ofC : {within [<span class="nb">set</span>` I], continuous (-f)}.
+      <span class="nb">move</span>=&gt; ?; <span class="nb">apply</span>: continuous_comp; [<span class="bp">exact</span>: fC | <span class="bp">exact</span>: continuousN].
+    <span class="nb">have</span> ofI : {<span class="kr">in</span> I &amp;, injective (-f)} <span class="bp">by</span> <span class="nb">move</span>=&gt;&gt; ? ? /oppr_inj/fI -&gt;.
+    <span class="nb">rewrite</span> -[X <span class="kr">in</span> X &lt; _ -&gt; _](opprK (f b)) ltr_oppl =&gt; ofaLofb.
+    <span class="nb">have</span> := main _ c ofC ofI a b aI bI ofaLofb aLc cLb.
+    <span class="bp">by</span> (<span class="kp">do</span> <span class="mi">2</span> <span class="nb">rewrite</span> ltr_oppl opprK); <span class="nb">rewrite</span> and_comm.
+  <span class="nb">split</span>=&gt; [faLfc|fcLfb].
+    <span class="nb">suff</span> L : f a &lt; f b <span class="bp">by</span> <span class="nb">have</span> [] := main f c fC fI a b aI bI L aLc cLb.
+    <span class="bp">by</span> <span class="nb">case</span>: ltgtP decr fanfb =&gt; // fbfa []//; <span class="nb">case</span>: ltgtP faLfc.
+  <span class="nb">suff</span> L : f a &lt; f b <span class="bp">by</span> <span class="nb">have</span> [] := main f c fC fI a b aI bI L aLc cLb.
+  <span class="bp">by</span> <span class="nb">case</span>: ltgtP decr fanfb =&gt; // fbfa []//; <span class="nb">case</span>: ltgtP fcLfb.
+<span class="nb">have</span>{main fC} whole a c b := main f c fC fI a b.
+<span class="nb">have</span> low a c b : f a &lt; f c -&gt; a \<span class="kr">in</span> I -&gt; b \<span class="kr">in</span> I -&gt;
+       a &lt; c -&gt; c &lt; b -&gt; f a &lt; f b /\ f c &lt; f b.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; L aI bI ac cb; <span class="nb">case</span>: (aux a c b aI bI ac cb)=&gt; [/(_ L)].
+<span class="nb">have</span> high a c b : f c &lt; f b -&gt; a \<span class="kr">in</span> I -&gt; b \<span class="kr">in</span> I -&gt;
+     a &lt; c -&gt; c &lt; b -&gt; f a &lt; f b /\ f a &lt; f c.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; L aI bI ac cb; <span class="nb">case</span>: (aux a c b aI bI ac cb)=&gt; [_ /(_ L)].
+<span class="nb">apply</span>: le_mono_in =&gt; x y xI yI xLy.
+<span class="nb">have</span> [uLx | xLu | xu] := ltrgtP u x.
+- <span class="nb">suff</span> fuLfx : f u &lt; f x <span class="bp">by</span> <span class="nb">have</span> [] := low u x y fuLfx uI yI uLx xLy.
+  <span class="nb">have</span> [xLv | vLx | -&gt; //] := ltrgtP x v; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">case</span>: (whole u x v).
+  <span class="bp">by</span> <span class="nb">case</span>: (low u v x).
+- <span class="nb">have</span> fxLfu : f x &lt; f u <span class="bp">by</span> <span class="nb">have</span> [] := high x u v fuLfv xI vI xLu ulv.
+  <span class="nb">have</span> [yLu | uLy | -&gt; //] := ltrgtP y u; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">case</span>: (whole x y u).
+  <span class="bp">by</span> <span class="nb">case</span>: (low x u y).
+<span class="nb">move</span>: xLy; <span class="nb">rewrite</span> -xu =&gt; uLy.
+<span class="nb">have</span> [yLv | vLy | -&gt; //] := ltrgtP y v; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">case</span>: (whole u y v).
+<span class="bp">by</span> <span class="nb">case</span>: (low u v y).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">itv_continuous_inj_ge</span> <span class="nv">f</span> (<span class="nv">I</span> : interval R) :
+  (<span class="kr">exists</span> <span class="nv">x</span> <span class="nv">y</span>, [/\ x \<span class="kr">in</span> I, y \<span class="kr">in</span> I, x &lt; y &amp; f y &lt;= f x]) -&gt;
+  {within [<span class="nb">set</span>` I], continuous f} -&gt; {<span class="kr">in</span> I &amp;, injective f} -&gt;
+  {<span class="kr">in</span> I &amp;, {mono f : x y /~ x &lt;= y}}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; [a [b [aI bI ab fbfa]]] fC fI x y xI yI.
+<span class="nb">suff</span> : (- f) y &lt;= (- f) x = (y &lt;= x) <span class="bp">by</span> <span class="nb">rewrite</span> ler_oppl opprK.
+<span class="nb">apply</span>: itv_continuous_inj_le xI =&gt; // [|x1 x1I | x1 x2 x1I x2I].
+- <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">a</span>, b; <span class="nb">split</span> =&gt; //; <span class="nb">rewrite</span> ler_oppl opprK.
+- <span class="bp">by</span> <span class="nb">apply</span>/continuousN/fC.
+<span class="bp">by</span> <span class="nb">move</span>/oppr_inj; <span class="nb">apply</span>/fI.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">itv_continuous_inj_mono</span> <span class="nv">f</span> (<span class="nv">I</span> : interval R) :
+    {within [<span class="nb">set</span>` I], continuous f} -&gt; {<span class="kr">in</span> I &amp;, injective f} -&gt; monotonous I f.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fC fI.
+<span class="nb">case</span>: (pselect (<span class="kr">exists</span> <span class="nv">a</span> <span class="nv">b</span>, [/\ a \<span class="kr">in</span> I , b \<span class="kr">in</span> I &amp; a &lt; b])); <span class="nb">last first</span>.
+  <span class="nb">move</span>=&gt; N2I; <span class="nb">left</span> =&gt; x y xI yI; <span class="nb">suff</span> -&gt; : x = y <span class="bp">by</span> <span class="nb">rewrite</span> <span class="nl">?lexx</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>: contra_notP N2I =&gt; /eqP; <span class="nb">case</span>: ltgtP; [<span class="kr">exists</span> <span class="nv">x</span>, y|<span class="kr">exists</span> <span class="nv">y</span>, x|].
+<span class="nb">move</span>=&gt; [a [b [aI bI lt_ab]]].
+<span class="nb">have</span> /orP[faLfb|fbLfa] := le_total (f a) (f b).
+  <span class="bp">by</span> <span class="nb">left</span>; <span class="nb">apply</span>: itv_continuous_inj_le =&gt; //; <span class="kr">exists</span> <span class="nv">a</span>, b; <span class="nb">rewrite</span> <span class="nl">?faLfb</span>.
+<span class="bp">by</span> <span class="nb">right</span>; <span class="nb">apply</span>: itv_continuous_inj_ge =&gt; //; <span class="kr">exists</span> <span class="nv">a</span>, b; <span class="nb">rewrite</span> <span class="nl">?fbLfa</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">segment_continuous_inj_le</span> <span class="nv">f</span> <span class="nv">a</span> <span class="nv">b</span> :
+    f a &lt;= f b -&gt; {within `[a, b], continuous f} -&gt; {<span class="kr">in</span> `[a, b] &amp;, injective f} -&gt;
+  {<span class="kr">in</span> `[a, b] &amp;, {mono f : x y / x &lt;= y}}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fafb fct finj; <span class="nb">have</span> [//|] := itv_continuous_inj_mono fct finj.
+<span class="nb">have</span> [aLb|bLa|&lt;-] := ltrgtP a b; <span class="kp">first</span> <span class="mi">1</span> <span class="nb">last</span>.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; _ x ?; <span class="nb">rewrite</span> itv_ge// -ltNge.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; _ x y /itvxxP-&gt; /itvxxP-&gt;; <span class="nb">rewrite</span> !lexx.
+<span class="nb">move</span>=&gt; /(_ a b); <span class="nb">rewrite</span> !bound_itvE fafb.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /(_ (ltW aLb) (ltW aLb)); <span class="nb">rewrite</span> lt_geF.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">segment_continuous_inj_ge</span> <span class="nv">f</span> <span class="nv">a</span> <span class="nv">b</span> :
+    f a &gt;= f b -&gt; {within `[a, b], continuous f} -&gt; {<span class="kr">in</span> `[a, b] &amp;, injective f} -&gt;
+  {<span class="kr">in</span> `[a, b] &amp;, {mono f : x y /~ x &lt;= y}}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fafb fct finj; <span class="nb">have</span> [|//] := itv_continuous_inj_mono fct finj.
+<span class="nb">have</span> [aLb|bLa|&lt;-] := ltrgtP a b; <span class="kp">first</span> <span class="mi">1</span> <span class="nb">last</span>.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; _ x ?; <span class="nb">rewrite</span> itv_ge// -ltNge.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; _ x y /itvxxP-&gt; /itvxxP-&gt;; <span class="nb">rewrite</span> !lexx.
+<span class="nb">move</span>=&gt; /(_ b a); <span class="nb">rewrite</span> !bound_itvE fafb.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; /(_ (ltW aLb) (ltW aLb)); <span class="nb">rewrite</span> lt_geF.
+<span class="kn">Qed</span>.
+
+<span class="c">(* The condition &quot;f a &lt;= f b&quot; is unnecessary because the last                *)</span>
+<span class="c">(* interval condition is vacuously true otherwise.                           *)</span>
+<span class="kn">Lemma</span> <span class="nf">segment_can_le</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> <span class="nv">g</span> : a &lt;= b -&gt;
+    {within `[a, b], continuous f} -&gt;
+    {<span class="kr">in</span> `[a, b], cancel f g} -&gt;
+  {<span class="kr">in</span> `[f a, f b] &amp;, {mono g : x y / x &lt;= y}}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; aLb ctf fK; <span class="nb">have</span> [fbLfa | faLfb] := ltrP (f b) (f a).
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; x y; <span class="nb">rewrite</span> itv_ge// -ltNge.
+<span class="nb">have</span> [aab bab] : a \<span class="kr">in</span> `[a, b] /\ b \<span class="kr">in</span> `[a, b] <span class="bp">by</span> <span class="nb">rewrite</span> !bound_itvE.
+<span class="nb">case</span>: ltgtP faLfb =&gt; // [faLfb _|-&gt; _ _ _ /itvxxP-&gt; /itvxxP-&gt;]; <span class="nb">rewrite</span> <span class="nl">?lexx</span>//.
+<span class="nb">have</span> lt_ab : a &lt; b <span class="bp">by</span> <span class="nb">case</span>: (ltgtP a b) aLb faLfb =&gt; // -&gt;; <span class="nb">rewrite</span> ltxx.
+<span class="nb">have</span> w : <span class="kr">exists</span> <span class="nv">x</span> <span class="nv">y</span>, [/\ x \<span class="kr">in</span> `[a, b], y \<span class="kr">in</span> `[a, b], x &lt; y &amp; f x &lt;= f y].
+  <span class="bp">by</span> <span class="kr">exists</span> <span class="nv">a</span>, b; <span class="nb">rewrite</span> !bound_itvE (ltW faLfb).
+<span class="nb">have</span> fle := itv_continuous_inj_le w ctf (can_in_inj fK).
+<span class="nb">move</span>=&gt; x y xin yin; <span class="nb">have</span> := IVT aLb ctf.
+<span class="nb">case</span>: (ltrgtP (f a) (f b)) faLfb =&gt; // _ _ ivt.
+<span class="bp">by</span> <span class="nb">have</span> [[u uin &lt;-] [v vin &lt;-]] := (ivt _ xin, ivt _ yin); <span class="nb">rewrite</span> !fK// !fle.
+<span class="kn">Qed</span>.
+
+<span class="kn">Section</span> <span class="nf">negation_itv</span>.
+<span class="kn">Local Definition</span> <span class="nf">itvN_oppr</span> <span class="nv">a</span> <span class="nv">b</span> := @GRing.opp R.
+<span class="kn">Local Lemma</span> <span class="nf">itv_oppr_is_fun</span> <span class="nv">a</span> <span class="nv">b</span> :
+  IsFun _ _ `[- b, - a]%classic `[a, b]%classic (itvN_oppr a b).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">split</span>=&gt; x /=; <span class="nb">rewrite</span> oppr_itvcc. <span class="kn">Qed</span>.
+HB.instance <span class="kn">Definition</span> <span class="nf">_</span> <span class="nv">a</span> <span class="nv">b</span> := itv_oppr_is_fun a b.
+<span class="kn">End</span> <span class="nf">negation_itv</span>.
+
+<span class="c">(* The condition &quot;f b &lt;= f a&quot; is unnecessary---see seg...increasing above    *)</span>
+<span class="kn">Lemma</span> <span class="nf">segment_can_ge</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> <span class="nv">g</span> : a &lt;= b -&gt;
+    {within `[a, b], continuous f} -&gt;
+    {<span class="kr">in</span> `[a, b], cancel f g} -&gt;
+  {<span class="kr">in</span> `[f b, f a] &amp;, {mono g : x y /~ x &lt;= y}}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; aLb fC fK x y xfbfa yfbfa; <span class="nb">rewrite</span> -ler_opp2.
+<span class="nb">apply</span>: (@segment_can_le (- b) (- a) (f \o -%R) (- g));
+    <span class="nb">rewrite</span> /= <span class="nl">?ler_opp2</span> <span class="nl">?opprK</span> //.
+  <span class="nb">pose</span> fun_neg : subspace `[-b,-a] -&gt; subspace `[a,b] := itvN_oppr a b.
+  <span class="nb">move</span>=&gt; z; <span class="nb">apply</span>: (@continuous_comp _ _ _ [<span class="kr">fun</span> <span class="nv">of</span> <span class="nv">fun_neg</span>]); <span class="nb">last</span> <span class="bp">exact</span>: fC.
+  <span class="bp">exact</span>/subspaceT_continuous/continuous_subspaceT/opp_continuous.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; z zab; <span class="nb">rewrite</span> -[- g]/(@GRing.opp _ \o g)/= fK <span class="nl">?opprK</span>// oppr_itvcc.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">segment_can_mono</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> <span class="nv">g</span> : a &lt;= b -&gt;
+    {within `[a, b], continuous f} -&gt; {<span class="kr">in</span> `[a, b], cancel f g} -&gt;
+  monotonous (f @`[a, b]) g.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; le_ab fct fK; <span class="nb">rewrite</span> /monotonous/=; <span class="nb">case</span>: ltrgtP =&gt; fab; [<span class="nb">left</span>|<span class="nb">right</span>..];
+  <span class="kp">do</span> <span class="nl">?by</span> [<span class="nb">apply</span>: segment_can_le|<span class="nb">apply</span>: segment_can_ge].
+<span class="bp">by</span> <span class="nb">move</span>=&gt; x y /itvxxP&lt;- /itvxxP&lt;-; <span class="nb">rewrite</span> !lexx.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">segment_continuous_surjective</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> : a &lt;= b -&gt;
+  {within `[a, b], continuous f} -&gt; set_surj `[a, b] (f @`[a, b]) f.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; ? fct y/= /IVT[]// x; <span class="kr">exists</span> <span class="nv">x</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">segment_continuous_le_surjective</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> : a &lt;= b -&gt; f a &lt;= f b -&gt;
+  {within `[a, b], continuous f} -&gt; set_surj `[a, b] `[f a, f b] f.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; le_ab f_ab /(segment_continuous_surjective le_ab).
+<span class="bp">by</span> <span class="nb">rewrite</span> (min_idPl _)// (max_idPr _).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">segment_continuous_ge_surjective</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> : a &lt;= b -&gt; f b &lt;= f a -&gt;
+  {within `[a, b], continuous f} -&gt; set_surj `[a, b] `[f b, f a] f.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; le_ab f_ab /(segment_continuous_surjective le_ab).
+<span class="bp">by</span> <span class="nb">rewrite</span> (min_idPr _)// (max_idPl _).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">continuous_inj_image_segment</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> : a &lt;= b -&gt;
+    {within `[a, b], continuous f} -&gt; {<span class="kr">in</span> `[a, b] &amp;, injective f} -&gt;
+  f @` `[a, b] = f @`[a, b]%classic.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; leab fct finj; <span class="nb">apply</span>: mono_surj_image_segment =&gt; //.
+  <span class="bp">exact</span>: itv_continuous_inj_mono.
+<span class="bp">exact</span>: segment_continuous_surjective.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">continuous_inj_image_segmentP</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> : a &lt;= b -&gt;
+    {within `[a, b], continuous f} -&gt; {<span class="kr">in</span> `[a, b] &amp;, injective f} -&gt;
+  <span class="kr">forall</span> <span class="nv">y</span>, reflect (<span class="kr">exists2</span> x, x \<span class="kr">in</span> `[a, b] &amp; f x = y) (y \<span class="kr">in</span> f @`[a, b]).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; /continuous_inj_image_segment/[<span class="nb">apply</span>]/[<span class="nb">apply</span>]/predeqP + y =&gt; /(_ y) faby.
+<span class="bp">by</span> <span class="nb">apply</span>/(equivP idP); <span class="nb">symmetry</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">segment_continuous_can_sym</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> <span class="nv">g</span> : a &lt;= b -&gt;
+    {within `[a, b], continuous f} -&gt; {<span class="kr">in</span> `[a, b], cancel f g} -&gt;
+  {<span class="kr">in</span> f @`[a, b], cancel g f}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; aLb ctf fK; <span class="nb">have</span> g_mono := segment_can_mono aLb ctf fK.
+<span class="nb">have</span> f_mono := itv_continuous_inj_mono ctf (can_in_inj fK).
+<span class="nb">have</span> f_surj := segment_continuous_surjective aLb ctf.
+<span class="nb">have</span> fIP := mono_surj_image_segmentP aLb f_mono f_surj.
+<span class="nb">suff</span>: {<span class="kr">in</span> f @`[a, b], {on `[a, b], cancel g &amp; f}}.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; gK _ /fIP[x xab &lt;-]; <span class="nb">rewrite</span> fK.
+<span class="nb">have</span>: {<span class="kr">in</span> f @`[a, b] &amp;, {on `[a, b]  &amp;, injective g}}.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; _ _ /fIP [x xab &lt;-] /fIP[y yab &lt;-]; <span class="nb">rewrite</span> !fK// =&gt; _ _ -&gt;.
+<span class="bp">by</span> <span class="nb">apply</span>/ssrbool.inj_can_sym_in_on =&gt; x xab; <span class="nb">rewrite</span> <span class="nl">?fK</span> <span class="nl">?mono_mem_image_segment</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">segment_continuous_le_can_sym</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> <span class="nv">g</span> : a &lt;= b -&gt;
+    {within `[a, b], continuous f} -&gt; {<span class="kr">in</span> `[a, b], cancel f g} -&gt;
+  {<span class="kr">in</span> `[f a, f b], cancel g f}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; aLb fct fK x xfafb; <span class="nb">apply</span>: (segment_continuous_can_sym aLb fct fK).
+<span class="nb">have</span> : f a &lt;= f b <span class="bp">by</span> <span class="nb">rewrite</span> (itvP xfafb).
+<span class="bp">by</span> <span class="nb">case</span>: ltrgtP xfafb =&gt; // -&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">segment_continuous_ge_can_sym</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> <span class="nv">g</span> : a &lt;= b -&gt;
+    {within `[a, b], continuous f} -&gt; {<span class="kr">in</span> `[a, b], cancel f g} -&gt;
+  {<span class="kr">in</span> `[f b, f a], cancel g f}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; aLb fct fK x xfafb; <span class="nb">apply</span>: (segment_continuous_can_sym aLb fct fK).
+<span class="nb">have</span> : f a &gt;= f b <span class="bp">by</span> <span class="nb">rewrite</span> (itvP xfafb).
+<span class="bp">by</span> <span class="nb">case</span>: ltrgtP xfafb =&gt; // -&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">segment_inc_surj_continuous</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> :
+    {<span class="kr">in</span> `[a, b] &amp;, {mono f : x y / x &lt;= y}} -&gt; set_surj `[a, b] `[f a, f b] f -&gt;
+  {within `[a, b], continuous f}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fle f_surj; <span class="nb">have</span> [f_inj flt] := (inc_inj_in fle, leW_mono_in fle).
+<span class="nb">have</span> [aLb|bLa|] := ltgtP a b; <span class="kp">first</span> <span class="nb">last</span>.
+- <span class="bp">by</span> <span class="nb">move</span>=&gt; -&gt;; <span class="nb">rewrite</span> set_itv1; <span class="bp">exact</span>: continuous_subspace1.
+- <span class="nb">rewrite</span> continuous_subspace_in =&gt; z /set_mem /=; <span class="nb">rewrite</span> in_itv /=.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; /andP[/le_trans] /[<span class="nb">apply</span>]; <span class="nb">rewrite</span> leNgt bLa.
+<span class="nb">have</span> le_ab : a &lt;= b <span class="bp">by</span> <span class="nb">rewrite</span> ltW.
+<span class="nb">have</span> [aab bab] : a \<span class="kr">in</span> `[a, b] /\ b \<span class="kr">in</span> `[a, b] <span class="bp">by</span> <span class="nb">rewrite</span> !bound_itvE ltW.
+<span class="nb">have</span> fab : f @` `[a, b] = `[f a, f b]%classic <span class="bp">by</span> <span class="bp">exact</span>:inc_surj_image_segment.
+<span class="nb">pose</span> g := pinv `[a, b] f; <span class="nb">have</span> fK : {<span class="kr">in</span> `[a, b], cancel f g}.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -[mem _]mem_setE; <span class="nb">apply</span>: pinvKV; <span class="nb">rewrite</span> !mem_setE.
+<span class="nb">have</span> gK : {<span class="kr">in</span> `[f a, f b], cancel g f} <span class="bp">by</span> <span class="nb">move</span>=&gt; z zab; <span class="nb">rewrite</span> pinvK// fab inE.
+<span class="nb">have</span> gle : {<span class="kr">in</span> `[f a, f b] &amp;, {mono g : x y / x &lt;= y}}.
+  <span class="nb">apply</span>: can_mono_in (fle); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">move</span>=&gt; *; <span class="nb">rewrite</span> gK.
+  <span class="nb">move</span>=&gt; z zfab; <span class="nb">have</span> {zfab} : `[f a, f b]%classic z <span class="bp">by</span> [].
+  <span class="bp">by</span> <span class="nb">rewrite</span> -fab =&gt; -[x xab &lt;-]; <span class="nb">rewrite</span> fK.
+<span class="nb">have</span> glt := leW_mono_in gle.
+<span class="nb">rewrite</span> continuous_subspace_in =&gt; x xab.
+<span class="nb">have</span> xabcc : x \<span class="kr">in</span> `[a, b] <span class="bp">by</span> <span class="nb">move</span>: xab; <span class="nb">rewrite</span> mem_setE.
+<span class="nb">have</span> fxab : f x \<span class="kr">in</span> `[f a, f b] <span class="bp">by</span> <span class="nb">rewrite</span> in_itv/= !fle.
+<span class="nb">have</span> := xabcc; <span class="nb">rewrite</span> in_itv //= =&gt; /andP [ax xb].
+<span class="nb">apply</span>/cvgrPdist_lt =&gt; _ /posnumP[e]; <span class="nb">rewrite</span> !near_simpl; near=&gt; y.
+<span class="nb">rewrite</span> (@le_lt_trans _ _ (e%:num / <span class="mi">2</span>%:R))//; <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ltr_pdivr_mulr// ltr_pmulr// ltr1n.
+<span class="nb">rewrite</span> ler_distlC; near: y.
+<span class="nb">pose</span> u := minr (f x + e%:num / <span class="mi">2</span>) (f b).
+<span class="nb">pose</span> l := maxr (f x - e%:num / <span class="mi">2</span>) (f a).
+<span class="nb">have</span> ufab : u \<span class="kr">in</span> `[f a, f b].
+  <span class="nb">rewrite</span> !in_itv /= le_minl <span class="nl">?le_minr</span> lexx <span class="nl">?fle</span> // le_ab orbT <span class="nl">?andbT</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ler_paddr // fle.
+<span class="nb">have</span> lfab : l \<span class="kr">in</span> `[f a, f b].
+  <span class="nb">rewrite</span> !in_itv/= le_maxl <span class="nl">?le_maxr</span> lexx <span class="nl">?fle</span>// le_ab orbT <span class="nl">?andbT</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> ler_subl_addr ler_paddr// fle // lexx.
+<span class="nb">have</span> guab : g u \<span class="kr">in</span> `[a, b].
+  <span class="nb">rewrite</span> !in_itv; <span class="nb">apply</span>/andP; <span class="nb">split</span>; <span class="nb">have</span> := ufab; <span class="nb">rewrite</span> in_itv =&gt; /andP.
+    <span class="bp">by</span> <span class="nb">case</span>; <span class="nb">rewrite</span> /= -gle // <span class="nl">?fK</span> // bound_itvE fle.
+  <span class="bp">by</span> <span class="nb">case</span> =&gt; _; <span class="nb">rewrite</span> /= -gle // <span class="nl">?fK</span> // bound_itvE fle.
+<span class="nb">have</span> glab : g l \<span class="kr">in</span> `[a, b].
+  <span class="nb">rewrite</span> !in_itv; <span class="nb">apply</span>/andP; <span class="nb">split</span>; <span class="nb">have</span> := lfab; <span class="nb">rewrite</span> in_itv /= =&gt; /andP.
+    <span class="bp">by</span> <span class="nb">case</span>; <span class="nb">rewrite</span> -gle // <span class="nl">?fK</span> // bound_itvE fle.
+  <span class="bp">by</span> <span class="nb">case</span> =&gt; _; <span class="nb">rewrite</span> -gle // <span class="nl">?fK</span> // bound_itvE fle.
+<span class="nb">have</span> faltu : f a &lt; u.
+  <span class="nb">rewrite</span> /u comparable_lt_minr <span class="nl">?real_comparable</span> <span class="nl">?num_real</span>// flt// aLb andbT.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (@le_lt_trans _ _ (f x)) <span class="nl">?fle</span>// ltr_addl.
+<span class="nb">have</span> lltfb : l &lt; f b.
+  <span class="nb">rewrite</span> /u comparable_lt_maxl <span class="nl">?real_comparable</span> <span class="nl">?num_real</span>// flt// aLb andbT.
+  <span class="bp">by</span> <span class="nb">rewrite</span> (@lt_le_trans _ _ (f x)) <span class="nl">?fle</span>// ltr_subl_addr ltr_addl.
+<span class="nb">case</span>: pselect =&gt; // _; <span class="nb">rewrite</span> near_withinE; near_simpl.
+<span class="nb">have</span> Fnbhs : Filter (nbhs x) <span class="bp">by</span> <span class="nb">apply</span>: nbhs_filter.
+<span class="nb">have</span> := ax; <span class="nb">rewrite</span> le_eqVlt =&gt; /orP[/eqP|] {}ax.
+  near=&gt; y =&gt; /[dup] yab; <span class="nb">rewrite</span> /= in_itv =&gt; /andP[ay yb]; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+    <span class="bp">by</span> <span class="nb">rewrite</span> (@le_trans _ _ (f a)) <span class="nl">?fle</span>// ler_subl_addr ax ler_paddr.
+  <span class="nb">apply</span>: ltW; <span class="nb">suff</span> : f y &lt; u <span class="bp">by</span> <span class="nb">rewrite</span> lt_minr =&gt; /andP[-&gt;].
+  <span class="nb">rewrite</span> -?[f y &lt; _]glt// <span class="nl">?fK</span>//; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> in_itv /= !fle.
+  <span class="bp">by</span> near: y; near_simpl; <span class="nb">apply</span>: open_lt; <span class="nb">rewrite</span> /= -flt <span class="nl">?gK</span>// -ax.
+<span class="nb">have</span> := xb; <span class="nb">rewrite</span> le_eqVlt =&gt; /orP[/eqP {}xb {ax}|{}xb].
+  near=&gt; y =&gt; /[dup] yab; <span class="nb">rewrite</span> /= in_itv /= =&gt; /andP[ay yb].
+  <span class="nb">apply</span>/andP; <span class="nb">split</span>; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> (@le_trans _ _ (f b)) <span class="nl">?fle</span>// xb ler_paddr.
+  <span class="nb">apply</span>: ltW; <span class="nb">suff</span> : l &lt; f y <span class="bp">by</span> <span class="nb">rewrite</span> lt_maxl =&gt; /andP[-&gt;].
+  <span class="nb">rewrite</span> -?[_ &lt; f y]glt// <span class="nl">?fK</span>//; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> in_itv /= !fle.
+  <span class="bp">by</span> near: y; near_simpl; <span class="nb">apply</span>: open_gt; <span class="nb">rewrite</span> /= -flt// gK// xb.
+<span class="nb">have</span> xoab : x \<span class="kr">in</span> `]a, b[ <span class="bp">by</span> <span class="nb">rewrite</span> in_itv /=; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+near=&gt; y; <span class="nb">suff</span>: l &lt;= f y &lt;= u.
+  <span class="bp">by</span> <span class="nb">rewrite</span> le_maxl le_minr -!andbA =&gt; /and4P[-&gt; _ -&gt;].
+<span class="nb">have</span> ? : y \<span class="kr">in</span> `[a, b] <span class="bp">by</span> <span class="nb">apply</span>: subset_itv_oo_cc; near: y; <span class="nb">apply</span>: near_in_itv.
+<span class="nb">have</span> fyab : f y \<span class="kr">in</span> `[f a, f b] <span class="bp">by</span> <span class="nb">rewrite</span> in_itv/= !fle// <span class="nl">?ltW</span>.
+<span class="nb">rewrite</span> -[l &lt;= _]gle -?[_ &lt;= u]gle// <span class="nl">?fK</span> //.
+<span class="nb">apply</span>: subset_itv_oo_cc; near: y; <span class="nb">apply</span>: near_in_itv; <span class="nb">rewrite</span> in_itv /=.
+<span class="nb">rewrite</span> -[x]fK // !glt//= lt_minr lt_maxl <span class="nl">?andbT</span> ltr_subl_addr ltr_spaddr //.
+<span class="bp">by</span> <span class="nb">apply</span>/and3P; <span class="nb">split</span>; <span class="nb">rewrite</span> // flt.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">segment_dec_surj_continuous</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> :
+    {<span class="kr">in</span> `[a, b] &amp;, {mono f : x y /~ x &lt;= y}} -&gt;
+    set_surj `[a, b] `[f b, f a] f -&gt;
+  {within `[a, b], continuous f}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fge f_surj; <span class="nb">suff</span>: {within `[a, b], continuous (- f)}.
+  <span class="nb">move</span>=&gt; contNf x xab; <span class="nb">rewrite</span> -[f]opprK.
+  <span class="bp">exact</span>/continuous_comp/opp_continuous/contNf.
+<span class="nb">apply</span>: segment_inc_surj_continuous.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; x y xab yab; <span class="nb">rewrite</span> ler_opp2 fge.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; y /=; <span class="nb">rewrite</span> -oppr_itvcc =&gt; /f_surj[x ? /(canLR opprK)&lt;-]; <span class="kr">exists</span> <span class="nv">x</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">segment_mono_surj_continuous</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> :
+    monotonous `[a, b] f -&gt; set_surj `[a, b] (f @`[a, b]) f -&gt;
+  {within `[a, b], continuous f}.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> continuous_subspace_in =&gt; -[fle|fge] f_surj x /set_mem /= xab.
+  <span class="nb">have</span> leab : a &lt;= b <span class="bp">by</span> <span class="nb">rewrite</span> (itvP xab).
+  <span class="nb">have</span> fafb : f a &lt;= f b <span class="bp">by</span> <span class="nb">rewrite</span> fle // <span class="nl">?bound_itvE</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>: segment_inc_surj_continuous =&gt; //; <span class="nb">case</span>: ltrP f_surj fafb.
+<span class="nb">have</span> leab : a &lt;= b <span class="bp">by</span> <span class="nb">rewrite</span> (itvP xab).
+<span class="nb">have</span> fafb : f b &lt;= f a <span class="bp">by</span> <span class="nb">rewrite</span> fge // <span class="nl">?bound_itvE</span>.
+<span class="bp">by</span> <span class="nb">apply</span>: segment_dec_surj_continuous =&gt; //; <span class="nb">case</span>: ltrP f_surj fafb.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">segment_can_le_continuous</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> <span class="nv">g</span> : a &lt;= b -&gt;
+  {within `[a, b], continuous f} -&gt;
+  {<span class="kr">in</span> `[a, b], cancel f g} -&gt;
+  {within `[(f a), (f b)], continuous g}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; aLb ctf; <span class="nb">rewrite</span> continuous_subspace_in =&gt; fK x /set_mem /= xab.
+<span class="nb">have</span> faLfb : f a &lt;= f b <span class="bp">by</span> <span class="nb">rewrite</span> (itvP xab).
+<span class="nb">apply</span>: segment_inc_surj_continuous; <span class="kp">first</span> <span class="bp">exact</span>: segment_can_le.
+<span class="nb">rewrite</span> !fK <span class="nl">?bound_itvE</span>//=; <span class="nb">apply</span>: (@can_surj _ _ f); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> mem_setE.
+<span class="bp">exact</span>/image_subP/mem_inc_segment/segment_continuous_inj_le/(can_in_inj fK).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">segment_can_ge_continuous</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> <span class="nv">g</span> : a &lt;= b -&gt;
+  {within `[a, b], continuous f} -&gt;
+  {<span class="kr">in</span> `[a, b], cancel f g} -&gt;
+  {within `[(f b), (f a)], continuous g}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; aLb ctf; <span class="nb">rewrite</span> continuous_subspace_in =&gt; fK x /set_mem /= xab.
+<span class="nb">have</span> fbLfa : f b &lt;= f a <span class="bp">by</span> <span class="nb">rewrite</span> (itvP xab).
+<span class="nb">apply</span>: segment_dec_surj_continuous; <span class="kp">first</span> <span class="bp">exact</span>: segment_can_ge.
+<span class="nb">rewrite</span> !fK <span class="nl">?bound_itvE</span>//=; <span class="nb">apply</span>: (@can_surj _ _ f); <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> mem_setE.
+<span class="bp">exact</span>/image_subP/mem_dec_segment/segment_continuous_inj_ge/(can_in_inj fK).
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">segment_can_continuous</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">f</span> <span class="nv">g</span> : a &lt;= b -&gt;
+  {within `[a, b], continuous f} -&gt;
+  {<span class="kr">in</span> `[a, b], cancel f g} -&gt;
+  {within f @`[a, b], continuous g}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; aLb crf fK x; <span class="nb">case</span>: lerP =&gt; // _;
+  <span class="bp">by</span> [<span class="nb">apply</span>: segment_can_ge_continuous|<span class="nb">apply</span>: segment_can_le_continuous].
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">near_can_continuousAcan_sym</span> <span class="nv">f</span> <span class="nv">g</span> (<span class="nv">x</span> : R) :
+    {near x, cancel f g} -&gt; {near x, continuous f} -&gt;
+  {near f x, continuous g} /\ {near f x, cancel g f}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fK fct; near (<span class="mi">0</span> : R)^&#39;+ =&gt; e; <span class="nb">have</span> e_gt0 : <span class="mi">0</span> &lt; e <span class="bp">by</span> [].
+<span class="nb">have</span> xBeLxDe : x - e &lt;= x + e <span class="bp">by</span> <span class="nb">rewrite</span> ler_add2l gt0_cp.
+<span class="nb">have</span> fcte : {<span class="kr">in</span> `[x - e, x + e], continuous f}.
+  <span class="bp">by</span> near: e; <span class="nb">apply</span>/at_right_in_segment.
+<span class="nb">have</span> fwcte : {within `[x - e, x + e], continuous f}.
+  <span class="nb">apply</span>: continuous_in_subspaceT =&gt; y yI.
+  <span class="bp">by</span> <span class="nb">apply</span>: fcte; <span class="nb">move</span>/set_mem: yI.
+<span class="nb">have</span> fKe : {<span class="kr">in</span> `[x - e, x + e], cancel f g}
+  <span class="bp">by</span> near: e; <span class="nb">apply</span>/at_right_in_segment.
+<span class="nb">have</span> nearfx : \<span class="kr">forall</span> <span class="nv">y</span> \near f x, y \<span class="kr">in</span> f @`](x - e), (x + e)[.
+  <span class="nb">apply</span>: near_in_itv; <span class="nb">apply</span>: mono_mem_image_itvoo; <span class="nb">last first</span>.
+    <span class="bp">by</span> <span class="nb">rewrite</span> in_itv/= -ltr_distlC subrr normr0.
+  <span class="nb">apply</span>: itv_continuous_inj_mono =&gt; //.
+  <span class="bp">by</span> <span class="nb">apply</span>: (@can_in_inj _ _ _ _ g); near: e; <span class="nb">apply</span>/at_right_in_segment.
+<span class="nb">have</span> fxI : f x \<span class="kr">in</span> f @`]x - e, x + e[ <span class="bp">by</span> <span class="bp">exact</span>: (nbhs_singleton nearfx).
+<span class="nb">split</span>; near=&gt; y; <span class="kp">first</span> <span class="nb">last</span>.
+  <span class="nb">rewrite</span> (@segment_continuous_can_sym (x - e) (x + e))//.
+  <span class="bp">by</span> <span class="nb">apply</span>: subset_itv_oo_cc; near: y.
+near: y; <span class="nb">apply</span>: (filter_app _ _ nearfx); near_simpl; near=&gt; y =&gt; yfe.
+<span class="nb">have</span> : {within f @`]x - e, (x + e)[, continuous g}.
+  <span class="nb">apply</span>: continuous_subspaceW; <span class="nb">last</span> <span class="bp">exact</span>: (segment_can_continuous _ fwcte _).
+  <span class="bp">exact</span>: subset_itv_oo_cc.
+<span class="nb">rewrite</span> continuous_open_subspace; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>; <span class="bp">exact</span>: mem_set.
+<span class="bp">exact</span>: interval_open.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">near_can_continuous</span> <span class="nv">f</span> <span class="nv">g</span> (<span class="nv">x</span> : R) :
+  {near x, cancel f g} -&gt; {near x, continuous f} -&gt; {near f x, continuous g}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; fK fct; <span class="nb">have</span> [] := near_can_continuousAcan_sym fK fct. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">near_continuous_can_sym</span> <span class="nv">f</span> <span class="nv">g</span> (<span class="nv">x</span> : R) :
+  {near x, continuous f} -&gt; {near x, cancel f g} -&gt; {near f x, cancel g f}.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; fct fK; <span class="nb">have</span> [] := near_can_continuousAcan_sym fK fct. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">real_inverse_functions</span>.
+
+<span class="kn">Section</span> <span class="nf">real_inverse_function_instances</span>.
+
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+
+<span class="kn">Lemma</span> <span class="nf">exprn_continuous</span> <span class="nv">n</span> : continuous (@GRing.exp R ^~ n).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x; <span class="nb">elim</span>: n=&gt; [|n /(continuousM cvg_id) ih]; <span class="kp">first</span> <span class="bp">exact</span>: cst_continuous.
+<span class="bp">by</span> <span class="nb">rewrite</span> exprS; <span class="nb">under</span> eq_fun <span class="kp">do</span> <span class="nb">rewrite</span> exprS; <span class="bp">exact</span>: ih.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sqr_continuous</span> : continuous (@exprz R ^~ <span class="mi">2</span>).
+<span class="kn">Proof</span>. <span class="bp">exact</span>: (@exprn_continuous <span class="mi">2</span>%N). <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sqrt_continuous</span> : continuous (@Num.sqrt R).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; x; <span class="nb">case</span>: (ltrgtP x <span class="mi">0</span>) =&gt; [xlt0 | xgt0 | -&gt;].
+- <span class="nb">apply</span>: (near_cst_continuous <span class="mi">0</span>).
+  <span class="bp">by</span> near <span class="kp">do</span> <span class="nb">rewrite</span> ltr0_sqrtr//; <span class="nb">apply</span>: (cvgr_lt x).
+  <span class="nb">pose</span> I b : <span class="nb">set</span> R := [<span class="nb">set</span>` `]<span class="mi">0</span> ^+ <span class="mi">2</span>, b ^+ <span class="mi">2</span>[].
+  <span class="nb">suff</span> main b : <span class="mi">0</span> &lt;= b -&gt; {<span class="kr">in</span> I b, continuous (@Num.sqrt R)}.
+    near +oo_R =&gt; M; <span class="nb">apply</span>: (main M); <span class="nb">rewrite</span> // /I !inE/= in_itv/= expr0n xgt0.
+    <span class="bp">by</span> <span class="nb">rewrite</span> -ltr_sqrt <span class="nl">?exprn_gt0</span>// sqrtr_sqr gtr0_norm/=.
+  <span class="nb">move</span>=&gt; b0; <span class="nb">rewrite</span> -continuous_open_subspace; <span class="nb">last</span> <span class="bp">exact</span>: interval_open.
+  <span class="nb">apply</span>: continuous_subspaceW; <span class="kp">first</span> <span class="bp">exact</span>: subset_itv_oo_cc.
+  <span class="nb">apply</span>: (@segment_can_le_continuous _ _ _ (@GRing.exp _^~ _)) =&gt; //.
+    <span class="bp">by</span> <span class="nb">apply</span>: continuous_subspaceT; <span class="bp">exact</span>: exprn_continuous.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; y y0b; <span class="nb">rewrite</span> sqrtr_sqr ger0_norm// (itvP y0b).
+- <span class="nb">rewrite</span> sqrtr0; <span class="nb">apply</span>/cvgr0Pnorm_lt =&gt; _ /posnumP[e]; near=&gt; y.
+  <span class="nb">have</span> [ylt0|yge0] := ltrP y <span class="mi">0</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> ltr0_sqrtr <span class="nl">?normr0</span>.
+  <span class="nb">rewrite</span> ger0_norm <span class="nl">?sqrtr_ge0</span>//; <span class="nb">have</span>: `|y| &lt; e%:num ^+ <span class="mi">2</span> <span class="bp">by</span> [].
+  <span class="bp">by</span> <span class="nb">rewrite</span> -ltr_sqrt// ger0_norm// sqrtr_sqr ger0_norm.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">real_inverse_function_instances</span>.
+
+<span class="kn">Section</span> <span class="nf">is_derive_inverse</span>.
+<span class="kn">Variable</span> <span class="nv">R</span> : realType.
+
+<span class="c">(* Attempt to prove the diff of inverse *)</span>
+
+<span class="kn">Lemma</span> <span class="nf">is_derive1_caratheodory</span> (<span class="nv">f</span> : R -&gt; R) (<span class="nv">x</span> <span class="nv">a</span> : R) :
+  is_derive x <span class="mi">1</span> f a &lt;-&gt;
+  <span class="kr">exists</span> <span class="nv">g</span>, [/\ <span class="kr">forall</span> <span class="nv">z</span>, f z - f x = g z * (z - x),
+        {<span class="kr">for</span> x, continuous g} &amp; g x = a].
+<span class="kn">Proof</span>.
+<span class="nb">split</span> =&gt; [Hd|[g [fxE Cg gxE]]].
+  <span class="kr">exists</span> (<span class="nv">fun</span> <span class="nv">z</span> =&gt; <span class="kr">if</span> z == x <span class="kr">then</span> a <span class="kr">else</span> (f(z) - f(x)) / (z - x)); <span class="nb">split</span>.
+  - <span class="nb">move</span>=&gt; z; <span class="nb">case</span>: eqP =&gt; [-&gt;|/eqP]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> !subrr mulr0.
+    <span class="bp">by</span> <span class="nb">rewrite</span> -subr_eq0 =&gt; /divfK-&gt;.
+  - <span class="nb">apply</span>/continuous_withinNshiftx; <span class="nb">rewrite</span> eqxx /=.
+    <span class="nb">pose</span> g1 h := (h^-<span class="mi">1</span> *: ((f \o shift x) h%:A - f x)).
+    <span class="nb">have</span> F1 : g1 @ <span class="mi">0</span>^&#39; --&gt; a <span class="bp">by</span> <span class="nb">case</span>: Hd =&gt; H1 &lt;-.
+    <span class="nb">apply</span>: cvg_trans F1; <span class="nb">apply</span>: near_eq_cvg; <span class="nb">rewrite</span> /g1 !fctE.
+    near=&gt; i.
+    <span class="nb">rewrite</span> ifN; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> addrK mulrC /= [_%:A]mulr1.
+    <span class="nb">rewrite</span> -subr_eq0 addrK.
+    <span class="bp">by</span> near: i; <span class="nb">rewrite</span> near_withinE /= near_simpl; near=&gt; x1.
+  <span class="bp">by</span> <span class="nb">rewrite</span> eqxx.
+<span class="nb">suff</span> Hf : h^-<span class="mi">1</span> *: ((f \o shift x) h%:A - f x) @[h --&gt; <span class="mi">0</span>^&#39;] --&gt; a.
+  <span class="nb">have</span> F1 : &#39;D_1 f x = a <span class="bp">by</span> <span class="nb">apply</span>: cvg_lim.
+  <span class="nb">rewrite</span> -F1 <span class="kr">in</span> Hf.
+    <span class="bp">by</span> <span class="nb">constructor</span>.
+  <span class="nb">have</span> F1 :  (g \o shift x) y @[y --&gt; <span class="mi">0</span>^&#39;] --&gt; a.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -gxE; <span class="nb">apply</span>/continuous_withinNshiftx.
+<span class="nb">apply</span>: cvg_trans F1; <span class="nb">apply</span>: near_eq_cvg.
+near=&gt; y.
+<span class="nb">rewrite</span> /= fxE /= addrK [_%:A]mulr1.
+<span class="nb">suff</span> yNZ : y != <span class="mi">0</span> <span class="bp">by</span> <span class="nb">rewrite</span> [RHS]mulrC mulfK.
+<span class="bp">by</span> near: y; <span class="nb">rewrite</span> near_withinE /= near_simpl; near=&gt; x1.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">is_derive_0_is_cst</span> (<span class="nv">f</span> : R -&gt; R) <span class="nv">x</span> <span class="nv">y</span> :
+  (<span class="kr">forall</span> <span class="nv">x</span>, is_derive x <span class="mi">1</span> f <span class="mi">0</span>) -&gt; f x = f y.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; Hd.
+<span class="nb">wlog</span> xLy : x y / x &lt;= y <span class="bp">by</span> <span class="nb">move</span>=&gt; H; <span class="nb">case</span>: (leP x y) =&gt; [/H |/ltW /H].
+<span class="nb">rewrite</span> -(subKr (f y) (f x)).
+<span class="nb">have</span> [| _ _] := MVT_segment xLy; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> mul0r =&gt; -&gt;; <span class="nb">rewrite</span> subr0.
+<span class="nb">apply</span>/continuous_subspaceT=&gt; r.
+<span class="bp">exact</span>/differentiable_continuous/derivable1_diffP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Global Instance</span> <span class="nf">is_derive1_comp</span> (<span class="nv">f</span> <span class="nv">g</span> : R -&gt; R) (<span class="nv">x</span> <span class="nv">a</span> <span class="nv">b</span> : R) :
+  is_derive (g x) <span class="mi">1</span> f a -&gt; is_derive x <span class="mi">1</span> g b -&gt;
+  is_derive x <span class="mi">1</span> (f \o g) (a * b).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; [fgxv &lt;-{a}] [gv &lt;-{b}]; <span class="nb">apply</span>: (@DeriveDef _ _ _ _ _ (f \o g)).
+  <span class="nb">apply</span>/derivable1_diffP/differentiable_comp; <span class="kp">first</span> <span class="bp">exact</span>/derivable1_diffP.
+  <span class="bp">by</span> <span class="nb">move</span>/derivable1_diffP <span class="kr">in</span> fgxv.
+<span class="bp">by</span> <span class="nb">rewrite</span> -derive1E (derive1_comp gv fgxv) <span class="mi">2</span>!derive1E.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">is_deriveV</span> (<span class="nv">f</span> : R -&gt; R) (<span class="nv">x</span> <span class="nv">t</span> <span class="nv">v</span> : R) :
+  f x != <span class="mi">0</span> -&gt; is_derive x v f t -&gt;
+  is_derive x v (<span class="kr">fun</span> <span class="nv">y</span> =&gt; (f y)^-<span class="mi">1</span>) (- (f x) ^- <span class="mi">2</span> *: t).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fxNZ Df.
+<span class="nb">constructor</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>: derivableV =&gt; //; <span class="nb">case</span>: Df.
+<span class="bp">by</span> <span class="nb">rewrite</span> deriveV //; <span class="nb">case</span>: Df =&gt; _ -&gt;.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">is_derive_inverse</span> (<span class="nv">f</span> <span class="nv">g</span> : R -&gt; R) <span class="nv">l</span> <span class="nv">x</span> :
+  {near x, cancel f g}  -&gt;
+  {near x, continuous f}  -&gt;
+  is_derive x <span class="mi">1</span> f l -&gt; l != <span class="mi">0</span> -&gt; is_derive (f x) <span class="mi">1</span> g l^-<span class="mi">1</span>.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; fgK fC fD lNZ.
+<span class="nb">have</span> /is_derive1_caratheodory [h [fE hC hxE]] := fD.
+<span class="c">(* There should be something simpler *)</span>
+<span class="nb">have</span> gfxE : g (f x) = x <span class="bp">by</span> <span class="nb">have</span> [d Hd]:= nbhs_ex fgK; <span class="nb">apply</span>: Hd.
+<span class="nb">pose</span> g1 y := <span class="kr">if</span> y == f x <span class="kr">then</span> (h (g y))^-<span class="mi">1</span>
+             <span class="kr">else</span> (g y - g (f x)) / (y - f x).
+<span class="nb">apply</span>/is_derive1_caratheodory.
+<span class="kr">exists</span> <span class="nv">g1</span>; <span class="nb">split</span>; <span class="kp">first</span> <span class="mi">2</span> <span class="nb">last</span>.
+- <span class="bp">by</span> <span class="nb">rewrite</span> /g1 eqxx gfxE hxE.
+- <span class="nb">move</span>=&gt; z; <span class="nb">rewrite</span> /g1; <span class="nb">case</span>: eqP =&gt; [-&gt;|/eqP]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> !subrr mulr0.
+  <span class="bp">by</span> <span class="nb">rewrite</span> -subr_eq0 =&gt; /divfK.
+<span class="nb">have</span> F1 : (h (g x))^-<span class="mi">1</span> @[x --&gt; f x] --&gt; g1 (f x).
+  <span class="nb">rewrite</span> /g1 eqxx; <span class="nb">apply</span>: continuousV; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> /= gfxE hxE.
+  <span class="nb">apply</span>: continuous_comp; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">rewrite</span> gfxE.
+  <span class="bp">by</span> <span class="nb">apply</span>: nbhs_singleton (near_can_continuous _ _).
+<span class="nb">apply</span>: cvg_sub0 F1.
+<span class="nb">apply</span>/cvgrPdist_lt =&gt; eps eps_gt0 /=; <span class="nb">rewrite</span> !near_simpl /=.
+near=&gt; y; <span class="nb">rewrite</span> sub0r normrN !fctE.
+<span class="nb">have</span> fgyE : f (g y) = y <span class="bp">by</span> near: y; <span class="nb">apply</span>: near_continuous_can_sym.
+<span class="nb">rewrite</span> /g1; <span class="nb">case</span>: eqP =&gt; [_|/eqP x1Dfx]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> subrr normr0.
+<span class="nb">have</span> -&gt; : y - f x  = h (g y) * (g y - x) <span class="bp">by</span> <span class="nb">rewrite</span> -fE fgyE.
+<span class="nb">rewrite</span> gfxE invfM mulrC divfK <span class="nl">?subrr</span> <span class="nl">?normr0</span> // subr_eq0.
+<span class="bp">by</span> <span class="nb">apply</span>: contra x1Dfx =&gt; /eqP&lt;-; <span class="nb">apply</span>/eqP.
+<span class="kn">Unshelve</span>. <span class="kp">all</span>: <span class="bp">by</span> end_near. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">is_derive_inverse</span>.
+
+#[<span class="kn">global</span>] <span class="kn">Hint Extern</span> <span class="mi">0</span> (is_derive _ _ (<span class="kr">fun</span> <span class="nv">_</span> =&gt; (_ _)^-<span class="mi">1</span>) _) =&gt;
+  (<span class="nb">eapply</span> is_deriveV; <span class="kp">first</span> <span class="bp">by</span> []) : typeclass_instances.</span></pre></article></body></html>

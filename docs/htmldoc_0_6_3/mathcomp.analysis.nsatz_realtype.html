@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>mathcomp.analysis.nsatz_realtype</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library mathcomp.analysis.nsatz_realtype</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.nsatz.Nsatz.html#"><span class="id" title="library">Nsatz</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">mathcomp</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">all_ssreflect</span> <span class="id" title="library">ssralg</span> <span class="id" title="library">ssrint</span> <span class="id" title="library">ssrnum</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">mathcomp.classical</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="mathcomp.classical.boolp.html#"><span class="id" title="library">boolp</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="mathcomp.analysis.reals.html#"><span class="id" title="library">reals</span></a> <a class="idref" href="mathcomp.analysis.ereal.html#"><span class="id" title="library">ereal</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">                           nsatz for realType
+
+ This file registers the ring corresponding to the MathComp-Analysis type
+ realType to the tactic nsatz of Coq. This enables some automation used for
+ example in the file trigo.v.
+
+ ref: https://coq.inria.fr/refman/addendum/nsatz.html
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="module">GRing.Theory</span> <span class="id" title="module">Num.Theory</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">ring_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="Nsatz_realType" class="idref" href="#Nsatz_realType"><span class="id" title="section">Nsatz_realType</span></a>.<br/>
+<span class="id" title="keyword">Variable</span> <a id="Nsatz_realType.T" class="idref" href="#Nsatz_realType.T"><span class="id" title="variable">T</span></a> : <a class="idref" href="mathcomp.analysis.reals.html#Real.Exports.realType"><span class="id" title="abbreviation">realType</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="Nsatz_realType_Setoid_Theory" class="idref" href="#Nsatz_realType_Setoid_Theory"><span class="id" title="lemma">Nsatz_realType_Setoid_Theory</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Setoids.Setoid.html#Setoid_Theory"><span class="id" title="definition">Setoid.Setoid_Theory</span></a> <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T"><span class="id" title="variable">T</span></a> (@<a class="idref" href="http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T"><span class="id" title="variable">T</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="Nsatz_realType0" class="idref" href="#Nsatz_realType0"><span class="id" title="definition">Nsatz_realType0</span></a> := (0<span class="id" title="notation">%:</span><span class="id" title="notation">R</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.ssr.ssreflect.html#::core_scope:x_':'_x"><span class="id" title="notation">:</span></a> <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T"><span class="id" title="variable">T</span></a>).<br/>
+<span class="id" title="keyword">Definition</span> <a id="Nsatz_realType1" class="idref" href="#Nsatz_realType1"><span class="id" title="definition">Nsatz_realType1</span></a> := (1<span class="id" title="notation">%:</span><span class="id" title="notation">R</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.ssr.ssreflect.html#::core_scope:x_':'_x"><span class="id" title="notation">:</span></a> <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T"><span class="id" title="variable">T</span></a>).<br/>
+<span class="id" title="keyword">Definition</span> <a id="Nsatz_realType_add" class="idref" href="#Nsatz_realType_add"><span class="id" title="definition">Nsatz_realType_add</span></a> (<a id="x:2" class="idref" href="#x:2"><span class="id" title="binder">x</span></a> <a id="y:3" class="idref" href="#y:3"><span class="id" title="binder">y</span></a> : <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T"><span class="id" title="variable">T</span></a>) := (<a class="idref" href="mathcomp.analysis.nsatz_realtype.html#x:2"><span class="id" title="variable">x</span></a> <span class="id" title="notation">+</span> <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#y:3"><span class="id" title="variable">y</span></a>)%<span class="id" title="var">R</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a id="Nsatz_realType_mul" class="idref" href="#Nsatz_realType_mul"><span class="id" title="definition">Nsatz_realType_mul</span></a> (<a id="x:4" class="idref" href="#x:4"><span class="id" title="binder">x</span></a> <a id="y:5" class="idref" href="#y:5"><span class="id" title="binder">y</span></a> : <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T"><span class="id" title="variable">T</span></a>) := (<a class="idref" href="mathcomp.analysis.nsatz_realtype.html#x:4"><span class="id" title="variable">x</span></a> <span class="id" title="notation">×</span> <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#y:5"><span class="id" title="variable">y</span></a>)%<span class="id" title="var">R</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a id="Nsatz_realType_sub" class="idref" href="#Nsatz_realType_sub"><span class="id" title="definition">Nsatz_realType_sub</span></a> (<a id="x:6" class="idref" href="#x:6"><span class="id" title="binder">x</span></a> <a id="y:7" class="idref" href="#y:7"><span class="id" title="binder">y</span></a> : <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T"><span class="id" title="variable">T</span></a>) := (<a class="idref" href="mathcomp.analysis.nsatz_realtype.html#x:6"><span class="id" title="variable">x</span></a> <span class="id" title="notation">-</span> <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#y:7"><span class="id" title="variable">y</span></a>)%<span class="id" title="var">R</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a id="Nsatz_realType_opp" class="idref" href="#Nsatz_realType_opp"><span class="id" title="definition">Nsatz_realType_opp</span></a> (<a id="x:8" class="idref" href="#x:8"><span class="id" title="binder">x</span></a>  : <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T"><span class="id" title="variable">T</span></a>) := (<span class="id" title="notation">-</span> <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#x:8"><span class="id" title="variable">x</span></a>)%<span class="id" title="var">R</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">global</span>]<br/>
+<span class="id" title="keyword">Instance</span> <a id="Nsatz_realType_Ring_ops" class="idref" href="#Nsatz_realType_Ring_ops"><span class="id" title="instance">Nsatz_realType_Ring_ops</span></a>:<br/>
+&nbsp;&nbsp;&nbsp;(@<a class="idref" href="http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.setoid_ring.Ncring.html#Ring_ops"><span class="id" title="class">Ncring.Ring_ops</span></a> <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T"><span class="id" title="variable">T</span></a> <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType0"><span class="id" title="definition">Nsatz_realType0</span></a> <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType1"><span class="id" title="definition">Nsatz_realType1</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType_add"><span class="id" title="definition">Nsatz_realType_add</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType_mul"><span class="id" title="definition">Nsatz_realType_mul</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType_sub"><span class="id" title="definition">Nsatz_realType_sub</span></a><br/>
+&nbsp;&nbsp;<a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType_opp"><span class="id" title="definition">Nsatz_realType_opp</span></a> (@<a class="idref" href="http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType.T"><span class="id" title="variable">T</span></a>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">global</span>]<br/>
+<span class="id" title="keyword">Instance</span> <a id="Nsatz_realType_Ring" class="idref" href="#Nsatz_realType_Ring"><span class="id" title="instance">Nsatz_realType_Ring</span></a> : (<a class="idref" href="http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.setoid_ring.Ncring.html#Ring"><span class="id" title="class">Ncring.Ring</span></a> (<span class="id" title="var">Ro</span>:=<a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType_Ring_ops"><span class="id" title="instance">Nsatz_realType_Ring_ops</span></a>)).<br/>
+
+<br/>
+#[<span class="id" title="var">global</span>]<br/>
+<span class="id" title="keyword">Instance</span> <a id="Nsatz_realType_Cring" class="idref" href="#Nsatz_realType_Cring"><span class="id" title="instance">Nsatz_realType_Cring</span></a>: (<a class="idref" href="http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.setoid_ring.Cring.html#Cring"><span class="id" title="class">Cring.Cring</span></a> (<span class="id" title="var">Rr</span>:=<a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType_Ring"><span class="id" title="instance">Nsatz_realType_Ring</span></a>)).<br/>
+
+<br/>
+#[<span class="id" title="var">global</span>]<br/>
+<span class="id" title="keyword">Instance</span> <a id="Nsatz_realType_Integral_domain" class="idref" href="#Nsatz_realType_Integral_domain"><span class="id" title="instance">Nsatz_realType_Integral_domain</span></a> :<br/>
+&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.setoid_ring.Integral_domain.html#Integral_domain"><span class="id" title="class">Integral_domain.Integral_domain</span></a> (<span class="id" title="var">Rcr</span>:=<a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType_Cring"><span class="id" title="instance">Nsatz_realType_Cring</span></a>)).<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="mathcomp.analysis.nsatz_realtype.html#Nsatz_realType"><span class="id" title="section">Nsatz_realType</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "nsatz" := <span class="id" title="var">nsatz_default</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

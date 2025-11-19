@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html class="alectryon-standalone"><head><title>Rstruct.v</title><meta charset="utf-8"><meta content="Alectryon" name="generator"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+    // Resolve backreferences
+    document.addEventListener("DOMContentLoaded", function() {
+        var references = document.querySelectorAll([
+           ".alectryon-io .alectryon-extra-goals",
+           ".alectryon-io .alectryon-goal",
+           ".alectryon-io .alectryon-goals",
+           ".alectryon-io .alectryon-output",
+           ".alectryon-io .goal-conclusion",
+           ".alectryon-io .goal-hyps",
+           ".alectryon-io .goal-hyps > span"].join(", "));
+        document.querySelectorAll('.alectryon-io q').forEach(function (q) {
+            q.replaceWith(references[parseInt(q.innerText, 16)].cloneNode(true)) });
+    });
+
+    // Add checkboxes
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.style = "display: none";
+
+        input.className = "alectryon-extra-goal-toggle";
+        document.querySelectorAll('.alectryon-io label.goal-separator').forEach(function(lbl, idx) {
+            var goal = lbl.parentNode, box = input.cloneNode(true);
+            lbl.htmlFor = box.id = "alectryon-hyps-chk" + idx;
+            goal.parentNode.insertBefore(box, goal);
+        });
+
+        input.className = "alectryon-toggle";
+        document.querySelectorAll('.alectryon-io .alectryon-output').forEach(function(div, idx) {
+            var box = input.cloneNode(true), lbl = div.previousSibling;
+            box.checked = div.classList.contains("a:show");
+            if (lbl && lbl.tagName == "LABEL") {
+                lbl.htmlFor = box.id = "alectryon-output-chk" + idx;
+            }
+            div.parentNode.insertBefore(box, lbl || div);
+        });
+    });
+</script><link href="alectryon.css" rel="stylesheet"><link href="pygments.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/IBM-type/0.5.4/css/ibm-type.min.css" integrity="sha512-sky5cf9Ts6FY1kstGOBHSybfKqdHR41M0Ldb0BjNiv3ifltoQIsg0zIaQ+wwdwgQ0w9vKFW7Js50lxH9vqNSSw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/5.2.0/fira_code.min.css" integrity="sha512-MbysAYimH1hH2xYzkkMHB6MqxBqfP0megxsCLknbYqHVwXTCg9IqHbk+ZP/vnhO8UEW6PaXAkKe2vQ+SWACxxA==" crossorigin="anonymous" /><script src="alectryon.js"></script></head><body><article class="alectryon-root alectryon-centered alectryon-coqdoc alectryon-minified"><div class="alectryon-banner">Built with <a href="https://github.com/cpitclaudel/alectryon/">Alectryon</a>, running Coq+SerAPI v8.15.0+0.15.0. Bubbles (<span class="alectryon-bubble"></span>) indicate interactive fragments: hover for details, tap to reveal contents. Use <kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> to navigate, <kbd>Ctrl+🖱️</kbd> to focus. On Mac, use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>.</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-wsp"><span class="c">(* This file is a modification of an eponymous file from the CoqApprox        *)</span>
+<span class="c">(* library. The header of the original file is reproduced below. Changes are  *)</span>
+<span class="c">(* part of the analysis library and enjoy the same licence as this library.   *)</span></span></pre><div class="doc">
+This file is part of the CoqApprox formalization of rigorous
+polynomial approximation in Coq:
+http://tamadi.gforge.inria.fr/CoqApprox/
+
+<div class="paragraph"> </div>
+
+Copyright (c) 2010-2013, ENS de Lyon and Inria.
+
+<div class="paragraph"> </div>
+
+This library is governed by the CeCILL-C license under French law and
+abiding by the rules of distribution of free software. You can use,
+modify and/or redistribute the library under the terms of the CeCILL-C
+license as circulated by CEA, CNRS and Inria at the following URL:
+http://www.cecill.info/
+
+<div class="paragraph"> </div>
+
+As a counterpart to the access to the source code and rights to copy,
+modify and redistribute granted by the license, users are provided
+only with a limited warranty and the library's author, the holder of
+the economic rights, and the successive licensors have only limited
+liability. See the COPYING file for more details.
+
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Require Import</span> Rdefinitions Raxioms RIneq Rbasic_fun Zwf.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Require Import</span> Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Require Import</span> Rtrigo1 Reals.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp <span class="kn">Require Import</span> all_ssreflect ssralg poly mxpoly ssrnum.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predI _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predU _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predD _ &amp; _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ predC _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;[ preim _ of _ ]&quot;</span> was already used <span class="kr">in</span> scope
+fun_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ + _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ - _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt;= _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &gt; _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt;= _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt;= _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ &lt; _ &lt; _&quot;</span> was already used <span class="kr">in</span> scope
+nat_scope. [notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ * _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message"><span class="kn">Notation</span> <span class="s2">&quot;_ ^ _&quot;</span> was already used <span class="kr">in</span> scope nat_scope.
+[notation-overridden,parsing]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closedM;
+                   GRing.smulr_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedN] : GRing.subring_closed &gt;-&gt; GRing.oppr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedM; GRing.smulr_closedM] : GRing.subring_closed &gt;-&gt; GRing.mulr_closed.
+New coercion path [GRing.subring_closed_semi;
+                   GRing.semiring_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subring_closedB; GRing.zmod_closedD] : GRing.subring_closed &gt;-&gt; GRing.addr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.sdivr_closed_div;
+                   GRing.divr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.sdivr_closedM; GRing.smulr_closedM] : GRing.sdivr_closed &gt;-&gt; GRing.mulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.subalg_closedBM;
+                   GRing.subring_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.subalg_closedZ; GRing.submod_closedB] : GRing.subalg_closed &gt;-&gt; GRing.zmod_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divring_closed_div;
+                   GRing.sdivr_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divring_closedBM; GRing.subring_closedM] : GRing.divring_closed &gt;-&gt; GRing.smulr_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.divalg_closedBdiv;
+                   GRing.divring_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.divalg_closedZ; GRing.subalg_closedBM] : GRing.divalg_closed &gt;-&gt; GRing.subring_closed.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [GRing.Pred.subring_smul;
+                   GRing.Pred.smul_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[GRing.Pred.subring_semi; GRing.Pred.semiring_mul] : GRing.Pred.subring &gt;-&gt; GRing.Pred.mul.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Set Implicit Arguments</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Unset Strict Implicit</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Unset Printing Implicit Defensive</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Import</span> Order.TTheory GRing.Theory Num.Theory.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Local</span> <span class="kn">Open Scope</span> R_scope.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">Req_EM_T</span> (<span class="nv">r1</span> <span class="nv">r2</span> : R) : {r1 = r2} + {r1 &lt;&gt; r2}.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>r1, r2</var><span class="hyp-type"><b>: </b><span>R</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">{r1 = r2} + {r1 &lt;&gt; r2}</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>2</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">case</span>: (total_order_T r1 r2) =&gt; [[r1Lr2 | &lt;-] | r1Gr2].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>5</q><br><span><var>r1Lr2</var><span class="hyp-type"><b>: </b><span>r1 &lt; r2</span></span></span><br></div><span class="goal-separator"><hr></span><q>6</q></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><q>4</q><label class="goal-separator"><hr></label><div class="goal-conclusion">{r1 = r1} + {r1 &lt;&gt; r1}</div></blockquote><blockquote class="alectryon-goal"><div class="goal-hyps"><q>5</q><br><span><var>r1Gr2</var><span class="hyp-type"><b>: </b><span>r2 &lt; r1</span></span></span><br></div><label class="goal-separator"><hr></label><q>6</q></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input">-</label><small class="alectryon-output"><div><q>9</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">right</span>=&gt; r1Er2; <span class="nb">case</span>: (Rlt_irrefl r1); <span class="nb">rewrite</span> {<span class="mi">2</span>}r1Er2.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>4</q><span class="goal-separator"><hr></span><q>f</q></blockquote><div class="alectryon-extra-goals"><q>10</q></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input">-</label><small class="alectryon-output"><div><q>15</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">left</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>11</q><span class="goal-separator"><hr></span><q>6</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">right</span>=&gt; r1Er2; <span class="nb">case</span>: (Rlt_irrefl r1); <span class="nb">rewrite</span> {<span class="mi">1</span>}r1Er2.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">eqr</span> (<span class="nv">r1</span> <span class="nv">r2</span> : R) : bool :=
+  <span class="kr">if</span> Req_EM_T r1 r2 <span class="kr">is</span> <span class="nb">left</span> _ <span class="kr">then</span> true <span class="kr">else</span> false.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">eqrP</span> : Equality.axiom eqr.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><span class="goal-separator"><hr></span><div class="goal-conclusion">Equality.axiom eqr</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>1d</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; r1 r2; <span class="nb">rewrite</span> /eqr; <span class="nb">case</span>: Req_EM_T=&gt; H; <span class="nb">apply</span>: (iffP idP).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_eqMixin</span> := EqMixin eqrP.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_eqType</span> := <span class="kn">Eval</span> <span class="nb">hnf</span> <span class="kr">in</span> EqType R R_eqMixin.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Fact</span> <span class="nf">inhR</span> : inhabited R.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><span class="goal-separator"><hr></span><div class="goal-conclusion">inhabited R</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>22</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">exact</span>: (inhabits <span class="mi">0</span>).</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">pickR</span> (<span class="nv">P</span> : pred R) (<span class="nv">n</span> : nat) :=
+  <span class="kr">let</span> <span class="nv">x</span> := epsilon inhR P <span class="kr">in</span> <span class="kr">if</span> P x <span class="kr">then</span> Some x <span class="kr">else</span> None.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Fact</span> <span class="nf">pickR_some</span> <span class="nv">P</span> <span class="nv">n</span> <span class="nv">x</span> : pickR P n = Some x -&gt; P x.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P</var><span class="hyp-type"><b>: </b><span>pred R</span></span></span><br><span><var>n</var><span class="hyp-type"><b>: </b><span>nat</span></span></span><br><span><var>x</var><span class="hyp-type"><b>: </b><span>R</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">pickR P n = Some x -&gt; P x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>27</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> /pickR; <span class="nb">case</span>: (boolP (P _)) =&gt; // Px [&lt;-].</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Fact</span> <span class="nf">pickR_ex</span> (<span class="nv">P</span> : pred R) :
+  (<span class="kr">exists</span> <span class="nv">x</span> : R, P x) -&gt; <span class="kr">exists</span> <span class="nv">n</span>, pickR P n.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>2a</q><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="kr">exists</span> <span class="nv">x</span> : R, P x) -&gt; <span class="kr">exists</span> <span class="nv">n</span> : nat, pickR P n</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>30</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> /pickR; <span class="nb">move</span>=&gt; /(epsilon_spec inhR)-&gt;; <span class="kr">exists</span> <span class="mi">0</span>%N.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Fact</span> <span class="nf">pickR_ext</span> (<span class="nv">P</span> <span class="nv">Q</span> : pred R) : P =<span class="mi">1</span> Q -&gt; pickR P =<span class="mi">1</span> pickR Q.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>P, Q</var><span class="hyp-type"><b>: </b><span>pred R</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">P =<span class="mi">1</span> Q -&gt; pickR P =<span class="mi">1</span> pickR Q</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>36</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">move</span>=&gt; PEQ n; <span class="nb">rewrite</span> /pickR; <span class="nb">set</span> u := epsilon _ _; <span class="nb">set</span> v := epsilon _ _.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>39</q><br><span><var>PEQ</var><span class="hyp-type"><b>: </b><span>P =<span class="mi">1</span> Q</span></span></span><br><q>2b</q><br><span><var>u</var><span><span class="hyp-body"><b>:= </b><span>epsilon inhR (<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; P x)</span></span><span class="hyp-type"><b>: </b><span>R</span></span></span></span><br><span><var>v</var><span><span class="hyp-body"><b>:= </b><span>epsilon inhR (<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; Q x)</span></span><span class="hyp-type"><b>: </b><span>R</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="kr">if</span> P u <span class="kr">then</span> Some u <span class="kr">else</span> None) =
+(<span class="kr">if</span> Q v <span class="kr">then</span> Some v <span class="kr">else</span> None)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">suff</span>-&gt;: u = v <span class="bp">by</span> <span class="nb">rewrite</span> PEQ.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>3f</q><span class="goal-separator"><hr></span><div class="goal-conclusion">u = v</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">congr</span> epsilon; <span class="nb">apply</span>: functional_extensionality=&gt; x; <span class="nb">rewrite</span> PEQ.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">R_choiceMixin</span> : choiceMixin R :=
+  Choice.Mixin pickR_some pickR_ex pickR_ext.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_choiceType</span> := <span class="kn">Eval</span> <span class="nb">hnf</span> <span class="kr">in</span> ChoiceType R R_choiceMixin.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Fact</span> <span class="nf">RplusA</span> : associative (Rplus).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><span class="goal-separator"><hr></span><div class="goal-conclusion">associative Rplus</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>49</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; *; <span class="nb">rewrite</span> Rplus_assoc.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">R_zmodMixin</span> := ZmodMixin RplusA Rplus_comm Rplus_0_l Rplus_opp_l.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_zmodType</span> := <span class="kn">Eval</span> <span class="nb">hnf</span> <span class="kr">in</span> ZmodType R R_zmodMixin.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Fact</span> <span class="nf">RmultA</span> : associative (Rmult).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><span class="goal-separator"><hr></span><div class="goal-conclusion">associative Rmult</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>4e</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; *; <span class="nb">rewrite</span> Rmult_assoc.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Fact</span> <span class="nf">R1_neq_0</span> : R1 != R0.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><span class="goal-separator"><hr></span><div class="goal-conclusion">R1 != R0</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>53</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span>/eqP/R1_neq_R0.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">R_ringMixin</span> := RingMixin RmultA Rmult_1_l Rmult_1_r
+  Rmult_plus_distr_r Rmult_plus_distr_l R1_neq_0.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_ringType</span> := <span class="kn">Eval</span> <span class="nb">hnf</span> <span class="kr">in</span> RingType R R_ringMixin.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_comRingType</span> := <span class="kn">Eval</span> <span class="nb">hnf</span> <span class="kr">in</span> ComRingType R Rmult_comm.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Import</span> Monoid.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">Radd_monoid</span> := Law RplusA Rplus_0_l Rplus_0_r.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">Radd_comoid</span> := ComLaw Rplus_comm.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">Rmul_monoid</span> := Law RmultA Rmult_1_l Rmult_1_r.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">Rmul_comoid</span> := ComLaw Rmult_comm.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">Rmul_mul_law</span> := MulLaw Rmult_0_l Rmult_0_r.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">Radd_add_law</span> := AddLaw Rmult_plus_distr_r Rmult_plus_distr_l.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">Rinvx</span> <span class="nv">r</span> := <span class="kr">if</span> (r != <span class="mi">0</span>) <span class="kr">then</span> / r <span class="kr">else</span> r.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">unit_R</span> <span class="nv">r</span> := r != <span class="mi">0</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">RmultRinvx</span> : {<span class="kr">in</span> unit_R, left_inverse <span class="mi">1</span> Rinvx Rmult}.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><span class="goal-separator"><hr></span><div class="goal-conclusion">{<span class="kr">in</span> unit_R, left_inverse <span class="mi">1</span> Rinvx Rmult}</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>58</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">move</span>=&gt; r; <span class="nb">rewrite</span> -topredE /unit_R /Rinvx =&gt; /= rNZ /=.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>r</var><span class="hyp-type"><b>: </b><span>R_eqType</span></span></span><br><span><var>rNZ</var><span class="hyp-type"><b>: </b><span>r != <span class="mi">0</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="kr">if</span> r != <span class="mi">0</span> <span class="kr">then</span> / r <span class="kr">else</span> r) * r = <span class="mi">1</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> rNZ Rinv_l //; <span class="nb">apply</span>/eqP.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">RinvxRmult</span> : {<span class="kr">in</span> unit_R, right_inverse <span class="mi">1</span> Rinvx Rmult}.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><span class="goal-separator"><hr></span><div class="goal-conclusion">{<span class="kr">in</span> unit_R, right_inverse <span class="mi">1</span> Rinvx Rmult}</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>64</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">move</span>=&gt; r; <span class="nb">rewrite</span> -topredE /unit_R /Rinvx =&gt; /= rNZ /=.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>5f</q><span class="goal-separator"><hr></span><div class="goal-conclusion">r * (<span class="kr">if</span> r != <span class="mi">0</span> <span class="kr">then</span> / r <span class="kr">else</span> r) = <span class="mi">1</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> rNZ Rinv_r //; <span class="nb">apply</span>/eqP.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">intro_unit_R</span> <span class="nv">x</span> <span class="nv">y</span> : y * x = <span class="mi">1</span> /\ x * y = <span class="mi">1</span> -&gt; unit_R x.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>x, y</var><span class="hyp-type"><b>: </b><span>R</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">y * x = <span class="mi">1</span> /\ x * y = <span class="mi">1</span> -&gt; unit_R x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>6d</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">move</span>=&gt; [yx_eq1 _]; <span class="nb">apply</span>: contra_eqN yx_eq1 =&gt; /eqP-&gt;.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>6f</q><span class="goal-separator"><hr></span><div class="goal-conclusion">y * <span class="mi">0</span> != <span class="mi">1</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> Rmult_0_r eq_sym R1_neq_0.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">Rinvx_out</span> : {<span class="kr">in</span> predC unit_R, Rinvx =<span class="mi">1</span> id}.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><span class="goal-separator"><hr></span><div class="goal-conclusion">{<span class="kr">in</span> predC unit_R, Rinvx =<span class="mi">1</span> id}</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>78</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> inE/= /Rinvx -if_neg =&gt; -&gt;.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">R_unitRingMixin</span> :=
+  UnitRingMixin RmultRinvx RinvxRmult intro_unit_R Rinvx_out.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_unitRing</span> :=
+  <span class="kn">Eval</span> <span class="nb">hnf</span> <span class="kr">in</span> UnitRingType R R_unitRingMixin.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_comUnitRingType</span> :=
+  <span class="kn">Eval</span> <span class="nb">hnf</span> <span class="kr">in</span> [comUnitRingType of R].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">R_idomainMixin</span> <span class="nv">x</span> <span class="nv">y</span> : x * y = <span class="mi">0</span> -&gt; (x == <span class="mi">0</span>) || (y == <span class="mi">0</span>).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>6f</q><span class="goal-separator"><hr></span><div class="goal-conclusion">x * y = <span class="mi">0</span> -&gt; (x == <span class="mi">0</span>) || (y == <span class="mi">0</span>)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>7d</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; /Rmult_integral []-&gt;; <span class="nb">rewrite</span> eqxx <span class="nl">?orbT</span>.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_idomainType</span> := <span class="kn">Eval</span> <span class="nb">hnf</span> <span class="kr">in</span> IdomainType R R_idomainMixin.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">R_fieldMixin</span> : GRing.Field.mixin_of [unitRingType of R].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><span class="goal-separator"><hr></span><div class="goal-conclusion">GRing.Field.mixin_of [unitRingType of R]</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>82</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="bp">done</span>.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">R_fieldIdomainMixin</span> := FieldIdomainMixin R_fieldMixin.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_fieldType</span> := FieldType R R_fieldMixin.</span></span></pre><div class="doc">
+Reflect the order on the reals to bool 
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">Rleb</span> <span class="nv">r1</span> <span class="nv">r2</span> := <span class="kr">if</span> Rle_dec r1 r2 <span class="kr">is</span> <span class="nb">left</span> _ <span class="kr">then</span> true <span class="kr">else</span> false.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">Rltb</span> <span class="nv">r1</span> <span class="nv">r2</span> := Rleb r1 r2 &amp;&amp; (r1 != r2).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">Rgeb</span> <span class="nv">r1</span> <span class="nv">r2</span> := Rleb r2 r1.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">Rgtb</span> <span class="nv">r1</span> <span class="nv">r2</span> := Rltb r2 r1.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">RlebP</span> <span class="nv">r1</span> <span class="nv">r2</span> : reflect (r1 &lt;= r2) (Rleb r1 r2).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>4</q><span class="goal-separator"><hr></span><div class="goal-conclusion">reflect (r1 &lt;= r2) (Rleb r1 r2)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>87</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> /Rleb; <span class="nb">apply</span>: (iffP idP); <span class="nb">case</span>: Rle_dec.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">RltbP</span> <span class="nv">r1</span> <span class="nv">r2</span> : reflect (r1 &lt; r2) (Rltb r1 r2).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>4</q><span class="goal-separator"><hr></span><div class="goal-conclusion">reflect (r1 &lt; r2) (Rltb r1 r2)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>8c</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> /Rltb /Rleb; <span class="nb">apply</span>: (iffP idP); <span class="nb">case</span>: Rle_dec=&gt; //=.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>4</q><span class="goal-separator"><hr></span><div class="goal-conclusion">r1 &lt;= r2 -&gt; r1 != r2 -&gt; r1 &lt; r2</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><q>4</q><label class="goal-separator"><hr></label><div class="goal-conclusion">r1 &lt;= r2 -&gt; r1 &lt; r2 -&gt; r1 != r2</div></blockquote><blockquote class="alectryon-goal"><q>4</q><label class="goal-separator"><hr></label><div class="goal-conclusion">~ r1 &lt;= r2 -&gt; r1 &lt; r2 -&gt; false</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input">-</label><small class="alectryon-output"><div><q>91</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">case</span>=&gt; // r1Er2 /eqP[].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>4</q><span class="goal-separator"><hr></span><q>96</q></blockquote><div class="alectryon-extra-goals"><q>97</q></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input">-</label><small class="alectryon-output"><div><q>9b</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; _ r1Lr2; <span class="nb">apply</span>/eqP/Rlt_not_eq.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>4</q><span class="goal-separator"><hr></span><q>98</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; Nr1Lr2 r1Lr2; <span class="nb">case</span>: Nr1Lr2; <span class="nb">left</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+<span class="c">(*</span>
+<span class="c">Ltac toR := rewrite /GRing.add /GRing.opp /GRing.zero /GRing.mul /GRing.inv</span>
+<span class="c">  /GRing.one //=.</span>
+<span class="c">*)</span>
+
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Section</span> <span class="nf">ssreal_struct</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Import</span> GRing.Theory.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Import</span> Num.Theory.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Import</span> Num.Def.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Local</span> <span class="kn">Open Scope</span> R_scope.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">Rleb_norm_add</span> <span class="nv">x</span> <span class="nv">y</span> : Rleb (Rabs (x + y)) (Rabs x + Rabs y).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>6f</q><span class="goal-separator"><hr></span><div class="goal-conclusion">Rleb (Rabs (x + y)) (Rabs x + Rabs y)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>a3</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span>/RlebP/Rabs_triang.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">addr_Rgtb0</span> <span class="nv">x</span> <span class="nv">y</span> : Rltb <span class="mi">0</span> x -&gt; Rltb <span class="mi">0</span> y -&gt; Rltb <span class="mi">0</span> (x + y).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>6f</q><span class="goal-separator"><hr></span><div class="goal-conclusion">Rltb <span class="mi">0</span> x -&gt; Rltb <span class="mi">0</span> y -&gt; Rltb <span class="mi">0</span> (x + y)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>a8</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>/RltbP=&gt; Hx /RltbP Hy; <span class="nb">apply</span>/RltbP/Rplus_lt_0_compat.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">Rnorm0_eq0</span> <span class="nv">x</span> : Rabs x = <span class="mi">0</span> -&gt; x = <span class="mi">0</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>2c</q><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">Rabs x = <span class="mi">0</span> -&gt; x = <span class="mi">0</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>ad</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; H; <span class="nb">case</span>: (x == <span class="mi">0</span>) /eqP=&gt; // /Rabs_no_R0.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">Rleb_leVge</span> <span class="nv">x</span> <span class="nv">y</span> : Rleb <span class="mi">0</span> x -&gt; Rleb <span class="mi">0</span> y -&gt; (Rleb x y) || (Rleb y x).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>6f</q><span class="goal-separator"><hr></span><div class="goal-conclusion">Rleb <span class="mi">0</span> x -&gt; Rleb <span class="mi">0</span> y -&gt; Rleb x y || Rleb y x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>b3</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">move</span>/RlebP=&gt; Hx /RlebP Hy; <span class="nb">case</span>: (Rlt_le_dec x y).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>70</q><br><span><var>Hx</var><span class="hyp-type"><b>: </b><span><span class="mi">0</span> &lt;= x</span></span></span><br><span><var>Hy</var><span class="hyp-type"><b>: </b><span><span class="mi">0</span> &lt;= y</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">x &lt; y -&gt; Rleb x y || Rleb y x</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><q>ba</q><label class="goal-separator"><hr></label><div class="goal-conclusion">y &lt;= x -&gt; Rleb x y || Rleb y x</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>/Rlt_le/RlebP=&gt; -&gt;.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>ba</q><span class="goal-separator"><hr></span><q>c0</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>/RlebP=&gt; -&gt;; <span class="nb">rewrite</span> orbT.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">RnormM</span> : {morph Rabs : x y / x * y}.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><span class="goal-separator"><hr></span><div class="goal-conclusion">{morph Rabs : x y / x * y}</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">exact</span>: Rabs_mult.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">Rleb_def</span> <span class="nv">x</span> <span class="nv">y</span> : (Rleb x y) = (Rabs (y - x) == y - x).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>6f</q><span class="goal-separator"><hr></span><div class="goal-conclusion">Rleb x y = (Rabs (y - x) == y - x)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>/(sameP (RlebP x y))/(iffP idP)=&gt; [/eqP H| /Rle_minus H].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>70</q><br><span><var>H</var><span class="hyp-type"><b>: </b><span>Rabs (y - x) = y - x</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">x &lt;= y</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>70</q><br><span><var>H</var><span class="hyp-type"><b>: </b><span>x - y &lt;= <span class="mi">0</span></span></span></span><br></div><label class="goal-separator"><hr></label><div class="goal-conclusion">Rabs (y - x) == y - x</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>: Rminus_le; <span class="nb">rewrite</span> -Ropp_minus_distr.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>cf</q><span class="goal-separator"><hr></span><div class="goal-conclusion">- (y - x) &lt;= <span class="mi">0</span></div></blockquote><q>d2</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>/Rge_le/Ropp_0_le_ge_contravar.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>cf</q><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="mi">0</span> &lt;= y - x</div></blockquote><q>d2</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> -H; <span class="nb">apply</span>: Rabs_pos.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>d4</q><span class="goal-separator"><hr></span><q>d6</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>/eqP/Rabs_pos_eq.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>d4</q><span class="goal-separator"><hr></span><q>de</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> -Ropp_minus_distr.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>d4</q><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="mi">0</span> &lt;= - (x - y)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span>/Ropp_0_ge_le_contravar/Rle_ge.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">Rltb_def</span> <span class="nv">x</span> <span class="nv">y</span> : (Rltb x y) = (y != x) &amp;&amp; (Rleb x y).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>6f</q><span class="goal-separator"><hr></span><div class="goal-conclusion">Rltb x y = (y != x) &amp;&amp; Rleb x y</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>/(sameP (RltbP x y))/(iffP idP).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>6f</q><span class="goal-separator"><hr></span><div class="goal-conclusion">(y != x) &amp;&amp; Rleb x y -&gt; x &lt; y</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><q>6f</q><label class="goal-separator"><hr></label><div class="goal-conclusion">x &lt; y -&gt; (y != x) &amp;&amp; Rleb x y</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">case</span>/andP=&gt; /eqP H /RlebP/Rle_not_gt H2.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>70</q><br><span><var>H</var><span class="hyp-type"><b>: </b><span>y &lt;&gt; x</span></span></span><br><span><var>H2</var><span class="hyp-type"><b>: </b><span>~ x &gt; y</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">x &lt; y</div></blockquote><q>f1</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">case</span>: (Rtotal_order x y)=&gt; // [][] // /esym.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>6f</q><span class="goal-separator"><hr></span><q>f3</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">move</span>=&gt; H; <span class="nb">apply</span>/andP; <span class="nb">split</span>; [<span class="nb">apply</span>/eqP|<span class="nb">apply</span>/RlebP].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>70</q><br><span><var>H</var><span class="hyp-type"><b>: </b><span>x &lt; y</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">y &lt;&gt; x</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><q>101</q><label class="goal-separator"><hr></label><q>d1</q></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">exact</span>: Rgt_not_eq.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>101</q><span class="goal-separator"><hr></span><q>d1</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">exact</span>: Rlt_le.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Definition</span> <span class="nf">R_numMixin</span> := NumMixin Rleb_norm_add addr_Rgtb0 Rnorm0_eq0
+                                  Rleb_leVge RnormM Rleb_def Rltb_def.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_porderType</span> := POrderType ring_display R R_numMixin.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_numDomainType</span> := NumDomainType R R_numMixin.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_normedZmodType</span> := NormedZmodType R R R_numMixin.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">RleP</span> : <span class="kr">forall</span> <span class="nv">x</span> <span class="nv">y</span>, reflect (Rle x y) (x &lt;= y)%R.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">forall</span> <span class="nv">x</span> <span class="nv">y</span> : R, reflect (x &lt;= y) (x &lt;= y)%R</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>10a</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">exact</span>: RlebP.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">RltP</span> : <span class="kr">forall</span> <span class="nv">x</span> <span class="nv">y</span>, reflect (Rlt x y) (x &lt; y)%R.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">forall</span> <span class="nv">x</span> <span class="nv">y</span> : R, reflect (x &lt; y) (x &lt; y)%R</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>10f</q></div></small><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">exact</span>: RltbP.</span><span class="alectryon-wsp"> </span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="c">(* :TODO: *)</span>
+<span class="c">(* Lemma RgeP : forall x y, reflect (Rge x y) (x &gt;= y)%R. *)</span>
+<span class="c">(* Proof. exact: RlebP. Qed. *)</span>
+<span class="c">(* Lemma RgtP : forall x y, reflect (Rgt x y) (x &gt; y)%R. *)</span>
+<span class="c">(* Proof. exact: RltbP. Qed. *)</span>
+
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_numFieldType</span> := [numFieldType of R].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">Rreal_axiom</span> (<span class="nv">x</span> : R) : (<span class="mi">0</span> &lt;= x)%R || (x &lt;= <span class="mi">0</span>)%R.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>af</q><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="mi">0</span> &lt;= x)%R || (x &lt;= <span class="mi">0</span>)%R</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>114</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">case</span>: (Rle_dec <span class="mi">0</span> x)=&gt; [/RleP -&gt;|] //.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>af</q><span class="goal-separator"><hr></span><div class="goal-conclusion">~ <span class="mi">0</span> &lt;= x -&gt; (<span class="mi">0</span> &lt;= x)%R || (x &lt;= <span class="mi">0</span>)%R</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>/Rnot_le_lt/Rlt_le/RleP=&gt; -&gt;; <span class="nb">rewrite</span> orbT.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">R_total</span> : totalPOrderMixin R_porderType.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><span class="goal-separator"><hr></span><div class="goal-conclusion">totalPOrderMixin R_porderType</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>11d</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="nb">move</span>=&gt; x y; <span class="nb">case</span>: (Rle_lt_dec x y) =&gt; [/RleP -&gt; //|/Rlt_le/RleP -&gt;];
+  <span class="bp">by</span> <span class="nb">rewrite</span> orbT.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_latticeType</span> := LatticeType R R_total.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_distrLatticeType</span> := DistrLatticeType R R_total.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_orderType</span> := OrderType R R_total.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_realDomainType</span> := [realDomainType of R].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_realFieldType</span> := [realFieldType of R].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">Rarchimedean_axiom</span> : Num.archimedean_axiom R_numDomainType.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><span class="goal-separator"><hr></span><div class="goal-conclusion">Num.archimedean_axiom R_numDomainType</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>122</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">move</span>=&gt; x; <span class="kr">exists</span> (<span class="nv">Z</span>.abs_nat (up x) + <span class="mi">2</span>)%N.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>x</var><span class="hyp-type"><b>: </b><span>R_numDomainType</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(`|x| &lt; (Z.abs_nat (up x) + <span class="mi">2</span>)%:R)%R</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">have</span> [Hx1 Hx2]:= (archimed x).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>12a</q><br><span><var>Hx1</var><span class="hyp-type"><b>: </b><span>IZR (up x) &gt; x</span></span></span><br><span><var>Hx2</var><span class="hyp-type"><b>: </b><span>IZR (up x) - x &lt;= <span class="mi">1</span></span></span></span><br></div><span class="goal-separator"><hr></span><q>12b</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">have</span> Hz (z : Z): z = (z - <span class="mi">1</span> + <span class="mi">1</span>)%Z <span class="bp">by</span> <span class="nb">rewrite</span> Zplus_comm Zplus_minus.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>12a</q><br><q>130</q><br><q>131</q><br><span><var>Hz</var><span class="hyp-type"><b>: </b><span><span class="kr">forall</span> <span class="nv">z</span> : Z, z = (z - <span class="mi">1</span> + <span class="mi">1</span>)%Z</span></span></span><br></div><span class="goal-separator"><hr></span><q>12b</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">have</span> Zabs_nat_Zopp z : Z.abs_nat (- z)%Z = Z.abs_nat z <span class="bp">by</span> <span class="nb">case</span>: z.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>12a</q><br><q>130</q><br><q>131</q><br><q>136</q><br><span><var>Zabs_nat_Zopp</var><span class="hyp-type"><b>: </b><span><span class="kr">forall</span> <span class="nv">z</span> : Z,
+Z.abs_nat (- z) = Z.abs_nat z</span></span></span><br></div><span class="goal-separator"><hr></span><q>12b</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>/RltbP/Rabs_def1.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>13a</q><span class="goal-separator"><hr></span><div class="goal-conclusion">x &lt; ((Z.abs_nat (up x) + <span class="mi">2</span>)%:R)%R</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><q>13a</q><label class="goal-separator"><hr></label><div class="goal-conclusion">- ((Z.abs_nat (up x) + <span class="mi">2</span>)%:R)%R &lt; x</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>: (Rlt_trans _ ((Z.abs_nat (up x))%:R)%R); <span class="nb">last first</span>.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>13a</q><span class="goal-separator"><hr></span><div class="goal-conclusion">((Z.abs_nat (up x))%:R)%R &lt;
+((Z.abs_nat (up x) + <span class="mi">2</span>)%:R)%R</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><q>13a</q><label class="goal-separator"><hr></label><div class="goal-conclusion">x &lt; ((Z.abs_nat (up x))%:R)%R</div></blockquote><q>141</q></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> -[((Z.abs_nat _)%:R)%R]Rplus_0_r mulrnDr.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>13a</q><span class="goal-separator"><hr></span><div class="goal-conclusion">((Z.abs_nat (up x))%:R)%R + <span class="mi">0</span> &lt;
+((Z.abs_nat (up x))%:R + <span class="mi">2</span>)%R</div></blockquote><q>147</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span>/Rplus_lt_compat_l/Rlt_0_2.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>13a</q><span class="goal-separator"><hr></span><q>149</q></blockquote><q>140</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>: (Rlt_le_trans _ (IZR (up x)))=&gt; //.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>13a</q><span class="goal-separator"><hr></span><div class="goal-conclusion">IZR (up x) &lt;= ((Z.abs_nat (up x))%:R)%R</div></blockquote><q>140</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">elim</span>/(well_founded_ind (Zwf_well_founded <span class="mi">0</span>)): (up x) =&gt; z IHz.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>12a</q><br><q>130</q><br><q>131</q><br><q>136</q><br><q>13b</q><br><span><var>z</var><span class="hyp-type"><b>: </b><span>Z</span></span></span><br><span><var>IHz</var><span class="hyp-type"><b>: </b><span><span class="kr">forall</span> <span class="nv">y</span> : Z,
+Zwf <span class="mi">0</span> y z -&gt; IZR y &lt;= ((Z.abs_nat y)%:R)%R</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">IZR z &lt;= ((Z.abs_nat z)%:R)%R</div></blockquote><q>140</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">case</span>: (Z_lt_le_dec <span class="mi">0</span> z) =&gt; [zp | zn].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>12a</q><br><q>130</q><br><q>131</q><br><q>136</q><br><q>13b</q><br><q>159</q><br><q>15a</q><br><span><var>zp</var><span class="hyp-type"><b>: </b><span>(<span class="mi">0</span> &lt; z)%Z</span></span></span><br></div><span class="goal-separator"><hr></span><q>15b</q></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>12a</q><br><q>130</q><br><q>131</q><br><q>136</q><br><q>13b</q><br><q>159</q><br><q>15a</q><br><span><var>zn</var><span class="hyp-type"><b>: </b><span>(z &lt;= <span class="mi">0</span>)%Z</span></span></span><br></div><label class="goal-separator"><hr></label><q>15b</q></blockquote><q>141</q></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> [z]Hz plus_IZR Zabs_nat_Zplus //; <span class="nb">last</span> <span class="bp">exact</span>: Zlt_0_le_0_pred.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>15f</q><span class="goal-separator"><hr></span><div class="goal-conclusion">IZR (z - <span class="mi">1</span>) + <span class="mi">1</span> &lt;=
+((Z.abs_nat (z - <span class="mi">1</span>) + Z.abs_nat <span class="mi">1</span>)%coq_nat%:R)%R</div></blockquote><q>161</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> plusE mulrnDr.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>15f</q><span class="goal-separator"><hr></span><div class="goal-conclusion">IZR (z - <span class="mi">1</span>) + <span class="mi">1</span> &lt;=
+((Z.abs_nat (z - <span class="mi">1</span>))%:R + (Z.abs_nat <span class="mi">1</span>)%:R)%R</div></blockquote><q>161</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>/Rplus_le_compat_r/IHz; <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">exact</span>: Zlt_le_weak.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>15f</q><span class="goal-separator"><hr></span><div class="goal-conclusion">(z - <span class="mi">1</span> &lt; z)%Z</div></blockquote><q>161</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">exact</span>: Zlt_pred.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>163</q><span class="goal-separator"><hr></span><q>15b</q></blockquote><q>140</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>: (Rle_trans _ (IZR <span class="mi">0</span>)); <span class="kp">first</span> <span class="bp">exact</span>: IZR_le.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>163</q><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="mi">0</span> &lt;= ((Z.abs_nat z)%:R)%R</div></blockquote><q>140</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span>/RlebP/(ler0n R_numDomainType (Z.abs_nat z)).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>13a</q><span class="goal-separator"><hr></span><q>142</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>: (Rlt_le_trans _ (IZR (up x) - <span class="mi">1</span>)).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>13a</q><span class="goal-separator"><hr></span><div class="goal-conclusion">- ((Z.abs_nat (up x) + <span class="mi">2</span>)%:R)%R &lt; IZR (up x) - <span class="mi">1</span></div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><q>13a</q><label class="goal-separator"><hr></label><div class="goal-conclusion">IZR (up x) - <span class="mi">1</span> &lt;= x</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>: Ropp_lt_cancel; <span class="nb">rewrite</span> Ropp_involutive.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>13a</q><span class="goal-separator"><hr></span><div class="goal-conclusion">- (IZR (up x) - <span class="mi">1</span>) &lt; ((Z.abs_nat (up x) + <span class="mi">2</span>)%:R)%R</div></blockquote><q>17f</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> Ropp_minus_distr /Rminus -opp_IZR -{<span class="mi">2</span>}(Z.opp_involutive (up x)).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>13a</q><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="mi">1</span> + IZR (- up x) &lt; ((Z.abs_nat (- - up x) + <span class="mi">2</span>)%:R)%R</div></blockquote><q>17f</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">elim</span>/(well_founded_ind (Zwf_well_founded <span class="mi">0</span>)): (- up x)%Z =&gt; z IHz .</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>12a</q><br><q>130</q><br><q>131</q><br><q>136</q><br><q>13b</q><br><q>159</q><br><span><var>IHz</var><span class="hyp-type"><b>: </b><span><span class="kr">forall</span> <span class="nv">y</span> : Z,
+Zwf <span class="mi">0</span> y z -&gt;
+<span class="mi">1</span> + IZR y &lt; ((Z.abs_nat (- y) + <span class="mi">2</span>)%:R)%R</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="mi">1</span> + IZR z &lt; ((Z.abs_nat (- z) + <span class="mi">2</span>)%:R)%R</div></blockquote><q>17f</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">case</span>: (Z_lt_le_dec <span class="mi">0</span> z) =&gt; [zp | zn].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>12a</q><br><q>130</q><br><q>131</q><br><q>136</q><br><q>13b</q><br><q>159</q><br><q>18e</q><br><q>160</q><br></div><span class="goal-separator"><hr></span><q>18f</q></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>12a</q><br><q>130</q><br><q>131</q><br><q>136</q><br><q>13b</q><br><q>159</q><br><q>18e</q><br><q>164</q><br></div><label class="goal-separator"><hr></label><q>18f</q></blockquote><q>180</q></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> [z]Hz Zabs_nat_Zopp plus_IZR.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>193</q><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="mi">1</span> + (IZR (z - <span class="mi">1</span>) + <span class="mi">1</span>) &lt;
+((Z.abs_nat (z - <span class="mi">1</span> + <span class="mi">1</span>) + <span class="mi">2</span>)%:R)%R</div></blockquote><q>194</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> Zabs_nat_Zplus //; <span class="nb">last</span> <span class="bp">exact</span>: Zlt_0_le_0_pred.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>193</q><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="mi">1</span> + (IZR (z - <span class="mi">1</span>) + <span class="mi">1</span>) &lt;
+(((Z.abs_nat (z - <span class="mi">1</span>) + Z.abs_nat <span class="mi">1</span>)%coq_nat + <span class="mi">2</span>)%:R)%R</div></blockquote><q>194</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> plusE -Rplus_assoc -addnA [(_ + <span class="mi">2</span>)%N]addnC addnA mulrnDr.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>193</q><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="mi">1</span> + IZR (z - <span class="mi">1</span>) + <span class="mi">1</span> &lt;
+((Z.abs_nat (z - <span class="mi">1</span>) + <span class="mi">2</span>)%:R + (Z.abs_nat <span class="mi">1</span>)%:R)%R</div></blockquote><q>194</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>: Rplus_lt_compat_r; <span class="nb">rewrite</span> -Zabs_nat_Zopp.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>193</q><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="mi">1</span> + IZR (z - <span class="mi">1</span>) &lt; ((Z.abs_nat (- (z - <span class="mi">1</span>)) + <span class="mi">2</span>)%:R)%R</div></blockquote><q>194</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>: IHz; <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">exact</span>: Zlt_le_weak.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>12a</q><br><q>130</q><br><q>131</q><br><q>136</q><br><q>13b</q><br><q>159</q><br><q>160</q><br></div><span class="goal-separator"><hr></span><q>170</q></blockquote><q>194</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">exact</span>: Zlt_pred.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>196</q><span class="goal-separator"><hr></span><q>18f</q></blockquote><q>17f</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>: (Rle_lt_trans _ <span class="mi">1</span>).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>196</q><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="mi">1</span> + IZR z &lt;= <span class="mi">1</span></div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><q>196</q><label class="goal-separator"><hr></label><div class="goal-conclusion"><span class="mi">1</span> &lt; ((Z.abs_nat (- z) + <span class="mi">2</span>)%:R)%R</div></blockquote><q>180</q></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> -{<span class="mi">2</span>}[<span class="mi">1</span>]Rplus_0_r; <span class="nb">apply</span>: Rplus_le_compat_l.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>196</q><span class="goal-separator"><hr></span><div class="goal-conclusion">IZR z &lt;= <span class="mi">0</span></div></blockquote><q>1b2</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> -/(IZR <span class="mi">0</span>); <span class="nb">apply</span>: IZR_le.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>196</q><span class="goal-separator"><hr></span><q>1b4</q></blockquote><q>17f</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> mulrnDr; <span class="nb">apply</span>: (Rlt_le_trans _ <span class="mi">2</span>).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>196</q><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="mi">1</span> &lt; <span class="mi">2</span></div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><q>196</q><label class="goal-separator"><hr></label><div class="goal-conclusion"><span class="mi">2</span> &lt;= ((Z.abs_nat (- z))%:R + <span class="mi">2</span>)%R</div></blockquote><q>180</q></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">rewrite</span> -{<span class="mi">1</span>}[<span class="mi">1</span>]Rplus_0_r; <span class="nb">apply</span>/Rplus_lt_compat_l/Rlt_0_1.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>196</q><span class="goal-separator"><hr></span><q>1c2</q></blockquote><q>17f</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> -[<span class="mi">2</span>]Rplus_0_l; <span class="nb">apply</span>: Rplus_le_compat_r.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>196</q><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="mi">0</span> &lt;= ((Z.abs_nat (- z))%:R)%R</div></blockquote><q>17f</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span>/RlebP/(ler0n R_numDomainType (Z.abs_nat _)).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>13a</q><span class="goal-separator"><hr></span><q>181</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>: Rminus_le.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>13a</q><span class="goal-separator"><hr></span><div class="goal-conclusion">IZR (up x) - <span class="mi">1</span> - x &lt;= <span class="mi">0</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> /Rminus Rplus_assoc [- _ + _]Rplus_comm -Rplus_assoc -!/(Rminus _ _).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>13a</q><span class="goal-separator"><hr></span><div class="goal-conclusion">IZR (up x) - x - <span class="mi">1</span> &lt;= <span class="mi">0</span></div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">exact</span>: Rle_minus.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+<span class="c">(* Canonical R_numArchiDomainType := ArchiDomainType R Rarchimedean_axiom. *)</span>
+<span class="c">(* (* Canonical R_numArchiFieldType := [numArchiFieldType of R]. *) *)</span>
+<span class="c">(* Canonical R_realArchiDomainType := [realArchiDomainType of R]. *)</span>
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_realArchiFieldType</span> := ArchiFieldType R Rarchimedean_axiom.</span></span></pre><div class="doc">
+Here are the lemmas that we will use to prove that R has
+the rcfType structure. 
+</div><pre class="alectryon-io highlight"><!-- Generator: Alectryon --><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">continuity_eq</span> <span class="nv">f</span> <span class="nv">g</span> : f =<span class="mi">1</span> g -&gt; continuity f -&gt; continuity g.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>f, g</var><span class="hyp-type"><b>: </b><span>R -&gt; R</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">f =<span class="mi">1</span> g -&gt; continuity f -&gt; continuity g</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>1d6</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">move</span>=&gt; Hfg Hf x eps Heps.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>1d9</q><br><span><var>Hfg</var><span class="hyp-type"><b>: </b><span>f =<span class="mi">1</span> g</span></span></span><br><span><var>Hf</var><span class="hyp-type"><b>: </b><span>continuity f</span></span></span><br><span><var>x, eps</var><span class="hyp-type"><b>: </b><span>R</span></span></span><br><span><var>Heps</var><span class="hyp-type"><b>: </b><span>eps &gt; <span class="mi">0</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">exists</span> <span class="nv">alp</span> : R,
+  alp &gt; <span class="mi">0</span> /\
+  (<span class="kr">forall</span> <span class="nv">x0</span> : Base R_met,
+   D_x no_cond x x0 /\ dist R_met x0 x &lt; alp -&gt;
+   dist R_met (g x0) (g x) &lt; eps)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">have</span> [y [Hy1 Hy2]]:= Hf x eps Heps.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>1d9</q><br><q>1e0</q><br><q>1e1</q><br><q>1e2</q><br><q>1e3</q><br><span><var>y</var><span class="hyp-type"><b>: </b><span>R</span></span></span><br><span><var>Hy1</var><span class="hyp-type"><b>: </b><span>y &gt; <span class="mi">0</span></span></span></span><br><span><var>Hy2</var><span class="hyp-type"><b>: </b><span><span class="kr">forall</span> <span class="nv">x0</span> : Base R_met,
+D_x no_cond x x0 /\ dist R_met x0 x &lt; y -&gt;
+dist R_met (f x0) (f x) &lt; eps</span></span></span><br></div><span class="goal-separator"><hr></span><q>1e4</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="kr">exists</span> <span class="nv">y</span>; <span class="nb">split</span>=&gt; // z; <span class="nb">rewrite</span> -!Hfg; <span class="bp">exact</span>: Hy2.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">continuity_sum</span> (<span class="nv">I</span> : finType) <span class="nv">F</span> (<span class="nv">P</span> : pred I):
+(<span class="kr">forall</span> <span class="nv">i</span>, P i -&gt; continuity (F i)) -&gt;
+continuity (<span class="kr">fun</span> <span class="nv">x</span> =&gt; (\sum_(i | P i) ((F i) x)))%R.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>I</var><span class="hyp-type"><b>: </b><span>finType</span></span></span><br><span><var>F</var><span class="hyp-type"><b>: </b><span>I -&gt; R -&gt; R</span></span></span><br><span><var>P</var><span class="hyp-type"><b>: </b><span>pred I</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="kr">forall</span> <span class="nv">i</span> : I, P i -&gt; continuity (F i)) -&gt;
+continuity (<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; (\sum_(i | P i) F i x)%R)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>1ed</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">move</span>=&gt; H; <span class="nb">elim</span>: (index_enum I)=&gt; [|a l IHl].</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>1f0</q><br><q>1f1</q><br><q>1f2</q><br><span><var>H</var><span class="hyp-type"><b>: </b><span><span class="kr">forall</span> <span class="nv">i</span> : I, P i -&gt; continuity (F i)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">continuity
+  (<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; (\sum_(i &lt;- [::] | P i) F i x)%R)</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>1f0</q><br><q>1f1</q><br><q>1f2</q><br><q>1f9</q><br><span><var>a</var><span class="hyp-type"><b>: </b><span>I</span></span></span><br><span><var>l</var><span class="hyp-type"><b>: </b><span>seq I</span></span></span><br><span><var>IHl</var><span class="hyp-type"><b>: </b><span>continuity (<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; (\sum_(i &lt;- l | P i) F i x)%R)</span></span></span><br></div><label class="goal-separator"><hr></label><div class="goal-conclusion">continuity
+  (<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; (\sum_(i &lt;- (a :: l) | P i) F i x)%R)</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">set</span> f:= <span class="kr">fun</span> <span class="nv">_</span> =&gt; _.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>1f0</q><br><q>1f1</q><br><q>1f2</q><br><q>1f9</q><br><span><var>f</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">fun</span> <span class="nv">H</span> : R =&gt; (\sum_(i &lt;- [::] | P i) F i H)%R</span></span><span class="hyp-type"><b>: </b><span>R -&gt; R_zmodType</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">continuity f</div></blockquote><q>1fb</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">have</span> Hf: (<span class="kr">fun</span> <span class="nv">x</span>=&gt; <span class="mi">0</span>) =<span class="mi">1</span> f <span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> /f big_nil.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>1f0</q><br><q>1f1</q><br><q>1f2</q><br><q>1f9</q><br><q>206</q><br><span><var>Hf</var><span class="hyp-type"><b>: </b><span>(<span class="kr">fun</span>=&gt; <span class="mi">0</span>) =<span class="mi">1</span> f</span></span></span><br></div><span class="goal-separator"><hr></span><q>207</q></blockquote><q>1fb</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span>: (continuity_eq Hf); <span class="bp">exact</span>: continuity_const.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>1fd</q><span class="goal-separator"><hr></span><q>201</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">set</span> f := <span class="kr">fun</span> <span class="nv">_</span> =&gt; _.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>1f0</q><br><q>1f1</q><br><q>1f2</q><br><q>1f9</q><br><q>1fe</q><br><q>1ff</q><br><q>200</q><br><span><var>f</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">fun</span> <span class="nv">H</span> : R =&gt; (\sum_(i &lt;- (a :: l) | P i) F i H)%R</span></span><span class="hyp-type"><b>: </b><span>R -&gt; R_zmodType</span></span></span></span><br></div><span class="goal-separator"><hr></span><q>207</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">case</span> Hpa: (P a).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>1f0</q><br><q>1f1</q><br><q>1f2</q><br><q>1f9</q><br><q>1fe</q><br><q>1ff</q><br><q>200</q><br><q>214</q><br><span><var>Hpa</var><span class="hyp-type"><b>: </b><span>P a = true</span></span></span><br></div><span class="goal-separator"><hr></span><q>207</q></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>1f0</q><br><q>1f1</q><br><q>1f2</q><br><q>1f9</q><br><q>1fe</q><br><q>1ff</q><br><q>200</q><br><q>214</q><br><span><var>Hpa</var><span class="hyp-type"><b>: </b><span>P a = false</span></span></span><br></div><label class="goal-separator"><hr></label><q>207</q></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">have</span> Hf: (<span class="kr">fun</span> <span class="nv">x</span> =&gt; F a x + \sum_(i &lt;- l | P i) F i x)%R =<span class="mi">1</span> f.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>218</q><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; (F a x + \sum_(i &lt;- l | P i) F i x)%R) =<span class="mi">1</span>
+f</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>1f0</q><br><q>1f1</q><br><q>1f2</q><br><q>1f9</q><br><q>1fe</q><br><q>1ff</q><br><q>200</q><br><q>214</q><br><q>219</q><br><span><var>Hf</var><span class="hyp-type"><b>: </b><span>(<span class="kr">fun</span> <span class="nv">x</span> : R =&gt;
+ (F a x + \sum_(i &lt;- l | P i) F i x)%R) =<span class="mi">1</span> f</span></span></span><br></div><label class="goal-separator"><hr></label><q>207</q></blockquote><q>21b</q></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">    </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> /f big_cons Hpa.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>224</q><span class="goal-separator"><hr></span><q>207</q></blockquote><q>21a</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>: (continuity_eq Hf); <span class="nb">apply</span>: continuity_plus=&gt; //.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>224</q><span class="goal-separator"><hr></span><div class="goal-conclusion">continuity (F a)</div></blockquote><q>21a</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">exact</span>: H.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>21c</q><span class="goal-separator"><hr></span><q>207</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">have</span> Hf: (<span class="kr">fun</span> <span class="nv">x</span> =&gt; \sum_(i &lt;- l | P i) F i x)%R =<span class="mi">1</span> f.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>21c</q><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; (\sum_(i &lt;- l | P i) F i x)%R) =<span class="mi">1</span> f</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>1f0</q><br><q>1f1</q><br><q>1f2</q><br><q>1f9</q><br><q>1fe</q><br><q>1ff</q><br><q>200</q><br><q>214</q><br><q>21d</q><br><span><var>Hf</var><span class="hyp-type"><b>: </b><span>(<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; (\sum_(i &lt;- l | P i) F i x)%R) =<span class="mi">1</span> f</span></span></span><br></div><label class="goal-separator"><hr></label><q>207</q></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> /f big_cons Hpa.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>236</q><span class="goal-separator"><hr></span><q>207</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">exact</span>: (continuity_eq Hf).</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">continuity_exp</span> <span class="nv">f</span> <span class="nv">n</span>: continuity f -&gt; continuity (<span class="kr">fun</span> <span class="nv">x</span> =&gt; (f x)^+ n)%R.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>f</var><span class="hyp-type"><b>: </b><span>R -&gt; R</span></span></span><br><q>2b</q><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">continuity f -&gt; continuity (<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; (f x ^+ n)%R)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>23c</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">move</span>=&gt; Hf; <span class="nb">elim</span>: n=&gt; [|n IHn]; <span class="kp">first</span> <span class="bp">exact</span>: continuity_const.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>23f</q><br><q>1e1</q><br><q>2b</q><br><span><var>IHn</var><span class="hyp-type"><b>: </b><span>continuity (<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; (f x ^+ n)%R)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">continuity (<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; (f x ^+ n.+<span class="mi">1</span>)%R)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">set</span> g:= <span class="kr">fun</span> <span class="nv">_</span> =&gt; _.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>23f</q><br><q>1e1</q><br><q>2b</q><br><q>246</q><br><span><var>g</var><span><span class="hyp-body"><b>:= </b><span><span class="kr">fun</span> <span class="nv">H</span> : R =&gt; (f H ^+ n.+<span class="mi">1</span>)%R</span></span><span class="hyp-type"><b>: </b><span>R -&gt; R_ringType</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">continuity g</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">have</span> Hg: (<span class="kr">fun</span> <span class="nv">x</span>=&gt; f x * f x ^+ n)%R =<span class="mi">1</span> g.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>24b</q><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; (f x * f x ^+ n)%R) =<span class="mi">1</span> g</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>23f</q><br><q>1e1</q><br><q>2b</q><br><q>246</q><br><q>24c</q><br><span><var>Hg</var><span class="hyp-type"><b>: </b><span>(<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; (f x * f x ^+ n)%R) =<span class="mi">1</span> g</span></span></span><br></div><label class="goal-separator"><hr></label><q>24d</q></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> /g exprS.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>254</q><span class="goal-separator"><hr></span><q>24d</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span>: (continuity_eq Hg); <span class="bp">exact</span>: continuity_mult.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Lemma</span> <span class="nf">Rreal_closed_axiom</span> : Num.real_closed_axiom R_numDomainType.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><span class="goal-separator"><hr></span><div class="goal-conclusion">Num.real_closed_axiom R_numDomainType</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">Proof</span>.</label><small class="alectryon-output"><div><q>25a</q></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">move</span>=&gt; p a b; <span class="nb">rewrite</span> !le_eqVlt.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><span><var>p</var><span class="hyp-type"><b>: </b><span>{poly R_numDomainType}</span></span></span><br><span><var>a, b</var><span class="hyp-type"><b>: </b><span>R_numDomainType</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(a == b) || (a &lt; b)%R -&gt;
+(((p.[a])%R == <span class="mi">0</span>%R) || (p.[a] &lt; <span class="mi">0</span>)%R) &amp;&amp;
+((<span class="mi">0</span>%R == (p.[b])%R) || (<span class="mi">0</span> &lt; p.[b])%R) -&gt;
+<span class="kr">exists2</span> x : R_numDomainType,
+  (a &lt;= x &lt;= b)%R &amp; root p x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">case</span> Hpa: ((p.[a])%R == <span class="mi">0</span>%R).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>262</q><br><q>263</q><br><span><var>Hpa</var><span class="hyp-type"><b>: </b><span>((p.[a])%R == <span class="mi">0</span>%R) = true</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(a == b) || (a &lt; b)%R -&gt;
+(true || (p.[a] &lt; <span class="mi">0</span>)%R) &amp;&amp;
+((<span class="mi">0</span>%R == (p.[b])%R) || (<span class="mi">0</span> &lt; p.[b])%R) -&gt;
+<span class="kr">exists2</span> x : R_numDomainType,
+  (a &lt;= x &lt;= b)%R &amp; root p x</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>262</q><br><q>263</q><br><span><var>Hpa</var><span class="hyp-type"><b>: </b><span>((p.[a])%R == <span class="mi">0</span>%R) = false</span></span></span><br></div><label class="goal-separator"><hr></label><div class="goal-conclusion">(a == b) || (a &lt; b)%R -&gt;
+(false || (p.[a] &lt; <span class="mi">0</span>)%R) &amp;&amp;
+((<span class="mi">0</span>%R == (p.[b])%R) || (<span class="mi">0</span> &lt; p.[b])%R) -&gt;
+<span class="kr">exists2</span> x : R_numDomainType,
+  (a &lt;= x &lt;= b)%R &amp; root p x</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; ? _ ; <span class="kr">exists</span> <span class="nv">a</span>=&gt; //; <span class="nb">rewrite</span> lexx le_eqVlt.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>26d</q><span class="goal-separator"><hr></span><q>26f</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">case</span> Hpb: ((p.[b])%R == <span class="mi">0</span>%R).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>262</q><br><q>263</q><br><q>26e</q><br><span><var>Hpb</var><span class="hyp-type"><b>: </b><span>((p.[b])%R == <span class="mi">0</span>%R) = true</span></span></span><br></div><span class="goal-separator"><hr></span><q>26f</q></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>262</q><br><q>263</q><br><q>26e</q><br><span><var>Hpb</var><span class="hyp-type"><b>: </b><span>((p.[b])%R == <span class="mi">0</span>%R) = false</span></span></span><br></div><label class="goal-separator"><hr></label><q>26f</q></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; ? _; <span class="kr">exists</span> <span class="nv">b</span>=&gt; //; <span class="nb">rewrite</span> lexx le_eqVlt andbT.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>27a</q><span class="goal-separator"><hr></span><q>26f</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">case</span> Hab: (a == b).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>262</q><br><q>263</q><br><q>26e</q><br><q>27b</q><br><span><var>Hab</var><span class="hyp-type"><b>: </b><span>(a == b) = true</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">true || (a &lt; b)%R -&gt;
+(false || (p.[a] &lt; <span class="mi">0</span>)%R) &amp;&amp;
+((<span class="mi">0</span>%R == (p.[b])%R) || (<span class="mi">0</span> &lt; p.[b])%R) -&gt;
+<span class="kr">exists2</span> x : R_numDomainType,
+  (a &lt;= x &lt;= b)%R &amp; root p x</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>262</q><br><q>263</q><br><q>26e</q><br><q>27b</q><br><span><var>Hab</var><span class="hyp-type"><b>: </b><span>(a == b) = false</span></span></span><br></div><label class="goal-separator"><hr></label><div class="goal-conclusion">false || (a &lt; b)%R -&gt;
+(false || (p.[a] &lt; <span class="mi">0</span>)%R) &amp;&amp;
+((<span class="mi">0</span>%R == (p.[b])%R) || (<span class="mi">0</span> &lt; p.[b])%R) -&gt;
+<span class="kr">exists2</span> x : R_numDomainType,
+  (a &lt;= x &lt;= b)%R &amp; root p x</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">move</span>=&gt; _; <span class="nb">rewrite</span> (eqP Hab) eq_sym Hpb (ltNge <span class="mi">0</span>) /=; <span class="nb">case</span>/andP=&gt; /ltW -&gt;.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>287</q><span class="goal-separator"><hr></span><q>289</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> eq_sym Hpb /=; <span class="nb">clear</span>=&gt; /RltbP Hab /andP [] /RltbP Hpa /RltbP Hpb.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>262</q><br><q>263</q><br><span><var>Hab</var><span class="hyp-type"><b>: </b><span>a &lt; b</span></span></span><br><span><var>Hpa</var><span class="hyp-type"><b>: </b><span>(p.[a])%R &lt; <span class="mi">0</span>%R</span></span></span><br><span><var>Hpb</var><span class="hyp-type"><b>: </b><span><span class="mi">0</span>%R &lt; (p.[b])%R</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">exists2</span> x : R, (a &lt;= x &lt;= b)%R &amp; root p x</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">suff</span> Hcp: continuity (<span class="kr">fun</span> <span class="nv">x</span> =&gt; (p.[x])%R).</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>262</q><br><q>263</q><br><q>291</q><br><q>292</q><br><q>293</q><br><span><var>Hcp</var><span class="hyp-type"><b>: </b><span>continuity [eta horner p]</span></span></span><br></div><span class="goal-separator"><hr></span><q>294</q></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><q>290</q><label class="goal-separator"><hr></label><div class="goal-conclusion">continuity [eta horner p]</div></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">have</span> [z [[Hza Hzb] /eqP Hz2]]:= IVT _ a b Hcp Hab Hpa Hpb.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>262</q><br><q>263</q><br><q>291</q><br><q>292</q><br><q>293</q><br><q>299</q><br><span><var>z</var><span class="hyp-type"><b>: </b><span>R</span></span></span><br><span><var>Hza</var><span class="hyp-type"><b>: </b><span>a &lt;= z</span></span></span><br><span><var>Hzb</var><span class="hyp-type"><b>: </b><span>z &lt;= b</span></span></span><br><span><var>Hz2</var><span class="hyp-type"><b>: </b><span>(p.[z])%R == <span class="mi">0</span></span></span></span><br></div><span class="goal-separator"><hr></span><q>294</q></blockquote><q>29a</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="kr">exists</span> <span class="nv">z</span>=&gt; //; <span class="nb">apply</span>/andP; <span class="nb">split</span>; <span class="nb">apply</span>/RlebP.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>290</q><span class="goal-separator"><hr></span><q>29c</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">rewrite</span> -[p]coefK poly_def.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>290</q><span class="goal-separator"><hr></span><div class="goal-conclusion">continuity
+  [eta horner (\sum_(i &lt; size p) p`_i *: &#39;X^i)]</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">set</span> f := <span class="kr">fun</span> <span class="nv">_</span> =&gt; _.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>262</q><br><q>263</q><br><q>291</q><br><q>292</q><br><q>293</q><br><span><var>f</var><span><span class="hyp-body"><b>:= </b><span>[eta horner (\sum_(i &lt; size p) p`_i *: &#39;X^i)]</span></span><span class="hyp-type"><b>: </b><span>R -&gt; R_numDomainType</span></span></span></span><br></div><span class="goal-separator"><hr></span><q>207</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">have</span> Hf: (<span class="kr">fun</span> (<span class="nv">x</span> : R) =&gt; \sum_(i &lt; size p) (p`_i * x^+i))%R =<span class="mi">1</span> f.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>2af</q><span class="goal-separator"><hr></span><div class="goal-conclusion">(<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; (\sum_(i &lt; size p) p`_i * x ^+ i)%R) =<span class="mi">1</span>
+f</div></blockquote><div class="alectryon-extra-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>262</q><br><q>263</q><br><q>291</q><br><q>292</q><br><q>293</q><br><q>2b0</q><br><span><var>Hf</var><span class="hyp-type"><b>: </b><span>(<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; (\sum_(i &lt; size p) p`_i * x ^+ i)%R) =<span class="mi">1</span>
+f</span></span></span><br></div><label class="goal-separator"><hr></label><q>207</q></blockquote></div></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">move</span>=&gt; x; <span class="nb">rewrite</span> /f horner_sum.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>262</q><br><q>263</q><br><q>291</q><br><q>292</q><br><q>293</q><br><q>2b0</q><br><q>2c</q><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">(\sum_(i &lt; size p) p`_i * x ^+ i)%R =
+(\sum_i (p`_i *: &#39;X^i).[x])%R</div></blockquote><q>2b5</q></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">  </span><span class="alectryon-sentence"><label class="alectryon-input"><span class="bp">by</span> <span class="nb">apply</span>: eq_bigr=&gt; i _; <span class="nb">rewrite</span> hornerZ hornerXn.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><q>2b7</q><span class="goal-separator"><hr></span><q>207</q></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>: (continuity_eq Hf); <span class="nb">apply</span>: continuity_sum=&gt; i _.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>262</q><br><q>263</q><br><q>291</q><br><q>292</q><br><q>293</q><br><q>2b0</q><br><q>2b8</q><br><span><var>i</var><span class="hyp-type"><b>: </b><span>ordinal_finType (size p)</span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion">continuity (<span class="kr">fun</span> <span class="nv">x</span> : R =&gt; (p`_i * x ^+ i)%R)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="nb">apply</span>:continuity_scal; <span class="nb">apply</span>: continuity_exp=&gt; x esp Hesp.</label><small class="alectryon-output"><div><div class="alectryon-goals"><blockquote class="alectryon-goal"><div class="goal-hyps"><q>262</q><br><q>263</q><br><q>291</q><br><q>292</q><br><q>293</q><br><q>2b0</q><br><q>2b8</q><br><q>2c5</q><br><span><var>x, esp</var><span class="hyp-type"><b>: </b><span>R</span></span></span><br><span><var>Hesp</var><span class="hyp-type"><b>: </b><span>esp &gt; <span class="mi">0</span></span></span></span><br></div><span class="goal-separator"><hr></span><div class="goal-conclusion"><span class="kr">exists</span> <span class="nv">alp</span> : R,
+  alp &gt; <span class="mi">0</span> /\
+  (<span class="kr">forall</span> <span class="nv">x0</span> : Base R_met,
+   D_x no_cond x x0 /\ dist R_met x0 x &lt; alp -&gt;
+   dist R_met x0 x &lt; esp)</div></blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="bp">by</span> <span class="kr">exists</span> <span class="nv">esp</span>; <span class="nb">split</span>=&gt; // y [].</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Qed</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Canonical</span> <span class="nf">R_rcfType</span> := RcfType R Rreal_closed_axiom.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="c">(* Canonical R_realClosedArchiFieldType := [realClosedArchiFieldType of R]. *)</span>
+
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">End</span> <span class="nf">ssreal_struct</span>.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp">
+</span><span class="alectryon-sentence"><span class="alectryon-input"><span class="kn">Local</span> <span class="kn">Open Scope</span> ring_scope.</span><span class="alectryon-wsp">
+</span></span><span class="alectryon-sentence"><label class="alectryon-input"><span class="kn">From</span> mathcomp.classical <span class="kn">Require Import</span> boolp classical_sets.</label><small class="alectryon-output"><div><div class="alectryon-messages"><blockquote class="alectryon-message">New coercion path [Empty.mixin; Empty.eqMixin] : Empty.class_of &gt;-&gt; Equality.mixin_of <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[Empty.base; Finite.base; Choice.base] : Empty.class_of &gt;-&gt; Equality.mixin_of.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [Empty.mixin; Empty.choiceMixin] : Empty.class_of &gt;-&gt; Choice.mixin_of <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[Empty.base; Finite.base; Choice.mixin] : Empty.class_of &gt;-&gt; Choice.mixin_of.
+[ambiguous-paths,typechecker]</blockquote><blockquote class="alectryon-message">New coercion path [Empty.mixin; Empty.countMixin] : Empty.class_of &gt;-&gt; Countable.mixin_of <span class="kr">is</span> ambiguous <span class="kr">with</span> existing 
+[Empty.base; Finite.mixin; Finite.mixin_base] : Empty.class_of &gt;-&gt; Countable.mixin_of.
+[ambiguous-paths,typechecker]</blockquote></div></div></small><span class="alectryon-wsp">
+</span></span><span class="alectryon-wsp"><span class="kn">Require Import</span> reals.
+
+<span class="kn">Section</span> <span class="nf">ssreal_struct_contd</span>.
+<span class="kn">Implicit Type</span> <span class="nf">E</span> : <span class="nb">set</span> R.
+
+<span class="kn">Lemma</span> <span class="nf">is_upper_boundE</span> <span class="nv">E</span> <span class="nv">x</span> : is_upper_bound E x = (ubound E) x.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> propeqE; <span class="nb">split</span>; [<span class="nb">move</span>=&gt; h|<span class="nb">move</span>=&gt; /ubP h y Ey; <span class="bp">exact</span>/RleP/h].
+<span class="bp">by</span> <span class="nb">apply</span>/ubP =&gt; y Ey; <span class="nb">apply</span>/RleP/h.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">boundE</span> <span class="nv">E</span> : bound E = has_ubound E.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">apply</span>/eq_exists=&gt; x; <span class="nb">rewrite</span> is_upper_boundE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rcondcomplete</span> <span class="nv">E</span> : has_sup E -&gt; {m | isLub E m}.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; [E0 uE]; <span class="nb">have</span> := completeness E; <span class="nb">rewrite</span> boundE =&gt; /(_ uE E0)[x [E1 E2]].
+<span class="kr">exists</span> <span class="nv">x</span>; <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> -is_upper_boundE; <span class="nb">apply</span>: E1.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; y; <span class="nb">rewrite</span> -is_upper_boundE =&gt; /E2/RleP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rsupremums_neq0</span> <span class="nv">E</span> : has_sup E -&gt; (supremums E !=set0)%classic.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; /Rcondcomplete[x [? ?]]; <span class="kr">exists</span> <span class="nv">x</span>. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rsup_isLub</span> <span class="nv">x0</span> <span class="nv">E</span> : has_sup E -&gt; isLub E (supremum x0 E).
+<span class="kn">Proof</span>.
+<span class="nb">have</span> [-&gt; [/set0P]|E0 hsE] := eqVneq E set0; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> eqxx.
+<span class="nb">have</span> [s [Es sE]] := Rcondcomplete hsE.
+<span class="nb">split</span> =&gt; x Ex; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>/ge_supremum_Nmem=&gt; //; <span class="bp">exact</span>: Rsupremums_neq0.
+<span class="nb">rewrite</span> /supremum (negbTE E0); <span class="nb">case</span>: xgetP =&gt; /=.
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; _ -&gt; [_ EsE]; <span class="nb">apply</span>/EsE.
+<span class="bp">by</span> <span class="nb">have</span> [y Ey /(_ y)] := Rsupremums_neq0 hsE.
+<span class="kn">Qed</span>.
+
+<span class="c">(* :TODO: rewrite like this using (a fork of?) Coquelicot *)</span>
+<span class="c">(* Lemma real_sup_adherent (E : pred R) : real_sup E \in closure E. *)</span>
+<span class="kn">Lemma</span> <span class="nf">real_sup_adherent</span> <span class="nv">x0</span> <span class="nv">E</span> (<span class="nv">eps</span> : R) : (<span class="mi">0</span> &lt; eps) -&gt;
+  has_sup E -&gt; <span class="kr">exists2</span> e, E e &amp; (supremum x0 E - eps) &lt; e.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; eps_gt0 supE; <span class="nb">set</span> m := _ - eps; <span class="nb">apply</span>: contrapT=&gt; mNsmall.
+<span class="nb">have</span> : (ubound E) m.
+  <span class="nb">apply</span>/ubP =&gt; y Ey.
+  <span class="bp">by</span> <span class="nb">have</span> /negP := mNsmall (ex_intro2 _ _ y Ey _); <span class="nb">rewrite</span> -leNgt.
+<span class="nb">have</span> [_ /(_ m)] := Rsup_isLub x0 supE.
+<span class="nb">move</span> =&gt; m_big /m_big.
+<span class="bp">by</span> <span class="nb">rewrite</span> -subr_ge0 addrC addKr oppr_ge0 leNgt eps_gt0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">Rsup_ub</span> <span class="nv">x0</span> <span class="nv">E</span> : has_sup E -&gt; (ubound E) (supremum x0 E).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; supE x Ex; <span class="nb">apply</span>/ge_supremum_Nmem =&gt; //; <span class="bp">exact</span>: Rsupremums_neq0.
+<span class="kn">Qed</span>.
+
+<span class="kn">Definition</span> <span class="nf">real_realMixin</span> : Real.mixin_of _ :=
+  RealMixin (@Rsup_ub (<span class="mi">0</span> : R)) (real_sup_adherent <span class="mi">0</span>).
+<span class="kn">Canonical</span> <span class="nf">real_realType</span> := RealType R real_realMixin.
+
+<span class="kn">Implicit Types</span> (<span class="nv">x</span> <span class="nv">y</span> : R) (<span class="nv">m</span> <span class="nv">n</span> : nat).
+
+<span class="c">(* equational lemmas about exp, sin and cos for mathcomp compat *)</span>
+
+<span class="c">(* Require Import realsum. *)</span>
+
+<span class="c">(* :TODO: One day, do this *)</span>
+<span class="c">(* Notation &quot;\Sum_ i E&quot; := (psum (fun i =&gt; E)) *)</span>
+<span class="c">(*  (at level 100, i ident, format &quot;\Sum_ i  E&quot;) : ring_scope. *)</span>
+
+<span class="c">(* Definition exp x := \Sum_n (n`!)%:R^-1 * x ^ n. *)</span>
+
+<span class="kn">Lemma</span> <span class="nf">expR0</span> : exp (<span class="mi">0</span> : R) = <span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> exp_0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expRD</span> <span class="nv">x</span> <span class="nv">y</span> : exp x * exp y = exp (x + y).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> exp_plus. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">expRX</span> <span class="nv">x</span> <span class="nv">n</span> : exp x ^+ n = exp (x *+ n).
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>: n =&gt; [|n Ihn]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> expr0 mulr0n exp_0.
+<span class="bp">by</span> <span class="nb">rewrite</span> exprS Ihn mulrS expRD.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">sinD</span> <span class="nv">x</span> <span class="nv">y</span> : sin (x + y) = sin x * cos y + cos x * sin y.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> sin_plus. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">cosD</span> <span class="nv">x</span> <span class="nv">y</span> : cos (x + y) = (cos x * cos y - sin x * sin y).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> cos_plus. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RplusE</span> <span class="nv">x</span> <span class="nv">y</span> : Rplus x y = x + y. <span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RminusE</span> <span class="nv">x</span> <span class="nv">y</span> : Rminus x y = x - y. <span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RmultE</span> <span class="nv">x</span> <span class="nv">y</span> : Rmult x y = x * y. <span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RoppE</span> <span class="nv">x</span> : Ropp x = - x. <span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RinvE</span> <span class="nv">x</span> : x != <span class="mi">0</span> -&gt; Rinv x = x^-<span class="mi">1</span>.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; x_neq0; <span class="nb">rewrite</span> -[RHS]/(<span class="kr">if</span> _ <span class="kr">then</span> _ <span class="kr">else</span> _) x_neq0. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RdivE</span> <span class="nv">x</span> <span class="nv">y</span> : y != <span class="mi">0</span> -&gt; Rdiv x y = x / y.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; y_neq0; <span class="nb">rewrite</span> /Rdiv RinvE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">INRE</span> <span class="nv">n</span> : INR n = n%:R.
+<span class="kn">Proof</span>. <span class="nb">elim</span>: n =&gt; // n IH; <span class="bp">by</span> <span class="nb">rewrite</span> S_INR IH RplusE -addn1 natrD. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RsqrtE</span> <span class="nv">x</span> : <span class="mi">0</span> &lt;= x -&gt; sqrt x = Num.sqrt x.
+<span class="kn">Proof</span>.
+<span class="nb">move</span> =&gt; x0; <span class="nb">apply</span>/eqP; <span class="nb">have</span> [t1 t2] := conj (sqrtr_ge0 x) (sqrt_pos x).
+<span class="nb">rewrite</span> eq_sym -(eqr_expn2 (_: <span class="mi">0</span> &lt; <span class="mi">2</span>)%N t1) //; <span class="nb">last</span> <span class="bp">by</span> <span class="nb">apply</span> /RleP.
+<span class="nb">rewrite</span> sqr_sqrtr // !exprS expr0 mulr1 -RmultE <span class="nl">?sqrt_sqrt</span> //; <span class="bp">by</span> <span class="nb">apply</span>/RleP.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RpowE</span> <span class="nv">x</span> <span class="nv">n</span> : pow x n = x ^+ n.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">elim</span>: n =&gt; [ | n In] //=; <span class="nb">rewrite</span> exprS In RmultE. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">RmaxE</span> <span class="nv">x</span> <span class="nv">y</span> : Rmax x y = Num.max x y.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: (lerP x y) =&gt; H; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> Rmax_right //; <span class="nb">apply</span>: RlebP.
+<span class="bp">by</span> <span class="nb">rewrite</span> <span class="nl">?ltW</span> // Rmax_left //;  <span class="nb">apply</span>/RlebP; <span class="nb">move</span>/ltW : H.
+<span class="kn">Qed</span>.
+
+<span class="c">(* useful? *)</span>
+<span class="kn">Lemma</span> <span class="nf">RminE</span> <span class="nv">x</span> <span class="nv">y</span> : Rmin x y = Num.min x y.
+<span class="kn">Proof</span>.
+<span class="nb">case</span>: (lerP x y) =&gt; H; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> Rmin_left //; <span class="nb">apply</span>: RlebP.
+<span class="bp">by</span> <span class="nb">rewrite</span> <span class="nl">?ltW</span> // Rmin_right //;  <span class="nb">apply</span>/RlebP; <span class="nb">move</span>/ltW : H.
+<span class="kn">Qed</span>.
+
+<span class="kn">Section</span> <span class="nf">bigmaxr</span>.
+<span class="kn">Context</span> {<span class="nv">R</span> : realDomainType}.
+
+<span class="c">(* bigop pour le max pour des listes non vides ? *)</span>
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Definition</span> <span class="nf">bigmaxr</span> (<span class="nv">r</span> : R) <span class="nv">s</span> := \big[Num.max/head r s]_(i &lt;- s) i.
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bigmaxr_nil</span> (<span class="nv">x0</span> : R) : bigmaxr x0 [::] = x0.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /bigmaxr /= big_nil. <span class="kn">Qed</span>.
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bigmaxr_un</span> (<span class="nv">x0</span> <span class="nv">x</span> : R) : bigmaxr x0 [:: x] = x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> /bigmaxr /= big_cons big_nil maxxx. <span class="kn">Qed</span>.
+
+<span class="c">(* previous definition *)</span>
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bigmaxrE</span> (<span class="nv">r</span> : R) <span class="nv">s</span> : bigmaxr r s = foldr Num.max (head r s) (behead s).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> (_ : bigmaxr _ _ = <span class="kr">if</span> s <span class="kr">isn&#39;t</span> h :: t <span class="kr">then</span> r <span class="kr">else</span> \big[Num.max/h]_(i &lt;- s) i).
+  <span class="nb">case</span>: s =&gt; // ? t; <span class="nb">rewrite</span> big_cons /bigmaxr.
+  <span class="bp">by</span> <span class="nb">elim</span>: t =&gt; //= [|? ? &lt;-]; [<span class="nb">rewrite</span> big_nil maxxx | <span class="nb">rewrite</span> big_cons maxCA].
+<span class="bp">by</span> <span class="nb">case</span>: s =&gt; //=; <span class="nb">rewrite</span> /bigmaxr big_nil.
+<span class="kn">Qed</span>.
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bigrmax_dflt</span> (<span class="nv">x</span> <span class="nv">y</span> : R) <span class="nv">s</span> : Num.max x (\big[Num.max/x]_(j &lt;- y :: s) j) =
+  Num.max x (\big[Num.max/y]_(i &lt;- y :: s) i).
+<span class="kn">Proof</span>.
+<span class="nb">elim</span>: s =&gt; /= [|h t IH] <span class="kr">in</span> x y *.
+<span class="bp">by</span> <span class="nb">rewrite</span> !big_cons !big_nil maxxx maxCA maxxx maxC.
+<span class="bp">by</span> <span class="nb">rewrite</span> big_cons maxCA IH maxCA [<span class="kr">in</span> RHS]big_cons IH.
+<span class="kn">Qed</span>.
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bigmaxr_cons</span> (<span class="nv">x0</span> <span class="nv">x</span> <span class="nv">y</span> : R) <span class="nv">lr</span> :
+  bigmaxr x0 (x :: y :: lr) = Num.max x (bigmaxr x0 (y :: lr)).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> [y :: lr]lock /bigmaxr /= -lock big_cons bigrmax_dflt. <span class="kn">Qed</span>.
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bigmaxr_ler</span> (<span class="nv">x0</span> : R) <span class="nv">s</span> <span class="nv">i</span> :
+  (i &lt; size s)%N -&gt; (nth x0 s i) &lt;= (bigmaxr x0 s).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /bigmaxr; <span class="nb">elim</span>: s i =&gt; // h t IH [_|i] /=.
+  <span class="bp">by</span> <span class="nb">rewrite</span> big_cons /= le_maxr lexx.
+<span class="nb">rewrite</span> ltnS =&gt; ti; <span class="nb">case</span>: t =&gt; [|h&#39; t] // <span class="kr">in</span> IH ti *.
+<span class="bp">by</span> <span class="nb">rewrite</span> big_cons bigrmax_dflt le_maxr orbC IH.
+<span class="kn">Qed</span>.
+
+<span class="c">(* Compatibilité avec l&#39;addition *)</span>
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bigmaxr_addr</span> (<span class="nv">x0</span> : R) <span class="nv">lr</span> (<span class="nv">x</span> : R) :
+  bigmaxr (x0 + x) (map (<span class="kr">fun</span> <span class="nv">y</span> : R =&gt; y + x) lr) = (bigmaxr x0 lr) + x.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /bigmaxr; <span class="nb">case</span>: lr =&gt; [|h t]; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> !big_nil.
+<span class="nb">elim</span>: t h =&gt; /= [|h&#39; t IH] h; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> ?(big_cons,big_nil) -addr_maxl.
+<span class="bp">by</span> <span class="nb">rewrite</span> [<span class="kr">in</span> RHS]big_cons bigrmax_dflt addr_maxl -IH big_cons bigrmax_dflt.
+<span class="kn">Qed</span>.
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bigmaxr_mem</span> (<span class="nv">x0</span> : R) <span class="nv">lr</span> : (<span class="mi">0</span> &lt; size lr)%N -&gt; bigmaxr x0 lr \<span class="kr">in</span> lr.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /bigmaxr; <span class="nb">case</span>: lr =&gt; // h t _.
+<span class="nb">elim</span>: t =&gt; //= [|h&#39; t IH] <span class="kr">in</span> h *; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">rewrite</span> big_cons big_nil inE maxxx.
+<span class="nb">rewrite</span> big_cons bigrmax_dflt inE eq_le; <span class="nb">case</span>: lerP =&gt; /=.
+- <span class="bp">by</span> <span class="nb">rewrite</span> le_maxr lexx.
+- <span class="bp">by</span> <span class="nb">rewrite</span> lt_maxr ltxx =&gt; ?; <span class="nb">rewrite</span> max_r <span class="nl">?IH</span> // ltW.
+<span class="kn">Qed</span>.
+
+<span class="c">(* TODO: bigmaxr_morph? *)</span>
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bigmaxr_mulr</span> (<span class="nv">A</span> : finType) (<span class="nv">s</span> : seq A) (<span class="nv">k</span> : R) (<span class="nv">x</span> : A -&gt; R) :
+  <span class="mi">0</span> &lt;= k -&gt; bigmaxr <span class="mi">0</span> (map (<span class="kr">fun</span> <span class="nv">i</span> =&gt; k * x i) s) = k * bigmaxr <span class="mi">0</span> (map x s).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; k0; <span class="nb">elim</span>: s =&gt; /= [|h [/=|h&#39; t ih]].
+<span class="bp">by</span> <span class="nb">rewrite</span> bigmaxr_nil mulr0.
+<span class="bp">by</span> <span class="nb">rewrite</span> !bigmaxr_un.
+<span class="bp">by</span> <span class="nb">rewrite</span> bigmaxr_cons {}ih bigmaxr_cons maxr_pmulr.
+<span class="kn">Qed</span>.
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bigmaxr_index</span> (<span class="nv">x0</span> : R) <span class="nv">lr</span> :
+  (<span class="mi">0</span> &lt; size lr)%N -&gt; (index (bigmaxr x0 lr) lr &lt; size lr)%N.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /bigmaxr; <span class="nb">case</span>: lr =&gt; //= h t _; <span class="nb">case</span>: ifPn =&gt; // /negbTE H.
+<span class="nb">move</span>: (@bigmaxr_mem x0 (h :: t) isT).
+<span class="bp">by</span> <span class="nb">rewrite</span> ltnS index_mem inE /= eq_sym H.
+<span class="kn">Qed</span>.
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bigmaxr_lerP</span> (<span class="nv">x0</span> : R) <span class="nv">lr</span> (<span class="nv">x</span> : R) :
+  (<span class="mi">0</span> &lt; size lr)%N -&gt;
+  reflect (<span class="kr">forall</span> <span class="nv">i</span>, (i &lt; size lr)%N -&gt; (nth x0 lr i) &lt;= x) ((bigmaxr x0 lr) &lt;= x).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; lr_size; <span class="nb">apply</span>: (iffP idP) =&gt; [le_x i i_size | H].
+  <span class="bp">by</span> <span class="nb">apply</span>: (le_trans _ le_x); <span class="nb">apply</span>: bigmaxr_ler.
+<span class="bp">by</span> <span class="nb">move</span>/(nthP x0): (bigmaxr_mem x0 lr_size) =&gt; [i i_size &lt;-]; <span class="nb">apply</span>: H.
+<span class="kn">Qed</span>.
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bigmaxr_ltrP</span> (<span class="nv">x0</span> : R) <span class="nv">lr</span> (<span class="nv">x</span> : R) :
+  (<span class="mi">0</span> &lt; size lr)%N -&gt;
+  reflect (<span class="kr">forall</span> <span class="nv">i</span>, (i &lt; size lr)%N -&gt; (nth x0 lr i) &lt; x) ((bigmaxr x0 lr) &lt; x).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; lr_size; <span class="nb">apply</span>: (iffP idP) =&gt; [lt_x i i_size | H].
+  <span class="bp">by</span> <span class="nb">apply</span>: le_lt_trans lt_x; <span class="nb">apply</span>: bigmaxr_ler.
+<span class="bp">by</span> <span class="nb">move</span>/(nthP x0): (bigmaxr_mem x0 lr_size) =&gt; [i i_size &lt;-]; <span class="nb">apply</span>: H.
+<span class="kn">Qed</span>.
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bigmaxrP</span> (<span class="nv">x0</span> : R) <span class="nv">lr</span> (<span class="nv">x</span> : R) :
+  (x \<span class="kr">in</span> lr /\ <span class="kr">forall</span> <span class="nv">i</span>, (i &lt; size lr) %N -&gt; (nth x0 lr i) &lt;= x) -&gt; (bigmaxr x0 lr = x).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; [] /(nthP x0) [] j j_size j_nth x_ler; <span class="nb">apply</span>: le_anti; <span class="nb">apply</span>/andP; <span class="nb">split</span>.
+  <span class="bp">by</span> <span class="nb">apply</span>/bigmaxr_lerP =&gt; //; <span class="nb">apply</span>: (leq_trans _ j_size).
+<span class="bp">by</span> <span class="nb">rewrite</span> -j_nth (bigmaxr_ler _ j_size).
+<span class="kn">Qed</span>.
+
+<span class="c">(* surement à supprimer à la fin</span>
+<span class="c">Lemma bigmaxc_lttc x0 lc :</span>
+<span class="c">  uniq lc -&gt; forall i, (i &lt; size lc)%N -&gt; (i != index (bigmaxc x0 lc) lc)</span>
+<span class="c">    -&gt; lttc (nth x0 lc i) (bigmaxc x0 lc).</span>
+<span class="c">Proof.</span>
+<span class="c">move=&gt; lc_uniq Hi size_i /negP neq_i.</span>
+<span class="c">rewrite lttc_neqAle (bigmaxc_letc _ size_i) andbT.</span>
+<span class="c">apply/negP =&gt; /eqP H; apply: neq_i; rewrite -H eq_sym; apply/eqP.</span>
+<span class="c">by apply: index_uniq.</span>
+<span class="c">Qed. *)</span>
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bigmaxr_lerif</span> (<span class="nv">x0</span> : R) <span class="nv">lr</span> :
+  uniq lr -&gt; <span class="kr">forall</span> <span class="nv">i</span>, (i &lt; size lr)%N -&gt;
+     (nth x0 lr i) &lt;= (bigmaxr x0 lr) ?= iff (i == index (bigmaxr x0 lr) lr).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>=&gt; lr_uniq i i_size; <span class="nb">rewrite</span> /Num.leif (bigmaxr_ler _ i_size).
+<span class="nb">rewrite</span> -(nth_uniq x0 i_size (bigmaxr_index _ (leq_trans _ i_size)) lr_uniq) //.
+<span class="nb">rewrite</span> nth_index //.
+<span class="bp">by</span> <span class="nb">apply</span>: bigmaxr_mem; <span class="nb">apply</span>: (leq_trans _ i_size).
+<span class="kn">Qed</span>.
+
+<span class="c">(* bigop pour le max pour des listes non vides ? *)</span>
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Definition</span> <span class="nf">bmaxrf</span> <span class="nv">n</span> (<span class="nv">f</span> : {ffun &#39;I_n.+<span class="mi">1</span> -&gt; R}) :=
+  bigmaxr (f ord0) (codom f).
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bmaxrf_ler</span> <span class="nv">n</span> (<span class="nv">f</span> : {ffun &#39;I_n.+<span class="mi">1</span> -&gt; R}) <span class="nv">i</span> :
+  (f i) &lt;= (bmaxrf f).
+<span class="kn">Proof</span>.
+<span class="nb">move</span>: (@bigmaxr_ler (f ord0) (codom f) (nat_of_ord i)).
+<span class="nb">rewrite</span> /bmaxrf size_codom card_ord =&gt; H; <span class="nb">move</span>: (ltn_ord i); <span class="nb">move</span>/H.
+<span class="nb">suff</span> -&gt; : nth (f ord0) (codom f) i = f i; <span class="kp">first</span> <span class="bp">by</span> [].
+<span class="bp">by</span> <span class="nb">rewrite</span> /codom (nth_map ord0) <span class="nl">?size_enum_ord</span> // nth_ord_enum.
+<span class="kn">Qed</span>.
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bmaxrf_index</span> <span class="nv">n</span> (<span class="nv">f</span> : {ffun &#39;I_n.+<span class="mi">1</span> -&gt; R}) :
+  (index (bmaxrf f) (codom f) &lt; n.+<span class="mi">1</span>)%N.
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> /bmaxrf.
+<span class="nb">rewrite</span> [<span class="kr">in</span> X <span class="kr">in</span> (_ &lt; X)%N](_ : n.+<span class="mi">1</span> = size (codom f)); <span class="nb">last first</span>.
+  <span class="bp">by</span> <span class="nb">rewrite</span> size_codom card_ord.
+<span class="bp">by</span> <span class="nb">apply</span>: bigmaxr_index; <span class="nb">rewrite</span> size_codom card_ord.
+<span class="kn">Qed</span>.
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Definition</span> <span class="nf">index_bmaxrf</span> <span class="nv">n</span> <span class="nv">f</span> := Ordinal (@bmaxrf_index n f).
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">ordnat</span> <span class="nv">i</span> <span class="nv">n</span> (<span class="nv">ord_i</span> : (i &lt; n)%N) : i = Ordinal ord_i :&gt; nat.
+<span class="kn">Proof</span>. <span class="bp">by</span> []. <span class="kn">Qed</span>.
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">eq_index_bmaxrf</span> <span class="nv">n</span> (<span class="nv">f</span> : {ffun &#39;I_n.+<span class="mi">1</span> -&gt; R}) :
+  f (index_bmaxrf f) = bmaxrf f.
+<span class="kn">Proof</span>.
+<span class="nb">move</span>: (bmaxrf_index f).
+<span class="nb">rewrite</span> -[X <span class="kr">in</span> _ (_ &lt; X)%N]card_ord -(size_codom f) index_mem.
+<span class="nb">move</span>/(nth_index (f ord0)) =&gt; &lt;-; <span class="nb">rewrite</span> (nth_map ord0).
+  <span class="bp">by</span> <span class="nb">rewrite</span> (ordnat (bmaxrf_index _)) /index_bmaxrf nth_ord_enum.
+<span class="bp">by</span> <span class="nb">rewrite</span> size_enum_ord; <span class="nb">apply</span>: bmaxrf_index.
+<span class="kn">Qed</span>.
+
+#[deprecated(note=<span class="s2">&quot;To be removed. Use topology.v&#39;s bigmax/min lemmas instead.&quot;</span>)]
+<span class="kn">Lemma</span> <span class="nf">bmaxrf_lerif</span> <span class="nv">n</span> (<span class="nv">f</span> : {ffun &#39;I_n.+<span class="mi">1</span> -&gt; R}) :
+  injective f -&gt; <span class="kr">forall</span> <span class="nv">i</span>,
+     (f i) &lt;= (bmaxrf f) ?= iff (i == index_bmaxrf f).
+<span class="kn">Proof</span>.
+<span class="bp">by</span> <span class="nb">move</span>=&gt; inj_f i; <span class="nb">rewrite</span> /Num.leif bmaxrf_ler -(inj_eq inj_f) eq_index_bmaxrf.
+<span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">bigmaxr</span>.
+
+<span class="kn">End</span> <span class="nf">ssreal_struct_contd</span>.
+
+<span class="kn">Require Import</span> signed topology normedtype.
+
+<span class="kn">Section</span> <span class="nf">analysis_struct</span>.
+
+<span class="kn">Canonical</span> <span class="nf">R_pointedType</span> := [pointedType of R <span class="kr">for</span> pointed_of_zmodule R_ringType].
+<span class="kn">Canonical</span> <span class="nf">R_filteredType</span> :=
+  [filteredType R of R <span class="kr">for</span> filtered_of_normedZmod R_normedZmodType].
+<span class="kn">Canonical</span> <span class="nf">R_topologicalType</span> : topologicalType := TopologicalType R
+  (topologyOfEntourageMixin
+    (uniformityOfBallMixin
+      (@nbhs_ball_normE _ R_normedZmodType)
+      (pseudoMetric_of_normedDomain R_normedZmodType))).
+<span class="kn">Canonical</span> <span class="nf">R_uniformType</span> : uniformType :=
+  UniformType R
+  (uniformityOfBallMixin (@nbhs_ball_normE _ R_normedZmodType)
+    (pseudoMetric_of_normedDomain R_normedZmodType)).
+<span class="kn">Canonical</span> <span class="nf">R_pseudoMetricType</span> : pseudoMetricType R_numDomainType :=
+  PseudoMetricType R (pseudoMetric_of_normedDomain R_normedZmodType).
+
+<span class="c">(* TODO: express using ball?*)</span>
+<span class="kn">Lemma</span> <span class="nf">continuity_pt_nbhs</span> (<span class="nv">f</span> : R -&gt; R) <span class="nv">x</span> :
+  continuity_pt f x &lt;-&gt;
+  <span class="kr">forall</span> <span class="nv">eps</span> : {posnum R}, nbhs x (<span class="kr">fun</span> <span class="nv">u</span> =&gt; `|f u - f x| &lt; eps%:num).
+<span class="kn">Proof</span>.
+<span class="nb">split</span>=&gt; [fcont e|fcont _/RltP/posnumP[e]]; <span class="nb">last first</span>.
+  <span class="nb">have</span> [_/posnumP[d] xd_fxe] := fcont e.
+  <span class="kr">exists</span> <span class="nv">d</span>%:num; <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">apply</span>/RltP; <span class="nb">have</span> := [gt0 of d%:num].
+  <span class="bp">by</span> <span class="nb">move</span>=&gt; y [_ /RltP yxd]; <span class="nb">apply</span>/RltP/xd_fxe; <span class="nb">rewrite</span> /= distrC.
+<span class="nb">have</span> /RltP egt0 := [gt0 of e%:num].
+<span class="nb">have</span> [_ [/RltP/posnumP[d] dx_fxe]] := fcont e%:num egt0.
+<span class="kr">exists</span> <span class="nv">d</span>%:num =&gt; //= y xyd; <span class="nb">case</span>: (eqVneq x y) =&gt; [-&gt;|xney].
+  <span class="bp">by</span> <span class="nb">rewrite</span> subrr normr0.
+<span class="nb">apply</span>/RltP/dx_fxe; <span class="nb">split</span>; <span class="kp">first</span> <span class="bp">by</span> <span class="nb">split</span>=&gt; //; <span class="nb">apply</span>/eqP.
+<span class="bp">by</span> <span class="nb">have</span> /RltP := xyd; <span class="nb">rewrite</span> distrC.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">continuity_pt_cvg</span> (<span class="nv">f</span> : R -&gt; R) (<span class="nv">x</span> : R) :
+  continuity_pt f x &lt;-&gt; {<span class="kr">for</span> x, continuous f}.
+<span class="kn">Proof</span>.
+<span class="nb">eapply</span> iff_trans; <span class="kp">first</span> <span class="bp">exact</span>: continuity_pt_nbhs.
+<span class="nb">apply</span> iff_sym.
+<span class="nb">have</span> FF : Filter (f @ x).
+  <span class="bp">by</span> <span class="nb">typeclasses eauto</span>.
+  <span class="c">(*by apply fmap_filter; apply: @filter_filter&#39; (locally_filter _).*)</span>
+<span class="nb">case</span>: (@fcvg_ballP _ _ (f @ x) FF (f x)) =&gt; {FF}H1 H2.
+<span class="c">(* TODO: in need for lemmas and/or refactoring of already existing lemmas (ball vs. Rabs) *)</span>
+<span class="nb">split</span> =&gt; [{H2} - /H1 {}H1 eps|{H1} H].
+- <span class="nb">have</span> {H1} [//|_/posnumP[x0] Hx0] := H1 eps%:num.
+  <span class="kr">exists</span> <span class="nv">x0</span>%:num =&gt; //= Hx0&#39; /Hx0 /=.
+  <span class="bp">by</span> <span class="nb">rewrite</span> /= distrC; <span class="nb">apply</span>.
+- <span class="nb">apply</span> H2 =&gt; _ /posnumP[eps]; <span class="nb">move</span>: (H eps) =&gt; {H} [_ /posnumP[x0] Hx0].
+  <span class="kr">exists</span> <span class="nv">x0</span>%:num =&gt; //= y /Hx0 /= {}Hx0.
+  <span class="bp">by</span> <span class="nb">rewrite</span> /ball /= distrC.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">continuity_ptE</span> (<span class="nv">f</span> : R -&gt; R) (<span class="nv">x</span> : R) :
+  continuity_pt f x &lt;-&gt; {<span class="kr">for</span> x, continuous f}.
+<span class="kn">Proof</span>. <span class="bp">exact</span>: continuity_pt_cvg. <span class="kn">Qed</span>.
+
+<span class="kn">Local</span> <span class="kn">Open Scope</span> classical_set_scope.
+
+<span class="kn">Lemma</span> <span class="nf">continuity_pt_cvg&#39;</span> <span class="nv">f</span> <span class="nv">x</span> :
+  continuity_pt f x &lt;-&gt; f @ x^&#39; --&gt; f x.
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">rewrite</span> continuity_ptE continuous_withinNx. <span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">continuity_pt_dnbhs</span> <span class="nv">f</span> <span class="nv">x</span> :
+  continuity_pt f x &lt;-&gt;
+  <span class="kr">forall</span> <span class="nv">eps</span>, <span class="mi">0</span> &lt; eps -&gt; x^&#39; (<span class="kr">fun</span> <span class="nv">u</span> =&gt; `|f x - f u| &lt; eps).
+<span class="kn">Proof</span>.
+<span class="nb">rewrite</span> continuity_pt_cvg&#39; (@cvgrPdist_lt _ [normedModType _ of R^o]).
+<span class="bp">exact</span>.
+<span class="kn">Qed</span>.
+
+<span class="kn">Lemma</span> <span class="nf">nbhs_pt_comp</span> (<span class="nv">P</span> : R -&gt; <span class="kt">Prop</span>) (<span class="nv">f</span> : R -&gt; R) (<span class="nv">x</span> : R) :
+  nbhs (f x) P -&gt; continuity_pt f x -&gt; \near x, P (f x).
+<span class="kn">Proof</span>. <span class="bp">by</span> <span class="nb">move</span>=&gt; Lf /continuity_pt_cvg; <span class="nb">apply</span>. <span class="kn">Qed</span>.
+
+<span class="kn">End</span> <span class="nf">analysis_struct</span>.</span></pre></article></body></html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>mathcomp.analysis.posnum</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library mathcomp.analysis.posnum</h1>
+
+<div class="code">
+<span class="comment">(*&nbsp;mathcomp&nbsp;analysis&nbsp;(c)&nbsp;2017&nbsp;Inria&nbsp;and&nbsp;AIST.&nbsp;License:&nbsp;CeCILL-C.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*)</span><br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">mathcomp</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">all_ssreflect</span> <span class="id" title="library">ssralg</span> <span class="id" title="library">ssrnum</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="mathcomp.analysis.signed.html#"><span class="id" title="library">signed</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="mathcomp.analysis.boolp.html#"><span class="id" title="library">boolp</span></a> <a class="idref" href="mathcomp.analysis.nngnum.html#"><span class="id" title="library">nngnum</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+ This file develops tools to make the manipulation of positive numbers      
+ easier, thanks to canonical structures.                                    
+
+<div class="paragraph"> </div>
+
+          !! x == triggers pretyping to fill the holes of the term x. The   
+                  main use case is to trigger typeclass inference in the    
+                  body of a ssreflect have := !! body.                      
+                  Credits: Enrico Tassi.                                    
+    {posnum R} == interface type for elements in R that are positive; R     
+                  must have a numDomainType structure.                      
+                  Allows to solve automatically goals of the form x &gt; 0 if  
+                  x is canonically a {posnum R}. {posnum R} is canonically  
+                  stable by addition, multiplication, inverse, min and sqrt 
+                  All positive natural numbers ((n.+1)%:R) are also         
+                  canonically in {posnum R}                                 
+   PosNum xgt0 == packs the proof xgt0 : x &gt; 0, for x : R, to build a       
+                  {posnum R}.                                               
+        x%:pos == explicitly casts x to {posnum R}, triggers the inference  
+                  of a {posnum R} structure for x.                          
+        x%:num == explicit cast from {posnum R} to R.                       
+       posreal == notation for {posnum R}, where R is the type of real      
+                  numbers.                                                  
+             2 == notation for 2%:R.                                        
+    [gt0 of x] == infers a {posnum R} structure for x and outputs the proof 
+                  that x is positive.                                        
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;x %:numpos" (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 2, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="var">format</span> "x %:numpos").<br/>
+
+<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="module">Order.TTheory</span> <span class="id" title="module">Order.Syntax</span> <span class="id" title="module">GRing.Theory</span> <span class="id" title="module">Num.Theory</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">ring_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="numpos" class="idref" href="#numpos"><span class="id" title="abbreviation">numpos</span></a> := (@<a class="idref" href="mathcomp.analysis.signed.html#Signed.Exports.num"><span class="id" title="abbreviation">num</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span> 0 <a class="idref" href="mathcomp.analysis.signed.html#5e27fe60fda0a7fe6124229ec9350cb6"><span class="id" title="notation">!=0</span></a> <a class="idref" href="mathcomp.analysis.signed.html#f1caef69e1bef41a6b6764969723a144"><span class="id" title="notation">&gt;=0</span></a>).<br/>
+<span class="id" title="keyword">Notation</span> <a id="32ca3ebdb8f81947d72e223fe158e1ad" class="idref" href="#32ca3ebdb8f81947d72e223fe158e1ad"><span class="id" title="notation">&quot;</span></a>x %:numpos" := (<a class="idref" href="mathcomp.analysis.posnum.html#numpos"><span class="id" title="abbreviation">numpos</span></a> <span class="id" title="var">x</span>).<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>
