@@ -41,12 +41,11 @@ Variable f : R -> Y -> R.
 Variable B : set Y.
 Hypothesis mB : measurable B.
 
-Variable a u v : R.
+Variable u v : R.
 Let I : set R := `]u, v[.
 
-Hypothesis Ia : I a.
 Hypothesis int_f : forall x, I x -> mu.-integrable B (EFin \o (f x)).
-Hypothesis cf : {ae mu, forall y, B y -> continuous (f ^~ y)}.
+Hypothesis cf : {ae mu, forall y, B y -> {in I, continuous (f ^~ y)}}.
 
 Variable g : Y -> R.
 
@@ -56,13 +55,14 @@ Hypothesis g_ub : forall x, I x -> {ae mu, forall y, B y -> `|f x y| <= g y}.
 Let F x := (\int[mu]_(y in B) f x y)%R.
 
 Lemma continuity_under_integral :
-  continuous_at a (fun l => \int[mu]_(x in B) f l x).
+  {in I, continuous (fun l => \int[mu]_(x in B) f l x)}.
 Proof.
+move=> a /set_mem Ia.
 have [Z [mZ Z0 /subsetCPl ncfZ]] := cf.
-have BZ_cf x : x \in B `\` Z -> continuous (f ^~ x).
+have BZ_cf x : x \in B `\` Z -> {in I, continuous (f ^~ x)}.
   by rewrite inE/= => -[Bx nZx]; exact: ncfZ.
 have [vu|uv] := lerP v u.
-  by move: Ia; rewrite /I set_itv_ge// -leNgt bnd_simp.
+  by move: (Ia); rewrite /I set_itv_ge// -leNgt bnd_simp.
 apply/cvg_nbhsP => w wa.
 have /near_in_itvoo[e /= e0 aeuv] : a \in `]u, v[ by rewrite inE.
 move/cvgrPdist_lt : (wa) => /(_ _ e0)[N _ aue].
@@ -114,7 +114,8 @@ apply: (@dominated_cvg _ _ _ mu _ _
   have : x \in B `\` Z.
     move: BZUUx; rewrite inE/= => -[Bx nZUUx]; rewrite inE/=; split => //.
     by apply: contra_not nZUUx; left.
-  by move/(BZ_cf x)/(_ a)/cvg_nbhsP; apply; rewrite (cvg_shiftn N).
+  move/(BZ_cf x)/(_ a); move/mem_set : Ia => /[swap] /[apply].
+  by move/cvg_nbhsP; apply; rewrite (cvg_shiftn N).
 - by apply: (integrableS mB) => //; exact: measurableD.
 - move=> n x [Bx ZUUx]; rewrite lee_fin.
   move/subsetCPl : (Ug_ub n); apply => //=.

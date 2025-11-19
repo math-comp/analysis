@@ -13,6 +13,9 @@
 
 ### Generalized
 
+- in `lebesgue_integral_under.v`:
+  + weaken an hypothesis of lemma `continuity_under_integral`
+
 ### Deprecated
 
 ### Removed
