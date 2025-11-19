@@ -13,9 +13,10 @@ From mathcomp Require Import num_topology product_topology separation_axioms.
 (*                                                                            *)
 (* ```                                                                        *)
 (*   metricType K == metric structure with distance mdist                     *)
-(*                   The mixin is defined by extending PseudoMetric.          *)
 (*                   The HB class is Metric.                                  *)
 (*                   R^o with R : numFieldType is shown to be a metric space. *)
+(*                   The mixin PseudoMetric_isMetric extends PseudoMetric.    *)
+(*                   The factor isMetric just requires a distance.            *)
 (* ```                                                                        *)
 (******************************************************************************)
 
@@ -29,7 +30,7 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-HB.mixin Record isMetric (K : numDomainType) M of PseudoMetric K M := {
+HB.mixin Record PseudoMetric_isMetric (K : numDomainType) M of PseudoMetric K M := {
   mdist : M -> M -> K ;
   mdist_ge0 : forall x y, 0 <= mdist x y ;
   mdist_positivity : forall x y, mdist x y = 0 -> x = y;
@@ -38,7 +39,7 @@ HB.mixin Record isMetric (K : numDomainType) M of PseudoMetric K M := {
 
 #[short(type="metricType")]
 HB.structure Definition Metric (K : numDomainType) :=
-  { M of PseudoMetric K M & isMetric K M }.
+  { M of PseudoMetric K M & PseudoMetric_isMetric K M }.
 
 Section metric_lemmas.
 Context {R : realFieldType} (T : metricType R).
@@ -89,6 +90,56 @@ Qed.
 
 End metric_lemmas.
 
+HB.factory Record isMetric (K : numFieldType) (M : Type) of Choice M := {
+  mdist : M -> M -> K ;
+  mdistxx : forall x, mdist x x = 0 ;
+  mdist_positivity : forall x y, mdist x y = 0 -> x = y ;
+  mdist_sym : forall x y, mdist x y = mdist y x ;
+  mdist_triangle : forall y x z, mdist x z <= mdist x y + mdist y z
+}.
+
+HB.builders Context K M of isMetric K M.
+
+Let ball (x : M) e : set M := [set y | mdist x y < e].
+
+Let ent : set_system (M * M) := entourage_ ball.
+
+Let nbhs (x : M) : set_system M := nbhs_ ent x.
+
+Let nbhsE : nbhs = nbhs_ ent. Proof. by []. Qed.
+
+HB.instance Definition _ := hasNbhs.Build M nbhs.
+
+Let ball_center x (e : K) : 0 < e -> ball x e x.
+Proof. by move=> e0; rewrite /ball/= mdistxx. Qed.
+
+Let ball_sym x y (e : K) : ball x e y -> ball y e x.
+Proof. by rewrite /ball/= mdist_sym. Qed.
+
+Let ball_triangle x y z e1 e2 : ball x e1 y -> ball y e2 z ->
+  ball x (e1 + e2) z.
+Proof.
+by rewrite /ball/= => ? ?; rewrite (le_lt_trans (mdist_triangle y _ _))// ltrD.
+Qed.
+
+Let entourageE : ent = entourage_ ball. Proof. by []. Qed.
+
+HB.instance Definition _ := @Nbhs_isPseudoMetric.Build K M
+  ent nbhsE ball ball_center ball_sym ball_triangle entourageE.
+
+Let mdist_ge0 x y : 0 <= mdist x y.
+Proof.
+rewrite -(@pmulrn_lge0 _ _ 2)// -(mdistxx x).
+by rewrite (le_trans (mdist_triangle y _ _))// mdist_sym -mulr2n.
+Qed.
+
+Let ballEmdist x d : ball x d = [set y | mdist x y < d]. Proof. by []. Qed.
+
+HB.instance Definition _ := PseudoMetric_isMetric.Build K M
+  mdist_ge0 mdist_positivity ballEmdist.
+
+HB.end.
+
 Section numFieldType_metric.
 Context {R : numFieldType}.
 Implicit Type x y : R.
@@ -105,7 +156,7 @@ Let ballEmdist x d : ball x d = [set y | dist x y < d].
 Proof. by apply/seteqP; split => [|]/= A; rewrite /ball/= distrC. Qed.
 
 HB.instance Definition _ :=
-  @isMetric.Build R R^o dist dist_ge0 dist_positivity ballEmdist.
+  @PseudoMetric_isMetric.Build R R^o dist dist_ge0 dist_positivity ballEmdist.
 
 End numFieldType_metric.
 
