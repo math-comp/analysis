@@ -10,6 +10,9 @@
 - in `convex.v`:
   + lemmas `convN`, `conv_le`
 
+- in `normed_module.v`:
+  + lemma `limit_point_infinite_setP`
+
 ### Changed
 
 ### Renamed
