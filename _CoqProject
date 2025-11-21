@@ -84,8 +84,8 @@ theories/normedtype_theory/urysohn.v
 theories/normedtype_theory/vitali_lemma.v
 theories/normedtype_theory/normedtype.v
 
-theories/realfun.v
 theories/sequences.v
+theories/realfun.v
 theories/exp.v
 theories/trigo.v
 theories/esum.v
