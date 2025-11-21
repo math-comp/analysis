@@ -1062,8 +1062,8 @@ move/limit_pointP : Ea => [y_ [y_E y_neq_a y_cvg_a]].
 have [a0 [a0a a0V0 a0E]] : exists a0, [/\ a0 != a, a0 \in V0 & a0 \in E].
   move/cvgrPdist_lt : y_cvg_a => /(_ _ r0_gt0)[M _ May_r0].
   exists (y_ M); split=> //.
-  - by apply/mem_set; rewrite /V0 /ball/= May_r0/=.
-  - by apply/mem_set/y_E; exists M.
+  - by apply/mem_set/May_r0 => /=.
+  - by apply/mem_set/y_E/imageT.
 have [v [v0 Pv]] : {v : nat -> elt_type |
     v 0 = exist _ (a0, r0) (And5 ar0V a0E a0V0 r0_gt0 a0a) /\
     forall n, elt_rel (v n) (v n.+1)}.
