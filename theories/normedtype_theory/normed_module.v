@@ -1094,7 +1094,7 @@ have arv q p : (p < q)%N -> `|a - r_ (v q)| < `|a - r_ (v p)|.
     by case: (Pv q) => _ [] _ [].
 move=> p q _ _ /=; apply: contraPP => /eqP.
 by rewrite neq_lt => /orP[] /arv /[swap] ->; rewrite ltxx.
-Unshelve. all: by end_near. Qed.
+Qed.
 
 Lemma EFin_lim (R : realFieldType) (f : nat -> R) : cvgn f ->
   limn (EFin \o f) = (limn f)%:E.
