@@ -1076,7 +1076,7 @@ have [v [v0 Pv]] : {v : nat -> elt_type |
     apply: subset_trans ariV => z /lt_trans; apply.
     by move: aiari; rewrite inE.
   have y_MVj : y_ M \in Vj.
-    rewrite inE; apply: (@lt_le_trans _ _ rj)//.
+    rewrite inE; apply: (@lt_le_trans _ _ rj) => //.
     by apply: May_rj => /=.
   have y_ME : y_ M \in E by rewrite inE; apply/y_E/imageT.
   exists (exist _ (y_ M, rj) (And5 VjV y_ME y_MVj rj_gt0 (y_neq_a M))) => /=.
