@@ -1042,8 +1042,8 @@ Proof.
 split=> [Ea V aV|]; last first.
   move=> aE U /aE /infiniteP /pcard_leP /injfunPex[/= f funf injf].
   have [f0a|f0a] := eqVneq (f O) a; last first.
-    by exists (f 0); have /= [Uf0 Ef0]:= funf 0 Logic.I.
-  have /= [Uf1 Ef1]:= funf 1 Logic.I.
+    by exists (f 0); case: (funf 0 Logic.I).
+  have [Uf1 Ef1]:= funf 1 Logic.I.
   exists (f 1); split => //; apply/eqP => f1a.
   have := injf 1 0 (in_setT _) (in_setT _).
   by rewrite f1a f0a => /(_ erefl); exact/eqP/oner_neq0.
