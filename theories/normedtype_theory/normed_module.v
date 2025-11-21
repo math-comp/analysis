@@ -1036,6 +1036,66 @@ move=> n; have : nbhs (x : T) (U n).
 by move/Ax/cid => [/= an [anx Aan Uan]]; exists an.
 Unshelve. all: by end_near. Qed.
 
+Lemma limit_point_infinite_setP {R : archiRealFieldType} (E : set R) (a : R) :
+  limit_point E a <-> (forall U, nbhs a U -> infinite_set (U `&` E)).
+Proof.
+split=> [Ea V aV|]; last first.
+  move=> aE U /aE /infiniteP /pcard_leP /injfunPex[/= f funf injf].
+  have [f0a|f0a] := eqVneq (f O) a; last first.
+    by exists (f 0); case: (funf 0 Logic.I).
+  have [Uf1 Ef1]:= funf 1 Logic.I.
+  exists (f 1); split=> //; apply/eqP => f1a.
+  have := injf 1 0 (in_setT _) (in_setT _).
+  by rewrite f1a f0a => /(_ erefl); exact/eqP/oner_neq0.
+(* we build 2 sequences a_ and r_ s.t. a_i and r_i have the properties: *)
+pose elt_prop (ar : R * R) := [/\ ball a ar.2 `<=` V,
+  ar.1 \in E, ar.1 \in (ball a ar.2 : set R), ar.2 > 0 & ar.1 != a].
+pose elt_type := {ar : R * R | elt_prop ar}.
+pose a_ (x : elt_type) := (proj1_sig x).2.
+pose r_ (x : elt_type) := (proj1_sig x).1.
+(* two successive (a_i, r_i) and (a_j, r_j) satisfy the relation: *)
+pose elt_rel i j := `|a - r_ i| = a_ j /\ ball a (a_ j) `<=` ball a (a_ i) /\
+  `|a - r_ j| < `|a - r_ i| /\ r_ i != r_ j.
+move: aV => -[r0/= r0_gt0 ar0V].
+pose V0 : set R := ball a r0.
+move/limit_pointP : Ea => [y_ [y_E y_neq_a y_cvg_a]].
+have [a0 [a0a a0V0 a0E]] : exists a0, [/\ a0 != a, a0 \in V0 & a0 \in E].
+  move/cvgrPdist_lt : y_cvg_a => /(_ _ r0_gt0)[M _ May_r0].
+  exists (y_ M); split=> //.
+  - by apply/mem_set/May_r0 => /=.
+  - by apply/mem_set/y_E/imageT.
+have [v [v0 Pv]] : {v : nat -> elt_type |
+    v 0 = exist _ (a0, r0) (And5 ar0V a0E a0V0 r0_gt0 a0a) /\
+    forall n, elt_rel (v n) (v n.+1)}.
+  apply: dependent_choice => -[[ai ri] [/= ariV xE aiari ri_gt0 aia]].
+  pose rj : R := `|a - ai|.
+  have rj_gt0 : 0 < rj by rewrite /rj normr_gt0 subr_eq0 eq_sym.
+  apply/cid; move/cvgrPdist_lt : y_cvg_a => /(_ _ rj_gt0)[M/= _ May_rj].
+  pose Vj : set R := ball a rj.
+  have VjV : Vj `<=` V.
+    apply: subset_trans ariV => z /lt_trans; apply.
+    by move: aiari; rewrite inE.
+  have y_MVj : y_ M \in Vj.
+    rewrite inE; apply: (@lt_le_trans _ _ rj) => //.
+    by apply: May_rj => /=.
+  have y_ME : y_ M \in E by rewrite inE; apply/y_E/imageT.
+  exists (exist _ (y_ M, rj) (And5 VjV y_ME y_MVj rj_gt0 (y_neq_a M))) => /=.
+  split; first exact.
+  split; rewrite /a_ /r_/=.
+    by apply: le_ball; move: aiari; rewrite inE => /ltW.
+  split; first by move: y_MVj; rewrite inE.
+  by apply/eqP => aiyM; move: y_MVj; rewrite -aiyM inE /Vj /ball/= /rj ltxx.
+apply/infiniteP/pcard_leP/injfunPex => /=; exists (r_ \o v).
+  move=> n _; rewrite /r_ /=.
+  by case: (v n) => -[ai ri] [/= ariV /set_mem Eai /set_mem/ariV aiari _ _].
+have arv q p : (p < q)%N -> `|a - r_ (v q)| < `|a - r_ (v p)|.
+  elim: q p => [[]//|q ih p].
+  by rewrite ltnS leq_eqVlt => /predU1P[->|/ih]; last apply: lt_trans;
+    by case: (Pv q) => _ [] _ [].
+move=> p q _ _ /=; apply: contraPP => /eqP.
+by rewrite neq_lt => /orP[] /arv /[swap] ->; rewrite ltxx.
+Qed.
+
 Lemma EFin_lim (R : realFieldType) (f : nat -> R) : cvgn f ->
   limn (EFin \o f) = (limn f)%:E.
 Proof.
