@@ -834,6 +834,9 @@ apply: contrapT => /asboolPn/forallp_asboolPn A0; apply/A_neq0/eqP.
 by rewrite eqEsubset; split.
 Qed.
 
+Lemma not_nonemptyP A : ~ (A !=set0) <-> A = set0.
+Proof. by split; [|move=> ->]; move/set0P/negP; [move/negbNE/eqP|]. Qed.
+
 Lemma setF_eq0 : (T -> False) -> all_equal_to (set0 : set T).
 Proof. by move=> TF A; rewrite -subset0 => x; have := TF x. Qed.
 
@@ -1206,7 +1209,7 @@ Notation bigcupM1l := bigcupX1l (only parsing).
 Notation bigcupM1r := bigcupX1r (only parsing).
 
 Lemma set_cst {T I} (x : T) (A : set I) :
-   [set x | _ in A] = if A == set0 then set0 else [set x].
+  [set x | _ in A] = if A == set0 then set0 else [set x].
 Proof.
 apply/seteqP; split=> [_ [i +] <-|t]; first by case: ifPn => // /eqP ->.
 by case: ifPn => // /set0P[i Ai ->{t}]; exists i.
@@ -2980,10 +2983,10 @@ Lemma has_ub_set1 x : has_ubound [set x].
 Proof. by exists x; rewrite ub_set1. Qed.
 
 Lemma has_inf0 : ~ has_inf (@set0 T).
-Proof. by rewrite /has_inf not_andP; left; apply/set0P/negP/negPn. Qed.
+Proof. by rewrite /has_inf not_andP; left; exact/not_nonemptyP. Qed.
 
 Lemma has_sup0 : ~ has_sup (@set0 T).
-Proof. by rewrite /has_sup not_andP; left; apply/set0P/negP/negPn. Qed.
+Proof. by rewrite /has_sup not_andP; left; apply/not_nonemptyP. Qed.
 
 Lemma has_sup1 x : has_sup [set x].
 Proof. by split; [exists x | exists x => y ->]. Qed.
