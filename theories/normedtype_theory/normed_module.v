@@ -1090,9 +1090,8 @@ apply/infiniteP/pcard_leP/injfunPex => /=; exists (r_ \o v).
   by case: (v n) => -[ai ri] [/= ariV /set_mem Eai /set_mem/ariV aiari _ _].
 have arv q p : (p < q)%N -> `|a - r_ (v q)| < `|a - r_ (v p)|.
   elim: q p => [[]//|q ih p].
-  rewrite ltnS leq_eqVlt => /predU1P[ ->|/ih].
+  by rewrite ltnS leq_eqVlt => /predU1P[->|/ih]; last apply: lt_trans;
     by case: (Pv q) => _ [] _ [].
-  by apply: le_lt_trans; case: (Pv q) => _ [] _ [] /ltW.
 move=> p q _ _ /=; apply: contraPP => /eqP.
 by rewrite neq_lt => /orP[] /arv; rewrite ltNge => /negP + H; apply; rewrite H.
 Unshelve. all: by end_near. Qed.
