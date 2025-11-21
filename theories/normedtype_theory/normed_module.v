@@ -1087,8 +1087,7 @@ have [v [v0 Pv]] : {v : nat -> elt_type |
   by apply/eqP => aiyM; move: y_MVj; rewrite -aiyM inE /Vj /ball/= /rj ltxx.
 apply/infiniteP/pcard_leP/injfunPex => /=; exists (r_ \o v).
   move=> n _; rewrite /r_ /=.
-  case: (v n) => -[ai ri] [/= ariV /set_mem Eai /set_mem aiari _ _].
-  by split => //; exact: ariV.
+  by case: (v n) => -[ai ri] [/= ariV /set_mem Eai /set_mem/ariV aiari _ _].
 have arv q p : (p < q)%N -> `|a - r_ (v q)| < `|a - r_ (v p)|.
   elim: q p => [[]//|q ih p].
   rewrite ltnS leq_eqVlt => /predU1P[ ->|/ih].
