@@ -1073,16 +1073,16 @@ have [v [v0 Pv]] : {v : nat -> elt_type |
   apply/cid; move/cvgrPdist_lt : y_cvg_a => /(_ _ rj_gt0)[M/= _ May_rj].
   pose Vj : set R := ball a rj.
   have VjV : Vj `<=` V.
-    apply: subset_trans ariV => z /lt_le_trans; apply.
-    by move: aiari; rewrite inE /ball/= => /ltW.
+    apply: subset_trans ariV => z /lt_trans; apply.
+    by move: aiari; rewrite inE.
   have y_MVj : y_ M \in Vj.
-    rewrite inE /Vj /ball/= /rj (@lt_le_trans _ _ rj)//.
+    rewrite inE; apply: (@lt_le_trans _ _ rj)//.
     by apply: May_rj => /=.
-  have y_ME : y_ M \in E by rewrite inE; apply: y_E; exists M.
+  have y_ME : y_ M \in E by rewrite inE; apply/y_E/imageT.
   exists (exist _ (y_ M, rj) (And5 VjV y_ME y_MVj rj_gt0 (y_neq_a M))) => /=.
   split; first exact.
   split; rewrite /a_ /r_/=.
-    by apply: le_ball; move: aiari; rewrite inE /ball/= => /ltW.
+    by apply: le_ball; move: aiari; rewrite inE => /ltW.
   split; first by move: y_MVj; rewrite inE.
   by apply/eqP => aiyM; move: y_MVj; rewrite -aiyM inE /Vj /ball/= /rj ltxx.
 apply/infiniteP/pcard_leP/injfunPex => /=; exists (r_ \o v).
