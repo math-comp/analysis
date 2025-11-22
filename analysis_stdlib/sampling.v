@@ -833,8 +833,8 @@ rewrite /mmt_gen_fun.
 pose mmtX : {RV P >-> R : realType} := expR \o t \o* bool_to_real R X.
 set A := X @^-1` [set true].
 set B := X @^-1` [set false].
-have mA : measurable A by exact: measurable_sfunP.
-have mB : measurable B by exact: measurable_sfunP.
+have mA : measurable A by exact: measurable_funPTI.
+have mB : measurable B by exact: measurable_funPTI.
 have dAB : [disjoint A & B].
   by apply/disj_setPRL; rewrite /A /B preimage_true preimage_false.
 have TAB : setT = A `|` B by rewrite -preimage_setU -setT_bool preimage_setT.
