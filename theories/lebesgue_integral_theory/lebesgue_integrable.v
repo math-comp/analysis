@@ -391,18 +391,18 @@ rewrite (@le_lt_trans _ _ (mu setT)) ?le_measure ?inE//.
 by rewrite ?ltry ?fin_num_fun_lty//; exact: fin_num_measure.
 Qed.
 
-Lemma finite_measure_integrable_cst k : mu.-integrable [set: T] (EFin \o cst k).
+Lemma finite_measure_integrable_cst A k :
+  measurable A -> mu.-integrable A (EFin \o cst k).
 Proof.
-apply/integrableP; split; first exact/measurable_EFinP.
+move=> mA; apply/integrableP; split; first exact/measurable_EFinP.
 have [k0|k0] := leP 0%R k.
 - under eq_integral do rewrite /= ger0_norm//.
   rewrite lebesgue_integral_nonneg.integral_cstr//= lte_mul_pinfty//.
-  rewrite fin_num_fun_lty//.
-  exact: fin_num_measure.
+  by rewrite -ge0_fin_numE// fin_num_measure.
 - under eq_integral do rewrite /= ltr0_norm//.
   rewrite lebesgue_integral_nonneg.integral_cstr//= lte_mul_pinfty//.
     by rewrite lee_fin lerNr oppr0 ltW.
-  by rewrite fin_num_fun_lty//; exact: fin_num_measure.
+  by rewrite -ge0_fin_numE// fin_num_measure.
 Qed.
 
 End integrable_finite_measure.

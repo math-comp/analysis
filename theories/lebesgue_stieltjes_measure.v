@@ -506,9 +506,6 @@ HB.instance Definition _ (f : cumulative R R) :=
 End wlength_extension.
 Arguments lebesgue_stieltjes_measure {R}.
 
-#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `wlength_sigma_subadditive`")]
-Notation wlength_sigma_sub_additive := wlength_sigma_subadditive (only parsing).
-
 Definition measurableTypeR (R : realType) :=
   g_sigma_algebraType R.-ocitv.-measurable.
 

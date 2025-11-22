@@ -1183,11 +1183,11 @@ Variable mu : {finite_measure set T -> \bar R}.
 
 Lemma Lfun_cst c r : cst c \in Lfun mu r%:E.
 Proof.
-rewrite inE; apply/andP; split; rewrite inE//= /finite_norm unlock/Lnorm poweR_lty//.
+rewrite inE/=; apply/andP; split; rewrite inE//=.
+rewrite /finite_norm unlock poweR_lty//.
 under eq_integral => x _/= do rewrite (_ : `|c| `^ r = cst (`|c| `^ r) x)//.
-have /integrableP[_/=] := finite_measure_integrable_cst mu (`|c| `^ r).
-under eq_integral => x _ do rewrite ger0_norm ?powR_ge0//.
-by [].
+apply/integrable_lty => //.
+exact: finite_measure_integrable_cst.
 Qed.
 
 End Lspace_finite_measure.
