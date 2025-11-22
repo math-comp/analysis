@@ -13,6 +13,17 @@
 - in `normed_module.v`:
   + lemma `limit_point_infinite_setP`
 
+- new file `lebesgue_integral_theory/giry.v`
+  + definition `measure_eq`
+  + definition `giry`
+  + definition `giry_ev`
+  + definition `giry_measurable`
+  + definition `preimg_giry_ev`
+  + definition `giry_display`
+  + lemma `measurable_giry_ev`
+  + definition `giry_int`
+  + lemma `measurable_giry_int`
+
 ### Changed
 
 ### Renamed
