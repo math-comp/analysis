@@ -221,8 +221,6 @@ Definition lambda_system :=
 Definition monotone := ndseq_closed /\ niseq_closed.
 
 End set_systems.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `lambda_system`")]
-Notation monotone_class := lambda_system (only parsing).
 (*#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `setSD_closed`")]
 Notation setD_closed := setSD_closed (only parsing).*)
 #[deprecated(since="mathcomp-analysis 1.9.0", note="renamed `setD_closed`")]
@@ -430,8 +428,6 @@ Proof.
 move=> sDGD; have := smallest_sigma_algebra D G.
 by move=> /(sigma_algebraP sDGD) [sT sD snd sI]; split.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `g_sigma_algebra_lambda_system`")]
-Notation monotone_class_g_salgebra := g_sigma_algebra_lambda_system (only parsing).
 
 Lemma smallest_sigma_ring T (G : set (set T)) : sigma_ring <<sr G >>.
 Proof.
@@ -594,8 +590,6 @@ by move=> *; apply HHH_.
 Qed.
 
 End smallest_lambda_system.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `smallest_lambda_system`")]
-Notation smallest_monotone_classE := smallest_lambda_system (only parsing).
 
 Section lambda_system_subset.
 Variables (T : Type) (G : set (set T)) (setIG : setI_closed G) (D : set T).
@@ -613,8 +607,6 @@ rewrite -(@smallest_lambda_system _ _ setIG D) //.
 Qed.
 
 End lambda_system_subset.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `lambda_system_subset`")]
-Notation monotone_class_subset := lambda_system_subset (only parsing).
 
 Section dynkin.
 Variable T : Type.
@@ -740,12 +732,6 @@ exact: g_dynkin_dynkin.
 Qed.
 
 End dynkin_lemmas.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed into `setI_closed_g_dynkin_g_sigma_algebra`")]
-Notation setI_closed_gdynkin_salgebra := setI_closed_g_dynkin_g_sigma_algebra (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed into `g_dynkin_dynkin`")]
-Notation dynkin_g_dynkin := g_dynkin_dynkin (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed into `dynkin_lambda_system`")]
-Notation dynkin_monotone := dynkin_lambda_system (only parsing).
 
 Section trace.
 Variable (T : Type).
@@ -1270,8 +1256,6 @@ Definition sigma_display {T} : set (set T) -> measure_display.
 Proof. exact. Qed.
 
 Definition g_sigma_algebraType {T} (G : set (set T)) := T.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed into `g_sigma_algebraType`")]
-Notation salgebraType := g_sigma_algebraType (only parsing).
 
 Section g_salgebra_instance.
 Variables (T : pointedType) (G : set (set T)).

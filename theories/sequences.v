@@ -364,8 +364,6 @@ by exists i => //; rewrite big_ord_recr/=; right.
 Qed.
 
 End seqD.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed to `nondecreasing_bigsetU_seqD`")]
-Notation eq_bigsetU_seqD := nondecreasing_bigsetU_seqD (only parsing).
 
 Lemma seqDUE {R : realDomainType} n (r : R) :
   (seqDU (fun n => `]r, r + n%:R]) n = `]r + n.-1%:R, r + n%:R])%classic.

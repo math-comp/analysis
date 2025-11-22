@@ -1747,8 +1747,6 @@ Qed.
 
 End g_sigma_algebra_measure_unique_trace.
 Arguments g_sigma_algebra_measure_unique_trace {d R T} G D.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `g_sigma_algebra_measure_unique_trace`")]
-Notation g_salgebra_measure_unique_trace := g_sigma_algebra_measure_unique_trace (only parsing).
 
 Definition lim_sup_set T (F : (set T)^nat) := \bigcap_n \bigcup_(j >= n) F j.
 
@@ -1932,10 +1930,6 @@ Qed.
 
 End g_sigma_algebra_measure_unique.
 Arguments g_sigma_algebra_measure_unique {d R T} G.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `g_sigma_algebra_measure_unique_cover`")]
-Notation g_salgebra_measure_unique_cover := g_sigma_algebra_measure_unique_cover (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `g_sigma_algebra_measure_unique`")]
-Notation g_salgebra_measure_unique := g_sigma_algebra_measure_unique (only parsing).
 
 Section measure_unique.
 Context d (R : realType) (T : measurableType d).

@@ -2191,19 +2191,19 @@ have := @derivableX _ _ (@onem R) n x 1.
 by rewrite fctE; apply; exact: derivableB.
 Qed.
 
-Lemma derivable_oo_continuous_bnd_onemXnMr n x :
-  derivable_oo_continuous_bnd (fun y => `1-y ^+ n * x) 0 1.
+Lemma derivable_oo_LRcontinuous_onemXnMr n x :
+  derivable_oo_LRcontinuous (fun y => `1-y ^+ n * x) 0 1.
 Proof.
 split.
 - by move=> y y01; apply: derivableM => //=; exact: onemXn_derivable.
 - apply: cvgM; last exact: cvg_cst.
   apply: cvg_at_right_filter.
-  apply: (@cvg_comp _ _ _ (fun x => `1-x) (fun x => x ^+ n)).
+  apply: (@cvg_comp _ _ _ onem (fun x => x ^+ n)).
     by apply: cvgB; [exact: cvg_cst|exact: cvg_id].
   exact: exprn_continuous.
 - apply: cvg_at_left_filter.
   apply: cvgM; last exact: cvg_cst.
-  apply: (@cvg_comp _ _ _ (fun x => `1-x) (fun x => x ^+ n)).
+  apply: (@cvg_comp _ _ _ onem (fun x => x ^+ n)).
     by apply: cvgB; [exact: cvg_cst|exact: cvg_id].
   exact: exprn_continuous.
 Qed.
@@ -2225,12 +2225,14 @@ rewrite (@continuous_FTC2 _ _ (fun x => `1-x ^+ n.+1 / - n.+1%:R))//=.
 - rewrite onem1 expr0n/= mul0r onem0 expr1n mul1r sub0r.
   by rewrite -invrN -2!mulNrn opprK.
 - by apply: continuous_in_subspaceT => x x01; exact: continuous_onemXn.
-- exact: derivable_oo_continuous_bnd_onemXnMr.
+- exact: derivable_oo_LRcontinuous_onemXnMr.
 - move=> x x01; rewrite derive1Mr//; last exact: onemXn_derivable.
   by rewrite derive_onemXn mulrAC divff// mul1r.
 Qed.
 
 End about_onemXn.
+#[deprecated(since="mathcomp-analysis 1.15.0", note="renamed to `derivable_oo_LRcontinuous_onemXnMr`")]
+Notation derivable_oo_continuous_bnd_onemXnMr := derivable_oo_LRcontinuous_onemXnMr (only parsing).
 
 (**md about the function $x \mapsto x^a  (1 - x)^b$ *)
 Section XMonemX.

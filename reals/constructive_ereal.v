@@ -2957,32 +2957,6 @@ Arguments lee_sum_nneg_natl {R}.
 Arguments lee_sum_npos_natl {R}.
 #[global] Hint Extern 0 (is_true (0 <= `| _ |)%E) => solve [apply: abse_ge0] : core.
 
-#[deprecated(since="mathcomp-analysis 1.2.0", note="Use gee_pMl instead.")]
-Notation gee_pmull := gee_pMl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="Use geeDl instead.")]
-Notation gee_addl := geeDl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="Use geeDr instead.")]
-Notation gee_addr := geeDr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="Use gteDr instead.")]
-Notation gte_addr := gteDr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="Use gteDl instead.")]
-Notation gte_addl := gteDl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="Use lteBlDr instead.")]
-Notation lte_subl_addr := lteBlDr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="Use lteBlDl instead.")]
-Notation lte_subl_addl := lteBlDl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="Use lteBrDr instead.")]
-Notation lte_subr_addr := lteBrDr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="Use lteBrDl instead.")]
-Notation lte_subr_addl := lteBrDl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="Use leeBlDr instead.")]
-Notation lee_subl_addr := leeBlDr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="Use leeBlDl instead.")]
-Notation lee_subl_addl := leeBlDl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="Use leeBrDr instead.")]
-Notation lee_subr_addr := leeBrDr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="Use leeBrDl instead.")]
-Notation lee_subr_addl := leeBrDl (only parsing).
 #[deprecated(since="mathcomp-analysis 1.3.0", note="Use `lte_leD` instead.")]
 Notation lte_le_add := lte_leD (only parsing).
 #[deprecated(since="mathcomp-analysis 1.3.0", note="Use `lee_ltD` instead.")]
