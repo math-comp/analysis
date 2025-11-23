@@ -15,6 +15,7 @@
 
 - new file `lebesgue_integral_theory/giry.v`
   + definition `measure_eq`
+  + lemma `dynkin_induction`
   + definition `giry`
   + definition `giry_ev`
   + definition `giry_measurable`
@@ -23,6 +24,15 @@
   + lemma `measurable_giry_ev`
   + definition `giry_int`
   + lemma `measurable_giry_int`
+  + lemma `measurable_giry_codensity`
+  + definition `giry_map`
+  + lemma `measurable_giry_map`
+  + lemma `giry_int_map`
+  + lemma `giry_map_dirac`
+  + definition `giry_ret`
+  + lemma `measurable_giry_ret`
+  + lemma `giry_int_ret`
+  + definition `giry_join`
 
 ### Changed
 
