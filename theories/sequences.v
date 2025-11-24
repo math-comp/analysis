@@ -1,9 +1,9 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint.
-From mathcomp Require Import interval archimedean.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality set_interval reals interval_inference.
+From mathcomp Require Import interval interval_inference archimedean.
+From mathcomp Require Import mathcomp_extra boolp contra classical_sets.
+From mathcomp Require Import functions cardinality set_interval reals.
 From mathcomp Require Import ereal topology tvs normedtype landau.
 
 (**md**************************************************************************)
@@ -2717,17 +2717,17 @@ pose k : nat := [arg min_(i < @ord_max N | a_ i \in B) i].
 have ? : a_ (@ord_max N) \in B.
   by rewrite /a_ /= mulrAC divff ?pnatr_eq0// mul1r subrKC; exact/mem_set.
 have k_gt0 : (0 < k)%N.
-  rewrite /k; case: arg_minnP => // /= i aiB aBi.
-  rewrite lt0n; apply/eqP => i0.
-  move: aiB; rewrite i0 /a_ !mul0r addr0 => /set_mem.
-  by move/(ABlt _ _ aA); rewrite ltxx.
+  rewrite /k; case: arg_minnP => // /= i + aBi.
+  contra; rewrite leqn0 => /eqP ->.
+  rewrite /a_ !mul0r addr0; apply/negP => /set_mem/(ABlt _ _ aA).
+  by rewrite ltxx.
 have akN1A : a_ k.-1 \in A.
   rewrite /k; case: arg_minnP => // /= i aiB aBi.
   have i0 : i != ord0.
-    apply/eqP => /= i0.
-    move: aiB; rewrite /a_ i0 !mul0r addr0 => /set_mem.
-    by move/(ABlt _ _ aA); rewrite ltxx.
-  apply/mem_set/notP => abs.
+    contra: aiB => ->.
+    rewrite /a_ !mul0r addr0; apply/negP => /set_mem/(ABlt _ _ aA).
+    by rewrite ltxx.
+  apply/mem_set/boolp.notP => abs.
   have {}abs : a_ i.-1 \in B.
     by move/seteqP : ABT => [_ /(_ (a_ i.-1) Logic.I)] [//|/mem_set].
   have iN : (i.-1 < N.+1)%N by rewrite prednK ?lt0n// ltnW.
