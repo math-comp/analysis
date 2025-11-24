@@ -17,7 +17,7 @@ From mathcomp Require Import lebesgue_measure lebesgue_integral.
 (*                     preimg_giry_ev                                         *)
 (*     giry_display == display of giry_measurable                             *)
 (*    giry_int mu f := \int[mu]_x f x                                         *)
-(*      giry_map mf == the map of type giry T1 R -> giry T2 R                *)
+(*      giry_map mf == the map of type giry T1 R -> giry T2 R                 *)
 (*                     where mf is a proof that f : T1 -> T2 is measurable    *)
 (*       giry_ret x == the unit of the Giry monad, i.e., \d_x                 *)
 (* @giry_join _ T R == the multiplication of the Giry monad                   *)
