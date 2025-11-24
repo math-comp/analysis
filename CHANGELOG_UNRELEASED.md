@@ -16,11 +16,11 @@
   + definition `null_set` with notation `_.-null_set`
   + lemma `subset_null_set`
   + lemma `negligible_null_set`
-  + lemma `measure_null_setP`
+  + lemma `measure0_null_setP`
   + lemma `null_setU`
   + definition `null_dominates`
   + lemma `null_dominates_trans`
-  + lemma `content_null_dominatesP`
+  + lemma `null_content_dominatesP`
 
 - in `charge.v`:
   + definition `charge_dominates`
