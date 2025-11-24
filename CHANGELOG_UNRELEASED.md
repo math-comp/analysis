@@ -18,7 +18,7 @@
 
 - in `lebesgue_integral_fubini.v`:
   + definition `product_subprobability`
-  + lemma `product_subprobability__setC`
+  + lemma `product_subprobability_setC`
 
 - new file `lebesgue_integral_theory/giry.v`
   + definition `measure_eq`
