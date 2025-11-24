@@ -31,6 +31,8 @@ From mathcomp Require Import measurable_structure measure_function.
 (*              mu-.null_set == (measure-theoretic) null sets                 *)
 (*                 m1 `<< m2 == m1 is absolutely continuous w.r.t. m2 or      *)
 (*                              m2 dominates m1                               *)
+(*   content_dominates mu nu == forall A, measurable A ->                     *)
+(*                              mu A = 0 -> nu A = 0                          *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -383,26 +385,30 @@ Section absolute_continuity.
 Context d (T : semiRingOfSetsType d) (R : realType).
 Implicit Types m : set T -> \bar R.
 
-Definition null_set_dominates m1 m2 := m2.-null_set `<=` m1.-null_set.
+Definition null_dominates m2 m1 := m2.-null_set `<=` m1.-null_set.
 
 End absolute_continuity.
-Notation "m1 `<< m2" := (null_set_dominates m1 m2).
+Notation "m1 `<< m2" := (null_dominates m2 m1).
 
 Section null_dominates_lemmas.
 Context d (T : semiRingOfSetsType d) (R : realType).
 Implicit Types m : set T -> \bar R.
 
 Lemma null_dominates_trans m1 m2 m3 : m1 `<< m2 -> m2 `<< m3 -> m1 `<< m3.
-Proof. by move=> m12 m23 A /m23/m12. Qed.
+Proof. by move=> m12 m23 A /m23 /m12. Qed.
 
 End null_dominates_lemmas.
 
-Section content_null_dominates_lemmas.
-Context d (T : measurableType d) (R : realType) (U : Type).
-Implicit Types (mu : {content set T -> \bar R}) (f g : T -> U).
+Definition content_dominates {d} {T : measurableType d} {R : realType}
+    (mu : {content set T -> \bar R}) (nu : set T -> \bar R) :=
+  forall A, measurable A -> mu A = 0 -> nu A = 0.
 
-Lemma measure_null_dominatesP (nu : set T -> \bar R) mu :
-  nu `<< mu <-> (forall A, measurable A -> mu A = 0 -> nu A = 0).
+Section content_null_dominates_lemmas.
+Context d (T : measurableType d) (R : realType).
+Implicit Types (mu : {content set T -> \bar R}).
+
+Lemma content_null_dominatesP (nu : set T -> \bar R) mu :
+  nu `<< mu <-> content_dominates mu nu.
 Proof.
 split.
 - by move=> dom A mA muA0; apply: (dom A) => //; exact/measure_null_setP.
@@ -418,7 +424,7 @@ Implicit Types (nu mu : {measure set T -> \bar R}) (f g : T -> U).
 Lemma null_dominates_ae_eq nu mu f g E : measurable E ->
   nu `<< mu -> ae_eq mu E f g -> ae_eq nu E f g.
 Proof.
-move=> mE /measure_null_dominatesP m21 [A [*]]; exists A; split => //.
+move=> mE /content_null_dominatesP m21 [A [*]]; exists A; split => //.
 exact: m21.
 Qed.
 

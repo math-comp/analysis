@@ -18,13 +18,14 @@
   + lemma `negligible_null_set`
   + lemma `measure_null_setP`
   + lemma `null_setU`
-  + definition `null_set_dominates`
+  + definition `null_dominates`
   + lemma `null_dominates_trans`
-  + lemma `measure_null_dominatesP`
-  + lemma `measure_charge_dominatesP`
+  + lemma `content_null_dominatesP`
 
 - in `charge.v`:
+  + definition `charge_dominates`
   + lemma `charge_null_dominatesP`
+  + lemma `content_charge_dominatesP`
 
 ### Changed
 
@@ -91,6 +92,9 @@
 - in `measurable_structure.v`:
   + definition `measure_dominates` (use `null_set_dominates` instead)
   + lemma `measure_dominates_trans`
+
+- in `charge.v`:
+  + lemma `dominates_charge_variation` (use `charge_null_dominatesP` instead)
 
 ### Infrastructure
 

@@ -65,6 +65,7 @@ From mathcomp Require Import lebesgue_measure lebesgue_integral.
 (*                              decomposition nuPN: hahn_decomposition nu P N *)
 (*     charge_variation nuPN == variation of the charge nu                    *)
 (*                           := jordan_pos nuPN \+ jordan_neg nuPN            *)
+(*  charge_dominates mu nuPN := content_dominates mu (charge_variation nuPN)  *)
 (*       induced_charge intf == charge induced by a function f : T -> \bar R  *)
 (*                              R has type realType; T is a measurableType.   *)
 (*                              intf is a proof that f is integrable over     *)
@@ -433,7 +434,7 @@ Lemma dominates_cscalel d (T : measurableType d) (R : realType)
   (nu : {charge set T -> \bar R})
   (c : R) : nu `<< mu -> cscale c nu `<< mu.
 Proof.
-move=> /measure_null_dominatesP numu; apply/measure_null_dominatesP => E mE.
+move=> /content_null_dominatesP numu; apply/content_null_dominatesP => E mE.
 by move/(numu _ mE) => E0; apply/eqP; rewrite mule_eq0 eqe E0/= eqxx orbT.
 Qed.
 
@@ -516,8 +517,8 @@ Lemma dominates_cadd d (T : measurableType d) (R : realType)
   nu0 `<< mu -> nu1 `<< mu ->
   cadd nu0 nu1 `<< mu.
 Proof.
-move=> /measure_null_dominatesP nu0mu.
-move=> /measure_null_dominatesP nu1mu A nA A0 mA0 A0A.
+move=> /content_null_dominatesP nu0mu.
+move=> /content_null_dominatesP nu1mu A nA A0 mA0 A0A.
 by have muA0 := nA _ mA0 A0A; rewrite /cadd nu0mu// nu1mu// adde0.
 Qed.
 
@@ -563,18 +564,14 @@ HB.instance Definition _ := isCharge.Build _ _ _
 
 HB.end.
 
-Section dominates_pushforward.
-
 Lemma dominates_pushforward d d' (T : measurableType d) (T' : measurableType d')
   (R : realType) (mu : {measure set T -> \bar R})
   (nu : {charge set T -> \bar R}) (f : T -> T') (mf : measurable_fun setT f) :
   nu `<< mu -> pushforward nu f `<< pushforward mu f.
 Proof.
-move=> /measure_null_dominatesP numu; apply/measure_null_dominatesP => A mA.
+move=> /content_null_dominatesP numu; apply/content_null_dominatesP => A mA.
 by apply: numu; rewrite -[X in measurable X]setTI; exact: mf.
 Qed.
-
-End dominates_pushforward.
 
 Section positive_negative_set.
 Context d (T : semiRingOfSetsType d) (R : numDomainType).
@@ -1022,8 +1019,8 @@ Qed.
 Lemma jordan_pos_dominates (mu : {measure set T -> \bar R}) :
   nu `<< mu -> jordan_pos `<< mu.
 Proof.
-move=> /measure_null_dominatesP nu_mu.
-apply/measure_null_dominatesP => A mA muA0.
+move=> /content_null_dominatesP nu_mu.
+apply/content_null_dominatesP => A mA muA0.
 have := nu_mu A mA muA0.
 rewrite jordan_posE// cjordan_posE /crestr0 mem_set// /crestr/=.
 have mAP : measurable (A `&` P) by exact: measurableI.
@@ -1034,8 +1031,8 @@ Qed.
 Lemma jordan_neg_dominates (mu : {measure set T -> \bar R}) :
   nu `<< mu -> jordan_neg `<< mu.
 Proof.
-move=> /measure_null_dominatesP nu_mu.
-apply/measure_null_dominatesP => A mA muA0.
+move=> /content_null_dominatesP nu_mu.
+apply/content_null_dominatesP => A mA muA0.
 have := nu_mu A mA muA0.
 rewrite jordan_negE// cjordan_negE /crestr0 mem_set// /crestr/=.
 have mAN : measurable (A `&` N) by exact: measurableI.
@@ -1085,9 +1082,14 @@ HB.instance Definition _ := isCharge.Build _ _ _ mu
 
 End charge_variation.
 
+Definition charge_dominates d (T : measurableType d) {R : realType}
+    (mu : {content set T -> \bar R}) (nu : {charge set T -> \bar R})
+    (P N : set T) (nuPN : hahn_decomposition nu P N) :=
+  content_dominates mu (charge_variation nuPN).
+
 Section charge_variation_continuous.
 Local Open Scope ereal_scope.
-Context {R : realType} d (T : measurableType d).
+Context d (T : measurableType d) {R : realType}.
 Variable nu : {charge set T -> \bar R}.
 Variables (P N : set T) (nuPN : hahn_decomposition nu P N).
 
@@ -1099,26 +1101,36 @@ rewrite (jordan_decomp nuPN mA) /cadd/= cscaleN1 /charge_variation.
 by rewrite (le_trans (lee_abs_sub _ _))// !gee0_abs.
 Qed.
 
-Lemma dominates_charge_variation (mu : {measure set T -> \bar R}) :
+Lemma __deprecated__dominates_charge_variation (mu : {measure set T -> \bar R}) :
   nu `<< mu -> charge_variation nuPN `<< mu.
 Proof.
-move=> /[dup]numu /measure_null_dominatesP nu0mu0.
-apply/measure_null_dominatesP => A mA muA0; rewrite /charge_variation/=.
-have /measure_null_dominatesP ->// := jordan_pos_dominates nuPN numu.
+move=> /[dup]numu /content_null_dominatesP nu0mu0.
+apply/content_null_dominatesP => A mA muA0; rewrite /charge_variation/=.
+have /content_null_dominatesP ->// := jordan_pos_dominates nuPN numu.
 rewrite add0e.
-by have /measure_null_dominatesP -> := jordan_neg_dominates nuPN numu.
+by have /content_null_dominatesP -> := jordan_neg_dominates nuPN numu.
 Qed.
 
 Lemma charge_null_dominatesP (mu : {measure set T -> \bar R}) :
-  nu `<< mu <->
-  (forall A, measurable A -> mu A = 0 -> charge_variation nuPN A = 0).
+  nu `<< mu <-> charge_dominates mu nuPN.
 Proof.
 split => [|numu].
-- move/dominates_charge_variation/measure_null_dominatesP => + Am A A0.
-  exact.
-- apply/measure_null_dominatesP => A mA /numu => /(_ mA) nuA0.
+- move=> /[dup]numu /content_null_dominatesP nu0mu0.
+  move=> A mA muA0; rewrite /charge_variation/=.
+  have /content_null_dominatesP ->// := jordan_pos_dominates nuPN numu.
+  rewrite add0e.
+  by have /content_null_dominatesP -> := jordan_neg_dominates nuPN numu.
+- apply/content_null_dominatesP => A mA /numu => /(_ mA) nuA0.
   apply/eqP; rewrite -abse_eq0 eq_le abse_ge0 andbT.
   by rewrite -nuA0 abse_charge_variation.
+Qed.
+
+Lemma content_charge_dominatesP (mu : {measure set T -> \bar R}) :
+  content_dominates mu nu <-> charge_dominates mu nuPN.
+Proof.
+split.
+- by move/content_null_dominatesP/charge_null_dominatesP.
+- by move/charge_null_dominatesP/content_null_dominatesP.
 Qed.
 
 Lemma charge_variation_continuous (mu : {measure set T -> \bar R}) :
@@ -1126,7 +1138,7 @@ Lemma charge_variation_continuous (mu : {measure set T -> \bar R}) :
   exists d : R, (0 < d)%R /\
   forall A, measurable A -> mu A < d%:E -> charge_variation nuPN A < e%:E.
 Proof.
-move=> /[dup]nudommu /measure_null_dominatesP numu.
+move=> /[dup]nudommu /content_null_dominatesP numu.
 apply/not_forallP => -[e] /not_implyP[e0] /forallNP H.
 have {H} : forall n, exists A,
     [/\ measurable A, mu A < (2 ^- n.+1)%:E & charge_variation nuPN A >= e%:E].
@@ -1153,8 +1165,7 @@ have : mu (lim_sup_set F) = 0.
   by move/cvg_lim : h => ->//; rewrite ltry.
 have : measurable (lim_sup_set F).
   by apply: bigcap_measurable => // k _; exact: bigcup_measurable.
-have /measure_null_dominatesP/[apply]/[apply] :=
-  dominates_charge_variation nudommu.
+move/charge_null_dominatesP : nudommu => /[apply] /[apply].
 apply/eqP; rewrite neq_lt// ltNge measure_ge0//=.
 suff : charge_variation nuPN (lim_sup_set F) >= e%:E by exact: lt_le_trans.
 have echarge n : e%:E <= charge_variation nuPN (\bigcup_(j >= n) F j).
@@ -1171,27 +1182,9 @@ have /(_ _ _)/cvg_lim <-// := lim_sup_set_cvg (charge_variation nuPN) F.
 by rewrite -ge0_fin_numE// fin_num_measure//; exact: bigcup_measurable.
 Qed.
 
-Lemma measure_charge_dominatesP (mu : {measure set T -> \bar R}) :
-  (forall A, measurable A -> mu A = 0 -> nu A = 0)
-  <->
-  (forall A, measurable A -> mu A = 0 -> charge_variation nuPN A = 0).
-Proof.
-split.
-  move/measure_null_dominatesP => numu.
-  move=> A mA muA0.
-  apply/eqP; rewrite eq_le measure_ge0 andbT.
-  rewrite /charge_variation.
-  rewrite adde_le0//.
-    by have /measure_null_dominatesP->// := jordan_pos_dominates nuPN numu.
-  by have /measure_null_dominatesP->// := jordan_neg_dominates nuPN numu.
-move=> H A mA muA0.
-apply/eqP.
-rewrite -abse_eq0 eq_le abse_ge0 andbT.
-have <- := H _ mA muA0.
-exact: abse_charge_variation.
-Qed.
-
 End charge_variation_continuous.
+#[deprecated(since="mathcomp-analysis 1.15.0", note="use `charge_null_dominatesP` instead")]
+Notation dominates_charge_variation := __deprecated__dominates_charge_variation (only parsing).
 
 Definition induced_charge d (T : measurableType d) {R : realType}
     (mu : {measure set T -> \bar R}) (f : T -> \bar R)
@@ -1261,7 +1254,7 @@ Proof. exact: integrable_abse. Qed.
 
 Lemma dominates_induced : induced_charge intnf `<< mu.
 Proof.
-apply/measure_null_dominatesP => /= A mA muA.
+apply/content_null_dominatesP => /= A mA muA.
 rewrite /induced_charge; apply/eqP; rewrite -abse_eq0 eq_le abse_ge0 andbT.
 rewrite (le_trans (le_abse_integral _ _ _))//=.
   by case/integrableP : intnf => /= + _; exact: measurable_funTS.
@@ -1769,7 +1762,7 @@ pose AP := A `&` P.
 have mAP : measurable AP by exact: measurableI.
 have muAP_gt0 : 0 < mu AP.
   rewrite lt0e measure_ge0// andbT.
-  move/measure_null_dominatesP in nu_mu.
+  move/content_null_dominatesP in nu_mu.
   apply/eqP/(contra_not (nu_mu _ mAP))/eqP; rewrite gt_eqF//.
   rewrite (@lt_le_trans _ _ (sigma AP))//.
     rewrite (@lt_le_trans _ _ (sigma A))//; last first.
@@ -1864,8 +1857,8 @@ pose mu_ j : {finite_measure set T -> \bar R} := mfrestr (mE j) (muEoo j).
 have nuEoo i : nu (E i) < +oo by rewrite ltey_eq fin_num_measure.
 pose nu_ j : {finite_measure set T -> \bar R} := mfrestr (mE j) (nuEoo j).
 have nu_mu_ k : nu_ k `<< mu_ k.
-  apply/measure_null_dominatesP => S mS mu_kS0.
-  move/measure_null_dominatesP : nu_mu; apply => //.
+  apply/content_null_dominatesP => S mS mu_kS0.
+  move/content_null_dominatesP : nu_mu; apply => //.
   exact: measurableI.
 have [g_] := choice (fun j => radon_nikodym_finite (nu_mu_ j)).
 move=> /all_and3[g_ge0 ig_ int_gE].
