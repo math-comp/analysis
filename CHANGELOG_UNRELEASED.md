@@ -51,18 +51,6 @@
 
 - in `probability.v`:
   + `derivable_oo_continuous_bnd_onemXnMr` -> `derivable_oo_LRcontinuous_onemXnMr`
-- in `reals.v`:
-  + `sup_le_ub` -> `ge_sub`
-  + `le_inf` -> `inf_le`
-  + `le_sup` -> `sup_le`
-  + `sup_ubound` -> `ub_le_sup`
-  + `inf_lbound` -> `ge_inf`
-  + `ub_ereal_sup` -> `ge_ereal_sup`
-  + `ereal_inf_le` -> `ge_ereal_inf`
-  + `le_ereal_sup` -> `ereal_sup_le`
-  + `le_ereal_inf` -> `ereal_inf_le_tmp`
-  + `lb_ereal_inf` -> `le_ereal_inf_tmp`
-  + `ereal_sup_ge` -> `le_ereal_sup_tmp`
 
 ### Generalized
 
@@ -105,8 +93,6 @@
 - in `sequences.v`:
   + notation `eq_bigsetU_seqD`
     (deprecated since 1.2.0)
-- in `ereal.v`:
-  + notation `ereal_sup_le` (was deprecated since 1.11.0)
 
 ### Infrastructure
 
