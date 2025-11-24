@@ -25,12 +25,14 @@ From mathcomp Require Import lebesgue_integral_nonneg lebesgue_integrable.
 (*                                                                            *)
 (* Detailed contents:                                                         *)
 (* ```                                                                        *)
-(*               m1 \x m2 == product measure over T1 * T2, m1 is a measure    *)
-(*                           over T1, and m2 is a sigma finite measure over   *)
-(*                           T2                                               *)
-(*              m1 \x^ m2 == product measure over T1 * T2, m2 is a measure    *)
-(*                           over T1, and m1 is a sigma finite measure over   *)
-(*                           T2                                               *)
+(*                 m1 \x m2 == product measure over T1 * T2, m1 is a measure  *)
+(*                             over T1, and m2 is a sigma finite measure over *)
+(*                             T2                                             *)
+(* product_subprobability P == P.1 \x P.2 where P is a pair of subprobability *)
+(*                           measures                                         *)
+(*                m1 \x^ m2 == product measure over T1 * T2, m2 is a measure  *)
+(*                             over T1, and m1 is a sigma finite measure over *)
+(*                             T2                                             *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -315,6 +317,48 @@ rewrite ge0_integralZr ?integral_indic ?setIT//; exact: measurableT_comp.
 Qed.
 
 End product_measure1E.
+
+Section product_subprobability.
+Local Open Scope classical_set_scope.
+Local Open Scope ring_scope.
+Local Open Scope ereal_scope.
+Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
+  {R : realType}.
+Variable m12 : subprobability T1 R * subprobability T2 R.
+
+Let prod := m12.1 \x m12.2.
+
+HB.instance Definition _ := Measure.on prod.
+
+Let prod_setT : prod setT <= 1.
+Proof.
+rewrite -setXTT [leLHS]product_measure1E// -[leRHS]mule1.
+by rewrite lee_pmul// sprobability_setT.
+Qed.
+
+HB.instance Definition _ :=
+  Measure_isSubProbability.Build _ _ _ prod prod_setT.
+
+Definition product_subprobability : subprobability (T1 * T2)%type R := prod.
+
+End product_subprobability.
+
+Section product_subprobability_setC.
+Local Open Scope classical_set_scope.
+Local Open Scope ereal_scope.
+Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
+  {R : realType}.
+
+Lemma product_subprobability_setC (P : subprobability T1 R * subprobability T2 R)
+    (A : set (T1 * T2)) : measurable A ->
+  (P.1 \x P.2) (~` A) = (P.1 \x P.2) [set: T1 * T2] - (P.1 \x P.2) A.
+Proof.
+move=> mA.
+rewrite -(setvU A) measureU//=; [|exact: measurableC|exact: setICl].
+by rewrite addeK// (_ : (_ \x _)%E = product_subprobability P)// fin_num_measure.
+Qed.
+
+End product_subprobability_setC.
 
 Section product_measure_unique.
 Local Open Scope ereal_scope.

@@ -29,6 +29,8 @@ From mathcomp Require Import lebesgue_measure lebesgue_integral.
 (*                                                                            *)
 (******************************************************************************)
 
+Reserved Notation "m >>= f" (at level 49).
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -43,36 +45,9 @@ Notation "x ≡μ y" := (measure_eq x y) (at level 70).
 Global Hint Extern 0 (_ ≡μ _) => reflexivity : core.
 
 Local Open Scope classical_set_scope.
-(* Adapted from mathlib induction_on_inter *)
-(* TODO: change premises to use setX_closed like notations *)
-Lemma dynkin_induction d {T : measurableType d} (G : set (set T))
-    (P : set_system T) :
-  @measurable _ T = <<s G >> ->
-  setI_closed G ->
-  P [set: T] ->
-  G `<=` P ->
-  (forall S, measurable S -> P S -> P (~` S)) ->
-  (forall F : (set T)^nat,
-    (forall n, measurable (F n)) ->
-    trivIset setT F ->
-    (forall n, P (F n)) -> P (\bigcup_k F k)) ->
-  (forall S, <<s G >> S -> P S).
-Proof.
-move=> GE GI PsetT GP PsetC Pbigcup A sGA.
-suff: <<s G >> `<=` [set A | measurable A /\ P A] by move=> /(_ _ sGA)[].
-apply: lambda_system_subset; [by []| | |by []].
-- apply/dynkin_lambda_system; split => //.
-  + by move=> B [mB PB]; split; [exact: measurableC|exact: PsetC].
-  + move=> F tF Hm; split.
-      by apply: bigcup_measurable => k _; apply Hm.
-    by apply: Pbigcup => //; apply Hm.
-- move=> B GB; split; last exact: GP.
-  by rewrite GE; exact: sub_gen_smallest.
-Qed.
-Local Close Scope classical_set_scope.
+Local Open Scope ereal_scope.
 
 Section giry_def.
-Local Open Scope classical_set_scope.
 Context d (T : measurableType d) (R : realType).
 
 Definition giry : Type := @subprobability d T R.
@@ -120,8 +95,6 @@ End giry_def.
 Arguments giry_ev {d T R} mu A.
 
 Section giry_integral.
-Local Open Scope classical_set_scope.
-Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 
 Definition giry_int (mu : giry T R) (f : T -> \bar R) := \int[mu]_x f x.
@@ -159,7 +132,6 @@ End giry_integral.
 Arguments giry_int {d T R} mu f.
 
 Section measurable_giry_codensity.
-Local Open Scope classical_set_scope.
 Context d1 {T1 : measurableType d1}.
 
 Lemma measurable_giry_codensity d2 {T2 : measurableType d2} {R : realType}
@@ -177,8 +149,6 @@ Qed.
 End measurable_giry_codensity.
 
 Section giry_map.
-Local Open Scope classical_set_scope.
-Local Open Scope ereal_scope.
 Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
   {R : realType}.
 Variables (f : T1 -> T2) (mf : measurable_fun [set: T1] f) (mu1 : giry T1 R).
@@ -211,13 +181,11 @@ Definition giry_map : giry T2 R := map.
 End giry_map.
 
 Section giry_map_lemmas.
-Local Open Scope classical_set_scope.
-Local Open Scope ereal_scope.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Implicit Type f : T1 -> T2.
+Variable f : T1 -> T2.
+Hypothesis mf : measurable_fun [set: T1] f.
 
-Lemma measurable_giry_map f (mf : measurable_fun [set: T1] f) :
-  measurable_fun [set: giry T1 R] (giry_map mf).
+Lemma measurable_giry_map : measurable_fun [set: giry T1 R] (giry_map mf).
 Proof.
 rewrite /giry_map.
 apply: measurable_giry_codensity => // B mB.
@@ -225,17 +193,15 @@ apply: measurable_giry_ev.
 by rewrite -(setTI (f @^-1` B)); exact: mf.
 Qed.
 
-Lemma giry_int_map f (mf : measurable_fun [set: T1] f)
-    (mu : giry T1 R) (h : T2 -> \bar R) :
+Lemma giry_int_map (mu : giry T1 R) (h : T2 -> \bar R) :
   measurable_fun [set: T2] h -> (forall x, 0 <= h x) ->
   giry_int (giry_map mf mu) h = giry_int mu (h \o f).
 Proof. by move=> mh h0; exact: ge0_integral_pushforward. Qed.
 
-Lemma giry_map_dirac f (mf : measurable_fun [set: T1] f)
-    (mu1 : giry T1 R) (B : set T2) : measurable B ->
+Lemma giry_map_dirac (mu1 : giry T1 R) (B : set T2) : measurable B ->
   giry_map mf mu1 B = \int[mu1]_x (\d_(f x))%R B.
 Proof.
-move=> mA.
+move=> mB.
 rewrite -[in LHS](setIT B) -[LHS]integral_indic// [LHS]giry_int_map//.
   exact/measurable_EFinP/measurable_indic.
 by move=> ?; rewrite lee_fin.
@@ -244,12 +210,9 @@ Qed.
 End giry_map_lemmas.
 
 Section giry_ret.
-Local Open Scope classical_set_scope.
-Local Open Scope ring_scope.
-Local Open Scope ereal_scope.
 Context {d} {T : measurableType d} {R : realType}.
 
-Definition giry_ret (x : T) : giry T R := \d_x.
+Definition giry_ret (x : T) : giry T R := (\d_x)%R.
 
 Lemma measurable_giry_ret : measurable_fun [set: T] giry_ret.
 Proof.
@@ -265,8 +228,6 @@ Qed.
 End giry_ret.
 
 Section giry_join.
-Local Open Scope classical_set_scope.
-Local Open Scope ereal_scope.
 Context {d} {T : measurableType d} {R : realType}.
 Variable M : giry (giry T R) R.
 
@@ -318,8 +279,6 @@ End giry_join.
 Arguments giry_join {d T R}.
 
 Section measurable_giry_join.
-Local Open Scope classical_set_scope.
-Local Open Scope ereal_scope.
 Context {d} {T : measurableType d} {R : realType}.
 
 Lemma measurable_giry_join : measurable_fun [set: giry (giry T R) R] giry_join.
@@ -337,8 +296,7 @@ under eq_integral do rewrite sintegralE.
 rewrite ge0_integral_fsum//; last 2 first.
   by move=> r; apply: measurable_funeM; exact: measurable_giry_ev.
   by move=> n x _; exact: nnsfun_mulemu_ge0.
-rewrite sintegralE /=.
-apply: fsbigop.eq_fsbigr => // r rh.
+rewrite sintegralE /=; apply: eq_fsbigr => // r rh.
 rewrite integralZl//.
 have := finite_measure_integrable_cst M 1 measurableT.
 apply: le_integrable => //; first exact: measurable_giry_ev.
@@ -366,7 +324,7 @@ transitivity (limn (fun n => \int[M]_mu \int[mu]_x gE n x)).
   apply: congr_lim; apply/funext => n.
   rewrite integralT_nnsfun sintegral_giry_join; apply: eq_integral => x _.
   by rewrite integralT_nnsfun.
-rewrite -monotone_convergence//; last 3 first.
+rewrite -[LHS]monotone_convergence//; last 3 first.
   by move=> n; exact: measurable_giry_int.
   by move=> n x _; exact: integral_ge0.
   by move=> x _ m n mn; apply: ge0_le_integral => // t _; exact: nd_gE.
@@ -378,10 +336,7 @@ Qed.
 
 End measurable_giry_join.
 
-Reserved Notation "m >>= f" (at level 49).
-
 Section giry_bind.
-Local Open Scope classical_set_scope.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Implicit Types (mu : giry T1 R) (f : T1 -> giry T2 R).
 
@@ -410,8 +365,6 @@ Qed.
 End giry_bind.
 
 Section giry_monad.
-Local Open Scope classical_set_scope.
-Local Open Scope ereal_scope.
 Context d1 d2 d3 (T1 : measurableType d1) (T2 : measurableType d2)
   (T3 : measurableType d3) (R : realType).
 
@@ -444,58 +397,14 @@ Qed.
 
 End giry_monad.
 
-Section giry_map_zero.
-Local Open Scope classical_set_scope.
-Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
-  {R : realType}.
-
-Lemma giry_map_zero (f : T1 -> T2) (mf : measurable_fun [set: T1] f) :
-  giry_map mf (@mzero d1 T1 R) ≡μ @mzero d2 T2 R.
-Proof. by []. Qed.
-
-End giry_map_zero.
-
-Section giry_prod.
-Local Open Scope classical_set_scope.
-Local Open Scope ereal_scope.
-Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2} {R : realType}.
-Variable μ12 : giry T1 R * giry T2 R.
-
 (* https://en.wikipedia.org/wiki/Giry_monad#Product_distributions  *)
-Let prod := μ12.1 \x μ12.2.
-
-HB.instance Definition _ := Measure.on prod.
-
-Let prod_setT : prod setT <= 1.
-Proof.
-rewrite -setXTT [leLHS]product_measure1E// -[leRHS]mule1.
-by rewrite lee_pmul// sprobability_setT.
-Qed.
-
-HB.instance Definition _ :=
-  Measure_isSubProbability.Build _ _ _ prod prod_setT.
-
-Definition giry_prod : giry (T1 * T2)%type R := prod.
-
-(*  gBind' (fun v1 => gBind' (gRet \o (pair v1)) (snd μ)) (fst μ). *)
-
-End giry_prod.
+Definition giry_prod {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
+    {R : realType} (m : giry T1 R * giry T2 R) : giry (T1 * T2)%type R :=
+  @product_subprobability _ _ T1 T2 R m.
 
 Section measurable_giry_prod.
-Local Open Scope classical_set_scope.
-Local Open Scope ereal_scope.
 Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
   {R : realType}.
-
-(* TODO: Clean up, maybe move elsewhere *)
-Lemma subprobability_prod_setC (P : giry T1 R * giry T2 R) (A : set (T1 * T2)) :
-  measurable A ->
-  (P.1 \x P.2) (~` A) = (P.1 \x P.2) [set: T1 * T2] - (P.1 \x P.2) A.
-Proof.
-move=> mA; rewrite -(setvU A) measureU//= ?addeK ?setICl//.
-- by rewrite (_ : (_ \x _)%E = giry_prod P)// fin_num_measure.
-- exact: measurableC.
-Qed.
 
 (* See: Tobias Fritz. A synthetic approach to Markov kernels, conditional
    independence and theorems on sufficient statistics.
@@ -526,7 +435,7 @@ apply: dynkin_induction => /=.
 - move=> S mS HS.
   apply: (eq_measurable_fun (fun x : giry T1 R * giry T2 R =>
       x.1 [set: T1] * x.2 [set: T2] - (x.1 \x x.2) S)).
-    move=> /= x _; rewrite subprobability_prod_setC//.
+    move=> /= x _; rewrite product_subprobability_setC//.
     by rewrite -setXTT product_measure1E.
   apply emeasurable_funB => //=.
   by apply: emeasurable_funM => //=;
@@ -542,19 +451,17 @@ Qed.
 End measurable_giry_prod.
 
 Section giry_prod_int.
-Local Open Scope classical_set_scope.
-Local Open Scope ereal_scope.
 Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
   {R : realType}.
-Variables (μ1 : giry T1 R) (μ2 : giry T2 R) (h : T1 * T2 -> \bar R).
+Variables (m1 : giry T1 R) (m2 : giry T2 R) (h : T1 * T2 -> \bar R).
 Hypotheses (mh : measurable_fun [set: T1 * T2] h) (h0 : forall x, 0 <= h x).
 
-Lemma giry_int_prod1 : giry_int (giry_prod (μ1, μ2)) h =
-  giry_int μ1 (fun x => giry_int μ2 (fun y => h (x, y))).
+Lemma giry_int_prod1 : giry_int (giry_prod (m1, m2)) h =
+  giry_int m1 (fun x => giry_int m2 (fun y => h (x, y))).
 Proof. exact: fubini_tonelli1. Qed.
 
-Lemma giry_int_prod2 : giry_int (giry_prod (μ1, μ2)) h =
-  giry_int μ2 (fun y => giry_int μ1 (fun x => h (x, y))).
+Lemma giry_int_prod2 : giry_int (giry_prod (m1, m2)) h =
+  giry_int m2 (fun y => giry_int m1 (fun x => h (x, y))).
 Proof. exact: fubini_tonelli2. Qed.
 
 End giry_prod_int.
