@@ -29,7 +29,7 @@ From mathcomp Require Import lebesgue_integral_nonneg lebesgue_integrable.
 (*                             over T1, and m2 is a sigma finite measure over *)
 (*                             T2                                             *)
 (* product_subprobability P == P.1 \x P.2 where P is a pair of subprobability *)
-(*                           measures                                         *)
+(*                             measures                                       *)
 (*                m1 \x^ m2 == product measure over T1 * T2, m2 is a measure  *)
 (*                             over T1, and m1 is a sigma finite measure over *)
 (*                             T2                                             *)
