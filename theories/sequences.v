@@ -1,9 +1,9 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint.
-From mathcomp Require Import interval archimedean.
-From mathcomp Require Import boolp classical_sets.
-From mathcomp Require Import functions set_interval reals interval_inference.
+From mathcomp Require Import interval interval_inference archimedean.
+From mathcomp Require Import mathcomp_extra boolp contra classical_sets.
+From mathcomp Require Import functions cardinality set_interval reals.
 From mathcomp Require Import ereal topology tvs normedtype landau.
 
 (**md**************************************************************************)
@@ -91,6 +91,12 @@ From mathcomp Require Import ereal topology tvs normedtype landau.
 (*                einfs u := [sequence ereal_inf (sdrop u n)]_n               *)
 (* limn_esup u, limn_einf == limit sup/inferior for a sequence of             *)
 (*                           of extended reals                                *)
+(* ```                                                                        *)
+(*                                                                            *)
+(* ```                                                                        *)
+(*       adjacent_set L R == L and R are two adjacent sets of real numbers    *)
+(*                cut L R == L and R are two sets of real numbers that form   *)
+(*                           a cut                                            *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Bounded functions                                                       *)
@@ -200,6 +206,20 @@ Lemma increasing_seqP d (T : porderType d) (u_ : T ^nat) :
 Proof.
 split; first by move=> u_nondec; apply: le_mono; apply: homo_ltn lt_trans _.
 by move=> u_incr n; rewrite lt_neqAle eq_le !u_incr leqnSn ltnn.
+Qed.
+
+Lemma increasing_seq_injective d {T : orderType d} (f : T^nat) :
+  increasing_seq f -> injective f.
+Proof.
+move=> incrf a b fafb; apply: contrapT => /eqP; rewrite neq_lt => /orP[ab|ba].
+- have : (f a < f b)%O.
+    rewrite (@lt_le_trans _ _ (f a.+1))//.
+      by move/increasing_seqP : incrf; exact.
+    by move: ab; rewrite incrf.
+  by rewrite fafb ltxx.
+- have := incrf a b.
+  rewrite fafb lexx => /esym.
+  by rewrite -leEnat leNgt ba.
 Qed.
 
 Lemma decreasing_seqP d (T : porderType d) (u_ : T ^nat) :
@@ -2650,6 +2670,133 @@ move/(_ _ (@is_cvg_geometric_series _ a _ x1)) => ->.
 apply: nondecreasing_cvgn_le; last exact: is_cvg_geometric_series.
 by apply: nondecreasing_series => ? _ /=; rewrite pmulr_lge0 // exprn_gt0.
 Qed.
+
+Section adjacent_cut.
+Context {R : realType}.
+Implicit Types L D E : set R.
+
+Definition adjacent_set A B :=
+  [/\ A !=set0, B !=set0, (forall x y, A x -> B y -> x <= y) &
+    forall e : {posnum R}, exists2 xy, xy \in A `*` B & xy.2 - xy.1 < e%:num].
+
+Lemma adjacent_sup_inf A B : adjacent_set A B -> sup A = inf B.
+Proof.
+case=> A0 B0 AB_le AB_eps; apply/eqP; rewrite eq_le; apply/andP; split.
+  by apply: ge_sup => // x Ax; apply: lb_le_inf => // y By; exact: AB_le.
+apply/ler_addgt0Pl => _ /posnumP[e]; rewrite -lerBlDr.
+have [[x y]/=] := AB_eps e.
+rewrite !inE => -[/= Ax By] /ltW yxe.
+rewrite (le_trans _ yxe)// lerB//.
+- by rewrite ge_inf//; exists x => // z; exact: AB_le.
+- by rewrite ub_le_sup//; exists y => // z Az; exact: AB_le.
+Qed.
+
+Lemma adjacent_sup_inf_unique A B M : adjacent_set A B ->
+  ubound A M -> lbound B M -> M = sup A.
+Proof.
+move=> [A0 B0 AB_leq AB_eps] AM BM.
+apply/eqP; rewrite eq_le ge_sup// andbT (@adjacent_sup_inf A B)//.
+exact: lb_le_inf.
+Qed.
+
+Definition cut L B := [/\ L !=set0, B !=set0,
+  (forall x y, L x -> B y -> x < y) & L `|` B = [set: R] ].
+
+Lemma cut_adjacent A B : cut A B -> adjacent_set A B.
+Proof.
+move=> [A0 B0 ABlt ABT]; split => //; first by move=> x y Ax By; exact/ltW/ABlt.
+move: A0 B0 => [a aA] [b bB] e.
+have ba0 : b - a > 0 by rewrite subr_gt0 ABlt.
+have [N N0 baNe] : exists2 N, N != 0 & (b - a) / N%:R < e%:num.
+  exists (truncn ((b - a) / e%:num)).+1 => //.
+  by rewrite ltr_pdivrMr// mulrC -ltr_pdivrMr// truncnS_gt.
+pose a_ i := a + i%:R * (b - a) / N%:R.
+pose k : nat := [arg min_(i < @ord_max N | a_ i \in B) i].
+have ? : a_ (@ord_max N) \in B.
+  by rewrite /a_ /= mulrAC divff ?pnatr_eq0// mul1r subrKC; exact/mem_set.
+have k_gt0 : (0 < k)%N.
+  rewrite /k; case: arg_minnP => // /= i + aBi.
+  contra; rewrite leqn0 => /eqP ->.
+  rewrite /a_ !mul0r addr0; apply/negP => /set_mem/(ABlt _ _ aA).
+  by rewrite ltxx.
+have akN1A : a_ k.-1 \in A.
+  rewrite /k; case: arg_minnP => // /= i aiB aBi.
+  have i0 : i != ord0.
+    contra: aiB => ->.
+    rewrite /a_ !mul0r addr0; apply/negP => /set_mem/(ABlt _ _ aA).
+    by rewrite ltxx.
+  apply/mem_set/boolp.notP => abs.
+  have {}abs : a_ i.-1 \in B.
+    by move/seteqP : ABT => [_ /(_ (a_ i.-1) Logic.I)] [//|/mem_set].
+  have iN : (i.-1 < N.+1)%N by rewrite prednK ?lt0n// ltnW.
+  have := aBi (Ordinal iN) abs.
+  apply/negP; rewrite -ltnNge/=.
+  by case: i => -[//|? ?] in i0 iN abs aiB aBi *.
+have akB : a_ k \in B by rewrite /k; case: arg_minnP => // /= i aiB aBi.
+exists (a_ k.-1, a_ k); first by rewrite !inE; split => //=; exact/set_mem.
+rewrite /a_ opprD addrACA subrr add0r -!mulrA -!mulrBl.
+by rewrite -natrB ?leq_pred// -subn1 subKn// mul1r.
+Qed.
+
+Lemma infinite_bounded_limit_point_nonempty E :
+  infinite_set E -> bounded_set E -> limit_point E !=set0.
+Proof.
+move=> infiniteE boundedE.
+have E0 : E !=set0.
+  apply/set0P/negP => /eqP E0.
+  by move: infiniteE; rewrite E0; apply; exact: finite_set0.
+have ? : ProperFilter (globally E).
+  by case: E0 => x Ex; exact: globally_properfilter Ex.
+pose A := [set x | infinite_set (`[x, +oo[ `&` E)].
+have A0 : A !=set0.
+  move/ex_bound : boundedE => [M EM]; exists (- M).
+  rewrite /A /= setIidr// => x Ex /=.
+  by rewrite in_itv/= andbT lerNnormlW// EM.
+pose B := ~` A.
+have B0 : B !=set0.
+  move/ex_bound : boundedE => [M EM]; exists (M + 1).
+  rewrite /B /A /= (_ : _ `&` _ = set0)// -subset0 => x []/=.
+  rewrite in_itv/= andbT => /[swap] /EM/= /ler_normlW xM.
+  by move/le_trans => /(_ _ xM); rewrite leNgt ltrDl ltr01.
+have Ale_closed x y : A x -> y <= x -> A y.
+  rewrite /A /= => xE yx.
+  rewrite (@itv_bndbnd_setU _ _ _ (BLeft x))//.
+  by apply: contra_not xE; rewrite setIUl finite_setU => -[].
+have ABlt x y : A x -> B y -> x < y.
+  by move=> Ax By; rewrite ltNge; apply/negP => /(Ale_closed _ _ Ax).
+have AB : cut A B by split => //; rewrite /B setUv.
+pose l := sup A. (* the real number defined by the cut (A, B) *)
+have infleE (e : R) (e0 : e > 0) :infinite_set (`]l - e, +oo[ `&` E).
+  suff : A (l - e).
+    apply: contra_not => leE.
+    rewrite -setU1itv// setIUl finite_setU; split => //.
+    by apply/(sub_finite_set _ (finite_set1 (l - e))); exact: subIsetl.
+  have : has_sup A.
+    by split => //; case: B0 => d dB; exists d => z Az; exact/ltW/ABlt.
+  move/(sup_adherent e0) => [r Ar].
+  by rewrite -/l => /ltW ler; exact: (Ale_closed _ _ Ar).
+have finleE (e : R) (e0 : e > 0) : finite_set (`[l + e, +oo[ `&` E).
+  suff : B (l + e) by rewrite /B/= /A/= => /contrapT.
+  have : has_inf B.
+    by split => //; case: A0 => g gA; exists g => z Bz; exact/ltW/ABlt.
+  move/(inf_adherent e0) => [r Br].
+  rewrite -(adjacent_sup_inf (cut_adjacent AB)) -/l => /ltW rle Ale.
+  have /ABlt := Ale_closed _ _ Ale rle.
+  by move/(_ _ Br); rewrite ltxx.
+exists l; apply/limit_point_infinite_setP => /= U.
+rewrite /nbhs/= /nbhs_ball_/= => -[e /= e0].
+rewrite -[ball_ _ _ _]/(ball _ _) => leU.
+have : infinite_set (`]l - e, l + e[ `&` E).
+  rewrite (_ : _ `&` _ =
+      `]l - e, +oo[ `&` E `\` `[l + e, +oo[ `&` E); last first.
+    rewrite setDE setCI setIUr -(setIA _ _ (~` E)) setICr setI0 setU0.
+    by rewrite setIAC -setDE [in LHS]set_itv_splitD.
+  by apply: infinite_setD; [exact: infleE|exact: finleE].
+apply/contra_not/sub_finite_set; apply: setSI.
+by move: leU; rewrite ball_itv.
+Qed.
+
+End adjacent_cut.
 
 Section banach_contraction.
 
