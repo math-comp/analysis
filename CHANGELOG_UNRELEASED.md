@@ -20,6 +20,12 @@
   + definition `cut`
   + lemmas `cut_adjacent`, `infinite_bounded_limit_point_nonempty`
 
+- in `topology_structure.v`:
+  + definition `isolated`
+  + lemma `isolatedS`
+  + lemma `disjoint_isolated_limit_point`
+  + lemma `closure_isolated_limit_point`
+
 ### Changed
 
 ### Renamed
@@ -36,6 +42,9 @@
   + weaken an hypothesis of lemma `finite_measure_integrable_cst`
 
 ### Deprecated
+
+- in `topology_structure.v`:
+  + lemma `closure_limit_point` (use `closure_limit_point_isolated` instead)
 
 ### Removed
 

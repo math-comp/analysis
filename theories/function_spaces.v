@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp Require Import boolp classical_sets functions.
@@ -1218,8 +1218,7 @@ have C : compact R.
   by apply: tychonoff => x; rewrite -precompactE; move: ptwsPreW; exact.
 apply: (subclosed_compact _ C); first exact: closed_closure.
 have WsubR : (fW @` W) `<=` R.
-  move=> f Wf x; rewrite /R /K closure_limit_point; left.
-  by case: Wf => i ? <-; exists i.
+  by move=> f [i Wi <-] x; rewrite /K; apply: subset_closure; exists i.
 rewrite closureE; apply: smallest_sub (compact_closed _ C) WsubR.
 exact: hausdorff_product.
 Qed.
