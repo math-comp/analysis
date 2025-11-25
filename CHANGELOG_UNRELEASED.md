@@ -77,6 +77,9 @@
   + lemma `disjoint_isolated_limit_point`
   + lemma `closure_isolated_limit_point`
 
+- in `separation_axioms.v`:
+  + lemma `perfectP`
+
 ### Changed
 
 - in `charge.v`:

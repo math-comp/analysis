@@ -781,9 +781,8 @@ Lemma closed_closure (A : set T) : closed (closure A).
 Proof. by move=> p clclAp B /nbhs_interior /clclAp [q [clAq /clAq]]. Qed.
 
 End Closed.
-(*#[deprecated(since="mathcomp-analysis 1.15.0", note="use `closure_limit_point_isolated` instead")]
+#[deprecated(since="mathcomp-analysis 1.15.0", note="use `closure_limit_point_isolated` instead")]
 Notation closure_limit_point := __deprecated__closure_limit_point (only parsing).
-*)
 
 Lemma closed_comp {T U : topologicalType} (f : T -> U) (D : set U) :
   {in ~` f @^-1` D, continuous f} -> closed D -> closed (f @^-1` D).
