@@ -80,6 +80,14 @@
 - in `separation_axioms.v`:
   + lemma `perfectP`
 
+- in `cardinality.v`:
+  + lemmas `infinite_prod_rat`, ``card_rat2`
+
+- in `normed_module.v`:
+  + lemma `open_subball_rat`
+  + fact `isolated_rat_ball`
+  + lemma `countable_isolated`
+
 ### Changed
 
 - in `charge.v`:

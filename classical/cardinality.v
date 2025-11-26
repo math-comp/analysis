@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
@@ -1116,6 +1116,18 @@ Qed.
 
 Lemma card_rat : [set: rat] #= [set: nat].
 Proof. exact/eq_card_nat/infinite_rat/countableP. Qed.
+
+Lemma infinite_prod_rat : infinite_set [set: rat * rat].
+Proof.
+apply/infiniteP/pcard_leTP/injPex => /=.
+have /pcard_eqP[/squash/bijPex[f bijf]] : ([set: nat] #= [set: rat])%card.
+  by rewrite card_eq_sym card_rat.
+exists (pair 0%:Q \o f) => m n _ _ [].
+by move/bij_inj : (bijf) => /[apply]; exact.
+Qed.
+
+Lemma card_rat2 : ([set: rat * rat] #= [set: nat])%card.
+Proof. exact/eq_card_nat/infinite_prod_rat/countableP. Qed.
 
 Lemma choicePcountable {T : choiceType} : countable [set: T] ->
   {T' : countType | T = T' :> Type}.

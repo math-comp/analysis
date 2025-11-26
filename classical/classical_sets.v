@@ -1,7 +1,7 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg matrix finmap ssrnum.
-From mathcomp Require Import ssrint interval.
+From mathcomp Require Import ssrint rat interval.
 From mathcomp Require Import mathcomp_extra boolp wochoice.
 
 (**md**************************************************************************)
