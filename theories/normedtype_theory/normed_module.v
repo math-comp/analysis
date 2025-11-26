@@ -2088,6 +2088,85 @@ apply: filterS => e xeA y exy; apply: xeA.
 by rewrite -ball_normE/= in exy; exact: ltW.
 Qed.
 
+Lemma open_subball_rat {R : realType} (S : set R) x : open S -> x \in S ->
+  exists c r, let B : set R := ball (@ratr R c) (ratr r) in x \in B /\ B `<=` S.
+Proof.
+move=> oS /set_mem/(open_subball oS)[r/= r0 rS].
+have [y yxr] : exists y, ball x (r / 4) (ratr y).
+  suff : ball x (r / 4) `&` range ratr !=set0.
+    by move=> [/= _ []] /[swap] -[y _ <-]; exists y.
+  apply: dense_rat; last by apply: ball_open; rewrite divr_gt0.
+  by exists x; apply: ballxx; rewrite divr_gt0.
+have [q /andP[rq qr]] : exists q, r / 4 < ratr q < r / 2.
+  have : ball (r / 3) (r / 12) `&` range ratr !=set0.
+    apply: dense_rat; last by apply: ball_open; rewrite divr_gt0.
+    by exists (r / 3); apply: ballxx; rewrite divr_gt0.
+  move=> [/= _ []] /[swap] -[z _ <-].
+  rewrite ball_itv/= in_itv/= => /andP[rz zr]; exists z; apply/andP; split.
+  - rewrite (le_lt_trans _ rz)// -mulrBr ler_pM2l// -(@ler_pM2l _ 12)//.
+    rewrite mulrBr divff// (@natrM _ 3 4) -mulrA divff// mulr1.
+    by rewrite mulrAC divff// mul1r -lerBlDr opprK natr1.
+  - rewrite (lt_le_trans zr)// -mulrDr ler_pM2l// -(@ler_pM2l _ 12)//.
+    rewrite mulrDr divff// (@natrM _ 3 4) mulrAC divff// mul1r.
+    by rewrite natr1 (@natrM _ 2 2) -!mulrA divff// mulr1 -natrM ler_nat.
+have [yqxr xrS] : ball (@ratr R y) (ratr q) `<=` ball x r /\ ball x r `<=` S.
+  split => [z yqz|z /rat_in_itvoo[p]].
+  - rewrite /ball/= -(subrK (ratr y) x) -(addrA _ (ratr y)).
+    rewrite (le_lt_trans (ler_normD _ _))// (splitr r) ltrD//.
+      by apply: le_ball yxr; rewrite ler_pM2l// lef_pV2 ?posrE// ler_nat.
+    by rewrite (lt_trans yqz).
+  - rewrite in_itv/= => /andP[xzp pr]; apply: (rS (ratr p)) => //=.
+    + by rewrite sub0r normrN gtr0_norm// (le_lt_trans _ xzp).
+    + exact: le_lt_trans xzp.
+exists y, q; split; last exact: subset_trans xrS.
+exact/mem_set/ball_sym/(le_ball _ yxr)/ltW.
+Qed.
+
+Section countable_isolated.
+Context {R : realType}.
+Variable S : set R.
+
+Fact isolated_rat_ball (x : R) : isolated S x -> exists cr,
+  let B : set R := ball (@ratr R cr.1) (ratr cr.2) in
+  x \in B /\ (forall y : R, isolated S y -> y \in B -> x = y).
+Proof.
+move=> Sx.
+have [e Sxe] : exists e : {posnum R},
+    forall y : R, isolated S y -> y \in (ball x e%:num : set R) -> x = y.
+  case: Sx => [xS/= [V xV /seteqP[VSx _]]].
+  have [e /= e0 exV] : \forall e \near 0^'+, ball x e `<=` V°.
+    apply: open_subball; first exact: open_interior.
+    by move/nbhs_interior : xV; exact: nbhs_singleton.
+  have e20 : 0 < e / 2 by rewrite divr_gt0.
+  exists (PosNum e20) => y [Sy [/= U yU USy /set_mem xey]].
+  apply/eqP/negPn/negP => xy.
+  suff : (V `&` S) y by move/VSx/esym; exact/eqP.
+  split => //; last exact/set_mem.
+  apply: interior_subset; apply: exV xey => //.
+  by rewrite /ball_/= sub0r normrN gtr0_norm// gtr_pMr// invf_lt1// ltr1n.
+have [c [r [xcr crxe]]] : exists c r,
+  let B : set R := ball (@ratr R c) (ratr r) in x \in B /\ B `<=` ball x e%:num.
+  by apply: open_subball_rat; [exact: ball_open|exact/mem_set/ballxx].
+by exists (c, r); split=> //= y /Sxe /[!inE] /[swap] /crxe /[swap] /[apply].
+Qed.
+
+Lemma countable_isolated : countable (isolated S).
+Proof.
+apply/pcard_injP => /=.
+pose g r := if pselect (isolated S r) is left H then
+  sval (cid (isolated_rat_ball H)) else 0.
+have /card_bijP[h /bij_inj injh] := card_rat2.
+exists (set_val \o h \o to_setT \o g) => x y /set_mem xS /set_mem yS /=.
+rewrite /= /g; case: pselect => // xS'; case: pselect => // yS'.
+case: cid => //= [ar [xar Nxar]]{xS'}; case: cid => //= [bd [ybd Nybd]]{yS'} ab.
+have /injh/(congr1 (fun x => \val x)) : h (to_setT ar) = h (to_setT bd).
+  move: (h (to_setT ar)) (h (to_setT bd)) ab => [n nT] [m mT].
+  by rewrite !set_valE/= => ->; congr exist.
+by rewrite -inv_to_setT !funK ?inE// => {}ab; apply: Nxar => //; rewrite ab.
+Qed.
+
+End countable_isolated.
+
 Lemma closed_disjoint_closed_ball {R : realFieldType} {M : normedModType R}
     (K : set M) z : closed K -> ~ K z ->
   \forall d \near 0^'+, closed_ball z d `&` K = set0.
