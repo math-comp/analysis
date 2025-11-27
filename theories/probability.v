@@ -1574,6 +1574,7 @@ HB.instance Definition _ := @Measure_isProbability.Build _ _ R
 
 Lemma dominates_uniform_prob : uniform_prob ab `<< mu.
 Proof.
+apply/null_content_dominatesP.
 move=> A mA muA0; rewrite /uniform_prob integral_uniform_pdf.
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
   apply: integral_ge0 => x [Ax /=]; rewrite in_itv /= => xab.
@@ -1875,7 +1876,7 @@ HB.instance Definition _ :=
 
 Lemma normal_prob_dominates : normal_prob `<< mu.
 Proof.
-move=> A mA muA0; rewrite /normal_prob /normal_pdf.
+apply/null_content_dominatesP=> A mA muA0; rewrite /normal_prob /normal_pdf.
 have [s0|s0] := eqVneq sigma 0.
   apply: null_set_integral => //=; apply: (integrableS measurableT) => //=.
   exact: integrable_indic_itv.
@@ -2653,7 +2654,7 @@ Qed.
 
 Lemma beta_prob_dom : beta_prob `<< mu.
 Proof.
-move=> A mA muA0; rewrite /beta_prob /mscale/=.
+apply/null_content_dominatesP => A mA muA0; rewrite /beta_prob /mscale/=.
 apply/eqP; rewrite mule_eq0 eqe invr_eq0 gt_eqF/= ?beta_fun_gt0//; apply/eqP.
 rewrite /beta_num integral_XMonemX_restrict.
 apply/eqP; rewrite eq_le; apply/andP; split; last first.

@@ -28,6 +28,11 @@ From mathcomp Require Import measurable_structure measure_function.
 (*                              forall x, P x does not stand alone.           *)
 (*      f = g %[ae mu in D ] == f is equal to g almost everywhere in D        *)
 (*            f = g %[ae mu] == f is equal to g almost everywhere             *)
+(*              mu-.null_set == (measure-theoretic) null sets                 *)
+(*                 m1 `<< m2 == m1 is absolutely continuous w.r.t. m2 or      *)
+(*                              m2 dominates m1                               *)
+(*   content_dominates mu nu == forall A, measurable A ->                     *)
+(*                              mu A = 0 -> nu A = 0                          *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -40,6 +45,8 @@ Reserved Notation "f = g %[ae mu 'in' D ]"
   (at level 70, g at next level, format "f  =  g  '%[ae'  mu  'in'  D ]").
 Reserved Notation "f = g %[ae mu ]"
   (at level 70, g at next level, format "f  =  g  '%[ae'  mu ]").
+Reserved Notation "m .-null_set" (at level 2, format "m .-null_set").
+Reserved Notation "m1 `<< m2" (at level 51).
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -324,12 +331,101 @@ Proof. by apply: filterS => x /= /[apply] ->. Qed.
 
 End ae_eqe.
 
-Section absolute_continuity_lemmas.
+Section null_set.
+Context d (T : semiRingOfSetsType d) (R : numDomainType).
+Implicit Types m : set T -> \bar R.
+
+Definition null_set m :=
+  [set N | forall A, measurable A -> A `<=` N -> m A = 0].
+
+End null_set.
+Notation "m .-null_set" := (null_set m).
+
+Section null_set_lemmas.
+Context d (T : semiRingOfSetsType d) (R : numDomainType).
+Implicit Types m : set T -> \bar R.
+
+Lemma subset_null_set m A B : A `<=` B -> m.-null_set B -> m.-null_set A.
+Proof. by move=> AB + N mN NA; apply => //; exact: subset_trans AB. Qed.
+
+End null_set_lemmas.
+
+Section content_null_set_lemmas.
+Context d (T : measurableType d) (R : realType).
+Implicit Types m : {content set T -> \bar R}.
+
+Lemma negligible_null_set m A : m.-negligible A -> m.-null_set A.
+Proof.
+move=> [N [mN N0 AN]]; apply: (subset_null_set AN) => C mC CN.
+by apply/eqP; rewrite -measure_le0 -N0 le_measure// inE.
+Qed.
+
+Lemma measure0_null_setP m A : measurable A -> m.-null_set A <-> m A = 0.
+Proof.
+move=> mA; split; [exact|move=> A0].
+by apply: negligible_null_set; exists A; split.
+Qed.
+
+Lemma null_setU m B : measurable B ->
+  m.-null_set B <-> (forall A, measurable A -> m (A `|` B) = m A).
+Proof.
+move=> mB; split=> [nullB A mA|B0 A mA AB].
+- apply/eqP; rewrite eq_le.
+  rewrite (@le_measure _ _ _ _ A) ?inE ?andbT//; last exact: measurableU.
+  by rewrite (le_trans (measureU2 _ _ _))// (nullB B)// adde0.
+- apply/eqP; rewrite eq_le measure_ge0 andbT.
+  by rewrite -(measure0 m) -[leRHS]B0// set0U le_measure// inE.
+Qed.
+
+End content_null_set_lemmas.
+
+Section absolute_continuity.
+Context d (T : semiRingOfSetsType d) (R : realType).
+Implicit Types m : set T -> \bar R.
+
+Definition null_dominates m2 m1 := m2.-null_set `<=` m1.-null_set.
+
+End absolute_continuity.
+Notation "m1 `<< m2" := (null_dominates m2 m1).
+
+Section null_dominates_lemmas.
+Context d (T : semiRingOfSetsType d) (R : realType).
+Implicit Types m : set T -> \bar R.
+
+Lemma null_dominates_trans m1 m2 m3 : m1 `<< m2 -> m2 `<< m3 -> m1 `<< m3.
+Proof. by move=> m12 m23 A /m23 /m12. Qed.
+
+End null_dominates_lemmas.
+
+Definition content_dominates {d} {T : measurableType d} {R : realType}
+    (mu : {content set T -> \bar R}) (nu : set T -> \bar R) :=
+  forall A, measurable A -> mu A = 0 -> nu A = 0.
+
+Section null_content_dominatesP.
+Context d (T : measurableType d) (R : realType).
+Implicit Types (mu : {content set T -> \bar R}).
+
+Lemma null_content_dominatesP (nu : set T -> \bar R) mu :
+  nu `<< mu <-> content_dominates mu nu.
+Proof.
+split.
+- by move=> dom A mA muA0; apply: (dom A) => //; exact/measure0_null_setP.
+- by move=> + A muA0 B mB BA; apply => //; exact: muA0.
+Qed.
+
+End null_content_dominatesP.
+
+Section null_dominates_ae_eq.
 Context d (T : measurableType d) (R : realType) (U : Type).
-Implicit Types (m : {measure set T -> \bar R}) (f g : T -> U).
+Implicit Types (nu mu : {measure set T -> \bar R}) (f g : T -> U).
 
-Lemma measure_dominates_ae_eq m1 m2 f g E : measurable E ->
-  m2 `<< m1 -> ae_eq m1 E f g -> ae_eq m2 E f g.
-Proof. by move=> mE m21 [A [mA A0 ?]]; exists A; split => //; exact: m21. Qed.
+Lemma null_dominates_ae_eq nu mu f g E : measurable E ->
+  nu `<< mu -> ae_eq mu E f g -> ae_eq nu E f g.
+Proof.
+move=> mE /null_content_dominatesP m21 [A [*]]; exists A; split => //.
+exact: m21.
+Qed.
 
-End absolute_continuity_lemmas.
+End null_dominates_ae_eq.
+#[deprecated(since="mathcomp-analysis 1.15.0", note="renamed `null_dominates_ae_eq`")]
+Notation measure_dominates_ae_eq := null_dominates_ae_eq (only parsing).
