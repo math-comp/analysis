@@ -5,7 +5,7 @@
 ### Added
 
 - in `classical_sets.v`:
-  + lemma `not_nonemptyP`
+  + lemma `nonemptyPn`
 
 - in `cardinality.v`:
   + lemma `infinite_setD`

@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
 From mathcomp Require Import topology_structure.
@@ -91,7 +91,7 @@ move=> AB CAB; have -> : C = (C `&` A) `|` (C `&` B).
   rewrite predeqE => x; split=> [Cx|[] [] //].
   by have [Ax|Bx] := CAB _ Cx; [left|right].
 move/connectedP/(_ (fun b => if b then C `&` B else C `&` A)) => /not_and3P[]//.
-  by move/existsNP => [b /not_nonemptyP]; case: b => ->;
+  by move/existsNP => [b /nonemptyPn]; case: b => ->;
     rewrite !(setU0,set0U); [left|right]; apply: subIset; right.
 case/not_andP => /eqP/set0P[x []].
 - move=> /closureI[cCx cAx] [Cx Bx]; exfalso.

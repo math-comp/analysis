@@ -474,7 +474,7 @@ have [[j Dj BiBj]|] :=
   move/forall2NP => H.
   have {}H j : (\bigcup_(i < n.+1) D i) j ->
                closure (B i) `&` closure (B j) = set0.
-   by have [//|/not_nonemptyP] := H j.
+   by have [//|/nonemptyPn] := H j.
   have H_i : (H_ n (\bigcup_(i < n) D i)) i.
     split => // s Hs si; apply: H => //.
     by move: Hs => [m /= nm Dms]; exists m => //=; rewrite (ltn_trans nm).
