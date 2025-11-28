@@ -34,6 +34,16 @@
   + definition `cut`
   + lemmas `cut_adjacent`, `infinite_bounded_limit_point_nonempty`
 
+- in `normed_module.v`:
+  + lemma `limit_point_setD`
+
+- in `reals.v`:
+  + lemma `nat_has_minimum`
+
+- in `sequences.v`:
+  + definition `adherence_value`
+  + lemmas `adherence_value_cvg`, `limit_point_adherence_value`
+
 ### Changed
 
 - in `charge.v`:
