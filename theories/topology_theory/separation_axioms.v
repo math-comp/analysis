@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap.
 From mathcomp Require Import boolp classical_sets functions wochoice.
@@ -128,7 +128,7 @@ have /compact_near_coveringP : compact (V `\` U).
 move=> /(_ _ (powerset_filter_from F) (fun W x => ~ W x))[].
   move=> z [Vz ?]; have zE : x <> z by move/nbhs_singleton: nbhsU => /[swap] ->.
   have : ~ cluster F z by move: zE; apply: contra_not; rewrite clFx1 => ->.
-  case/existsNP=> C /existsPNP [D] FC /existsNP [Dz] /set0P/negP/negPn/eqP.
+  case/existsNP=> C /existsPNP [D] FC /existsNP [Dz] /nonemptyPn.
   rewrite setIC => /disjoints_subset CD0; exists (D, [set W | F W /\ W `<=` C]).
     by split; rewrite //= nbhs_simpl; exact: powerset_filter_fromP.
   by case => t W [Dt] [FW] /subsetCP; apply; apply: CD0.
@@ -140,8 +140,7 @@ Qed.
 Lemma compact_precompact (A : set T) :
   hausdorff_space -> compact A -> precompact A.
 Proof.
-move=> h c; rewrite precompactE ( _ : closure A = A)//.
-by apply/esym/closure_id; exact: compact_closed.
+by move=> h c; rewrite precompactE -(closure_id _).1//; exact: compact_closed.
 Qed.
 
 Lemma open_hausdorff : hausdorff_space =

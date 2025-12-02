@@ -418,7 +418,7 @@ Proof.
 rewrite ball_hausdorff => a b ab.
 have ab2 : 0 < `|a - b| / 2 by apply divr_gt0 => //; rewrite normr_gt0 subr_eq0.
 set r := PosNum ab2; exists (r, r) => /=.
-apply/negPn/negP => /set0P[c] []; rewrite -ball_normE /ball_ => acr bcr.
+apply/eqP/nonemptyPn => -[c] []; rewrite -ball_normE /ball_ => acr bcr.
 have r22 : r%:num * 2 = r%:num + r%:num.
   by rewrite (_ : 2 = 1 + 1) // mulrDr mulr1.
 move: (ltrD acr bcr); rewrite -r22 (distrC b c).
