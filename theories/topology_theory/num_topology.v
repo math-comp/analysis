@@ -149,7 +149,8 @@ Lemma closure_sup (R : realType) (A : set R) :
   A !=set0 -> has_ubound A -> closure A (sup A).
 Proof.
 move=> A0 ?; have [|AsupA] := pselect (A (sup A)); first exact: subset_closure.
-rewrite closure_limit_point; right => U /nbhs_ballP[_ /posnumP[e]] supAeU.
+rewrite closure_isolated_limit_point.
+right => U /nbhs_ballP[_ /posnumP[e]] supAeU.
 suff [x [Ax /andP[sAex xsA]]] : exists x, A x /\ sup A - e%:num < x < sup A.
   exists x; split => //; first by rewrite lt_eqF.
   apply supAeU; rewrite /ball /= ltr_distl (addrC x e%:num) -ltrBlDl sAex.
