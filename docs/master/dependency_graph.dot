@@ -405,6 +405,10 @@ digraph depend {
 			fillcolor=10,
 			fontcolor=white,
 			label=lebesgue_integral_differentiation];
+		"theories/lebesgue_integral_theory/giry"	[URL="mathcomp.analysis.lebesgue_integral_theory.giry.html",
+			fillcolor=10,
+			fontcolor=white,
+			label=giry];
 	}
 	"classical/all_classical" -> "reals/prodnormedzmodule";
 	"classical/all_classical" -> "theories/topology_theory/topology_structure";
@@ -518,6 +522,7 @@ digraph depend {
 	"theories/trigo" -> "theories/gauss_integral";
 	"theories/trigo" -> "theories/pi_irrational";
 	"theories/ftc" -> "theories/trigo";
+	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/lebesgue_integral_theory/giry";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/charge";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/hoelder";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/kernel";
