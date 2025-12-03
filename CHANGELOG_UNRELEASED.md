@@ -63,6 +63,10 @@
 - in `lebesgue_integrable.v`:
   + weaken an hypothesis of lemma `finite_measure_integrable_cst`
 
+- in `derive.v`:
+  + definition `jacobian`
+  + lemmas `deriveEjacobian`, `differentiable_coord`
+
 ### Deprecated
 
 ### Removed

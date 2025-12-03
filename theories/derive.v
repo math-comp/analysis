@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval poly.
 From mathcomp Require Import sesquilinear.
@@ -174,7 +174,7 @@ Proof. by move=> ?; apply: DiffDef. Qed.
 
 Section jacobian.
 
-Definition jacobian n m (R : numFieldType) (f : 'rV[R]_n.+1 -> 'rV[R]_m.+1) p :=
+Definition jacobian n m (R : numFieldType) (f : 'rV[R]_n -> 'rV[R]_m) p :=
   lin1_mx ('d f p).
 
 End jacobian.
@@ -352,7 +352,7 @@ Section DifferentialR2.
 Variable R : numFieldType.
 Implicit Type (V : normedModType R).
 
-Lemma deriveEjacobian m n (f : 'rV[R]_m.+1 -> 'rV[R]_n.+1) (a v : 'rV[R]_m.+1) :
+Lemma deriveEjacobian m n (f : 'rV[R]_m -> 'rV[R]_n) (a v : 'rV[R]_m) :
   differentiable f a -> 'D_ v f a = v *m jacobian f a.
 Proof. by move=> /deriveE->; rewrite /jacobian mul_rV_lin1. Qed.
 
@@ -684,10 +684,10 @@ apply: DiffDef; first exact/linear_differentiable/scalel_continuous.
 by rewrite diff_lin //; apply: scalel_continuous.
 Qed.
 
-Lemma differentiable_coord m n (M : 'M[R]_(m.+1, n.+1)) i j :
-  differentiable (fun N : 'M[R]_(m.+1, n.+1) => N i j : R ) M.
+Lemma differentiable_coord m n (M : 'M[R]_(m, n)) i j :
+  differentiable (fun N : 'M[R]_(m, n) => N i j : R ) M.
 Proof.
-have @f : {linear 'M[R]_(m.+1, n.+1) -> R}.
+have @f : {linear 'M[R]_(m, n) -> R}.
   by exists (fun N : 'M[R]_(_, _) => N i j); do 2![eexists]; do ?[constructor];
      rewrite ?mxE// => ? *; rewrite ?mxE//; move=> ?; rewrite !mxE.
 rewrite (_ : (fun _ => _) = f) //; exact/linear_differentiable/coord_continuous.
