@@ -266,7 +266,6 @@ rewrite (@le_trans _ _ (\int[M]_x `|giry_ev x [set: T]|))//; last first.
   by apply/aeW => x _; rewrite gee0_abs// sprobability_setT.
 rewrite ge0_le_integral//=.
 - exact: measurable_giry_ev.
-- by move=> x _; rewrite abse_ge0.
 - by apply: measurableT_comp => //; exact: measurable_giry_ev.
 - by move=> x _; rewrite gee0_abs.
 Qed.

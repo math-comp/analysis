@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2024 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
@@ -297,7 +297,6 @@ rewrite fine_le//.
 apply: ge0_le_integral => //=.
 - by move=> y _; rewrite lee_fin u_ge0.
 - by apply/measurable_EFinP => /=; apply/measurable_funTS; exact: measurable_u.
-- by move=> y _; rewrite lee_fin expR_ge0.
 - by move=> y _; rewrite lee_fin u_gauss_fun.
 Qed.
 

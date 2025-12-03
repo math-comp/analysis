@@ -394,14 +394,16 @@ Proof.
 move=> f0; pose f_ := nnsfun_approx mD mf.
 transitivity (limn (fun n => \int[mscale k m]_(x in D) (f_ n x)%:E)).
   rewrite -monotone_convergence//=.
-  - by apply: eq_integral => x /[!inE] xD; apply/esym/cvg_lim => //=; exact: cvg_nnsfun_approx.
+  - apply: eq_integral => x /[!inE] xD; apply/esym/cvg_lim => //=.
+    exact: cvg_nnsfun_approx.
   - by move=> n; apply: measurableT_comp => //; exact: measurable_funTS.
   - by move=> n x _; rewrite lee_fin.
   - by move=> x _ a b ab; rewrite lee_fin//; exact/lefP/nd_nnsfun_approx.
 rewrite (_ : \int[m]_(x in D) _ =
     limn (fun n => \int[m]_(x in D) (f_ n x)%:E)); last first.
   rewrite -monotone_convergence//=.
-  - by apply: eq_integral => x /[!inE] xD; apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
+  - apply: eq_integral => x /[!inE] xD; apply/esym/cvg_lim => //.
+    exact: cvg_nnsfun_approx.
   - by move=> n; exact/measurable_EFinP/measurable_funTS.
   - by move=> n x _; rewrite lee_fin.
   - by move=> x _ a b ab; rewrite lee_fin//; exact/lefP/nd_nnsfun_approx.
@@ -410,7 +412,6 @@ rewrite -limeMl//.
 apply/ereal_nondecreasing_is_cvgn => a b ab; apply: ge0_le_integral => //.
 - by move=> x _; rewrite lee_fin.
 - exact/measurable_EFinP/measurable_funTS.
-- by move=> x _; rewrite lee_fin.
 - exact/measurable_EFinP/measurable_funTS.
 - by move=> x _; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 Qed.
@@ -711,7 +712,7 @@ have f_ge0 n x : D x -> 0 <= (f_ n x)%:E by move=> Dx; rewrite lee_fin.
 have cvg_f_ (m : {measure set T -> \bar R}) :
     cvgn (fun x => \int[m]_(x0 in D) (f_ x x0)%:E).
   apply: ereal_nondecreasing_is_cvgn => a b ab.
-  apply: ge0_le_integral => //; [exact: f_ge0|exact: f_ge0|].
+  apply: ge0_le_integral => //; first exact: f_ge0.
   by move=> t Dt; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 transitivity (limn (fun n =>
     \int[measure_add (msum m_ N) (m_ N)]_(x in D) (f_ n x)%:E)).
@@ -818,7 +819,6 @@ apply: lee_nneseries => [n _ _|n _].
 rewrite [leRHS]integral_mkcond; apply: ge0_le_integral => //.
 - by move=> x _; rewrite lee_fin.
 - exact/measurable_EFinP.
-- by move=> x _; rewrite erestrict_ge0.
 - exact/(measurable_restrictT _ mD).
 Qed.
 
@@ -1397,7 +1397,6 @@ rewrite [leRHS](ge0_negligible_integral _ _ _ _ muN)//.
 apply: ge0_le_integral; first exact: measurableD.
 - by move=> t [Dt _]; exact: f10.
 - exact: measurable_funS mf1.
-- by move=> t [Dt _]; exact: f20.
 - exact: measurable_funS mf2.
 - by move=> t [Dt Nt]; move/subsetCl : f1f2N; exact.
 Qed.
@@ -1431,7 +1430,6 @@ move=> mg a0; have ? : measurable (D `&` [set x | (a%:E <= `|g x|)%E]).
 apply: (@le_trans _ _ (\int[mu]_(x in D `&` [set x | `|g x| >= a%:E]) f `|g x|)).
   rewrite -integral_cst//; apply: ge0_le_integral => //.
   - by move=> x _ /=; rewrite f0 // lee_fin ltW.
-  - by move=> x _ /=; rewrite f0.
   - apply: measurableT_comp => //; apply: measurableT_comp => //.
     exact: measurable_funS mg.
   - by move=> x /= [Dx]; apply: f_nd;
@@ -1638,7 +1636,7 @@ exact: ge0_nondecreasing_set_nondecreasing_integral.
 Qed.
 
 Lemma le0_nondecreasing_set_cvg_integral :
- \int[mu]_(x in F i) f x @[i --> \oo] --> \int[mu]_(x in \bigcup_i F i) f x.
+  \int[mu]_(x in F i) f x @[i --> \oo] --> \int[mu]_(x in \bigcup_i F i) f x.
 Proof.
 apply/cvgeNP; rewrite -integralN/=; last first.
   apply: fin_num_adde_defr; rewrite integral0_eq// => x [n _ Fnx].

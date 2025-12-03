@@ -763,7 +763,6 @@ rewrite -monotone_convergence => [|//|||]; first exact: eq_integral.
 - move=> x /= _ a b ab; apply: ge0_le_integral => //.
   + by move=> y _; rewrite lee_fin; exact: fun_ge0.
   + exact/measurable_EFinP/measurableT_comp.
-  + by move=> *; rewrite lee_fin; exact: fun_ge0.
   + exact/measurable_EFinP/measurableT_comp.
   + by move=> y _; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 Qed.
@@ -796,7 +795,6 @@ rewrite -monotone_convergence => [|//|||]; first exact: eq_integral.
 - move=> y /= _ a b ab; apply: ge0_le_integral => //.
   + by move=> x _; rewrite lee_fin fun_ge0.
   + exact/measurable_EFinP/measurableT_comp.
-  + by move=> *; rewrite lee_fin fun_ge0.
   + exact/measurable_EFinP/measurableT_comp.
   + by move=> x _; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 Qed.
@@ -861,7 +859,6 @@ have : m1.-integrable setT (fun x => \int[m2]_y `|f (x, y)|).
   apply/integrableP; split; first exact/measurable_fun1.
   rewrite (le_lt_trans _  ((integrable12ltyP mf).1 imf))// ge0_le_integral //.
   - by apply: measurableT_comp => //; exact: measurable_fun1.
-  - by move=> *; exact: integral_ge0.
   - exact: measurable_fun1.
   - by move=> *; rewrite gee0_abs//; exact: integral_ge0.
 move/integrable_ae => /(_ measurableT); apply: filterS => x /= /(_ I) im2f.
@@ -876,7 +873,6 @@ have : m2.-integrable setT (fun y => \int[m1]_x `|f (x, y)|).
   apply/integrableP; split; first exact/measurable_fun2.
   rewrite (le_lt_trans _ ((integrable21ltyP mf).1 imf))// ge0_le_integral //.
   - by apply: measurableT_comp => //; exact: measurable_fun2.
-  - by move=> *; exact: integral_ge0.
   - exact: measurable_fun2.
   - by move=> *; rewrite gee0_abs//; exact: integral_ge0.
 move/integrable_ae => /(_ measurableT); apply: filterS => x /= /(_ I) im2f.
@@ -918,16 +914,15 @@ apply/integrableP; split=> //.
 apply: le_lt_trans ((integrable12ltyP mf).1 imf).
 apply: ge0_le_integral; [by []|by []|..].
 - by apply: measurableT_comp; last apply: measurable_Fplus.
-- by move=> x _; exact: integral_ge0.
 - exact: measurable_fun1.
 - move=> x _; apply: le_trans.
     apply: le_abse_integral => //; apply: measurableT_comp => //.
     exact: measurable_funepos.
   apply: ge0_le_integral => //.
-  - apply: measurableT_comp => //.
+  + apply: measurableT_comp => //.
     by apply: measurableT_comp => //; exact: measurable_funepos.
-  - by apply: measurableT_comp => //; exact/measurableT_comp.
-  - by move=> y _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse leeDl.
+  + by apply: measurableT_comp => //; exact/measurableT_comp.
+  + by move=> y _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse leeDl.
 Qed.
 
 Let integrable_Fminus : m1.-integrable setT Fminus.
@@ -936,7 +931,6 @@ apply/integrableP; split=> //.
 apply: le_lt_trans ((integrable12ltyP mf).1 imf).
 apply: ge0_le_integral; [by []|by []|..].
 - exact: measurableT_comp.
-- by move=> *; exact: integral_ge0.
 - exact: measurable_fun1.
 - move=> x _; apply: le_trans.
     apply: le_abse_integral => //; apply: measurableT_comp => //.
@@ -980,23 +974,21 @@ Let integrable_Gplus : m2.-integrable setT Gplus.
 Proof.
 apply/integrableP; split=> //; apply: le_lt_trans ((integrable21ltyP mf).1 imf).
 apply: ge0_le_integral; [by []|by []|exact: measurableT_comp|..].
-- by move=> *; exact: integral_ge0.
 - exact: measurable_fun2.
 - move=> y _; apply: le_trans.
     apply: le_abse_integral => //; apply: measurableT_comp => //.
     exact: measurable_funepos.
   apply: ge0_le_integral => //.
-  - apply: measurableT_comp => //.
+  + apply: measurableT_comp => //.
     by apply: measurableT_comp => //; exact: measurable_funepos.
-  - by apply: measurableT_comp => //; exact: measurableT_comp.
-  - by move=> x _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse leeDl.
+  + by apply: measurableT_comp => //; exact: measurableT_comp.
+  + by move=> x _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse leeDl.
 Qed.
 
 Let integrable_Gminus : m2.-integrable setT Gminus.
 Proof.
 apply/integrableP; split=> //; apply: le_lt_trans ((integrable21ltyP mf).1 imf).
 apply: ge0_le_integral; [by []|by []|exact: measurableT_comp|..].
-- by move=> *; exact: integral_ge0.
 - exact: measurable_fun2.
 - move=> y _; apply: le_trans.
     apply: le_abse_integral => //; apply: measurableT_comp => //.

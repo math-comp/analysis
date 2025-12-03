@@ -678,7 +678,6 @@ rewrite (_ : (fun x => _) =
     apply: ge0_le_integral => //.
     - by move=> y _; rewrite lee_fin.
     - exact/measurable_EFinP/measurableT_comp.
-    - by move=> y _; rewrite lee_fin.
     - exact/measurable_EFinP/measurableT_comp.
     - by move=> y _; rewrite lee_fin; exact/lefP/ndk_.
   rewrite -monotone_convergence//.
@@ -1249,7 +1248,6 @@ transitivity (\int[l x]_y lim ((\int[k (x, y)]_z (f_ n z)%:E) @[n --> \oo])).
   - move=> y _ a b ab; apply: ge0_le_integral => //.
     + by move=> z _; rewrite lee_fin.
     + exact/measurable_EFinP.
-    + by move=> z _; rewrite lee_fin.
     + exact/measurable_EFinP.
     + by move=> z _; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 apply: eq_integral => y _; rewrite -monotone_convergence//; last 3 first.

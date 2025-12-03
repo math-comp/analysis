@@ -1428,7 +1428,6 @@ move=> mA; apply: ereal_nondecreasing_is_cvgn => a b ab.
 apply: ge0_le_integral => //.
 - by move=> ? ?; exact: max_approxRN_seq_ge0.
 - by apply: measurable_funS (measurable_max_approxRN_seq a).
-- by move=> ? ?; exact: max_approxRN_seq_ge0.
 - exact: measurable_funS (measurable_max_approxRN_seq b).
 - by move=> x _; exact: max_approxRN_seq_nd.
 Qed.
@@ -1587,7 +1586,6 @@ apply/andP; split; last first.
 apply: ge0_le_integral => //.
 - by move=> x _; exact: approxRN_seq_ge0.
 - exact: measurable_approxRN_seq.
-- by move=> ? *; exact: max_approxRN_seq_ge0.
 - exact: measurable_max_approxRN_seq.
 - by move=> ? _; exact: max_approxRN_seq_ge.
 Qed.

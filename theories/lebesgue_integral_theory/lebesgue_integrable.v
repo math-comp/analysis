@@ -90,7 +90,6 @@ have h1 : mu.-integrable D f <-> mu.-integrable D (f \_ (~` N)).
     (\int[mu]_(x in D) (`|(f \_ (~` N)) x| + `|(f \_ N) x|))).
     apply: ge0_le_integral => //.
     - by apply: measurableT_comp => //; exact: emeasurable_funD.
-    - by move=> ? ?; exact: adde_ge0.
     - by apply: emeasurable_funD; exact: measurableT_comp.
     - by move=> *; rewrite lee_abs_add.
   rewrite ge0_integralD//; [|exact: measurableT_comp..].
@@ -180,7 +179,6 @@ move=> /integrableP[mf foo] /integrableP[mg goo]; apply/integrableP; split.
 apply: (@le_lt_trans _ _ (\int[mu]_(x in D) (`|f x| + `|g x|))).
   apply: ge0_le_integral => //.
   - by apply: measurableT_comp => //; exact: emeasurable_funD.
-  - by move=> ? ?; apply: adde_ge0.
   - by apply: emeasurable_funD; apply: measurableT_comp.
   - by move=> *; exact: lee_abs_add.
 by rewrite ge0_integralD //; [exact: lte_add_pinfty| exact: measurableT_comp..].
@@ -1028,11 +1026,10 @@ have muE j : mu (E j) = 0.
   apply: (@le_trans _ _ (j.+1%:R%:E * \int[mu]_(x in E j) j.+1%:R^-1%:E)).
     by rewrite integral_cst// muleA -EFinM divff// mul1e.
   rewrite lee_pmul//; first exact: integral_ge0.
-  apply: ge0_le_integral => //; [| |by move=> x []].
-  - by move=> x [_/=]; exact: le_trans.
-  - apply: emeasurable_funB.
-    + by apply: measurable_funS msf => //; exact: subIsetl.
-    + by apply: measurable_funS msg => //; exact: subIsetl.
+  apply: ge0_le_integral => //; last by move=> x [].
+  apply: emeasurable_funB.
+  - by apply: measurable_funS msf => //; exact: subIsetl.
+  - by apply: measurable_funS msg => //; exact: subIsetl.
 have nd_E : {homo E : n0 m / (n0 <= m)%N >-> (n0 <= m)%O}.
   move=> i j ij; apply/subsetPset => x [Dx /= ifg]; split => //.
   by move: ifg; apply: le_trans; rewrite lee_fin lef_pV2// ?posrE// ler_nat.

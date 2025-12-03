@@ -77,6 +77,9 @@
     the previous definition can be recovered with the lemma
     `null_dominatesP`
 
+- in `lebesgue_integral_monotone_convergence.v`:
+  + lemma `ge0_le_integral` (remove superfluous hypothesis)
+
 ### Renamed
 
 - in `probability.v`:
