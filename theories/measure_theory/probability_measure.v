@@ -73,6 +73,17 @@ HB.instance Definition _ := @isSubProbability.Build _ _ _ P sprobability_setT.
 
 HB.end.
 
+Section mzero_subprobability.
+Context d (T : measurableType d) (R : realType).
+
+Let mzero_setT : (@mzero d T R setT <= 1)%E.
+Proof. by rewrite /mzero/=. Qed.
+
+HB.instance Definition _ :=
+  Measure_isSubProbability.Build _ _ _ (@mzero d T R) mzero_setT.
+
+End mzero_subprobability.
+
 HB.mixin Record isProbability d (T : measurableType d) (R : realType)
   (P : set T -> \bar R) := { probability_setT : P setT = 1%E }.
 

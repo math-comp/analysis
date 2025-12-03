@@ -86,6 +86,7 @@ lebesgue_integral_theory/lebesgue_Rintegral.v
 lebesgue_integral_theory/lebesgue_integral_fubini.v
 lebesgue_integral_theory/lebesgue_integral_differentiation.v
 lebesgue_integral_theory/lebesgue_integral.v
+lebesgue_integral_theory/giry.v
 
 ftc.v
 hoelder.v

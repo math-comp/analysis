@@ -37,6 +37,35 @@
   + definition `cut`
   + lemmas `cut_adjacent`, `infinite_bounded_limit_point_nonempty`
 
+- in `measurable_structure.v`:
+  + lemma `dynkin_induction``
+
+- in `lebesgue_integral_fubini.v`:
+  + definition `product_subprobability`
+  + lemma `product_subprobability_setC`
+
+- new file `lebesgue_integral_theory/giry.v`
+  + definition `measure_eq`
+  + definition `giry`
+  + definition `giry_ev`
+  + definition `giry_measurable`
+  + definition `preimg_giry_ev`
+  + definition `giry_display`
+  + lemma `measurable_giry_ev`
+  + definition `giry_int`
+  + lemmas `measurable_giry_int`, `measurable_giry_codensity`
+  + definition `giry_map`
+  + lemmas `measurable_giry_map`, `giry_int_map`, `giry_map_dirac`
+  + definition `giry_ret`
+  + lemmas `measurable_giry_ret`, `giry_int_ret`
+  + definition `giry_join`
+  + lemmas `measurable_giry_join`, `sintegral_giry_join`, `giry_int_join`
+  + definition `giry_bind`
+  + lemmas `measurable_giry_bind`, `giry_int_bind`
+  + lemmas `giry_joinA`, `giry_join_id1`, `giry_join_id2`, `giry_map_zero`
+  + definition `giry_prod`
+  + lemmas `measurable_giry_prod`, `giry_int_prod1`, `giry_int_prod2`
+
 ### Changed
 
 - in `charge.v`:

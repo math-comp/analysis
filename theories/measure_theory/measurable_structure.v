@@ -1156,6 +1156,32 @@ Proof. by move=> PF; apply: bigcap_measurable => //; exists 1. Qed.
 
 End sigmaring_lemmas.
 
+(* Adapted from mathlib induction_on_inter *)
+Lemma dynkin_induction d {T : measurableType d} (G : set (set T))
+    (P : set_system T) :
+  @measurable _ T = <<s G >> ->
+  setI_closed G ->
+  P [set: T] ->
+  G `<=` P ->
+  (forall S, measurable S -> P S -> P (~` S)) ->
+  (forall F : (set T)^nat,
+    (forall n, measurable (F n)) ->
+    trivIset [set: nat] F ->
+    (forall n, P (F n)) -> P (\bigcup_k F k)) ->
+  (forall S, <<s G >> S -> P S).
+Proof.
+move=> GE GI PsetT GP PsetC Pbigcup A sGA.
+suff: <<s G >> `<=` [set A | measurable A /\ P A] by move=> /(_ _ sGA)[].
+apply: lambda_system_subset; [by []| | |by []].
+- apply/dynkin_lambda_system; split => //.
+  + by move=> B [mB PB]; split; [exact: measurableC|exact: PsetC].
+  + move=> F tF Hm; split.
+      by apply: bigcup_measurable => k _; apply Hm.
+    by apply: Pbigcup => //; apply Hm.
+- move=> B GB; split; last exact: GP.
+  by rewrite GE; exact: sub_gen_smallest.
+Qed.
+
 Lemma countable_measurable d (T : sigmaRingType d) (A : set T) :
   (forall t : T, measurable [set t]) -> countable A -> measurable A.
 Proof.
@@ -1166,7 +1192,6 @@ rewrite [X in _ X](_ : _ = \bigcup_(x in f @` A) [set 'pinv_(cst r) A f x]).
 by rewrite eqEsubset; split=> [_ [_ [s As <-]] <-|_ [_ [s As <-]] ->];
   exists (f s).
 Qed.
-
 Section sigma_ring_lambda_system.
 Context d (T : sigmaRingType d).
 
