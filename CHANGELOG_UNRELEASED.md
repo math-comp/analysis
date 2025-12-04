@@ -34,6 +34,9 @@
   + definition `cut`
   + lemmas `cut_adjacent`, `infinite_bounded_limit_point_nonempty`
 
+- in `subspace_topology.v`:
+  + definition `from_subspace`
+
 ### Changed
 
 - in `charge.v`:
@@ -44,6 +47,9 @@
   + the notation ``` `<< ``` is now for `null_set_dominates`,
     the previous definition can be recovered with the lemma
     `null_dominatesP`
+
+- in `subspace_topology.v`:
+  + notation `{within _, continuous _}` (now uses `from_subspace`)
 
 ### Renamed
 
