@@ -1,3 +1,4 @@
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop interval_inference.
@@ -339,8 +340,6 @@ apply/andP; split.
     apply: ge0_le_integral => //=.
     - exact: measurable_closed_ball.
     - by move=> x _; rewrite lee_fin ltW.
-    - move=> x /small_ballS/= /[!in_itv]/= /andP[x0 xpi].
-      by rewrite fsin_ge0// (ltW x0)/= ltW.
     - case/integrableP : (integrable_fsin n) => + _.
       apply: measurable_funS => // x ix.
       exact: subset_itv_oo_cc (small_ballS ix).

@@ -332,7 +332,6 @@ rewrite !ger0_norm ?fine_ge0 ?integral_ge0 ?fine_le//.
 - by apply: integrable_fin_num => //; exact: integrableD.
 - apply: ge0_le_integral => //.
   + by apply: measurableT_comp => //; case/integrableP: (mfpn n).
-  + by move=> x Ex; rewrite adde_ge0.
   + by apply: emeasurable_funD; [move: mfp | move: mfn]; case/integrableP.
   + by move=> ? ?; rewrite fpn; exact: lee_abs_sub.
   + by move=> x Ex; rewrite adde_ge0.

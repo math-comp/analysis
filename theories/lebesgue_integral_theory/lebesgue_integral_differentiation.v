@@ -144,7 +144,6 @@ exists h; split => //; rewrite [eps%:num]splitr; apply: le_lt_trans.
   apply: (@ge0_le_integral _ _ _ mu _ mE _ fgh) => //.
   - apply: (measurable_funS mE) => //; do 2 apply: measurableT_comp => //.
     exact: measurable_funB.
-  - by move=> z _; rewrite adde_ge0.
   - apply: measurableT_comp => //; apply: measurable_funD;
       apply: (measurable_funS mE (@subset_refl _ E));
       (apply: measurableT_comp => //);
@@ -406,7 +405,6 @@ rewrite lee_pmul2l//; last 2 first.
 rewrite -ge0_integralD//=; [|by do 2 apply: measurableT_comp..].
 apply: ge0_le_integral => //=.
 - by do 2 apply: measurableT_comp => //; exact: measurable_funD.
-- by move=> /= x _; exact: adde_ge0.
 - by apply: measurableT_comp => //; apply: measurable_funD => //;
     exact: measurableT_comp.
 - by move=> /= x _; exact: ler_normD.
@@ -682,7 +680,6 @@ rewrite (@le_lt_trans _ _ (\int[mu]_(y in ball x t) e%:E))//; last first.
 apply: ge0_le_integral => //=; first exact: measurable_ball.
 - by do 2 apply: measurableT_comp => //=; apply: measurable_funB;
     [exact: measurable_funS mUf|exact: measurable_cst].
-- by move=> y _; rewrite lee_fin.
 - move=> y xry; rewrite lee_fin distrC fx'//=; apply: (lt_le_trans xry).
   by near: t; exact: nbhs0_ltW.
 Unshelve. all: by end_near. Qed.
@@ -719,7 +716,6 @@ rewrite (@le_trans _ _ (\int[mu]_(y in ball x t) e%:E))//.
   - exact: measurable_ball.
   - do 2 apply: measurableT_comp => //=; apply: measurable_funB => //.
     by apply: measurable_funS mUf => //; apply: lxU => //=.
-  - by move=> y xty; rewrite lee_fin ltW.
   - move=> y xty; rewrite lee_fin distrC fx'//; apply: (lt_le_trans xty).
     by near: t; exact: nbhs0_ltW.
 rewrite integral_cst//=; last exact: measurable_ball.
@@ -815,7 +811,6 @@ apply: (@le_trans _ _ ((mu (ball x r))^-1 *
     + exact: measurable_ball.
     + do 2 apply: measurableT_comp => //=; apply: measurable_funB => //.
       exact: measurableT_comp.
-    + by move=> *; rewrite adde_ge0.
     + apply: emeasurable_funD => //; do 2 apply: measurableT_comp => //.
       exact: measurable_funS mf.
   by move=> /= y xry; rewrite -EFinD lee_fin// ler_normB.

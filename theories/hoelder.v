@@ -604,7 +604,6 @@ move=> mf mg.
 rewrite !Lnorm1 -ge0_integralD//=; [|by do 2 apply: measurableT_comp..].
 rewrite ge0_le_integral//.
 - by do 2 apply: measurableT_comp => //; exact: measurable_funD.
-- by move=> x _; rewrite adde_ge0.
 - by apply/measurableT_comp/measurable_funD; exact/measurableT_comp.
 - by move=> x _; rewrite lee_fin ler_normD.
 Qed.
@@ -1135,7 +1134,6 @@ rewrite gt0_ler_poweR//.
 - rewrite ge0_le_integral//.
   + apply: measurableT_comp => //; apply/measurable_EFinP.
     exact: measurable_funX.
-  + by move=> x _; rewrite lee_fin powR_ge0.
   + apply/measurable_EFinP.
     apply/(@measurableT_comp _ _ _ _ _ _ (fun x : R => x `^ 2)%R) => //.
     exact/measurableT_comp.

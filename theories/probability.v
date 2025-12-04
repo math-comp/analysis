@@ -1588,7 +1588,6 @@ apply: ge0_le_integral => //=.
 - exact: measurableI.
 - by move=> x [Ax]; rewrite /= in_itv/= => axb; rewrite lee_fin uniform_pdf_ge0.
 - by apply/measurable_EFinP/measurable_funTS; exact: measurable_uniform_pdf.
-- by move=> x [Ax _]; rewrite lee_fin invr_ge0// ltW// subr_gt0.
 - by move=> x [Ax]; rewrite in_itv/= /uniform_pdf => ->.
 Qed.
 
@@ -1664,7 +1663,6 @@ rewrite -limeMl//.
 apply/ereal_nondecreasing_is_cvgn => x y xy; apply: ge0_le_integral => //=.
 - by move=> ? _; rewrite lee_fin.
 - exact/measurable_EFinP/measurable_funTS.
-- by move=> ? _; rewrite lee_fin.
 - exact/measurable_EFinP/measurable_funTS.
 - by move=> ? _; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 Qed.
@@ -1889,7 +1887,6 @@ apply: ge0_le_integral => //=.
 - by move=> x _; rewrite lee_fin mulr_ge0 ?normal_peak_ge0 ?normal_fun_ge0.
 - apply/measurable_funTS/measurableT_comp => //=.
   by apply: measurable_funM => //; exact: measurable_normal_fun.
-- by move=> x _; rewrite lee_fin normal_peak_ge0.
 - by move=> x _; have := normal_pdf_ub m x s0; rewrite /normal_pdf (negbTE s0).
 Qed.
 
@@ -2530,7 +2527,6 @@ apply: (@le_lt_trans _ _ (\int[mu]_(x in `[0%R, 1%R]) (beta_fun a b)^-1%:E)%E).
   - by move=> x _; rewrite lee_fin beta_pdf_ge0.
   - apply/measurable_funTS/measurable_EFinP => /=.
     exact: measurable_beta_pdf.
-  - by move=> x _; rewrite lee_fin invr_ge0// beta_fun_ge0.
   - by move=> x _; rewrite lee_fin beta_pdf_le_beta_funV.
 rewrite integral_cst//= lebesgue_measure_itv//=.
 by rewrite lte01 oppr0 adde0 mule1 ltry.
