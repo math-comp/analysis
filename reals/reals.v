@@ -662,9 +662,9 @@ Proof.
 move=> A0.
 pose B : set int := [set x%:~R | x in A].
 have B0 : B !=set0 by apply: image_nonempty.
-have : lbound B 0 by move=> _ [b0 Bb0 <-]; rewrite ler0z.
+have: lbound B 0 by move=> _ [b0 Bb0 <-]; rewrite ler0z.
 move/(int_lbound_has_minimum B0) => [_ [[i Ai <-]]] Bi.
-exists i; split => // k Bk.
+exists i; split=> // k Bk.
 by have := Bi k%:~R; rewrite ler_int; apply; exists k.
 Qed.
 
