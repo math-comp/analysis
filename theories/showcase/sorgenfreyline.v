@@ -303,6 +303,18 @@ Definition continuous_at_sorgenfrey_to_Rtopo x (f : sorgenfrey -> R) :=
 
 Let Rmetric := GRing_regular__canonical__pseudometric_structure_PseudoMetric R.
 
+Lemma continuous_at_sorgenfrey_to_Rtopo_at_rightP (f : sorgenfrey -> Rtopo) x :
+  continuous_at_sorgenfrey_to_Rtopo x f <-> f z @[z --> x^'+] --> f x.
+Proof.
+split => [H|/(@cvgrPdist_lt _ Rmetric) rcf eps eps0].
+- apply/(@cvgrPdist_lt _ Rmetric) => e e0; have [d d0 {}H] := H e e0; near=> xd.
+  apply/H/andP; split=> //;rewrite -ltrBlDl; near: xd; exact: nbhs_right_ltDr.
+- have [d d0 {}rcf] := rcf eps eps0; exists d => // z/andP[].
+  rewrite le_eqVlt => /predU1P[<- _|xz zxd]; first by rewrite subrr normr0.
+  apply: rcf => //=; rewrite lter_distl; apply/andP.
+  by split; [rewrite ltrBlDr|apply: (lt_trans xz); rewrite ltrDl].
+Unshelve. end_near. Qed.
+
 Lemma continuous_at_sorgenfrey_to_RtopoP f x :
   continuous_at_sorgenfrey_to_Rtopo x f <-> @continuous_at sorgenfrey Rtopo x f.
 Proof.
