@@ -124,6 +124,7 @@ theories/lebesgue_integral_theory/giry.v
 theories/ftc.v
 theories/hoelder.v
 theories/probability.v
+theories/independence.v
 theories/convex.v
 theories/charge.v
 theories/kernel.v
