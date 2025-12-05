@@ -40,6 +40,9 @@
 - in `measurable_structure.v`:
   + lemma `dynkin_induction``
 
+- in `measurable_realfun.v`:
+	+ lemmas `nondecreasing_measurable`, `nonincreasing_measurable`
+
 - in `lebesgue_integral_fubini.v`:
   + definition `product_subprobability`
   + lemma `product_subprobability_setC`

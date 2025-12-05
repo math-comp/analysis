@@ -1073,6 +1073,32 @@ Qed.
 
 End measurable_fun_realType.
 
+Section mono_measurable.
+Context {R : realType}.
+Local Open Scope ereal_scope.
+
+Lemma nondecreasing_measurable (f : R -> R) :
+  nondecreasing_fun f -> measurable_fun setT f.
+Proof.
+move=> f_nd.
+apply: (measurability (RGenCInfty.G (R:=R))) => [|/=?[?][r]-><-].
+  exact: RGenCInfty.measurableE.
+rewrite setTI; apply: is_interval_measurable; rewrite is_intervalPlt/= => s t.
+rewrite in_itv/= andbT => fs _ u /andP [su _]; rewrite in_itv/= andbT.
+by apply: (@le_trans _ _ (f s)); last exact/f_nd/ltW.
+Qed.
+
+Lemma nonincreasing_measurable (f : R -> R) :
+  nonincreasing_fun f -> measurable_fun setT f.
+Proof.
+move=> f_ni.
+have ->: f = (0 \- (-f))%R by apply: funext => r; rewrite /= opprK add0r.
+apply: measurable_funB; first exact: measurable_cst.
+by apply: nondecreasing_measurable => s t st; rewrite lerN2; exact: f_ni.
+Qed.
+
+End mono_measurable.
+
 Lemma measurable_ln (R : realType) : measurable_fun [set: R] (@ln R).
 Proof.
 rewrite -set_itvNyy (@itv_bndbnd_setU _ _ _ (BRight 0))//.
