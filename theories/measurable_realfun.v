@@ -906,6 +906,15 @@ Notation measurable_oppr := oppr_measurable (only parsing).
 #[deprecated(since="mathcomp-analysis 1.4.0", note="use `normr_measurable` instead")]
 Notation measurable_normr := normr_measurable (only parsing).
 
+Lemma measurable_funX d (T : measurableType d) {R : realType} D (f : T -> R) n :
+  measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
+Proof.
+move=> mf.
+exact: (@measurable_comp _ _ _ _ _ _ setT (fun x : R => x ^+ n) _ f).
+Qed.
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `measurable_funX` instead")]
+Notation measurable_fun_pow := measurable_funX (only parsing).
+
 Section measurable_fun_realType.
 Context d (T : measurableType d) (R : realType).
 Implicit Types (D : set T) (f g : T -> R).
@@ -932,6 +941,9 @@ Lemma measurable_funB D f g : measurable_fun D f ->
   measurable_fun D g -> measurable_fun D (f \- g).
 Proof. by move=> ? ?; apply: measurable_funD =>//; exact: measurableT_comp. Qed.
 
+Lemma measurable_funN D f : measurable_fun D f -> measurable_fun D (\- f).
+Proof. by move=> ?; rewrite -/(GRing.opp \o f); exact: measurableT_comp. Qed.
+
 Lemma measurable_funM D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \* g).
 Proof.
@@ -942,11 +954,9 @@ have ->: f \* g = (fun x => 2%:R^-1 * (f x + g x) ^+ 2)
   by rewrite -[_ + (_ ^+ 2)]addrA addrCA addrK [RHS]mulrC -mulr_natr mulfK.
 apply: measurable_funB; first apply: measurable_funB.
 - apply: measurableT_comp => //.
-  by apply: measurableT_comp (exprn_measurable _) _; exact: measurable_funD.
-- apply: measurableT_comp => //.
-  exact: measurableT_comp (exprn_measurable _) _.
-apply: measurableT_comp => //.
-exact: measurableT_comp (exprn_measurable _) _.
+  by apply: measurable_funX; exact: measurable_funD.
+- by apply: measurableT_comp => //; exact: measurable_funX.
+by apply: measurableT_comp => //; exact: measurable_funX.
 Qed.
 
 Lemma measurable_fun_ltr D f g : measurable_fun D f -> measurable_fun D g ->
@@ -1075,26 +1085,23 @@ End measurable_fun_realType.
 
 Section mono_measurable.
 Context {R : realType}.
-Local Open Scope ereal_scope.
 
-Lemma nondecreasing_measurable (f : R -> R) :
-  nondecreasing_fun f -> measurable_fun setT f.
+Lemma nondecreasing_measurable (D : set R) (f : R -> R) : measurable D ->
+  nondecreasing_fun f -> measurable_fun D f.
 Proof.
-move=> f_nd.
-apply: (measurability (RGenCInfty.G (R:=R))) => [|/=?[?][r]-><-].
+move=> mD f_nd.
+apply: (measurability (@RGenCInfty.G R)) => [|/= _ [_] [r] -> <-].
   exact: RGenCInfty.measurableE.
-rewrite setTI; apply: is_interval_measurable; rewrite is_intervalPlt/= => s t.
-rewrite in_itv/= andbT => fs _ u /andP [su _]; rewrite in_itv/= andbT.
-by apply: (@le_trans _ _ (f s)); last exact/f_nd/ltW.
+apply: measurableI => //; apply: is_interval_measurable => s t/=.
+rewrite !in_itv/= !andbT => fs ft u /andP[su ut].
+by rewrite in_itv/= andbT (le_trans fs)// f_nd.
 Qed.
 
-Lemma nonincreasing_measurable (f : R -> R) :
-  nonincreasing_fun f -> measurable_fun setT f.
+Lemma nonincreasing_measurable (D : set R) (f : R -> R) : measurable D ->
+  nonincreasing_fun f -> measurable_fun D f.
 Proof.
-move=> f_ni.
-have ->: f = (0 \- (-f))%R by apply: funext => r; rewrite /= opprK add0r.
-apply: measurable_funB; first exact: measurable_cst.
-by apply: nondecreasing_measurable => s t st; rewrite lerN2; exact: f_ni.
+move=> mD f_ni; rewrite -(opprK f); apply/measurable_funN.
+by apply: nondecreasing_measurable => // s t st; rewrite lerN2 f_ni.
 Qed.
 
 End mono_measurable.
@@ -1201,15 +1208,6 @@ Proof.
 under eq_fun do rewrite -mulr_natr.
 by do 2 apply: measurable_funM => //.
 Qed.
-
-Lemma measurable_funX d (T : measurableType d) {R : realType} D (f : T -> R) n :
-  measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
-Proof.
-move=> mf.
-exact: (@measurable_comp _ _ _ _ _ _ setT (fun x : R => x ^+ n) _ f).
-Qed.
-#[deprecated(since="mathcomp-analysis 1.4.0", note="use `measurable_funX` instead")]
-Notation measurable_fun_pow := measurable_funX (only parsing).
 
 Lemma measurable_powR (R : realType) p : measurable_fun [set: R] (@powR R ^~ p).
 Proof.

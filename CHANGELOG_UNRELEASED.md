@@ -40,9 +40,6 @@
 - in `measurable_structure.v`:
   + lemma `dynkin_induction``
 
-- in `measurable_realfun.v`:
-	+ lemmas `nondecreasing_measurable`, `nonincreasing_measurable`
-
 - in `lebesgue_integral_fubini.v`:
   + definition `product_subprobability`
   + lemma `product_subprobability_setC`
@@ -68,6 +65,10 @@
   + lemmas `giry_joinA`, `giry_join_id1`, `giry_join_id2`, `giry_map_zero`
   + definition `giry_prod`
   + lemmas `measurable_giry_prod`, `giry_int_prod1`, `giry_int_prod2`
+
+- in `measurable_realfun.v`:
+  + lemmas `measurable_funN`
+  + lemmas `nondecreasing_measurable`, `nonincreasing_measurable`
 
 ### Changed
 
