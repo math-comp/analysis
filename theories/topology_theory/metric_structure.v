@@ -140,6 +140,166 @@ HB.instance Definition _ := PseudoMetric_isMetric.Build K M
 
 HB.end.
 
+HB.mixin Record PseudoMetricHausdorff_isMetric
+    (K : realType) M of PseudoMetric K M := {
+  metric_hausdorff : hausdorff_space M
+}.
+
+Lemma eqPropLR (P1 P2 : Prop) : P1 = P2 -> P1 -> P2.
+Proof. by move=> ->. Qed.
+
+HB.builders Context K M of PseudoMetricHausdorff_isMetric K M.
+
+(*Let mdist x y := match sumbool_of_bool (x == y) with
+  | left _ => 0
+  | right H => let: (r1, r2) := sval (cid
+    ((eqPropLR (@ball_hausdorff K M)) metric_hausdorff _ _ (negbT H)))
+    in r1%:num + r2%:num
+end.*)
+
+Let mdist (x y : M) := inf [set r | 0 < r /\ ball x r y].
+
+Let mdistxx (x : M) : mdist x x = 0.
+Proof.
+rewrite /mdist.
+have -> : [set r | 0 < r /\ ball x r x] = `]0, +oo[%classic.
+  apply/seteqP; split => [z|z]/=; rewrite !in_itv/= andbT.
+    by move=> -[].
+  move=> z0; split => //.
+  by apply: ballxx.
+by rewrite real_interval.inf_itv//.
+Qed.
+
+Let mdist_ge0 (x y : M) : 0 <= mdist x y.
+Proof.
+rewrite leNgt.
+apply/negP.
+rewrite /mdist.
+have [->|/set0P H] := eqVneq [set r | 0 < r /\ ball x r y] set0.
+  by rewrite inf0 ltxx.
+move/inf_lt => /(_ H)[e/= []].
+move=> /ltW.
+by rewrite leNgt => /negPf ->.
+Qed.
+
+Let mdist_positivity (x y : M) : mdist x y = 0 -> x = y.
+Proof.
+move=> xy0.
+apply/eqP/negPn/negP => xy.
+have : ball x (mdist x y / 2) y.
+  rewrite /mdist.
+  
+
+have := metric_hausdorff.
+rewrite ball_hausdorff.
+move/(_ _ _ xy) => -[[a b]] /= /eqP xayb0.
+
+
+Admitted.
+
+Let mdist_sym x y : mdist x y = mdist y x.
+Proof.
+rewrite /mdist.
+rewrite (_ : [set r | 0 < r /\ ball x r y] = [set r | 0 < r /\ ball y r x]); last first.
+  by apply/seteqP; split => z/= [z0] /ball_sym.
+by [].
+Qed.
+
+Lemma mdist_triangle y x z : mdist x z <= mdist x y + mdist y z.
+Proof.
+rewrite /mdist.
+apply: ge_inf.
+  admit.
+move=> /=; split.
+  admit.
+apply: (@ball_triangle _ _ y).
+
+
+have := @ball_triangle _ _ y x z.
+
+
+rewrite /mdist.
+rewrite -inf_sumE.
+
+
+
+
+
+
+Let mdist_positivity (x y : M) : mdist x y = 0 -> x = y.
+Proof.
+move=> xy0.
+apply/eqP/negPn/negP => xy.
+rewrite /mdist in xy0.
+have := metric_hausdorff.
+rewrite ball_hausdorff => /(_ _ _ xy)[[r d/=]].
+have : 
+move=> /eqP xryd0.
+have : [set r | 0 < r /\ ball x r y] !=set0.
+  exists (r%:num + d%:num) => /=.
+  split => //.
+  apply: ball_triangle.
+  
+  
+apply/negP.
+apply/set0P.
+
+
+
+
+
+rewrite /hausdorff_space => /(_ x y).
+apply.
+
+
+
+Let ballEmdist x d : ball x d = [set y | mdist x y < d].
+Proof.
+apply/seteqP; split.
+  move=> y.
+  rewrite /mdist/=.
+  move=> xdy.
+
+  admit.
+move=> y/=.
+have [|/set0P] := eqVneq [set r | 0 < r /\ ball x r y] set0.
+  move=> xy0.
+  rewrite /mdist.
+  admit.
+rewrite /mdist => /[swap].
+move/inf_lt.
+move=> /[apply].
+move=> []/= e [e0] xey ed.
+apply: le_ball xey.
+exact/ltW.
+
+
+
+
+  have [->|] := eqVneq x y.
+le_inf
+  
+  have := (eqPropLR (@ball_hausdorff K M)) metric_hausdorff.
+  rewrite lt_neqAle.
+  rewrite ltNge.
+  rewrite ltNge; apply/negP.
+  rewrite /inf.
+  rewrite lerNr.
+  rewrite /inf.
+
+
+
+Let mdist_positivity x y : mdist x y = 0 -> x = y.
+Proof.
+rewrite /mdist.
+contra => xy.
+Admitted.
+
+
+
+
+HB.end.
+
 Section numFieldType_metric.
 Context {R : numFieldType}.
 Implicit Type x y : R.
