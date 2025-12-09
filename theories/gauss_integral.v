@@ -70,7 +70,7 @@ Definition integral0_gauss x := \int[mu]_(t in `[0, x]) gauss_fun t.
 Lemma integral0_gauss_ge0 x : 0 <= integral0_gauss x.
 Proof. by apply: Rintegral_ge0 => //= r _; rewrite expR_ge0. Qed.
 
-Let continuous_integral0_gauss x : (0 < x)%R ->
+Let continuous_integral0_gauss x : (0 <= x)%R ->
   {within `[0, x], continuous integral0_gauss}.
 Proof.
 move=> x0; rewrite /integral0_gauss.
@@ -244,7 +244,7 @@ rewrite /integral0_gauss [in LHS]/Rintegral.
 have derM : ( *%R^~ x)^`() = cst x.
   by apply/funext => z; rewrite derive1Mr// derive1_id mul1r.
 have := @integration_by_substitution_increasing R (fun t => t * x)
-  gauss_fun _ _ ltr01.
+  gauss_fun _ _ ler01.
 rewrite -/mu mul0r mul1r => ->//=; last 6 first.
   - move=> a b; rewrite !in_itv/= => /andP[a0 a1] /andP[b0 b1] ab.
     by rewrite ltr_pM2r.
@@ -308,7 +308,8 @@ apply: (@squeeze_cvgr _ _ _ _ (cst 0) gauss_fun).
 - exact: cvg_gauss_fun.
 Unshelve. all: end_near. Qed.
 
-Lemma cvg_integral0_gauss_sqr : (integral0_gauss x) ^+ 2 @[x --> +oo] --> pi / 4.
+Lemma cvg_integral0_gauss_sqr :
+  (integral0_gauss x) ^+ 2 @[x --> +oo] --> pi / 4.
 Proof.
 have h_h0 x : 0 < x -> h x = h 0.
   move=> x0.
@@ -324,7 +325,7 @@ have h_h0 x : 0 < x -> h x = h 0.
     apply: continuousD; last first.
       rewrite /prop_for /continuous_at expr2.
       under [X in X @ _ --> _]eq_fun do rewrite expr2.
-      by apply: cvgM; exact: continuous_integral0_gauss.
+      by apply: cvgM; apply: continuous_integral0_gauss; exact: ltW.
     by apply: derivable_within_continuous => u _; exact: derivable_integral01_u.
   move=> c; rewrite in_itv/= => /andP[c0 cx].
   by rewrite derive_h// mul0r => /eqP; rewrite subr_eq0 => /eqP.
