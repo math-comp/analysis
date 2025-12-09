@@ -106,6 +106,15 @@
   + definition `jacobian`
   + lemmas `deriveEjacobian`, `differentiable_coord`
 
+- in `ftc.v`:
+  + lemmas `parameterized_integral_continuous`,
+    `integration_by_substitution_decreasing`,
+    `integration_by_substitution_oppr`,
+    `integration_by_substitution_increasing`,
+    `integration_by_substitution_onem`,
+    `Rintegration_by_substitution_onem`
+
+
 ### Deprecated
 
 ### Removed

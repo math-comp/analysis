@@ -2352,7 +2352,7 @@ Proof.
 rewrite -[LHS]Rintegral_mkcond Rintegration_by_substitution_onem//=.
 - rewrite onem1 -[RHS]Rintegral_mkcond; apply: eq_Rintegral => x x01.
   by rewrite XMonemXC.
-- by rewrite ltr01 lexx.
+- by rewrite ler01 lexx.
 - exact: within_continuous_XMonemX.
 Qed.
 
