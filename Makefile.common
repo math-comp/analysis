@@ -104,6 +104,8 @@ endif
 
 DOCDIR=html
 
+GIT_HASH = $(shell git rev-parse --short HEAD)
+
 $(DOCDIR)/dependency_graph.pre:
 	mkdir -p $(DOCDIR)
 	coqdep -f _CoqProject | perl etc/builddoc_dependency_dot.pl > $(DOCDIR)/dependency_graph.pre
@@ -114,8 +116,13 @@ $(DOCDIR)/dependency_graph.dot: $(DOCDIR)/dependency_graph.pre
 html: build $(DOCDIR)/dependency_graph.dot
 	etc/rocqnavi_generate-hierarchy-graph.sh $(DOCDIR)/hierarchy_graph.dot
 	find . -name "*.v" -or -name "*.glob" | grep -v "/\." | grep -v "_opam/" | xargs rocqnavi \
-	-title "Mathcomp Analysis" \
-	-d $(DOCDIR) -base mathcomp -Q theories analysis \
+	-title "Mathcomp Analysis $(GIT_HASH)" \
+	-d $(DOCDIR) -Q theories mathcomp.analysis \
+	-Q classical mathcomp.classical \
+	-Q reals mathcomp.reals \
+	-Q reals_stdlib mathcomp.reals_stdlib \
+	-Q experimental_reals mathcomp.experimental_reals \
+	-Q analysis_stdlib mathcomp.analysis_stdlib \
 	-coqlib https://rocq-prover.org/doc/V8.20.1/stdlib/ \
 	-dependency-graph $(DOCDIR)/dependency_graph.dot \
 	-hierarchy-graph $(DOCDIR)/hierarchy_graph.dot \
