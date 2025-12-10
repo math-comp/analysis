@@ -1,9 +1,9 @@
 name: Publish master GitHub Pages
 
 on:
-  push:
+  workflow_dispatch: ## Run the workflow manually
   schedule:
-    - cron: '0 0 * * *' # This cron expression means "at 00:00 (midnight) UTC, every day"
+    - cron: '0 18 * * *' # This cron expression means "at 03:00 (midnight) JST, every day"
 
 permissions:
   contents: write
