@@ -239,27 +239,74 @@
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Gdelta_Fsigma.T" class="id"><a name="Gdelta_Fsigma.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <span class="vernacular">Implicit</span><span class="gallina-kwd"> Type</span><span class="id"> S</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta_Fsigma.T">T</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Gdelta" class="id"><a name="Gdelta" class="" title="Gdelta not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Gdelta" class="id"><a name="Gdelta" class="" title="Gdelta :
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> Prop
+
+Gdelta is not universe polymorphic
+Arguments Gdelta {T} S%classical_set_scope
+Gdelta is transparent
+Expands to: Constant mathcomp.analysis.borel_hierarchy.Gdelta
+Declared in
+library mathcomp.analysis.borel_hierarchy, line 30, characters 11-17
 ">Gdelta</a></span><span class="id"> </span><span id="S:2" class="id"><a name="S:2" class="">S</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span id="F:5" class="id"><span id="F:3" class="id"><a name="F:5" class="">F</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> :</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta_Fsigma.T">T</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc">,</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:4" class="id"><a name="i:4" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#F:3">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#i:4">i</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:2">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0f075d0e59a6e8ec7e140f5f44f5e4cc">\bigcap_</a></span><span id="i:6" class="id"><a name="i:6" class="">i</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#F:5">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#i:6">i</a></span>).<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="open_Gdelta" class="id"><a name="open_Gdelta" class="" title="open_Gdelta not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="open_Gdelta" class="id"><a name="open_Gdelta" class="" title="open_Gdelta :
+forall {T : topology_structure.Topological.type}
+  [S : set (topology_structure.Topological.sort T)],
+topology_structure.open S -> Gdelta S
+
+open_Gdelta is not universe polymorphic
+Arguments open_Gdelta {T} [S]%classical_set_scope _
+open_Gdelta is opaque
+Expands to: Constant mathcomp.analysis.borel_hierarchy.open_Gdelta
+Declared in
+library mathcomp.analysis.borel_hierarchy, line 33, characters 6-17
 ">open_Gdelta</a></span><span class="id"> </span><span id="S:7" class="id"><a name="S:7" class="">S</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:7">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta">Gdelta</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:7">S</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="gallina-kwd"> exists</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#36dd16448713ee91dfa0961a8ba48e73">fun=&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#36dd16448713ee91dfa0961a8ba48e73"> </a></span><span class="id">S</span>)<span class="id">=&gt;</span><span class="id"> //;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#bigcap_const">bigcap_const</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Gdelta_dense" class="id"><a name="Gdelta_dense" class="" title="Gdelta_dense not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Gdelta_dense" class="id"><a name="Gdelta_dense" class="" title="Gdelta_dense :
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> Prop
+
+Gdelta_dense is not universe polymorphic
+Arguments Gdelta_dense {T} S%classical_set_scope
+Gdelta_dense is transparent
+Expands to: Constant mathcomp.analysis.borel_hierarchy.Gdelta_dense
+Declared in
+library mathcomp.analysis.borel_hierarchy, line 36, characters 11-23
 ">Gdelta_dense</a></span><span class="id"> </span><span id="S:8" class="id"><a name="S:8" class="">S</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span id="F:11" class="id"><span id="F:9" class="id"><a name="F:11" class="">F</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> :</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta_Fsigma.T">T</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc">,</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:10" class="id"><a name="i:10" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#F:9">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#i:10">i</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#dense">dense</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#F:9">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#i:10">i</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:8">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0f075d0e59a6e8ec7e140f5f44f5e4cc">\bigcap_</a></span><span id="i:12" class="id"><a name="i:12" class="">i</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#F:11">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#i:12">i</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Fsigma" class="id"><a name="Fsigma" class="" title="Fsigma not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Fsigma" class="id"><a name="Fsigma" class="" title="Fsigma :
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> Prop
+
+Fsigma is not universe polymorphic
+Arguments Fsigma {T} S%classical_set_scope
+Fsigma is transparent
+Expands to: Constant mathcomp.analysis.borel_hierarchy.Fsigma
+Declared in
+library mathcomp.analysis.borel_hierarchy, line 40, characters 11-17
 ">Fsigma</a></span><span class="id"> </span><span id="S:13" class="id"><a name="S:13" class="">S</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span id="F:16" class="id"><span id="F:14" class="id"><a name="F:16" class="">F</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> :</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta_Fsigma.T">T</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc">,</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:15" class="id"><a name="i:15" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#F:14">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#i:15">i</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:13">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#4652af423267d4923a164c1104e1273f">\bigcup_</a></span><span id="i:17" class="id"><a name="i:17" class="">i</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#F:16">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#i:17">i</a></span>).<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="closed_Fsigma" class="id"><a name="closed_Fsigma" class="" title="closed_Fsigma not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="closed_Fsigma" class="id"><a name="closed_Fsigma" class="" title="closed_Fsigma :
+forall {T : topology_structure.Topological.type}
+  [S : set (topology_structure.Topological.sort T)],
+topology_structure.closed S -> Fsigma S
+
+closed_Fsigma is not universe polymorphic
+Arguments closed_Fsigma {T} [S]%classical_set_scope _
+closed_Fsigma is opaque
+Expands to: Constant mathcomp.analysis.borel_hierarchy.closed_Fsigma
+Declared in
+library mathcomp.analysis.borel_hierarchy, line 43, characters 6-19
 ">closed_Fsigma</a></span><span class="id"> </span><span id="S:18" class="id"><a name="S:18" class="">S</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:18">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Fsigma">Fsigma</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:18">S</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -268,7 +315,32 @@
 <br/>
 <span class="vernacular">End</span><span class="id"> Gdelta_Fsigma</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="Gdelta_measurable" class="id"><a name="Gdelta_measurable" class="" title="Gdelta_measurable not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="Gdelta_measurable" class="id"><a name="Gdelta_measurable" class="" title="Gdelta_measurable :
+forall {R : realType} [S : set R], Gdelta S -> 'measurable%classic S
+
+Gdelta_measurable is not universe polymorphic
+Expanded type for implicit arguments
+Gdelta_measurable :
+forall {R : realType} [S : set R],
+Gdelta S ->
+forall
+  [i : set
+         (set
+            (lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+               R))],
+[set M | sigma_algebra
+           [set: lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+                   R]
+           M /\
+         (R.-ocitv).-measurable `<=` M]%classic
+  i ->
+i S
+
+Arguments Gdelta_measurable {R} [S]%classical_set_scope _ [i] _
+Gdelta_measurable is opaque
+Expands to: Constant mathcomp.analysis.borel_hierarchy.Gdelta_measurable
+Declared in
+library mathcomp.analysis.borel_hierarchy, line 48, characters 6-23
 ">Gdelta_measurable</a></span><span class="id"> {</span><span id="R:19" class="id"><a name="R:19" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="S:20" class="id"><a name="S:20" class="">S</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#R:19">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta">Gdelta</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:20">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#measurable">measurable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:20">S</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -277,7 +349,16 @@
 <span class="id">exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#open_measurable">open_measurable</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="Gdelta_subspace_open" class="id"><a name="Gdelta_subspace_open" class="" title="Gdelta_subspace_open not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="Gdelta_subspace_open" class="id"><a name="Gdelta_subspace_open" class="" title="Gdelta_subspace_open :
+forall {R : realType} [A : set R] [S : set (subspace A)],
+topology_structure.open A -> Gdelta S -> Gdelta (A `&` S)
+
+Gdelta_subspace_open is not universe polymorphic
+Arguments Gdelta_subspace_open {R} [A S]%classical_set_scope _ _
+Gdelta_subspace_open is opaque
+Expands to: Constant mathcomp.analysis.borel_hierarchy.Gdelta_subspace_open
+Declared in
+library mathcomp.analysis.borel_hierarchy, line 54, characters 6-26
 ">Gdelta_subspace_open</a></span><span class="id"> {</span><span id="R:21" class="id"><a name="R:21" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="A:22" class="id"><a name="A:22" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#R:21">R</a></span>) (<span id="S:23" class="id"><a name="S:23" class="">S</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#subspace">subspace</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#A:22">A</a></span>))<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#A:22">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta">Gdelta</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:23">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta">Gdelta</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#A:22">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:23">S</a></span>).<br/>
 <details>
@@ -291,7 +372,14 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> irrational_Gdelta</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="irrational_Gdelta.R" class="id"><a name="irrational_Gdelta.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="irrational_Gdelta" class="id"><a name="irrational_Gdelta" class="" title="irrational_Gdelta not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="irrational_Gdelta" class="id"><a name="irrational_Gdelta" class="" title="irrational_Gdelta : forall {R : realType}, Gdelta_dense irrational
+
+irrational_Gdelta is not universe polymorphic
+Arguments irrational_Gdelta {R}
+irrational_Gdelta is opaque
+Expands to: Constant mathcomp.analysis.borel_hierarchy.irrational_Gdelta
+Declared in
+library mathcomp.analysis.borel_hierarchy, line 65, characters 6-23
 ">irrational_Gdelta</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta_dense">Gdelta_dense</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.reals.reals.html#irrational">irrational</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#irrational_Gdelta.R">R</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -310,7 +398,14 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> irrational_Gdelta</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="not_rational_Gdelta" class="id"><a name="not_rational_Gdelta" class="" title="not_rational_Gdelta not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="not_rational_Gdelta" class="id"><a name="not_rational_Gdelta" class="" title="not_rational_Gdelta : forall [R : realType], ~ Gdelta rational
+
+not_rational_Gdelta is not universe polymorphic
+Arguments not_rational_Gdelta [R] _
+not_rational_Gdelta is opaque
+Expands to: Constant mathcomp.analysis.borel_hierarchy.not_rational_Gdelta
+Declared in
+library mathcomp.analysis.borel_hierarchy, line 81, characters 6-25
 ">not_rational_Gdelta</a></span> (<span id="R:29" class="id"><a name="R:29" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181">~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta">Gdelta</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.reals.reals.html#rational">rational</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#R:29">R</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>

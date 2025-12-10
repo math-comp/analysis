@@ -233,24 +233,74 @@ Reference:
 <span class="vernacular">Section</span><span class="id"> Nsatz_realType</span>.<br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="Nsatz_realType.T" class="id"><a name="Nsatz_realType.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="Nsatz_realType_Setoid_Theory" class="id"><a name="Nsatz_realType_Setoid_Theory" class="" title="Nsatz_realType_Setoid_Theory not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="Nsatz_realType_Setoid_Theory" class="id"><a name="Nsatz_realType_Setoid_Theory" class="" title="Nsatz_realType_Setoid_Theory : forall T : realType, Setoid_Theory T eq
+
+Nsatz_realType_Setoid_Theory is not universe polymorphic
+Arguments Nsatz_realType_Setoid_Theory T
+Nsatz_realType_Setoid_Theory is opaque
+Expands to: Constant
+            mathcomp.reals_stdlib.nsatz_realtype.Nsatz_realType_Setoid_Theory
+Declared in
+library mathcomp.reals_stdlib.nsatz_realtype, line 24, characters 6-34
 ">Nsatz_realType_Setoid_Theory</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Setoids.Setoid.html#Setoid_Theory">Setoid</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Setoids.Setoid.html#Setoid_Theory">Setoid_Theory</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span> (<span class="id">@</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#eq">eq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> constructor</span><span class="id"> =&gt;</span><span class="id"> [x</span><span class="id"> //|x</span><span class="id"> y</span><span class="id"> //|x</span><span class="id"> y</span><span class="id"> z</span><span class="id"> -&gt;]</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType0" class="id"><a name="Nsatz_realType0" class="" title="Nsatz_realType0 not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType0" class="id"><a name="Nsatz_realType0" class="" title="Nsatz_realType0 : forall T : realType, T
+
+Nsatz_realType0 is not universe polymorphic
+Arguments Nsatz_realType0 T
+Nsatz_realType0 is transparent
+Expands to: Constant mathcomp.reals_stdlib.nsatz_realtype.Nsatz_realType0
+Declared in
+library mathcomp.reals_stdlib.nsatz_realtype, line 27, characters 11-26
 ">Nsatz_realType0</a></span><span class="id"> :=</span> (<span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType1" class="id"><a name="Nsatz_realType1" class="" title="Nsatz_realType1 not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType1" class="id"><a name="Nsatz_realType1" class="" title="Nsatz_realType1 : forall T : realType, T
+
+Nsatz_realType1 is not universe polymorphic
+Arguments Nsatz_realType1 T
+Nsatz_realType1 is transparent
+Expands to: Constant mathcomp.reals_stdlib.nsatz_realtype.Nsatz_realType1
+Declared in
+library mathcomp.reals_stdlib.nsatz_realtype, line 28, characters 11-26
 ">Nsatz_realType1</a></span><span class="id"> :=</span> (<span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_add" class="id"><a name="Nsatz_realType_add" class="" title="Nsatz_realType_add not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_add" class="id"><a name="Nsatz_realType_add" class="" title="Nsatz_realType_add : forall T : realType, T -> T -> T
+
+Nsatz_realType_add is not universe polymorphic
+Arguments Nsatz_realType_add T (x y)%ring_scope
+Nsatz_realType_add is transparent
+Expands to: Constant mathcomp.reals_stdlib.nsatz_realtype.Nsatz_realType_add
+Declared in
+library mathcomp.reals_stdlib.nsatz_realtype, line 29, characters 11-29
 ">Nsatz_realType_add</a></span> (<span id="x:3" class="id"><a name="x:3" class="">x</a></span><span class="id"> </span><span id="y:4" class="id"><a name="y:4" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:3">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:4">y</a></span>)<span class="id">%R</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_mul" class="id"><a name="Nsatz_realType_mul" class="" title="Nsatz_realType_mul not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_mul" class="id"><a name="Nsatz_realType_mul" class="" title="Nsatz_realType_mul : forall T : realType, T -> T -> T
+
+Nsatz_realType_mul is not universe polymorphic
+Arguments Nsatz_realType_mul T (x y)%ring_scope
+Nsatz_realType_mul is transparent
+Expands to: Constant mathcomp.reals_stdlib.nsatz_realtype.Nsatz_realType_mul
+Declared in
+library mathcomp.reals_stdlib.nsatz_realtype, line 30, characters 11-29
 ">Nsatz_realType_mul</a></span> (<span id="x:5" class="id"><a name="x:5" class="">x</a></span><span class="id"> </span><span id="y:6" class="id"><a name="y:6" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:5">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:6">y</a></span>)<span class="id">%R</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_sub" class="id"><a name="Nsatz_realType_sub" class="" title="Nsatz_realType_sub not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_sub" class="id"><a name="Nsatz_realType_sub" class="" title="Nsatz_realType_sub : forall T : realType, T -> T -> T
+
+Nsatz_realType_sub is not universe polymorphic
+Arguments Nsatz_realType_sub T (x y)%ring_scope
+Nsatz_realType_sub is transparent
+Expands to: Constant mathcomp.reals_stdlib.nsatz_realtype.Nsatz_realType_sub
+Declared in
+library mathcomp.reals_stdlib.nsatz_realtype, line 31, characters 11-29
 ">Nsatz_realType_sub</a></span> (<span id="x:7" class="id"><a name="x:7" class="">x</a></span><span class="id"> </span><span id="y:8" class="id"><a name="y:8" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:7">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:8">y</a></span>)<span class="id">%R</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_opp" class="id"><a name="Nsatz_realType_opp" class="" title="Nsatz_realType_opp not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_opp" class="id"><a name="Nsatz_realType_opp" class="" title="Nsatz_realType_opp : forall T : realType, T -> T
+
+Nsatz_realType_opp is not universe polymorphic
+Arguments Nsatz_realType_opp T x%ring_scope
+Nsatz_realType_opp is transparent
+Expands to: Constant mathcomp.reals_stdlib.nsatz_realtype.Nsatz_realType_opp
+Declared in
+library mathcomp.reals_stdlib.nsatz_realtype, line 32, characters 11-29
 ">Nsatz_realType_opp</a></span> (<span id="x:9" class="id"><a name="x:9" class="">x</a></span> <span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:9">x</a></span>)<span class="id">%R</span>.<br/>
 <br/>
 <span class="id">#[global]</span><br/>

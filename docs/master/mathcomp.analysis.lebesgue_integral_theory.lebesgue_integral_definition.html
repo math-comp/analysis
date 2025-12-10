@@ -267,10 +267,31 @@ Detailed contents:
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <span class="vernacular">Variables</span> (<span id="simple_fun_raw_integral.T" class="id"><a name="simple_fun_raw_integral.T" class="">T</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>) (<span id="simple_fun_raw_integral.R" class="id"><a name="simple_fun_raw_integral.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span>) (<span id="simple_fun_raw_integral.mu" class="id"><a name="simple_fun_raw_integral.mu" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#T:2">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#R:4">R</a></span>) (<span id="simple_fun_raw_integral.f" class="id"><a name="simple_fun_raw_integral.f" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#T:2">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#R:4">R</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sintegral" class="id"><a name="sintegral" class="" title="sintegral not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sintegral" class="id"><a name="sintegral" class="" title="sintegral :
+forall [T : Type] [R : numDomainType],
+(set T -> \bar R) -> (T -> R) -> GRing.BaseAddUMagma.sort \bar R
+
+sintegral is not universe polymorphic
+Arguments sintegral [T]%type_scope [R] (mu f)%function_scope
+sintegral is transparent
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegral
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 59, characters 11-20
 ">sintegral</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77">\sum_</a></span>(<span id="x:12" class="id"><span id="x:11" class="id"><span id="x:10" class="id"><span id="x:9" class="id"><a name="x:12" class="">x</a></span></span></span></span><span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77"> \in</a></span><span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#simple_fun_raw_integral.R">R</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>)<span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:9">x</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> *</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#simple_fun_raw_integral.mu">mu</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#simple_fun_raw_integral.f">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:9">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span>).<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegralET" class="id"><a name="sintegralET" class="" title="sintegralET not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegralET" class="id"><a name="sintegralET" class="" title="sintegralET :
+forall [T : Type] [R : numDomainType] (mu : set T -> \bar R) (f : T -> R),
+sintegral (R:=R) mu f =
+(\sum_(x \in [set: R]) (x%:E * mu (f @^-1` [set x])%classic)%E)%R
+
+sintegralET is not universe polymorphic
+Arguments sintegralET [T]%type_scope [R] (mu f)%function_scope
+sintegralET is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegralET
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 61, characters 6-17
 ">sintegralET</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77">\sum_</a></span>(<span id="x:16" class="id"><span id="x:15" class="id"><span id="x:14" class="id"><span id="x:13" class="id"><a name="x:16" class="">x</a></span></span></span></span><span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77"> \in</a></span><span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#simple_fun_raw_integral.R">R</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>)<span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:13">x</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> *</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#simple_fun_raw_integral.mu">mu</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#simple_fun_raw_integral.f">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:13">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span>).<br/>
 <details>
@@ -287,7 +308,19 @@ Detailed contents:
 <span class="vernacular">Variable</span><span class="id"> </span><span id="sintegral_lemmas.mu" class="id"><a name="sintegral_lemmas.mu" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">{measure</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> set</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_lemmas.T">T</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> -&gt;</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> \bar</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_lemmas.R">R</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">}</a></span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegralE" class="id"><a name="sintegralE" class="" title="sintegralE not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegralE" class="id"><a name="sintegralE" class="" title="sintegralE :
+forall [d : measure_display] [T : sigmaRingType d] 
+  [R : realType] (mu : measure T R) (f : T -> R),
+sintegral (R:=R) mu f =
+(\sum_(x \in range f) (x%:E * mu (f @^-1` [set x])%classic)%E)%R
+
+sintegralE is not universe polymorphic
+Arguments sintegralE [d]%measure_display_scope [T R] mu f%function_scope
+sintegralE is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegralE
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 74, characters 6-16
 ">sintegralE</a></span><span class="id"> </span><span id="f:22" class="id"><a name="f:22" class="">f</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_lemmas.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:22">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77">\sum_</a></span>(<span id="x:26" class="id"><span id="x:25" class="id"><span id="x:24" class="id"><span id="x:23" class="id"><a name="x:26" class="">x</a></span></span></span></span><span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77"> \in</a></span><span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#range">range</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:22">f</a></span>)<span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:23">x</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> *</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_lemmas.mu">mu</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:22">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:23">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span>).<br/>
 <details>
@@ -297,7 +330,18 @@ Detailed contents:
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#preimage10">preimage10</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#measure0">measure0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mule0">mule0</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegral0" class="id"><a name="sintegral0" class="" title="sintegral0 not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegral0" class="id"><a name="sintegral0" class="" title="sintegral0 :
+forall [d : measure_display] [T : sigmaRingType d] 
+  [R : realType] (mu : measure T R),
+sintegral (R:=R) mu (cst 0%R) = 0%R
+
+sintegral0 is not universe polymorphic
+Arguments sintegral0 [d]%measure_display_scope [T R] mu
+sintegral0 is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegral0
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 81, characters 6-16
 ">sintegral0</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_lemmas.mu">mu</a></span> (<span class="id"><a href="mathcomp.classical.functions.html#cst">cst</a></span><span class="id"> 0%R</span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -308,14 +352,37 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#HBNNSimple">HBNNSimple</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegral_ge0" class="id"><a name="sintegral_ge0" class="" title="sintegral_ge0 not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegral_ge0" class="id"><a name="sintegral_ge0" class="" title="sintegral_ge0 :
+forall [d : measure_display] [T : sigmaRingType d] 
+  [R : realType] (mu : measure T R) (f : {nnsfun T >-> R}),
+(0%R <= sintegral (R:=R) mu f)%E
+
+sintegral_ge0 is not universe polymorphic
+Arguments sintegral_ge0 [d]%measure_display_scope [T R] mu f
+sintegral_ge0 is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegral_ge0
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 89, characters 6-19
 ">sintegral_ge0</a></span> (<span id="f:27" class="id"><a name="f:27" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">{nnsfun</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_lemmas.T">T</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> &gt;-&gt;</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_lemmas.R">R</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">}</a></span>)<span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_lemmas.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:27">f</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegralE">sintegralE</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.ereal.html#fsume_ge0">fsume_ge0</a></span><span class="id">//</span><span class="id"> =&gt;</span><span class="id"> r</span><span class="id"> _;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#nnsfun_mulemu_ge0">nnsfun_mulemu_ge0</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegral_indic" class="id"><a name="sintegral_indic" class="" title="sintegral_indic not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegral_indic" class="id"><a name="sintegral_indic" class="" title="sintegral_indic :
+forall [d : measure_display] [T : sigmaRingType d] 
+  [R : realType] (mu : measure T R) (A : set T),
+sintegral (R:=R) mu (\1_A)%R = mu A
+
+sintegral_indic is not universe polymorphic
+Arguments sintegral_indic [d]%measure_display_scope 
+  [T R] mu A%classical_set_scope
+sintegral_indic is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegral_indic
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 92, characters 6-21
 ">sintegral_indic</a></span> (<span id="A:28" class="id"><a name="A:28" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_lemmas.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_lemmas.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#e353122e03268a6eab33cb5af81dd3c6">\1_</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#A:28">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_lemmas.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#A:28">A</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -329,7 +396,19 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#preimage_indic">preimage_indic</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifT">ifT</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.classical.classical_sets.html#inE">inE</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifN">ifN</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.classical.classical_sets.html#notin_setE">notin_setE</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegralEnnsfun" class="id"><a name="sintegralEnnsfun" class="" title="sintegralEnnsfun not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegralEnnsfun" class="id"><a name="sintegralEnnsfun" class="" title="sintegralEnnsfun :
+forall [d : measure_display] [T : sigmaRingType d] 
+  [R : realType] (mu : measure T R) (f : {nnsfun T >-> R}),
+sintegral (R:=R) mu f =
+(\sum_(x \in [set r | 0 < r]) (x%:E * mu (f @^-1` [set x])%classic)%E)%R
+
+sintegralEnnsfun is not universe polymorphic
+Arguments sintegralEnnsfun [d]%measure_display_scope [T R] mu f
+sintegralEnnsfun is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegralEnnsfun
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 104, characters 6-22
 ">sintegralEnnsfun</a></span> (<span id="f:29" class="id"><a name="f:29" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">{nnsfun</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_lemmas.T">T</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> &gt;-&gt;</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_lemmas.R">R</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">}</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_lemmas.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:29">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77">\sum_</a></span>(<span id="x:34" class="id"><span id="x:33" class="id"><span id="x:32" class="id"><span id="x:31" class="id"><a name="x:34" class="">x</a></span></span></span></span><span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77"> \in</a></span><span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="r:30" class="id"><a name="r:30" class="">r</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#r:30">r</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&gt;'_x"> &gt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&gt;'_x"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span><span class="id">%R</span>)<span class="id"><a href="mathcomp.analysis.ereal.html#6d081607cbe896cec5e830da47315b77"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:31">x</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> *</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_lemmas.mu">mu</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:29">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:31">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span>).<br/>
 <details>
@@ -343,7 +422,19 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> sintegral_lemmas</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_sintegral" class="id"><a name="eq_sintegral" class="" title="eq_sintegral not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_sintegral" class="id"><a name="eq_sintegral" class="" title="eq_sintegral :
+forall {d : measure_display} {T : sigmaRingType d} 
+  {R : numDomainType} {mu : set T -> \bar R} (g f : T -> R),
+f =1 g -> sintegral (R:=R) mu f = sintegral (R:=R) mu g
+
+eq_sintegral is not universe polymorphic
+Arguments eq_sintegral {d}%measure_display_scope {T R} 
+  {mu}%function_scope (g f)%function_scope _
+eq_sintegral is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.eq_sintegral
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 115, characters 6-18
 ">eq_sintegral</a></span><span class="id"> </span><span id="d:35" class="id"><a name="d:35" class="">d</a></span> (<span id="T:36" class="id"><a name="T:36" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#SigmaRing.Exports.sigmaRingType">sigmaRingType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#d:35">d</a></span>) (<span id="R:37" class="id"><a name="R:37" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="mu:38" class="id"><a name="mu:38" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#T:36">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#R:37">R</a></span>)<span class="id"> </span><span id="g:39" class="id"><a name="g:39" class="">g</a></span><span class="id"> </span><span id="f:40" class="id"><a name="f:40" class="">f</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:40">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> =1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#g:39">g</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#mu:38">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:40">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#mu:38">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#g:39">g</a></span>.<br/>
@@ -361,7 +452,21 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#HBNNSimple">HBNNSimple</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="le_measure_sintegral" class="id"><a name="le_measure_sintegral" class="" title="le_measure_sintegral not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="le_measure_sintegral" class="id"><a name="le_measure_sintegral" class="" title="le_measure_sintegral :
+forall {d : measure_display} {T : measurableType d} 
+  {R : realType} [m1 m2 : measure T R],
+(forall S : set T, d.-measurable%classic S -> (m1 S <= m2 S)%E) ->
+forall f : {nnsfun T >-> R},
+(sintegral (R:=R) m1 f <= sintegral (R:=R) m2 f)%E
+
+le_measure_sintegral is not universe polymorphic
+Arguments le_measure_sintegral {d}%measure_display_scope 
+  {T R} [m1 m2] m12%function_scope f
+le_measure_sintegral is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.le_measure_sintegral
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 129, characters 6-26
 ">le_measure_sintegral</a></span> (<span id="f:51" class="id"><a name="f:51" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">{nnsfun</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#le_measure_sintegral.T">T</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> &gt;-&gt;</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#le_measure_sintegral.R">R</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">}</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#le_measure_sintegral.m1">m1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:51">f</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#le_measure_sintegral.m2">m2</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:51">f</a></span>.<br/>
 <details>
@@ -379,7 +484,18 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#HBNNSimple">HBNNSimple</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegralrM" class="id"><a name="sintegralrM" class="" title="sintegralrM not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegralrM" class="id"><a name="sintegralrM" class="" title="sintegralrM :
+forall [d : measure_display] [T : sigmaRingType d] 
+  [R : realType] (m : measure T R) (r : R) (f : {nnsfun T >-> R}),
+sintegral (R:=R) m (cst r \* f)%R = (r%:E * sintegral (R:=R) m f)%E
+
+sintegralrM is not universe polymorphic
+Arguments sintegralrM [d]%measure_display_scope [T R] m r%ring_scope f
+sintegralrM is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegralrM
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 144, characters 6-17
 ">sintegralrM</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegralrM.m">m</a></span> (<span class="id"><a href="mathcomp.classical.functions.html#cst">cst</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegralrM.r">r</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#97c66421897c043c5333ab3c7e831f5b"> \*</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#97c66421897c043c5333ab3c7e831f5b"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegralrM.f">f</a></span>)<span class="id">%R</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegralrM.r">r</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> *</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegralrM.m">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegralrM.f">f</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -402,7 +518,19 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#HBNNSimple">HBNNSimple</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegralD" class="id"><a name="sintegralD" class="" title="sintegralD not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sintegralD" class="id"><a name="sintegralD" class="" title="sintegralD :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] (m : measure T R) (f g : {nnsfun T >-> R}),
+sintegral (R:=R) m (f \+ g)%R =
+(sintegral (R:=R) m f + sintegral (R:=R) m g)%R
+
+sintegralD is not universe polymorphic
+Arguments sintegralD [d]%measure_display_scope [T R] m f g
+sintegralD is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegralD
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 164, characters 6-16
 ">sintegralD</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegralD.m">m</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegralD.f">f</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#d85e5ec1adc01afcee458717bbaea5e5"> \+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#d85e5ec1adc01afcee458717bbaea5e5"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegralD.g">g</a></span>)<span class="id">%R</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegralD.m">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegralD.f">f</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d4965da372b2485934ec33867ee5fbe7"> +</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d4965da372b2485934ec33867ee5fbe7"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegralD.m">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegralD.g">g</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -447,15 +575,100 @@ Qed.</div></details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> split=&gt;</span><span class="id"> x;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.subr_ge0">subr_ge0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#le_sintegral.fg">fg</a></span>. Qed.</div></details>
-<span id="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="id"><span id="Algebra_sub_fun__canonical__numfun_NonNegFun" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="" title="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun not a defined object.
-">#[local]</a></span></span></span><span id="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="id"><span id="Algebra_sub_fun__canonical__numfun_NonNegFun" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="" title="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun not a defined object.
-"> HB</a></span></span></span>.<span id="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="id"><span id="Algebra_sub_fun__canonical__numfun_NonNegFun" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="" title="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun not a defined object.
-">instance</a></span></span></span><span class="vernacular"> Definition</span><span id="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="id"><span id="Algebra_sub_fun__canonical__numfun_NonNegFun" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="" title="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun not a defined object.
-"> _</a></span></span></span><span id="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="id"><span id="Algebra_sub_fun__canonical__numfun_NonNegFun" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="" title="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun not a defined object.
-"> :=</a></span></span></span><span id="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="id"><span id="Algebra_sub_fun__canonical__numfun_NonNegFun" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="" title="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun not a defined object.
+<span id="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="id"><span id="Algebra_sub_fun__canonical__numfun_NonNegFun" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="" title="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] [f g : {nnsfun T >-> R}],
+(forall x : T, (f x <= g x)%R) -> {nnsfun T >-> R}
+
+Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is not universe polymorphic
+Arguments Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
+  [d]%measure_display_scope [T R f g] fg%function_scope
+Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is transparent
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 203, characters 0-42
+">#[local]</a></span></span></span><span id="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="id"><span id="Algebra_sub_fun__canonical__numfun_NonNegFun" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="" title="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] [f g : {nnsfun T >-> R}],
+(forall x : T, (f x <= g x)%R) -> {nnsfun T >-> R}
+
+Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is not universe polymorphic
+Arguments Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
+  [d]%measure_display_scope [T R f g] fg%function_scope
+Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is transparent
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 203, characters 0-42
+"> HB</a></span></span></span>.<span id="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="id"><span id="Algebra_sub_fun__canonical__numfun_NonNegFun" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="" title="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] [f g : {nnsfun T >-> R}],
+(forall x : T, (f x <= g x)%R) -> {nnsfun T >-> R}
+
+Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is not universe polymorphic
+Arguments Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
+  [d]%measure_display_scope [T R f g] fg%function_scope
+Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is transparent
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 203, characters 0-42
+">instance</a></span></span></span><span class="vernacular"> Definition</span><span id="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="id"><span id="Algebra_sub_fun__canonical__numfun_NonNegFun" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="" title="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] [f g : {nnsfun T >-> R}],
+(forall x : T, (f x <= g x)%R) -> {nnsfun T >-> R}
+
+Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is not universe polymorphic
+Arguments Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
+  [d]%measure_display_scope [T R f g] fg%function_scope
+Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is transparent
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 203, characters 0-42
+"> _</a></span></span></span><span id="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="id"><span id="Algebra_sub_fun__canonical__numfun_NonNegFun" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="" title="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] [f g : {nnsfun T >-> R}],
+(forall x : T, (f x <= g x)%R) -> {nnsfun T >-> R}
+
+Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is not universe polymorphic
+Arguments Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
+  [d]%measure_display_scope [T R f g] fg%function_scope
+Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is transparent
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 203, characters 0-42
+"> :=</a></span></span></span><span id="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="id"><span id="Algebra_sub_fun__canonical__numfun_NonNegFun" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun" class="" title="Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] [f g : {nnsfun T >-> R}],
+(forall x : T, (f x <= g x)%R) -> {nnsfun T >-> R}
+
+Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is not universe polymorphic
+Arguments Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
+  [d]%measure_display_scope [T R f g] fg%function_scope
+Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is transparent
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 203, characters 0-42
 "> fgnn</a></span></span></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="le_sintegral" class="id"><a name="le_sintegral" class="" title="le_sintegral not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="le_sintegral" class="id"><a name="le_sintegral" class="" title="le_sintegral :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] (m : measure T R) [f g : {nnsfun T >-> R}],
+(forall x : T, (f x <= g x)%R) ->
+(sintegral (R:=R) m f <= sintegral (R:=R) m g)%E
+
+le_sintegral is not universe polymorphic
+Arguments le_sintegral [d]%measure_display_scope [T R] 
+  m [f g] fg%function_scope
+le_sintegral is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.le_sintegral
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 205, characters 6-18
 ">le_sintegral</a></span><span class="id"> :</span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#le_sintegral.m">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#le_sintegral.f">f</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#le_sintegral.m">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#le_sintegral.g">g</a></span>)<span class="id">%E</span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -469,7 +682,47 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> is_cvg_sintegral</span>.<br/>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#HBNNSimple">HBNNSimple</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_sintegral" class="id"><a name="is_cvg_sintegral" class="" title="is_cvg_sintegral not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_sintegral" class="id"><a name="is_cvg_sintegral" class="" title="is_cvg_sintegral :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] [m : measure T R] [f : {nnsfun T >-> R} ^nat],
+(forall x : T,
+ {homo (fun x0 : nat => f x0 x) : n m0 / n <= m0 >-> 
+ (n <= m0)%R}) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (sintegral (R:=R) m \o (fun x : nat => f x))
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (sintegral (R:=R) m \o (fun x : nat => f x))
+           (filter.nbhs filter.eventually))))
+
+is_cvg_sintegral is not universe polymorphic
+Expanded type for implicit arguments
+is_cvg_sintegral :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] [m : measure T R] [f : {nnsfun T >-> R} ^nat],
+(forall x : T,
+ {homo (fun x0 : nat => f x0 x) : n m0 / n <= m0 >-> 
+ (n <= m0)%R}) ->
+forall [t : set (GRing.BaseAddUMagma.sort \bar R)],
+filter.nbhs
+  (filter.lim
+     (filter.fmap (sintegral (R:=R) m \o (fun x : nat => f x))
+        (filter.nbhs filter.eventually)))
+  t ->
+exists2 i : nat,
+  [set: nat]%classic i &
+  ((fun N : nat => [set n | N <= n]) i
+   `<=` (sintegral (R:=R) m \o (fun x : nat => f x)) @^-1` t)%classic
+
+Arguments is_cvg_sintegral [d]%measure_display_scope 
+  [T R m f] _%function_scope [t] _
+is_cvg_sintegral is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.is_cvg_sintegral
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 216, characters 6-22
 ">is_cvg_sintegral</a></span><span class="id"> </span><span id="d:184" class="id"><a name="d:184" class="">d</a></span> (<span id="T:185" class="id"><a name="T:185" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#Measurable.Exports.measurableType">measurableType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#d:184">d</a></span>) (<span id="R:186" class="id"><a name="R:186" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>)<br/>
 &nbsp;&nbsp;(<span id="m:187" class="id"><a name="m:187" class="">m</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">{measure</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> set</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#T:185">T</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> -&gt;</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> \bar</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#R:186">R</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">}</a></span>) (<span id="f:188" class="id"><a name="f:188" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">{nnsfun</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#T:185">T</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> &gt;-&gt;</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#R:186">R</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">}</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:189" class="id"><a name="x:189" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#:::'nondecreasing_seq'_x">nondecreasing_seq</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:188">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> ^~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:189">x</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#cvgn">cvgn</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#m:187">m</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:188">f</a></span>).<br/>
@@ -550,7 +803,35 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="nd_sintegral_lim_lemma" class="id"><a name="nd_sintegral_lim_lemma" class="" title="nd_sintegral_lim_lemma not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="nd_sintegral_lim_lemma" class="id"><a name="nd_sintegral_lim_lemma" class="" title="nd_sintegral_lim_lemma :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] (mu : measure T R) [g : {nnsfun T >-> R} ^nat]
+  [f : {nnsfun T >-> R}],
+(forall x : T, {homo (fun x0 : nat => g x0 x) : n m / n <= m >-> (n <= m)%R}) ->
+(forall x : T,
+ filter.cvg_to
+   (filter.nbhs
+      (filter.fmap (fun x0 : nat => g x0 x) (filter.nbhs filter.eventually)))
+   (filter.nbhs
+      (filter.lim
+         (filter.fmap (fun x0 : nat => g x0 x)
+            (filter.nbhs filter.eventually)))) ->
+ (f x <=
+  filter.lim
+    (filter.fmap (fun x0 : nat => g x0 x) (filter.nbhs filter.eventually)))%R) ->
+(sintegral (R:=R) mu f <=
+ filter.lim
+   (filter.fmap (sintegral (R:=R) mu \o (fun x : nat => g x))
+      (filter.nbhs filter.eventually)))%E
+
+nd_sintegral_lim_lemma is not universe polymorphic
+Arguments nd_sintegral_lim_lemma [d]%measure_display_scope 
+  [T R] mu [g f] (nd_g gf)%function_scope
+nd_sintegral_lim_lemma is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.nd_sintegral_lim_lemma
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 286, characters 6-28
 ">nd_sintegral_lim_lemma</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_nondecreasing_limit_lemma.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_nondecreasing_limit_lemma.f">f</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#limn">limn</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_nondecreasing_limit_lemma.mu">mu</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_nondecreasing_limit_lemma.g">g</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -627,7 +908,29 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#cvg_lim">cvg_lim</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_nondecreasing_limit.gf">gf</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="nd_sintegral_lim" class="id"><a name="nd_sintegral_lim" class="" title="nd_sintegral_lim not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="nd_sintegral_lim" class="id"><a name="nd_sintegral_lim" class="" title="nd_sintegral_lim :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] (mu : measure T R) [g : {nnsfun T >-> R} ^nat]
+  [f : {nnsfun T >-> R}],
+(forall x : T, {homo (fun x0 : nat => g x0 x) : n m / n <= m >-> (n <= m)%R}) ->
+(forall x : T,
+ filter.cvg_to
+   (filter.nbhs
+      (filter.fmap (fun x0 : nat => g x0 x) (filter.nbhs filter.eventually)))
+   (filter.nbhs (f x))) ->
+sintegral (R:=R) mu f =
+filter.lim
+  (filter.fmap (sintegral (R:=R) mu \o (fun x : nat => g x))
+     (filter.nbhs filter.eventually))
+
+nd_sintegral_lim is not universe polymorphic
+Arguments nd_sintegral_lim [d]%measure_display_scope 
+  [T R] mu [g f] (nd_g gf)%function_scope
+nd_sintegral_lim is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.nd_sintegral_lim
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 357, characters 6-22
 ">nd_sintegral_lim</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_nondecreasing_limit.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_nondecreasing_limit.f">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#limn">limn</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_nondecreasing_limit.mu">mu</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral_nondecreasing_limit.g">g</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -654,7 +957,22 @@ Qed.</div></details>
 <span class="vernacular">Let</span><span class="id"> </span><span id="integral.nnintegral" class="id"><a name="integral.nnintegral" class="">nnintegral</a></span><span class="id"> </span><span id="mu:303" class="id"><a name="mu:303" class="">mu</a></span><span class="id"> </span><span id="f:304" class="id"><a name="f:304" class="">f</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.ereal.html#ereal_sup">ereal_sup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#mu:303">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#h:307">h</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> |</a></span><br/>
 &nbsp;&nbsp;<span id="h:307" class="id"><a name="h:307" class="">h</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span id="h:305" class="id"><a name="h:305" class="">h</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> :</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">{nnsfun</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral.T">T</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> &gt;-&gt;</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral.R">R</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">}</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> |</a></span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="x:306" class="id"><a name="x:306" class="">x</a></span><span class="id">,</span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#h:305">h</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:306">x</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:304">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:306">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">]</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">]</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="integral" class="id"><a name="integral" class="" title="integral not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="integral" class="id"><a name="integral" class="" title="integral :
+forall [d : measure_display] [T : measurableType d] [R : realType],
+(set T -> \bar R) ->
+set T ->
+(T -> \bar R) ->
+GRing.BaseAddMagma.sort
+  constructive_ereal_extended__canonical__Algebra_BaseAddMagma
+
+integral is not universe polymorphic
+Arguments integral [d]%measure_display_scope [T R] 
+  mu%function_scope D%classical_set_scope f%function_scope
+integral is transparent
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 381, characters 11-19
 ">integral</a></span><span class="id"> </span><span id="mu:308" class="id"><a name="mu:308" class="">mu</a></span><span class="id"> </span><span id="D:309" class="id"><a name="D:309" class="">D</a></span><span class="id"> </span><span id="f:310" class="id"><a name="f:310" class="">f</a></span> (<span id="g:311" class="id"><a name="g:311" class="">g</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:310">f</a></span><span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> \_</a></span><span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:309">D</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral.nnintegral">nnintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#mu:308">mu</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#g:311">g</a></span><span class="id"><a href="mathcomp.analysis.numfun.html#0aba79a7ddf4e21eb9e8bb0a843651a1"> ^\+</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'-'_x"> -</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral.nnintegral">nnintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#mu:308">mu</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#g:311">g</a></span><span class="id"><a href="mathcomp.analysis.numfun.html#dc73a9eb30675850d21ad1ad76b8f0e8"> ^\-</a></span>).<br/>
 <br/>
@@ -698,7 +1016,19 @@ Qed.</div></details>
 &nbsp;&nbsp;(<span class="gallina-kwd">at</span><span class="id"> level</span><span class="id"> 36,</span><span class="id"> F</span><span class="gallina-kwd"> at</span><span class="id"> level</span><span class="id"> 36,</span><span class="id"> x,</span><span class="id"> D</span><span class="gallina-kwd"> at</span><span class="id"> level</span><span class="id"> 50,</span><br/>
 &nbsp;&nbsp;<span class="id">format</span> <span class="id">&quot;'[' \int_ ( x  'in'  D ) '/  '  F ']'&quot;</span>).<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_integral" class="id"><a name="eq_integral" class="" title="eq_integral not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_integral" class="id"><a name="eq_integral" class="" title="eq_integral :
+forall {d : measure_display} {T : measurableType d} 
+  {R : realType} {mu : measure T R} {D : set T} (g f : T -> \bar R),
+{in D, f =1 g} -> (\int[mu]_(x in D) f x)%E = (\int[mu]_(x in D) g x)%E
+
+eq_integral is not universe polymorphic
+Arguments eq_integral {d}%measure_display_scope {T R mu}
+  {D}%classical_set_scope (g f)%function_scope _
+eq_integral is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.eq_integral
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 415, characters 6-17
 ">eq_integral</a></span><span class="id"> </span><span id="D:321" class="id"><a name="D:321" class="">D</a></span><span class="id"> </span><span id="g:322" class="id"><a name="g:322" class="">g</a></span><span class="id"> </span><span id="f:323" class="id"><a name="f:323" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:321">D</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:323">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> =1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#g:322">g</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4">\int_</a></span>(<span id="x:324" class="id"><a name="x:324" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:321">D</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:323">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:324">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4">\int_</a></span>(<span id="x:325" class="id"><a name="x:325" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:321">D</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#g:322">g</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:325">x</a></span>.<br/>
 <details>
@@ -706,7 +1036,26 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral">integral</a></span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.functions.html#eq_restrictP">eq_restrictP</a></span><span class="id">-&gt;</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="ge0_integralE" class="id"><a name="ge0_integralE" class="" title="ge0_integralE not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="ge0_integralE" class="id"><a name="ge0_integralE" class="" title="ge0_integralE :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] (mu : measure T R) [D : set T] [f : T -> \bar R],
+(forall x : T, D x -> (0%R <= f x)%E) ->
+(\int[mu]_(x in D) f x)%E =
+(fun (mu0 : set T -> \bar R) (f0 : T -> \bar R) =>
+ ereal_sup (R:=R)
+   [set sintegral (R:=R) mu0 h
+      | h in [set h | (forall x : T, ((h x)%:E <= f0 x)%E)]])
+  mu (f \_ D)
+
+ge0_integralE is not universe polymorphic
+Arguments ge0_integralE [d]%measure_display_scope 
+  [T R] mu [D]%classical_set_scope [f]%function_scope 
+  _%function_scope
+ge0_integralE is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.ge0_integralE
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 419, characters 6-19
 ">ge0_integralE</a></span><span class="id"> </span><span id="D:326" class="id"><a name="D:326" class="">D</a></span><span class="id"> </span><span id="f:327" class="id"><a name="f:327" class="">f</a></span><span class="id"> :</span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:328" class="id"><a name="x:328" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:326">D</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:328">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:327">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:328">x</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4">\int_</a></span>(<span id="x:329" class="id"><a name="x:329" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:326">D</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:327">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:329">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral.nnintegral">nnintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral.mu">mu</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:327">f</a></span><span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> \_</a></span><span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:326">D</a></span>).<br/>
 <details>
@@ -718,7 +1067,25 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#erestrict0">erestrict0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral.nnintegral0">nnintegral0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#sube0">sube0</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="ge0_integralTE" class="id"><a name="ge0_integralTE" class="" title="ge0_integralTE not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="ge0_integralTE" class="id"><a name="ge0_integralTE" class="" title="ge0_integralTE :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] (mu : measure T R) [f : T -> \bar R],
+(forall x : T, (0%R <= f x)%E) ->
+(\int[mu]_x f x)%E =
+(fun (mu0 : set T -> \bar R) (f0 : T -> \bar R) =>
+ ereal_sup (R:=R)
+   [set sintegral (R:=R) mu0 h
+      | h in [set h | (forall x : T, ((h x)%:E <= f0 x)%E)]])
+  mu f
+
+ge0_integralTE is not universe polymorphic
+Arguments ge0_integralTE [d]%measure_display_scope 
+  [T R] mu [f]%function_scope _%function_scope
+ge0_integralTE is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.ge0_integralTE
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 428, characters 6-20
 ">ge0_integralTE</a></span><span class="id"> </span><span id="f:330" class="id"><a name="f:330" class="">f</a></span><span class="id"> :</span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:331" class="id"><a name="x:331" class="">x</a></span><span class="id">,</span><span class="id"> 0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:330">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:331">x</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4">\int_</a></span>(<span id="x:332" class="id"><a name="x:332" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT">setT</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:330">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:332">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral.nnintegral">nnintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:330">f</a></span>.<br/>
 <details>
@@ -726,7 +1093,20 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> f0;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#ge0_integralE">ge0_integralE</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.functions.html#patch_setT">patch_setT</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="integralE" class="id"><a name="integralE" class="" title="integralE not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="integralE" class="id"><a name="integralE" class="" title="integralE :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] (mu : measure T R) (D : set T) (f : T -> \bar R),
+(\int[mu]_(x in D) f x)%E =
+(\int[mu]_(x in D) f^\+ x - \int[mu]_(x in D) f^\- x)%E
+
+integralE is not universe polymorphic
+Arguments integralE [d]%measure_display_scope [T R] 
+  mu D%classical_set_scope f%function_scope
+integralE is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integralE
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 432, characters 6-15
 ">integralE</a></span><span class="id"> </span><span id="D:333" class="id"><a name="D:333" class="">D</a></span><span class="id"> </span><span id="f:334" class="id"><a name="f:334" class="">f</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4">\int_</a></span>(<span id="x:335" class="id"><a name="x:335" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:333">D</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:334">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:335">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4">\int_</a></span>(<span id="x:336" class="id"><a name="x:336" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:333">D</a></span>) (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:334">f</a></span><span class="id"><a href="mathcomp.analysis.numfun.html#0aba79a7ddf4e21eb9e8bb0a843651a1"> ^\+</a></span><span class="id"><a href="mathcomp.analysis.numfun.html#0aba79a7ddf4e21eb9e8bb0a843651a1"> x</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'-'_x"> -</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4">\int_</a></span>(<span id="x:337" class="id"><a name="x:337" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:333">D</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:334">f</a></span><span class="id"><a href="mathcomp.analysis.numfun.html#dc73a9eb30675850d21ad1ad76b8f0e8"> ^\-</a></span><span class="id"><a href="mathcomp.analysis.numfun.html#dc73a9eb30675850d21ad1ad76b8f0e8"> x</a></span>.<br/>
 <details>
@@ -736,21 +1116,36 @@ Qed.</div></details>
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="integral0" class="id"><a name="integral0" class="" title="integral0 :
-forall [R K : nzRingType] (RtoK : {rmorphism R -> K}),
-integralOver (R:=R) (K:=K) RtoK 0
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] (mu : measure T R) (D : set T),
+(\int[mu]_(x in D) cst 0%R x)%E = 0%R
 
 integral0 is not universe polymorphic
-Arguments integral0 [R K] RtoK
+Arguments integral0 [d]%measure_display_scope [T R] mu D%classical_set_scope
 integral0 is opaque
-Expands to: Constant mathcomp.algebra.mxpoly.integral0
-Declared in library mathcomp.algebra.mxpoly, line 1071, characters 6-15
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral0
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 438, characters 6-15
 ">integral0</a></span><span class="id"> </span><span id="D:338" class="id"><a name="D:338" class="">D</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4">\int_</a></span>(<span id="x:339" class="id"><a name="x:339" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:338">D</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.classical.functions.html#cst">cst</a></span><span class="id"> 0</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:339">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#ge0_integralE">ge0_integralE</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#erestrict0">erestrict0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral.nnintegral0">nnintegral0</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral0_eq" class="id"><a name="integral0_eq" class="" title="integral0_eq not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral0_eq" class="id"><a name="integral0_eq" class="" title="integral0_eq :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] (mu : measure T R) [D : set T] [f : T -> \bar R],
+(forall x : T, D x -> f x = 0%R) -> (\int[mu]_(x in D) f x)%E = 0%R
+
+integral0_eq is not universe polymorphic
+Arguments integral0_eq [d]%measure_display_scope [T R] 
+  mu [D]%classical_set_scope [f]%function_scope _%function_scope
+integral0_eq is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral0_eq
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 441, characters 6-18
 ">integral0_eq</a></span><span class="id"> </span><span id="D:340" class="id"><a name="D:340" class="">D</a></span><span class="id"> </span><span id="f:341" class="id"><a name="f:341" class="">f</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:342" class="id"><a name="x:342" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:340">D</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:342">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:341">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:342">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4">\int_</a></span>(<span id="x:343" class="id"><a name="x:343" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:340">D</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:341">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:343">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span>.<br/>
 <details>
@@ -760,7 +1155,19 @@ Declared in library mathcomp.algebra.mxpoly, line 1071, characters 6-15
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral0">integral0</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_ge0" class="id"><a name="integral_ge0" class="" title="integral_ge0 not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_ge0" class="id"><a name="integral_ge0" class="" title="integral_ge0 :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] (mu : measure T R) [D : set T] [f : T -> \bar R],
+(forall x : T, D x -> (0%R <= f x)%E) -> (0%R <= \int[mu]_(x in D) f x)%E
+
+integral_ge0 is not universe polymorphic
+Arguments integral_ge0 [d]%measure_display_scope [T R] 
+  mu [D]%classical_set_scope [f]%function_scope _%function_scope
+integral_ge0 is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral_ge0
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 448, characters 6-18
 ">integral_ge0</a></span><span class="id"> </span><span id="D:344" class="id"><a name="D:344" class="">D</a></span><span class="id"> </span><span id="f:345" class="id"><a name="f:345" class="">f</a></span><span class="id"> :</span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:346" class="id"><a name="x:346" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:344">D</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:346">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:345">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:346">x</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4">\int_</a></span>(<span id="x:347" class="id"><a name="x:347" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:344">D</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:345">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:347">x</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -769,7 +1176,21 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.functions.html#patch">patch</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifP">ifP</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> //</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#inE">inE</a></span><span class="id"> =&gt;</span><span class="id"> /f0-&gt;</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_nnsfun" class="id"><a name="integral_nnsfun" class="" title="integral_nnsfun not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_nnsfun" class="id"><a name="integral_nnsfun" class="" title="integral_nnsfun :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] (mu : measure T R) [D : set T],
+d.-measurable%classic D ->
+forall h : {nnsfun T >-> R},
+(\int[mu]_(x in D) (h x)%:E)%E = sintegral (R:=R) mu (h \_ D)
+
+integral_nnsfun is not universe polymorphic
+Arguments integral_nnsfun [d]%measure_display_scope 
+  [T R] mu [D]%classical_set_scope mD h
+integral_nnsfun is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral_nnsfun
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 454, characters 6-21
 ">integral_nnsfun</a></span><span class="id"> </span><span id="D:348" class="id"><a name="D:348" class="">D</a></span> (<span id="mD:349" class="id"><a name="mD:349" class="">mD</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#measurable">measurable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:348">D</a></span>) (<span id="h:350" class="id"><a name="h:350" class="">h</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">{nnsfun</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral.T">T</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> &gt;-&gt;</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral.R">R</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">}</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4">\int_</a></span>(<span id="x:351" class="id"><a name="x:351" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#290ff52d5eb077d1c33b08b0bbb307f4"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:348">D</a></span>) (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#h:350">h</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:351">x</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral.mu">mu</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#h:350">h</a></span><span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> \_</a></span><span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:348">D</a></span>).<br/>
 <details>
@@ -795,7 +1216,28 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#HBNNSimple">HBNNSimple</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="ge0_le_measure_integral" class="id"><a name="ge0_le_measure_integral" class="" title="ge0_le_measure_integral not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="ge0_le_measure_integral" class="id"><a name="ge0_le_measure_integral" class="" title="ge0_le_measure_integral :
+forall {d : measure_display} {T : measurableType d} 
+  {R : realType} [m1 m2 : measure T R],
+(forall S : set T, d.-measurable%classic S -> (m1 S <= m2 S)%E) ->
+forall [f : T -> \bar R] [S : set T],
+d.-measurable%classic S ->
+(forall x : T, (0%R <= f x)%E) ->
+measurable_fun (T:=T)
+  (U:=constructive_ereal_extended__canonical__measurable_structure_SigmaRing
+        R)
+  [set: T] f ->
+(\int[m1]_(x in S) f x <= \int[m2]_(x in S) f x)%E
+
+ge0_le_measure_integral is not universe polymorphic
+Arguments ge0_le_measure_integral {d}%measure_display_scope 
+  {T R} [m1 m2] m12%function_scope [f]%function_scope 
+  [S]%classical_set_scope _ _%function_scope _
+ge0_le_measure_integral is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.ge0_le_measure_integral
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 477, characters 6-29
 ">ge0_le_measure_integral</a></span> (<span id="f:364" class="id"><a name="f:364" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#ge0_le_measure_integral.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#ge0_le_measure_integral.R">R</a></span>)<span class="id"> </span><span id="S:365" class="id"><a name="S:365" class="">S</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#measurable">measurable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#S:365">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:366" class="id"><a name="x:366" class="">x</a></span><span class="id">,</span><span class="id"> 0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:364">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:366">x</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_fun">measurable_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#ge0_le_measure_integral.T">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:364">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#ge0_le_measure_integral.m1">m1</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">]_</a></span>(<span id="x:367" class="id"><a name="x:367" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#S:365">S</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:364">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:367">x</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#ge0_le_measure_integral.m2">m2</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">]_</a></span>(<span id="x:368" class="id"><a name="x:368" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#S:365">S</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:364">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:368">x</a></span>.<br/>
@@ -817,7 +1259,23 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#HBNNSimple">HBNNSimple</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_indic" class="id"><a name="integral_indic" class="" title="integral_indic not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_indic" class="id"><a name="integral_indic" class="" title="integral_indic :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] (mu : measure T R) [D : set T],
+d.-measurable%classic D ->
+forall [A : set T],
+d.-measurable%classic A ->
+(\int[mu]_(x in D) (\1_A x)%:E)%E = mu (A `&` D)%classic
+
+integral_indic is not universe polymorphic
+Arguments integral_indic [d]%measure_display_scope 
+  [T R] mu [D]%classical_set_scope mD [A]%classical_set_scope 
+  _
+integral_indic is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral_indic
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 496, characters 6-20
 ">integral_indic</a></span><span class="id"> </span><span id="A:375" class="id"><a name="A:375" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#measurable">measurable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#A:375">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral_indic.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">]_</a></span>(<span id="x:376" class="id"><a name="x:376" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral_indic.D">D</a></span>) (<span class="id"><a href="mathcomp.analysis.numfun.html#e353122e03268a6eab33cb5af81dd3c6">\1_</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#A:375">A</a></span><span class="id"><a href="mathcomp.analysis.numfun.html#e353122e03268a6eab33cb5af81dd3c6"> x</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral_indic.mu">mu</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#A:375">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral_indic.D">D</a></span>).<br/>
 <details>
@@ -834,7 +1292,19 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> </span><span id="domain_change.d" class="id"><a name="domain_change.d" class="">d</a></span> (<span id="domain_change.T" class="id"><a name="domain_change.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#Measurable.Exports.measurableType">measurableType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#d:377">d</a></span>) (<span id="domain_change.R" class="id"><a name="domain_change.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>).<br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="domain_change.mu" class="id"><a name="domain_change.mu" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">{measure</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> set</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#domain_change.T">T</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> -&gt;</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> \bar</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#domain_change.R">R</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">}</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_mkcond" class="id"><a name="integral_mkcond" class="" title="integral_mkcond not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_mkcond" class="id"><a name="integral_mkcond" class="" title="integral_mkcond :
+forall {d : measure_display} {T : measurableType d} 
+  {R : realType} {mu : measure T R} (D : set T) (f : T -> \bar R),
+(\int[mu]_(x in D) f x)%E = (\int[mu]_x (f \_ D) x)%E
+
+integral_mkcond is not universe polymorphic
+Arguments integral_mkcond {d}%measure_display_scope 
+  {T R mu} D%classical_set_scope f%function_scope
+integral_mkcond is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral_mkcond
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 510, characters 6-21
 ">integral_mkcond</a></span><span class="id"> </span><span id="D:382" class="id"><a name="D:382" class="">D</a></span><span class="id"> </span><span id="f:383" class="id"><a name="f:383" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#domain_change.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">]_</a></span>(<span id="x:384" class="id"><a name="x:384" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:382">D</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:383">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:384">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#domain_change.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">]_</a></span><span id="x:385" class="id"><a name="x:385" class="">x</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:383">f</a></span><span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> \_</a></span><span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:382">D</a></span>)<span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> x</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -843,7 +1313,18 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#HBNNSimple">HBNNSimple</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="integralT_nnsfun" class="id"><a name="integralT_nnsfun" class="" title="integralT_nnsfun not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="integralT_nnsfun" class="id"><a name="integralT_nnsfun" class="" title="integralT_nnsfun :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] (mu : measure T R) (h : {nnsfun T >-> R}),
+(\int[mu]_x (h x)%:E)%E = sintegral (R:=R) mu h
+
+integralT_nnsfun is not universe polymorphic
+Arguments integralT_nnsfun [d]%measure_display_scope [T R] mu h
+integralT_nnsfun is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integralT_nnsfun
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 515, characters 6-22
 ">integralT_nnsfun</a></span> (<span id="h:386" class="id"><a name="h:386" class="">h</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">{nnsfun</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#domain_change.T">T</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> &gt;-&gt;</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#domain_change.R">R</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">}</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#domain_change.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">]_</a></span><span id="x:387" class="id"><a name="x:387" class="">x</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#h:386">h</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:387">x</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#sintegral">sintegral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#domain_change.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#h:386">h</a></span>.<br/>
 <details>
@@ -851,7 +1332,20 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral_nnsfun">integral_nnsfun</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.functions.html#patch_setT">patch_setT</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_mkcondr" class="id"><a name="integral_mkcondr" class="" title="integral_mkcondr not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_mkcondr" class="id"><a name="integral_mkcondr" class="" title="integral_mkcondr :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] (mu : measure T R) (D P : set T) 
+  (f : T -> \bar R),
+(\int[mu]_(x in D `&` P) f x)%E = (\int[mu]_(x in D) (f \_ P) x)%E
+
+integral_mkcondr is not universe polymorphic
+Arguments integral_mkcondr [d]%measure_display_scope 
+  [T R] mu (D P)%classical_set_scope f%function_scope
+integral_mkcondr is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral_mkcondr
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 519, characters 6-22
 ">integral_mkcondr</a></span><span class="id"> </span><span id="D:388" class="id"><a name="D:388" class="">D</a></span><span class="id"> </span><span id="P:389" class="id"><a name="P:389" class="">P</a></span><span class="id"> </span><span id="f:390" class="id"><a name="f:390" class="">f</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#domain_change.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">]_</a></span>(<span id="x:391" class="id"><a name="x:391" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:388">D</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#P:389">P</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:390">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:391">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#domain_change.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">]_</a></span>(<span id="x:392" class="id"><a name="x:392" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:388">D</a></span>) (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:390">f</a></span><span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> \_</a></span><span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#P:389">P</a></span>)<span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> x</a></span>.<br/>
 <details>
@@ -859,7 +1353,20 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral_mkcond">integral_mkcond</a></span><span class="id"> [</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssrmatching.ssrmatching.html#SsrMatchingSyntax.RHS">RHS</a></span><span class="id">]</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral_mkcond">integral_mkcond</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.functions.html#patch_setI">patch_setI</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_mkcondl" class="id"><a name="integral_mkcondl" class="" title="integral_mkcondl not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_mkcondl" class="id"><a name="integral_mkcondl" class="" title="integral_mkcondl :
+forall [d : measure_display] [T : measurableType d] 
+  [R : realType] (mu : measure T R) (D P : set T) 
+  (f : T -> \bar R),
+(\int[mu]_(x in P `&` D) f x)%E = (\int[mu]_(x in D) (f \_ P) x)%E
+
+integral_mkcondl is not universe polymorphic
+Arguments integral_mkcondl [d]%measure_display_scope 
+  [T R] mu (D P)%classical_set_scope f%function_scope
+integral_mkcondl is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral_mkcondl
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition, line 523, characters 6-22
 ">integral_mkcondl</a></span><span class="id"> </span><span id="D:393" class="id"><a name="D:393" class="">D</a></span><span class="id"> </span><span id="P:394" class="id"><a name="P:394" class="">P</a></span><span class="id"> </span><span id="f:395" class="id"><a name="f:395" class="">f</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#domain_change.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">]_</a></span>(<span id="x:396" class="id"><a name="x:396" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#P:394">P</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:393">D</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:395">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#x:396">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#domain_change.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">]_</a></span>(<span id="x:397" class="id"><a name="x:397" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#D:393">D</a></span>) (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#f:395">f</a></span><span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> \_</a></span><span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#P:394">P</a></span>)<span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> x</a></span>.<br/>
 <details>

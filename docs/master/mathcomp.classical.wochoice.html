@@ -248,7 +248,13 @@ can be found in `classical_sets.v` but expressed with `Prop` instead of
 <span class="vernacular">Unset</span><span class="vernacular"> Strict</span><span class="vernacular"> Implicit</span>.<br/>
 <span class="vernacular">Unset</span><span class="vernacular"> Printing</span><span class="vernacular"> Implicit</span><span class="vernacular"> Defensive</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="nonempty" class="id"><a name="nonempty" class="" title="nonempty not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="nonempty" class="id"><a name="nonempty" class="" title="nonempty : forall {T : Type}, {pred T} -> Prop
+
+nonempty is not universe polymorphic
+Arguments nonempty {T}%type_scope A
+nonempty is transparent
+Expands to: Constant mathcomp.classical.wochoice.nonempty
+Declared in library mathcomp.classical.wochoice, line 40, characters 11-19
 ">nonempty</a></span><span class="id"> {</span><span id="T:1" class="id"><a name="T:1" class="">T</a></span><span class="id">:</span><span class="id"> Type}</span> (<span id="A:2" class="id"><a name="A:2" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">{pred</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#T:1">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">}</a></span>)<span class="id"> :=</span><span class="gallina-kwd"> exists</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="x:3" class="id"><a name="x:3" class="">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#x:3">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#A:2">A</a></span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="vernacular"> LocalProperties</span>.<br/>
@@ -258,24 +264,76 @@ can be found in `classical_sets.v` but expressed with `Prop` instead of
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span> <span id="89052c3227ae11b5fc5b06d7fdfaa55c" class="id"><a name="89052c3227ae11b5fc5b06d7fdfaa55c" class="">&quot;{ 'allA' P }&quot;</a></span><span class="id"> :=</span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="A:8" class="id"><a name="A:8" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">{pred</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#LocalProperties.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">}</a></span><span class="id">,</span><span class="id"> P</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#A:8">A</a></span><span class="id"> :</span><span class="gallina-kwd"> Prop</span>) (<span class="gallina-kwd">at</span><span class="id"> level</span><span class="id"> 0</span>).<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="ph" class="id"><a name="ph" class="">ph</a></span><span class="id"> :=</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#phantom">phantom</a></span><span class="id"> _</span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="prop_within" class="id"><a name="prop_within" class="" title="prop_within not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="prop_within" class="id"><a name="prop_within" class="" title="prop_within :
+forall {T : predArgType},
+mem_pred T ->
+forall [P : {pred T} -> Prop],
+phantom Prop (forall A : {pred T}, P A : Prop) -> Prop
+
+prop_within is not universe polymorphic
+Arguments prop_within {T}%type_scope d [P]%function_scope _
+prop_within is transparent
+Expands to: Constant mathcomp.classical.wochoice.prop_within
+Declared in library mathcomp.classical.wochoice, line 49, characters 11-22
 ">prop_within</a></span><span class="id"> </span><span id="d:9" class="id"><a name="d:9" class="">d</a></span><span class="id"> </span><span id="P:10" class="id"><a name="P:10" class="">P</a></span><span class="id"> &amp;</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#ph">ph</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#89052c3227ae11b5fc5b06d7fdfaa55c">{allA</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#89052c3227ae11b5fc5b06d7fdfaa55c"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#P:10">P</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#89052c3227ae11b5fc5b06d7fdfaa55c">}</a></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="A:11" class="id"><a name="A:11" class="">A</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#sub_mem">sub_mem</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#mem">mem</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#A:11">A</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#d:9">d</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#P:10">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#A:11">A</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="withinW" class="id"><a name="withinW" class="" title="withinW not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="withinW" class="id"><a name="withinW" class="" title="withinW :
+forall {T : predArgType} [A : {pred T}] [P : {pred T} -> Prop],
+(forall A0 : {pred T}, P A0 : Prop) ->
+{ in <= A, forall A0 : {pred T}, P A0 : Prop}
+
+withinW is not universe polymorphic
+Expanded type for implicit arguments
+withinW :
+forall {T : predArgType} [A : {pred T}] [P : {pred T} -> Prop],
+(forall A0 : {pred T}, P A0 : Prop) ->
+forall [A0 : {pred T}], {subset A0 <= A} -> P A0
+
+Arguments withinW {T}%type_scope [A] [P]%function_scope 
+  _%function_scope [A] _
+withinW is opaque
+Expands to: Constant mathcomp.classical.wochoice.withinW
+Declared in library mathcomp.classical.wochoice, line 51, characters 6-13
 ">withinW</a></span><span class="id"> </span><span id="A:12" class="id"><a name="A:12" class="">A</a></span><span class="id"> </span><span id="P:13" class="id"><a name="P:13" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#89052c3227ae11b5fc5b06d7fdfaa55c">{allA</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#89052c3227ae11b5fc5b06d7fdfaa55c"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#P:13">P</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#89052c3227ae11b5fc5b06d7fdfaa55c">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#prop_within">prop_within</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#mem">mem</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#A:12">A</a></span>) (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#inPhantom">inPhantom</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#89052c3227ae11b5fc5b06d7fdfaa55c">{allA</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#89052c3227ae11b5fc5b06d7fdfaa55c"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#P:13">P</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#89052c3227ae11b5fc5b06d7fdfaa55c">}</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> allP</span><span class="id"> ?</span><span class="id"> _;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#allP">allP</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="withinT" class="id"><a name="withinT" class="" title="withinT not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="withinT" class="id"><a name="withinT" class="" title="withinT :
+forall {T : predArgType} [P : {pred T} -> Prop],
+{ in <= T, forall A : {pred T}, P A : Prop} ->
+forall A : {pred T}, P A : Prop
+
+withinT is not universe polymorphic
+Arguments withinT {T}%type_scope [P]%function_scope _ A
+withinT is opaque
+Expands to: Constant mathcomp.classical.wochoice.withinT
+Declared in library mathcomp.classical.wochoice, line 54, characters 6-13
 ">withinT</a></span><span class="id"> </span><span id="P:14" class="id"><a name="P:14" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#prop_within">prop_within</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#mem">mem</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#LocalProperties.T">T</a></span>) (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#inPhantom">inPhantom</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#89052c3227ae11b5fc5b06d7fdfaa55c">{allA</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#89052c3227ae11b5fc5b06d7fdfaa55c"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#P:14">P</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#89052c3227ae11b5fc5b06d7fdfaa55c">}</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#89052c3227ae11b5fc5b06d7fdfaa55c">{allA</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#89052c3227ae11b5fc5b06d7fdfaa55c"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#P:14">P</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#89052c3227ae11b5fc5b06d7fdfaa55c">}</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> allP</span><span class="id"> A;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#allP">allP</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sub_within" class="id"><a name="sub_within" class="" title="sub_within not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sub_within" class="id"><a name="sub_within" class="" title="sub_within :
+forall {T : predArgType} [d d' : mem_pred T] [P : {pred T} -> Prop],
+sub_mem d d' ->
+forall [phP : phantom Prop (forall A : {pred T}, P A : Prop)],
+prop_within d' (P:=P) phP -> prop_within d (P:=P) phP
+
+sub_within is not universe polymorphic
+Expanded type for implicit arguments
+sub_within :
+forall {T : predArgType} [d d' : mem_pred T] [P : {pred T} -> Prop],
+sub_mem d d' ->
+forall [phP : phantom Prop (forall A : {pred T}, P A : Prop)],
+prop_within d' (P:=P) phP -> forall [A : {pred T}], sub_mem (mem A) d -> P A
+
+Arguments sub_within {T}%type_scope [d d'] [P]%function_scope _ [phP] _ [A] _
+sub_within is opaque
+Expands to: Constant mathcomp.classical.wochoice.sub_within
+Declared in library mathcomp.classical.wochoice, line 57, characters 6-16
 ">sub_within</a></span><span class="id"> </span><span id="d:15" class="id"><a name="d:15" class="">d</a></span><span class="id"> </span><span id="d':16" class="id"><a name="d':16" class="">d'</a></span><span class="id"> </span><span id="P:17" class="id"><a name="P:17" class="">P</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#sub_mem">sub_mem</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#d:15">d</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#d':16">d'</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="phP:18" class="id"><a name="phP:18" class="">phP</a></span><span class="id">,</span><span class="id"> @</span><span class="id"><a href="mathcomp.classical.wochoice.html#prop_within">prop_within</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#d':16">d'</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#P:17">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#phP:18">phP</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.classical.wochoice.html#prop_within">prop_within</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#d:15">d</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#P:17">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#phP:18">phP</a></span>.<br/>
 <details>
@@ -292,49 +350,133 @@ can be found in `classical_sets.v` but expressed with `Prop` instead of
 <span class="vernacular">Variables</span> (<span id="RelDefs.T" class="id"><a name="RelDefs.T" class="">T</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>) (<span id="RelDefs.R" class="id"><a name="RelDefs.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#rel">rel</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#T:20">T</a></span>).<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">x</span><span class="id"> y</span><span class="id"> z</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#RelDefs.T">T</a></span>) (<span class="id">A</span><span class="id"> C</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">{pred</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#RelDefs.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">}</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="maximal" class="id"><a name="maximal" class="" title="maximal not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="maximal" class="id"><a name="maximal" class="" title="maximal : forall [T : Type], rel T -> T -> Prop
+
+maximal is not universe polymorphic
+Arguments maximal [T]%type_scope R z
+maximal is transparent
+Expands to: Constant mathcomp.classical.wochoice.maximal
+Declared in library mathcomp.classical.wochoice, line 71, characters 11-18
 ">maximal</a></span><span class="id"> </span><span id="z:23" class="id"><a name="z:23" class="">z</a></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="x:24" class="id"><a name="x:24" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#RelDefs.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#z:23">z</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#x:24">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#RelDefs.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#x:24">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#z:23">z</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="minimal" class="id"><a name="minimal" class="" title="minimal not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="minimal" class="id"><a name="minimal" class="" title="minimal : forall [T : Type], rel T -> T -> Prop
+
+minimal is not universe polymorphic
+Arguments minimal [T]%type_scope R z
+minimal is transparent
+Expands to: Constant mathcomp.classical.wochoice.minimal
+Declared in library mathcomp.classical.wochoice, line 73, characters 11-18
 ">minimal</a></span><span class="id"> </span><span id="z:25" class="id"><a name="z:25" class="">z</a></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="x:26" class="id"><a name="x:26" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#RelDefs.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#x:26">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#z:25">z</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#RelDefs.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#z:25">z</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#x:26">x</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="upper_bound" class="id"><a name="upper_bound" class="" title="upper_bound not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="upper_bound" class="id"><a name="upper_bound" class="" title="upper_bound : forall [T : Type], rel T -> {pred T} -> T -> Prop
+
+upper_bound is not universe polymorphic
+Arguments upper_bound [T]%type_scope R A z
+upper_bound is transparent
+Expands to: Constant mathcomp.classical.wochoice.upper_bound
+Declared in library mathcomp.classical.wochoice, line 75, characters 11-22
 ">upper_bound</a></span><span class="id"> </span><span id="A:27" class="id"><a name="A:27" class="">A</a></span><span class="id"> </span><span id="z:28" class="id"><a name="z:28" class="">z</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#A:27">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">,</a></span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="x:29" class="id"><a name="x:29" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#RelDefs.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#x:29">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#z:28">z</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">}</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="lower_bound" class="id"><a name="lower_bound" class="" title="lower_bound not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="lower_bound" class="id"><a name="lower_bound" class="" title="lower_bound : forall [T : Type], rel T -> {pred T} -> T -> Prop
+
+lower_bound is not universe polymorphic
+Arguments lower_bound [T]%type_scope R A z
+lower_bound is transparent
+Expands to: Constant mathcomp.classical.wochoice.lower_bound
+Declared in library mathcomp.classical.wochoice, line 77, characters 11-22
 ">lower_bound</a></span><span class="id"> </span><span id="A:30" class="id"><a name="A:30" class="">A</a></span><span class="id"> </span><span id="z:31" class="id"><a name="z:31" class="">z</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#A:30">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">,</a></span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="x:32" class="id"><a name="x:32" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#RelDefs.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#z:31">z</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#x:32">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">}</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="preorder" class="id"><a name="preorder" class="" title="preorder : forall A : Type, relation A -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="preorder" class="id"><a name="preorder" class="" title="preorder : forall [T : Type], rel T -> Prop
 
 preorder is not universe polymorphic
-Arguments preorder A%type_scope R
-Expands to: Inductive Corelib.Relations.Relation_Definitions.preorder
-Declared in
-library Corelib.Relations.Relation_Definitions, line 36, characters 11-19
+Arguments preorder [T]%type_scope R
+preorder is transparent
+Expands to: Constant mathcomp.classical.wochoice.preorder
+Declared in library mathcomp.classical.wochoice, line 79, characters 11-19
 ">preorder</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#reflexive">reflexive</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#RelDefs.R">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#transitive">transitive</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#RelDefs.R">R</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="partial_order" class="id"><a name="partial_order" class="" title="partial_order not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="partial_order" class="id"><a name="partial_order" class="" title="partial_order : forall [T : Type], rel T -> Prop
+
+partial_order is not universe polymorphic
+Arguments partial_order [T]%type_scope R
+partial_order is transparent
+Expands to: Constant mathcomp.classical.wochoice.partial_order
+Declared in library mathcomp.classical.wochoice, line 81, characters 11-24
 ">partial_order</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#preorder">preorder</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#antisymmetric">antisymmetric</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#RelDefs.R">R</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="total_order" class="id"><a name="total_order" class="" title="total_order not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="total_order" class="id"><a name="total_order" class="" title="total_order : forall [T : Type], rel T -> Prop
+
+total_order is not universe polymorphic
+Arguments total_order [T]%type_scope R
+total_order is transparent
+Expands to: Constant mathcomp.classical.wochoice.total_order
+Declared in library mathcomp.classical.wochoice, line 83, characters 11-22
 ">total_order</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#partial_order">partial_order</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#total">total</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#RelDefs.R">R</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="minimum_of" class="id"><a name="minimum_of" class="" title="minimum_of not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="minimum_of" class="id"><a name="minimum_of" class="" title="minimum_of : forall [T : Type], rel T -> {pred T} -> T -> Prop
+
+minimum_of is not universe polymorphic
+Arguments minimum_of [T]%type_scope R A z
+minimum_of is transparent
+Expands to: Constant mathcomp.classical.wochoice.minimum_of
+Declared in library mathcomp.classical.wochoice, line 85, characters 11-21
 ">minimum_of</a></span><span class="id"> </span><span id="A:33" class="id"><a name="A:33" class="">A</a></span><span class="id"> </span><span id="z:34" class="id"><a name="z:34" class="">z</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#z:34">z</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#A:33">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#lower_bound">lower_bound</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#A:33">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#z:34">z</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="maximum_of" class="id"><a name="maximum_of" class="" title="maximum_of not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="maximum_of" class="id"><a name="maximum_of" class="" title="maximum_of : forall [T : Type], rel T -> {pred T} -> T -> Prop
+
+maximum_of is not universe polymorphic
+Arguments maximum_of [T]%type_scope R A z
+maximum_of is transparent
+Expands to: Constant mathcomp.classical.wochoice.maximum_of
+Declared in library mathcomp.classical.wochoice, line 87, characters 11-21
 ">maximum_of</a></span><span class="id"> </span><span id="A:35" class="id"><a name="A:35" class="">A</a></span><span class="id"> </span><span id="z:36" class="id"><a name="z:36" class="">z</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#z:36">z</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#A:35">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#upper_bound">upper_bound</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#A:35">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#z:36">z</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="well_order" class="id"><a name="well_order" class="" title="well_order not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="well_order" class="id"><a name="well_order" class="" title="well_order : forall [T : Type], rel T -> Prop
+
+well_order is not universe polymorphic
+Arguments well_order [T]%type_scope R
+well_order is transparent
+Expands to: Constant mathcomp.classical.wochoice.well_order
+Declared in library mathcomp.classical.wochoice, line 89, characters 11-21
 ">well_order</a></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="A:37" class="id"><a name="A:37" class="">A</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#nonempty">nonempty</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#A:37">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a3726bd940c3c0e96cb8e13291e9ded4">exists!</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a3726bd940c3c0e96cb8e13291e9ded4"> </a></span><span id="z:38" class="id"><a name="z:38" class="">z</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a3726bd940c3c0e96cb8e13291e9ded4">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a3726bd940c3c0e96cb8e13291e9ded4"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#minimum_of">minimum_of</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#A:37">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#z:38">z</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="chain" class="id"><a name="chain" class="" title="chain not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="chain" class="id"><a name="chain" class="" title="chain : forall [T : Type], rel T -> {pred T} -> Prop
+
+chain is not universe polymorphic
+Arguments chain [T]%type_scope R C
+chain is transparent
+Expands to: Constant mathcomp.classical.wochoice.chain
+Declared in library mathcomp.classical.wochoice, line 91, characters 11-16
 ">chain</a></span><span class="id"> </span><span id="C:39" class="id"><a name="C:39" class="">C</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#C:39">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> &amp;,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#total">total</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#RelDefs.R">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">}</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="wo_chain" class="id"><a name="wo_chain" class="" title="wo_chain not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="wo_chain" class="id"><a name="wo_chain" class="" title="wo_chain : forall [T : Type], rel T -> {pred T} -> Prop
+
+wo_chain is not universe polymorphic
+Arguments wo_chain [T]%type_scope R C
+wo_chain is transparent
+Expands to: Constant mathcomp.classical.wochoice.wo_chain
+Declared in library mathcomp.classical.wochoice, line 93, characters 11-19
 ">wo_chain</a></span><span class="id"> </span><span id="C:40" class="id"><a name="C:40" class="">C</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed">{in</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed"> &lt;=</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#C:40">C</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed">,</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#well_order">well_order</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed">}</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="antisymmetric_wo_chain" class="id"><a name="antisymmetric_wo_chain" class="" title="antisymmetric_wo_chain not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="antisymmetric_wo_chain" class="id"><a name="antisymmetric_wo_chain" class="" title="antisymmetric_wo_chain :
+forall [T : Type] [R : rel T] [C : {pred T}],
+{in C &, antisymmetric (T:=T) R} ->
+{ in <= C, forall A : {pred T}, nonempty A -> exists z : T, minimum_of R A z} ->
+wo_chain (T:=T) R C
+
+antisymmetric_wo_chain is not universe polymorphic
+Expanded type for implicit arguments
+antisymmetric_wo_chain :
+forall [T : Type] [R : rel T] [C : {pred T}],
+{in C &, antisymmetric (T:=T) R} ->
+{ in <= C, forall A : {pred T}, nonempty A -> exists z : T, minimum_of R A z} ->
+forall [A : {pred T}],
+{subset A <= C} -> nonempty A -> exists ! z : T, minimum_of R A z
+
+Arguments antisymmetric_wo_chain [T]%type_scope [R C] _ _ [A] _ _
+antisymmetric_wo_chain is opaque
+Expands to: Constant mathcomp.classical.wochoice.antisymmetric_wo_chain
+Declared in library mathcomp.classical.wochoice, line 95, characters 6-28
 ">antisymmetric_wo_chain</a></span><span class="id"> </span><span id="C:41" class="id"><a name="C:41" class="">C</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#C:41">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> &amp;,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#antisymmetric">antisymmetric</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#RelDefs.R">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed">{in</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed"> &lt;=</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#C:41">C</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed">,</a></span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="A:42" class="id"><a name="A:42" class="">A</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#nonempty">nonempty</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#A:42">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> exists</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="z:43" class="id"><a name="z:43" class="">z</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#minimum_of">minimum_of</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#A:42">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#z:43">z</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
@@ -346,7 +488,25 @@ library Corelib.Relations.Relation_Definitions, line 36, characters 11-19
 <span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> Ranti;</span><span class="id"> rewrite</span><span class="id"> ?sAC</span><span class="id"> ?lbAx</span><span class="id"> ?lbAz</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="antisymmetric_well_order" class="id"><a name="antisymmetric_well_order" class="" title="antisymmetric_well_order not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="antisymmetric_well_order" class="id"><a name="antisymmetric_well_order" class="" title="antisymmetric_well_order :
+forall [T : Type] [R : rel T],
+antisymmetric (T:=T) R ->
+(forall A : {pred T}, nonempty A -> exists z : T, minimum_of R A z) ->
+well_order (T:=T) R
+
+antisymmetric_well_order is not universe polymorphic
+Expanded type for implicit arguments
+antisymmetric_well_order :
+forall [T : Type] [R : rel T],
+antisymmetric (T:=T) R ->
+(forall A : {pred T}, nonempty A -> exists z : T, minimum_of R A z) ->
+forall [A : {pred T}], nonempty A -> exists ! z : T, minimum_of R A z
+
+Arguments antisymmetric_well_order [T]%type_scope 
+  [R] _ _%function_scope [A] _
+antisymmetric_well_order is opaque
+Expands to: Constant mathcomp.classical.wochoice.antisymmetric_well_order
+Declared in library mathcomp.classical.wochoice, line 104, characters 6-30
 ">antisymmetric_well_order</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#antisymmetric">antisymmetric</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#RelDefs.R">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="A:44" class="id"><a name="A:44" class="">A</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#nonempty">nonempty</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#A:44">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> exists</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="z:45" class="id"><a name="z:45" class="">z</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#minimum_of">minimum_of</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#A:44">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#z:45">z</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.wochoice.html#well_order">well_order</a></span>.<br/>
@@ -358,7 +518,21 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> RelDefs</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="wo_chainW" class="id"><a name="wo_chainW" class="" title="wo_chainW not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="wo_chainW" class="id"><a name="wo_chainW" class="" title="wo_chainW :
+forall [T : eqType] [R : rel T] [C : {pred T}],
+wo_chain (T:=T) R C -> chain (T:=T) R C
+
+wo_chainW is not universe polymorphic
+Expanded type for implicit arguments
+wo_chainW :
+forall [T : eqType] [R : rel T] [C : {pred T}],
+wo_chain (T:=T) R C ->
+forall [x y : T], x \in C -> y \in C -> R x y || R y x = true
+
+Arguments wo_chainW [T R C] _ [x y] _ _
+wo_chainW is opaque
+Expands to: Constant mathcomp.classical.wochoice.wo_chainW
+Declared in library mathcomp.classical.wochoice, line 113, characters 6-15
 ">wo_chainW</a></span> (<span id="T:46" class="id"><a name="T:46" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#Equality.Exports.eqType">eqType</a></span>)<span class="id"> </span><span id="R:47" class="id"><a name="R:47" class="">R</a></span><span class="id"> </span><span id="C:48" class="id"><a name="C:48" class="">C</a></span><span class="id"> :</span><span class="id"> @</span><span class="id"><a href="mathcomp.classical.wochoice.html#wo_chain">wo_chain</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#T:46">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#R:47">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#C:48">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#chain">chain</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#R:47">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#C:48">C</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -369,14 +543,41 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> z</span><span class="id"> []</span><span class="id"> []</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#or3P">or3P</a></span><span class="id">[]</span><span class="id"> //</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id">-&gt;</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#allP">allP</a></span><span class="id">/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#and3P">and3P</a></span><span class="id">[]</span><span class="id"> =&gt;</span><span class="id"> [_|]</span><span class="id"> -&gt;;</span><span class="id"> rewrite</span><span class="id"> ?</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#orbT">orbT</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="wo_chain_reflexive" class="id"><a name="wo_chain_reflexive" class="" title="wo_chain_reflexive not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="wo_chain_reflexive" class="id"><a name="wo_chain_reflexive" class="" title="wo_chain_reflexive :
+forall [T : eqType] [R : rel T] [C : {pred T}],
+wo_chain (T:=T) R C -> {in C, reflexive (T:=T) R}
+
+wo_chain_reflexive is not universe polymorphic
+Expanded type for implicit arguments
+wo_chain_reflexive :
+forall [T : eqType] [R : rel T] [C : {pred T}],
+wo_chain (T:=T) R C -> forall [x : T], x \in C -> R x x = true
+
+Arguments wo_chain_reflexive [T R C] _ [x] _
+wo_chain_reflexive is opaque
+Expands to: Constant mathcomp.classical.wochoice.wo_chain_reflexive
+Declared in library mathcomp.classical.wochoice, line 121, characters 6-24
 ">wo_chain_reflexive</a></span> (<span id="T:52" class="id"><a name="T:52" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#Equality.Exports.eqType">eqType</a></span>)<span class="id"> </span><span id="R:53" class="id"><a name="R:53" class="">R</a></span><span class="id"> </span><span id="C:54" class="id"><a name="C:54" class="">C</a></span><span class="id"> :</span><span class="id"> @</span><span class="id"><a href="mathcomp.classical.wochoice.html#wo_chain">wo_chain</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#T:52">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#R:53">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#C:54">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#C:54">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#reflexive">reflexive</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#R:53">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">}</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move/</span><span class="id"><a href="mathcomp.classical.wochoice.html#wo_chainW">wo_chainW</a></span><span class="id"> =&gt;</span><span class="id"> Rtotal</span><span class="id"> x</span><span class="id"> xC;</span><span class="id"> rewrite</span><span class="id"> -[R</span><span class="id"> x</span><span class="id"> x]</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#orbb">orbb</a></span><span class="id"> Rtotal</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="wo_chain_antisymmetric" class="id"><a name="wo_chain_antisymmetric" class="" title="wo_chain_antisymmetric not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="wo_chain_antisymmetric" class="id"><a name="wo_chain_antisymmetric" class="" title="wo_chain_antisymmetric :
+forall [T : eqType] [R : rel T] [C : {pred T}],
+wo_chain (T:=T) R C -> {in C &, antisymmetric (T:=T) R}
+
+wo_chain_antisymmetric is not universe polymorphic
+Expanded type for implicit arguments
+wo_chain_antisymmetric :
+forall [T : eqType] [R : rel T] [C : {pred T}],
+wo_chain (T:=T) R C ->
+forall [x y : T], x \in C -> y \in C -> R x y && R y x -> x = y
+
+Arguments wo_chain_antisymmetric [T R C] _ [x y] _ _ _
+wo_chain_antisymmetric is opaque
+Expands to: Constant mathcomp.classical.wochoice.wo_chain_antisymmetric
+Declared in library mathcomp.classical.wochoice, line 124, characters 6-28
 ">wo_chain_antisymmetric</a></span> (<span id="T:55" class="id"><a name="T:55" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#Equality.Exports.eqType">eqType</a></span>)<span class="id"> </span><span id="R:56" class="id"><a name="R:56" class="">R</a></span><span class="id"> </span><span id="C:57" class="id"><a name="C:57" class="">C</a></span><span class="id"> :</span><span class="id"> @</span><span class="id"><a href="mathcomp.classical.wochoice.html#wo_chain">wo_chain</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#T:55">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#R:56">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#C:57">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#C:57">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> &amp;,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#antisymmetric">antisymmetric</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#R:56">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">}</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -391,7 +592,20 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Section</span><span class="id"> Zorn</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="Zorn's_lemma" class="id"><a name="Zorn's_lemma" class="" title="Zorn's_lemma not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="Zorn's_lemma" class="id"><a name="Zorn's_lemma" class="" title="Zorn's_lemma :
+forall [T : eqType] [R : rel T] [S : {pred T}],
+{in S, reflexive (T:=T) R} ->
+{in S & &, transitive (T:=T) R} ->
+{ in <= S,
+forall C : {pred T},
+wo_chain (T:=T) R C -> exists2 z : T, z \in S & upper_bound R C z} ->
+{z : T | z \in S & {in S, maximal R z}}
+
+Zorn's_lemma is not universe polymorphic
+Arguments Zorn's_lemma [T R S] _ _ _
+Zorn's_lemma is opaque
+Expands to: Constant mathcomp.classical.wochoice.Zorn's_lemma
+Declared in library mathcomp.classical.wochoice, line 136, characters 6-18
 ">Zorn's_lemma</a></span> (<span id="T:61" class="id"><a name="T:61" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#Equality.Exports.eqType">eqType</a></span>) (<span id="R:62" class="id"><a name="R:62" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#rel">rel</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#T:61">T</a></span>) (<span id="S:63" class="id"><a name="S:63" class="">S</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">{pred</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#T:61">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">}</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#S:63">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#reflexive">reflexive</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#R:62">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#41940d7b27ea6f4cfc62b9919ed9d131">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#41940d7b27ea6f4cfc62b9919ed9d131"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#S:63">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#41940d7b27ea6f4cfc62b9919ed9d131"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#41940d7b27ea6f4cfc62b9919ed9d131"> &amp;,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#41940d7b27ea6f4cfc62b9919ed9d131"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#transitive">transitive</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#R:62">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#41940d7b27ea6f4cfc62b9919ed9d131">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed">{in</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed"> &lt;=</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#S:63">S</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed">,</a></span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="C:64" class="id"><a name="C:64" class="">C</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#wo_chain">wo_chain</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#R:62">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#C:64">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span id="z:66" class="id"><span id="z:65" class="id"><a name="z:66" class="">z</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#z:65">z</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#S:63">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#upper_bound">upper_bound</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#R:62">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#C:64">C</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#z:66">z</a></span><span class="id"><a href="mathcomp.classical.wochoice.html#fe8092b4ca6d9c5e269c207de1270eed">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
@@ -510,7 +724,22 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> contra:</span><span class="id"> notRyx</span><span class="id"> =&gt;</span><span class="id"> notXy;</span><span class="id"> have</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#predU1P">predU1P</a></span><span class="id">[-&gt;|/iXU-&gt;]</span><span class="id"> :=</span><span class="id"> U1y;</span><span class="id"> first</span><span class="id"> apply/RU1fU</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Theorem</span><span class="id"> </span><span id="Hausdorff_maximal_principle" class="id"><a name="Hausdorff_maximal_principle" class="" title="Hausdorff_maximal_principle not a defined object.
+<span class="vernacular">Theorem</span><span class="id"> </span><span id="Hausdorff_maximal_principle" class="id"><a name="Hausdorff_maximal_principle" class="" title="Hausdorff_maximal_principle :
+forall [T : Type] [R : rel T] [S C : {pred T}],
+{in S, reflexive (T:=T) R} ->
+{in S & &, transitive (T:=T) R} ->
+chain (T:=T) R C ->
+{subset C <= S} ->
+{M : {pred T}
+| [/\ {subset C <= M}, {subset M <= S}
+    & forall X : {pred T},
+      chain (T:=T) R X -> {subset M <= X} -> {subset X <= S} -> M = X]}
+
+Hausdorff_maximal_principle is not universe polymorphic
+Arguments Hausdorff_maximal_principle [T]%type_scope [R S C] _ _ _ _
+Hausdorff_maximal_principle is opaque
+Expands to: Constant mathcomp.classical.wochoice.Hausdorff_maximal_principle
+Declared in library mathcomp.classical.wochoice, line 252, characters 8-35
 ">Hausdorff_maximal_principle</a></span><span class="id"> </span><span id="T:106" class="id"><a name="T:106" class="">T</a></span><span class="id"> </span><span id="R:107" class="id"><a name="R:107" class="">R</a></span> (<span id="S:108" class="id"><a name="S:108" class="">S</a></span><span class="id"> </span><span id="C:109" class="id"><a name="C:109" class="">C</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">{pred</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#T:106">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">}</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#S:108">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#reflexive">reflexive</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#R:107">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#41940d7b27ea6f4cfc62b9919ed9d131">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#41940d7b27ea6f4cfc62b9919ed9d131"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#S:108">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#41940d7b27ea6f4cfc62b9919ed9d131"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#41940d7b27ea6f4cfc62b9919ed9d131"> &amp;,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#41940d7b27ea6f4cfc62b9919ed9d131"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#transitive">transitive</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#R:107">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#41940d7b27ea6f4cfc62b9919ed9d131">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#chain">chain</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#R:107">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#C:109">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">{subset</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#C:109">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> &lt;=</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#S:108">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562">{</a></span><span id="M:110" class="id"><a name="M:110" class="">M</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">{pred</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#T:106">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562"> |</a></span><br/>
@@ -551,7 +780,14 @@ Qed.</div></details>
 <span class="id">exact:</span><span class="id"> Xch</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Theorem</span><span class="id"> </span><span id="well_ordering_principle" class="id"><a name="well_ordering_principle" class="" title="well_ordering_principle not a defined object.
+<span class="vernacular">Theorem</span><span class="id"> </span><span id="well_ordering_principle" class="id"><a name="well_ordering_principle" class="" title="well_ordering_principle :
+forall T : eqType, {R : rel T | well_order (T:=T) R}
+
+well_ordering_principle is not universe polymorphic
+Arguments well_ordering_principle T
+well_ordering_principle is opaque
+Expands to: Constant mathcomp.classical.wochoice.well_ordering_principle
+Declared in library mathcomp.classical.wochoice, line 290, characters 8-31
 ">well_ordering_principle</a></span> (<span id="T:123" class="id"><a name="T:123" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#Equality.Exports.eqType">eqType</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562">{</a></span><span id="R:124" class="id"><a name="R:124" class="">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#rel">rel</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#T:123">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562"> |</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562"> </a></span><span class="id"><a href="mathcomp.classical.wochoice.html#well_order">well_order</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.wochoice.html#R:124">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562">}</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>

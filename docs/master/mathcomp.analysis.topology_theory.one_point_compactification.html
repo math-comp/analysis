@@ -229,7 +229,15 @@ embeds into its one-point compactification.
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="one_point_compactification" class="id"><a name="one_point_compactification" class="" title="one_point_compactification not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="one_point_compactification" class="id"><a name="one_point_compactification" class="" title="one_point_compactification : Type -> Type
+
+one_point_compactification is not universe polymorphic
+Arguments one_point_compactification X%type_scope
+one_point_compactification is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 20, characters 11-37
 ">one_point_compactification</a></span> (<span id="X:1" class="id"><a name="X:1" class="">X</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#option">option</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#X:1">X</a></span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> one_point_compactification</span>.<br/>
@@ -237,30 +245,142 @@ embeds into its one-point compactification.
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="opc" class="id"><a name="opc" class="">opc</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#one_point_compactification">one_point_compactification</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#one_point_compactification.X">X</a></span>).<br/>
 <br/>
-<span id="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="one_point_compactification_one_point_compactification__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="" title="one_point_compactification_one_point_compactification__canonical__choice_Choice
-not a defined object.
-">HB</a></span></span></span></span></span></span></span>.<span id="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="one_point_compactification_one_point_compactification__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="" title="one_point_compactification_one_point_compactification__canonical__choice_Choice
-not a defined object.
-">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="one_point_compactification_one_point_compactification__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="" title="one_point_compactification_one_point_compactification__canonical__choice_Choice
-not a defined object.
-"> _</a></span></span></span></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="one_point_compactification_one_point_compactification__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="" title="one_point_compactification_one_point_compactification__canonical__choice_Choice
-not a defined object.
-"> :=</a></span></span></span></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="one_point_compactification_one_point_compactification__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="" title="one_point_compactification_one_point_compactification__canonical__choice_Choice
-not a defined object.
+<span id="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="one_point_compactification_one_point_compactification__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="" title="one_point_compactification_one_point_compactification__canonical__choice_Choice :
+topology_structure.Topological.type -> choiceType
+
+one_point_compactification_one_point_compactification__canonical__choice_Choice is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__choice_Choice
+  {X}
+one_point_compactification_one_point_compactification__canonical__choice_Choice is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__choice_Choice
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 27, characters 0-42
+">HB</a></span></span></span></span></span></span></span>.<span id="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="one_point_compactification_one_point_compactification__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="" title="one_point_compactification_one_point_compactification__canonical__choice_Choice :
+topology_structure.Topological.type -> choiceType
+
+one_point_compactification_one_point_compactification__canonical__choice_Choice is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__choice_Choice
+  {X}
+one_point_compactification_one_point_compactification__canonical__choice_Choice is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__choice_Choice
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 27, characters 0-42
+">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="one_point_compactification_one_point_compactification__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="" title="one_point_compactification_one_point_compactification__canonical__choice_Choice :
+topology_structure.Topological.type -> choiceType
+
+one_point_compactification_one_point_compactification__canonical__choice_Choice is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__choice_Choice
+  {X}
+one_point_compactification_one_point_compactification__canonical__choice_Choice is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__choice_Choice
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 27, characters 0-42
+"> _</a></span></span></span></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="one_point_compactification_one_point_compactification__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="" title="one_point_compactification_one_point_compactification__canonical__choice_Choice :
+topology_structure.Topological.type -> choiceType
+
+one_point_compactification_one_point_compactification__canonical__choice_Choice is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__choice_Choice
+  {X}
+one_point_compactification_one_point_compactification__canonical__choice_Choice is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__choice_Choice
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 27, characters 0-42
+"> :=</a></span></span></span></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="one_point_compactification_one_point_compactification__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="one_point_compactification_one_point_compactification__canonical__choice_Choice" class="" title="one_point_compactification_one_point_compactification__canonical__choice_Choice :
+topology_structure.Topological.type -> choiceType
+
+one_point_compactification_one_point_compactification__canonical__choice_Choice is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__choice_Choice
+  {X}
+one_point_compactification_one_point_compactification__canonical__choice_Choice is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__choice_Choice
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 27, characters 0-42
 "> Choice</a></span></span></span></span></span></span></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.on">on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#opc">opc</a></span>.<br/>
-<span id="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="" title="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed
-not a defined object.
-">HB</a></span></span></span></span>.<span id="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="" title="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed
-not a defined object.
-">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="" title="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed
-not a defined object.
-"> _</a></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="" title="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed
-not a defined object.
-"> :=</a></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="" title="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed
-not a defined object.
+<span id="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="" title="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed :
+topology_structure.Topological.type -> pointedType
+
+one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed
+  {X}
+one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 28, characters 0-43
+">HB</a></span></span></span></span>.<span id="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="" title="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed :
+topology_structure.Topological.type -> pointedType
+
+one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed
+  {X}
+one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 28, characters 0-43
+">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="" title="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed :
+topology_structure.Topological.type -> pointedType
+
+one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed
+  {X}
+one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 28, characters 0-43
+"> _</a></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="" title="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed :
+topology_structure.Topological.type -> pointedType
+
+one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed
+  {X}
+one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 28, characters 0-43
+"> :=</a></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed" class="" title="one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed :
+topology_structure.Topological.type -> pointedType
+
+one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed
+  {X}
+one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__classical_sets_Pointed
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 28, characters 0-43
 "> Pointed</a></span></span></span></span>.<span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.on">on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#opc">opc</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="one_point_nbhs" class="id"><a name="one_point_nbhs" class="" title="one_point_nbhs not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="one_point_nbhs" class="id"><a name="one_point_nbhs" class="" title="one_point_nbhs :
+forall {X : topology_structure.Topological.type},
+one_point_compactification (topology_structure.Topological.sort X) ->
+filter.set_system
+  (one_point_compactification (topology_structure.Topological.sort X))
+
+one_point_nbhs is not universe polymorphic
+Arguments one_point_nbhs {X} x _
+one_point_nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_nbhs
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 30, characters 11-25
 ">one_point_nbhs</a></span> (<span id="x:3" class="id"><a name="x:3" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#opc">opc</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#opc">opc</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">if</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#x:3">x</a></span><span class="id"> is</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#Some">Some</a></span><span class="id"> x'</span><span class="gallina-kwd"> then</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#Some">Some</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> x'</span><span class="gallina-kwd"> else</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#filter_from">filter_from</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span>) (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="U:5" class="id"><a name="U:5" class="">U</a></span><span class="id"> =&gt;</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#Some">Some</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1">~`</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#U:5">U</a></span>))<span class="id"><a href="mathcomp.classical.classical_sets.html#f0f4f4a06533e5eeff19ee265a896441"> `|`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f0f4f4a06533e5eeff19ee265a896441"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#None">None</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span>).<br/>
@@ -299,32 +419,148 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> z</span><span class="id"> /=</span><span class="id"> nCz;</span><span class="id"> apply:</span><span class="id"> nCA;</span><span class="id"> left</span>.<br/>
 Qed.</div></details>
 <br/>
-<span id="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedFiltered" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="" title="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs
-not a defined object.
-">HB</a></span></span></span></span></span></span></span></span></span>.<span id="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedFiltered" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="" title="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs
-not a defined object.
-">instance</a></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedFiltered" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="" title="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs
-not a defined object.
-"> _</a></span></span></span></span></span></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedFiltered" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="" title="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs
-not a defined object.
-"> :=</a></span></span></span></span></span></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedFiltered" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="" title="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs
-not a defined object.
+<span id="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedFiltered" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="" title="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs :
+topology_structure.Topological.type -> filter.PointedNbhs.type
+
+one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs
+  {X}
+one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 61, characters 0-61
+">HB</a></span></span></span></span></span></span></span></span></span>.<span id="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedFiltered" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="" title="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs :
+topology_structure.Topological.type -> filter.PointedNbhs.type
+
+one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs
+  {X}
+one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 61, characters 0-61
+">instance</a></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedFiltered" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="" title="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs :
+topology_structure.Topological.type -> filter.PointedNbhs.type
+
+one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs
+  {X}
+one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 61, characters 0-61
+"> _</a></span></span></span></span></span></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedFiltered" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="" title="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs :
+topology_structure.Topological.type -> filter.PointedNbhs.type
+
+one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs
+  {X}
+one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 61, characters 0-61
+"> :=</a></span></span></span></span></span></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_PointedFiltered" class="id"><span id="one_point_compactification_one_point_compactification__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs" class="" title="one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs :
+topology_structure.Topological.type -> filter.PointedNbhs.type
+
+one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs
+  {X}
+one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__filter_PointedNbhs
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 61, characters 0-61
 "> hasNbhs</a></span></span></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.classical.filter.html#hasNbhs.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#opc">opc</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#one_point_nbhs">one_point_nbhs</a></span>.<br/>
 <br/>
-<span id="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="id"><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_16" class="id"><a name="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="" title="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological
-not a defined object.
-">HB</a></span></span></span></span></span>.<span id="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="id"><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_16" class="id"><a name="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="" title="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological
-not a defined object.
-">instance</a></span></span></span></span></span><span class="vernacular"> Definition</span><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="id"><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_16" class="id"><a name="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="" title="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological
-not a defined object.
-"> _</a></span></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="id"><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_16" class="id"><a name="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="" title="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological
-not a defined object.
-"> :=</a></span></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="id"><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_16" class="id"><a name="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="" title="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological
-not a defined object.
+<span id="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="id"><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_16" class="id"><a name="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="" title="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological :
+topology_structure.Topological.type ->
+topology_structure.PointedTopological.type
+
+one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological
+  {X}
+one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 63, characters 0-121
+">HB</a></span></span></span></span></span>.<span id="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="id"><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_16" class="id"><a name="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="" title="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological :
+topology_structure.Topological.type ->
+topology_structure.PointedTopological.type
+
+one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological
+  {X}
+one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 63, characters 0-121
+">instance</a></span></span></span></span></span><span class="vernacular"> Definition</span><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="id"><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_16" class="id"><a name="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="" title="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological :
+topology_structure.Topological.type ->
+topology_structure.PointedTopological.type
+
+one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological
+  {X}
+one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 63, characters 0-121
+"> _</a></span></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="id"><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_16" class="id"><a name="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="" title="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological :
+topology_structure.Topological.type ->
+topology_structure.PointedTopological.type
+
+one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological
+  {X}
+one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 63, characters 0-121
+"> :=</a></span></span></span></span></span><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="id"><span id="one_point_compactification_one_point_compactification__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_16" class="id"><a name="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological" class="" title="one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological :
+topology_structure.Topological.type ->
+topology_structure.PointedTopological.type
+
+one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological is not universe polymorphic
+Arguments
+  one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological
+  {X}
+one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_one_point_compactification__canonical__topology_structure_PointedTopological
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 63, characters 0-121
 "> @Nbhs_isNbhsTopological</a></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Nbhs_isNbhsTopological.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#opc">opc</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#one_point_compactification.one_point_filter">one_point_filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#one_point_compactification.one_point_singleton">one_point_singleton</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#one_point_compactification.one_point_nbhs_nbhs">one_point_nbhs_nbhs</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="one_point_compactification_compact" class="id"><a name="one_point_compactification_compact" class="" title="one_point_compactification_compact not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="one_point_compactification_compact" class="id"><a name="one_point_compactification_compact" class="" title="one_point_compactification_compact :
+forall {X : topology_structure.Topological.type},
+compact
+  [set: one_point_compactification (topology_structure.Topological.sort X)]
+
+one_point_compactification_compact is not universe polymorphic
+Arguments one_point_compactification_compact {X} F _ _
+one_point_compactification_compact is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_compact
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 66, characters 6-40
 ">one_point_compactification_compact</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#opc">opc</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -343,7 +579,19 @@ not a defined object.
 <span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> apply:</span> (<span class="id">UiP</span> (<span class="id">_</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span>_))<span class="id">;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> /=;</span><span class="id"> [apply:</span><span class="id"> WU;</span><span class="id"> right|exact:</span> (<span class="id"><a href="mathcomp.classical.filter.html#near">near</a></span><span class="id"> nFi</span>)<span class="id">]</span>.<br/>
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="one_point_compactification_some_nbhs" class="id"><a name="one_point_compactification_some_nbhs" class="" title="one_point_compactification_some_nbhs not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="one_point_compactification_some_nbhs" class="id"><a name="one_point_compactification_some_nbhs" class="" title="one_point_compactification_some_nbhs :
+forall {X : topology_structure.Topological.type}
+  (x : topology_structure.Topological.sort X)
+  (U : set (topology_structure.Topological.sort X)),
+filter.nbhs x U -> filter.nbhs (Some x) [set Some x | x in U]%classic
+
+one_point_compactification_some_nbhs is not universe polymorphic
+Arguments one_point_compactification_some_nbhs {X} x U%classical_set_scope _
+one_point_compactification_some_nbhs is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_some_nbhs
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 82, characters 6-42
 ">one_point_compactification_some_nbhs</a></span> (<span id="x:20" class="id"><a name="x:20" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#one_point_compactification.X">X</a></span>) (<span id="U:21" class="id"><a name="U:21" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#one_point_compactification.X">X</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#x:20">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#U:21">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#opc">opc</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#Some">Some</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#x:20">x</a></span>) (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#Some">Some</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#U:21">U</a></span>).<br/>
 <details>
@@ -351,14 +599,48 @@ not a defined object.
 <div class="proofscript">
 <span class="id"> exact/</span><span class="id"><a href="mathcomp.classical.filter.html#filterS">filterS</a></span><span class="id">/</span><span class="id"><a href="mathcomp.classical.classical_sets.html#preimage_image">preimage_image</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="one_point_compactification_some_continuous" class="id"><a name="one_point_compactification_some_continuous" class="" title="one_point_compactification_some_continuous not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="one_point_compactification_some_continuous" class="id"><a name="one_point_compactification_some_continuous" class="" title="one_point_compactification_some_continuous :
+forall {X : topology_structure.Topological.type}
+  (x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X)),
+filter.continuous_at
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        X)
+  (U:=one_point_compactification_one_point_compactification__canonical__filter_Nbhs)
+  x
+  (Some
+   :
+   topology_structure.Topological.sort X ->
+   one_point_compactification (topology_structure.Topological.sort X))
+
+one_point_compactification_some_continuous is not universe polymorphic
+Arguments one_point_compactification_some_continuous {X} x t _
+one_point_compactification_some_continuous is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_some_continuous
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 86, characters 6-48
 ">one_point_compactification_some_continuous</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#Some">Some</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#one_point_compactification.X">X</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#opc">opc</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> U</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="one_point_compactification_open_some" class="id"><a name="one_point_compactification_open_some" class="" title="one_point_compactification_open_some not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="one_point_compactification_open_some" class="id"><a name="one_point_compactification_open_some" class="" title="one_point_compactification_open_some :
+forall {X : topology_structure.Topological.type}
+  (U : set (topology_structure.Topological.sort X)),
+topology_structure.open U ->
+topology_structure.open [set Some x | x in U]%classic
+
+one_point_compactification_open_some is not universe polymorphic
+Arguments one_point_compactification_open_some {X} 
+  U%classical_set_scope _ t _
+one_point_compactification_open_some is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_open_some
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 89, characters 6-42
 ">one_point_compactification_open_some</a></span> (<span id="U:22" class="id"><a name="U:22" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#one_point_compactification.X">X</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#U:22">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#opc">opc</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#Some">Some</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#U:22">U</a></span>).<br/>
 <details>
@@ -368,7 +650,16 @@ not a defined object.
 <span class="id">exact/</span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#one_point_compactification_some_nbhs">one_point_compactification_some_nbhs</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="one_point_compactification_weak_topology" class="id"><a name="one_point_compactification_weak_topology" class="" title="one_point_compactification_weak_topology not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="one_point_compactification_weak_topology" class="id"><a name="one_point_compactification_weak_topology" class="" title="one_point_compactification_weak_topology :
+forall {X : topology_structure.Topological.type}, filter.nbhs = filter.nbhs
+
+one_point_compactification_weak_topology is not universe polymorphic
+Arguments one_point_compactification_weak_topology {X}
+one_point_compactification_weak_topology is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_weak_topology
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 96, characters 6-46
 ">one_point_compactification_weak_topology</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id">@</span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> _</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_topology">weak_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#one_point_compactification.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#opc">opc</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#Some">Some</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#one_point_compactification.X">X</a></span>.<br/>
 <details>

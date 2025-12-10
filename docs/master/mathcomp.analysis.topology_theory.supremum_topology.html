@@ -232,7 +232,16 @@
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sup_topology" class="id"><a name="sup_topology" class="" title="sup_topology not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sup_topology" class="id"><a name="sup_topology" class="" title="sup_topology :
+forall {T I : Type}, (I -> topology_structure.Topological.axioms_ T) -> Type
+
+sup_topology is not universe polymorphic
+Arguments sup_topology {T I}%type_scope Tc%function_scope
+sup_topology is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.sup_topology
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 24, characters 11-23
 ">sup_topology</a></span><span class="id"> {</span><span id="T:1" class="id"><a name="T:1" class="">T</a></span><span class="id"> :</span><span class="id"> Type}</span><span class="id"> {</span><span id="I:2" class="id"><a name="I:2" class="">I</a></span><span class="id"> :</span><span class="id"> Type}</span><br/>
 &nbsp;&nbsp;(<span id="Tc:3" class="id"><a name="Tc:3" class="">Tc</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#I:2">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological">Topological</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#T:1">T</a></span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#T:1">T</a></span>.<br/>
 <br/>
@@ -242,33 +251,177 @@
 <br/>
 <span class="vernacular">Let</span><span class="id"> </span><span id="Sup_Topology.TS" class="id"><a name="Sup_Topology.TS" class="">TS</a></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="i:10" class="id"><a name="i:10" class="">i</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Pack">Topological</a></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Pack">Pack</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#Sup_Topology.Tc">Tc</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#i:10">i</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sup_subbase" class="id"><a name="sup_subbase" class="" title="sup_subbase not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sup_subbase" class="id"><a name="sup_subbase" class="" title="sup_subbase :
+forall [T : choiceType] [I : Type],
+(I -> topology_structure.Topological.axioms_ T) -> set (set T)
+
+sup_subbase is not universe polymorphic
+Arguments sup_subbase [T] [I]%type_scope Tc%function_scope _
+sup_subbase is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.sup_subbase
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 33, characters 11-22
 ">sup_subbase</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#4652af423267d4923a164c1104e1273f">\bigcup_</a></span><span id="i:11" class="id"><a name="i:11" class="">i</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#Sup_Topology.TS">TS</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#i:11">i</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#Sup_Topology.T">T</a></span>).<br/>
 <br/>
-<span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class="" title="supremum_topology_sup_topology__canonical__choice_Choice
-not a defined object.
-">HB</a></span></span></span></span></span></span></span>.<span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class="" title="supremum_topology_sup_topology__canonical__choice_Choice
-not a defined object.
-">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class="" title="supremum_topology_sup_topology__canonical__choice_Choice
-not a defined object.
-"> _</a></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class="" title="supremum_topology_sup_topology__canonical__choice_Choice
-not a defined object.
-"> :=</a></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class="" title="supremum_topology_sup_topology__canonical__choice_Choice
-not a defined object.
+<span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class="" title="supremum_topology_sup_topology__canonical__choice_Choice :
+forall [T : choiceType] [I : Type],
+(I -> topology_structure.Topological.axioms_ T) -> choiceType
+
+supremum_topology_sup_topology__canonical__choice_Choice is not universe polymorphic
+Arguments supremum_topology_sup_topology__canonical__choice_Choice 
+  [T] [I]%type_scope Tc%function_scope
+supremum_topology_sup_topology__canonical__choice_Choice is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__choice_Choice
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 35, characters 0-40
+">HB</a></span></span></span></span></span></span></span>.<span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class="" title="supremum_topology_sup_topology__canonical__choice_Choice :
+forall [T : choiceType] [I : Type],
+(I -> topology_structure.Topological.axioms_ T) -> choiceType
+
+supremum_topology_sup_topology__canonical__choice_Choice is not universe polymorphic
+Arguments supremum_topology_sup_topology__canonical__choice_Choice 
+  [T] [I]%type_scope Tc%function_scope
+supremum_topology_sup_topology__canonical__choice_Choice is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__choice_Choice
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 35, characters 0-40
+">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class="" title="supremum_topology_sup_topology__canonical__choice_Choice :
+forall [T : choiceType] [I : Type],
+(I -> topology_structure.Topological.axioms_ T) -> choiceType
+
+supremum_topology_sup_topology__canonical__choice_Choice is not universe polymorphic
+Arguments supremum_topology_sup_topology__canonical__choice_Choice 
+  [T] [I]%type_scope Tc%function_scope
+supremum_topology_sup_topology__canonical__choice_Choice is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__choice_Choice
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 35, characters 0-40
+"> _</a></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class="" title="supremum_topology_sup_topology__canonical__choice_Choice :
+forall [T : choiceType] [I : Type],
+(I -> topology_structure.Topological.axioms_ T) -> choiceType
+
+supremum_topology_sup_topology__canonical__choice_Choice is not universe polymorphic
+Arguments supremum_topology_sup_topology__canonical__choice_Choice 
+  [T] [I]%type_scope Tc%function_scope
+supremum_topology_sup_topology__canonical__choice_Choice is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__choice_Choice
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 35, characters 0-40
+"> :=</a></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class="" title="supremum_topology_sup_topology__canonical__choice_Choice :
+forall [T : choiceType] [I : Type],
+(I -> topology_structure.Topological.axioms_ T) -> choiceType
+
+supremum_topology_sup_topology__canonical__choice_Choice is not universe polymorphic
+Arguments supremum_topology_sup_topology__canonical__choice_Choice 
+  [T] [I]%type_scope Tc%function_scope
+supremum_topology_sup_topology__canonical__choice_Choice is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__choice_Choice
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 35, characters 0-40
 "> Choice</a></span></span></span></span></span></span></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.on">on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#S">S</a></span>.<br/>
-<span id="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_Topological
-not a defined object.
-">HB</a></span></span></span></span></span></span></span></span></span></span>.<span id="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_Topological
-not a defined object.
-">instance</a></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_Topological
-not a defined object.
-"> _</a></span></span></span></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_Topological
-not a defined object.
-"> :=</a></span></span></span></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_Topological
-not a defined object.
+<span id="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_Topological :
+forall [T : choiceType] [I : Type],
+(I -> topology_structure.Topological.axioms_ T) ->
+topology_structure.Topological.type
+
+supremum_topology_sup_topology__canonical__topology_structure_Topological is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__topology_structure_Topological
+  [T] [I]%type_scope Tc%function_scope
+supremum_topology_sup_topology__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 36, characters 0-72
+">HB</a></span></span></span></span></span></span></span></span></span></span>.<span id="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_Topological :
+forall [T : choiceType] [I : Type],
+(I -> topology_structure.Topological.axioms_ T) ->
+topology_structure.Topological.type
+
+supremum_topology_sup_topology__canonical__topology_structure_Topological is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__topology_structure_Topological
+  [T] [I]%type_scope Tc%function_scope
+supremum_topology_sup_topology__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 36, characters 0-72
+">instance</a></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_Topological :
+forall [T : choiceType] [I : Type],
+(I -> topology_structure.Topological.axioms_ T) ->
+topology_structure.Topological.type
+
+supremum_topology_sup_topology__canonical__topology_structure_Topological is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__topology_structure_Topological
+  [T] [I]%type_scope Tc%function_scope
+supremum_topology_sup_topology__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 36, characters 0-72
+"> _</a></span></span></span></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_Topological :
+forall [T : choiceType] [I : Type],
+(I -> topology_structure.Topological.axioms_ T) ->
+topology_structure.Topological.type
+
+supremum_topology_sup_topology__canonical__topology_structure_Topological is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__topology_structure_Topological
+  [T] [I]%type_scope Tc%function_scope
+supremum_topology_sup_topology__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 36, characters 0-72
+"> :=</a></span></span></span></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="supremum_topology_sup_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_Topological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_Topological :
+forall [T : choiceType] [I : Type],
+(I -> topology_structure.Topological.axioms_ T) ->
+topology_structure.Topological.type
+
+supremum_topology_sup_topology__canonical__topology_structure_Topological is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__topology_structure_Topological
+  [T] [I]%type_scope Tc%function_scope
+supremum_topology_sup_topology__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 36, characters 0-72
 "> isSubBaseTopological</a></span></span></span></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#isSubBaseTopological.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#S">S</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_subbase">sup_subbase</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#id">id</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_sup" class="id"><a name="cvg_sup" class="" title="cvg_sup not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_sup" class="id"><a name="cvg_sup" class="" title="cvg_sup :
+forall [T : choiceType] [I : Type]
+  (Tc : I -> topology_structure.Topological.axioms_ T)
+  [F : filter.set_system T] (t : T),
+filter.Filter F ->
+filter.cvg_to (filter.nbhs F) (filter.nbhs (t : sup_topology Tc)) <->
+(forall i : I,
+ filter.cvg_to (filter.nbhs F)
+   (filter.nbhs
+      (t
+       :
+       topology_structure.Topological.sort
+         ((fun i0 : I =>
+           {|
+             topology_structure.Topological.sort := T;
+             topology_structure.Topological.class := Tc i0
+           |}) i))))
+
+cvg_sup is not universe polymorphic
+Arguments cvg_sup [T] [I]%type_scope Tc%function_scope [F] t _
+cvg_sup is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.cvg_sup
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 38, characters 6-13
 ">cvg_sup</a></span> (<span id="F:12" class="id"><a name="F:12" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#Sup_Topology.T">T</a></span>) (<span id="t:13" class="id"><a name="t:13" class="">t</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#Sup_Topology.T">T</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#Filter">Filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#F:12">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#F:12">F</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#t:13">t</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#S">S</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> &lt;-&gt;</a></span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="i:14" class="id"><a name="i:14" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#F:12">F</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#t:13">t</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#Sup_Topology.TS">TS</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#i:14">i</a></span>).<br/>
 <details>
@@ -292,22 +445,118 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> Sup_Topology</span>.<br/>
 <br/>
-<span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
-not a defined object.
-">HB</a></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
-not a defined object.
-">instance</a></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
-not a defined object.
-"> _</a></span></span></span></span></span></span></span></span></span></span></span></span> (<span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
-not a defined object.
-">I</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
-not a defined object.
-"> :</a></span></span></span></span></span></span></span></span></span></span></span></span><span class="gallina-kwd"> Type</span>) (<span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
-not a defined object.
-">T</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
-not a defined object.
-"> :</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
-not a defined object.
+<span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological :
+forall [I : Type] [T : pointedType],
+(I -> topology_structure.Topological.axioms_ T) ->
+topology_structure.PointedTopological.type
+
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+  [I]%type_scope [T] f%function_scope
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 59, characters 0-112
+">HB</a></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological :
+forall [I : Type] [T : pointedType],
+(I -> topology_structure.Topological.axioms_ T) ->
+topology_structure.PointedTopological.type
+
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+  [I]%type_scope [T] f%function_scope
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 59, characters 0-112
+">instance</a></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological :
+forall [I : Type] [T : pointedType],
+(I -> topology_structure.Topological.axioms_ T) ->
+topology_structure.PointedTopological.type
+
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+  [I]%type_scope [T] f%function_scope
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 59, characters 0-112
+"> _</a></span></span></span></span></span></span></span></span></span></span></span></span> (<span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological :
+forall [I : Type] [T : pointedType],
+(I -> topology_structure.Topological.axioms_ T) ->
+topology_structure.PointedTopological.type
+
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+  [I]%type_scope [T] f%function_scope
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 59, characters 0-112
+">I</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological :
+forall [I : Type] [T : pointedType],
+(I -> topology_structure.Topological.axioms_ T) ->
+topology_structure.PointedTopological.type
+
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+  [I]%type_scope [T] f%function_scope
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 59, characters 0-112
+"> :</a></span></span></span></span></span></span></span></span></span></span></span></span><span class="gallina-kwd"> Type</span>) (<span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological :
+forall [I : Type] [T : pointedType],
+(I -> topology_structure.Topological.axioms_ T) ->
+topology_structure.PointedTopological.type
+
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+  [I]%type_scope [T] f%function_scope
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 59, characters 0-112
+">T</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological :
+forall [I : Type] [T : pointedType],
+(I -> topology_structure.Topological.axioms_ T) ->
+topology_structure.PointedTopological.type
+
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+  [I]%type_scope [T] f%function_scope
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 59, characters 0-112
+"> :</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedNbhs" class="id"><span id="supremum_topology_sup_topology__canonical__filter_PointedFiltered" class="id"><span id="supremum_topology_sup_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.I" class="id"><a name="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological" class="" title="supremum_topology_sup_topology__canonical__topology_structure_PointedTopological :
+forall [I : Type] [T : pointedType],
+(I -> topology_structure.Topological.axioms_ T) ->
+topology_structure.PointedTopological.type
+
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+  [I]%type_scope [T] f%function_scope
+supremum_topology_sup_topology__canonical__topology_structure_PointedTopological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__topology_structure_PointedTopological
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 59, characters 0-112
 "> pointedType</a></span></span></span></span></span></span></span></span></span></span></span></span>) (<span class="id">f</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#I:15">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological">Topological</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#T:16">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.on">Pointed</a></span>.<span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.on">on</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_topology">sup_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#f:17">f</a></span>).<br/>
 <br/>
@@ -329,7 +578,17 @@ not a defined object.
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#asboolP">asboolP</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourageT">entourageT</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sup_ent" class="id"><a name="sup_ent" class="" title="sup_ent not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sup_ent" class="id"><a name="sup_ent" class="" title="sup_ent :
+forall [T : choiceType] [Ii : Type],
+(Ii -> Uniform.axioms_ T) -> filter.set_system (T * T)
+
+sup_ent is not universe polymorphic
+Arguments sup_ent [T] [Ii]%type_scope Tc%function_scope _
+sup_ent is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.sup_ent
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 76, characters 11-18
 ">sup_ent</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_uniform.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_uniform.T">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#filter_from">filter_from</a></span> (<span class="id"><a href="mathcomp.classical.filter.html#finI_from">finI_from</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_uniform.IEnt">IEnt</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="p:28" class="id"><a name="p:28" class="">p</a></span><span class="id"> =&gt;</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#projT1">projT1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#p:28">p</a></span>).<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span>))<span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#id">id</a></span>.<br/>
 <br/>
@@ -442,20 +701,85 @@ Qed.</div></details>
 &nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.classical_sets.html#mem_set">mem_set</a></span><span class="id">/FsubE</span><span class="id"> =&gt;</span><span class="id"> it</span><span class="id"> /Ifwt/</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#interior_subset">interior_subset</a></span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.classical_sets.html#set_mem">set_mem</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span id="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_22" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="" title="supremum_topology_sup_topology__canonical__uniform_structure_Uniform
-not a defined object.
-">HB</a></span></span></span></span></span>.<span id="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_22" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="" title="supremum_topology_sup_topology__canonical__uniform_structure_Uniform
-not a defined object.
-">instance</a></span></span></span></span></span><span class="vernacular"> Definition</span><span id="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_22" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="" title="supremum_topology_sup_topology__canonical__uniform_structure_Uniform
-not a defined object.
-"> _</a></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_22" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="" title="supremum_topology_sup_topology__canonical__uniform_structure_Uniform
-not a defined object.
-"> :=</a></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_22" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="" title="supremum_topology_sup_topology__canonical__uniform_structure_Uniform
-not a defined object.
+<span id="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_22" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="" title="supremum_topology_sup_topology__canonical__uniform_structure_Uniform :
+forall [T : choiceType] [Ii : Type], (Ii -> Uniform.axioms_ T) -> uniformType
+
+supremum_topology_sup_topology__canonical__uniform_structure_Uniform is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__uniform_structure_Uniform 
+  [T] [Ii]%type_scope Tc%function_scope
+supremum_topology_sup_topology__canonical__uniform_structure_Uniform is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__uniform_structure_Uniform
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 173, characters 0-131
+">HB</a></span></span></span></span></span>.<span id="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_22" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="" title="supremum_topology_sup_topology__canonical__uniform_structure_Uniform :
+forall [T : choiceType] [Ii : Type], (Ii -> Uniform.axioms_ T) -> uniformType
+
+supremum_topology_sup_topology__canonical__uniform_structure_Uniform is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__uniform_structure_Uniform 
+  [T] [Ii]%type_scope Tc%function_scope
+supremum_topology_sup_topology__canonical__uniform_structure_Uniform is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__uniform_structure_Uniform
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 173, characters 0-131
+">instance</a></span></span></span></span></span><span class="vernacular"> Definition</span><span id="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_22" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="" title="supremum_topology_sup_topology__canonical__uniform_structure_Uniform :
+forall [T : choiceType] [Ii : Type], (Ii -> Uniform.axioms_ T) -> uniformType
+
+supremum_topology_sup_topology__canonical__uniform_structure_Uniform is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__uniform_structure_Uniform 
+  [T] [Ii]%type_scope Tc%function_scope
+supremum_topology_sup_topology__canonical__uniform_structure_Uniform is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__uniform_structure_Uniform
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 173, characters 0-131
+"> _</a></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_22" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="" title="supremum_topology_sup_topology__canonical__uniform_structure_Uniform :
+forall [T : choiceType] [Ii : Type], (Ii -> Uniform.axioms_ T) -> uniformType
+
+supremum_topology_sup_topology__canonical__uniform_structure_Uniform is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__uniform_structure_Uniform 
+  [T] [Ii]%type_scope Tc%function_scope
+supremum_topology_sup_topology__canonical__uniform_structure_Uniform is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__uniform_structure_Uniform
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 173, characters 0-131
+"> :=</a></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_22" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="supremum_topology_sup_topology__canonical__uniform_structure_Uniform" class="" title="supremum_topology_sup_topology__canonical__uniform_structure_Uniform :
+forall [T : choiceType] [Ii : Type], (Ii -> Uniform.axioms_ T) -> uniformType
+
+supremum_topology_sup_topology__canonical__uniform_structure_Uniform is not universe polymorphic
+Arguments
+  supremum_topology_sup_topology__canonical__uniform_structure_Uniform 
+  [T] [Ii]%type_scope Tc%function_scope
+supremum_topology_sup_topology__canonical__uniform_structure_Uniform is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.supremum_topology_sup_topology__canonical__uniform_structure_Uniform
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 173, characters 0-131
 "> @Nbhs_isUniform</a></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#Nbhs_isUniform.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#Tt">Tt</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_ent">sup_ent</a></span><br/>
 &nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_ent_filter">sup_ent_filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_ent_refl">sup_ent_refl</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_ent_inv">sup_ent_inv</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_ent_split">sup_ent_split</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_ent_nbhs">sup_ent_nbhs</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="countable_sup_ent" class="id"><a name="countable_sup_ent" class="" title="countable_sup_ent not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="countable_sup_ent" class="id"><a name="countable_sup_ent" class="" title="countable_sup_ent :
+forall [T : choiceType] [Ii : Type] [Tc : Ii -> Uniform.axioms_ T],
+countable (T:=Ii) [set: Ii] ->
+(forall n : Ii,
+ countable_uniformity
+   ((fun i : Ii => {| Uniform.sort := T; Uniform.class := Tc i |}) n)) ->
+countable_uniformity (sup_topology (fun x : Ii => Tc x))
+
+countable_sup_ent is not universe polymorphic
+Arguments countable_sup_ent [T] [Ii]%type_scope [Tc]%function_scope 
+  _ _%function_scope
+countable_sup_ent is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.countable_sup_ent
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 176, characters 6-23
 ">countable_sup_ent</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.cardinality.html#countable">countable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_uniform.Ii">Ii</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="n:72" class="id"><a name="n:72" class="">n</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#countable_uniformity">countable_uniformity</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_uniform.TS">TS</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#n:72">n</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#countable_uniformity">countable_uniformity</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#Tt">Tt</a></span>.<br/>

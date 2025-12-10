@@ -237,30 +237,88 @@ This file provides connected and its related notions.
 <span class="vernacular">Variable</span><span class="id"> </span><span id="connected_sets.T" class="id"><a name="connected_sets.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> A</span><span class="id"> B</span><span class="id"> C</span><span class="id"> D</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_sets.T">T</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="connected" class="id"><a name="connected" class="" title="connected not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="connected" class="id"><a name="connected" class="" title="connected :
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> Prop
+
+connected is not universe polymorphic
+Arguments connected {T} A%classical_set_scope
+connected is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.connected.connected
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 29, characters 11-20
 ">connected</a></span><span class="id"> </span><span id="A:3" class="id"><a name="A:3" class="">A</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="B:4" class="id"><a name="B:4" class="">B</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:4">B</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span> (<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span id="C:6" class="id"><span id="C:5" class="id"><a name="C:6" class="">C</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:5">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:4">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:3">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:6">C</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span id="C:8" class="id"><span id="C:7" class="id"><a name="C:8" class="">C</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:7">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:4">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:3">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:8">C</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:4">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:3">A</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected0" class="id"><a name="connected0" class="" title="connected0 not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected0" class="id"><a name="connected0" class="" title="connected0 : forall [T : topology_structure.Topological.type], connected set0
+
+connected0 is not universe polymorphic
+Expanded type for implicit arguments
+connected0 :
+forall [T : topology_structure.Topological.type]
+  [B : set (topology_structure.Topological.sort T)],
+(B !=set0)%classic ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.open C & B = (set0 `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.closed C & B = (set0 `&` C)%classic) ->
+B = set0
+
+Arguments connected0 [T B] _ _ _
+connected0 is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.connected.connected0
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 33, characters 6-16
 ">connected0</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_sets.T">T</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> ?</span><span class="id"> ?</span><span class="id"> [?</span><span class="id"> ?];</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0I">set0I</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="separated" class="id"><a name="separated" class="" title="separated not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="separated" class="id"><a name="separated" class="" title="separated :
+forall [T : topology_structure.Topological.type],
+set (topology_structure.Topological.sort T) ->
+set (topology_structure.Topological.sort T) -> Prop
+
+separated is not universe polymorphic
+Arguments separated [T] (A B)%classical_set_scope
+separated is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.connected.separated
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 36, characters 11-20
 ">separated</a></span><span class="id"> </span><span id="A:9" class="id"><a name="A:9" class="">A</a></span><span class="id"> </span><span id="B:10" class="id"><a name="B:10" class="">B</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:9">A</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:10">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:9">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:10">B</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="separatedC" class="id"><a name="separatedC" class="" title="separatedC not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="separatedC" class="id"><a name="separatedC" class="" title="separatedC :
+forall [T : topology_structure.Topological.type]
+  (A B : set (topology_structure.Topological.sort T)),
+separated (T:=T) A B = separated (T:=T) B A
+
+separatedC is not universe polymorphic
+Arguments separatedC [T] (A B)%classical_set_scope
+separatedC is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.connected.separatedC
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 39, characters 6-16
 ">separatedC</a></span><span class="id"> </span><span id="A:11" class="id"><a name="A:11" class="">A</a></span><span class="id"> </span><span id="B:12" class="id"><a name="B:12" class="">B</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#separated">separated</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:11">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:12">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#separated">separated</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:12">B</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:11">A</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#separated">separated</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#andC">andC</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setIC">setIC</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#setIC">setIC</a></span><span class="id"> _</span><span class="id"> B</span>). Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="separated_disjoint" class="id"><a name="separated_disjoint" class="" title="separated_disjoint not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="separated_disjoint" class="id"><a name="separated_disjoint" class="" title="separated_disjoint :
+forall [T : topology_structure.Topological.type]
+  [A B : set (topology_structure.Topological.sort T)],
+separated (T:=T) A B -> (A `&` B)%classic = set0
+
+separated_disjoint is not universe polymorphic
+Arguments separated_disjoint [T] [A B]%classical_set_scope _
+separated_disjoint is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.separated_disjoint
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 42, characters 6-24
 ">separated_disjoint</a></span><span class="id"> </span><span id="A:13" class="id"><a name="A:13" class="">A</a></span><span class="id"> </span><span id="B:14" class="id"><a name="B:14" class="">B</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#separated">separated</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:13">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:14">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:13">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:14">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -269,7 +327,21 @@ This file provides connected and its related notions.
 <span class="gallina-kwd">by</span><span class="id"> move:</span><span class="id"> AB;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#separated">separated</a></span><span class="id"> =&gt;</span><span class="id"> -[&lt;-</span><span class="id"> _];</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#subset_closure">subset_closure</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connectedPn" class="id"><a name="connectedPn" class="" title="connectedPn not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connectedPn" class="id"><a name="connectedPn" class="" title="connectedPn :
+forall [T : topology_structure.Topological.type]
+  (A : set (topology_structure.Topological.sort T)),
+~ connected A <->
+(exists E : bool -> set (topology_structure.Topological.sort T),
+   [/\ forall b : bool, (E b !=set0)%classic,
+       A = (E false `|` E true)%classic
+     & separated (T:=T) (E false) (E true)])
+
+connectedPn is not universe polymorphic
+Arguments connectedPn [T] A%classical_set_scope
+connectedPn is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.connected.connectedPn
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 48, characters 6-17
 ">connectedPn</a></span><span class="id"> </span><span id="A:15" class="id"><a name="A:15" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181">~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:15">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> &lt;-&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">exists</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="E:16" class="id"><a name="E:16" class="">E</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_sets.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">[/\</a></span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="b:17" class="id"><a name="b:17" class="">b</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#E:16">E</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#b:17">b</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">,</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:15">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#E:16">E</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f0f4f4a06533e5eeff19ee265a896441"> `|`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f0f4f4a06533e5eeff19ee265a896441"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#E:16">E</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#separated">separated</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#E:16">E</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span>) (<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#E:16">E</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">]</a></span>.<br/>
@@ -304,7 +376,21 @@ Qed.</div></details>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> have</span><span class="id"> :</span><span class="id"> B</span><span class="id"> y;</span><span class="id"> [by</span><span class="id"> rewrite</span><span class="id"> BAD;</span><span class="id"> split|rewrite</span><span class="id"> BAC</span><span class="id"> =&gt;</span><span class="id"> -[]]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connectedP" class="id"><a name="connectedP" class="" title="connectedP not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connectedP" class="id"><a name="connectedP" class="" title="connectedP :
+forall [T : topology_structure.Topological.type]
+  (A : set (topology_structure.Topological.sort T)),
+connected A <->
+(forall E : bool -> set (topology_structure.Topological.sort T),
+ ~
+ [/\ forall b : bool, (E b !=set0)%classic, A = (E false `|` E true)%classic
+   & separated (T:=T) (E false) (E true)])
+
+connectedP is not universe polymorphic
+Arguments connectedP [T] A%classical_set_scope
+connectedP is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.connected.connectedP
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 80, characters 6-16
 ">connectedP</a></span><span class="id"> </span><span id="A:22" class="id"><a name="A:22" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:22">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> &lt;-&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="E:23" class="id"><a name="E:23" class="">E</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_sets.T">T</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181">~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">[/\</a></span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="b:24" class="id"><a name="b:24" class="">b</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#E:23">E</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#b:24">b</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">,</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:22">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#E:23">E</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f0f4f4a06533e5eeff19ee265a896441"> `|`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f0f4f4a06533e5eeff19ee265a896441"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#E:23">E</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#separated">separated</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#E:23">E</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span>) (<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#E:23">E</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">]</a></span>.<br/>
@@ -314,7 +400,20 @@ Qed.</div></details>
 <span class="id">rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.classical.boolp.html#propeqE">propeqE</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#forallNE">forallNE</a></span><span class="id">;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#notRL">notRL</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#propeqE">propeqE</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connectedPn">connectedPn</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_subset" class="id"><a name="connected_subset" class="" title="connected_subset not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_subset" class="id"><a name="connected_subset" class="" title="connected_subset :
+forall [T : topology_structure.Topological.type]
+  [A B C : set (topology_structure.Topological.sort T)],
+separated (T:=T) A B ->
+(C `<=` A `|` B)%classic ->
+connected C -> (C `<=` A)%classic \/ (C `<=` B)%classic
+
+connected_subset is not universe polymorphic
+Arguments connected_subset [T] [A B C]%classical_set_scope _ _ _
+connected_subset is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.connected_subset
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 87, characters 6-22
 ">connected_subset</a></span><span class="id"> </span><span id="A:25" class="id"><a name="A:25" class="">A</a></span><span class="id"> </span><span id="B:26" class="id"><a name="B:26" class="">B</a></span><span class="id"> </span><span id="C:27" class="id"><a name="C:27" class="">C</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#separated">separated</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:25">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:26">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:27">C</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:25">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f0f4f4a06533e5eeff19ee265a896441"> `|`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f0f4f4a06533e5eeff19ee265a896441"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:26">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:27">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:27">C</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:25">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#f031fe1957c4a4a8e217aa46af2b4e25"> \/</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#f031fe1957c4a4a8e217aa46af2b4e25"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:27">C</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:26">B</a></span>.<br/>
 <details>
@@ -333,7 +432,29 @@ Qed.</div></details>
 &nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> move:</span><span class="id"> AB;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#separated">separated</a></span><span class="id"> =&gt;</span><span class="id"> -[]</span><span class="id"> _;</span><span class="id"> apply/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id">/</span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0P">set0P</a></span><span class="id">;</span><span class="gallina-kwd"> exists</span><span class="id"> x</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected1" class="id"><a name="connected1" class="" title="connected1 not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected1" class="id"><a name="connected1" class="" title="connected1 :
+forall [T : topology_structure.Topological.type]
+  [x : topology_structure.Topological.sort T],
+connected [set x]
+
+connected1 is not universe polymorphic
+Expanded type for implicit arguments
+connected1 :
+forall [T : topology_structure.Topological.type]
+  [x : topology_structure.Topological.sort T]
+  [B : set (topology_structure.Topological.sort T)],
+(B !=set0)%classic ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.open C & B = ([set x] `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.closed C & B = ([set x] `&` C)%classic) ->
+B = [set x]%classic
+
+Arguments connected1 [T x B] _ _ _
+connected1 is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.connected.connected1
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 103, characters 6-16
 ">connected1</a></span><span class="id"> </span><span id="x:29" class="id"><a name="x:29" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:29">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -343,7 +464,36 @@ Qed.</div></details>
 Qed.</div></details>
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> connected1</span><span class="id"> :</span><span class="id"> core</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="bigcup_connected" class="id"><a name="bigcup_connected" class="" title="bigcup_connected not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="bigcup_connected" class="id"><a name="bigcup_connected" class="" title="bigcup_connected :
+forall [T : topology_structure.Topological.type] [I : Type]
+  [A : I -> set (topology_structure.Topological.sort T)] 
+  [P : I -> Prop],
+(\bigcap_(i in P) A i !=set0)%classic ->
+(forall i : I, P i -> connected (A i)) -> connected (\bigcup_(i in P) A i)
+
+bigcup_connected is not universe polymorphic
+Expanded type for implicit arguments
+bigcup_connected :
+forall [T : topology_structure.Topological.type] [I : Type]
+  [A : I -> set (topology_structure.Topological.sort T)] 
+  [P : I -> Prop],
+(\bigcap_(i in P) A i !=set0)%classic ->
+(forall i : I, P i -> connected (A i)) ->
+forall [B : set (topology_structure.Topological.sort T)],
+(B !=set0)%classic ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.open C & B = (\bigcup_(i in P) A i `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.closed C & B = (\bigcup_(i in P) A i `&` C)%classic) ->
+B = (\bigcup_(i in P) A i)%classic
+
+Arguments bigcup_connected [T] [I]%type_scope [A P]%function_scope 
+  _ _%function_scope [B] _ _ _
+bigcup_connected is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.bigcup_connected
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 110, characters 6-22
 ">bigcup_connected</a></span><span class="id"> </span><span id="I:30" class="id"><a name="I:30" class="">I</a></span> (<span id="A:31" class="id"><a name="A:31" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#I:30">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_sets.T">T</a></span>) (<span id="P:32" class="id"><a name="P:32" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#I:30">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> Prop</span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#14a333048a56ff17648c57d37a4a5f40">\bigcap_</a></span>(<span id="i:33" class="id"><a name="i:33" class="">i</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.classical.classical_sets.html#14a333048a56ff17648c57d37a4a5f40"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#P:32">P</a></span>) (<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:31">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#i:33">i</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:34" class="id"><a name="i:34" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#P:32">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#i:34">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:31">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#i:34">i</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#6c1866a3b78974b64276da9cd4d63a55">\bigcup_</a></span>(<span id="i:35" class="id"><a name="i:35" class="">i</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.classical.classical_sets.html#6c1866a3b78974b64276da9cd4d63a55"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#P:32">P</a></span>) (<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:31">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#i:35">i</a></span>)).<br/>
@@ -373,7 +523,32 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move/</span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#separated_disjoint">separated_disjoint</a></span><span class="id"> :</span><span class="id"> sE;</span><span class="id"> apply/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id">/</span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0P">set0P</a></span><span class="id">;</span><span class="gallina-kwd"> exists</span><span class="id"> d</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connectedU" class="id"><a name="connectedU" class="" title="connectedU not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connectedU" class="id"><a name="connectedU" class="" title="connectedU :
+forall [T : topology_structure.Topological.type]
+  [A B : set (topology_structure.Topological.sort T)],
+(A `&` B !=set0)%classic -> connected A -> connected B -> connected (A `|` B)
+
+connectedU is not universe polymorphic
+Expanded type for implicit arguments
+connectedU :
+forall [T : topology_structure.Topological.type]
+  [A B : set (topology_structure.Topological.sort T)],
+(A `&` B !=set0)%classic ->
+connected A ->
+connected B ->
+forall [B0 : set (topology_structure.Topological.sort T)],
+(B0 !=set0)%classic ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.open C & B0 = ((A `|` B) `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.closed C & B0 = ((A `|` B) `&` C)%classic) ->
+B0 = (A `|` B)%classic
+
+Arguments connectedU [T] [A B]%classical_set_scope _ _ _ [B] _ _ _
+connectedU is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.connected.connectedU
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 137, characters 6-16
 ">connectedU</a></span><span class="id"> </span><span id="A:40" class="id"><a name="A:40" class="">A</a></span><span class="id"> </span><span id="B:41" class="id"><a name="B:41" class="">B</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:40">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:41">B</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:40">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:41">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:40">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f0f4f4a06533e5eeff19ee265a896441"> `|`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f0f4f4a06533e5eeff19ee265a896441"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:41">B</a></span>).<br/>
 <details>
@@ -384,7 +559,33 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> [|[|[]]]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_closure" class="id"><a name="connected_closure" class="" title="connected_closure not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_closure" class="id"><a name="connected_closure" class="" title="connected_closure :
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)],
+connected A -> connected (topology_structure.closure A)
+
+connected_closure is not universe polymorphic
+Expanded type for implicit arguments
+connected_closure :
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)],
+connected A ->
+forall [B : set (topology_structure.Topological.sort T)],
+(B !=set0)%classic ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.open C &
+   B = (topology_structure.closure A `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.closed C &
+   B = (topology_structure.closure A `&` C)%classic) ->
+B = topology_structure.closure A
+
+Arguments connected_closure [T] [A]%classical_set_scope _ [B] _ _ _
+connected_closure is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.connected_closure
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 145, characters 6-23
 ">connected_closure</a></span><span class="id"> </span><span id="A:42" class="id"><a name="A:42" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:42">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:42">A</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -401,25 +602,93 @@ Qed.</div></details>
 <span class="id">-</span><span class="gallina-kwd"> by</span><span class="gallina-kwd"> exists</span><span class="id"> C2</span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> rewrite</span><span class="id"> C2E</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setIA">setIA</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#setIidl">setIidl</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#subset_closure">subset_closure</a></span><span class="id"> _</span><span class="id"> _</span>)).<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="connected_component" class="id"><a name="connected_component" class="" title="connected_component not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="connected_component" class="id"><a name="connected_component" class="" title="connected_component :
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) ->
+topology_structure.Topological.sort T ->
+set (topology_structure.Topological.sort T)
+
+connected_component is not universe polymorphic
+Arguments connected_component {T} A%classical_set_scope x _
+connected_component is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.connected_component
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 159, characters 11-30
 ">connected_component</a></span> (<span id="A:43" class="id"><a name="A:43" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_sets.T">T</a></span>) (<span id="x:44" class="id"><a name="x:44" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_sets.T">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#6c1866a3b78974b64276da9cd4d63a55">\bigcup_</a></span>(<span id="A:46" class="id"><a name="A:46" class="">A</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.classical.classical_sets.html#6c1866a3b78974b64276da9cd4d63a55"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span id="C:45" class="id"><a name="C:45" class="">C</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> :</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_sets.T">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">[/\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:45">C</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:44">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:45">C</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:43">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:45">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">]</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">]</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#6c1866a3b78974b64276da9cd4d63a55"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:46">A</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="component_connected" class="id"><a name="component_connected" class="" title="component_connected not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="component_connected" class="id"><a name="component_connected" class="" title="component_connected :
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
+connected (connected_component A x)
+
+component_connected is not universe polymorphic
+Expanded type for implicit arguments
+component_connected :
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T]
+  [B : set (topology_structure.Topological.sort T)],
+(B !=set0)%classic ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.open C & B = (connected_component A x `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.closed C & B = (connected_component A x `&` C)%classic) ->
+B = connected_component A x
+
+Arguments component_connected [T] [A]%classical_set_scope [x B] _ _ _
+component_connected is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.component_connected
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 162, characters 6-25
 ">component_connected</a></span><span class="id"> </span><span id="A:47" class="id"><a name="A:47" class="">A</a></span><span class="id"> </span><span id="x:48" class="id"><a name="x:48" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:47">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:48">x</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#bigcup_connected">bigcup_connected</a></span><span class="id">;</span><span class="id"> [exists</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> C</span><span class="id"> []|move=&gt;</span><span class="id"> C</span><span class="id"> []]</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_sub" class="id"><a name="connected_component_sub" class="" title="connected_component_sub not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_sub" class="id"><a name="connected_component_sub" class="" title="connected_component_sub :
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
+(connected_component A x `<=` A)%classic
+
+connected_component_sub is not universe polymorphic
+Expanded type for implicit arguments
+connected_component_sub :
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x t : topology_structure.Topological.sort T],
+connected_component A x t -> A t
+
+Arguments connected_component_sub [T] [A]%classical_set_scope [x t] _
+connected_component_sub is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.connected_component_sub
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 165, characters 6-29
 ">connected_component_sub</a></span><span class="id"> </span><span id="A:49" class="id"><a name="A:49" class="">A</a></span><span class="id"> </span><span id="x:50" class="id"><a name="x:50" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:49">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:50">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:49">A</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> y</span><span class="id"> [B</span><span class="id"> [_</span><span class="id"> +</span><span class="id"> _]]</span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#69f87318111a06c23cf3b6c947249a45">[apply]</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_id" class="id"><a name="connected_component_id" class="" title="connected_component_id not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_id" class="id"><a name="connected_component_id" class="" title="connected_component_id :
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
+A x -> connected A -> connected_component A x = A
+
+connected_component_id is not universe polymorphic
+Arguments connected_component_id [T] [A]%classical_set_scope [x] _ _
+connected_component_id is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.connected_component_id
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 168, characters 6-28
 ">connected_component_id</a></span><span class="id"> </span><span id="A:51" class="id"><a name="A:51" class="">A</a></span><span class="id"> </span><span id="x:52" class="id"><a name="x:52" class="">x</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:51">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:52">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:51">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:51">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:52">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:51">A</a></span>.<br/>
 <details>
@@ -429,7 +698,19 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> y</span><span class="id"> Ay;</span><span class="gallina-kwd"> exists</span><span class="id"> A</span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> split</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_out" class="id"><a name="connected_component_out" class="" title="connected_component_out not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_out" class="id"><a name="connected_component_out" class="" title="connected_component_out :
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
+~ A x -> connected_component A x = set0
+
+connected_component_out is not universe polymorphic
+Arguments connected_component_out [T] [A]%classical_set_scope [x] _
+connected_component_out is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.connected_component_out
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 175, characters 6-29
 ">connected_component_out</a></span><span class="id"> </span><span id="A:53" class="id"><a name="A:53" class="">A</a></span><span class="id"> </span><span id="x:54" class="id"><a name="x:54" class="">x</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181">~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:53">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:54">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:53">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:54">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span>.<br/>
 <details>
@@ -437,7 +718,34 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> NAx;</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.classical.classical_sets.html#subset0">subset0</a></span><span class="id"> =&gt;</span><span class="id"> y</span><span class="id"> [B</span><span class="id"> [/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#d18bf1e242aa8006719f115a8f44092e">[swap]</a></span><span class="id">/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#69f87318111a06c23cf3b6c947249a45">[apply]</a></span><span class="id">]]</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_max" class="id"><a name="connected_component_max" class="" title="connected_component_max not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_max" class="id"><a name="connected_component_max" class="" title="connected_component_max :
+forall [T : topology_structure.Topological.type]
+  [A B : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
+B x ->
+(B `<=` A)%classic -> connected B -> (B `<=` connected_component A x)%classic
+
+connected_component_max is not universe polymorphic
+Expanded type for implicit arguments
+connected_component_max :
+forall [T : topology_structure.Topological.type]
+  [A B : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
+B x ->
+(B `<=` A)%classic ->
+connected B ->
+forall [t : topology_structure.Topological.sort T],
+B t ->
+exists2 i : set (topology_structure.Topological.sort T),
+  [set C | [/\ C x, C `<=` A & connected C]]%classic i & id i t
+
+Arguments connected_component_max [T] [A B]%classical_set_scope 
+  [x] _ _ _ [t] _
+connected_component_max is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.connected_component_max
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 179, characters 6-29
 ">connected_component_max</a></span><span class="id"> </span><span id="A:55" class="id"><a name="A:55" class="">A</a></span><span class="id"> </span><span id="B:56" class="id"><a name="B:56" class="">B</a></span><span class="id"> </span><span id="x:57" class="id"><a name="x:57" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:56">B</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:57">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:56">B</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:55">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:56">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:56">B</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:55">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:57">x</a></span>.<br/>
 <details>
@@ -445,14 +753,37 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> Bx</span><span class="id"> BA</span><span class="id"> Bc</span><span class="id"> y</span><span class="id"> By;</span><span class="gallina-kwd"> exists</span><span class="id"> B</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_refl" class="id"><a name="connected_component_refl" class="" title="connected_component_refl not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_refl" class="id"><a name="connected_component_refl" class="" title="connected_component_refl :
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
+A x -> connected_component A x x
+
+connected_component_refl is not universe polymorphic
+Arguments connected_component_refl [T] [A]%classical_set_scope [x] _
+connected_component_refl is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.connected_component_refl
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 183, characters 6-30
 ">connected_component_refl</a></span><span class="id"> </span><span id="A:58" class="id"><a name="A:58" class="">A</a></span><span class="id"> </span><span id="x:59" class="id"><a name="x:59" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:58">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:59">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:58">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:59">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:59">x</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> Ax;</span><span class="gallina-kwd"> exists</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id">x</span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> _</span><span class="id"> -&gt;</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_cover" class="id"><a name="connected_component_cover" class="" title="connected_component_cover not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_cover" class="id"><a name="connected_component_cover" class="" title="connected_component_cover :
+forall [T : topology_structure.Topological.type]
+  (A : set (topology_structure.Topological.sort T)),
+(\bigcup_(A0 in [set connected_component A x | x in A]) A0)%classic = A
+
+connected_component_cover is not universe polymorphic
+Arguments connected_component_cover [T] A%classical_set_scope
+connected_component_cover is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.connected_component_cover
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 186, characters 6-31
 ">connected_component_cover</a></span><span class="id"> </span><span id="A:60" class="id"><a name="A:60" class="">A</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#6c1866a3b78974b64276da9cd4d63a55">\bigcup_</a></span>(<span id="A:61" class="id"><a name="A:61" class="">A</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.classical.classical_sets.html#6c1866a3b78974b64276da9cd4d63a55"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:60">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:60">A</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#6c1866a3b78974b64276da9cd4d63a55"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:61">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:60">A</a></span>.<br/>
 <details>
@@ -462,7 +793,19 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="gallina-kwd"> exists</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> A</span><span class="id"> x</span>)<span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component_refl">connected_component_refl</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_sym" class="id"><a name="connected_component_sym" class="" title="connected_component_sym not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_sym" class="id"><a name="connected_component_sym" class="" title="connected_component_sym :
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x y : topology_structure.Topological.sort T],
+connected_component A x y -> connected_component A y x
+
+connected_component_sym is not universe polymorphic
+Arguments connected_component_sym [T] [A]%classical_set_scope [x y] _
+connected_component_sym is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.connected_component_sym
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 193, characters 6-29
 ">connected_component_sym</a></span><span class="id"> </span><span id="A:62" class="id"><a name="A:62" class="">A</a></span><span class="id"> </span><span id="x:63" class="id"><a name="x:63" class="">x</a></span><span class="id"> </span><span id="y:64" class="id"><a name="y:64" class="">y</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:62">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:63">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#y:64">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:62">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#y:64">y</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:63">x</a></span>.<br/>
 <details>
@@ -470,7 +813,20 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> [B</span><span class="id"> [*]];</span><span class="gallina-kwd"> exists</span><span class="id"> B</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_trans" class="id"><a name="connected_component_trans" class="" title="connected_component_trans not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_trans" class="id"><a name="connected_component_trans" class="" title="connected_component_trans :
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [y x z : topology_structure.Topological.sort T],
+connected_component A x y ->
+connected_component A y z -> connected_component A x z
+
+connected_component_trans is not universe polymorphic
+Arguments connected_component_trans [T] [A]%classical_set_scope [y x z] _ _
+connected_component_trans is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.connected_component_trans
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 197, characters 6-31
 ">connected_component_trans</a></span><span class="id"> </span><span id="A:65" class="id"><a name="A:65" class="">A</a></span><span class="id"> </span><span id="y:66" class="id"><a name="y:66" class="">y</a></span><span class="id"> </span><span id="x:67" class="id"><a name="x:67" class="">x</a></span><span class="id"> </span><span id="z:68" class="id"><a name="z:68" class="">z</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:65">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:67">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#y:66">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:65">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#y:66">y</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#z:68">z</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:65">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:67">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#z:68">z</a></span>.<br/>
@@ -481,7 +837,20 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> split;</span><span class="id"> [left</span><span class="id"> |</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#subUset">subUset</a></span><span class="id"> |</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connectedU">connectedU</a></span><span class="id">=&gt;</span><span class="id"> //;</span><span class="gallina-kwd"> exists</span><span class="id"> y]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="same_connected_component" class="id"><a name="same_connected_component" class="" title="same_connected_component not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="same_connected_component" class="id"><a name="same_connected_component" class="" title="same_connected_component :
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x y : topology_structure.Topological.sort T],
+connected_component A x y ->
+connected_component A x = connected_component A y
+
+same_connected_component is not universe polymorphic
+Arguments same_connected_component [T] [A]%classical_set_scope [x y] _
+same_connected_component is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.same_connected_component
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 205, characters 6-30
 ">same_connected_component</a></span><span class="id"> </span><span id="A:69" class="id"><a name="A:69" class="">A</a></span><span class="id"> </span><span id="x:70" class="id"><a name="x:70" class="">x</a></span><span class="id"> </span><span id="y:71" class="id"><a name="y:71" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:69">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:70">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#y:71">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:69">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:70">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:69">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#y:71">y</a></span>.<br/>
 <details>
@@ -491,7 +860,31 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component_sym">connected_component_sym</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="component_closed" class="id"><a name="component_closed" class="" title="component_closed not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="component_closed" class="id"><a name="component_closed" class="" title="component_closed :
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
+topology_structure.closed A ->
+topology_structure.closed (connected_component A x)
+
+component_closed is not universe polymorphic
+Expanded type for implicit arguments
+component_closed :
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
+topology_structure.closed A ->
+forall [t : topology_structure.Topological.sort T],
+topology_structure.closure (connected_component A x) t ->
+exists2 i : set (topology_structure.Topological.sort T),
+  [set C | [/\ C x, C `<=` A & connected C]]%classic i & id i t
+
+Arguments component_closed [T] [A]%classical_set_scope [x] _ [t] _
+component_closed is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.component_closed
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 212, characters 6-22
 ">component_closed</a></span><span class="id"> </span><span id="A:72" class="id"><a name="A:72" class="">A</a></span><span class="id"> </span><span id="x:73" class="id"><a name="x:73" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:72">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:72">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:73">x</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -506,7 +899,18 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_closure">connected_closure</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#component_connected">component_connected</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="clopen_separatedP" class="id"><a name="clopen_separatedP" class="" title="clopen_separatedP not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="clopen_separatedP" class="id"><a name="clopen_separatedP" class="" title="clopen_separatedP :
+forall [T : topology_structure.Topological.type]
+  (A : set (topology_structure.Topological.sort T)),
+topology_structure.clopen A <-> separated (T:=T) A (~` A)
+
+clopen_separatedP is not universe polymorphic
+Arguments clopen_separatedP [T] A%classical_set_scope
+clopen_separatedP is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.connected.clopen_separatedP
+Declared in
+library mathcomp.analysis.topology_theory.connected, line 224, characters 6-23
 ">clopen_separatedP</a></span><span class="id"> </span><span id="A:75" class="id"><a name="A:75" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#clopen">clopen</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:75">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> &lt;-&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#separated">separated</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:75">A</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1">~`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:75">A</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>

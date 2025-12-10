@@ -265,7 +265,94 @@ Detailed contents:
 <br/>
 <span class="vernacular">Let</span><span class="id"> </span><span id="continuity_under_integral.F" class="id"><a name="continuity_under_integral.F" class="">F</a></span><span class="id"> </span><span id="x:29" class="id"><a name="x:29" class="">x</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#continuity_under_integral.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85">]_</a></span>(<span id="y:30" class="id"><a name="y:30" class="">y</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#continuity_under_integral.B">B</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#continuity_under_integral.f">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#x:29">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#y:30">y</a></span>)<span class="id">%R</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="continuity_under_integral" class="id"><a name="continuity_under_integral" class="" title="continuity_under_integral not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="continuity_under_integral" class="id"><a name="continuity_under_integral" class="" title="continuity_under_integral :
+forall {R : realType} [d : measure_display] {Y : measurableType d}
+  {mu : measure Y R} [f : R -> Y -> R] [B : set Y],
+d.-measurable%classic B ->
+forall [u v : R],
+(forall x : R, `]u, v[%classic x -> mu.-integrable B (EFin \o f x)) ->
+(\forall y \ae mu, B y ->
+                   {in `]u, v[%classic,
+                     forall
+                       x : filter.Nbhs.sort
+                             (numFieldTopology.Real_sort__canonical__filter_Nbhs
+                                R),
+                     filter.continuous_at
+                       (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs
+                             R)
+                       (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs
+                             R)
+                       x (f^~ y)}) ->
+forall [g : Y -> R],
+mu.-integrable B (EFin \o g) ->
+(forall x : R,
+ `]u, v[%classic x -> \forall y \ae mu, B y -> (`|f x y| <= g y)%R) ->
+{in `]u, v[%classic,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+    (U:=numFieldTopology.RealField_sort__canonical__filter_Nbhs R) x0
+    (fun
+       l : filter.Nbhs.sort
+             (numFieldTopology.Real_sort__canonical__filter_Nbhs R) =>
+     (\int[mu]_(x in B) f l x)%R)}
+
+continuity_under_integral is not universe polymorphic
+Expanded type for implicit arguments
+continuity_under_integral :
+forall {R : realType} [d : measure_display] {Y : measurableType d}
+  {mu : measure Y R} [f : R -> Y -> R] [B : set Y],
+d.-measurable%classic B ->
+forall [u v : R],
+(forall x : R, `]u, v[%classic x -> mu.-integrable B (EFin \o f x)) ->
+(\forall y \ae mu, B y ->
+                   {in `]u, v[%classic,
+                     forall
+                       x : filter.Nbhs.sort
+                             (numFieldTopology.Real_sort__canonical__filter_Nbhs
+                                R),
+                     filter.continuous_at
+                       (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs
+                             R)
+                       (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs
+                             R)
+                       x (f^~ y)}) ->
+forall [g : Y -> R],
+mu.-integrable B (EFin \o g) ->
+(forall x : R,
+ `]u, v[%classic x -> \forall y \ae mu, B y -> (`|f x y| <= g y)%R) ->
+forall [x : R],
+x \in `]u, v[%classic ->
+forall
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.RealField_sort__canonical__filter_Nbhs R))],
+filter.nbhs
+  ((fun
+      l : filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R) =>
+    (\int[mu]_(x0 in B) f l x0)%R) x)
+  t ->
+exists2 i : R,
+  [set e | (0 < e)%R]%classic i &
+  (ball_ [eta normr] x i
+   `<=` (fun
+           l : filter.Nbhs.sort
+                 (numFieldTopology.Real_sort__canonical__filter_Nbhs R) =>
+         (\int[mu]_(x0 in B) f l x0)%R) @^-1`
+        t)%classic
+
+Arguments continuity_under_integral {R} [d]%measure_display_scope 
+  {Y mu} [f]%function_scope [B]%classical_set_scope 
+  mB [u v]%ring_scope int_f%function_scope cf [g]%function_scope 
+  int_g g_ub%function_scope [x] _ [t] _
+continuity_under_integral is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.continuity_under_integral
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under, line 57, characters 6-31
 ">continuity_under_integral</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#continuity_under_integral.I">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="l:31" class="id"><a name="l:31" class="">l</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#continuity_under_integral.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85">]_</a></span>(<span id="x:32" class="id"><a name="x:32" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#continuity_under_integral.B">B</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#continuity_under_integral.f">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#l:31">l</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#x:32">x</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">}</a></span>.<br/>
 <details>
@@ -340,12 +427,30 @@ Detailed contents:
 <br/>
 <span class="vernacular">Section</span><span class="id"> differentiation_under_integral</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="partial1of2" class="id"><a name="partial1of2" class="" title="partial1of2 not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="partial1of2" class="id"><a name="partial1of2" class="" title="partial1of2 : forall {R : realType} {T : Type}, (R -> T -> R) -> R -> T -> R
+
+partial1of2 is not universe polymorphic
+Arguments partial1of2 {R} {T}%type_scope f%function_scope _%ring_scope _
+partial1of2 is transparent
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.partial1of2
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under, line 129, characters 11-22
 ">partial1of2</a></span><span class="id"> {</span><span id="R:53" class="id"><a name="R:53" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> {</span><span id="T:54" class="id"><a name="T:54" class="">T</a></span><span class="id"> :</span><span class="id"> Type}</span> (<span id="f:55" class="id"><a name="f:55" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#R:53">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#T:54">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#R:53">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#R:53">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#T:54">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#R:53">R</a></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="x:56" class="id"><a name="x:56" class="">x</a></span><span class="id"> </span><span id="y:57" class="id"><a name="y:57" class="">y</a></span><span class="id"> =&gt;</span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#f:55">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> ^~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#y:57">y</a></span>)<span class="id"><a href="mathcomp.analysis.derive.html#09404cd9a88c3cc9bb8278711d82576f">^`</a></span>()<span class="id"><a href="mathcomp.analysis.derive.html#09404cd9a88c3cc9bb8278711d82576f"> x</a></span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span> <span id="differentiation_under_integral.:::'''d1'_x" class="id"><a name="differentiation_under_integral.:::'''d1'_x" class="">&quot;'d1 f&quot;</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#partial1of2">partial1of2</a></span><span class="id"> f</span>).<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="partial1of2E" class="id"><a name="partial1of2E" class="" title="partial1of2E not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="partial1of2E" class="id"><a name="partial1of2E" class="" title="partial1of2E :
+forall {R : realType} {T : Type} (f : R -> T -> R) (x : R) (y : T),
+partial1of2 f x y = 'D_1 (f^~ y) x
+
+partial1of2E is not universe polymorphic
+Arguments partial1of2E {R} {T}%type_scope f%function_scope x%ring_scope y
+partial1of2E is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.partial1of2E
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under, line 133, characters 6-18
 ">partial1of2E</a></span><span class="id"> {</span><span id="R:58" class="id"><a name="R:58" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> {</span><span id="T:59" class="id"><a name="T:59" class="">T</a></span><span class="id"> :</span><span class="id"> Type}</span> (<span id="f:60" class="id"><a name="f:60" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#R:58">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#T:59">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#R:58">R</a></span>)<span class="id"> </span><span id="x:61" class="id"><a name="x:61" class="">x</a></span><span class="id"> </span><span id="y:62" class="id"><a name="y:62" class="">y</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.:::'''d1'_x">'d1</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.:::'''d1'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#f:60">f</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.:::'''d1'_x"> x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#y:62">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.derive.html#:::'''D_'_x_x_x">'D_</a></span><span class="id">1</span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#f:60">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f">^~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#y:62">y</a></span>)<span class="id"><a href="mathcomp.analysis.derive.html#:::'''D_'_x_x_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#x:61">x</a></span>.<br/>
 <details>
@@ -374,7 +479,76 @@ Detailed contents:
 <br/>
 <span class="vernacular">Let</span><span class="id"> </span><span id="differentiation_under_integral.F" class="id"><a name="differentiation_under_integral.F" class="">F</a></span><span class="id"> </span><span id="x':99" class="id"><a name="x':99" class="">x'</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85">]_</a></span>(<span id="y:100" class="id"><a name="y:100" class="">y</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.B">B</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.f">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#x':99">x'</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#y:100">y</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_differentiation_under_integral" class="id"><a name="cvg_differentiation_under_integral" class="" title="cvg_differentiation_under_integral not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_differentiation_under_integral" class="id"><a name="cvg_differentiation_under_integral" class="" title="cvg_differentiation_under_integral :
+forall {R : realType} [d : measure_display] {Y : measurableType d}
+  {mu : measure Y R} [f : R -> Y -> R] [B : set Y],
+d.-measurable%classic B ->
+forall [a u v : R],
+`]u, v[%classic a ->
+(forall x : R, `]u, v[%classic x -> mu.-integrable B (EFin \o f x)) ->
+(forall (x : R) (y : Y), `]u, v[%classic x -> B y -> derivable (f^~ y) x 1) ->
+forall [G : Y -> R],
+(forall y : Y, (0 <= G y)%R) ->
+mu.-integrable B (EFin \o G) ->
+(forall (x : R) (y : Y),
+ `]u, v[%classic x -> B y -> (`|partial1of2 f x y| <= G y)%R) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap
+        (fun h : R =>
+         (h^-1 *:
+          ((fun x' : R => \int[mu]_(y in B) f x' y) (h + a)%E -
+           (fun x' : R => \int[mu]_(y in B) f x' y) a))%R)
+        (filter.nbhs (topology_structure.dnbhs 0%R))))
+  (filter.nbhs (\int[mu]_(y in B) partial1of2 f a y)%R)
+
+cvg_differentiation_under_integral is not universe polymorphic
+Expanded type for implicit arguments
+cvg_differentiation_under_integral :
+forall {R : realType} [d : measure_display] {Y : measurableType d}
+  {mu : measure Y R} [f : R -> Y -> R] [B : set Y],
+d.-measurable%classic B ->
+forall [a u v : R],
+`]u, v[%classic a ->
+(forall x : R, `]u, v[%classic x -> mu.-integrable B (EFin \o f x)) ->
+(forall (x : R) (y : Y), `]u, v[%classic x -> B y -> derivable (f^~ y) x 1) ->
+forall [G : Y -> R],
+(forall y : Y, (0 <= G y)%R) ->
+mu.-integrable B (EFin \o G) ->
+(forall (x : R) (y : Y),
+ `]u, v[%classic x -> B y -> (`|partial1of2 f x y| <= G y)%R) ->
+forall
+  [t : set
+         (numFieldNormedType.RealField_sort__canonical__GRing_LSemiModule R)],
+filter.nbhs (\int[mu]_(y in B) partial1of2 f a y)%R t ->
+exists2 i : R,
+  [set e | (0 < e)%R]%classic i &
+  (ball_ [eta normr] 0%R i
+   `<=` (fun
+           t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (Real_sort__canonical__tvs_PreTopologicalNmodule R)) =>
+         (fun
+            y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (Real_sort__canonical__tvs_PreTopologicalNmodule R)) =>
+          is_true (y != 0%R)) t0 ->
+         ((fun h : R =>
+           (h^-1 *:
+            ((fun x' : R => \int[mu]_(y in B) f x' y) (h + a)%E -
+             (fun x' : R => \int[mu]_(y in B) f x' y) a))%R) @^-1`
+          t) t0))%classic
+
+Arguments cvg_differentiation_under_integral {R} [d]%measure_display_scope
+  {Y mu} [f]%function_scope [B]%classical_set_scope 
+  mB [a u v]%ring_scope Ia (intf derf1)%function_scope 
+  [G]%function_scope G_ge0%function_scope intG G_ub%function_scope 
+  [t] _
+cvg_differentiation_under_integral is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.cvg_differentiation_under_integral
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under, line 158, characters 6-40
 ">cvg_differentiation_under_integral</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#h:101">h</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#4e5a4c91ec0aa12de06dfe1cc07ea126">^-1</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#3b05480e39db306e67fadbc79d394529"> *:</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.F">F</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#h:101">h</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.a">a</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.F">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.a">a</a></span>)<span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> @[</a></span><span id="h:101" class="id"><a name="h:101" class="">h</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#f8c5a58f3e97f5207acd97345df460ee">^'</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f">]</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85">]_</a></span>(<span id="y:102" class="id"><a name="y:102" class="">y</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.B">B</a></span>) (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.:::'''d1'_x">'d1</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.:::'''d1'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.f">f</a></span>)<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.:::'''d1'_x"> a</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#y:102">y</a></span>.<br/>
 <details>
@@ -498,7 +672,32 @@ Detailed contents:
 <span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#cvg_cst">cvg_cst</a></span>.<br/>
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="differentiation_under_integral" class="id"><a name="differentiation_under_integral" class="" title="differentiation_under_integral not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="differentiation_under_integral" class="id"><a name="differentiation_under_integral" class="" title="differentiation_under_integral :
+forall {R : realType} [d : measure_display] {Y : measurableType d}
+  {mu : measure Y R} [f : R -> Y -> R] [B : set Y],
+d.-measurable%classic B ->
+forall [a u v : R],
+`]u, v[%classic a ->
+(forall x : R, `]u, v[%classic x -> mu.-integrable B (EFin \o f x)) ->
+(forall (x : R) (y : Y), `]u, v[%classic x -> B y -> derivable (f^~ y) x 1) ->
+forall [G : Y -> R],
+(forall y : Y, (0 <= G y)%R) ->
+mu.-integrable B (EFin \o G) ->
+(forall (x : R) (y : Y),
+ `]u, v[%classic x -> B y -> (`|partial1of2 f x y| <= G y)%R) ->
+(fun x' : R => (\int[mu]_(y in B) f x' y)%R)^`()%classic a =
+(\int[mu]_(y in B) ((partial1of2 f)^~ y) a)%R
+
+differentiation_under_integral is not universe polymorphic
+Arguments differentiation_under_integral {R} [d]%measure_display_scope 
+  {Y mu} [f]%function_scope [B]%classical_set_scope 
+  mB [a u v]%ring_scope Ia (intf derf1)%function_scope 
+  [G]%function_scope G_ge0%function_scope intG G_ub%function_scope
+differentiation_under_integral is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.differentiation_under_integral
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under, line 279, characters 6-36
 ">differentiation_under_integral</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.F">F</a></span><span class="id"><a href="mathcomp.analysis.derive.html#09404cd9a88c3cc9bb8278711d82576f">^`</a></span>()<span class="id"><a href="mathcomp.analysis.derive.html#09404cd9a88c3cc9bb8278711d82576f"> a</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85">]_</a></span>(<span id="y:150" class="id"><a name="y:150" class="">y</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#00afd7077fe8d4381a047ef487700a85"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.B">B</a></span>) (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.:::'''d1'_x">'d1</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.:::'''d1'_x"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.f">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> ^~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#y:150">y</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> a</a></span>.<br/>
 <details>
@@ -508,7 +707,79 @@ Detailed contents:
 <span class="gallina-kwd">by</span><span class="id"> have</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#cvg_lim">cvg_lim</a></span><span class="id">-&gt;</span><span class="id"> //:=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#cvg_differentiation_under_integral">cvg_differentiation_under_integral</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="derivable_under_integral" class="id"><a name="derivable_under_integral" class="" title="derivable_under_integral not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="derivable_under_integral" class="id"><a name="derivable_under_integral" class="" title="derivable_under_integral :
+forall {R : realType} [d : measure_display] {Y : measurableType d}
+  {mu : measure Y R} [f : R -> Y -> R] [B : set Y],
+d.-measurable%classic B ->
+forall [a u v : R],
+`]u, v[%classic a ->
+(forall x : R, `]u, v[%classic x -> mu.-integrable B (EFin \o f x)) ->
+(forall (x : R) (y : Y), `]u, v[%classic x -> B y -> derivable (f^~ y) x 1) ->
+forall [G : Y -> R],
+(forall y : Y, (0 <= G y)%R) ->
+mu.-integrable B (EFin \o G) ->
+(forall (x : R) (y : Y),
+ `]u, v[%classic x -> B y -> (`|partial1of2 f x y| <= G y)%R) ->
+derivable (fun x' : R => (\int[mu]_(y in B) f x' y)%R) a 1
+
+derivable_under_integral is not universe polymorphic
+Expanded type for implicit arguments
+derivable_under_integral :
+forall {R : realType} [d : measure_display] {Y : measurableType d}
+  {mu : measure Y R} [f : R -> Y -> R] [B : set Y],
+d.-measurable%classic B ->
+forall [a u v : R],
+`]u, v[%classic a ->
+(forall x : R, `]u, v[%classic x -> mu.-integrable B (EFin \o f x)) ->
+(forall (x : R) (y : Y), `]u, v[%classic x -> B y -> derivable (f^~ y) x 1) ->
+forall [G : Y -> R],
+(forall y : Y, (0 <= G y)%R) ->
+mu.-integrable B (EFin \o G) ->
+(forall (x : R) (y : Y),
+ `]u, v[%classic x -> B y -> (`|partial1of2 f x y| <= G y)%R) ->
+forall
+  [t : set
+         (numFieldNormedType.RealField_sort__canonical__normed_module_NormedModule
+            R)],
+filter.nbhs
+  (filter.lim
+     (filter.fmap
+        (fun h : R =>
+         (h^-1 *:
+          (((fun x' : R => \int[mu]_(y in B) f x' y) \o shift a) h%:A -
+           (fun x' : R => \int[mu]_(y in B) f x' y) a))%R)
+        (filter.nbhs (topology_structure.dnbhs 0%R))))
+  t ->
+exists2 i : R,
+  [set e | (0 < e)%R]%classic i &
+  (ball_ [eta normr] 0%R i
+   `<=` (fun
+           t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
+         (fun
+            y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
+          is_true (y != 0%R)) t0 ->
+         ((fun h : R =>
+           (h^-1 *:
+            (((fun x' : R => \int[mu]_(y in B) f x' y) \o shift a) h%:A -
+             (fun x' : R => \int[mu]_(y in B) f x' y) a))%R) @^-1`
+          t) t0))%classic
+
+Arguments derivable_under_integral {R} [d]%measure_display_scope 
+  {Y mu} [f]%function_scope [B]%classical_set_scope 
+  mB [a u v]%ring_scope Ia (intf derf1)%function_scope 
+  [G]%function_scope G_ge0%function_scope intG G_ub%function_scope 
+  [t] _
+derivable_under_integral is opaque
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.derivable_under_integral
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under, line 286, characters 6-30
 ">derivable_under_integral</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html#derivable">derivable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.F">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html#differentiation_under_integral.a">a</a></span><span class="id"> 1</span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>

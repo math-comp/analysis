@@ -233,7 +233,15 @@
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="counting" class="id"><a name="counting" class="" title="counting not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="counting" class="id"><a name="counting" class="" title="counting : forall {T : choiceType} {R : realType}, set T -> \bar R
+
+counting is not universe polymorphic
+Arguments counting {T R} X%classical_set_scope
+counting is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.counting_measure.counting
+Declared in
+library mathcomp.analysis.measure_theory.counting_measure, line 25, characters 11-19
 ">counting</a></span> (<span id="T:1" class="id"><a name="T:1" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span>) (<span id="R:2" class="id"><a name="R:2" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>) (<span id="X:3" class="id"><a name="X:3" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#T:1">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#R:2">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">if</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> </a></span><span class="id"><a href="mathcomp.classical.cardinality.html#finite_set">finite_set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#X:3">X</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> &gt;]</a></span><span class="gallina-kwd"> then</span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#44d0f89c729ff1a622f59bca3b1bc3fe">#|`</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#44d0f89c729ff1a622f59bca3b1bc3fe"> </a></span><span class="id"><a href="mathcomp.classical.cardinality.html#fset_set">fset_set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#X:3">X</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#44d0f89c729ff1a622f59bca3b1bc3fe"> |</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="gallina-kwd"> else</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span><span class="id">%E</span>.<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#counting">counting</a></span><span class="id"> {T</span><span class="id"> R}</span>.<br/>
@@ -313,22 +321,84 @@
 <span class="id">-</span><span class="gallina-kwd"> by</span><span class="gallina-kwd"> exists</span><span class="id"> k</span>.<br/>
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
-<span id="counting_measure_counting__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="counting_measure_counting__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="counting_measure_counting__canonical__measure_function_Measure" class="" title="counting_measure_counting__canonical__measure_function_Measure
-not a defined object.
-">HB</a></span></span></span></span></span></span></span>.<span id="counting_measure_counting__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="counting_measure_counting__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="counting_measure_counting__canonical__measure_function_Measure" class="" title="counting_measure_counting__canonical__measure_function_Measure
-not a defined object.
-">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="counting_measure_counting__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="counting_measure_counting__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="counting_measure_counting__canonical__measure_function_Measure" class="" title="counting_measure_counting__canonical__measure_function_Measure
-not a defined object.
-"> _</a></span></span></span></span></span></span></span><span id="counting_measure_counting__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="counting_measure_counting__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="counting_measure_counting__canonical__measure_function_Measure" class="" title="counting_measure_counting__canonical__measure_function_Measure
-not a defined object.
-"> :=</a></span></span></span></span></span></span></span><span id="counting_measure_counting__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="counting_measure_counting__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="counting_measure_counting__canonical__measure_function_Measure" class="" title="counting_measure_counting__canonical__measure_function_Measure
-not a defined object.
+<span id="counting_measure_counting__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="counting_measure_counting__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="counting_measure_counting__canonical__measure_function_Measure" class="" title="counting_measure_counting__canonical__measure_function_Measure :
+forall [d : measure_display] (T : sigmaRingType d) (R : realType),
+measure T R
+
+counting_measure_counting__canonical__measure_function_Measure is not universe polymorphic
+Arguments counting_measure_counting__canonical__measure_function_Measure
+  [d]%measure_display_scope T R
+counting_measure_counting__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.counting_measure.counting_measure_counting__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.measure_theory.counting_measure, line 96, characters 0-108
+">HB</a></span></span></span></span></span></span></span>.<span id="counting_measure_counting__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="counting_measure_counting__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="counting_measure_counting__canonical__measure_function_Measure" class="" title="counting_measure_counting__canonical__measure_function_Measure :
+forall [d : measure_display] (T : sigmaRingType d) (R : realType),
+measure T R
+
+counting_measure_counting__canonical__measure_function_Measure is not universe polymorphic
+Arguments counting_measure_counting__canonical__measure_function_Measure
+  [d]%measure_display_scope T R
+counting_measure_counting__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.counting_measure.counting_measure_counting__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.measure_theory.counting_measure, line 96, characters 0-108
+">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="counting_measure_counting__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="counting_measure_counting__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="counting_measure_counting__canonical__measure_function_Measure" class="" title="counting_measure_counting__canonical__measure_function_Measure :
+forall [d : measure_display] (T : sigmaRingType d) (R : realType),
+measure T R
+
+counting_measure_counting__canonical__measure_function_Measure is not universe polymorphic
+Arguments counting_measure_counting__canonical__measure_function_Measure
+  [d]%measure_display_scope T R
+counting_measure_counting__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.counting_measure.counting_measure_counting__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.measure_theory.counting_measure, line 96, characters 0-108
+"> _</a></span></span></span></span></span></span></span><span id="counting_measure_counting__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="counting_measure_counting__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="counting_measure_counting__canonical__measure_function_Measure" class="" title="counting_measure_counting__canonical__measure_function_Measure :
+forall [d : measure_display] (T : sigmaRingType d) (R : realType),
+measure T R
+
+counting_measure_counting__canonical__measure_function_Measure is not universe polymorphic
+Arguments counting_measure_counting__canonical__measure_function_Measure
+  [d]%measure_display_scope T R
+counting_measure_counting__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.counting_measure.counting_measure_counting__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.measure_theory.counting_measure, line 96, characters 0-108
+"> :=</a></span></span></span></span></span></span></span><span id="counting_measure_counting__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="counting_measure_counting__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="counting_measure_counting__canonical__measure_function_Measure" class="" title="counting_measure_counting__canonical__measure_function_Measure :
+forall [d : measure_display] (T : sigmaRingType d) (R : realType),
+measure T R
+
+counting_measure_counting__canonical__measure_function_Measure is not universe polymorphic
+Arguments counting_measure_counting__canonical__measure_function_Measure
+  [d]%measure_display_scope T R
+counting_measure_counting__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.counting_measure.counting_measure_counting__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.measure_theory.counting_measure, line 96, characters 0-108
 "> isMeasure</a></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#isMeasure.Build">Build</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#counting">counting</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#measure_count.counting0">counting0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#measure_count.counting_ge0">counting_ge0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#measure_count.counting_sigma_additive">counting_sigma_additive</a></span>.<br/>
 <br/>
 <span class="vernacular">End</span><span class="id"> measure_count</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sigma_finite_counting" class="id"><a name="sigma_finite_counting" class="" title="sigma_finite_counting not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sigma_finite_counting" class="id"><a name="sigma_finite_counting" class="" title="sigma_finite_counting :
+forall R : realType,
+sigma_finite
+  (T:=Datatypes_nat__canonical__measurable_structure_SemiRingOfSets) (R:=R)
+  [set: nat] counting
+
+sigma_finite_counting is not universe polymorphic
+Arguments sigma_finite_counting R
+sigma_finite_counting is opaque
+Expands to: Constant
+            mathcomp.analysis.measure_theory.counting_measure.sigma_finite_counting
+Declared in
+library mathcomp.analysis.measure_theory.counting_measure, line 101, characters 6-27
 ">sigma_finite_counting</a></span> (<span id="R:74" class="id"><a name="R:74" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#sigma_finite">sigma_finite</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#counting">counting</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#R:74">R</a></span>).<br/>
 <details>
@@ -337,19 +407,85 @@ not a defined object.
 <span class="gallina-kwd">exists</span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="n:76" class="id"><span id="n:75" class="id"><a name="n:76" class="">n</a></span></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#ab8d1100462fb578182d90787a3ffaeb">`I_</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#n:75">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span>)<span class="id">;</span><span class="id"> first</span><span class="gallina-kwd"> by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.classical_sets.html#seteqP">seteqP</a></span><span class="id">;</span><span class="id"> split=&gt;</span><span class="id"> //x</span><span class="id"> _;</span><span class="gallina-kwd"> exists</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> /=</span>.<br/>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> k;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#counting">counting</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#asboolT">asboolT</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ltry">ltry</a></span>.<br/>
 Qed.</div></details>
-<span id="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_factory_7" class="id"><span id="hb_instance_6.R" class="id"><a name="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="" title="counting_measure_counting__canonical__measure_function_SigmaFiniteContent
-not a defined object.
-">HB</a></span></span></span>.<span id="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_factory_7" class="id"><span id="hb_instance_6.R" class="id"><a name="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="" title="counting_measure_counting__canonical__measure_function_SigmaFiniteContent
-not a defined object.
-">instance</a></span></span></span><span class="vernacular"> Definition</span><span id="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_factory_7" class="id"><span id="hb_instance_6.R" class="id"><a name="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="" title="counting_measure_counting__canonical__measure_function_SigmaFiniteContent
-not a defined object.
-"> _</a></span></span></span><span id="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_factory_7" class="id"><span id="hb_instance_6.R" class="id"><a name="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="" title="counting_measure_counting__canonical__measure_function_SigmaFiniteContent
-not a defined object.
-"> R</a></span></span></span><span id="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_factory_7" class="id"><span id="hb_instance_6.R" class="id"><a name="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="" title="counting_measure_counting__canonical__measure_function_SigmaFiniteContent
-not a defined object.
+<span id="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_factory_7" class="id"><span id="hb_instance_6.R" class="id"><a name="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="" title="counting_measure_counting__canonical__measure_function_SigmaFiniteContent :
+forall R : realType,
+{sigma_finite_content set Datatypes_nat__canonical__measurable_structure_SemiRingOfSets -> \bar R}%R
+
+counting_measure_counting__canonical__measure_function_SigmaFiniteContent is not universe polymorphic
+Arguments
+  counting_measure_counting__canonical__measure_function_SigmaFiniteContent 
+  R
+counting_measure_counting__canonical__measure_function_SigmaFiniteContent is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.counting_measure.counting_measure_counting__canonical__measure_function_SigmaFiniteContent
+Declared in
+library mathcomp.analysis.measure_theory.counting_measure, line 107, characters 0-101
+">HB</a></span></span></span>.<span id="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_factory_7" class="id"><span id="hb_instance_6.R" class="id"><a name="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="" title="counting_measure_counting__canonical__measure_function_SigmaFiniteContent :
+forall R : realType,
+{sigma_finite_content set Datatypes_nat__canonical__measurable_structure_SemiRingOfSets -> \bar R}%R
+
+counting_measure_counting__canonical__measure_function_SigmaFiniteContent is not universe polymorphic
+Arguments
+  counting_measure_counting__canonical__measure_function_SigmaFiniteContent 
+  R
+counting_measure_counting__canonical__measure_function_SigmaFiniteContent is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.counting_measure.counting_measure_counting__canonical__measure_function_SigmaFiniteContent
+Declared in
+library mathcomp.analysis.measure_theory.counting_measure, line 107, characters 0-101
+">instance</a></span></span></span><span class="vernacular"> Definition</span><span id="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_factory_7" class="id"><span id="hb_instance_6.R" class="id"><a name="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="" title="counting_measure_counting__canonical__measure_function_SigmaFiniteContent :
+forall R : realType,
+{sigma_finite_content set Datatypes_nat__canonical__measurable_structure_SemiRingOfSets -> \bar R}%R
+
+counting_measure_counting__canonical__measure_function_SigmaFiniteContent is not universe polymorphic
+Arguments
+  counting_measure_counting__canonical__measure_function_SigmaFiniteContent 
+  R
+counting_measure_counting__canonical__measure_function_SigmaFiniteContent is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.counting_measure.counting_measure_counting__canonical__measure_function_SigmaFiniteContent
+Declared in
+library mathcomp.analysis.measure_theory.counting_measure, line 107, characters 0-101
+"> _</a></span></span></span><span id="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_factory_7" class="id"><span id="hb_instance_6.R" class="id"><a name="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="" title="counting_measure_counting__canonical__measure_function_SigmaFiniteContent :
+forall R : realType,
+{sigma_finite_content set Datatypes_nat__canonical__measurable_structure_SemiRingOfSets -> \bar R}%R
+
+counting_measure_counting__canonical__measure_function_SigmaFiniteContent is not universe polymorphic
+Arguments
+  counting_measure_counting__canonical__measure_function_SigmaFiniteContent 
+  R
+counting_measure_counting__canonical__measure_function_SigmaFiniteContent is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.counting_measure.counting_measure_counting__canonical__measure_function_SigmaFiniteContent
+Declared in
+library mathcomp.analysis.measure_theory.counting_measure, line 107, characters 0-101
+"> R</a></span></span></span><span id="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_factory_7" class="id"><span id="hb_instance_6.R" class="id"><a name="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="" title="counting_measure_counting__canonical__measure_function_SigmaFiniteContent :
+forall R : realType,
+{sigma_finite_content set Datatypes_nat__canonical__measurable_structure_SemiRingOfSets -> \bar R}%R
+
+counting_measure_counting__canonical__measure_function_SigmaFiniteContent is not universe polymorphic
+Arguments
+  counting_measure_counting__canonical__measure_function_SigmaFiniteContent 
+  R
+counting_measure_counting__canonical__measure_function_SigmaFiniteContent is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.counting_measure.counting_measure_counting__canonical__measure_function_SigmaFiniteContent
+Declared in
+library mathcomp.analysis.measure_theory.counting_measure, line 107, characters 0-101
 "> :=</a></span></span></span><br/>
-&nbsp;&nbsp;<span id="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_factory_7" class="id"><span id="hb_instance_6.R" class="id"><a name="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="" title="counting_measure_counting__canonical__measure_function_SigmaFiniteContent
-not a defined object.
+&nbsp;&nbsp;<span id="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_factory_7" class="id"><span id="hb_instance_6.R" class="id"><a name="counting_measure_counting__canonical__measure_function_SigmaFiniteContent" class="" title="counting_measure_counting__canonical__measure_function_SigmaFiniteContent :
+forall R : realType,
+{sigma_finite_content set Datatypes_nat__canonical__measurable_structure_SemiRingOfSets -> \bar R}%R
+
+counting_measure_counting__canonical__measure_function_SigmaFiniteContent is not universe polymorphic
+Arguments
+  counting_measure_counting__canonical__measure_function_SigmaFiniteContent 
+  R
+counting_measure_counting__canonical__measure_function_SigmaFiniteContent is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.counting_measure.counting_measure_counting__canonical__measure_function_SigmaFiniteContent
+Declared in
+library mathcomp.analysis.measure_theory.counting_measure, line 107, characters 0-101
 ">@isSigmaFinite</a></span></span></span>.<span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#isSigmaFinite.Build">Build</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#counting">counting</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#R:77">R</a></span>) (<span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#sigma_finite_counting">sigma_finite_counting</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.counting_measure.html#R:77">R</a></span>).<br/>
 
       <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>

@@ -242,7 +242,16 @@
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> </span><span id="dirac_measure.d" class="id"><a name="dirac_measure.d" class="">d</a></span> (<span id="dirac_measure.T" class="id"><a name="dirac_measure.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#SigmaRing.Exports.sigmaRingType">sigmaRingType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#d:1">d</a></span>) (<span id="dirac_measure.a" class="id"><a name="dirac_measure.a" class="">a</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#T:2">T</a></span>) (<span id="dirac_measure.R" class="id"><a name="dirac_measure.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.RealField.Exports.realFieldType">realFieldType</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="dirac" class="id"><a name="dirac" class="" title="dirac not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="dirac" class="id"><a name="dirac" class="" title="dirac :
+forall {d : measure_display} {T : sigmaRingType d},
+T -> forall {R : realFieldType}, set T -> \bar R
+
+dirac is not universe polymorphic
+Arguments dirac {d}%measure_display_scope {T} a {R} A%classical_set_scope
+dirac is transparent
+Expands to: Constant mathcomp.analysis.measure_theory.dirac_measure.dirac
+Declared in
+library mathcomp.analysis.measure_theory.dirac_measure, line 34, characters 11-16
 ">dirac</a></span> (<span id="A:5" class="id"><a name="A:5" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_measure.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_measure.R">R</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.numfun.html#e353122e03268a6eab33cb5af81dd3c6">\1_</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#A:5">A</a></span><span class="id"><a href="mathcomp.analysis.numfun.html#e353122e03268a6eab33cb5af81dd3c6"> a</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>.<br/>
 <br/>
 <span class="vernacular">Let</span><span class="id"> </span><span id="dirac_measure.dirac0" class="id"><a name="dirac_measure.dirac0" class="">dirac0</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac">dirac</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span><br/>
@@ -277,16 +286,66 @@
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#eqe">eqe</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.pnatr_eq0">pnatr_eq0</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#eqb0">eqb0</a></span><span class="id">;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#contra">contra</a></span><span class="id"> aFn</span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#a4185b2be48be717d1ed9bd3d9ed6b28">[!</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#inE">inE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#a4185b2be48be717d1ed9bd3d9ed6b28">]</a></span><span class="id"> aFn;</span><span class="gallina-kwd"> exists</span><span class="id"> i</span>.<br/>
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
-<span id="dirac_measure_dirac__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="dirac_measure_dirac__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="dirac_measure_dirac__canonical__measure_function_Measure" class="" title="dirac_measure_dirac__canonical__measure_function_Measure
-not a defined object.
-">HB</a></span></span></span></span></span></span></span>.<span id="dirac_measure_dirac__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="dirac_measure_dirac__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="dirac_measure_dirac__canonical__measure_function_Measure" class="" title="dirac_measure_dirac__canonical__measure_function_Measure
-not a defined object.
-">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="dirac_measure_dirac__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="dirac_measure_dirac__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="dirac_measure_dirac__canonical__measure_function_Measure" class="" title="dirac_measure_dirac__canonical__measure_function_Measure
-not a defined object.
-"> _</a></span></span></span></span></span></span></span><span id="dirac_measure_dirac__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="dirac_measure_dirac__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="dirac_measure_dirac__canonical__measure_function_Measure" class="" title="dirac_measure_dirac__canonical__measure_function_Measure
-not a defined object.
-"> :=</a></span></span></span></span></span></span></span><span id="dirac_measure_dirac__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="dirac_measure_dirac__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="dirac_measure_dirac__canonical__measure_function_Measure" class="" title="dirac_measure_dirac__canonical__measure_function_Measure
-not a defined object.
+<span id="dirac_measure_dirac__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="dirac_measure_dirac__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="dirac_measure_dirac__canonical__measure_function_Measure" class="" title="dirac_measure_dirac__canonical__measure_function_Measure :
+forall [d : measure_display] [T : sigmaRingType d],
+T -> forall R : realFieldType, measure T R
+
+dirac_measure_dirac__canonical__measure_function_Measure is not universe polymorphic
+Arguments dirac_measure_dirac__canonical__measure_function_Measure
+  [d]%measure_display_scope [T] a R
+dirac_measure_dirac__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.dirac_measure.dirac_measure_dirac__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.measure_theory.dirac_measure, line 58, characters 0-96
+">HB</a></span></span></span></span></span></span></span>.<span id="dirac_measure_dirac__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="dirac_measure_dirac__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="dirac_measure_dirac__canonical__measure_function_Measure" class="" title="dirac_measure_dirac__canonical__measure_function_Measure :
+forall [d : measure_display] [T : sigmaRingType d],
+T -> forall R : realFieldType, measure T R
+
+dirac_measure_dirac__canonical__measure_function_Measure is not universe polymorphic
+Arguments dirac_measure_dirac__canonical__measure_function_Measure
+  [d]%measure_display_scope [T] a R
+dirac_measure_dirac__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.dirac_measure.dirac_measure_dirac__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.measure_theory.dirac_measure, line 58, characters 0-96
+">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="dirac_measure_dirac__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="dirac_measure_dirac__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="dirac_measure_dirac__canonical__measure_function_Measure" class="" title="dirac_measure_dirac__canonical__measure_function_Measure :
+forall [d : measure_display] [T : sigmaRingType d],
+T -> forall R : realFieldType, measure T R
+
+dirac_measure_dirac__canonical__measure_function_Measure is not universe polymorphic
+Arguments dirac_measure_dirac__canonical__measure_function_Measure
+  [d]%measure_display_scope [T] a R
+dirac_measure_dirac__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.dirac_measure.dirac_measure_dirac__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.measure_theory.dirac_measure, line 58, characters 0-96
+"> _</a></span></span></span></span></span></span></span><span id="dirac_measure_dirac__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="dirac_measure_dirac__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="dirac_measure_dirac__canonical__measure_function_Measure" class="" title="dirac_measure_dirac__canonical__measure_function_Measure :
+forall [d : measure_display] [T : sigmaRingType d],
+T -> forall R : realFieldType, measure T R
+
+dirac_measure_dirac__canonical__measure_function_Measure is not universe polymorphic
+Arguments dirac_measure_dirac__canonical__measure_function_Measure
+  [d]%measure_display_scope [T] a R
+dirac_measure_dirac__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.dirac_measure.dirac_measure_dirac__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.measure_theory.dirac_measure, line 58, characters 0-96
+"> :=</a></span></span></span></span></span></span></span><span id="dirac_measure_dirac__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="dirac_measure_dirac__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="dirac_measure_dirac__canonical__measure_function_Measure" class="" title="dirac_measure_dirac__canonical__measure_function_Measure :
+forall [d : measure_display] [T : sigmaRingType d],
+T -> forall R : realFieldType, measure T R
+
+dirac_measure_dirac__canonical__measure_function_Measure is not universe polymorphic
+Arguments dirac_measure_dirac__canonical__measure_function_Measure
+  [d]%measure_display_scope [T] a R
+dirac_measure_dirac__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.dirac_measure.dirac_measure_dirac__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.measure_theory.dirac_measure, line 58, characters 0-96
 "> isMeasure</a></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#isMeasure.Build">Build</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac">dirac</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_measure.dirac0">dirac0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_measure.dirac_ge0">dirac_ge0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_measure.dirac_sigma_additive">dirac_sigma_additive</a></span>.<br/>
 <br/>
@@ -299,21 +358,51 @@ not a defined object.
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> </span><span id="dirac_lemmas_realFieldType.d" class="id"><a name="dirac_lemmas_realFieldType.d" class="">d</a></span> (<span id="dirac_lemmas_realFieldType.T" class="id"><a name="dirac_lemmas_realFieldType.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#SigmaRing.Exports.sigmaRingType">sigmaRingType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#d:9">d</a></span>) (<span id="dirac_lemmas_realFieldType.R" class="id"><a name="dirac_lemmas_realFieldType.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.RealField.Exports.realFieldType">realFieldType</a></span>).<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="diracE" class="id"><a name="diracE" class="" title="diracE not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="diracE" class="id"><a name="diracE" class="" title="diracE :
+forall [d : measure_display] [T : sigmaRingType d] 
+  (R : realFieldType) (a : T) (A : set T),
+(\d_a)%R A = ((a \in A)%:R)%:E
+
+diracE is not universe polymorphic
+Arguments diracE [d]%measure_display_scope [T] R a A%classical_set_scope
+diracE is opaque
+Expands to: Constant mathcomp.analysis.measure_theory.dirac_measure.diracE
+Declared in
+library mathcomp.analysis.measure_theory.dirac_measure, line 70, characters 6-12
 ">diracE</a></span><span class="id"> </span><span id="a:12" class="id"><a name="a:12" class="">a</a></span> (<span id="A:13" class="id"><a name="A:13" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_lemmas_realFieldType.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318">\d_</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#a:12">a</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318"> A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> =</a></span> (<span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#a:12">a</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#A:13">A</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> :&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_lemmas_realFieldType.R">R</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac">dirac</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#indicE">indicE</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="dirac0" class="id"><a name="dirac0" class="" title="dirac0 not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="dirac0" class="id"><a name="dirac0" class="" title="dirac0 :
+forall [d : measure_display] [T : sigmaRingType d] 
+  (R : realFieldType) (a : T),
+(\d_a)%R set0 = 0%R
+
+dirac0 is not universe polymorphic
+Arguments dirac0 [d]%measure_display_scope [T] R a
+dirac0 is opaque
+Expands to: Constant mathcomp.analysis.measure_theory.dirac_measure.dirac0
+Declared in
+library mathcomp.analysis.measure_theory.dirac_measure, line 73, characters 6-12
 ">dirac0</a></span> (<span id="a:14" class="id"><a name="a:14" class="">a</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_lemmas_realFieldType.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318">\d_</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#a:14">a</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318"> set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> :&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_lemmas_realFieldType.R">R</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#diracE">diracE</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#in_set0">in_set0</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="diracT" class="id"><a name="diracT" class="" title="diracT not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="diracT" class="id"><a name="diracT" class="" title="diracT :
+forall [d : measure_display] [T : sigmaRingType d] 
+  (R : realFieldType) (a : T),
+(\d_a)%R [set: T] = 1%E
+
+diracT is not universe polymorphic
+Arguments diracT [d]%measure_display_scope [T] R a
+diracT is opaque
+Expands to: Constant mathcomp.analysis.measure_theory.dirac_measure.diracT
+Declared in
+library mathcomp.analysis.measure_theory.dirac_measure, line 76, characters 6-12
 ">diracT</a></span> (<span id="a:15" class="id"><a name="a:15" class="">a</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_lemmas_realFieldType.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318">\d_</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#a:15">a</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318"> setT</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id">1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> :&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_lemmas_realFieldType.R">R</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -326,7 +415,18 @@ not a defined object.
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> </span><span id="dirac_lemmas.d" class="id"><a name="dirac_lemmas.d" class="">d</a></span> (<span id="dirac_lemmas.T" class="id"><a name="dirac_lemmas.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#SigmaRing.Exports.sigmaRingType">sigmaRingType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#d:16">d</a></span>) (<span id="dirac_lemmas.R" class="id"><a name="dirac_lemmas.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>).<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_card_sum" class="id"><a name="finite_card_sum" class="" title="finite_card_sum not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_card_sum" class="id"><a name="finite_card_sum" class="" title="finite_card_sum :
+forall [d : measure_display] [T : sigmaRingType d] (R : realType) [A : set T],
+finite_set A -> (\esum_(_ in A) 1%E)%R = (#|` fset_set (T:=T) A|%:R)%:E
+
+finite_card_sum is not universe polymorphic
+Arguments finite_card_sum [d]%measure_display_scope 
+  [T] R [A]%classical_set_scope _
+finite_card_sum is opaque
+Expands to: Constant
+            mathcomp.analysis.measure_theory.dirac_measure.finite_card_sum
+Declared in
+library mathcomp.analysis.measure_theory.dirac_measure, line 85, characters 6-21
 ">finite_card_sum</a></span> (<span id="A:19" class="id"><a name="A:19" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_lemmas.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html#finite_set">finite_set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#A:19">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.esum.html#bfafafade7d3e202dbbc3dbf50606eb1">\esum_</a></span>(<span id="i:20" class="id"><a name="i:20" class="">i</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.esum.html#bfafafade7d3e202dbbc3dbf50606eb1"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#A:19">A</a></span>)<span class="id"><a href="mathcomp.analysis.esum.html#bfafafade7d3e202dbbc3dbf50606eb1"> </a></span><span class="id">1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> =</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#44d0f89c729ff1a622f59bca3b1bc3fe">#|`</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#44d0f89c729ff1a622f59bca3b1bc3fe"> </a></span><span class="id"><a href="mathcomp.classical.cardinality.html#fset_set">fset_set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#A:19">A</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#44d0f89c729ff1a622f59bca3b1bc3fe">|</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> :&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_lemmas.R">R</a></span>.<br/>
 <details>
@@ -336,7 +436,18 @@ not a defined object.
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#card_fset_sum1">card_fset_sum1</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.natr_sum">natr_sum</a></span><span class="id"> -</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#sumEFin">sumEFin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#fsbig_finite">fsbig_finite</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_card_dirac" class="id"><a name="finite_card_dirac" class="" title="finite_card_dirac not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_card_dirac" class="id"><a name="finite_card_dirac" class="" title="finite_card_dirac :
+forall [d : measure_display] [T : sigmaRingType d] (R : realType) [A : set T],
+finite_set A -> (\esum_(i in A) \d_i A)%R = (#|` fset_set (T:=T) A|%:R)%:E
+
+finite_card_dirac is not universe polymorphic
+Arguments finite_card_dirac [d]%measure_display_scope 
+  [T] R [A]%classical_set_scope _
+finite_card_dirac is opaque
+Expands to: Constant
+            mathcomp.analysis.measure_theory.dirac_measure.finite_card_dirac
+Declared in
+library mathcomp.analysis.measure_theory.dirac_measure, line 92, characters 6-23
 ">finite_card_dirac</a></span> (<span id="A:21" class="id"><a name="A:21" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_lemmas.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html#finite_set">finite_set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#A:21">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.esum.html#bfafafade7d3e202dbbc3dbf50606eb1">\esum_</a></span>(<span id="i:22" class="id"><a name="i:22" class="">i</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.esum.html#bfafafade7d3e202dbbc3dbf50606eb1"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#A:21">A</a></span>)<span class="id"><a href="mathcomp.analysis.esum.html#bfafafade7d3e202dbbc3dbf50606eb1"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318">\d_</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#i:22">i</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318"> A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> =</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#44d0f89c729ff1a622f59bca3b1bc3fe">#|`</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#44d0f89c729ff1a622f59bca3b1bc3fe"> </a></span><span class="id"><a href="mathcomp.classical.cardinality.html#fset_set">fset_set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#A:21">A</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#44d0f89c729ff1a622f59bca3b1bc3fe">|</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> :&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_lemmas.R">R</a></span>.<br/>
 <details>
@@ -347,7 +458,18 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> i</span><span class="id"> iA;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#diracE">diracE</a></span><span class="id"> iA</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="infinite_card_dirac" class="id"><a name="infinite_card_dirac" class="" title="infinite_card_dirac not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="infinite_card_dirac" class="id"><a name="infinite_card_dirac" class="" title="infinite_card_dirac :
+forall [d : measure_display] [T : sigmaRingType d] (R : realType) [A : set T],
+infinite_set A -> (\esum_(i in A) \d_i A)%R = +oo%E
+
+infinite_card_dirac is not universe polymorphic
+Arguments infinite_card_dirac [d]%measure_display_scope 
+  [T] R [A]%classical_set_scope _
+infinite_card_dirac is opaque
+Expands to: Constant
+            mathcomp.analysis.measure_theory.dirac_measure.infinite_card_dirac
+Declared in
+library mathcomp.analysis.measure_theory.dirac_measure, line 100, characters 6-25
 ">infinite_card_dirac</a></span> (<span id="A:23" class="id"><a name="A:23" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_lemmas.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html#infinite_set">infinite_set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#A:23">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.esum.html#bfafafade7d3e202dbbc3dbf50606eb1">\esum_</a></span>(<span id="i:24" class="id"><a name="i:24" class="">i</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.esum.html#bfafafade7d3e202dbbc3dbf50606eb1"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#A:23">A</a></span>)<span class="id"><a href="mathcomp.analysis.esum.html#bfafafade7d3e202dbbc3dbf50606eb1"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318">\d_</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#i:24">i</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318"> A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> :&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#dirac_lemmas.R">R</a></span>.<br/>
 <details>

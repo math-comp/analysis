@@ -230,11 +230,37 @@
 <span class="vernacular">Section</span><span class="id"> sigT_topology</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="sigT_topology.I" class="id"><a name="sigT_topology.I" class="">I</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span><span class="id"> {</span><span id="sigT_topology.X" class="id"><a name="sigT_topology.X" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#I:1">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sigT_nbhs" class="id"><a name="sigT_nbhs" class="" title="sigT_nbhs not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sigT_nbhs" class="id"><a name="sigT_nbhs" class="" title="sigT_nbhs :
+forall {I : choiceType} {X : I -> topology_structure.Topological.type},
+{i : I & topology_structure.Topological.sort (X i)} ->
+filter.set_system {i : I & topology_structure.Topological.sort (X i)}
+
+sigT_nbhs is not universe polymorphic
+Arguments sigT_nbhs {I} {X}%function_scope x _
+sigT_nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.sigT_nbhs
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 22, characters 11-20
 ">sigT_nbhs</a></span> (<span id="x:4" class="id"><a name="x:4" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">{</a></span><span id="i:3" class="id"><a name="i:3" class="">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:3">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">}</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">{</a></span><span id="i:5" class="id"><a name="i:5" class="">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:5">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">}</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#projT2">projT2</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#x:4">x</a></span>).<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_nbhsE" class="id"><a name="sigT_nbhsE" class="" title="sigT_nbhsE not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_nbhsE" class="id"><a name="sigT_nbhsE" class="" title="sigT_nbhsE :
+forall {I : choiceType} {X : I -> topology_structure.Topological.type}
+  (i : I) (x : topology_structure.Topological.sort (X i)),
+sigT_nbhs
+  (existT (fun i0 : I => topology_structure.Topological.sort (X i0)) i x) =
+filter.fmap
+  (existT (fun i0 : I => topology_structure.Topological.sort (X i0)) i)
+  (filter.nbhs (filter.nbhs x))
+
+sigT_nbhsE is not universe polymorphic
+Arguments sigT_nbhsE {I} {X}%function_scope i x
+sigT_nbhsE is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.sigT_nbhsE
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 25, characters 6-16
 ">sigT_nbhsE</a></span> (<span id="i:6" class="id"><a name="i:6" class="">i</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.I">I</a></span>) (<span id="x:7" class="id"><a name="x:7" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:6">i</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_nbhs">sigT_nbhs</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:6">i</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#x:7">x</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> _</span><span class="id"> _</span>)<span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span> (<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#x:7">x</a></span>).<br/>
 <details>
@@ -242,11 +268,61 @@
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> done</span>. Qed.</div></details>
 <br/>
-<span id="Specif_sigT__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="Specif_sigT__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Specif_sigT__canonical__filter_Nbhs" class="" title="Specif_sigT__canonical__filter_Nbhs not a defined object.
-">HB</a></span></span></span></span></span></span></span>.<span id="Specif_sigT__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="Specif_sigT__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Specif_sigT__canonical__filter_Nbhs" class="" title="Specif_sigT__canonical__filter_Nbhs not a defined object.
-">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="Specif_sigT__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="Specif_sigT__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Specif_sigT__canonical__filter_Nbhs" class="" title="Specif_sigT__canonical__filter_Nbhs not a defined object.
-"> _</a></span></span></span></span></span></span></span><span id="Specif_sigT__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="Specif_sigT__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Specif_sigT__canonical__filter_Nbhs" class="" title="Specif_sigT__canonical__filter_Nbhs not a defined object.
-"> :=</a></span></span></span></span></span></span></span><span id="Specif_sigT__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="Specif_sigT__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Specif_sigT__canonical__filter_Nbhs" class="" title="Specif_sigT__canonical__filter_Nbhs not a defined object.
+<span id="Specif_sigT__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="Specif_sigT__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Specif_sigT__canonical__filter_Nbhs" class="" title="Specif_sigT__canonical__filter_Nbhs :
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) -> filter.Nbhs.type
+
+Specif_sigT__canonical__filter_Nbhs is not universe polymorphic
+Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%function_scope
+Specif_sigT__canonical__filter_Nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__filter_Nbhs
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 29, characters 0-62
+">HB</a></span></span></span></span></span></span></span>.<span id="Specif_sigT__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="Specif_sigT__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Specif_sigT__canonical__filter_Nbhs" class="" title="Specif_sigT__canonical__filter_Nbhs :
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) -> filter.Nbhs.type
+
+Specif_sigT__canonical__filter_Nbhs is not universe polymorphic
+Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%function_scope
+Specif_sigT__canonical__filter_Nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__filter_Nbhs
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 29, characters 0-62
+">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="Specif_sigT__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="Specif_sigT__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Specif_sigT__canonical__filter_Nbhs" class="" title="Specif_sigT__canonical__filter_Nbhs :
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) -> filter.Nbhs.type
+
+Specif_sigT__canonical__filter_Nbhs is not universe polymorphic
+Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%function_scope
+Specif_sigT__canonical__filter_Nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__filter_Nbhs
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 29, characters 0-62
+"> _</a></span></span></span></span></span></span></span><span id="Specif_sigT__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="Specif_sigT__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Specif_sigT__canonical__filter_Nbhs" class="" title="Specif_sigT__canonical__filter_Nbhs :
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) -> filter.Nbhs.type
+
+Specif_sigT__canonical__filter_Nbhs is not universe polymorphic
+Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%function_scope
+Specif_sigT__canonical__filter_Nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__filter_Nbhs
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 29, characters 0-62
+"> :=</a></span></span></span></span></span></span></span><span id="Specif_sigT__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="Specif_sigT__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Specif_sigT__canonical__filter_Nbhs" class="" title="Specif_sigT__canonical__filter_Nbhs :
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) -> filter.Nbhs.type
+
+Specif_sigT__canonical__filter_Nbhs is not universe polymorphic
+Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%function_scope
+Specif_sigT__canonical__filter_Nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__filter_Nbhs
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 29, characters 0-62
 "> hasNbhs</a></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.classical.filter.html#hasNbhs.Build">Build</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">{</a></span><span id="i:8" class="id"><a name="i:8" class="">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:8">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">}</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_nbhs">sigT_nbhs</a></span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Lemma</span><span class="id"> </span><span id="sigT_nbhs_proper" class="id"><a name="sigT_nbhs_proper" class="" title="sigT_nbhs_proper not a defined object.
@@ -273,22 +349,115 @@
 <span class="gallina-kwd">by</span><span class="gallina-kwd"> exists</span><span class="id"> W</span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> x</span><span class="id"> /=</span><span class="id"> Wx;</span><span class="id"> exact/</span>(<span class="id"><a href="mathcomp.classical.filter.html#filterS">filterS</a></span><span class="id"> WlA</span>)<span class="id">/</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open_nbhs_nbhs">open_nbhs_nbhs</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span id="Specif_sigT__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="Specif_sigT__canonical__topology_structure_Topological" class="" title="Specif_sigT__canonical__topology_structure_Topological not a defined object.
-">HB</a></span></span></span></span>.<span id="Specif_sigT__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="Specif_sigT__canonical__topology_structure_Topological" class="" title="Specif_sigT__canonical__topology_structure_Topological not a defined object.
-">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="Specif_sigT__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="Specif_sigT__canonical__topology_structure_Topological" class="" title="Specif_sigT__canonical__topology_structure_Topological not a defined object.
-"> _</a></span></span></span></span><span id="Specif_sigT__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="Specif_sigT__canonical__topology_structure_Topological" class="" title="Specif_sigT__canonical__topology_structure_Topological not a defined object.
-"> :=</a></span></span></span></span><span id="Specif_sigT__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="Specif_sigT__canonical__topology_structure_Topological" class="" title="Specif_sigT__canonical__topology_structure_Topological not a defined object.
+<span id="Specif_sigT__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="Specif_sigT__canonical__topology_structure_Topological" class="" title="Specif_sigT__canonical__topology_structure_Topological :
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) ->
+topology_structure.Topological.type
+
+Specif_sigT__canonical__topology_structure_Topological is not universe polymorphic
+Arguments Specif_sigT__canonical__topology_structure_Topological 
+  {I} {X}%function_scope
+Specif_sigT__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 44, characters 0-121
+">HB</a></span></span></span></span>.<span id="Specif_sigT__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="Specif_sigT__canonical__topology_structure_Topological" class="" title="Specif_sigT__canonical__topology_structure_Topological :
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) ->
+topology_structure.Topological.type
+
+Specif_sigT__canonical__topology_structure_Topological is not universe polymorphic
+Arguments Specif_sigT__canonical__topology_structure_Topological 
+  {I} {X}%function_scope
+Specif_sigT__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 44, characters 0-121
+">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="Specif_sigT__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="Specif_sigT__canonical__topology_structure_Topological" class="" title="Specif_sigT__canonical__topology_structure_Topological :
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) ->
+topology_structure.Topological.type
+
+Specif_sigT__canonical__topology_structure_Topological is not universe polymorphic
+Arguments Specif_sigT__canonical__topology_structure_Topological 
+  {I} {X}%function_scope
+Specif_sigT__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 44, characters 0-121
+"> _</a></span></span></span></span><span id="Specif_sigT__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="Specif_sigT__canonical__topology_structure_Topological" class="" title="Specif_sigT__canonical__topology_structure_Topological :
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) ->
+topology_structure.Topological.type
+
+Specif_sigT__canonical__topology_structure_Topological is not universe polymorphic
+Arguments Specif_sigT__canonical__topology_structure_Topological 
+  {I} {X}%function_scope
+Specif_sigT__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 44, characters 0-121
+"> :=</a></span></span></span></span><span id="Specif_sigT__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="Specif_sigT__canonical__topology_structure_Topological" class="" title="Specif_sigT__canonical__topology_structure_Topological :
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) ->
+topology_structure.Topological.type
+
+Specif_sigT__canonical__topology_structure_Topological is not universe polymorphic
+Arguments Specif_sigT__canonical__topology_structure_Topological 
+  {I} {X}%function_scope
+Specif_sigT__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 44, characters 0-121
 "> Nbhs_isNbhsTopological</a></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Nbhs_isNbhsTopological.Build">Build</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">{</a></span><span id="i:14" class="id"><a name="i:14" class="">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:14">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">}</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_nbhs_proper">sigT_nbhs_proper</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_nbhs_singleton">sigT_nbhs_singleton</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_nbhs_nbhs">sigT_nbhs_nbhs</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="existT_continuous" class="id"><a name="existT_continuous" class="" title="existT_continuous not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="existT_continuous" class="id"><a name="existT_continuous" class="" title="existT_continuous :
+forall {I : choiceType} {X : I -> topology_structure.Topological.type}
+  (i : I)
+  (x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            (X i))),
+filter.continuous_at
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        (X i))
+  (U:=Specif_sigT__canonical__filter_Nbhs) x
+  (existT (fun x0 : I => topology_structure.Topological.sort (X x0)) i)
+
+existT_continuous is not universe polymorphic
+Arguments existT_continuous {I} {X}%function_scope i x t _
+existT_continuous is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.existT_continuous
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 47, characters 6-23
 ">existT_continuous</a></span> (<span id="i:15" class="id"><a name="i:15" class="">i</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.I">I</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:15">i</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> ?</span><span class="id"> ?</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="existT_open_map" class="id"><a name="existT_open_map" class="" title="existT_open_map not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="existT_open_map" class="id"><a name="existT_open_map" class="" title="existT_open_map :
+forall {I : choiceType} {X : I -> topology_structure.Topological.type}
+  (i : I) (A : set (topology_structure.Topological.sort (X i))),
+topology_structure.open A ->
+topology_structure.open
+  [set existT (fun x : I => topology_structure.Topological.sort (X x)) i x
+     | x in A]%classic
+
+existT_open_map is not universe polymorphic
+Arguments existT_open_map {I} {X}%function_scope i 
+  A%classical_set_scope _ t _
+existT_open_map is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.existT_open_map
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 50, characters 6-21
 ">existT_open_map</a></span> (<span id="i:16" class="id"><a name="i:16" class="">i</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.I">I</a></span>) (<span id="A:17" class="id"><a name="A:17" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:16">i</a></span>))<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#A:17">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:16">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#A:17">A</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -299,7 +468,23 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> z</span><span class="id"> Az;</span><span class="gallina-kwd"> exists</span><span class="id"> z</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="existT_nbhs" class="id"><a name="existT_nbhs" class="" title="existT_nbhs not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="existT_nbhs" class="id"><a name="existT_nbhs" class="" title="existT_nbhs :
+forall {I : choiceType} {X : I -> topology_structure.Topological.type}
+  (i : I) (x : topology_structure.Topological.sort (X i))
+  (U : set (topology_structure.Topological.sort (X i))),
+filter.nbhs x U ->
+filter.nbhs
+  (existT (fun i0 : I => topology_structure.Topological.sort (X i0)) i x)
+  [set existT (fun i0 : I => topology_structure.Topological.sort (X i0)) i x
+     | x in U]%classic
+
+existT_nbhs is not universe polymorphic
+Arguments existT_nbhs {I} {X}%function_scope i x U%classical_set_scope _
+existT_nbhs is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.existT_nbhs
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 58, characters 6-17
 ">existT_nbhs</a></span> (<span id="i:18" class="id"><a name="i:18" class="">i</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.I">I</a></span>) (<span id="x:19" class="id"><a name="x:19" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:18">i</a></span>) (<span id="U:20" class="id"><a name="U:20" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:18">i</a></span>))<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#x:19">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#U:20">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:18">i</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#x:19">x</a></span>) (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:18">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#U:20">U</a></span>).<br/>
 <details>
@@ -307,7 +492,22 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="id"> exact/</span><span class="id"><a href="mathcomp.classical.filter.html#filterS">filterS</a></span><span class="id">/</span><span class="id"><a href="mathcomp.classical.classical_sets.html#preimage_image">preimage_image</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_openP" class="id"><a name="sigT_openP" class="" title="sigT_openP not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_openP" class="id"><a name="sigT_openP" class="" title="sigT_openP :
+forall {I : choiceType} {X : I -> topology_structure.Topological.type}
+  (U : set {i : I & topology_structure.Topological.sort (X i)}),
+topology_structure.open U <->
+(forall i : I,
+ topology_structure.open
+   (existT (fun i0 : I => topology_structure.Topological.sort (X i0)) i @^-1`
+    U)%classic)
+
+sigT_openP is not universe polymorphic
+Arguments sigT_openP {I} {X}%function_scope U%classical_set_scope
+sigT_openP is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.sigT_openP
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 62, characters 6-16
 ">sigT_openP</a></span> (<span id="U:22" class="id"><a name="U:22" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">{</a></span><span id="i:21" class="id"><a name="i:21" class="">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:21">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">}</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#U:22">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> &lt;-&gt;</a></span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="i:23" class="id"><a name="i:23" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:23">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#U:22">U</a></span>).<br/>
 <details>
@@ -318,7 +518,36 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#interior">interior</a></span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_nbhsE">sigT_nbhsE</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open_nbhs_nbhs">open_nbhs_nbhs</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_continuous" class="id"><a name="sigT_continuous" class="" title="sigT_continuous not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_continuous" class="id"><a name="sigT_continuous" class="" title="sigT_continuous :
+forall {I : choiceType} {X : I -> topology_structure.Topological.type}
+  {Z : topology_structure.Topological.type}
+  (f : forall i : I,
+       topology_structure.Topological.sort (X i) ->
+       topology_structure.Topological.sort Z),
+(forall (i : I)
+   (x : filter.Nbhs.sort
+          (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+             (X i))),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         (X i))
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         Z)
+   x (f i)) ->
+forall x : filter.Nbhs.sort Specif_sigT__canonical__filter_Nbhs,
+filter.continuous_at (T:=Specif_sigT__canonical__filter_Nbhs)
+  (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        Z)
+  x (sigT_fun f)
+
+sigT_continuous is not universe polymorphic
+Arguments sigT_continuous {I} {X}%function_scope {Z} 
+  (f _)%function_scope x t _
+sigT_continuous is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.sigT_continuous
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 70, characters 6-21
 ">sigT_continuous</a></span><span class="id"> {</span><span id="Z:24" class="id"><a name="Z:24" class="">Z</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span> (<span id="f:26" class="id"><a name="f:26" class="">f</a></span><span class="id"> :</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="i:25" class="id"><a name="i:25" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:25">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#Z:24">Z</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:27" class="id"><a name="i:27" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#f:26">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:27">i</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id"><a href="mathcomp.classical.unstable.html#sigT_fun">sigT_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#f:26">f</a></span>).<br/>
 <details>
@@ -326,14 +555,37 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> ctsf</span><span class="id"> []</span><span class="id"> i</span><span class="id"> x</span><span class="id"> U</span><span class="id"> nU;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#existT_continuous">existT_continuous</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> ctsf</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_setUE" class="id"><a name="sigT_setUE" class="" title="sigT_setUE not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_setUE" class="id"><a name="sigT_setUE" class="" title="sigT_setUE :
+forall {I : choiceType} {X : I -> topology_structure.Topological.type},
+[set: {i : I & topology_structure.Topological.sort (X i)}]%classic =
+(\bigcup_i range (existT (fun i0 : I => let (sort, _) := X i0 in sort) i))%classic
+
+sigT_setUE is not universe polymorphic
+Arguments sigT_setUE {I} {X}%function_scope
+sigT_setUE is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.sigT_setUE
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 74, characters 6-16
 ">sigT_setUE</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">{</a></span><span id="i:28" class="id"><a name="i:28" class="">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:28">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">}</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#4652af423267d4923a164c1104e1273f">\bigcup_</a></span><span id="i:29" class="id"><a name="i:29" class="">i</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:29">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:29">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#eqEsubset">eqEsubset</a></span><span class="id">;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> [[i</span><span class="id"> x]</span><span class="id"> _|[]//];</span><span class="gallina-kwd"> exists</span><span class="id"> i</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_compact" class="id"><a name="sigT_compact" class="" title="sigT_compact not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_compact" class="id"><a name="sigT_compact" class="" title="sigT_compact :
+forall {I : choiceType} {X : I -> topology_structure.Topological.type},
+finite_set [set: I] ->
+(forall i : I, compact [set: topology_structure.Topological.sort (X i)]) ->
+compact [set: {i : I & topology_structure.Topological.sort (X i)}]
+
+sigT_compact is not universe polymorphic
+Arguments sigT_compact {I} {X}%function_scope _ _%function_scope F _ _
+sigT_compact is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.sigT_compact
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 77, characters 6-18
 ">sigT_compact</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html#finite_set">finite_set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.I">I</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:30" class="id"><a name="i:30" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:30">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">{</a></span><span id="i:31" class="id"><a name="i:31" class="">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:31">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">}</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>.<br/>
 <details>

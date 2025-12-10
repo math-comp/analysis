@@ -807,16 +807,221 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <br/>
-<span id="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="id"><span id="Builders_1.HB_unnamed_factory_3" class="id"><a name="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="" title="Builders_1.Builders_1_T__canonical__topology_structure_Topological
-not a defined object.
-">HB</a></span></span>.<span id="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="id"><span id="Builders_1.HB_unnamed_factory_3" class="id"><a name="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="" title="Builders_1.Builders_1_T__canonical__topology_structure_Topological
-not a defined object.
-">instance</a></span></span><span class="vernacular"> Definition</span><span id="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="id"><span id="Builders_1.HB_unnamed_factory_3" class="id"><a name="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="" title="Builders_1.Builders_1_T__canonical__topology_structure_Topological
-not a defined object.
-"> _</a></span></span><span id="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="id"><span id="Builders_1.HB_unnamed_factory_3" class="id"><a name="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="" title="Builders_1.Builders_1_T__canonical__topology_structure_Topological
-not a defined object.
-"> :=</a></span></span><span id="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="id"><span id="Builders_1.HB_unnamed_factory_3" class="id"><a name="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="" title="Builders_1.Builders_1_T__canonical__topology_structure_Topological
-not a defined object.
+<span id="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="id"><span id="Builders_1.HB_unnamed_factory_3" class="id"><a name="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="" title="Builders_1.Builders_1_T__canonical__topology_structure_Topological :
+forall (T : Type) (local_mixin_choice_hasChoice : hasChoice.axioms_ T)
+  (local_mixin_eqtype_hasDecEq : Equality.mixin_of T)
+  (local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ T)
+  (local_mixin_filter_isFiltered : filter.isFiltered.axioms_ T T),
+Discrete_ofNbhs.phant_axioms T local_mixin_choice_hasChoice
+  local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
+  local_mixin_filter_isFiltered T id_phant
+  (Builders_1.Builders_1_T__canonical__filter_Nbhs T
+     local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+     local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
+  id_phant
+  {|
+    filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+    filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+    filter.Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
+    filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+  |} id_phant local_mixin_choice_hasChoice id_phant
+  local_mixin_eqtype_hasDecEq id_phant local_mixin_filter_selfFiltered
+  id_phant local_mixin_filter_isFiltered id_phant id_phant T T id_phant
+  (Builders_1.Builders_1_T__canonical__filter_Filtered T
+     local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+     local_mixin_filter_isFiltered)
+  id_phant
+  {|
+    filter.Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+    filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+    filter.Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+  |} id_phant local_mixin_choice_hasChoice id_phant
+  local_mixin_eqtype_hasDecEq id_phant local_mixin_filter_isFiltered id_phant
+  id_phant ->
+topology_structure.Topological.type
+
+Builders_1.Builders_1_T__canonical__topology_structure_Topological is not universe polymorphic
+Arguments Builders_1.Builders_1_T__canonical__topology_structure_Topological
+  T%type_scope local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_selfFiltered local_mixin_filter_isFiltered 
+  fresh_name_2
+Builders_1.Builders_1_T__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.discrete_topology.Builders_1.Builders_1_T__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.discrete_topology, line 92, characters 0-129
+">HB</a></span></span>.<span id="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="id"><span id="Builders_1.HB_unnamed_factory_3" class="id"><a name="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="" title="Builders_1.Builders_1_T__canonical__topology_structure_Topological :
+forall (T : Type) (local_mixin_choice_hasChoice : hasChoice.axioms_ T)
+  (local_mixin_eqtype_hasDecEq : Equality.mixin_of T)
+  (local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ T)
+  (local_mixin_filter_isFiltered : filter.isFiltered.axioms_ T T),
+Discrete_ofNbhs.phant_axioms T local_mixin_choice_hasChoice
+  local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
+  local_mixin_filter_isFiltered T id_phant
+  (Builders_1.Builders_1_T__canonical__filter_Nbhs T
+     local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+     local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
+  id_phant
+  {|
+    filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+    filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+    filter.Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
+    filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+  |} id_phant local_mixin_choice_hasChoice id_phant
+  local_mixin_eqtype_hasDecEq id_phant local_mixin_filter_selfFiltered
+  id_phant local_mixin_filter_isFiltered id_phant id_phant T T id_phant
+  (Builders_1.Builders_1_T__canonical__filter_Filtered T
+     local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+     local_mixin_filter_isFiltered)
+  id_phant
+  {|
+    filter.Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+    filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+    filter.Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+  |} id_phant local_mixin_choice_hasChoice id_phant
+  local_mixin_eqtype_hasDecEq id_phant local_mixin_filter_isFiltered id_phant
+  id_phant ->
+topology_structure.Topological.type
+
+Builders_1.Builders_1_T__canonical__topology_structure_Topological is not universe polymorphic
+Arguments Builders_1.Builders_1_T__canonical__topology_structure_Topological
+  T%type_scope local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_selfFiltered local_mixin_filter_isFiltered 
+  fresh_name_2
+Builders_1.Builders_1_T__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.discrete_topology.Builders_1.Builders_1_T__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.discrete_topology, line 92, characters 0-129
+">instance</a></span></span><span class="vernacular"> Definition</span><span id="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="id"><span id="Builders_1.HB_unnamed_factory_3" class="id"><a name="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="" title="Builders_1.Builders_1_T__canonical__topology_structure_Topological :
+forall (T : Type) (local_mixin_choice_hasChoice : hasChoice.axioms_ T)
+  (local_mixin_eqtype_hasDecEq : Equality.mixin_of T)
+  (local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ T)
+  (local_mixin_filter_isFiltered : filter.isFiltered.axioms_ T T),
+Discrete_ofNbhs.phant_axioms T local_mixin_choice_hasChoice
+  local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
+  local_mixin_filter_isFiltered T id_phant
+  (Builders_1.Builders_1_T__canonical__filter_Nbhs T
+     local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+     local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
+  id_phant
+  {|
+    filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+    filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+    filter.Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
+    filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+  |} id_phant local_mixin_choice_hasChoice id_phant
+  local_mixin_eqtype_hasDecEq id_phant local_mixin_filter_selfFiltered
+  id_phant local_mixin_filter_isFiltered id_phant id_phant T T id_phant
+  (Builders_1.Builders_1_T__canonical__filter_Filtered T
+     local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+     local_mixin_filter_isFiltered)
+  id_phant
+  {|
+    filter.Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+    filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+    filter.Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+  |} id_phant local_mixin_choice_hasChoice id_phant
+  local_mixin_eqtype_hasDecEq id_phant local_mixin_filter_isFiltered id_phant
+  id_phant ->
+topology_structure.Topological.type
+
+Builders_1.Builders_1_T__canonical__topology_structure_Topological is not universe polymorphic
+Arguments Builders_1.Builders_1_T__canonical__topology_structure_Topological
+  T%type_scope local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_selfFiltered local_mixin_filter_isFiltered 
+  fresh_name_2
+Builders_1.Builders_1_T__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.discrete_topology.Builders_1.Builders_1_T__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.discrete_topology, line 92, characters 0-129
+"> _</a></span></span><span id="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="id"><span id="Builders_1.HB_unnamed_factory_3" class="id"><a name="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="" title="Builders_1.Builders_1_T__canonical__topology_structure_Topological :
+forall (T : Type) (local_mixin_choice_hasChoice : hasChoice.axioms_ T)
+  (local_mixin_eqtype_hasDecEq : Equality.mixin_of T)
+  (local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ T)
+  (local_mixin_filter_isFiltered : filter.isFiltered.axioms_ T T),
+Discrete_ofNbhs.phant_axioms T local_mixin_choice_hasChoice
+  local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
+  local_mixin_filter_isFiltered T id_phant
+  (Builders_1.Builders_1_T__canonical__filter_Nbhs T
+     local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+     local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
+  id_phant
+  {|
+    filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+    filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+    filter.Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
+    filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+  |} id_phant local_mixin_choice_hasChoice id_phant
+  local_mixin_eqtype_hasDecEq id_phant local_mixin_filter_selfFiltered
+  id_phant local_mixin_filter_isFiltered id_phant id_phant T T id_phant
+  (Builders_1.Builders_1_T__canonical__filter_Filtered T
+     local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+     local_mixin_filter_isFiltered)
+  id_phant
+  {|
+    filter.Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+    filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+    filter.Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+  |} id_phant local_mixin_choice_hasChoice id_phant
+  local_mixin_eqtype_hasDecEq id_phant local_mixin_filter_isFiltered id_phant
+  id_phant ->
+topology_structure.Topological.type
+
+Builders_1.Builders_1_T__canonical__topology_structure_Topological is not universe polymorphic
+Arguments Builders_1.Builders_1_T__canonical__topology_structure_Topological
+  T%type_scope local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_selfFiltered local_mixin_filter_isFiltered 
+  fresh_name_2
+Builders_1.Builders_1_T__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.discrete_topology.Builders_1.Builders_1_T__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.discrete_topology, line 92, characters 0-129
+"> :=</a></span></span><span id="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="id"><span id="Builders_1.HB_unnamed_factory_3" class="id"><a name="Builders_1.Builders_1_T__canonical__topology_structure_Topological" class="" title="Builders_1.Builders_1_T__canonical__topology_structure_Topological :
+forall (T : Type) (local_mixin_choice_hasChoice : hasChoice.axioms_ T)
+  (local_mixin_eqtype_hasDecEq : Equality.mixin_of T)
+  (local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ T)
+  (local_mixin_filter_isFiltered : filter.isFiltered.axioms_ T T),
+Discrete_ofNbhs.phant_axioms T local_mixin_choice_hasChoice
+  local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
+  local_mixin_filter_isFiltered T id_phant
+  (Builders_1.Builders_1_T__canonical__filter_Nbhs T
+     local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+     local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
+  id_phant
+  {|
+    filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+    filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+    filter.Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
+    filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+  |} id_phant local_mixin_choice_hasChoice id_phant
+  local_mixin_eqtype_hasDecEq id_phant local_mixin_filter_selfFiltered
+  id_phant local_mixin_filter_isFiltered id_phant id_phant T T id_phant
+  (Builders_1.Builders_1_T__canonical__filter_Filtered T
+     local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+     local_mixin_filter_isFiltered)
+  id_phant
+  {|
+    filter.Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+    filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+    filter.Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+  |} id_phant local_mixin_choice_hasChoice id_phant
+  local_mixin_eqtype_hasDecEq id_phant local_mixin_filter_isFiltered id_phant
+  id_phant ->
+topology_structure.Topological.type
+
+Builders_1.Builders_1_T__canonical__topology_structure_Topological is not universe polymorphic
+Arguments Builders_1.Builders_1_T__canonical__topology_structure_Topological
+  T%type_scope local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_selfFiltered local_mixin_filter_isFiltered 
+  fresh_name_2
+Builders_1.Builders_1_T__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.discrete_topology.Builders_1.Builders_1_T__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.discrete_topology, line 92, characters 0-129
 "> Nbhs_isTopological</a></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Nbhs_isTopological.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Builders_1.Builders_1.T">T</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Builders_1.nbhs_filter">nbhs_filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Builders_1.Builders_1.nbhsE_subproof">nbhsE_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Builders_1.Builders_1.openE_subproof">openE_subproof</a></span>.<br/>
 <br/>
@@ -838,11 +1043,86 @@ not a defined object.
 <br/>
 <span id="Builders_6.op_bigU" class="id"><span id="Builders_6.opI" class="id"><span id="Builders_6.opT" class="id"><span id="Builders_6.op" class="id"><span id="Builders_6.Builders_6.fresh_name_7" class="id"><span id="Builders_6.Builders_6_T__canonical__choice_Choice" class="id"><span id="Builders_6.Builders_6_T__canonical__eqtype_Equality" class="id"><span id="Builders_6.Builders_6.local_mixin_eqtype_hasDecEq" class="id"><span id="Builders_6.Builders_6.local_mixin_choice_hasChoice" class="id"><span id="Builders_6.Builders_6.T" class="id"><span id="Builders_6.Super" class="id"><span id="Builders_6" class="id"><a name="Builders_6.op_bigU" class="">HB</a></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="Builders_6.op_bigU" class="id"><span id="Builders_6.opI" class="id"><span id="Builders_6.opT" class="id"><span id="Builders_6.op" class="id"><span id="Builders_6.Builders_6.fresh_name_7" class="id"><span id="Builders_6.Builders_6_T__canonical__choice_Choice" class="id"><span id="Builders_6.Builders_6_T__canonical__eqtype_Equality" class="id"><span id="Builders_6.Builders_6.local_mixin_eqtype_hasDecEq" class="id"><span id="Builders_6.Builders_6.local_mixin_choice_hasChoice" class="id"><span id="Builders_6.Builders_6.T" class="id"><span id="Builders_6.Super" class="id"><span id="Builders_6" class="id"><a name="Builders_6.op_bigU" class="">builders</a></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Context</span><span id="Builders_6.op_bigU" class="id"><span id="Builders_6.opI" class="id"><span id="Builders_6.opT" class="id"><span id="Builders_6.op" class="id"><span id="Builders_6.Builders_6.fresh_name_7" class="id"><span id="Builders_6.Builders_6_T__canonical__choice_Choice" class="id"><span id="Builders_6.Builders_6_T__canonical__eqtype_Equality" class="id"><span id="Builders_6.Builders_6.local_mixin_eqtype_hasDecEq" class="id"><span id="Builders_6.Builders_6.local_mixin_choice_hasChoice" class="id"><span id="Builders_6.Builders_6.T" class="id"><span id="Builders_6.Super" class="id"><span id="Builders_6" class="id"><a name="Builders_6.op_bigU" class=""> T</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="Builders_6.op_bigU" class="id"><span id="Builders_6.opI" class="id"><span id="Builders_6.opT" class="id"><span id="Builders_6.op" class="id"><span id="Builders_6.Builders_6.fresh_name_7" class="id"><span id="Builders_6.Builders_6_T__canonical__choice_Choice" class="id"><span id="Builders_6.Builders_6_T__canonical__eqtype_Equality" class="id"><span id="Builders_6.Builders_6.local_mixin_eqtype_hasDecEq" class="id"><span id="Builders_6.Builders_6.local_mixin_choice_hasChoice" class="id"><span id="Builders_6.Builders_6.T" class="id"><span id="Builders_6.Super" class="id"><span id="Builders_6" class="id"><a name="Builders_6.op_bigU" class=""> of</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="Builders_6.op_bigU" class="id"><span id="Builders_6.opI" class="id"><span id="Builders_6.opT" class="id"><span id="Builders_6.op" class="id"><span id="Builders_6.Builders_6.fresh_name_7" class="id"><span id="Builders_6.Builders_6_T__canonical__choice_Choice" class="id"><span id="Builders_6.Builders_6_T__canonical__eqtype_Equality" class="id"><span id="Builders_6.Builders_6.local_mixin_eqtype_hasDecEq" class="id"><span id="Builders_6.Builders_6.local_mixin_choice_hasChoice" class="id"><span id="Builders_6.Builders_6.T" class="id"><span id="Builders_6.Super" class="id"><span id="Builders_6" class="id"><a name="Builders_6.op_bigU" class=""> isOpenTopological</a></span></span></span></span></span></span></span></span></span></span></span></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#T:249">T</a></span>.<br/>
 <br/>
-<span id="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="id"><span id="Builders_6.Builders_6_T__canonical__filter_Filtered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="Builders_6.HB_unnamed_factory_8" class="id"><a name="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="" title="Builders_6.Builders_6_T__canonical__filter_Nbhs not a defined object.
-">HB</a></span></span></span></span></span>.<span id="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="id"><span id="Builders_6.Builders_6_T__canonical__filter_Filtered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="Builders_6.HB_unnamed_factory_8" class="id"><a name="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="" title="Builders_6.Builders_6_T__canonical__filter_Nbhs not a defined object.
-">instance</a></span></span></span></span></span><span class="vernacular"> Definition</span><span id="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="id"><span id="Builders_6.Builders_6_T__canonical__filter_Filtered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="Builders_6.HB_unnamed_factory_8" class="id"><a name="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="" title="Builders_6.Builders_6_T__canonical__filter_Nbhs not a defined object.
-"> _</a></span></span></span></span></span><span id="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="id"><span id="Builders_6.Builders_6_T__canonical__filter_Filtered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="Builders_6.HB_unnamed_factory_8" class="id"><a name="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="" title="Builders_6.Builders_6_T__canonical__filter_Nbhs not a defined object.
-"> :=</a></span></span></span></span></span><span id="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="id"><span id="Builders_6.Builders_6_T__canonical__filter_Filtered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="Builders_6.HB_unnamed_factory_8" class="id"><a name="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="" title="Builders_6.Builders_6_T__canonical__filter_Nbhs not a defined object.
+<span id="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="id"><span id="Builders_6.Builders_6_T__canonical__filter_Filtered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="Builders_6.HB_unnamed_factory_8" class="id"><a name="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="" title="Builders_6.Builders_6_T__canonical__filter_Nbhs :
+forall T : Type,
+hasChoice.axioms_ T ->
+Equality.mixin_of T ->
+filter.selfFiltered.axioms_ T ->
+filter.isFiltered.axioms_ T T -> filter.Nbhs.type
+
+Builders_6.Builders_6_T__canonical__filter_Nbhs is not universe polymorphic
+Arguments Builders_6.Builders_6_T__canonical__filter_Nbhs 
+  T%type_scope local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
+Builders_6.Builders_6_T__canonical__filter_Nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.discrete_topology.Builders_6.Builders_6_T__canonical__filter_Nbhs
+Declared in
+library mathcomp.analysis.topology_theory.discrete_topology, line 98, characters 0-50
+">HB</a></span></span></span></span></span>.<span id="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="id"><span id="Builders_6.Builders_6_T__canonical__filter_Filtered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="Builders_6.HB_unnamed_factory_8" class="id"><a name="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="" title="Builders_6.Builders_6_T__canonical__filter_Nbhs :
+forall T : Type,
+hasChoice.axioms_ T ->
+Equality.mixin_of T ->
+filter.selfFiltered.axioms_ T ->
+filter.isFiltered.axioms_ T T -> filter.Nbhs.type
+
+Builders_6.Builders_6_T__canonical__filter_Nbhs is not universe polymorphic
+Arguments Builders_6.Builders_6_T__canonical__filter_Nbhs 
+  T%type_scope local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
+Builders_6.Builders_6_T__canonical__filter_Nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.discrete_topology.Builders_6.Builders_6_T__canonical__filter_Nbhs
+Declared in
+library mathcomp.analysis.topology_theory.discrete_topology, line 98, characters 0-50
+">instance</a></span></span></span></span></span><span class="vernacular"> Definition</span><span id="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="id"><span id="Builders_6.Builders_6_T__canonical__filter_Filtered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="Builders_6.HB_unnamed_factory_8" class="id"><a name="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="" title="Builders_6.Builders_6_T__canonical__filter_Nbhs :
+forall T : Type,
+hasChoice.axioms_ T ->
+Equality.mixin_of T ->
+filter.selfFiltered.axioms_ T ->
+filter.isFiltered.axioms_ T T -> filter.Nbhs.type
+
+Builders_6.Builders_6_T__canonical__filter_Nbhs is not universe polymorphic
+Arguments Builders_6.Builders_6_T__canonical__filter_Nbhs 
+  T%type_scope local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
+Builders_6.Builders_6_T__canonical__filter_Nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.discrete_topology.Builders_6.Builders_6_T__canonical__filter_Nbhs
+Declared in
+library mathcomp.analysis.topology_theory.discrete_topology, line 98, characters 0-50
+"> _</a></span></span></span></span></span><span id="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="id"><span id="Builders_6.Builders_6_T__canonical__filter_Filtered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="Builders_6.HB_unnamed_factory_8" class="id"><a name="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="" title="Builders_6.Builders_6_T__canonical__filter_Nbhs :
+forall T : Type,
+hasChoice.axioms_ T ->
+Equality.mixin_of T ->
+filter.selfFiltered.axioms_ T ->
+filter.isFiltered.axioms_ T T -> filter.Nbhs.type
+
+Builders_6.Builders_6_T__canonical__filter_Nbhs is not universe polymorphic
+Arguments Builders_6.Builders_6_T__canonical__filter_Nbhs 
+  T%type_scope local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
+Builders_6.Builders_6_T__canonical__filter_Nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.discrete_topology.Builders_6.Builders_6_T__canonical__filter_Nbhs
+Declared in
+library mathcomp.analysis.topology_theory.discrete_topology, line 98, characters 0-50
+"> :=</a></span></span></span></span></span><span id="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="id"><span id="Builders_6.Builders_6_T__canonical__filter_Filtered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="Builders_6.topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="Builders_6.HB_unnamed_factory_8" class="id"><a name="Builders_6.Builders_6_T__canonical__filter_Nbhs" class="" title="Builders_6.Builders_6_T__canonical__filter_Nbhs :
+forall T : Type,
+hasChoice.axioms_ T ->
+Equality.mixin_of T ->
+filter.selfFiltered.axioms_ T ->
+filter.isFiltered.axioms_ T T -> filter.Nbhs.type
+
+Builders_6.Builders_6_T__canonical__filter_Nbhs is not universe polymorphic
+Arguments Builders_6.Builders_6_T__canonical__filter_Nbhs 
+  T%type_scope local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
+Builders_6.Builders_6_T__canonical__filter_Nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.discrete_topology.Builders_6.Builders_6_T__canonical__filter_Nbhs
+Declared in
+library mathcomp.analysis.topology_theory.discrete_topology, line 98, characters 0-50
 "> hasNbhs</a></span></span></span></span></span>.<span class="id"><a href="mathcomp.classical.filter.html#hasNbhs.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Builders_6.Builders_6.T">T</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#nbhs_of_open">nbhs_of_open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Builders_6.op">op</a></span>).<br/>
 <br/>
 <span class="vernacular">Let</span><span class="id"> </span><span id="Builders_6.Builders_6.nbhs_pfilter_subproof" class="id"><a name="Builders_6.Builders_6.nbhs_pfilter_subproof" class="">nbhs_pfilter_subproof</a></span> (<span id="p:251" class="id"><a name="p:251" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Builders_6.Builders_6.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#ProperFilter">ProperFilter</a></span> (<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#p:251">p</a></span>).<br/>
@@ -878,16 +1158,106 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> /Aop</span><span class="id"> [B</span><span class="id"> [Bop</span><span class="id"> Bp</span><span class="id"> sBA]];</span><span class="gallina-kwd"> exists</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> _</span><span class="id"> B</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#conj">conj</a></span><span class="id"> Bop</span><span class="id"> sBA</span>)).<br/>
 Qed.</div></details>
 <br/>
-<span id="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="id"><span id="Builders_6.HB_unnamed_factory_11" class="id"><a name="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="" title="Builders_6.Builders_6_T__canonical__topology_structure_Topological
-not a defined object.
-">HB</a></span></span>.<span id="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="id"><span id="Builders_6.HB_unnamed_factory_11" class="id"><a name="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="" title="Builders_6.Builders_6_T__canonical__topology_structure_Topological
-not a defined object.
-">instance</a></span></span><span class="vernacular"> Definition</span><span id="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="id"><span id="Builders_6.HB_unnamed_factory_11" class="id"><a name="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="" title="Builders_6.Builders_6_T__canonical__topology_structure_Topological
-not a defined object.
-"> _</a></span></span><span id="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="id"><span id="Builders_6.HB_unnamed_factory_11" class="id"><a name="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="" title="Builders_6.Builders_6_T__canonical__topology_structure_Topological
-not a defined object.
-"> :=</a></span></span><span id="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="id"><span id="Builders_6.HB_unnamed_factory_11" class="id"><a name="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="" title="Builders_6.Builders_6_T__canonical__topology_structure_Topological
-not a defined object.
+<span id="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="id"><span id="Builders_6.HB_unnamed_factory_11" class="id"><a name="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="" title="Builders_6.Builders_6_T__canonical__topology_structure_Topological :
+forall (T : Type) (local_mixin_choice_hasChoice : hasChoice.axioms_ T)
+  (local_mixin_eqtype_hasDecEq : Equality.mixin_of T)
+  (local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ T)
+  (local_mixin_filter_isFiltered : filter.isFiltered.axioms_ T T),
+topology_structure.Nbhs_isTopological.axioms_ T local_mixin_choice_hasChoice
+  local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
+  local_mixin_filter_isFiltered ->
+topology_structure.Topological.type
+
+Builders_6.Builders_6_T__canonical__topology_structure_Topological is not universe polymorphic
+Arguments Builders_6.Builders_6_T__canonical__topology_structure_Topological
+  T%type_scope local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
+  local_mixin_topology_structure_Nbhs_isTopological
+Builders_6.Builders_6_T__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.discrete_topology.Builders_6.Builders_6_T__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.discrete_topology, line 98, characters 0-50
+">HB</a></span></span>.<span id="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="id"><span id="Builders_6.HB_unnamed_factory_11" class="id"><a name="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="" title="Builders_6.Builders_6_T__canonical__topology_structure_Topological :
+forall (T : Type) (local_mixin_choice_hasChoice : hasChoice.axioms_ T)
+  (local_mixin_eqtype_hasDecEq : Equality.mixin_of T)
+  (local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ T)
+  (local_mixin_filter_isFiltered : filter.isFiltered.axioms_ T T),
+topology_structure.Nbhs_isTopological.axioms_ T local_mixin_choice_hasChoice
+  local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
+  local_mixin_filter_isFiltered ->
+topology_structure.Topological.type
+
+Builders_6.Builders_6_T__canonical__topology_structure_Topological is not universe polymorphic
+Arguments Builders_6.Builders_6_T__canonical__topology_structure_Topological
+  T%type_scope local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
+  local_mixin_topology_structure_Nbhs_isTopological
+Builders_6.Builders_6_T__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.discrete_topology.Builders_6.Builders_6_T__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.discrete_topology, line 98, characters 0-50
+">instance</a></span></span><span class="vernacular"> Definition</span><span id="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="id"><span id="Builders_6.HB_unnamed_factory_11" class="id"><a name="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="" title="Builders_6.Builders_6_T__canonical__topology_structure_Topological :
+forall (T : Type) (local_mixin_choice_hasChoice : hasChoice.axioms_ T)
+  (local_mixin_eqtype_hasDecEq : Equality.mixin_of T)
+  (local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ T)
+  (local_mixin_filter_isFiltered : filter.isFiltered.axioms_ T T),
+topology_structure.Nbhs_isTopological.axioms_ T local_mixin_choice_hasChoice
+  local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
+  local_mixin_filter_isFiltered ->
+topology_structure.Topological.type
+
+Builders_6.Builders_6_T__canonical__topology_structure_Topological is not universe polymorphic
+Arguments Builders_6.Builders_6_T__canonical__topology_structure_Topological
+  T%type_scope local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
+  local_mixin_topology_structure_Nbhs_isTopological
+Builders_6.Builders_6_T__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.discrete_topology.Builders_6.Builders_6_T__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.discrete_topology, line 98, characters 0-50
+"> _</a></span></span><span id="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="id"><span id="Builders_6.HB_unnamed_factory_11" class="id"><a name="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="" title="Builders_6.Builders_6_T__canonical__topology_structure_Topological :
+forall (T : Type) (local_mixin_choice_hasChoice : hasChoice.axioms_ T)
+  (local_mixin_eqtype_hasDecEq : Equality.mixin_of T)
+  (local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ T)
+  (local_mixin_filter_isFiltered : filter.isFiltered.axioms_ T T),
+topology_structure.Nbhs_isTopological.axioms_ T local_mixin_choice_hasChoice
+  local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
+  local_mixin_filter_isFiltered ->
+topology_structure.Topological.type
+
+Builders_6.Builders_6_T__canonical__topology_structure_Topological is not universe polymorphic
+Arguments Builders_6.Builders_6_T__canonical__topology_structure_Topological
+  T%type_scope local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
+  local_mixin_topology_structure_Nbhs_isTopological
+Builders_6.Builders_6_T__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.discrete_topology.Builders_6.Builders_6_T__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.discrete_topology, line 98, characters 0-50
+"> :=</a></span></span><span id="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="id"><span id="Builders_6.HB_unnamed_factory_11" class="id"><a name="Builders_6.Builders_6_T__canonical__topology_structure_Topological" class="" title="Builders_6.Builders_6_T__canonical__topology_structure_Topological :
+forall (T : Type) (local_mixin_choice_hasChoice : hasChoice.axioms_ T)
+  (local_mixin_eqtype_hasDecEq : Equality.mixin_of T)
+  (local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ T)
+  (local_mixin_filter_isFiltered : filter.isFiltered.axioms_ T T),
+topology_structure.Nbhs_isTopological.axioms_ T local_mixin_choice_hasChoice
+  local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
+  local_mixin_filter_isFiltered ->
+topology_structure.Topological.type
+
+Builders_6.Builders_6_T__canonical__topology_structure_Topological is not universe polymorphic
+Arguments Builders_6.Builders_6_T__canonical__topology_structure_Topological
+  T%type_scope local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
+  local_mixin_topology_structure_Nbhs_isTopological
+Builders_6.Builders_6_T__canonical__topology_structure_Topological is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.discrete_topology.Builders_6.Builders_6_T__canonical__topology_structure_Topological
+Declared in
+library mathcomp.analysis.topology_theory.discrete_topology, line 98, characters 0-50
 "> Nbhs_isTopological</a></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Nbhs_isTopological.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Builders_6.Builders_6.T">T</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Builders_6.Builders_6.nbhs_pfilter_subproof">nbhs_pfilter_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Builders_6.Builders_6.nbhsE_subproof">nbhsE_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Builders_6.Builders_6.openE_subproof">openE_subproof</a></span>.<br/>
 <br/>

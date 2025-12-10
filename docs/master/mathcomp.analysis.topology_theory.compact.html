@@ -254,7 +254,14 @@ This file provides various formulations of compactness, and some theory.
 <span class="vernacular">Class</span><span class="id"> </span><span id="infer" class="id"><span id="infer" class="id"><a name="infer" class="">infer</a></span></span> (<span id="P:1" class="id"><a name="P:1" class="">P</a></span><span class="id"> :</span><span class="gallina-kwd"> Prop</span>)<span class="id"> :=</span><span class="id"> </span><span id="Infer" class="id"><span id="Infer" class="id"><a name="Infer" class="">Infer</a></span></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#P:1">P</a></span>.<br/>
 <span class="id">#[export]</span><span class="vernacular"> Hint</span><span class="id"> Mode</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#infer">infer</a></span><span class="id"> !</span><span class="id"> :</span><span class="id"> typeclass_instances</span>.<br/>
 <span class="id">#[export]</span><span class="vernacular"> Hint</span><span class="id"> Extern</span><span class="id"> 0</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#infer">infer</a></span><span class="id"> _</span>)<span class="id"> =&gt;</span> (<span class="id">exact</span>)<span class="id"> :</span><span class="id"> typeclass_instances</span>.<br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="inferP" class="id"><a name="inferP" class="" title="inferP not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="inferP" class="id"><a name="inferP" class="" title="inferP : forall [P : Prop], P -> infer P
+
+inferP is not universe polymorphic
+Arguments inferP [P]%type_scope _
+inferP is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.inferP
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 47, characters 6-12
 ">inferP</a></span> (<span id="P:4" class="id"><a name="P:4" class="">P</a></span><span class="id"> :</span><span class="gallina-kwd"> Prop</span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#P:4">P</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#infer">infer</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#P:4">P</a></span><br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -264,45 +271,153 @@ This file provides various formulations of compactness, and some theory.
 <span class="vernacular">Section</span><span class="id"> Compact</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Compact.T" class="id"><a name="Compact.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="cluster" class="id"><a name="cluster" class="" title="cluster not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="cluster" class="id"><a name="cluster" class="" title="cluster :
+forall {T : topology_structure.Topological.type},
+filter.set_system (topology_structure.Topological.sort T) ->
+set (topology_structure.Topological.sort T)
+
+cluster is not universe polymorphic
+Arguments cluster {T} F _
+cluster is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.cluster
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 52, characters 11-18
 ">cluster</a></span> (<span id="F:6" class="id"><a name="F:6" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Compact.T">T</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span id="p:7" class="id"><a name="p:7" class="">p</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> :</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Compact.T">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:6">F</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#66dbad1460009d34aaa2b12bce284203"> `#`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#66dbad1460009d34aaa2b12bce284203"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#p:7">p</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">]</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="cluster_nbhs" class="id"><a name="cluster_nbhs" class="" title="cluster_nbhs not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="cluster_nbhs" class="id"><a name="cluster_nbhs" class="" title="cluster_nbhs :
+forall {T : topology_structure.Topological.type}
+  [t : filter.Filtered.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+            T)],
+cluster (filter.nbhs t) t
+
+cluster_nbhs is not universe polymorphic
+Expanded type for implicit arguments
+cluster_nbhs :
+forall {T : topology_structure.Topological.type}
+  [t : filter.Filtered.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+            T)]
+  [A B : set (topology_structure.Topological.sort T)],
+filter.nbhs t A ->
+filter.nbhs t B ->
+exists a : topology_structure.Topological.sort T, (A `&` B)%classic a
+
+Arguments cluster_nbhs {T} [t A B] _ _
+cluster_nbhs is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.cluster_nbhs
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 54, characters 6-18
 ">cluster_nbhs</a></span><span class="id"> </span><span id="t:8" class="id"><a name="t:8" class="">t</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cluster">cluster</a></span> (<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#t:8">t</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#t:8">t</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> A</span><span class="id"> B</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#nbhs_singleton">nbhs_singleton</a></span><span class="id"> At</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#nbhs_singleton">nbhs_singleton</a></span><span class="id"> Bt;</span><span class="gallina-kwd"> exists</span><span class="id"> t</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="clusterEonbhs" class="id"><a name="clusterEonbhs" class="" title="clusterEonbhs not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="clusterEonbhs" class="id"><a name="clusterEonbhs" class="" title="clusterEonbhs :
+forall {T : topology_structure.Topological.type}
+  (F : filter.set_system (topology_structure.Topological.sort T)),
+cluster F = [set p | F `#` topology_structure.open_nbhs p]%classic
+
+clusterEonbhs is not universe polymorphic
+Arguments clusterEonbhs {T} F
+clusterEonbhs is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.clusterEonbhs
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 57, characters 6-19
 ">clusterEonbhs</a></span><span class="id"> </span><span id="F:9" class="id"><a name="F:9" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cluster">cluster</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:9">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="p:10" class="id"><a name="p:10" class="">p</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:9">F</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#66dbad1460009d34aaa2b12bce284203"> `#`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#66dbad1460009d34aaa2b12bce284203"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open_nbhs">open_nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#p:10">p</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> under</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#eq_fun">eq_fun</a></span><span class="id"> do</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#meets_openr">meets_openr</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="clusterE" class="id"><a name="clusterE" class="" title="clusterE not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="clusterE" class="id"><a name="clusterE" class="" title="clusterE :
+forall {T : topology_structure.Topological.type}
+  (F : filter.set_system (topology_structure.Topological.sort T)),
+cluster F = (\bigcap_(A in F) topology_structure.closure A)%classic
+
+clusterE is not universe polymorphic
+Arguments clusterE {T} F
+clusterE is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.clusterE
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 60, characters 6-14
 ">clusterE</a></span><span class="id"> </span><span id="F:11" class="id"><a name="F:11" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cluster">cluster</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:11">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#14a333048a56ff17648c57d37a4a5f40">\bigcap_</a></span>(<span id="A:12" class="id"><a name="A:12" class="">A</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.classical.classical_sets.html#14a333048a56ff17648c57d37a4a5f40"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:11">F</a></span>) (<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:12">A</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#predeqE">predeqE</a></span><span class="id"> =&gt;</span><span class="id"> p;</span><span class="id"> split=&gt;</span><span class="id"> cF</span><span class="id"> ????;</span><span class="id"> apply:</span><span class="id"> cF</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="closureEcluster" class="id"><a name="closureEcluster" class="" title="closureEcluster not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="closureEcluster" class="id"><a name="closureEcluster" class="" title="closureEcluster :
+forall {T : topology_structure.Topological.type}
+  (E : set (topology_structure.Topological.sort T)),
+topology_structure.closure E = cluster (filter.globally E)
+
+closureEcluster is not universe polymorphic
+Arguments closureEcluster {T} E%classical_set_scope
+closureEcluster is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.closureEcluster
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 63, characters 6-21
 ">closureEcluster</a></span><span class="id"> </span><span id="E:13" class="id"><a name="E:13" class="">E</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#E:13">E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cluster">cluster</a></span> (<span class="id"><a href="mathcomp.classical.filter.html#globally">globally</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#E:13">E</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closureEnbhs">closureEnbhs</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_cluster" class="id"><a name="cvg_cluster" class="" title="cvg_cluster not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_cluster" class="id"><a name="cvg_cluster" class="" title="cvg_cluster :
+forall {T : topology_structure.Topological.type}
+  [F
+   G : filter.Filtered.sort
+         (filter.filter_set_system__canonical__filter_Filtered
+            (topology_structure.Topological.sort T))],
+filter.cvg_to (filter.nbhs F) (filter.nbhs G) ->
+(cluster F `<=` cluster G)%classic
+
+cvg_cluster is not universe polymorphic
+Expanded type for implicit arguments
+cvg_cluster :
+forall {T : topology_structure.Topological.type}
+  [F
+   G : filter.Filtered.sort
+         (filter.filter_set_system__canonical__filter_Filtered
+            (topology_structure.Topological.sort T))],
+filter.cvg_to (filter.nbhs F) (filter.nbhs G) ->
+forall [t : topology_structure.Topological.sort T],
+cluster F t ->
+forall [A B : set (topology_structure.Topological.sort T)],
+G A ->
+filter.nbhs t B ->
+exists a : topology_structure.Topological.sort T, (A `&` B)%classic a
+
+Arguments cvg_cluster {T} [F G] _ [t] _ [A B] _ _
+cvg_cluster is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.cvg_cluster
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 66, characters 6-17
 ">cvg_cluster</a></span><span class="id"> </span><span id="F:14" class="id"><a name="F:14" class="">F</a></span><span class="id"> </span><span id="G:15" class="id"><a name="G:15" class="">G</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:14">F</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#G:15">G</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cluster">cluster</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:14">F</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cluster">cluster</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#G:15">G</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> sGF</span><span class="id"> p</span><span class="id"> Fp</span><span class="id"> P</span><span class="id"> Q</span><span class="id"> GP</span><span class="id"> Qp;</span><span class="id"> apply:</span><span class="id"> Fp</span><span class="id"> Qp;</span><span class="id"> apply:</span><span class="id"> sGF</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="cluster_cvgE" class="id"><a name="cluster_cvgE" class="" title="cluster_cvgE not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="cluster_cvgE" class="id"><a name="cluster_cvgE" class="" title="cluster_cvgE :
+forall {T : topology_structure.Topological.type}
+  [F : filter.set_system (topology_structure.Topological.sort T)],
+filter.Filter F ->
+cluster F =
+[set p | (exists2
+            G : filter.set_system (topology_structure.Topological.sort T),
+            filter.ProperFilter G &
+            filter.cvg_to (filter.nbhs G) (filter.nbhs p) /\ F `<=` G)]%classic
+
+cluster_cvgE is not universe polymorphic
+Arguments cluster_cvgE {T} [F] _
+cluster_cvgE is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.cluster_cvgE
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 69, characters 6-18
 ">cluster_cvgE</a></span><span class="id"> </span><span id="F:16" class="id"><a name="F:16" class="">F</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#Filter">Filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:16">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cluster">cluster</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:16">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="p:17" class="id"><a name="p:17" class="">p</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="gallina-kwd"> exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span id="G:19" class="id"><span id="G:18" class="id"><a name="G:19" class="">G</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#ProperFilter">ProperFilter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#G:18">G</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#G:19">G</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#p:17">p</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:16">F</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#G:19">G</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
@@ -333,7 +448,22 @@ This file provides various formulations of compactness, and some theory.
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setIT">setIT</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="closureEcvg" class="id"><a name="closureEcvg" class="" title="closureEcvg not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="closureEcvg" class="id"><a name="closureEcvg" class="" title="closureEcvg :
+forall {T : topology_structure.Topological.type}
+  (E : set (topology_structure.Topological.sort T)),
+topology_structure.closure E =
+[set p | (exists2
+            G : filter.set_system (topology_structure.Topological.sort T),
+            filter.ProperFilter G &
+            filter.cvg_to (filter.nbhs G) (filter.nbhs p) /\
+            filter.globally E `<=` G)]%classic
+
+closureEcvg is not universe polymorphic
+Arguments closureEcvg {T} E%classical_set_scope
+closureEcvg is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.closureEcvg
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 97, characters 6-17
 ">closureEcvg</a></span> (<span id="E:24" class="id"><a name="E:24" class="">E</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Compact.T">T</a></span>)<span class="id">:</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#E:24">E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="p:25" class="id"><a name="p:25" class="">p</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="gallina-kwd"> exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span id="G:27" class="id"><span id="G:26" class="id"><a name="G:27" class="">G</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#ProperFilter">ProperFilter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#G:26">G</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#G:27">G</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#p:25">p</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#globally">globally</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#E:24">E</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#G:27">G</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
@@ -342,24 +472,66 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#closureEcluster">closureEcluster</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cluster_cvgE">cluster_cvgE</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="compact" class="id"><a name="compact" class="" title="compact : (R -> Prop) -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="compact" class="id"><a name="compact" class="" title="compact :
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> Prop
 
 compact is not universe polymorphic
-Arguments compact X%function_scope
+Arguments compact {T} A%classical_set_scope
 compact is transparent
-Expands to: Constant Stdlib.Reals.Rtopology.compact
-Declared in library Stdlib.Reals.Rtopology, line 420, characters 11-18
+Expands to: Constant mathcomp.analysis.topology_theory.compact.compact
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 102, characters 11-18
 ">compact</a></span><span class="id"> </span><span id="A:28" class="id"><a name="A:28" class="">A</a></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span> (<span id="F:29" class="id"><a name="F:29" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Compact.T">T</a></span>)<span class="id">,</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#ProperFilter">ProperFilter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:29">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:29">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:28">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:28">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cluster">cluster</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:29">F</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact0" class="id"><a name="compact0" class="" title="compact0 not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact0" class="id"><a name="compact0" class="" title="compact0 : forall {T : topology_structure.Topological.type}, compact set0
+
+compact0 is not universe polymorphic
+Expanded type for implicit arguments
+compact0 :
+forall {T : topology_structure.Topological.type}
+  [F : filter.set_system (topology_structure.Topological.sort T)],
+filter.ProperFilter F ->
+F set0 ->
+exists a : topology_structure.Topological.sort T,
+  (set0 `&` cluster F)%classic a
+
+Arguments compact0 {T} [F] _ _
+compact0 is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.compact0
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 105, characters 6-14
 ">compact0</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> F</span><span class="id"> FF</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.filter.html#filter_ex">filter_ex</a></span><span class="id"> []</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="subclosed_compact" class="id"><a name="subclosed_compact" class="" title="subclosed_compact not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="subclosed_compact" class="id"><a name="subclosed_compact" class="" title="subclosed_compact :
+forall {T : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort T)],
+topology_structure.closed A -> compact B -> (A `<=` B)%classic -> compact A
+
+subclosed_compact is not universe polymorphic
+Expanded type for implicit arguments
+subclosed_compact :
+forall {T : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort T)],
+topology_structure.closed A ->
+compact B ->
+(A `<=` B)%classic ->
+forall [F : filter.set_system (topology_structure.Topological.sort T)],
+filter.ProperFilter F ->
+F A ->
+exists a : topology_structure.Topological.sort T, (A `&` cluster F)%classic a
+
+Arguments subclosed_compact {T} [A B]%classical_set_scope _ _ _ [F] _ _
+subclosed_compact is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.subclosed_compact
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 108, characters 6-23
 ">subclosed_compact</a></span> (<span id="A:30" class="id"><a name="A:30" class="">A</a></span><span class="id"> </span><span id="B:31" class="id"><a name="B:31" class="">B</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Compact.T">T</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:30">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#B:31">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:30">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#B:31">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:30">A</a></span>.<br/>
 <details>
@@ -380,7 +552,27 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> /clAp</span><span class="id"> [q</span><span class="id"> [Aq</span><span class="id"> AqsoBq]];</span><span class="gallina-kwd"> exists</span><span class="id"> q;</span><span class="id"> apply:</span><span class="id"> AqsoBq</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_set1" class="id"><a name="compact_set1" class="" title="compact_set1 not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_set1" class="id"><a name="compact_set1" class="" title="compact_set1 :
+forall {T : topology_structure.Topological.type}
+  [x : topology_structure.Topological.sort T],
+compact [set x]
+
+compact_set1 is not universe polymorphic
+Expanded type for implicit arguments
+compact_set1 :
+forall {T : topology_structure.Topological.type}
+  [x : topology_structure.Topological.sort T]
+  [F : filter.set_system (topology_structure.Topological.sort T)],
+filter.ProperFilter F ->
+F [set x]%classic ->
+exists a : topology_structure.Topological.sort T,
+  ([set x] `&` cluster F)%classic a
+
+Arguments compact_set1 {T} [x F] _ _
+compact_set1 is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.compact_set1
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 124, characters 6-18
 ">compact_set1</a></span> (<span id="x:34" class="id"><a name="x:34" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Compact.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#x:34">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -391,7 +583,30 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#filter_ex">filter_ex</a></span><span class="id">;</span><span class="id"> [exact:</span><span class="id"> PF|</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#filterI">filterI</a></span><span class="id">]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_closedI" class="id"><a name="compact_closedI" class="" title="compact_closedI not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_closedI" class="id"><a name="compact_closedI" class="" title="compact_closedI :
+forall {T : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort T)],
+compact A -> topology_structure.closed B -> compact (A `&` B)
+
+compact_closedI is not universe polymorphic
+Expanded type for implicit arguments
+compact_closedI :
+forall {T : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort T)],
+compact A ->
+topology_structure.closed B ->
+forall [F : filter.set_system (topology_structure.Topological.sort T)],
+filter.ProperFilter F ->
+F (A `&` B)%classic ->
+exists a : topology_structure.Topological.sort T,
+  (A `&` B `&` cluster F)%classic a
+
+Arguments compact_closedI {T} [A B]%classical_set_scope _ _ [F] _ _
+compact_closedI is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.compact_closedI
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 132, characters 6-21
 ">compact_closedI</a></span> (<span id="A:35" class="id"><a name="A:35" class="">A</a></span><span class="id"> </span><span id="B:36" class="id"><a name="B:36" class="">B</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Compact.T">T</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:35">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#B:36">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:35">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#B:36">B</a></span>).<br/>
 <details>
@@ -407,7 +622,16 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> near_covering</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="near_covering.X" class="id"><a name="near_covering.X" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="near_covering" class="id"><a name="near_covering" class="" title="near_covering not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="near_covering" class="id"><a name="near_covering" class="" title="near_covering :
+forall {X : topology_structure.Topological.type},
+set (topology_structure.Topological.sort X) -> Prop
+
+near_covering is not universe polymorphic
+Arguments near_covering {X} K%classical_set_scope
+near_covering is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.near_covering
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 145, characters 11-24
 ">near_covering</a></span> (<span id="K:38" class="id"><a name="K:38" class="">K</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#near_covering.X">X</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span> (<span id="I:39" class="id"><a name="I:39" class="">I</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>) (<span id="F:40" class="id"><a name="F:40" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:39">I</a></span>) (<span id="P:41" class="id"><a name="P:41" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:39">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#near_covering.X">X</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> Prop</span>)<span class="id">,</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#Filter">Filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:40">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
@@ -458,7 +682,18 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> case;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> i</span><span class="id"> [?</span><span class="id"> ?];</span><span class="id"> exact:</span> (<span class="id">subP</span> (<span class="id">x'</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id">i</span>)).<br/>
 <span class="id">Unshelve</span>. <span class="id">end_near</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_near_coveringP" class="id"><a name="compact_near_coveringP" class="" title="compact_near_coveringP not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_near_coveringP" class="id"><a name="compact_near_coveringP" class="" title="compact_near_coveringP :
+forall {X : topology_structure.Topological.type}
+  (A : set (topology_structure.Topological.sort X)),
+compact A <-> near_covering A
+
+compact_near_coveringP is not universe polymorphic
+Arguments compact_near_coveringP {X} A%classical_set_scope
+compact_near_coveringP is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.compact_near_coveringP
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 191, characters 6-28
 ">compact_near_coveringP</a></span><span class="id"> </span><span id="A:53" class="id"><a name="A:53" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:53">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> &lt;-&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#near_covering">near_covering</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:53">A</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -466,14 +701,35 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> split;</span><span class="id"> [exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#near_covering.compact_near_covering">compact_near_covering</a></span><span class="id">|</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#near_covering.near_covering_compact">near_covering_compact</a></span><span class="id">]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="near_covering_within" class="id"><a name="near_covering_within" class="" title="near_covering_within not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="near_covering_within" class="id"><a name="near_covering_within" class="" title="near_covering_within :
+forall {X : topology_structure.Topological.type},
+set (topology_structure.Topological.sort X) -> Prop
+
+near_covering_within is not universe polymorphic
+Arguments near_covering_within {X} K%classical_set_scope
+near_covering_within is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.near_covering_within
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 196, characters 11-31
 ">near_covering_within</a></span> (<span id="K:54" class="id"><a name="K:54" class="">K</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#near_covering.X">X</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span> (<span id="I:55" class="id"><a name="I:55" class="">I</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>) (<span id="F:56" class="id"><a name="F:56" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:55">I</a></span>) (<span id="P:57" class="id"><a name="P:57" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:55">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#near_covering.X">X</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> Prop</span>)<span class="id">,</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#Filter">Filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:56">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:58" class="id"><a name="x:58" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#K:54">K</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#x:58">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#b0e0e41d3f9f3a55c2efe5e6fd271e94">\forall</a></span><span class="id"><a href="mathcomp.classical.filter.html#b0e0e41d3f9f3a55c2efe5e6fd271e94"> </a></span><span id="x':59" class="id"><a name="x':59" class="">x'</a></span><span class="id"><a href="mathcomp.classical.filter.html#b0e0e41d3f9f3a55c2efe5e6fd271e94"> \near</a></span><span class="id"><a href="mathcomp.classical.filter.html#b0e0e41d3f9f3a55c2efe5e6fd271e94"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#x:58">x</a></span><span class="id"><a href="mathcomp.classical.filter.html#b0e0e41d3f9f3a55c2efe5e6fd271e94"> &amp;</a></span><span class="id"><a href="mathcomp.classical.filter.html#b0e0e41d3f9f3a55c2efe5e6fd271e94"> </a></span><span id="i:60" class="id"><a name="i:60" class="">i</a></span><span class="id"><a href="mathcomp.classical.filter.html#b0e0e41d3f9f3a55c2efe5e6fd271e94"> \near</a></span><span class="id"><a href="mathcomp.classical.filter.html#b0e0e41d3f9f3a55c2efe5e6fd271e94"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:56">F</a></span><span class="id"><a href="mathcomp.classical.filter.html#b0e0e41d3f9f3a55c2efe5e6fd271e94">,</a></span><span class="id"><a href="mathcomp.classical.filter.html#b0e0e41d3f9f3a55c2efe5e6fd271e94"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#K:54">K</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#x':59">x'</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#P:57">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:60">i</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#x':59">x'</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#3a790c7390ef97f6a108c0787d66de4c">\near</a></span><span class="id"><a href="mathcomp.classical.filter.html#3a790c7390ef97f6a108c0787d66de4c"> </a></span><span id="F:63" class="id"><span id="F:62" class="id"><span id="F:61" class="id"><a name="F:63" class="">F</a></span></span></span><span class="id"><a href="mathcomp.classical.filter.html#3a790c7390ef97f6a108c0787d66de4c">,</a></span><span class="id"><a href="mathcomp.classical.filter.html#3a790c7390ef97f6a108c0787d66de4c"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#K:54">K</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#P:57">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:63">F</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="near_covering_withinP" class="id"><a name="near_covering_withinP" class="" title="near_covering_withinP not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="near_covering_withinP" class="id"><a name="near_covering_withinP" class="" title="near_covering_withinP :
+forall {X : topology_structure.Topological.type}
+  (K : set (topology_structure.Topological.sort X)),
+near_covering_within K <-> near_covering K
+
+near_covering_withinP is not universe polymorphic
+Arguments near_covering_withinP {X} K%classical_set_scope
+near_covering_withinP is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.near_covering_withinP
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 202, characters 6-27
 ">near_covering_withinP</a></span> (<span id="K:64" class="id"><a name="K:64" class="">K</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#near_covering.X">X</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#near_covering_within">near_covering_within</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#K:64">K</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> &lt;-&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#near_covering">near_covering</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#K:64">K</a></span>.<br/>
 <details>
@@ -488,7 +744,19 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> near_covering</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="ultra_cvg_clusterE" class="id"><a name="ultra_cvg_clusterE" class="" title="ultra_cvg_clusterE not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="ultra_cvg_clusterE" class="id"><a name="ultra_cvg_clusterE" class="" title="ultra_cvg_clusterE :
+forall [T : topology_structure.Topological.type]
+  [F : filter.set_system (topology_structure.Topological.sort T)],
+filter.UltraFilter (T:=topology_structure.Topological.sort T) F ->
+cluster F = [set p | filter.cvg_to (filter.nbhs F) (filter.nbhs p)]%classic
+
+ultra_cvg_clusterE is not universe polymorphic
+Arguments ultra_cvg_clusterE [T F] _
+ultra_cvg_clusterE is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.ultra_cvg_clusterE
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 214, characters 6-24
 ">ultra_cvg_clusterE</a></span> (<span id="T:69" class="id"><a name="T:69" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span>) (<span id="F:70" class="id"><a name="F:70" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#T:69">T</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#UltraFilter">UltraFilter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:70">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cluster">cluster</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:70">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="p:71" class="id"><a name="p:71" class="">p</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:70">F</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#p:71">p</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
 <details>
@@ -499,7 +767,22 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> cvFp;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cluster_cvgE">cluster_cvgE</a></span><span class="id">;</span><span class="gallina-kwd"> exists</span><span class="id"> F;</span><span class="id"> [apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#ultra_proper">ultra_proper</a></span><span class="id">|split]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_ultra" class="id"><a name="compact_ultra" class="" title="compact_ultra not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_ultra" class="id"><a name="compact_ultra" class="" title="compact_ultra :
+forall T : topology_structure.Topological.type,
+compact =
+[set A | (forall
+            F : filter.set_system (topology_structure.Topological.sort T),
+          filter.UltraFilter (T:=topology_structure.Topological.sort T) F ->
+          F A ->
+          A `&` [set p | filter.cvg_to (filter.nbhs F) (filter.nbhs p)]
+          !=set0)]%classic
+
+compact_ultra is not universe polymorphic
+Arguments compact_ultra T
+compact_ultra is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.compact_ultra
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 222, characters 6-19
 ">compact_ultra</a></span> (<span id="T:72" class="id"><a name="T:72" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="A:73" class="id"><a name="A:73" class="">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="F:74" class="id"><a name="F:74" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#T:72">T</a></span><span class="id">,</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#UltraFilter">UltraFilter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:74">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:74">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:73">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:73">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="p:75" class="id"><a name="p:75" class="">p</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:74">F</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#p:75">p</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
@@ -517,7 +800,29 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> Precompact</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Precompact.X" class="id"><a name="Precompact.X" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="compactU" class="id"><a name="compactU" class="" title="compactU not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="compactU" class="id"><a name="compactU" class="" title="compactU :
+forall {X : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort X)],
+compact A -> compact B -> compact (A `|` B)
+
+compactU is not universe polymorphic
+Expanded type for implicit arguments
+compactU :
+forall {X : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort X)],
+compact A ->
+compact B ->
+forall [F : filter.set_system (topology_structure.Topological.sort X)],
+filter.ProperFilter F ->
+F (A `|` B)%classic ->
+exists a : topology_structure.Topological.sort X,
+  ((A `|` B) `&` cluster F)%classic a
+
+Arguments compactU {X} [A B]%classical_set_scope _ _ [F] _ _
+compactU is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.compactU
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 237, characters 6-14
 ">compactU</a></span> (<span id="A:77" class="id"><a name="A:77" class="">A</a></span><span class="id"> </span><span id="B:78" class="id"><a name="B:78" class="">B</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Precompact.X">X</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:77">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#B:78">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:77">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f0f4f4a06533e5eeff19ee265a896441"> `|`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f0f4f4a06533e5eeff19ee265a896441"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#B:78">B</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -529,7 +834,33 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="gallina-kwd"> exists</span><span class="id"> x;</span><span class="id"> right</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="bigsetU_compact" class="id"><a name="bigsetU_compact" class="" title="bigsetU_compact not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="bigsetU_compact" class="id"><a name="bigsetU_compact" class="" title="bigsetU_compact :
+forall {X : topology_structure.Topological.type} [I : Type]
+  [F : I -> set (topology_structure.Topological.sort X)] 
+  [s : seq I] [P : pred I],
+(forall i : I, P i -> compact (F i)) ->
+compact (\big[setU/set0]_(i <- s | P i) F i)
+
+bigsetU_compact is not universe polymorphic
+Expanded type for implicit arguments
+bigsetU_compact :
+forall {X : topology_structure.Topological.type} [I : Type]
+  [F : I -> set (topology_structure.Topological.sort X)] 
+  [s : seq I] [P : pred I],
+(forall i : I, P i -> compact (F i)) ->
+forall [F0 : filter.set_system (topology_structure.Topological.sort X)],
+filter.ProperFilter F0 ->
+F0 (\big[setU/set0]_(i <- s | P i) F i) ->
+exists a : topology_structure.Topological.sort X,
+  (\big[setU/set0]_(i <- s | P i) F i `&` cluster F0)%classic a
+
+Arguments bigsetU_compact {X} [I]%type_scope [F]%function_scope 
+  [s]%seq_scope [P] _%function_scope [F] _ _
+bigsetU_compact is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.bigsetU_compact
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 246, characters 6-21
 ">bigsetU_compact</a></span><span class="id"> </span><span id="I:79" class="id"><a name="I:79" class="">I</a></span> (<span id="F:80" class="id"><a name="F:80" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:79">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Precompact.X">X</a></span>) (<span id="s:81" class="id"><a name="s:81" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#seq">seq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:79">I</a></span>) (<span id="P:82" class="id"><a name="P:82" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:79">I</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:83" class="id"><a name="i:83" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#P:82">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:83">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:80">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:83">i</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#60e57ff387b8a0840e944d0d03f215e2">\big[</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#setU">setU</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#60e57ff387b8a0840e944d0d03f215e2">/</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#60e57ff387b8a0840e944d0d03f215e2">]_</a></span>(<span id="i:86" class="id"><span id="i:85" class="id"><span id="i:84" class="id"><a name="i:86" class="">i</a></span></span></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#60e57ff387b8a0840e944d0d03f215e2"> &lt;-</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#60e57ff387b8a0840e944d0d03f215e2"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#s:81">s</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#60e57ff387b8a0840e944d0d03f215e2"> |</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#60e57ff387b8a0840e944d0d03f215e2"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#P:82">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:84">i</a></span>)<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#60e57ff387b8a0840e944d0d03f215e2"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:80">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:84">i</a></span>).<br/>
@@ -540,14 +871,42 @@ Qed.</div></details>
 <br/>
 <div class="doc">The closed condition here is neccessary to make this definition work in a
     non-hausdorff setting. </div>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="compact_near" class="id"><a name="compact_near" class="" title="compact_near not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="compact_near" class="id"><a name="compact_near" class="" title="compact_near :
+forall {X : topology_structure.Topological.type},
+filter.set_system (topology_structure.Topological.sort X) -> Prop
+
+compact_near is not universe polymorphic
+Arguments compact_near {X} F
+compact_near is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.compact_near
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 253, characters 11-23
 ">compact_near</a></span> (<span id="F:87" class="id"><a name="F:87" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Precompact.X">X</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span id="U:89" class="id"><span id="U:88" class="id"><a name="U:89" class="">U</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:87">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#U:88">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#U:89">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#U:89">U</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="precompact" class="id"><a name="precompact" class="" title="precompact not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="precompact" class="id"><a name="precompact" class="" title="precompact :
+forall {X : topology_structure.Topological.type},
+set (topology_structure.Topological.sort X) -> Prop
+
+precompact is not universe polymorphic
+Arguments precompact {X} C%classical_set_scope
+precompact is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.precompact
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 256, characters 11-21
 ">precompact</a></span> (<span id="C:90" class="id"><a name="C:90" class="">C</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Precompact.X">X</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact_near">compact_near</a></span> (<span class="id"><a href="mathcomp.classical.filter.html#globally">globally</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#C:90">C</a></span>).<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="precompactE" class="id"><a name="precompactE" class="" title="precompactE not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="precompactE" class="id"><a name="precompactE" class="" title="precompactE :
+forall {X : topology_structure.Topological.type}
+  (C : set (topology_structure.Topological.sort X)),
+precompact C = compact (topology_structure.closure C)
+
+precompactE is not universe polymorphic
+Arguments precompactE {X} C%classical_set_scope
+precompactE is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.precompactE
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 258, characters 6-17
 ">precompactE</a></span> (<span id="C:91" class="id"><a name="C:91" class="">C</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Precompact.X">X</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#precompact">precompact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#C:91">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#C:91">C</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -559,7 +918,18 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move/</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure_id">closure_id</a></span><span class="id">:</span><span class="id"> cB</span><span class="id"> =&gt;</span><span class="id"> -&gt;;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure_subset">closure_subset</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="precompact_subset" class="id"><a name="precompact_subset" class="" title="precompact_subset not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="precompact_subset" class="id"><a name="precompact_subset" class="" title="precompact_subset :
+forall {X : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort X)],
+(A `<=` B)%classic -> precompact B -> precompact A
+
+precompact_subset is not universe polymorphic
+Arguments precompact_subset {X} [A B]%classical_set_scope _ _
+precompact_subset is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.precompact_subset
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 267, characters 6-23
 ">precompact_subset</a></span> (<span id="A:92" class="id"><a name="A:92" class="">A</a></span><span class="id"> </span><span id="B:93" class="id"><a name="B:93" class="">B</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Precompact.X">X</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:92">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#B:93">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#precompact">precompact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#B:93">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#precompact">precompact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:92">A</a></span>.<br/>
 <details>
@@ -568,7 +938,18 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> AsubB</span><span class="id"> [B'</span><span class="id"> B'subB</span><span class="id"> cptB'];</span><span class="gallina-kwd"> exists</span><span class="id"> B'</span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> ?</span><span class="id"> ?;</span><span class="id"> exact/B'subB/AsubB</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="precompact_closed" class="id"><a name="precompact_closed" class="" title="precompact_closed not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="precompact_closed" class="id"><a name="precompact_closed" class="" title="precompact_closed :
+forall {X : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort X)],
+topology_structure.closed A -> precompact A = compact A
+
+precompact_closed is not universe polymorphic
+Arguments precompact_closed {X} [A]%classical_set_scope _
+precompact_closed is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.precompact_closed
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 273, characters 6-23
 ">precompact_closed</a></span> (<span id="A:94" class="id"><a name="A:94" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Precompact.X">X</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:94">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#precompact">precompact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:94">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:94">A</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -578,12 +959,33 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> {1}</span>(_<span class="id"> :</span><span class="id"> A</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"> A</span>)<span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#precompactE">precompactE</a></span><span class="id">//</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure_id">closure_id</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="locally_compact" class="id"><a name="locally_compact" class="" title="locally_compact not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="locally_compact" class="id"><a name="locally_compact" class="" title="locally_compact :
+forall {X : topology_structure.Topological.type},
+set (topology_structure.Topological.sort X) -> Prop
+
+locally_compact is not universe polymorphic
+Arguments locally_compact {X} A%classical_set_scope
+locally_compact is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.locally_compact
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 280, characters 11-26
 ">locally_compact</a></span> (<span id="A:95" class="id"><a name="A:95" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Precompact.X">X</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#f818c462d6c22e7642050f8453886316">[locally</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#f818c462d6c22e7642050f8453886316"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#precompact">precompact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:95">A</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#f818c462d6c22e7642050f8453886316">]</a></span>.<br/>
 <br/>
 <span class="vernacular">End</span><span class="id"> Precompact</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="finite_subset_cover" class="id"><a name="finite_subset_cover" class="" title="finite_subset_cover not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="finite_subset_cover" class="id"><a name="finite_subset_cover" class="" title="finite_subset_cover :
+forall [I : choiceType],
+set I -> forall [U : Type], (I -> set U) -> set U -> Prop
+
+finite_subset_cover is not universe polymorphic
+Arguments finite_subset_cover [I] D%classical_set_scope 
+  [U]%type_scope F%function_scope A%classical_set_scope
+finite_subset_cover is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.finite_subset_cover
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 284, characters 11-30
 ">finite_subset_cover</a></span> (<span id="I:96" class="id"><a name="I:96" class="">I</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span>) (<span id="D:97" class="id"><a name="D:97" class="">D</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:96">I</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span id="U:98" class="id"><a name="U:98" class="">U</a></span> (<span id="F:99" class="id"><a name="F:99" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:96">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#U:98">U</a></span>) (<span id="A:100" class="id"><a name="A:100" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#U:98">U</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span id="D':102" class="id"><span id="D':101" class="id"><a name="D':102" class="">D'</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c">{fset</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:96">I</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">{subset</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D':101">D'</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> &lt;=</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D:97">D</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:100">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#cover">cover</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">[set`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D':102">D'</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">]</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:99">F</a></span>.<br/>
@@ -591,18 +993,54 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> Covers</span>.<br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="Covers.T" class="id"><a name="Covers.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="cover_compact" class="id"><a name="cover_compact" class="" title="cover_compact not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="cover_compact" class="id"><a name="cover_compact" class="" title="cover_compact :
+forall [T : topology_structure.Topological.type],
+set (topology_structure.Topological.sort T) -> Prop
+
+cover_compact is not universe polymorphic
+Arguments cover_compact [T] A%classical_set_scope
+cover_compact is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.cover_compact
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 291, characters 11-24
 ">cover_compact</a></span> (<span id="A:105" class="id"><a name="A:105" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Covers.T">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span> (<span id="I:106" class="id"><a name="I:106" class="">I</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span>) (<span id="D:107" class="id"><a name="D:107" class="">D</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:106">I</a></span>) (<span id="f:108" class="id"><a name="f:108" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:106">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Covers.T">T</a></span>)<span class="id">,</span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:109" class="id"><a name="i:109" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D:107">D</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:109">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#f:108">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:109">i</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:105">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#cover">cover</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D:107">D</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#f:108">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#finite_subset_cover">finite_subset_cover</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D:107">D</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#f:108">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:105">A</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="open_fam_of" class="id"><a name="open_fam_of" class="" title="open_fam_of not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="open_fam_of" class="id"><a name="open_fam_of" class="" title="open_fam_of :
+forall [T : topology_structure.Topological.type],
+set (topology_structure.Topological.sort T) ->
+forall [I : Type],
+set I -> (I -> set (topology_structure.Topological.sort T)) -> Prop
+
+open_fam_of is not universe polymorphic
+Arguments open_fam_of [T] A%classical_set_scope [I]%type_scope
+  D%classical_set_scope f%function_scope
+open_fam_of is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.open_fam_of
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 296, characters 11-22
 ">open_fam_of</a></span> (<span id="A:110" class="id"><a name="A:110" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Covers.T">T</a></span>)<span class="id"> </span><span id="I:111" class="id"><a name="I:111" class="">I</a></span> (<span id="D:112" class="id"><a name="D:112" class="">D</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:111">I</a></span>) (<span id="f:113" class="id"><a name="f:113" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:111">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Covers.T">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span id="g:116" class="id"><span id="g:114" class="id"><a name="g:116" class="">g</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:111">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Covers.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc">,</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:115" class="id"><a name="i:115" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D:112">D</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:115">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#g:114">g</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:115">i</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> &amp;</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:117" class="id"><a name="i:117" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D:112">D</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:117">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#f:113">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:117">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:110">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#g:116">g</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:117">i</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="cover_compactE" class="id"><a name="cover_compactE" class="" title="cover_compactE not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="cover_compactE" class="id"><a name="cover_compactE" class="" title="cover_compactE :
+forall T : topology_structure.Topological.type,
+cover_compact (T:=T) =
+[set A | (forall (I : choiceType) (D : set I)
+            (f : I -> set (topology_structure.Topological.sort T)),
+          open_fam_of (T:=T) A D f ->
+          A `<=` cover D f ->
+          finite_subset_cover (I:=I) D
+            (U:=topology_structure.Topological.sort T) f A)]%classic
+
+cover_compactE is not universe polymorphic
+Arguments cover_compactE T
+cover_compactE is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.cover_compactE
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 300, characters 6-20
 ">cover_compactE</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cover_compact">cover_compact</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="A:118" class="id"><a name="A:118" class="">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="gallina-kwd"> forall</span> (<span id="I:119" class="id"><a name="I:119" class="">I</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span>) (<span id="D:120" class="id"><a name="D:120" class="">D</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:119">I</a></span>) (<span id="f:121" class="id"><a name="f:121" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:119">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Covers.T">T</a></span>)<span class="id">,</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#open_fam_of">open_fam_of</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:118">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D:120">D</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#f:121">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
@@ -623,7 +1061,19 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="gallina-kwd"> exists</span><span class="id"> D'</span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> p</span><span class="id"> /sAfcov</span><span class="id"> [i</span><span class="id"> ?</span><span class="id"> []];</span><span class="gallina-kwd"> exists</span><span class="id"> i</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="closed_fam_of" class="id"><a name="closed_fam_of" class="" title="closed_fam_of not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="closed_fam_of" class="id"><a name="closed_fam_of" class="" title="closed_fam_of :
+forall [T : topology_structure.Topological.type],
+set (topology_structure.Topological.sort T) ->
+forall [I : Type],
+set I -> (I -> set (topology_structure.Topological.sort T)) -> Prop
+
+closed_fam_of is not universe polymorphic
+Arguments closed_fam_of [T] A%classical_set_scope 
+  [I]%type_scope D%classical_set_scope f%function_scope
+closed_fam_of is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.closed_fam_of
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 318, characters 11-24
 ">closed_fam_of</a></span> (<span id="A:125" class="id"><a name="A:125" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Covers.T">T</a></span>)<span class="id"> </span><span id="I:126" class="id"><a name="I:126" class="">I</a></span> (<span id="D:127" class="id"><a name="D:127" class="">D</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:126">I</a></span>) (<span id="f:128" class="id"><a name="f:128" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:126">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Covers.T">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span id="g:131" class="id"><span id="g:129" class="id"><a name="g:131" class="">g</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:126">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Covers.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc">,</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:130" class="id"><a name="i:130" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D:127">D</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:130">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#g:129">g</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:130">i</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> &amp;</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:132" class="id"><a name="i:132" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D:127">D</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:132">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#f:128">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:132">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:125">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#g:131">g</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:132">i</a></span>.<br/>
@@ -633,7 +1083,25 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> PCovers</span>.<br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="PCovers.T" class="id"><a name="PCovers.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#PointedTopological.Exports.ptopologicalType">ptopologicalType</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_In0" class="id"><a name="compact_In0" class="" title="compact_In0 not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_In0" class="id"><a name="compact_In0" class="" title="compact_In0 :
+forall T : topology_structure.PointedTopological.type,
+compact =
+[set A | (forall (I : choiceType) (D : set I)
+            (f : I -> set (topology_structure.PointedTopological.sort T)),
+          closed_fam_of
+            (T:=topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+                  T)
+            A D f ->
+          filter.finI (I:=I)
+            (T:=topology_structure.PointedTopological.sort T) D f ->
+          \bigcap_(i in D) f i !=set0)]%classic
+
+compact_In0 is not universe polymorphic
+Arguments compact_In0 T
+compact_In0 is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.compact_In0
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 327, characters 6-17
 ">compact_In0</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="A:135" class="id"><a name="A:135" class="">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="gallina-kwd"> forall</span> (<span id="I:136" class="id"><a name="I:136" class="">I</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span>) (<span id="D:137" class="id"><a name="D:137" class="">D</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:136">I</a></span>) (<span id="f:138" class="id"><a name="f:138" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#I:136">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#PCovers.T">T</a></span>)<span class="id">,</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#closed_fam_of">closed_fam_of</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:135">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D:137">D</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#f:138">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#finI">finI</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D:137">D</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#f:138">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#14a333048a56ff17648c57d37a4a5f40">\bigcap_</a></span>(<span id="i:139" class="id"><a name="i:139" class="">i</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.classical.classical_sets.html#14a333048a56ff17648c57d37a4a5f40"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D:137">D</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#14a333048a56ff17648c57d37a4a5f40"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#f:138">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:139">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
@@ -656,7 +1124,19 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> have</span><span class="id"> /AclFIp</span><span class="id"> [_]</span><span class="id"> :=</span><span class="id"> FB;</span><span class="id"> move=&gt;</span><span class="id"> /</span>(_<span class="id"> _</span><span class="id"> p_C</span>).<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_cover" class="id"><a name="compact_cover" class="" title="compact_cover not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_cover" class="id"><a name="compact_cover" class="" title="compact_cover :
+forall T : topology_structure.PointedTopological.type,
+compact =
+cover_compact
+  (T:=topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+        T)
+
+compact_cover is not universe polymorphic
+Arguments compact_cover T
+compact_cover is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.compact_cover
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 347, characters 6-19
 ">compact_cover</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cover_compact">cover_compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#PCovers.T">T</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -706,7 +1186,27 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> PCovers</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_compact" class="id"><a name="finite_compact" class="" title="finite_compact not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_compact" class="id"><a name="finite_compact" class="" title="finite_compact :
+forall {X : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort X)],
+finite_set A -> compact A
+
+finite_compact is not universe polymorphic
+Expanded type for implicit arguments
+finite_compact :
+forall {X : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort X)],
+finite_set A ->
+forall [F : filter.set_system (topology_structure.Topological.sort X)],
+filter.ProperFilter F ->
+F A ->
+exists a : topology_structure.Topological.sort X, (A `&` cluster F)%classic a
+
+Arguments finite_compact {X} [A]%classical_set_scope _ [F] _ _
+finite_compact is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.finite_compact
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 394, characters 6-20
 ">finite_compact</a></span><span class="id"> {</span><span id="X:158" class="id"><a name="X:158" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span> (<span id="A:159" class="id"><a name="A:159" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#X:158">X</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.cardinality.html#finite_set">finite_set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:159">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:159">A</a></span>.<br/>
 <details>
@@ -717,7 +1217,24 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> -</span>(<span class="id"><a href="mathcomp.classical.classical_sets.html#setD1K">setD1K</a></span><span class="id"> Ax</span>)<span class="id">;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compactU">compactU</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact_set1">compact_set1</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="clopen_countable" class="id"><a name="clopen_countable" class="" title="clopen_countable not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="clopen_countable" class="id"><a name="clopen_countable" class="" title="clopen_countable :
+forall {T : topology_structure.PointedTopological.type},
+compact [set: topology_structure.PointedTopological.sort T] ->
+topology_structure.second_countable ->
+countable
+  (T:=set
+        (topology_structure.Topological.sort
+           (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+              T)))
+  topology_structure.clopen
+
+clopen_countable is not universe polymorphic
+Arguments clopen_countable {T} _ _
+clopen_countable is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.clopen_countable
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 402, characters 6-22
 ">clopen_countable</a></span><span class="id"> {</span><span id="T:160" class="id"><a name="T:160" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#PointedTopological.Exports.ptopologicalType">ptopologicalType</a></span><span class="id">}:</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#T:160">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#second_countable">second_countable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#T:160">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.cardinality.html#countable">countable</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#clopen">clopen</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#T:160">T</a></span>).<br/>
 <details>
@@ -749,7 +1266,27 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set_imfset">set_imfset</a></span><span class="id"> /=;</span><span class="gallina-kwd"> exists</span><span class="id"> y</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_cauchy_cvg" class="id"><a name="compact_cauchy_cvg" class="" title="compact_cauchy_cvg not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_cauchy_cvg" class="id"><a name="compact_cauchy_cvg" class="" title="compact_cauchy_cvg :
+forall {T : puniformType} [U : set T] [F : filter.set_system T],
+filter.ProperFilter F ->
+cauchy F ->
+F U ->
+compact U -> filter.cvg_to (filter.nbhs F) (filter.nbhs (filter.lim F))
+
+compact_cauchy_cvg is not universe polymorphic
+Expanded type for implicit arguments
+compact_cauchy_cvg :
+forall {T : puniformType} [U : set T] [F : filter.set_system T],
+filter.ProperFilter F ->
+cauchy F ->
+F U -> compact U -> forall [t : set T], filter.nbhs (filter.lim F) t -> F t
+
+Arguments compact_cauchy_cvg {T} [U]%classical_set_scope [F] _ _ _ _ [t] _
+compact_cauchy_cvg is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.compact_cauchy_cvg
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 431, characters 6-24
 ">compact_cauchy_cvg</a></span><span class="id"> {</span><span id="T:168" class="id"><a name="T:168" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#PointedUniform.Exports.puniformType">puniformType</a></span><span class="id">}</span> (<span id="U:169" class="id"><a name="U:169" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#T:168">T</a></span>) (<span id="F:170" class="id"><a name="F:170" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#T:168">T</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#ProperFilter">ProperFilter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:170">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#cauchy">cauchy</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:170">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:170">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#U:169">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#U:169">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#cvg">cvg</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:170">F</a></span>.<br/>
 <details>
@@ -764,7 +1301,17 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> near=&gt;</span><span class="id"> t;</span><span class="id"> apply/</span>(<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage_split">entourage_split</a></span><span class="id"> z</span><span class="id"> entE</span><span class="id"> Exz</span>)<span class="id">/D1D2E;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> near:</span><span class="id"> t</span>.<br/>
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_second_countable" class="id"><a name="compact_second_countable" class="" title="compact_second_countable not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_second_countable" class="id"><a name="compact_second_countable" class="" title="compact_second_countable :
+forall {R : realType} {T : pseudoPMetricType R},
+compact [set: T] -> topology_structure.second_countable
+
+compact_second_countable is not universe polymorphic
+Arguments compact_second_countable {R T} _
+compact_second_countable is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.compact_second_countable
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 443, characters 6-30
 ">compact_second_countable</a></span><span class="id"> {</span><span id="R:171" class="id"><a name="R:171" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> {</span><span id="T:172" class="id"><a name="T:172" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#PseudoPointedMetric.Exports.pseudoPMetricType">pseudoPMetricType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#R:171">R</a></span><span class="id">}</span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#T:172">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#second_countable">second_countable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#T:172">T</a></span>.<br/>
 <details>
@@ -793,7 +1340,16 @@ Qed.</div></details>
 &nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> apply:</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#le_ball">le_ball</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.ltW">ltW</a></span><span class="id"> deleps</span>))<span class="id">;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#interior_subset">interior_subset</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="clopen_surj" class="id"><a name="clopen_surj" class="" title="clopen_surj not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="clopen_surj" class="id"><a name="clopen_surj" class="" title="clopen_surj :
+forall {R : realType} {T : pseudoPMetricType R},
+compact [set: T] -> $| {surjfun [set: nat] >-> topology_structure.clopen} |
+
+clopen_surj is not universe polymorphic
+Arguments clopen_surj {R T} _
+clopen_surj is opaque
+Expands to: Constant mathcomp.analysis.topology_theory.compact.clopen_surj
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 469, characters 6-17
 ">clopen_surj</a></span><span class="id"> {</span><span id="R:184" class="id"><a name="R:184" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> {</span><span id="T:185" class="id"><a name="T:185" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#PseudoPointedMetric.Exports.pseudoPMetricType">pseudoPMetricType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#R:184">R</a></span><span class="id">}</span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#T:185">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#ecd5d6a919551cfe9224e1d618409104">$|</a></span><span class="id"><a href="mathcomp.classical.functions.html#1c26e7426e1d9eada0f35acf779b529e">{surjfun</a></span><span class="id"><a href="mathcomp.classical.functions.html#1c26e7426e1d9eada0f35acf779b529e"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="mathcomp.classical.functions.html#1c26e7426e1d9eada0f35acf779b529e"> &gt;-&gt;</a></span><span class="id"><a href="mathcomp.classical.functions.html#1c26e7426e1d9eada0f35acf779b529e"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#clopen">clopen</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#T:185">T</a></span><span class="id"><a href="mathcomp.classical.functions.html#1c26e7426e1d9eada0f35acf779b529e">}</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#ecd5d6a919551cfe9224e1d618409104">|</a></span>.<br/>
 <details>

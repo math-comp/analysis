@@ -258,11 +258,23 @@ reciprocals of the prime numbers.
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.tuple#tnth_ord_tuple">tnth_ord_tuple</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#subnKC">subnKC</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#ltnW">ltnW</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="next_prime" class="id"><a name="next_prime" class="" title="next_prime not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="next_prime" class="id"><a name="next_prime" class="" title="next_prime : nat -> nat
+
+next_prime is not universe polymorphic
+Arguments next_prime n%nat_scope
+next_prime is transparent
+Expands to: Constant mathcomp.analysis.showcase.pnt.next_prime
+Declared in library mathcomp.analysis.showcase.pnt, line 47, characters 11-21
 ">next_prime</a></span><span class="id"> </span><span id="n:9" class="id"><a name="n:9" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.showcase.pnt.html#n:9">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#0dacc1786c5ba797d47dd85006231633"> +</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#0dacc1786c5ba797d47dd85006231633"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6">[arg</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6"> min_</a></span>(<span id="i:11" class="id"><span id="i:10" class="id"><a name="i:11" class="">i</a></span></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6"> &lt;</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#val">val</a></span> (<span class="id"><a href="mathcomp.analysis.showcase.pnt.html#prime_seq.next_prime_subproof">next_prime_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#n:9">n</a></span>)<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6"> |</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.prime#prime">prime</a></span> (<span class="id"><a href="mathcomp.analysis.showcase.pnt.html#n:9">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#0dacc1786c5ba797d47dd85006231633"> +</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#0dacc1786c5ba797d47dd85006231633"> </a></span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#i:10">i</a></span>))<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#val">val</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#i:11">i</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6">]</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="prime_next_prime" class="id"><a name="prime_next_prime" class="" title="prime_next_prime not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="prime_next_prime" class="id"><a name="prime_next_prime" class="" title="prime_next_prime : forall n : nat, prime (next_prime n)
+
+prime_next_prime is not universe polymorphic
+Arguments prime_next_prime n%nat_scope
+prime_next_prime is opaque
+Expands to: Constant mathcomp.analysis.showcase.pnt.prime_next_prime
+Declared in library mathcomp.analysis.showcase.pnt, line 50, characters 6-22
 ">prime_next_prime</a></span><span class="id"> </span><span id="n:12" class="id"><a name="n:12" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.prime#prime">prime</a></span> (<span class="id"><a href="mathcomp.analysis.showcase.pnt.html#next_prime">next_prime</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#n:12">n</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -270,7 +282,13 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#next_prime">next_prime</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#arg_minnP">arg_minnP</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#prime_seq.next_prime_subproof">next_prime_subproof</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="next_prime_min" class="id"><a name="next_prime_min" class="" title="next_prime_min not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="next_prime_min" class="id"><a name="next_prime_min" class="" title="next_prime_min : forall [i j : nat], i < j < next_prime i -> ~~ prime j
+
+next_prime_min is not universe polymorphic
+Arguments next_prime_min [i j]%nat_scope _
+next_prime_min is opaque
+Expands to: Constant mathcomp.analysis.showcase.pnt.next_prime_min
+Declared in library mathcomp.analysis.showcase.pnt, line 55, characters 6-20
 ">next_prime_min</a></span> (<span id="i:13" class="id"><a name="i:13" class="">i</a></span><span class="id"> </span><span id="j:14" class="id"><a name="j:14" class="">j</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#i:13">i</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'&lt;'_x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'&lt;'_x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#j:14">j</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'&lt;'_x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'&lt;'_x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#next_prime">next_prime</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#i:13">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351">~~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.prime#prime">prime</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#j:14">j</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -285,7 +303,13 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#ltnn">ltnn</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="next_prime_lt" class="id"><a name="next_prime_lt" class="" title="next_prime_lt not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="next_prime_lt" class="id"><a name="next_prime_lt" class="" title="next_prime_lt : forall n : nat, n < next_prime n
+
+next_prime_lt is not universe polymorphic
+Arguments next_prime_lt n%nat_scope
+next_prime_lt is opaque
+Expands to: Constant mathcomp.analysis.showcase.pnt.next_prime_lt
+Declared in library mathcomp.analysis.showcase.pnt, line 67, characters 6-19
 ">next_prime_lt</a></span><span class="id"> </span><span id="n:15" class="id"><a name="n:15" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#n:15">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#next_prime">next_prime</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#n:15">n</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -295,10 +319,22 @@ Qed.</div></details>
 <span class="id">exact:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#leq_addr">leq_addr</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="prime_seq" class="id"><a name="prime_seq" class="" title="prime_seq not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="prime_seq" class="id"><a name="prime_seq" class="" title="prime_seq : nat -> nat
+
+prime_seq is not universe polymorphic
+Arguments prime_seq n%nat_scope
+prime_seq is transparent
+Expands to: Constant mathcomp.analysis.showcase.pnt.prime_seq
+Declared in library mathcomp.analysis.showcase.pnt, line 74, characters 11-20
 ">prime_seq</a></span><span class="id"> </span><span id="n:16" class="id"><a name="n:16" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#iter">iter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#n:16">n</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#next_prime">next_prime</a></span><span class="id"> 2</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="leq_prime_seq" class="id"><a name="leq_prime_seq" class="" title="leq_prime_seq not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="leq_prime_seq" class="id"><a name="leq_prime_seq" class="" title="leq_prime_seq : {mono prime_seq : m n / m <= n}
+
+leq_prime_seq is not universe polymorphic
+Arguments leq_prime_seq x y
+leq_prime_seq is opaque
+Expands to: Constant mathcomp.analysis.showcase.pnt.leq_prime_seq
+Declared in library mathcomp.analysis.showcase.pnt, line 76, characters 6-19
 ">leq_prime_seq</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088">{mono</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> </a></span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#prime_seq">prime_seq</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> </a></span><span id="m:19" class="id"><span id="m:17" class="id"><a name="m:19" class="">m</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> </a></span><span id="n:20" class="id"><span id="n:18" class="id"><a name="n:20" class="">n</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> /</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> </a></span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#m:17">m</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#cb53cf0ee22c036a03b4a9281c68b5a3"> &lt;=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#cb53cf0ee22c036a03b4a9281c68b5a3"> </a></span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#n:18">n</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088">}</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -308,7 +344,13 @@ Qed.</div></details>
 <span class="id">exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#next_prime_lt">next_prime_lt</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="mem_prime_seq" class="id"><a name="mem_prime_seq" class="" title="mem_prime_seq not a defined object.
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="mem_prime_seq" class="id"><a name="mem_prime_seq" class="" title="mem_prime_seq : forall p : nat, (p \in range prime_seq) = prime p
+
+mem_prime_seq is not universe polymorphic
+Arguments mem_prime_seq p%nat_scope
+mem_prime_seq is opaque
+Expands to: Constant mathcomp.analysis.showcase.pnt.mem_prime_seq
+Declared in library mathcomp.analysis.showcase.pnt, line 83, characters 6-19
 ">mem_prime_seq</a></span> (<span id="p:21" class="id"><a name="p:21" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#p:21">p</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#range">range</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#prime_seq">prime_seq</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.prime#prime">prime</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#p:21">p</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -642,7 +684,32 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#expnD">expnD</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#addnA">addnA</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#addnn">addnn</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Theorem</span><span class="id"> </span><span id="dvg_sum_inv_prime_seq" class="id"><a name="dvg_sum_inv_prime_seq" class="" title="dvg_sum_inv_prime_seq not a defined object.
+<span class="vernacular">Theorem</span><span class="id"> </span><span id="dvg_sum_inv_prime_seq" class="id"><a name="dvg_sum_inv_prime_seq" class="" title="dvg_sum_inv_prime_seq :
+forall [R : realType],
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap
+        (fun n : nat => (\sum_(0 <= i < n) (((prime_seq i)%:R : R)^-1)%:E)%R)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs +oo%E)
+
+dvg_sum_inv_prime_seq is not universe polymorphic
+Expanded type for implicit arguments
+dvg_sum_inv_prime_seq :
+forall [R : realType]
+  [t : set constructive_ereal_extended__canonical__Algebra_BaseAddUMagma],
+filter.nbhs +oo%E t ->
+exists2 i : nat,
+  [set: nat]%classic i &
+  ((fun N : nat => [set n | N <= n]) i
+   `<=` (fun n : nat =>
+         (\sum_(0 <= i0 < n) (((prime_seq i0)%:R : R)^-1)%:E)%R) @^-1`
+        t)%classic
+
+Arguments dvg_sum_inv_prime_seq [R t] _
+dvg_sum_inv_prime_seq is opaque
+Expands to: Constant mathcomp.analysis.showcase.pnt.dvg_sum_inv_prime_seq
+Declared in library mathcomp.analysis.showcase.pnt, line 408, characters 8-29
 ">dvg_sum_inv_prime_seq</a></span> (<span id="R:189" class="id"><a name="R:189" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e8c9389d173e080b4b0bc8cfb531c18e">\sum_</a></span>(<span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e8c9389d173e080b4b0bc8cfb531c18e"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e8c9389d173e080b4b0bc8cfb531c18e"> </a></span><span id="i:193" class="id"><span id="i:192" class="id"><span id="i:191" class="id"><a name="i:193" class="">i</a></span></span></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e8c9389d173e080b4b0bc8cfb531c18e"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e8c9389d173e080b4b0bc8cfb531c18e"> </a></span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#n:190">n</a></span>) (((<span class="id"><a href="mathcomp.analysis.showcase.pnt.html#prime_seq">prime_seq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#i:191">i</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#R:189">R</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#4e5a4c91ec0aa12de06dfe1cc07ea126">^-1</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>)<span class="id">%R</span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> @[</a></span><span id="n:190" class="id"><a name="n:190" class="">n</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#228a5fbd8d7ef28f21231bccff88d0b0">\oo</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f">]</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span><span class="id">%E</span>.<br/>
 <details>
