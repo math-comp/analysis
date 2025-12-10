@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Module mathcomp.analysis.borel_hierarchy</title>
+<meta name="description" content="Documentation of Coq module mathcomp.analysis.borel_hierarchy" />
+<link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+<link href="rocqnavi.css" rel="stylesheet" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="rocqnavi.js"> </script>
+</head>
+
+<body onload="init()">
+
+  <main>
+    <div class="sidebar">
+      <h2>Files</h2>
+      <li><details id="mathcomp"><summary>mathcomp</summary>
+          <ul>
+          <li><details id="mathcomp.analysis"><summary>analysis</summary>
+          <ul>
+          <li><details id="mathcomp.analysis.homotopy_theory"><summary>homotopy_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.homotopy_theory.continuous_path.html">continuous_path</a></li>
+<li><a href="mathcomp.analysis.homotopy_theory.homotopy.html">homotopy</a></li>
+<li><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html">wedge_sigT</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.lebesgue_integral_theory"><summary>lebesgue_integral_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.lebesgue_integral_theory.giry.html">giry</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html">lebesgue_Rintegral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html">lebesgue_integrable</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral.html">lebesgue_integral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html">lebesgue_integral_definition</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.html">lebesgue_integral_differentiation</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_dominated_convergence.html">lebesgue_integral_dominated_convergence</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.html">lebesgue_integral_fubini</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_monotone_convergence.html">lebesgue_integral_monotone_convergence</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html">lebesgue_integral_nonneg</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html">lebesgue_integral_under</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.html">measurable_fun_approximation</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html">simple_functions</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.measure_theory"><summary>measure_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.measure_theory.counting_measure.html">counting_measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.dirac_measure.html">dirac_measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measurable_function.html">measurable_function</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measurable_structure.html">measurable_structure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure.html">measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_extension.html">measure_extension</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_function.html">measure_function</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_negligible.html">measure_negligible</a></li>
+<li><a href="mathcomp.analysis.measure_theory.probability_measure.html">probability_measure</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.normedtype_theory"><summary>normedtype_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.normedtype_theory.complete_normed_module.html">complete_normed_module</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.ereal_normedtype.html">ereal_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.matrix_normedtype.html">matrix_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.normed_module.html">normed_module</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.normedtype.html">normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html">num_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html">pseudometric_normed_Zmodule</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.urysohn.html">urysohn</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.vitali_lemma.html">vitali_lemma</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.showcase"><summary>showcase</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.showcase.pnt.html">pnt</a></li>
+<li><a href="mathcomp.analysis.showcase.summability.html">summability</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.topology_theory"><summary>topology_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.topology_theory.bool_topology.html">bool_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.compact.html">compact</a></li>
+<li><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></li>
+<li><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.nat_topology.html">nat_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.num_topology.html">num_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.one_point_compactification.html">one_point_compactification</a></li>
+<li><a href="mathcomp.analysis.topology_theory.order_topology.html">order_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.product_topology.html">product_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html">pseudometric_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.quotient_topology.html">quotient_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.separation_axioms.html">separation_axioms</a></li>
+<li><a href="mathcomp.analysis.topology_theory.sigT_topology.html">sigT_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.subspace_topology.html">subspace_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.subtype_topology.html">subtype_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.supremum_topology.html">supremum_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.topology.html">topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.topology_structure.html">topology_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.uniform_structure.html">uniform_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.weak_topology.html">weak_topology</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.analysis.all_analysis.html">all_analysis</a></li>
+<li><a href="mathcomp.analysis.borel_hierarchy.html">borel_hierarchy</a></li>
+<li><a href="mathcomp.analysis.cantor.html">cantor</a></li>
+<li><a href="mathcomp.analysis.charge.html">charge</a></li>
+<li><a href="mathcomp.analysis.convex.html">convex</a></li>
+<li><a href="mathcomp.analysis.derive.html">derive</a></li>
+<li><a href="mathcomp.analysis.ereal.html">ereal</a></li>
+<li><a href="mathcomp.analysis.ess_sup_inf.html">ess_sup_inf</a></li>
+<li><a href="mathcomp.analysis.esum.html">esum</a></li>
+<li><a href="mathcomp.analysis.exp.html">exp</a></li>
+<li><a href="mathcomp.analysis.ftc.html">ftc</a></li>
+<li><a href="mathcomp.analysis.function_spaces.html">function_spaces</a></li>
+<li><a href="mathcomp.analysis.gauss_integral.html">gauss_integral</a></li>
+<li><a href="mathcomp.analysis.hoelder.html">hoelder</a></li>
+<li><a href="mathcomp.analysis.kernel.html">kernel</a></li>
+<li><a href="mathcomp.analysis.landau.html">landau</a></li>
+<li><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></li>
+<li><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html">lebesgue_stieltjes_measure</a></li>
+<li><a href="mathcomp.analysis.measurable_realfun.html">measurable_realfun</a></li>
+<li><a href="mathcomp.analysis.numfun.html">numfun</a></li>
+<li><a href="mathcomp.analysis.pi_irrational.html">pi_irrational</a></li>
+<li><a href="mathcomp.analysis.probability.html">probability</a></li>
+<li><a href="mathcomp.analysis.realfun.html">realfun</a></li>
+<li><a href="mathcomp.analysis.sequences.html">sequences</a></li>
+<li><a href="mathcomp.analysis.trigo.html">trigo</a></li>
+<li><a href="mathcomp.analysis.tvs.html">tvs</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis_stdlib"><summary>analysis_stdlib</summary>
+          <ul>
+          <li><details id="mathcomp.analysis_stdlib.showcase"><summary>showcase</summary>
+          <ul>
+          <li><a href="mathcomp.analysis_stdlib.showcase.uniform_bigO.html">uniform_bigO</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.analysis_stdlib.Rstruct_topology.html">Rstruct_topology</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.classical"><summary>classical</summary>
+          <ul>
+          <li><a href="mathcomp.classical.all_classical.html">all_classical</a></li>
+<li><a href="mathcomp.classical.boolp.html">boolp</a></li>
+<li><a href="mathcomp.classical.cardinality.html">cardinality</a></li>
+<li><a href="mathcomp.classical.classical_orders.html">classical_orders</a></li>
+<li><a href="mathcomp.classical.classical_sets.html">classical_sets</a></li>
+<li><a href="mathcomp.classical.contra.html">contra</a></li>
+<li><a href="mathcomp.classical.filter.html">filter</a></li>
+<li><a href="mathcomp.classical.fsbigop.html">fsbigop</a></li>
+<li><a href="mathcomp.classical.functions.html">functions</a></li>
+<li><a href="mathcomp.classical.internal_Eqdep_dec.html">internal_Eqdep_dec</a></li>
+<li><a href="mathcomp.classical.mathcomp_extra.html">mathcomp_extra</a></li>
+<li><a href="mathcomp.classical.set_interval.html">set_interval</a></li>
+<li><a href="mathcomp.classical.unstable.html">unstable</a></li>
+<li><a href="mathcomp.classical.wochoice.html">wochoice</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.experimental_reals"><summary>experimental_reals</summary>
+          <ul>
+          <li><a href="mathcomp.experimental_reals.discrete.html">discrete</a></li>
+<li><a href="mathcomp.experimental_reals.distr.html">distr</a></li>
+<li><a href="mathcomp.experimental_reals.realseq.html">realseq</a></li>
+<li><a href="mathcomp.experimental_reals.realsum.html">realsum</a></li>
+<li><a href="mathcomp.experimental_reals.xfinmap.html">xfinmap</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.reals"><summary>reals</summary>
+          <ul>
+          <li><a href="mathcomp.reals.all_reals.html">all_reals</a></li>
+<li><a href="mathcomp.reals.constructive_ereal.html">constructive_ereal</a></li>
+<li><a href="mathcomp.reals.prodnormedzmodule.html">prodnormedzmodule</a></li>
+<li><a href="mathcomp.reals.real_interval.html">real_interval</a></li>
+<li><a href="mathcomp.reals.reals.html">reals</a></li>
+<li><a href="mathcomp.reals.signed.html">signed</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.reals_stdlib"><summary>reals_stdlib</summary>
+          <ul>
+          <li><a href="mathcomp.reals_stdlib.Rstruct.html">Rstruct</a></li>
+<li><a href="mathcomp.reals_stdlib.nsatz_realtype.html">nsatz_realtype</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+    </div>
+
+  <div class="coq">
+
+    <div class="content">
+      <p><a href="./index.html">Top</a></p>
+      <h1 class="title">Module mathcomp.analysis.borel_hierarchy</h1>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.all_algebra.html">all_algebra</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html">boolp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html">classical_sets</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.functions.html">functions</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html">cardinality</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html">reals</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology.html">topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.normedtype.html">normedtype</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html">sequences</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure.html">measure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></span>.<br/>
+<br/>
+<div class="ssrdoc md">
+# Basic facts about G-delta and F-sigma sets
+
+```
+        Gdelta S == S is countable intersection of open sets
+  Gdelta_dense S == S is a countable intersection of dense open sets
+        Fsigma S == S is countable union of closed sets
+```
+
+</div>
+<br/>
+<span class="gallina-kwd">Set</span><span class="vernacular"> Implicit</span><span class="vernacular"> Arguments</span>.<br/>
+<span class="vernacular">Unset</span><span class="vernacular"> Strict</span><span class="vernacular"> Implicit</span>.<br/>
+<span class="vernacular">Unset</span><span class="vernacular"> Printing</span><span class="vernacular"> Implicit</span><span class="vernacular"> Defensive</span>.<br/>
+<br/>
+<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">TTheory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">Theory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Theory">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Theory">Theory</a></span>.<br/>
+<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.normed_module.html#numFieldNormedType.Exports">numFieldNormedType</a></span>.<span class="vernacular">Exports</span>.<br/>
+<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
+<br/>
+<span class="vernacular">Section</span><span class="id"> Gdelta_Fsigma</span>.<br/>
+<span class="vernacular">Context</span><span class="id"> {</span><span id="Gdelta_Fsigma.T" class="id"><a name="Gdelta_Fsigma.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
+<span class="vernacular">Implicit</span><span class="gallina-kwd"> Type</span><span class="id"> S</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta_Fsigma.T">T</a></span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Gdelta" class="id"><a name="Gdelta" class="" title="Gdelta not a defined object.
+">Gdelta</a></span><span class="id"> </span><span id="S:2" class="id"><a name="S:2" class="">S</a></span><span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span id="F:5" class="id"><span id="F:3" class="id"><a name="F:5" class="">F</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> :</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta_Fsigma.T">T</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc">,</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:4" class="id"><a name="i:4" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#F:3">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#i:4">i</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:2">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0f075d0e59a6e8ec7e140f5f44f5e4cc">\bigcap_</a></span><span id="i:6" class="id"><a name="i:6" class="">i</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#F:5">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#i:6">i</a></span>).<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="open_Gdelta" class="id"><a name="open_Gdelta" class="" title="open_Gdelta not a defined object.
+">open_Gdelta</a></span><span class="id"> </span><span id="S:7" class="id"><a name="S:7" class="">S</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:7">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta">Gdelta</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:7">S</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="gallina-kwd"> exists</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#36dd16448713ee91dfa0961a8ba48e73">fun=&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#36dd16448713ee91dfa0961a8ba48e73"> </a></span><span class="id">S</span>)<span class="id">=&gt;</span><span class="id"> //;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#bigcap_const">bigcap_const</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Gdelta_dense" class="id"><a name="Gdelta_dense" class="" title="Gdelta_dense not a defined object.
+">Gdelta_dense</a></span><span class="id"> </span><span id="S:8" class="id"><a name="S:8" class="">S</a></span><span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span id="F:11" class="id"><span id="F:9" class="id"><a name="F:11" class="">F</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> :</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta_Fsigma.T">T</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc">,</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:10" class="id"><a name="i:10" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#F:9">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#i:10">i</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#dense">dense</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#F:9">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#i:10">i</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:8">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0f075d0e59a6e8ec7e140f5f44f5e4cc">\bigcap_</a></span><span id="i:12" class="id"><a name="i:12" class="">i</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#F:11">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#i:12">i</a></span>).<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Fsigma" class="id"><a name="Fsigma" class="" title="Fsigma not a defined object.
+">Fsigma</a></span><span class="id"> </span><span id="S:13" class="id"><a name="S:13" class="">S</a></span><span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span id="F:16" class="id"><span id="F:14" class="id"><a name="F:16" class="">F</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> :</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta_Fsigma.T">T</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc">,</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:15" class="id"><a name="i:15" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#F:14">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#i:15">i</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#59ba2b47d2814e66f8210a649ae6e6bc"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:13">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#4652af423267d4923a164c1104e1273f">\bigcup_</a></span><span id="i:17" class="id"><a name="i:17" class="">i</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#F:16">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#i:17">i</a></span>).<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="closed_Fsigma" class="id"><a name="closed_Fsigma" class="" title="closed_Fsigma not a defined object.
+">closed_Fsigma</a></span><span class="id"> </span><span id="S:18" class="id"><a name="S:18" class="">S</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:18">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Fsigma">Fsigma</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:18">S</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="gallina-kwd"> exists</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#36dd16448713ee91dfa0961a8ba48e73">fun=&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#36dd16448713ee91dfa0961a8ba48e73"> </a></span><span class="id">S</span>)<span class="id">=&gt;</span><span class="id"> //;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#bigcup_const">bigcup_const</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">End</span><span class="id"> Gdelta_Fsigma</span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="Gdelta_measurable" class="id"><a name="Gdelta_measurable" class="" title="Gdelta_measurable not a defined object.
+">Gdelta_measurable</a></span><span class="id"> {</span><span id="R:19" class="id"><a name="R:19" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="S:20" class="id"><a name="S:20" class="">S</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#R:19">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta">Gdelta</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:20">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#measurable">measurable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:20">S</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> []</span><span class="id"> B</span><span class="id"> oB</span><span class="id"> -&gt;;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#bigcapT_measurable">bigcapT_measurable</a></span><span class="id"> =&gt;</span><span class="id"> i</span>.<br/>
+<span class="id">exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#open_measurable">open_measurable</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="Gdelta_subspace_open" class="id"><a name="Gdelta_subspace_open" class="" title="Gdelta_subspace_open not a defined object.
+">Gdelta_subspace_open</a></span><span class="id"> {</span><span id="R:21" class="id"><a name="R:21" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="A:22" class="id"><a name="A:22" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#R:21">R</a></span>) (<span id="S:23" class="id"><a name="S:23" class="">S</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#subspace">subspace</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#A:22">A</a></span>))<span class="id"> :</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#A:22">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta">Gdelta</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:23">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta">Gdelta</a></span> (<span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#A:22">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#S:23">S</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> oA</span><span class="id"> [/=</span><span class="id"> S_</span><span class="id"> oS_</span><span class="id"> US];</span><span class="gallina-kwd"> exists</span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="n:25" class="id"><span id="n:24" class="id"><a name="n:25" class="">n</a></span></span><span class="id"> =&gt;</span><span class="id"> A</span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span> (<span class="id">S_</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#n:24">n</a></span>)).<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> ?;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#open_setSI">open_setSI</a></span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#bigcapIr">bigcapIr</a></span><span class="id">//</span><span class="id"> US</span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Section</span><span class="id"> irrational_Gdelta</span>.<br/>
+<span class="vernacular">Context</span><span class="id"> {</span><span id="irrational_Gdelta.R" class="id"><a name="irrational_Gdelta.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="irrational_Gdelta" class="id"><a name="irrational_Gdelta" class="" title="irrational_Gdelta not a defined object.
+">irrational_Gdelta</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta_dense">Gdelta_dense</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.reals.reals.html#irrational">irrational</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#irrational_Gdelta.R">R</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#irrationalE">irrationalE</a></span>.<br/>
+<span class="id">have</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.cardinality.html#pcard_eqP">pcard_eqP</a></span><span class="id">/</span><span class="id"><a href="mathcomp.classical.cardinality.html#bijPex">bijPex</a></span><span class="id">[f</span><span class="id"> bijf]</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html#card_rat">card_rat</a></span>.<br/>
+<span class="id">pose</span><span class="id"> f1</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.functions.html#::form_scope:'''pinv_'_x">'pinv_</a></span>(<span class="gallina-kwd">fun</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#36dd16448713ee91dfa0961a8ba48e73"> =&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#36dd16448713ee91dfa0961a8ba48e73"> </a></span><span class="id">0%R</span>)<span class="id"><a href="mathcomp.classical.functions.html#::form_scope:'''pinv_'_x"> [set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.rat.html#rat">rat</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"> f</span>.<br/>
+<span class="gallina-kwd">exists</span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="n:28" class="id"><span id="n:27" class="id"><a name="n:28" class="">n</a></span></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1">~`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.rat.html#ratr">ratr</a></span> (<span class="id">f1</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#n:27">n</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span>).<br/>
+&nbsp;&nbsp;<span class="id">move=&gt;</span><span class="id"> n;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#openC">openC</a></span><span class="id">;</span><span class="id"> split;</span><span class="id"> last</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#dense_set1C">dense_set1C</a></span>.<br/>
+&nbsp;&nbsp;<span class="id">exact/</span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#accessible_closed_set1">accessible_closed_set1</a></span><span class="id">/</span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#hausdorff_accessible">hausdorff_accessible</a></span><span class="id">/</span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#Rhausdorff">Rhausdorff</a></span>.<br/>
+<span class="id">apply/</span><span class="id"><a href="mathcomp.classical.classical_sets.html#seteqP">seteqP</a></span><span class="id">;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> [/=</span><span class="id"> r/=</span><span class="id"> rE</span><span class="id"> n</span><span class="id"> _/=</span><span class="id"> rf1n|/=r</span><span class="id"> rE</span><span class="id"> q</span><span class="id"> _/=</span><span class="id"> [_</span><span class="id"> -&gt;</span><span class="id"> qr]]</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> apply:</span> (<span class="id">rE</span> (<span class="id">f1</span><span class="id"> n</span>))<span class="id"> =&gt;</span><span class="id"> //=;</span><span class="gallina-kwd"> exists</span> (<span class="id">f1</span><span class="id"> n</span>).<br/>
+<span class="id">apply:</span> (<span class="id">rE</span> (<span class="id">f</span><span class="id"> q</span>))<span class="id"> =&gt;</span><span class="id"> //=</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> /f1</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.functions.html#pinvKV">pinvKV</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.classical.classical_sets.html#inE">inE</a></span><span class="id">//=;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.functions.html#set_bij_inj">set_bij_inj</a></span><span class="id"> bijf</span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">End</span><span class="id"> irrational_Gdelta</span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="not_rational_Gdelta" class="id"><a name="not_rational_Gdelta" class="" title="not_rational_Gdelta not a defined object.
+">not_rational_Gdelta</a></span> (<span id="R:29" class="id"><a name="R:29" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181">~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"> </a></span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#Gdelta">Gdelta</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.reals.reals.html#rational">rational</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#R:29">R</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#forall2NP">forall2NP</a></span><span class="id"> =&gt;</span><span class="id"> A;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#not_andP">not_andP</a></span><span class="id"> =&gt;</span><span class="id"> -[oA</span><span class="id"> ratrA]</span>.<br/>
+<span class="id">have</span><span class="id"> dense_A</span><span class="id"> n</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#dense">dense</a></span> (<span class="id">A</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#n:30">n</a></span>).<br/>
+&nbsp;&nbsp;<span class="id">move=&gt;</span><span class="id"> D</span><span class="id"> D0</span><span class="id"> /</span>(<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#dense_rat">dense_rat</a></span><span class="id"> R</span><span class="id"> D</span><span class="id"> D0</span>)<span class="id">;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.classical_sets.html#subset_nonempty">subset_nonempty</a></span><span class="id">;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setIS">setIS</a></span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> -/</span>(<span class="id">@</span><span class="id"><a href="mathcomp.reals.reals.html#rational">rational</a></span><span class="id"> R</span>)<span class="id"> ratrA;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#bigcap_inf">bigcap_inf</a></span>.<br/>
+<span class="id">have</span><span class="id"> [/=</span><span class="id"> B</span><span class="id"> oB</span><span class="id"> irratB]</span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#irrational_Gdelta">irrational_Gdelta</a></span><span class="id"> R</span>.<br/>
+<span class="id">pose</span><span class="id"> C</span><span class="id"> :</span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> R</span>)<span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="n:31" class="id"><a name="n:31" class="">n</a></span><span class="id"> =&gt;</span><span class="id"> A</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#n:31">n</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id">B</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#n:31">n</a></span>.<br/>
+<span class="id">have</span><span class="id"> C0</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0f075d0e59a6e8ec7e140f5f44f5e4cc">\bigcap_</a></span><span id="i:32" class="id"><a name="i:32" class="">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0f075d0e59a6e8ec7e140f5f44f5e4cc"> </a></span><span class="id">C</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#i:32">i</a></span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#bigcapI">bigcapI</a></span><span class="id"> -ratrA</span><span class="id"> -irratB</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setICr">setICr</a></span>.<br/>
+<span class="id">have</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.sequences.html#Baire">Baire</a></span><span class="id"> :</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="n:33" class="id"><a name="n:33" class="">n</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id">C</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#n:33">n</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#dense">dense</a></span> (<span class="id">C</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.borel_hierarchy.html#n:33">n</a></span>).<br/>
+&nbsp;&nbsp;<span class="id">move=&gt;</span><span class="id"> n;</span><span class="id"> split</span>.<br/>
+&nbsp;&nbsp;<span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#openI">openI</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> apply</span><span class="id"> oB</span>.<br/>
+&nbsp;&nbsp;<span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#denseI">denseI</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> apply</span><span class="id"> oB</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> -C0;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#dense0">dense0</a></span>.<br/>
+Qed.</div></details>
+
+      <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>
+    </div>
+  </div>
+    </main>
+</body>
+</html>

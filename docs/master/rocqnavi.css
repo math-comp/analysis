@@ -1,0 +1,219 @@
+
+/* Classes:
+     h1.title     the title of the page
+     div.coq      encloses all generated body
+     div.doc      contents of (** *) comments
+     div.footer   footer
+     summary.toggleproof   "Proof." line
+     div.proofscript  contents of proof script
+     span.docright contents of (**r *) comments
+     span.bracket contents of [ ] within comments
+     span.comment contents of (* *) comments
+     span.string  string literals "..."
+     span.kwd     Coq keyword
+     span.id      any other identifier
+*/
+
+@import url(https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css);
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica;
+  font-size: large;
+}
+
+* {
+    margin: 0em;
+    padding: 0em;
+}
+
+h1 {
+    font-size: 1.5em;
+    font-weight: bold;
+    align-items: center;
+}
+h2 {
+  color: #580909
+}
+
+h3 {
+  color: #C05001;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: sans-serif;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+div.sidebar{
+    padding: 1em;
+}
+div.sidebar li {
+    list-style: none;
+}
+div.sidebar ul {
+    padding-inline-start: 10px;
+}
+
+div.content {
+  max-width: 80ch;
+}
+
+div.coq, code {
+    padding: 1em;
+    font-family: "Fira Code", monospace;
+}
+div.coq li {
+  margin-left: 2em;
+}
+
+div.doc {
+  margin-left: 0%;
+  margin-top: 0.2em;
+  margin-bottom: 0.5em;
+  font-family: serif;
+  background-color: #f2f1f1;
+}
+
+summary.toggleproof {
+  list-style-position: outside;
+  font-size: 0.8em;
+  text-decoration: underline;
+}
+
+div.proofscript {
+  font-size: 0.8em;
+}
+
+div.footer {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  font-size: 0.8em;
+  font-style: italic;
+}
+
+span.docright {
+  position: absolute;
+  left: 60%;
+  width: 40%;
+  font-family: serif;
+}
+
+span.bracket {
+  font-family: monospace;
+  color: #008000;
+}
+
+span.vernacular {
+  color:  #9400d3;
+}
+
+span.gallina-kwd {
+  color:  #228b22;
+}
+
+.hierarchy-builder {
+  color: #ff4500;
+  margin: 2em 0;
+  border: solid 1px #cd0000;
+}
+
+span.comment {
+  color:  #008000;
+}
+
+span.string {
+  color: Maroon;
+}
+
+a:visited {color : #0000BF; text-decoration : none; }
+a:link {color : #0000BF; text-decoration : none; }
+a:hover {text-decoration : none; }
+a:active {text-decoration : none; }
+
+.coq :target {
+  background-color: yellow;
+  transition: background-color 0.5s;
+}
+
+.ssrdoc {
+    padding: 1em;
+}
+
+pre.ssrdoc {
+    border: solid 2px;
+}
+
+div.ssrdoc {
+    border-left: solid lightgray 2px;
+    font-family: serif;
+    transition: linear 0.5s;
+}
+div.ssrdoc:hover {
+    background-color: #f2f1f1;
+    transition: linear 0.5s;
+}
+
+.warning {
+    color: #cd0000;
+}
+
+img.img-darkmode-enable {
+    isolation: auto;
+}
+
+.darkmode--activated span.katex {
+    color: white;
+}
+
+.darkmode--activated span.docright {
+    color: white;
+}
+
+@media screen and (max-width:960px) {
+
+    main {
+        display: grid;
+    }
+
+    div.sidebar {
+        grid-row: 1;
+    }
+
+    div.coq {
+        grid-row: 2;
+    }
+
+}
+
+@media screen and (min-width:960px) {
+
+    main {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+    }
+
+    div.sidebar {
+        grid-column: 1;
+        overflow-x: auto;
+        overflow-y: auto;
+        height: 100vh;
+    }
+
+    div.coq {
+        grid-column: 2;
+        overflow-x: auto;
+        overflow-y: auto;
+        height: 100vh;
+    }
+
+}
+
+
+.darkmode-toggle {
+  z-index: 9999 !important;
+}

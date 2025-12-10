@@ -1,0 +1,377 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Module mathcomp.classical.mathcomp_extra</title>
+<meta name="description" content="Documentation of Coq module mathcomp.classical.mathcomp_extra" />
+<link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+<link href="rocqnavi.css" rel="stylesheet" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="rocqnavi.js"> </script>
+</head>
+
+<body onload="init()">
+
+  <main>
+    <div class="sidebar">
+      <h2>Files</h2>
+      <li><details id="mathcomp"><summary>mathcomp</summary>
+          <ul>
+          <li><details id="mathcomp.analysis"><summary>analysis</summary>
+          <ul>
+          <li><details id="mathcomp.analysis.homotopy_theory"><summary>homotopy_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.homotopy_theory.continuous_path.html">continuous_path</a></li>
+<li><a href="mathcomp.analysis.homotopy_theory.homotopy.html">homotopy</a></li>
+<li><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html">wedge_sigT</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.lebesgue_integral_theory"><summary>lebesgue_integral_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.lebesgue_integral_theory.giry.html">giry</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html">lebesgue_Rintegral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html">lebesgue_integrable</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral.html">lebesgue_integral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html">lebesgue_integral_definition</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.html">lebesgue_integral_differentiation</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_dominated_convergence.html">lebesgue_integral_dominated_convergence</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.html">lebesgue_integral_fubini</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_monotone_convergence.html">lebesgue_integral_monotone_convergence</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html">lebesgue_integral_nonneg</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html">lebesgue_integral_under</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.html">measurable_fun_approximation</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html">simple_functions</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.measure_theory"><summary>measure_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.measure_theory.counting_measure.html">counting_measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.dirac_measure.html">dirac_measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measurable_function.html">measurable_function</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measurable_structure.html">measurable_structure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure.html">measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_extension.html">measure_extension</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_function.html">measure_function</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_negligible.html">measure_negligible</a></li>
+<li><a href="mathcomp.analysis.measure_theory.probability_measure.html">probability_measure</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.normedtype_theory"><summary>normedtype_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.normedtype_theory.complete_normed_module.html">complete_normed_module</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.ereal_normedtype.html">ereal_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.matrix_normedtype.html">matrix_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.normed_module.html">normed_module</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.normedtype.html">normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html">num_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html">pseudometric_normed_Zmodule</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.urysohn.html">urysohn</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.vitali_lemma.html">vitali_lemma</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.showcase"><summary>showcase</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.showcase.pnt.html">pnt</a></li>
+<li><a href="mathcomp.analysis.showcase.summability.html">summability</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.topology_theory"><summary>topology_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.topology_theory.bool_topology.html">bool_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.compact.html">compact</a></li>
+<li><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></li>
+<li><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.nat_topology.html">nat_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.num_topology.html">num_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.one_point_compactification.html">one_point_compactification</a></li>
+<li><a href="mathcomp.analysis.topology_theory.order_topology.html">order_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.product_topology.html">product_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html">pseudometric_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.quotient_topology.html">quotient_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.separation_axioms.html">separation_axioms</a></li>
+<li><a href="mathcomp.analysis.topology_theory.sigT_topology.html">sigT_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.subspace_topology.html">subspace_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.subtype_topology.html">subtype_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.supremum_topology.html">supremum_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.topology.html">topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.topology_structure.html">topology_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.uniform_structure.html">uniform_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.weak_topology.html">weak_topology</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.analysis.all_analysis.html">all_analysis</a></li>
+<li><a href="mathcomp.analysis.borel_hierarchy.html">borel_hierarchy</a></li>
+<li><a href="mathcomp.analysis.cantor.html">cantor</a></li>
+<li><a href="mathcomp.analysis.charge.html">charge</a></li>
+<li><a href="mathcomp.analysis.convex.html">convex</a></li>
+<li><a href="mathcomp.analysis.derive.html">derive</a></li>
+<li><a href="mathcomp.analysis.ereal.html">ereal</a></li>
+<li><a href="mathcomp.analysis.ess_sup_inf.html">ess_sup_inf</a></li>
+<li><a href="mathcomp.analysis.esum.html">esum</a></li>
+<li><a href="mathcomp.analysis.exp.html">exp</a></li>
+<li><a href="mathcomp.analysis.ftc.html">ftc</a></li>
+<li><a href="mathcomp.analysis.function_spaces.html">function_spaces</a></li>
+<li><a href="mathcomp.analysis.gauss_integral.html">gauss_integral</a></li>
+<li><a href="mathcomp.analysis.hoelder.html">hoelder</a></li>
+<li><a href="mathcomp.analysis.kernel.html">kernel</a></li>
+<li><a href="mathcomp.analysis.landau.html">landau</a></li>
+<li><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></li>
+<li><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html">lebesgue_stieltjes_measure</a></li>
+<li><a href="mathcomp.analysis.measurable_realfun.html">measurable_realfun</a></li>
+<li><a href="mathcomp.analysis.numfun.html">numfun</a></li>
+<li><a href="mathcomp.analysis.pi_irrational.html">pi_irrational</a></li>
+<li><a href="mathcomp.analysis.probability.html">probability</a></li>
+<li><a href="mathcomp.analysis.realfun.html">realfun</a></li>
+<li><a href="mathcomp.analysis.sequences.html">sequences</a></li>
+<li><a href="mathcomp.analysis.trigo.html">trigo</a></li>
+<li><a href="mathcomp.analysis.tvs.html">tvs</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis_stdlib"><summary>analysis_stdlib</summary>
+          <ul>
+          <li><details id="mathcomp.analysis_stdlib.showcase"><summary>showcase</summary>
+          <ul>
+          <li><a href="mathcomp.analysis_stdlib.showcase.uniform_bigO.html">uniform_bigO</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.analysis_stdlib.Rstruct_topology.html">Rstruct_topology</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.classical"><summary>classical</summary>
+          <ul>
+          <li><a href="mathcomp.classical.all_classical.html">all_classical</a></li>
+<li><a href="mathcomp.classical.boolp.html">boolp</a></li>
+<li><a href="mathcomp.classical.cardinality.html">cardinality</a></li>
+<li><a href="mathcomp.classical.classical_orders.html">classical_orders</a></li>
+<li><a href="mathcomp.classical.classical_sets.html">classical_sets</a></li>
+<li><a href="mathcomp.classical.contra.html">contra</a></li>
+<li><a href="mathcomp.classical.filter.html">filter</a></li>
+<li><a href="mathcomp.classical.fsbigop.html">fsbigop</a></li>
+<li><a href="mathcomp.classical.functions.html">functions</a></li>
+<li><a href="mathcomp.classical.internal_Eqdep_dec.html">internal_Eqdep_dec</a></li>
+<li><a href="mathcomp.classical.mathcomp_extra.html">mathcomp_extra</a></li>
+<li><a href="mathcomp.classical.set_interval.html">set_interval</a></li>
+<li><a href="mathcomp.classical.unstable.html">unstable</a></li>
+<li><a href="mathcomp.classical.wochoice.html">wochoice</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.experimental_reals"><summary>experimental_reals</summary>
+          <ul>
+          <li><a href="mathcomp.experimental_reals.discrete.html">discrete</a></li>
+<li><a href="mathcomp.experimental_reals.distr.html">distr</a></li>
+<li><a href="mathcomp.experimental_reals.realseq.html">realseq</a></li>
+<li><a href="mathcomp.experimental_reals.realsum.html">realsum</a></li>
+<li><a href="mathcomp.experimental_reals.xfinmap.html">xfinmap</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.reals"><summary>reals</summary>
+          <ul>
+          <li><a href="mathcomp.reals.all_reals.html">all_reals</a></li>
+<li><a href="mathcomp.reals.constructive_ereal.html">constructive_ereal</a></li>
+<li><a href="mathcomp.reals.prodnormedzmodule.html">prodnormedzmodule</a></li>
+<li><a href="mathcomp.reals.real_interval.html">real_interval</a></li>
+<li><a href="mathcomp.reals.reals.html">reals</a></li>
+<li><a href="mathcomp.reals.signed.html">signed</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.reals_stdlib"><summary>reals_stdlib</summary>
+          <ul>
+          <li><a href="mathcomp.reals_stdlib.Rstruct.html">Rstruct</a></li>
+<li><a href="mathcomp.reals_stdlib.nsatz_realtype.html">nsatz_realtype</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+    </div>
+
+  <div class="coq">
+
+    <div class="content">
+      <p><a href="./index.html">Top</a></p>
+      <h1 class="title">Module mathcomp.classical.mathcomp_extra</h1>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap">finmap</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html">ssralg</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.ssrnum.html">ssrnum</a></span>.<br/>
+<br/>
+<div class="ssrdoc md">
+# MathComp extra
+
+This files contains lemmas and definitions recently added in mathcomp,
+in order to be able to compile analysis with older versions of mathcomp.
+
+```
+              proj i f == f i, where f : forall i, T i
+            dfwith f x == fun j =&gt; x if j = i, and f j otherwise
+                          given x : T i
+```
+
+</div>
+<br/>
+<span class="gallina-kwd">Set</span><span class="vernacular"> Implicit</span><span class="vernacular"> Arguments</span>.<br/>
+<span class="vernacular">Unset</span><span class="vernacular"> Strict</span><span class="vernacular"> Implicit</span>.<br/>
+<span class="vernacular">Unset</span><span class="vernacular"> Printing</span><span class="vernacular"> Implicit</span><span class="vernacular"> Defensive</span>.<br/>
+<br/>
+<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">TTheory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">Theory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.ssrnum.html#Num.Theory">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.ssrnum.html#Num.Theory">Theory</a></span>.<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
+<br/>
+<pre class="ssrdoc">
+MathComp 2.3 additions
+</pre>
+<br/>
+<span class="vernacular">Module</span><span class="id"> </span><span id="Order" class="id"><a name="Order" class="">Order</a></span>.<br/>
+<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order">Order</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Order.default_display" class="id"><a name="Order.default_display" class="" title="Order.default_display not a defined object.
+">default_display</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.disp_t">disp_t</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.Disp">Disp</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#tt">tt</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#tt">tt</a></span>. Defined.</div></details>
+<span class="vernacular">End</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#Order">Order</a></span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="proj" class="id"><a name="proj" class="" title="proj not a defined object.
+">proj</a></span><span class="id"> {</span><span id="I:1" class="id"><a name="I:1" class="">I</a></span><span class="id">}</span><span class="id"> {</span><span id="T:2" class="id"><a name="T:2" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#I:1">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">Type}</span><span class="id"> </span><span id="i:3" class="id"><a name="i:3" class="">i</a></span> (<span id="f:5" class="id"><a name="f:5" class="">f</a></span><span class="id"> :</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="i:4" class="id"><a name="i:4" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#T:2">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:4">i</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#f:5">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:3">i</a></span>.<br/>
+<br/>
+<span class="vernacular">Section</span><span class="id"> DFunWith</span>.<br/>
+<span class="vernacular">Variables</span> (<span id="DFunWith.I" class="id"><a name="DFunWith.I" class="">I</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#Equality.Exports.eqType">eqType</a></span>) (<span id="DFunWith.T" class="id"><a name="DFunWith.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#I:7">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> Type</span>) (<span id="DFunWith.f" class="id"><a name="DFunWith.f" class="">f</a></span><span class="id"> :</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="i:10" class="id"><a name="i:10" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#T:9">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:10">i</a></span>).<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="dfwith" class="id"><a name="dfwith" class="" title="dfwith :
+forall {I : eqType} {T : I -> Type},
+(forall i : I, T i) -> forall [i : I], T i -> forall j : I, T j
+
+dfwith is not universe polymorphic
+Arguments dfwith {I} {T}%function_scope f%function_scope [i] x j
+dfwith is transparent
+Expands to: Constant mathcomp.boot.eqtype.dfwith
+Declared in library mathcomp.boot.eqtype, line 509, characters 11-17
+">dfwith</a></span><span class="id"> </span><span id="i:13" class="id"><a name="i:13" class="">i</a></span> (<span id="x:14" class="id"><a name="x:14" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#DFunWith.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:13">i</a></span>) (<span id="j:15" class="id"><a name="j:15" class="">j</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#DFunWith.I">I</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#DFunWith.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#j:15">j</a></span><span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="gallina-kwd">if</span> (<span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:13">i</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#699be9384eca4d7537361910a9a14afe"> =P</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#699be9384eca4d7537361910a9a14afe"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#j:15">j</a></span>)<span class="id"> is</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#ReflectT">ReflectT</a></span><span class="id"> ij</span><span class="gallina-kwd"> then</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#ecast">ecast</a></span><span class="id"> </span><span id="j:17" class="id"><span id="j:16" class="id"><a name="j:17" class="">j</a></span></span> (<span class="id"><a href="mathcomp.classical.mathcomp_extra.html#DFunWith.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#j:16">j</a></span>)<span class="id"> ij</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#x:14">x</a></span><span class="gallina-kwd"> else</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#DFunWith.f">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#j:15">j</a></span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="dfwithin" class="id"><a name="dfwithin" class="" title="dfwithin not a defined object.
+">dfwithin</a></span><span class="id"> </span><span id="i:18" class="id"><a name="i:18" class="">i</a></span><span class="id"> </span><span id="x:19" class="id"><a name="x:19" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith">dfwith</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#x:19">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:18">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#x:19">x</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith">dfwith</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> ii;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eq_axiomK">eq_axiomK</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="dfwithout" class="id"><a name="dfwithout" class="" title="dfwithout not a defined object.
+">dfwithout</a></span><span class="id"> </span><span id="i:20" class="id"><a name="i:20" class="">i</a></span> (<span id="x:21" class="id"><a name="x:21" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#DFunWith.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:20">i</a></span>)<span class="id"> </span><span id="j:22" class="id"><a name="j:22" class="">j</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:20">i</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#j:22">j</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith">dfwith</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#x:21">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#j:22">j</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#DFunWith.f">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#j:22">j</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith">dfwith</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Variant</span><span class="id"> </span><span id="dfwith_spec" class="id"><a name="dfwith_spec" class="">dfwith_spec</a></span><span class="id"> </span><span id="i:23" class="id"><a name="i:23" class="">i</a></span> (<span id="x:24" class="id"><a name="x:24" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#DFunWith.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:23">i</a></span>)<span class="id"> :</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="j:25" class="id"><a name="j:25" class="">j</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#DFunWith.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#j:25">j</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span id="DFunWithin" class="id"><a name="DFunWithin" class="">DFunWithin</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith_spec:26">dfwith_spec</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#x:24">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#x:24">x</a></span><br/>
+&nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span id="DFunWithout" class="id"><a name="DFunWithout" class="">DFunWithout</a></span><span class="id"> </span><span id="j:28" class="id"><a name="j:28" class="">j</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:23">i</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#j:28">j</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith_spec:26">dfwith_spec</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#x:24">x</a></span> (<span class="id"><a href="mathcomp.classical.mathcomp_extra.html#DFunWith.f">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#j:28">j</a></span>).<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="dfwithP" class="id"><a name="dfwithP" class="" title="dfwithP :
+forall [I : eqType] [T : I -> Type] (f : forall i : I, T i) 
+  [i : I] (x : T i) (j : I),
+dfwith_spec (I:=I) (T:=T) f (i:=i) x (j:=j) (dfwith f x j)
+
+dfwithP is not universe polymorphic
+Arguments dfwithP [I] [T]%function_scope f%function_scope [i] x j
+dfwithP is opaque
+Expands to: Constant mathcomp.boot.eqtype.dfwithP
+Declared in library mathcomp.boot.eqtype, line 522, characters 6-13
+">dfwithP</a></span><span class="id"> </span><span id="i:29" class="id"><a name="i:29" class="">i</a></span> (<span id="x:30" class="id"><a name="x:30" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#DFunWith.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:29">i</a></span>) (<span id="j:31" class="id"><a name="j:31" class="">j</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#DFunWith.I">I</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith_spec">dfwith_spec</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#x:30">x</a></span> (<span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith">dfwith</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#x:30">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#j:31">j</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd">by</span><span class="id"> case:</span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqVneq">eqVneq</a></span><span class="id"> i</span><span class="id"> j</span>)<span class="id"> =&gt;</span><span class="id"> [&lt;-|nij];</span><br/>
+&nbsp;&nbsp;&nbsp;<span class="id">[rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwithin">dfwithin</a></span><span class="id">|rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwithout">dfwithout</a></span><span class="id">//];</span><span class="id"> constructor</span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="projK" class="id"><a name="projK" class="" title="projK not a defined object.
+">projK</a></span><span class="id"> </span><span id="i:32" class="id"><a name="i:32" class="">i</a></span> (<span id="x:33" class="id"><a name="x:33" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#DFunWith.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:32">i</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#cancel">cancel</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith">dfwith</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:32">i</a></span>) (<span class="id"><a href="mathcomp.classical.mathcomp_extra.html#proj">proj</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:32">i</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> z;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#proj">proj</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwithin">dfwithin</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">End</span><span class="id"> DFunWith</span>.<br/>
+<span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith">dfwith</a></span><span class="id"> {I</span><span class="id"> T}</span><span class="id"> f</span><span class="id"> i</span><span class="id"> x</span>.<br/>
+<br/>
+<pre class="ssrdoc">
+MathComp 2.4 additions
+</pre>
+<br/>
+<pre class="ssrdoc">
+MathComp 2.5 additions
+</pre>
+<br/>
+<span class="vernacular">Section</span><span class="id"> ssralg</span>.<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="subrKC" class="id"><a name="subrKC" class="" title="subrKC :
+forall [V : GRing.Zmodule.Exports.zmodType] (x y : V), (x + (y - x))%R = y
+
+subrKC is not universe polymorphic
+Arguments subrKC [V] (x y)%ring_scope
+subrKC is transparent
+Expands to: Constant mathcomp.algebra.ssralg.GRing.Theory.subrKC
+Declared in library mathcomp.algebra.ssralg, line 6484, characters 11-17
+">subrKC</a></span><span class="id"> {</span><span id="V:34" class="id"><a name="V:34" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.nmodule#Algebra.Zmodule.Exports.zmodType">zmodType</a></span><span class="id">}</span> (<span id="x:35" class="id"><a name="x:35" class="">x</a></span><span class="id"> </span><span id="y:36" class="id"><a name="y:36" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#V:34">V</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#x:35">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span> (<span class="id"><a href="mathcomp.classical.mathcomp_extra.html#y:36">y</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#x:35">x</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#y:36">y</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.addrC">addrC</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.subrK">subrK</a></span>. Qed.</div></details>
+<span class="vernacular">End</span><span class="id"> ssralg</span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sumr_le0" class="id"><a name="sumr_le0" class="" title="sumr_le0 :
+forall [R : numDomainType] [I : Type] (r : seq I) [P : pred I] [F : I -> R],
+(forall i : I, P i -> (F i <= 0)%R) -> (\sum_(i <- r | P i) F i <= 0)%R
+
+sumr_le0 is not universe polymorphic
+Arguments sumr_le0 [R] [I]%type_scope r%seq_scope 
+  [P] [F]%function_scope _%function_scope
+sumr_le0 is opaque
+Expands to: Constant
+            mathcomp.algebra.num_theory.numdomain.Num.Theory.sumr_le0
+Declared in
+library mathcomp.algebra.num_theory.numdomain, line 999, characters 6-14
+">sumr_le0</a></span> (<span id="R:37" class="id"><a name="R:37" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span>)<span class="id"> </span><span id="I:38" class="id"><a name="I:38" class="">I</a></span> (<span id="r:39" class="id"><a name="r:39" class="">r</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#seq">seq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#I:38">I</a></span>) (<span id="P:40" class="id"><a name="P:40" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#I:38">I</a></span>) (<span id="F:41" class="id"><a name="F:41" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#I:38">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#R:37">R</a></span>)<span class="id"> :</span><br/>
+&nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:42" class="id"><a name="i:42" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#P:40">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:42">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#F:41">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:42">i</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id">0</span>)<span class="id">%R</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#0e493beb85c9c1b3ab2241ceeaa98b08">\sum_</a></span>(<span id="i:45" class="id"><span id="i:44" class="id"><span id="i:43" class="id"><a name="i:45" class="">i</a></span></span></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#0e493beb85c9c1b3ab2241ceeaa98b08"> &lt;-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#0e493beb85c9c1b3ab2241ceeaa98b08"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#r:39">r</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#0e493beb85c9c1b3ab2241ceeaa98b08"> |</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#0e493beb85c9c1b3ab2241ceeaa98b08"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#P:40">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:43">i</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#0e493beb85c9c1b3ab2241ceeaa98b08"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#F:41">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:43">i</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id">0</span>)<span class="id">%R</span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> F0;</span><span class="id"> elim/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#big_rec">big_rec</a></span><span class="id"> :</span><span class="id"> _</span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> i</span><span class="id"> x</span><span class="id"> Pi;</span><span class="id"> apply/</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ler_wnDl">ler_wnDl</a></span><span class="id">/F0</span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="card_fset_sum1" class="id"><a name="card_fset_sum1" class="" title="card_fset_sum1 :
+forall [T : choiceType] (A : {fset T}), #|` A| = \sum_(i <- A) 1
+
+card_fset_sum1 is not universe polymorphic
+Arguments card_fset_sum1 [T] A
+card_fset_sum1 is opaque
+Expands to: Constant mathcomp.finmap.finmap.card_fset_sum1
+Declared in library mathcomp.finmap.finmap, line 2316, characters 6-20
+">card_fset_sum1</a></span> (<span id="T:46" class="id"><a name="T:46" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span>) (<span id="A:47" class="id"><a name="A:47" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c">{fset</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#T:46">T</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c">}</a></span>)<span class="id"> :</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#44d0f89c729ff1a622f59bca3b1bc3fe">#|`</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#44d0f89c729ff1a622f59bca3b1bc3fe"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#A:47">A</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#44d0f89c729ff1a622f59bca3b1bc3fe">|</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#3c5ded5149162c47f03c637c983c78c4">\sum_</a></span>(<span id="i:50" class="id"><span id="i:49" class="id"><span id="i:48" class="id"><a name="i:50" class="">i</a></span></span></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#3c5ded5149162c47f03c637c983c78c4"> &lt;-</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#3c5ded5149162c47f03c637c983c78c4"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#A:47">A</a></span>)<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#3c5ded5149162c47f03c637c983c78c4"> </a></span><span class="id">1</span>)<span class="id">%N</span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#big_seq_fsetE">big_seq_fsetE</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#sum1_card">sum1_card</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#cardfE">cardfE</a></span>. Qed.</div></details>
+
+      <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>
+    </div>
+  </div>
+    </main>
+</body>
+</html>
