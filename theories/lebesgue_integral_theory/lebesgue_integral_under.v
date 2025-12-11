@@ -62,14 +62,14 @@ have [Z [mZ Z0 /subsetCPl ncfZ]] := cf.
 have BZ_cf x : x \in B `\` Z -> {in I, continuous (f ^~ x)}.
   by rewrite inE/= => -[Bx nZx]; exact: ncfZ.
 have [vu|uv] := lerP v u.
-  by move: (Ia); rewrite /I set_itv_ge// -leNgt bnd_simp.
-apply/cvg_nbhsP => w wa.
+  by move: Ia; rewrite /I set_itv_ge// -leNgt bnd_simp.
+apply/(@cvg_nbhsP _ R^o) => w wa.
 have /near_in_itvoo[e /= e0 aeuv] : a \in `]u, v[ by rewrite inE.
 move/cvgrPdist_lt : (wa) => /(_ _ e0)[N _ aue].
 have IwnN n : I (w (n + N)) by apply: aeuv; apply: aue; exact: leq_addl.
 have : forall n, {ae mu, forall y, B y -> `|f (w (n + N)) y| <= g y}.
   by move=> n; exact: g_ub.
-move/choice  => [/= U /all_and3[mU U0 Ug_ub]].
+move/choice => [/= U /all_and3[mU U0 Ug_ub]].
 have mUU n : measurable (\big[setU/set0]_(k < n) U k).
   exact: bigsetU_measurable.
 set UU := \bigcup_n U n.
@@ -115,7 +115,7 @@ apply: (@dominated_cvg _ _ _ mu _ _
     move: BZUUx; rewrite inE/= => -[Bx nZUUx]; rewrite inE/=; split => //.
     by apply: contra_not nZUUx; left.
   move/(BZ_cf x)/(_ a); move/mem_set : Ia => /[swap] /[apply].
-  by move/cvg_nbhsP; apply; rewrite (cvg_shiftn N).
+  by move/(@cvg_nbhsP _ R^o); apply; rewrite (cvg_shiftn N).
 - by apply: (integrableS mB) => //; exact: measurableD.
 - move=> n x [Bx ZUUx]; rewrite lee_fin.
   move/subsetCPl : (Ug_ub n); apply => //=.
@@ -126,7 +126,8 @@ End continuity_under_integral.
 
 Section differentiation_under_integral.
 
-Definition partial1of2 {R : realType} {T : Type} (f : R -> T -> R) : R -> T -> R := fun x y => (f ^~ y)^`() x.
+Definition partial1of2 {R : realType} {T : Type} (f : R -> T -> R) : R -> T -> R
+  := fun x y => (f ^~ y)^`() x.
 
 Local Notation "'d1 f" := (partial1of2 f).
 
