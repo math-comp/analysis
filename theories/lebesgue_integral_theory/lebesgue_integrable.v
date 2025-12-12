@@ -339,12 +339,21 @@ Qed.
 End integrable_theory.
 Arguments eq_integrable {d T R mu D} mD f.
 
-Section measurable_bounded_integrable.
+Section Rintegrable.
 Context d {T : measurableType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
 Implicit Types (D A B : set T) (f : T -> R).
 
-Lemma measurable_bounded_integrable (f : T -> R) A (mA : measurable A) :
+Lemma integrable_norm D f : mu.-integrable D (EFin \o f) ->
+  mu.-integrable D (EFin \o (normr \o f)).
+Proof.
+move=> /integrableP[mf foo]; apply/integrableP; split.
+  do 2 apply: measurableT_comp => //.
+  exact/measurable_EFinP.
+by under eq_integral do rewrite /= normr_id.
+Qed.
+
+Lemma measurable_bounded_integrable f A (mA : measurable A) :
   (mu A < +oo)%E -> measurable_fun A f ->
   [bounded f x | x in A] -> mu.-integrable A (EFin \o f).
 Proof.
@@ -355,7 +364,7 @@ have [M [_ mrt]] := bdA; apply: le_lt_trans.
 by rewrite lte_mul_pinfty.
 Qed.
 
-End measurable_bounded_integrable.
+End Rintegrable.
 
 Lemma integrable_indic_itv {R : realType} (a b : R) (b0 b1 : bool) :
   let mu := lebesgue_measure in
