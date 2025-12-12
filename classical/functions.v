@@ -2666,7 +2666,7 @@ Lemma fct_sumE (I T : Type) (M : nmodType) r (P : {pred I}) (f : I -> T -> M) :
   \sum_(i <- r | P i) f i = fun x => \sum_(i <- r | P i) f i x.
 Proof. by apply/funext => ?; elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 
-Lemma fct_prodE (I : Type) (T : pointedType) (M : pzRingType) r (P : {pred I})
+Lemma fct_prodE (I T : Type) (M : pzRingType) r (P : {pred I})
     (f : I -> T -> M) :
   \prod_(i <- r | P i) f i = fun x => \prod_(i <- r | P i) f i x.
 Proof. by apply/funext => ?; elim/big_rec2: _ => //= i y ? Pi <-. Qed.
@@ -2689,7 +2689,7 @@ Lemma sumrfctE (T : Type) (K : nmodType) (s : seq (T -> K)) :
   \sum_(f <- s) f = (fun x => \sum_(f <- s) f x).
 Proof. exact: fct_sumE. Qed.
 
-Lemma prodrfctE (T : pointedType) (K : pzRingType) (s : seq (T -> K)) :
+Lemma prodrfctE (T : Type) (K : pzRingType) (s : seq (T -> K)) :
   \prod_(f <- s) f = (fun x => \prod_(f <- s) f x).
 Proof. exact: fct_prodE. Qed.
 
@@ -2700,7 +2700,7 @@ Proof. by elim: n => [//|n h]; rewrite funeqE=> ?; rewrite !mulrSr h. Qed.
 Lemma opprfctE (T : Type) (K : zmodType) (f : T -> K) : - f = (fun x => - f x).
 Proof. by []. Qed.
 
-Lemma mulrfctE (T : pointedType) (K : pzRingType) (f g : T -> K) :
+Lemma mulrfctE (T : Type) (K : pzRingType) (f g : T -> K) :
   f * g = (fun x => f x * g x).
 Proof. by []. Qed.
 
@@ -2712,7 +2712,7 @@ Proof. by []. Qed.
 Lemma cstE (T T': Type) (x : T) : cst x = fun _: T' => x.
 Proof. by []. Qed.
 
-Lemma exprfctE (T : pointedType) (K : pzRingType) (f : T -> K) n :
+Lemma exprfctE (T : Type) (K : pzRingType) (f : T -> K) n :
   f ^+ n = (fun x => f x ^+ n).
 Proof. by elim: n => [|n h]; rewrite funeqE=> ?; rewrite ?expr0 ?exprS ?h. Qed.
 
