@@ -9,16 +9,24 @@ From mathcomp Require Import product_topology.
 (* # Subspaces of topological spaces                                          *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*              subspace A == for (A : set T), this is a copy of T with a     *)
-(*                            topology that ignores points outside A          *)
-(*         incl_subspace x == with x of type subspace A with (A : set T),     *)
-(*                            inclusion of subspace A into T                  *)
-(*         nbhs_subspace x == filter associated with x : subspace A           *)
-(*          subspace_ent A == subspace entourages                             *)
-(*         subspace_ball A == balls of the pseudometric subspace structure    *)
-(*   continuousFunType A B == type of continuous function from set A to set B *)
-(*                            with domain subspace A                          *)
-(*                            The HB structure is ContinuousFun.              *)
+(*               subspace A == for (A : set T), this is a copy of T with a    *)
+(*                             topology that ignores points outside A         *)
+(*          incl_subspace x == with x of type subspace A with (A : set T),    *)
+(*                             inclusion of subspace A into T                 *)
+(*          nbhs_subspace x == filter associated with x : subspace A          *)
+(*        from_subspace A f == function of type `subspace A -> U` given a     *)
+(*                             function f of type `A -> U`                    *)
+(*                             The purpose of this definition is to preserve  *)
+(*                             the pretty-printing of the notation            *)
+(*                             {within _, continuous _} below. Its use is     *)
+(*                             however likely to be later superseded by a     *)
+(*                             better (compositional) mechanism.              *)
+(* {within A, continuous f} := continuous (from_subspace A f))                *)
+(*           subspace_ent A == subspace entourages                            *)
+(*          subspace_ball A == balls of the pseudometric subspace structure   *)
+(*    continuousFunType A B == type of continuous functions from set A to     *)
+(*                             set B with domain subspace A                   *)
+(*                             The HB structure is ContinuousFun.             *)
 (* ```                                                                        *)
 (******************************************************************************)
 
@@ -303,8 +311,12 @@ Global Instance subspace_proper_filter {T : topologicalType}
     (A : set T) (x : subspace A) :
   ProperFilter (nbhs_subspace x) := nbhs_subspace_filter x.
 
+Definition from_subspace {T U : Type} (A : set T) (f : T -> U) : subspace A -> U :=
+  f.
+Arguments from_subspace {T U} A f.
+
 Notation "{ 'within' A , 'continuous' f }" :=
-  (continuous (f : subspace A -> _)) : classical_set_scope.
+  (continuous (from_subspace A f)) : classical_set_scope.
 
 Arguments nbhs_subspaceP {T} A x.
 

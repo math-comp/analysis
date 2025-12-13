@@ -69,6 +69,8 @@
 - in `measurable_realfun.v`:
   + lemmas `measurable_funN`
   + lemmas `nondecreasing_measurable`, `nonincreasing_measurable`
+- in `subspace_topology.v`:
+  + definition `from_subspace`
 
 ### Changed
 
@@ -83,6 +85,8 @@
 
 - in `lebesgue_integral_monotone_convergence.v`:
   + lemma `ge0_le_integral` (remove superfluous hypothesis)
+- in `subspace_topology.v`:
+  + notation `{within _, continuous _}` (now uses `from_subspace`)
 
 ### Renamed
 

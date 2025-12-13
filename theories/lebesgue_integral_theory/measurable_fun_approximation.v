@@ -758,7 +758,7 @@ exists (\bigcup_(i in range f) dK i); split.
   + move=> i _; split; first by apply: compact_closed; have [] := dkP i.
     apply: (continuous_subspaceW (dKsub i)).
     apply: (@subspace_eq_continuous _ _ _ (fun=> i)).
-      by move=> ? /set_mem ->.
+      by rewrite /from_subspace => ? /set_mem ->.
     by apply: continuous_subspaceT => ?; exact: cvg_cst.
 Qed.
 
