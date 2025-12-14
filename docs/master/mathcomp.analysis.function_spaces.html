@@ -5364,7 +5364,13 @@ filter.prop_near1 F
               (subspace_topology_subspace__canonical__filter_Nbhs K),
       filter.continuous_at
         (T:=subspace_topology_subspace__canonical__filter_Nbhs K) (U:=V) x g)
-  (inPhantom (forall g : subspace K -> V, {within K, continuous g}%classic)) ->
+  (inPhantom
+     (forall (g : subspace K -> V)
+        (x : filter.Nbhs.sort
+               (subspace_topology_subspace__canonical__filter_Nbhs K)),
+      filter.continuous_at
+        (T:=subspace_topology_subspace__canonical__filter_Nbhs K) (U:=V) x
+        (g : subspace K -> V))) ->
 {uniform K, F --> f}%classic -> {within K, continuous f}%classic
 
 uniform_limit_continuous_subspace is not universe polymorphic
@@ -5382,16 +5388,22 @@ filter.prop_near1 F
               (subspace_topology_subspace__canonical__filter_Nbhs K),
       filter.continuous_at
         (T:=subspace_topology_subspace__canonical__filter_Nbhs K) (U:=V) x g)
-  (inPhantom (forall g : subspace K -> V, {within K, continuous g}%classic)) ->
+  (inPhantom
+     (forall (g : subspace K -> V)
+        (x : filter.Nbhs.sort
+               (subspace_topology_subspace__canonical__filter_Nbhs K)),
+      filter.continuous_at
+        (T:=subspace_topology_subspace__canonical__filter_Nbhs K) (U:=V) x
+        (g : subspace K -> V))) ->
 {uniform K, F --> f}%classic ->
 forall
   [x : filter.Nbhs.sort
          (subspace_topology_subspace__canonical__filter_Nbhs K)]
   [t : set (filter.Nbhs.sort V)],
-filter.nbhs ((f : subspace K -> V) x) t ->
+filter.nbhs (from_subspace K f x) t ->
 (if if if pselect (K x) then true else false then true else false
  then filter.within K (filter.nbhs x)
- else filter.globally [set x]) ((f : subspace K -> V) @^-1` t)%classic
+ else filter.globally [set x]) (from_subspace K f @^-1` t)%classic
 
 Arguments uniform_limit_continuous_subspace {U V} 
   [K]%classical_set_scope [F] [f]%function_scope _ 

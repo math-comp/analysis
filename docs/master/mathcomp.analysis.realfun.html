@@ -2479,13 +2479,13 @@ forall
   [x0 : filter.Nbhs.sort
           (subspace_topology_subspace__canonical__filter_Nbhs `[x, y])]
   [t : set (filter.Nbhs.sort V)],
-filter.nbhs ((f : subspace `[x, y] -> V) x0) t ->
+filter.nbhs (from_subspace `[x, y] f x0) t ->
 (if
   if if pselect (`[x, y]%classic x0) then true else false
   then true
   else false
  then filter.within `[x, y] (filter.nbhs x0)
- else filter.globally [set x0]) ((f : subspace `[x, y] -> V) @^-1` t)%classic
+ else filter.globally [set x0]) (from_subspace `[x, y] f @^-1` t)%classic
 
 Arguments derivable_oo_LRcontinuous_within {R V} [f]%function_scope
   [x y]%ring_scope _ [x0 t] _
@@ -2546,14 +2546,13 @@ forall
   [x0 : filter.Nbhs.sort
           (subspace_topology_subspace__canonical__filter_Nbhs `[x, +oo[)]
   [t : set (filter.Nbhs.sort V)],
-filter.nbhs ((f : subspace `[x, +oo[ -> V) x0) t ->
+filter.nbhs (from_subspace `[x, +oo[ f x0) t ->
 (if
   if if pselect (`[x, +oo[%classic x0) then true else false
   then true
   else false
  then filter.within `[x, +oo[ (filter.nbhs x0)
- else filter.globally [set x0])
-  ((f : subspace `[x, +oo[ -> V) @^-1` t)%classic
+ else filter.globally [set x0]) (from_subspace `[x, +oo[ f @^-1` t)%classic
 
 Arguments derivable_oy_Rcontinuous_within_itvcy {R V} 
   [f]%function_scope [x]%ring_scope _ [x0 t] _
@@ -2588,14 +2587,13 @@ forall
   [x0 : filter.Nbhs.sort
           (subspace_topology_subspace__canonical__filter_Nbhs `]-oo, x])]
   [t : set (filter.Nbhs.sort V)],
-filter.nbhs ((f : subspace `]-oo, x] -> V) x0) t ->
+filter.nbhs (from_subspace `]-oo, x] f x0) t ->
 (if
   if if pselect (`]-oo, x]%classic x0) then true else false
   then true
   else false
  then filter.within `]-oo, x] (filter.nbhs x0)
- else filter.globally [set x0])
-  ((f : subspace `]-oo, x] -> V) @^-1` t)%classic
+ else filter.globally [set x0]) (from_subspace `]-oo, x] f @^-1` t)%classic
 
 Arguments derivable_Noy_Lcontinuous_within_itvNyc 
   {R V} [f]%function_scope [x]%ring_scope _ [x0 t] 
@@ -2826,13 +2824,13 @@ forall
   [t : set
          (filter.Nbhs.sort
             (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs ((f : subspace [set` I] -> R) x) t ->
+filter.nbhs (from_subspace [set` I] f x) t ->
 (if
   if if pselect ([set` I]%classic x) then true else false
   then true
   else false
  then filter.within [set` I] (filter.nbhs x)
- else filter.globally [set x]) ((f : subspace [set` I] -> R) @^-1` t)%classic
+ else filter.globally [set x]) (from_subspace [set` I] f @^-1` t)%classic
 
 Arguments continuous_subspace_itv [R I] [f]%function_scope _ [x t] _
 continuous_subspace_itv is opaque
@@ -3536,11 +3534,11 @@ forall
   [t : set
          (filter.Nbhs.sort
             (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs ((f : subspace `[a, b] -> R) x) t ->
+filter.nbhs (from_subspace `[a, b] f x) t ->
 (if
   if if pselect (`[a, b]%classic x) then true else false then true else false
  then filter.within `[a, b] (filter.nbhs x)
- else filter.globally [set x]) ((f : subspace `[a, b] -> R) @^-1` t)%classic
+ else filter.globally [set x]) (from_subspace `[a, b] f @^-1` t)%classic
 
 Arguments segment_inc_surj_continuous [R] [a b]%ring_scope 
   [f]%function_scope _ _ [x t] _
@@ -3641,11 +3639,11 @@ forall
   [t : set
          (filter.Nbhs.sort
             (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs ((f : subspace `[a, b] -> R) x) t ->
+filter.nbhs (from_subspace `[a, b] f x) t ->
 (if
   if if pselect (`[a, b]%classic x) then true else false then true else false
  then filter.within `[a, b] (filter.nbhs x)
- else filter.globally [set x]) ((f : subspace `[a, b] -> R) @^-1` t)%classic
+ else filter.globally [set x]) (from_subspace `[a, b] f @^-1` t)%classic
 
 Arguments segment_dec_surj_continuous [R] [a b]%ring_scope 
   [f]%function_scope _ _ [x t] _
@@ -3684,11 +3682,11 @@ forall
   [t : set
          (filter.Nbhs.sort
             (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs ((f : subspace `[a, b] -> R) x) t ->
+filter.nbhs (from_subspace `[a, b] f x) t ->
 (if
   if if pselect (`[a, b]%classic x) then true else false then true else false
  then filter.within `[a, b] (filter.nbhs x)
- else filter.globally [set x]) ((f : subspace `[a, b] -> R) @^-1` t)%classic
+ else filter.globally [set x]) (from_subspace `[a, b] f @^-1` t)%classic
 
 Arguments segment_mono_surj_continuous [R] [a b]%ring_scope
   [f]%function_scope _ _ [x t] _
@@ -3729,14 +3727,13 @@ forall
   [t : set
          (filter.Nbhs.sort
             (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs ((g : subspace `[f a, f b] -> R) x) t ->
+filter.nbhs (from_subspace `[f a, f b] g x) t ->
 (if
   if if pselect (`[f a, f b]%classic x) then true else false
   then true
   else false
  then filter.within `[f a, f b] (filter.nbhs x)
- else filter.globally [set x])
-  ((g : subspace `[f a, f b] -> R) @^-1` t)%classic
+ else filter.globally [set x]) (from_subspace `[f a, f b] g @^-1` t)%classic
 
 Arguments segment_can_le_continuous [R] [a b]%ring_scope 
   [f g]%function_scope _ _%function_scope _ [x t] 
@@ -3777,14 +3774,13 @@ forall
   [t : set
          (filter.Nbhs.sort
             (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs ((g : subspace `[f b, f a] -> R) x) t ->
+filter.nbhs (from_subspace `[f b, f a] g x) t ->
 (if
   if if pselect (`[f b, f a]%classic x) then true else false
   then true
   else false
  then filter.within `[f b, f a] (filter.nbhs x)
- else filter.globally [set x])
-  ((g : subspace `[f b, f a] -> R) @^-1` t)%classic
+ else filter.globally [set x]) (from_subspace `[f b, f a] g @^-1` t)%classic
 
 Arguments segment_can_ge_continuous [R] [a b]%ring_scope 
   [f g]%function_scope _ _%function_scope _ [x t] 
@@ -3825,14 +3821,13 @@ forall
   [t : set
          (filter.Nbhs.sort
             (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs ((g : subspace (f @`[a, b]) -> R) x) t ->
+filter.nbhs (from_subspace (f @`[a, b]) g x) t ->
 (if
   if if pselect ((f @`[a, b])%classic x) then true else false
   then true
   else false
  then filter.within (f @`[a, b]) (filter.nbhs x)
- else filter.globally [set x])
-  ((g : subspace (f @`[a, b]) -> R) @^-1` t)%classic
+ else filter.globally [set x]) (from_subspace (f @`[a, b]) g @^-1` t)%classic
 
 Arguments segment_can_continuous [R] [a b]%ring_scope 
   [f g]%function_scope _ _%function_scope _ [x t] 
@@ -6190,12 +6185,12 @@ forall
   [t : set
          (filter.Nbhs.sort
             (numFieldTopology.RealField_sort__canonical__filter_Nbhs R))],
-filter.nbhs ((fine \o (total_variation a)^~ f : subspace `[a, b] -> R) x) t ->
+filter.nbhs (from_subspace `[a, b] (fine \o (total_variation a)^~ f) x) t ->
 (if
   if if pselect (`[a, b]%classic x) then true else false then true else false
  then filter.within `[a, b] (filter.nbhs x)
  else filter.globally [set x])
-  ((fine \o (total_variation a)^~ f : subspace `[a, b] -> R) @^-1` t)%classic
+  (from_subspace `[a, b] (fine \o (total_variation a)^~ f) @^-1` t)%classic
 
 Arguments total_variation_continuous {R} [a b] [f]%function_scope 
   _ _%function_scope _ [x t] _

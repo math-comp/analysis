@@ -2331,7 +2331,7 @@ forall [f : topology_structure.Topological.sort X -> R^o]
  filter.continuous_at
    (T:=subspace_topology.subspace_topology_subspace__canonical__filter_Nbhs A)
    (U:=num_topology.GRing_regular__canonical__filter_Nbhs R) x
-   (f : subspace_topology.subspace A -> R^o)) ->
+   (subspace_topology.from_subspace A f)) ->
 (forall x : topology_structure.Topological.sort X, A x -> (`|f x| <= M)%R) ->
 exists g : topology_structure.Topological.sort X -> R^o,
   [/\ {in A, f =1 g},

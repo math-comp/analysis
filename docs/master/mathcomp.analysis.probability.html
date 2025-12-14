@@ -5708,23 +5708,14 @@ forall {R : realType} [rate : R]
   [t : set
          (filter.Nbhs.sort
             (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs
-  ((exponential_pdf rate
-    :
-    subspace `[0%R, +oo[ ->
-    numFieldTopology.Real_sort__canonical__classical_sets_Pointed R) x)
-  t ->
+filter.nbhs (from_subspace `[0%R, +oo[ (exponential_pdf rate) x) t ->
 (if
   if if pselect (`[0%R, +oo[%classic x) then true else false
   then true
   else false
  then filter.within `[0%R, +oo[ (filter.nbhs x)
  else filter.globally [set x])
-  ((exponential_pdf rate
-    :
-    subspace `[0%R, +oo[ ->
-    numFieldTopology.Real_sort__canonical__classical_sets_Pointed R) @^-1`
-   t)%classic
+  (from_subspace `[0%R, +oo[ (exponential_pdf rate) @^-1` t)%classic
 
 Arguments within_continuous_exponential_pdf {R} [rate]%ring_scope [x t] _
 within_continuous_exponential_pdf is opaque
@@ -6837,11 +6828,11 @@ forall {R : realType} [A : set R] [a b : nat]
   [t : set
          (filter.Nbhs.sort
             (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs ((XMonemX a b : subspace A -> R) x) t ->
+filter.nbhs (from_subspace A (XMonemX a b) x) t ->
 (if if if pselect (A x) then true else false then true else false
  then filter.within A (filter.nbhs x)
  else filter.globally [set x])
-  ((XMonemX a b : subspace A -> R) @^-1` t)%classic
+  (from_subspace A (XMonemX a b) @^-1` t)%classic
 
 Arguments within_continuous_XMonemX {R} [A]%classical_set_scope
   [a b]%nat_scope [x t] _

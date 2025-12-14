@@ -3099,13 +3099,13 @@ forall
   [x : filter.Nbhs.sort
          (subspace_topology_subspace__canonical__filter_Nbhs [set` i])]
   [t : set (filter.Nbhs.sort U)],
-filter.nbhs ((f : subspace [set` i] -> U) x) t ->
+filter.nbhs (from_subspace [set` i] f x) t ->
 (if
   if if pselect ([set` i]%classic x) then true else false
   then true
   else false
  then filter.within [set` i] (filter.nbhs x)
- else filter.globally [set x]) ((f : subspace [set` i] -> U) @^-1` t)%classic
+ else filter.globally [set x]) (from_subspace [set` i] f @^-1` t)%classic
 
 Arguments derivable_within_continuous [R U] [f]%function_scope [i] _ [x t] _
 derivable_within_continuous is opaque

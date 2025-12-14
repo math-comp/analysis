@@ -892,14 +892,13 @@ forall
          (filter.Nbhs.sort
             (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
 filter.nbhs
-  (((parameterized_integral lebesgue_measure a)^~ f : subspace `[a, b] -> R)
-     x)
+  (from_subspace `[a, b] ((parameterized_integral lebesgue_measure a)^~ f) x)
   t ->
 (if
   if if pselect (`[a, b]%classic x) then true else false then true else false
  then filter.within `[a, b] (filter.nbhs x)
  else filter.globally [set x])
-  (((parameterized_integral lebesgue_measure a)^~ f : subspace `[a, b] -> R) @^-1`
+  (from_subspace `[a, b] ((parameterized_integral lebesgue_measure a)^~ f) @^-1`
    t)%classic
 
 Arguments parameterized_integral_continuous {R} [a b] 
