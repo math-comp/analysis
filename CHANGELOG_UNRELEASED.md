@@ -103,6 +103,13 @@
 
 - in `lebesgue_integrable.v`:
   + lemma `integrable_set0`
+- in `functions.v`:
+  + lemma `injectiveT_ltn`
+
+- in `sequences.v`:
+  + lemma `finite_range_cst`
+  + lemma `finite_range_cvg`
+  + theorem `bolzano_weierstrass`
 
 - in `lebesgue_integrable.v`:
   + lemma `integrable_norm`
