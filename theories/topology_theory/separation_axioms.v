@@ -1078,6 +1078,17 @@ Implicit Types (T : topologicalType).
 
 Definition perfect_set {T} (A : set T) := closed A /\ limit_point A = A.
 
+Lemma perfectP {T} (A : set T) :
+  perfect_set A <-> closed A /\ isolated A = set0.
+Proof.
+split=> [[cA limA]|[cA isoA]]; have := closure_isolated_limit_point A.
+- move=> /(congr1 (fun x => x `\` limit_point A)).
+  rewrite setUDK.
+    by rewrite limA -(closure_id A).1// setDv.
+  by apply/disj_setPS; rewrite disj_set_sym disjoint_isolated_limit_point.
+- by rewrite isoA set0U -(closure_id A).1.
+Qed.
+
 Lemma perfectTP {T} : perfect_set [set: T] <-> forall x : T, ~ open [set x].
 Proof.
 split.

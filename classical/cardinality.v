@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
@@ -632,6 +632,21 @@ Proof. by apply: subset_card_le; rewrite setDE; apply: subIset; left. Qed.
 Lemma finite_image T T' A (f : T -> T') : finite_set A -> finite_set (f @` A).
 Proof. exact/card_le_finite/card_image_le. Qed.
 
+Lemma finite_setX_or T T' (A : set T) (B : set T') :
+  finite_set (A `*` B) -> finite_set A \/ finite_set B.
+Proof.
+have [->|/set0P[a Aa]] := eqVneq A set0; first by left.
+have /sub_finite_set : [set a] `*` B `<=` A `*` B by move=> x/= [] -> ?; split.
+move => /[apply]/(finite_image snd); rewrite (_ : _ @` _ = B); first by right.
+by apply/seteqP; split=> [b [[? ?] [? ?] <-//]|b ?]/=; exists (a, b).
+Qed.
+
+Lemma infinite_setX {T} {A B : set T} :
+  infinite_set A -> infinite_set B -> infinite_set (A `*` B).
+Proof.
+by move=> iA iB; have /not_orP := conj iA iB; exact/contra_not/finite_setX_or.
+Qed.
+
 Lemma finite_set1 T (x : T) : finite_set [set x].
 Proof.
 elim/Pchoice: T => T in x *.
@@ -1099,9 +1114,7 @@ Lemma infinite_nat : ~ finite_set [set: nat].
 Proof. exact/infiniteP/card_lexx. Qed.
 
 Lemma infinite_prod_nat : infinite_set [set: nat * nat].
-Proof.
-by apply/infiniteP/pcard_leTP/injPex; exists (pair 0%N) => // m n _ _ [].
-Qed.
+Proof. by rewrite -setXTT; apply: infinite_setX; exact: infinite_nat. Qed.
 
 Lemma card_nat2 : [set: nat * nat] #= [set: nat].
 Proof. exact/eq_card_nat/infinite_prod_nat/countableP. Qed.
@@ -1116,6 +1129,12 @@ Qed.
 
 Lemma card_rat : [set: rat] #= [set: nat].
 Proof. exact/eq_card_nat/infinite_rat/countableP. Qed.
+
+Lemma infinite_prod_rat : infinite_set [set: rat * rat].
+Proof. by rewrite -setXTT; apply: infinite_setX; exact: infinite_rat. Qed.
+
+Lemma card_rat2 : ([set: rat * rat] #= [set: nat])%card.
+Proof. exact/eq_card_nat/infinite_prod_rat/countableP. Qed.
 
 Lemma choicePcountable {T : choiceType} : countable [set: T] ->
   {T' : countType | T = T' :> Type}.

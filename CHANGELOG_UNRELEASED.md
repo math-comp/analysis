@@ -71,6 +71,23 @@
   + lemmas `nondecreasing_measurable`, `nonincreasing_measurable`
 - in `subspace_topology.v`:
   + definition `from_subspace`
+- in `topology_structure.v`:
+  + definition `isolated`
+  + lemma `isolatedS`
+  + lemma `disjoint_isolated_limit_point`
+  + lemma `closure_isolated_limit_point`
+
+- in `separation_axioms.v`:
+  + lemma `perfectP`
+
+- in `cardinality.v`:
+  + lemmas `finite_setX_or`, `infinite_setX`
+  + lemmas `infinite_prod_rat`, ``card_rat2`
+
+- in `normed_module.v`:
+  + lemma `open_subball_rat`
+  + fact `isolated_rat_ball`
+  + lemma `countable_isolated`
 
 ### Changed
 
@@ -120,6 +137,9 @@
 
 
 ### Deprecated
+
+- in `topology_structure.v`:
+  + lemma `closure_limit_point` (use `closure_limit_point_isolated` instead)
 
 ### Removed
 

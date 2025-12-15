@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
 From mathcomp Require Export filter.
@@ -40,6 +40,7 @@ From mathcomp Require Export filter.
 (*                      x^' == set of neighbourhoods of x where x is          *)
 (*                             excluded (a "deleted neighborhood")            *)
 (*            limit_point E == the set of limit points of E                   *)
+(*               isolated A == the set of isolated points of A                *)
 (*                  dense S == the set (S : set T) is dense in T, with T of   *)
 (*                             type topologicalType                           *)
 (*           continuousType == type of continuous functions                   *)
@@ -687,12 +688,43 @@ Proof. by rewrite limit_pointEnbhs; under eq_fun do rewrite meets_openr. Qed.
 Lemma subset_limit_point E : limit_point E `<=` closure E.
 Proof. by move=> t Et U tU; have [p [? ? ?]] := Et _ tU; exists p. Qed.
 
-Lemma closure_limit_point E : closure E = E `|` limit_point E.
+Definition isolated (A : set T) (x : T) :=
+  x \in A /\ exists2 V, nbhs x V & V `&` A = [set x].
+
+Lemma isolatedS (A : set T) : isolated A `<=` A.
+Proof. by move=> x [/set_mem]. Qed.
+
+Lemma disjoint_isolated_limit_point (A : set T) :
+  [disjoint isolated A & limit_point A].
 Proof.
-rewrite predeqE => t; split => [cEt|]; last first.
+apply/disj_setPS => t [[At [V tV]]] /[swap].
+move/(_ _ tV) => [x [xt Ax Vx]].
+have /[swap] -> : [set x] `<=` V `&` A by move=> ? ->; split.
+move/subset_set1 => [/seteqP[/(_ _ erefl)//]|].
+by move=> /seteqP[_ /(_ _ erefl)/=]; apply/eqP; rewrite eq_sym.
+Qed.
+
+Lemma closure_isolated_limit_point (A : set T) :
+  closure A = isolated A `|` limit_point A.
+Proof.
+apply/seteqP; split=> [t At0|t [|]].
+- rewrite /setU/= -implyNp => /not_andP[tA U /At0[x [Ux Ax]]|+ U tU].
+    by exists x; split => //; contra: tA => <-; exact/mem_set.
+  move/forall2NP => /(_ U)[//|/seteqP/not_andP[|]].
+    by contra => H x [Ux Ax]; apply/eqP/negPn/negP => /H /(_ Ax).
+  have [At tUA|At _] := pselect (A t).
+    by absurd: tUA => _ ->; split => //; exact: nbhs_singleton.
+  have [x [Ax Ux]] := At0 _ tU.
+  by exists x; split => //; contra: At => <-.
+- by move/isolatedS; exact: subset_closure.
+- exact: subset_limit_point.
+Qed.
+
+Lemma __deprecated__closure_limit_point E : closure E = E `|` limit_point E.
+Proof.
+apply/seteqP; split => [|x]; last first.
   by case; [exact: subset_closure|exact: subset_limit_point].
-have [?|Et] := pselect (E t); [by left|right=> U tU; have [p []] := cEt _ tU].
-by exists p; split => //; apply/eqP => pt; apply: Et; rewrite -pt.
+by rewrite closure_isolated_limit_point => x [/isolatedS|]; [left|right].
 Qed.
 
 Definition closed (D : set T) := closure D `<=` D.
@@ -749,6 +781,8 @@ Lemma closed_closure (A : set T) : closed (closure A).
 Proof. by move=> p clclAp B /nbhs_interior /clclAp [q [clAq /clAq]]. Qed.
 
 End Closed.
+#[deprecated(since="mathcomp-analysis 1.15.0", note="use `closure_limit_point_isolated` instead")]
+Notation closure_limit_point := __deprecated__closure_limit_point (only parsing).
 
 Lemma closed_comp {T U : topologicalType} (f : T -> U) (D : set U) :
   {in ~` f @^-1` D, continuous f} -> closed D -> closed (f @^-1` D).
