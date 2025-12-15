@@ -2972,6 +2972,81 @@ Qed.
 
 End adjacent_cut.
 
+Section finite_range_sequence_constant.
+Context {R : realFieldType}.
+
+Lemma finite_range_cst (u_ : R^nat) : finite_set (range u_) ->
+  exists N, exists2 A, infinite_set A & (forall k, A k <-> u_ k = u_ N).
+Proof.
+case=> n; elim: n => [|n ih] in u_ *.
+  by rewrite card_eq_sym => /card_set_bijP[/= f [_ _ /(_ _ (imageT u_ 0))[]]].
+move/eq_cardSP => -[r [N _ uNr]] urn.
+apply: assume_not => /forallNP/(_ N) uN.
+have {uN}[B finB BuN] : exists2 B, finite_set B &
+    (forall k, B k <-> u_ k = u_ N).
+  exists (u_ @^-1` [set u_ N]); last by move=> k; split.
+  by apply: contrapT => u_N; apply: uN; eexists; [exact: u_N|by []].
+have [M BM] : exists M, ~ B M.
+  apply/existsNP => allB.
+  move: finB; rewrite (_ : B = setT); first exact/infinite_nat.
+  by rewrite -subTset => x _; exact: allB.
+have uMuN : u_ M != u_ N by apply: contra_not_neq BM; exact: (BuN _).2.
+pose v_ k := if k \in B then u_ M else u_ k.
+have /ih[k [A infA Ak]] : (range v_ #= `I_n)%card.
+  suff : range v_ = (range u_) `\ u_ N by move=> ->; rewrite uNr.
+  apply/seteqP; split=> [_ [y] _ <-|_ [[y _ <-]] uyuN]; rewrite /v_.
+  - case: ifPn => [yB|]; first by split; [exists M|exact/eqP].
+    by rewrite notin_setE => /BuN.
+  - by exists y => //; case: ifPn => // /set_mem /BuN.
+have [Bk|Bk] := pselect (B k).
+- exists M, (A `\` B); [exact: infinite_setD|move=> m; split=> [[+ Bm]|]].
+  + by move/(Ak _).1; rewrite /v_ memNset// mem_set.
+  + apply: contraPP; rewrite -[~ _]/((~` (_ `\` _)) m) setCD => -[|/BuN ->].
+    * have /iff_not2[+ _] := Ak m.
+      by move/[apply]; rewrite /v_; case: ifPn => mB; rewrite mem_set// eqxx.
+    * exact/nesym/eqP.
+- exists k, (A `\` B); [exact: infinite_setD|move=> m].
+  split=> [[+ Bm]|]; first by move/(Ak _).1; rewrite /v_ memNset// memNset.
+  apply: contraPP; rewrite -[~ _]/((~` (_ `\` _)) m) setCD => -[|Bm].
+  + have /iff_not2[+ _] := Ak m.
+    move=> /[apply]; rewrite /v_; case: ifPn => mB; rewrite memNset//.
+    by move: mB Bk => /set_mem /BuN -> /BuN /nesym.
+  + have /iff_not2[+ _] := BuN k.
+    by move=> /(_ Bk); apply: contra_not; rewrite ((BuN m).1 Bm).
+Qed.
+
+Lemma finite_range_cvg (x_ : R ^nat) : finite_set (range x_) ->
+  exists2 f : nat -> nat, increasing_seq f & cvgn (x_ \o f).
+Proof.
+move=> /finite_range_cst[k [A /infiniteP/pcard_leP/unsquash f Ak]].
+have : forall n, {y | (n < y)%N /\ A y}.
+  move=> n; apply/cid.
+  have [m xfm] : exists m, (n < f m)%N by exact: injectiveT_ltn.
+  by exists (f m); split => //; exact: funS.
+move/dependent_choice => /(_ 0)[g [g00 gincr]].
+exists g; first by apply/increasing_seqP => n; exact: (gincr _).1.
+apply/cvg_ex; exists (x_ k); apply/cvgrPdist_le => /= e e0.
+near=> n.
+have := (gincr n.-1).2; rewrite prednK; last by near: n; by exists 1%N.
+by move/(Ak (g n)).1 => ->; rewrite subrr normr0 ltW.
+Unshelve. all: end_near. Qed.
+
+End finite_range_sequence_constant.
+
+Theorem bolzano_weierstrass {R : realType} (u_ : R^nat):
+  bounded_fun u_ -> exists2 f : nat -> nat, increasing_seq f & cvgn (u_ \o f).
+Proof.
+move=> bnd_u; set U := range u_.
+have bndU : bounded_set U.
+  case: bnd_u => N [Nreal Nu_].
+  by exists N; split => // x /Nu_ {}Nu_ /= y [x0 _ <-]; exact: Nu_.
+have [/finite_range_cvg//|infU] := pselect (finite_set U).
+have [/= l Ul] := infinite_bounded_limit_point_nonempty infU bndU.
+have x_l := limit_point_cluster_eventually Ul.
+have [+ _] := cluster_eventually_cvg u_ l.
+by move=> /(_ x_l)[f fi fl]; exists f => //; apply/cvg_ex; exists l.
+Qed.
+
 Section banach_contraction.
 
 Context {R : realType} {X : completeNormedModType R} (U : set X).
