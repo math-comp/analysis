@@ -44,6 +44,9 @@
   + definition `product_subprobability`
   + lemma `product_subprobability_setC`
 
+- in `lebesgue_integral_theory/lebesgue_integrable.v`
+  + lemmas `null_set_integrable`, `null_set_integral_gen`
+
 - new file `lebesgue_integral_theory/giry.v`
   + definition `measure_eq`
   + definition `giry`

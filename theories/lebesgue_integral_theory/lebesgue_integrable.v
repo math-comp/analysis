@@ -818,6 +818,21 @@ Proof.
 by move=> mN intf ?; rewrite (negligible_integral mN mN)// setDv integral_set0.
 Qed.
 
+Lemma null_set_integrable (N : set T) (f : T -> \bar R) :
+  measurable N -> measurable_fun N f -> mu N = 0 -> mu.-integrable N f.
+Proof.
+move=> mN mf muN0.
+rewrite (negligible_integrable(N:=N)) ?setDv //=.
+by apply: (eq_integrable measurable0 (cst 0%R))
+  => [x|]; [rewrite inE | exact: integrable0].
+Qed.
+
+Lemma null_set_integral_gen (N : set T) (f : T -> \bar R) :
+  measurable N -> measurable_fun N f -> mu N = 0 -> \int[mu]_(x in N) f x = 0.
+Proof.
+by move=> *; apply: null_set_integral; [| exact: null_set_integrable |].
+Qed.
+
 End negligible_integral.
 Add Search Blacklist "ge0_negligible_integral".
 
