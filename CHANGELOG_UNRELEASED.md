@@ -81,6 +81,7 @@
   + lemma `perfectP`
 
 - in `cardinality.v`:
+  + lemmas `finite_setX_or`, `infinite_setX`
   + lemmas `infinite_prod_rat`, ``card_rat2`
 
 - in `normed_module.v`:
