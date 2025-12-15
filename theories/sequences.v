@@ -57,7 +57,6 @@ From mathcomp Require Import ereal topology tvs normedtype landau.
 (*                             is convergent and its limit is sup u_n         *)
 (*    nonincreasing_cvgn u_ == if u_ is nonincreasing u_ and bound by below   *)
 (*                             then u_ is convergent                          *)
-(*     adherence_value u_ a == a is an adherence value of the sequence u_     *)
 (*             adjacent_seq == adjacent sequences lemma                       *)
 (*                   cesaro == Cesaro's lemma                                 *)
 (* ```                                                                        *)
@@ -2672,10 +2671,26 @@ apply: nondecreasing_cvgn_le; last exact: is_cvg_geometric_series.
 by apply: nondecreasing_series => ? _ /=; rewrite pmulr_lge0 // exprn_gt0.
 Qed.
 
-Definition adherence_value {R : numDomainType} (u_ : R^nat) (a : R) :=
-  forall (e : R) n, e > 0 -> exists2 p, (p >= n)%N & `|u_ p - a| <= e.
+(* adherence values of a sequence *)
+Lemma cluster_eventuallyP {R : realFieldType} (u_ : R^nat) (a : R) :
+  cluster (u_ @ \oo) a <->
+    forall (e : R) n, e > 0 -> exists2 p, (p >= n)%N & `|a - u_ p| <= e.
+Proof.
+split => [/= uya e n e0|u_a /= A B [n/= _ nuA] [e/= e0 aeB]].
+- apply/not_exists2P => nuae.
+  have yuAe : nbhs \oo (u_ @^-1` [set x | `|a - x| > e]).
+    exists n => // m/= nm; have := nuae m.
+    by rewrite nm/= => -[//|/negP]; rewrite -ltNge.
+  have [/= r []] := uya _ _ yuAe (nbhsx_ballx a _ e0).
+  by rewrite /ball/= => /ltW; rewrite leNgt => /negbTE ->.
+- have e20 : 0 < e / 2 by rewrite divr_gt0.
+  have [p np upae] := u_a _ n e20.
+  exists (u_ p); split; first exact: nuA.
+  apply: aeB => /=.
+  by rewrite (le_lt_trans upae)// gtr_pMr// invf_lt1// ltr1n.
+Qed.
 
-Section adherence_value_cvg.
+Section cluster_eventually_cvg.
 Context {R : realType}.
 Variables (u_ : R^nat) (a : R).
 
@@ -2683,10 +2698,10 @@ Variables (u_ : R^nat) (a : R).
    |u_N_k - a| <= 1/k where N_k is the smallest natural number of the set
    A(N, k) defined below. *)
 
-Let A N k := [set j | (j > N)%N /\ `|u_ j - a| <= k.+1%:R^-1].
+Let A N k := [set j | (j > N)%N /\ `|a - u_ j| <= k.+1%:R^-1].
 
 Let elt_prop Nk :=
-  [/\ `|u_ Nk.1 - a| <= Nk.2%:R^-1, A Nk.1 Nk.2 !=set0 & (0 < Nk.2)%N].
+  [/\ `|a - u_ Nk.1| <= Nk.2%:R^-1, A Nk.1 Nk.2 !=set0 & (0 < Nk.2)%N].
 
 Let elt_type := {x : nat * nat | elt_prop x}.
 
@@ -2694,7 +2709,7 @@ Let N_ (x : elt_type) := (proj1_sig x).1.
 
 Let idx_ (x : elt_type) := (proj1_sig x).2.
 
-Let N_idx x : `|u_ (N_ x) - a| <= (idx_ x)%:R^-1.
+Let N_idx x : `|a - u_ (N_ x)| <= (idx_ x)%:R^-1.
 Proof. by move: x => [[? ?]] []. Qed.
 
 Let A_nonempty x : A (N_ x) (idx_ x) !=set0.
@@ -2716,11 +2731,11 @@ Proof.
 by move=> vrel; elim: n => // n /leq_ltn_trans; apply; have [->] := vrel n.
 Qed.
 
-Let adherence_value_cvg_direct : adherence_value u_ a ->
+Let cluster_eventually_cvg_direct : cluster (u_ @ \oo) a ->
   exists2 f : nat -> nat, increasing_seq f & u_ \o f @ \oo --> a.
 Proof.
-move=> u_a.
-have [N0 N01] : {N0 | `| u_ N0 - a | <= 1^-1}.
+move=> /cluster_eventuallyP u_a.
+have [N0 N01] : {N0 | `| a - u_ N0 | <= 1^-1}.
   by move: u_a => /(_ 1 1 ltr01)/cid2[N1 _] N1a1; exists N1; rewrite invr1.
 have A0 : A N0 1 !=set0.
   move: u_a => /(_ 2^-1 N0.+1).
@@ -2730,7 +2745,7 @@ have [v [v0 vrel]] : {v : nat -> elt_type |
     forall n, elt_rel (v n) (v n.+1) }.
   apply: dependent_choice => // -[[N i] /=] [uNi ANi0 i0].
   pose M := proj1_sig (cid (nat_has_minimum ANi0)).
-  have Mi1 : `|u_ M - a| <= i.+1%:R^-1 by rewrite /M; case: cid => /= x [[]].
+  have Mi1 : `|a - u_ M| <= i.+1%:R^-1 by rewrite /M; case: cid => /= x [[]].
   have AMi1 : A M i.+1 !=set0.
     move: u_a => /(_ i.+2%:R^-1 M.+1).
     by rewrite invr_gt0// ltr0n => /(_ isT)/cid2[m nm um]; exists m.
@@ -2743,26 +2758,27 @@ have [v [v0 vrel]] : {v : nat -> elt_type |
 exists (N_ \o v \o S).
   by apply/increasing_seqP => n; exact: N_incr.
 apply/subr_cvg0/cvgrPdist_le => /= e e0; near=> n.
-rewrite sub0r normrN (le_trans (N_idx (v n.+1)))//.
+rewrite sub0r normrN distrC (le_trans (N_idx (v n.+1)))//.
 rewrite invf_ple ?posrE//; last by rewrite ltr0n; case: (v n.+1) => -[? ?] [].
 rewrite (@le_trans _ _ n.+1%:R)//; last by rewrite ler_nat idx_incr.
 by rewrite -nat1r -lerBlDl; near: n; exact: nbhs_infty_ger.
 Unshelve. all: end_near. Qed.
 
-Lemma adherence_value_cvg : adherence_value u_ a <->
+Lemma cluster_eventually_cvg : cluster (u_ @ \oo) a <->
   exists2 f : nat -> nat, increasing_seq f & (u_ \o f @ \oo --> a).
 Proof.
-split => // -[f incrf] /cvgrPdist_le/= + e n e0.
-move=> /(_ _ e0)[N _ {}Nauf].
-exists (f (n + N)); last by rewrite distrC Nauf//= leq_addl.
+split => // -[f incrf] /cvgrPdist_le/= auf.
+apply/cluster_eventuallyP => e n e0; move: auf.
+move=>  /(_ _ e0)[N _ {}Nauf].
+exists (f (n + N)); last by rewrite Nauf//= leq_addl.
 rewrite (@leq_trans (f n))//.
   elim: n => // n; rewrite -ltnS => /leq_trans; apply.
   by move/increasing_seqP : incrf; exact.
 by rewrite -leEnat incrf leq_addr.
 Qed.
 
-Lemma limit_point_adherence_value :
-  limit_point (range u_) a -> adherence_value u_ a.
+Lemma limit_point_cluster_eventually :
+  limit_point (range u_) a -> cluster (u_ @ \oo) a.
 Proof.
 pose U := range u_.
 pose V i := [set u_ k | k in `I_i].
@@ -2782,11 +2798,11 @@ have idx_aU k : exists N1, u_ N1 \in aU k.
   have [/= y [/= a1y [[[m _ umy] Uny] ya]]] := aU0 k.
   exists m; rewrite inE /aU umy; split => //=; split => //; split => //.
   by exists m.
-have [N0 N01] : {N0 | `| u_ N0 - a | <= 1^-1}.
+have [N0 N01] : {N0 | `| a - u_ N0 | <= 1^-1}.
   apply/cid; have [a_ [au a_a]] := (limit_pointP _ _).1 u_a.
   move/cvgrPdist_le => /(_ _ ltr01)[N _] /(_ _ (leqnn N)) aaN1.
   have /au[x _ uxaN] := imageT a_ N.
-  by exists x; rewrite uxaN distrC invr1.
+  by exists x; rewrite uxaN invr1.
 have A0 : A N0 1 !=set0.
   have [N1] := idx_aU N0.+1.
   rewrite inE => -[/= uN1 [[[x _ uxuN1] /= VN0N1] uN1_a]].
@@ -2801,7 +2817,7 @@ have [v [v0 vrel]] : {v : nat -> elt_type |
   pose M := proj1_sig (cid (nat_has_minimum ANi0)).
   have M0 : (0 < M)%N.
     by rewrite /M; case: cid => //= x [[+ _] _]; exact: leq_trans.
-  have Mi1 : `|u_ M - a| <= i.+1%:R^-1 by rewrite /M; case: cid => /= x [[]].
+  have Mi1 : `|a - u_ M| <= i.+1%:R^-1 by rewrite /M; case: cid => /= x [[]].
   have AMi1 : A M i.+1 !=set0.
     have [N1] := idx_aU (maxn i.+1 M.+1).
     rewrite inE => -[/= uN1 [[[x _ uxuN2] /= Vi1M1] uN1_a]].
@@ -2817,7 +2833,7 @@ have [v [v0 vrel]] : {v : nat -> elt_type |
   - rewrite /M; case: cid => // x [ANix ANi]/=.
     case: cid => //= y; rewrite /idx_/= => -[/ANi xy /(_ _ ANix) yx].
     by apply/eqP; rewrite eq_le leEnat xy yx.
-apply/adherence_value_cvg; exists (N_ \o v).
+apply/cluster_eventually_cvg; exists (N_ \o v).
   by apply/increasing_seqP => n; exact: N_incr.
 apply/cvgrPdist_le => /= e e0; near=> n.
 have := N_idx (v n); rewrite distrC => /le_trans; apply.
@@ -2827,7 +2843,7 @@ rewrite (@le_trans _ _ n%:R)//; last by rewrite ler_nat idx_incr.
 by near: n; exact: nbhs_infty_ger.
 Unshelve. all: end_near. Qed.
 
-End adherence_value_cvg.
+End cluster_eventually_cvg.
 
 Section adjacent_cut.
 Context {R : realType}.

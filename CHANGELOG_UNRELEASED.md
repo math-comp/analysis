@@ -95,8 +95,8 @@
   + lemma `nat_has_minimum`
 
 - in `sequences.v`:
-  + definition `adherence_value`
-  + lemmas `adherence_value_cvg`, `limit_point_adherence_value`
+  + lemma `cluster_eventuallyP`
+  + lemmas `cluster_eventually_cvg`, `limit_point_cluster_eventually`
 
 ### Changed
 
