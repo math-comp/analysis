@@ -88,6 +88,15 @@
   + lemma `open_subball_rat`
   + fact `isolated_rat_ball`
   + lemma `countable_isolated`
+- in `normed_module.v`:
+  + lemma `limit_point_setD`
+
+- in `reals.v`:
+  + lemma `nat_has_minimum`
+
+- in `sequences.v`:
+  + lemma `cluster_eventuallyP`
+  + lemmas `cluster_eventually_cvg`, `limit_point_cluster_eventually`
 
 ### Changed
 

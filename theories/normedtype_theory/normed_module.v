@@ -1096,6 +1096,14 @@ move=> p q _ _ /=; apply: contraPP => /eqP.
 by rewrite neq_lt => /orP[] /arv /[swap] ->; rewrite ltxx.
 Qed.
 
+Lemma limit_point_setD {R : archiRealFieldType} (A V : set R) a :
+  finite_set V -> limit_point A a -> limit_point (A `\` V) a.
+Proof.
+move=> finV /limit_point_infinite_setP aA.
+apply/limit_point_infinite_setP => U aU.
+by rewrite setIDA; apply: infinite_setD => //; exact: aA.
+Qed.
+
 Lemma EFin_lim (R : realFieldType) (f : nat -> R) : cvgn f ->
   limn (EFin \o f) = (limn f)%:E.
 Proof.
