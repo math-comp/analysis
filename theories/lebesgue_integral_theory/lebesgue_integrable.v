@@ -135,6 +135,12 @@ apply/integrableP; split=> //; under eq_integral do rewrite (gee0_abs (lexx 0)).
 by rewrite integral0.
 Qed.
 
+Lemma integrable_set0 f : mu.-integrable set0 f.
+Proof.
+apply/integrableP; split; first exact: measurable_fun_set0.
+by rewrite integral_set0.
+Qed.
+
 Lemma eq_integrable f g : {in D, f =1 g} -> mu_int f -> mu_int g.
 Proof.
 move=> fg /integrableP[mf fi]; apply/integrableP; split.
@@ -815,9 +821,7 @@ Lemma null_set_integrable (N : set T) (f : T -> \bar R) :
   measurable N -> measurable_fun N f -> mu N = 0 -> mu.-integrable N f.
 Proof.
 move=> mN mf muN0.
-rewrite (negligible_integrable(N:=N)) ?setDv //=.
-by apply: (eq_integrable measurable0 (cst 0%R))
-  => [x|]; [rewrite inE | exact: integrable0].
+by rewrite (negligible_integrable mN) ?setDv//; exact: integrable_set0.
 Qed.
 
 Lemma null_set_integral (N : set T) (f : T -> \bar R) :

@@ -75,6 +75,9 @@
 - in `subspace_topology.v`:
   + definition `from_subspace`
 
+- in `lebesgue_integrable.v`:
+  + lemma `integrable_set0`
+
 ### Changed
 
 - in `charge.v`:
