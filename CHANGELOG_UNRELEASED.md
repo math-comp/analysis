@@ -196,6 +196,9 @@
 - in `charge.v`:
   + lemma `dominates_charge_variation` (use `charge_null_dominatesP` instead)
 
+- in `set_interval.v`:
+  + lemma `interval_set1` (use `set_itv1` instead)
+
 ### Infrastructure
 
 ### Misc
