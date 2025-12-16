@@ -1876,8 +1876,8 @@ Lemma normal_prob_dominates : normal_prob `<< mu.
 Proof.
 apply/null_content_dominatesP=> A mA muA0; rewrite /normal_prob /normal_pdf.
 have [s0|s0] := eqVneq sigma 0.
-  apply: null_set_integral => //=; apply: (integrableS measurableT) => //=.
-  exact: integrable_indic_itv.
+  apply: null_set_integral => //=; apply: measurable_funTS => /=.
+  exact/measurable_EFinP/measurable_indic.
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
   apply: integral_ge0 => x _.
   by rewrite lee_fin mulr_ge0 ?normal_peak_ge0 ?normal_fun_ge0.

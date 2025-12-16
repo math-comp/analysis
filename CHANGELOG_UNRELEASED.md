@@ -44,6 +44,9 @@
   + definition `product_subprobability`
   + lemma `product_subprobability_setC`
 
+- in `lebesgue_integral_theory/lebesgue_integrable.v`
+  + lemma `null_set_integrable`
+
 - new file `lebesgue_integral_theory/giry.v`
   + definition `measure_eq`
   + definition `giry`
@@ -98,6 +101,9 @@
   + lemma `cluster_eventuallyP`
   + lemmas `cluster_eventually_cvg`, `limit_point_cluster_eventually`
 
+- in `lebesgue_integrable.v`:
+  + lemma `integrable_set0`
+
 ### Changed
 
 - in `charge.v`:
@@ -144,6 +150,8 @@
     `integration_by_substitution_onem`,
     `Rintegration_by_substitution_onem`
 
+- in `lebesgue_integral_theory/lebesgue_integrable.v`
+  + lemma `null_set_integral`
 
 ### Deprecated
 

@@ -135,6 +135,12 @@ apply/integrableP; split=> //; under eq_integral do rewrite (gee0_abs (lexx 0)).
 by rewrite integral0.
 Qed.
 
+Lemma integrable_set0 f : mu.-integrable set0 f.
+Proof.
+apply/integrableP; split; first exact: measurable_fun_set0.
+by rewrite integral_set0.
+Qed.
+
 Lemma eq_integrable f g : {in D, f =1 g} -> mu_int f -> mu_int g.
 Proof.
 move=> fg /integrableP[mf fi]; apply/integrableP; split.
@@ -811,11 +817,19 @@ congr (_ - _); apply: ge0_negligible_integral => //; apply: (measurable_int mu).
 exact: integrable_funeneg.
 Qed.
 
-Lemma null_set_integral (N : set T) (f : T -> \bar R) :
-  measurable N -> mu.-integrable N f ->
-  mu N = 0 -> \int[mu]_(x in N) f x = 0.
+Lemma null_set_integrable (N : set T) (f : T -> \bar R) :
+  measurable N -> measurable_fun N f -> mu N = 0 -> mu.-integrable N f.
 Proof.
-by move=> mN intf ?; rewrite (negligible_integral mN mN)// setDv integral_set0.
+move=> mN mf muN0.
+by rewrite (negligible_integrable mN) ?setDv//; exact: integrable_set0.
+Qed.
+
+Lemma null_set_integral (N : set T) (f : T -> \bar R) :
+  measurable N -> measurable_fun N f -> mu N = 0 -> \int[mu]_(x in N) f x = 0.
+Proof.
+move=> mN mf N0.
+rewrite (negligible_integral mN mN) ?setDv ?integral_set0//.
+exact: null_set_integrable.
 Qed.
 
 End negligible_integral.
