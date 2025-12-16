@@ -45,7 +45,7 @@
   + lemma `product_subprobability_setC`
 
 - in `lebesgue_integral_theory/lebesgue_integrable.v`
-  + lemmas `null_set_integrable`, `null_set_integral_gen`
+  + lemma `null_set_integrable`
 
 - new file `lebesgue_integral_theory/giry.v`
   + definition `measure_eq`
@@ -121,6 +121,8 @@
     `integration_by_substitution_onem`,
     `Rintegration_by_substitution_onem`
 
+- in `lebesgue_integral_theory/lebesgue_integrable.v`
+  + lemma `null_set_integral`
 
 ### Deprecated
 

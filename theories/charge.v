@@ -1260,7 +1260,8 @@ rewrite (le_trans (le_abse_integral _ _ _))//=.
   by case/integrableP : intnf => /= + _; exact: measurable_funTS.
 rewrite le_eqVlt; apply/orP; left; apply/eqP.
 under eq_integral do rewrite abse_id.
-by apply: null_set_integral => //=; exact: integrableS intnf.
+apply: null_set_integral => //=.
+by apply: measurable_funTS; apply: measurable_int intnf.
 Qed.
 
 End dominates_induced.
