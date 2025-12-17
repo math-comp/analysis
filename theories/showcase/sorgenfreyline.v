@@ -308,9 +308,7 @@ Lemma continuous_at_sorgenfrey_to_RtopoP f x :
 Proof.
 split=> [H B | H e He].
 (* -> *)
-rewrite -(@filter_from_ballE R Rmetric).
 case => eps /= eps0 epsB.
-change (nbhs (f y @[y --> x]) B).
 case: (H eps eps0) => /= d d0 H'.
 exists (`[x,x+d[); split => //=.
 - exists [set (x,x+d)] => //.
@@ -325,9 +323,8 @@ by rewrite xz zx.
 (* <- *)
 have [] := H (ball (f x : Rmetric) e).
   by exists e.
-move=> F [[/= Fd Fsub <-] [[a1 a2] Fdi bix] Fpre].
-move: bix.
-rewrite /b /= in_itv /= =>/andP[a1x xa2].
+move=> F [[/= Fd Fsub <-] [[a1 a2] Fdi]].
+rewrite /b /= in_itv /= =>/andP[a1x xa2] Fpre.
 exists (a2-x).
   by rewrite subr_gt0.
 move=> y.
