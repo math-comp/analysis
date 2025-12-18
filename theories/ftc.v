@@ -463,7 +463,7 @@ rewrite le_eqVlt => /predU1P[<- _|ab intf].
 apply/(continuous_within_itvP _ ab); split; first last.
   exact: parameterized_integral_cvg_at_left.
   apply/cvg_at_right_filter.
-  rewrite {2}/int /parameterized_integral interval_set1 Rintegral_set1.
+  rewrite {2}/int /parameterized_integral set_itv1 Rintegral_set1.
   exact: (parameterized_integral_cvg_left ab).
 pose fab := f \_ `[a, b].
 have /= int_normr_cont : forall e : R, 0 < e ->
@@ -630,10 +630,10 @@ have Ga : G x @[x --> a^'+] --> G a.
    have := parameterized_integral_cvg_left ab iabfab.
    rewrite (_ : 0 = G a)%R.
      by move=> /left_right_continuousP[].
-   by rewrite /G interval_set1 Rintegral_set1.
+   by rewrite /G set_itv1 Rintegral_set1.
 have Gb : G x @[x --> b^'-] --> G b.
   exact: (parameterized_integral_cvg_at_left ab iabfab).
-have Ga0 : G a = 0%R by rewrite /G interval_set1// Rintegral_set1.
+have Ga0 : G a = 0%R by rewrite /G set_itv1// Rintegral_set1.
 have cE : c = F a.
   apply/eqP; rewrite -(opprK c) eq_sym -addr_eq0 addrC.
   by have := cvg_unique _ GacFa Ga; rewrite Ga0 => ->.

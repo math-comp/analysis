@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum interval.
 From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
@@ -120,12 +120,6 @@ move: b be zb => [[|]/= b|[|]//]; rewrite bnd_simp => be.
 by move=> /le_lt_trans; exact.
 Qed.
 
-Lemma interval_set1 x : `[x, x]%classic = [set x] :> set T.
-Proof.
-apply/seteqP; split => [y/=|y <-]; last by rewrite /= in_itv/= lexx.
-by rewrite in_itv/= => /andP[yx xy]; apply/eqP; rewrite eq_le yx xy.
-Qed.
-
 Lemma set_itvoo x y : `]x, y[%classic = [set z | (x < z < y)%O].
 Proof. by []. Qed.
 
@@ -230,6 +224,8 @@ Notation set_itv_infty_c := set_itvNyc (only parsing).
 Notation set_itv_pinfty_bnd := set_itv_ybnd (only parsing).
 #[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itv_bndNy`")]
 Notation set_itv_bnd_ninfty := set_itv_bndNy (only parsing).
+#[deprecated(since="mathcomp-analysis 1.15.0", note="use `set_itv1` instead")]
+Notation interval_set1 := set_itv1 (only parsing).
 
 Section set_itv_orderType.
 Variables (d : Order.disp_t) (T : orderType d).
