@@ -1952,4 +1952,5 @@ move/(series_le_cvg harmonic_ge0 (fun i => ltW (riemannR_gt0 i a0))).
 by move/contra_not; apply; exact: dvg_harmonic.
 Qed.
 
+
 End riemannR_series.
