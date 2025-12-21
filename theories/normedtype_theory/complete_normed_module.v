@@ -1,13 +1,9 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
-From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
-From mathcomp Require Import archimedean.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions cardinality set_interval.
-From mathcomp Require Import interval_inference ereal reals topology.
-From mathcomp Require Import function_spaces prodnormedzmodule real_interval.
-From mathcomp Require Import tvs pseudometric_normed_Zmodule normed_module.
+From mathcomp Require Import all_ssreflect ssralg ssrnum.
+From mathcomp Require Import boolp classical_sets interval_inference reals.
+From mathcomp Require Import topology tvs pseudometric_normed_Zmodule.
+From mathcomp Require Import normed_module.
 
 (**md**************************************************************************)
 (* # Complete normed modules                                                  *)
@@ -23,7 +19,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldNormedType.Exports.
 
 Local Open Scope classical_set_scope.
@@ -51,7 +47,7 @@ exists (sup D).
 apply/cvgrPdist_le => /= _ /posnumP[eps]; near=> x.
 rewrite ler_distl; move/ubP: (sup_upper_bound D_has_sup) => -> //=.
   apply: ge_sup => //; first by case: D_has_sup.
-  have Fxeps : F (ball_ [eta normr] x eps%:num).
+  have Fxeps : F (ball_ Num.norm x eps%:num).
     by near: x; apply: nearP_dep; apply: F_cauchy.
   apply/ubP => y /(_ _ Fxeps) /downP[z].
   rewrite /ball_/= ltr_distl ltrBlDr.

@@ -1130,22 +1130,6 @@ Lemma num_gt_min a x y :
 Proof. by rewrite -comparable_gt_min// real_comparable. Qed.
 
 End MorphReal.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_le_max`")]
-Notation num_le_maxr := num_le_max (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_ge_max`")]
-Notation num_le_maxl := num_ge_max (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_le_min`")]
-Notation num_le_minr := num_le_min (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_ge_min`")]
-Notation num_le_minl := num_ge_min (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_lt_max`")]
-Notation num_lt_maxr := num_lt_max (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_gt_max`")]
-Notation num_lt_maxl := num_gt_max (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_lt_min`")]
-Notation num_lt_minr := num_lt_min (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_gt_min`")]
-Notation num_lt_minl := num_gt_min (only parsing).
 
 Section MorphGe0.
 Context {R : numDomainType} {nz : nullity}.

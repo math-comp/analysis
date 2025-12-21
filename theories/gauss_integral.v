@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2024 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
@@ -15,7 +15,7 @@ From mathcomp Require Import exp trigo lebesgue_integral derive charge ftc.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldNormedType.Exports.
 
 Local Open Scope classical_set_scope.
@@ -70,7 +70,7 @@ Definition integral0_gauss x := \int[mu]_(t in `[0, x]) gauss_fun t.
 Lemma integral0_gauss_ge0 x : 0 <= integral0_gauss x.
 Proof. by apply: Rintegral_ge0 => //= r _; rewrite expR_ge0. Qed.
 
-Let continuous_integral0_gauss x : (0 < x)%R ->
+Let continuous_integral0_gauss x : (0 <= x)%R ->
   {within `[0, x], continuous integral0_gauss}.
 Proof.
 move=> x0; rewrite /integral0_gauss.
@@ -156,7 +156,7 @@ rewrite (@le_trans _ _ (2 * `|x * gauss_fun x|))//.
   do 2 rewrite ger0_norm ?expR_ge0//.
   by rewrite ler_expR// lerN2 ler_peMl ?sqr_ge0// lerDl sqr_ge0.
 rewrite normrM (ger0_norm (expR_ge0 _)).
-have ? : `|x| <= maxr `|c + e| `|c - e|.
+have ? : `|x| <= Num.max `|c + e| `|c - e|.
   rewrite le_max.
   have [x0|x0] := lerP 0 x.
     by rewrite ger0_norm// ler_normr (ltW xce).
@@ -164,7 +164,7 @@ have ? : `|x| <= maxr `|c + e| `|c - e|.
   move/ltW : cex.
   rewrite -lerN2 => /le_trans; apply.
   by rewrite -normrN ler_norm.
-rewrite (@le_trans _ _ (2 * ((maxr `|c + e| `|c - e|) * expR (- 0 ^+ 2))))//.
+rewrite (@le_trans _ _ (2 * ((Num.max `|c + e| `|c - e|) * expR (- 0 ^+ 2))))//.
 rewrite ler_pM2l// ler_pM ?expR_ge0//.
 by rewrite expr0n/= oppr0 expR0 gauss_fun_le1.
 Unshelve. all: end_near. Qed.
@@ -244,7 +244,7 @@ rewrite /integral0_gauss [in LHS]/Rintegral.
 have derM : ( *%R^~ x)^`() = cst x.
   by apply/funext => z; rewrite derive1Mr// derive1_id mul1r.
 have := @integration_by_substitution_increasing R (fun t => t * x)
-  gauss_fun _ _ ltr01.
+  gauss_fun _ _ ler01.
 rewrite -/mu mul0r mul1r => ->//=; last 6 first.
   - move=> a b; rewrite !in_itv/= => /andP[a0 a1] /andP[b0 b1] ab.
     by rewrite ltr_pM2r.
@@ -297,7 +297,6 @@ rewrite fine_le//.
 apply: ge0_le_integral => //=.
 - by move=> y _; rewrite lee_fin u_ge0.
 - by apply/measurable_EFinP => /=; apply/measurable_funTS; exact: measurable_u.
-- by move=> y _; rewrite lee_fin expR_ge0.
 - by move=> y _; rewrite lee_fin u_gauss_fun.
 Qed.
 
@@ -309,7 +308,8 @@ apply: (@squeeze_cvgr _ _ _ _ (cst 0) gauss_fun).
 - exact: cvg_gauss_fun.
 Unshelve. all: end_near. Qed.
 
-Lemma cvg_integral0_gauss_sqr : (integral0_gauss x) ^+ 2 @[x --> +oo] --> pi / 4.
+Lemma cvg_integral0_gauss_sqr :
+  (integral0_gauss x) ^+ 2 @[x --> +oo] --> pi / 4.
 Proof.
 have h_h0 x : 0 < x -> h x = h 0.
   move=> x0.
@@ -325,7 +325,7 @@ have h_h0 x : 0 < x -> h x = h 0.
     apply: continuousD; last first.
       rewrite /prop_for /continuous_at expr2.
       under [X in X @ _ --> _]eq_fun do rewrite expr2.
-      by apply: cvgM; exact: continuous_integral0_gauss.
+      by apply: cvgM; apply: continuous_integral0_gauss; exact: ltW.
     by apply: derivable_within_continuous => u _; exact: derivable_integral01_u.
   move=> c; rewrite in_itv/= => /andP[c0 cx].
   by rewrite derive_h// mul0r => /eqP; rewrite subr_eq0 => /eqP.

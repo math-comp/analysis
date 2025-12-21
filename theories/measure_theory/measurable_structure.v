@@ -1,10 +1,8 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions cardinality fsbigop reals.
-From mathcomp Require Import interval_inference ereal topology normedtype.
-From mathcomp Require Import sequences esum numfun.
+From mathcomp Require Import all_ssreflect all_algebra finmap.
+From mathcomp Require Import boolp classical_sets functions cardinality reals.
+From mathcomp Require Import ereal topology normedtype sequences.
 
 (**md**************************************************************************)
 (* # Measure Theory                                                           *)
@@ -116,19 +114,13 @@ From mathcomp Require Import sequences esum numfun.
 (*                                   and the tnth projections.                *)
 (* ```                                                                        *)
 (*                                                                            *)
-(* ## More measure-theoretic definitions                                      *)
-(*                                                                            *)
-(* ```                                                                        *)
-(*  m1 `<< m2 == m1 is absolutely continuous w.r.t. m2 or m2 dominates m1     *)
-(* ```                                                                        *)
-(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import ProperNotations.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Reserved Notation "'s<|' D , G '|>'" (at level 40, G, D at next level).
 Reserved Notation "'s<<' A '>>'".
@@ -146,7 +138,6 @@ Reserved Notation "'<<sr' G '>>'" (format "'<<sr'  G '>>'").
 Reserved Notation "'<<M' G '>>'" (format "'<<M'  G '>>'").
 Reserved Notation "p .-prod" (format "p .-prod").
 Reserved Notation "p .-prod.-measurable" (format "p .-prod.-measurable").
-Reserved Notation "m1 `<< m2" (at level 51).
 
 Inductive measure_display := default_measure_display.
 Declare Scope measure_display_scope.
@@ -223,8 +214,6 @@ Definition lambda_system :=
 Definition monotone := ndseq_closed /\ niseq_closed.
 
 End set_systems.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `lambda_system`")]
-Notation monotone_class := lambda_system (only parsing).
 (*#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `setSD_closed`")]
 Notation setD_closed := setSD_closed (only parsing).*)
 #[deprecated(since="mathcomp-analysis 1.9.0", note="renamed `setD_closed`")]
@@ -432,8 +421,6 @@ Proof.
 move=> sDGD; have := smallest_sigma_algebra D G.
 by move=> /(sigma_algebraP sDGD) [sT sD snd sI]; split.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `g_sigma_algebra_lambda_system`")]
-Notation monotone_class_g_salgebra := g_sigma_algebra_lambda_system (only parsing).
 
 Lemma smallest_sigma_ring T (G : set (set T)) : sigma_ring <<sr G >>.
 Proof.
@@ -596,8 +583,6 @@ by move=> *; apply HHH_.
 Qed.
 
 End smallest_lambda_system.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `smallest_lambda_system`")]
-Notation smallest_monotone_classE := smallest_lambda_system (only parsing).
 
 Section lambda_system_subset.
 Variables (T : Type) (G : set (set T)) (setIG : setI_closed G) (D : set T).
@@ -615,8 +600,6 @@ rewrite -(@smallest_lambda_system _ _ setIG D) //.
 Qed.
 
 End lambda_system_subset.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `lambda_system_subset`")]
-Notation monotone_class_subset := lambda_system_subset (only parsing).
 
 Section dynkin.
 Variable T : Type.
@@ -742,12 +725,6 @@ exact: g_dynkin_dynkin.
 Qed.
 
 End dynkin_lemmas.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed into `setI_closed_g_dynkin_g_sigma_algebra`")]
-Notation setI_closed_gdynkin_salgebra := setI_closed_g_dynkin_g_sigma_algebra (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed into `g_dynkin_dynkin`")]
-Notation dynkin_g_dynkin := g_dynkin_dynkin (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed into `dynkin_lambda_system`")]
-Notation dynkin_monotone := dynkin_lambda_system (only parsing).
 
 Section trace.
 Variable (T : Type).
@@ -1179,6 +1156,32 @@ Proof. by move=> PF; apply: bigcap_measurable => //; exists 1. Qed.
 
 End sigmaring_lemmas.
 
+(* Adapted from mathlib induction_on_inter *)
+Lemma dynkin_induction d {T : measurableType d} (G : set (set T))
+    (P : set_system T) :
+  @measurable _ T = <<s G >> ->
+  setI_closed G ->
+  P [set: T] ->
+  G `<=` P ->
+  (forall S, measurable S -> P S -> P (~` S)) ->
+  (forall F : (set T)^nat,
+    (forall n, measurable (F n)) ->
+    trivIset [set: nat] F ->
+    (forall n, P (F n)) -> P (\bigcup_k F k)) ->
+  (forall S, <<s G >> S -> P S).
+Proof.
+move=> GE GI PsetT GP PsetC Pbigcup A sGA.
+suff: <<s G >> `<=` [set A | measurable A /\ P A] by move=> /(_ _ sGA)[].
+apply: lambda_system_subset; [by []| | |by []].
+- apply/dynkin_lambda_system; split => //.
+  + by move=> B [mB PB]; split; [exact: measurableC|exact: PsetC].
+  + move=> F tF Hm; split.
+      by apply: bigcup_measurable => k _; apply Hm.
+    by apply: Pbigcup => //; apply Hm.
+- move=> B GB; split; last exact: GP.
+  by rewrite GE; exact: sub_gen_smallest.
+Qed.
+
 Lemma countable_measurable d (T : sigmaRingType d) (A : set T) :
   (forall t : T, measurable [set t]) -> countable A -> measurable A.
 Proof.
@@ -1189,7 +1192,6 @@ rewrite [X in _ X](_ : _ = \bigcup_(x in f @` A) [set 'pinv_(cst r) A f x]).
 by rewrite eqEsubset; split=> [_ [_ [s As <-]] <-|_ [_ [s As <-]] ->];
   exists (f s).
 Qed.
-
 Section sigma_ring_lambda_system.
 Context d (T : sigmaRingType d).
 
@@ -1272,8 +1274,6 @@ Definition sigma_display {T} : set (set T) -> measure_display.
 Proof. exact. Qed.
 
 Definition g_sigma_algebraType {T} (G : set (set T)) := T.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed into `g_sigma_algebraType`")]
-Notation salgebraType := g_sigma_algebraType (only parsing).
 
 Section g_salgebra_instance.
 Variables (T : pointedType) (G : set (set T)).
@@ -1677,18 +1677,3 @@ HB.instance Definition _ := @isMeasurable.Build (measure_tuple_display d)
   (n.-tuple T) (g_sigma_preimage coors) tuple_set0 tuple_setC tuple_bigcup.
 
 End measurable_tuple.
-
-Section absolute_continuity.
-Context d (T : semiRingOfSetsType d) (R : realType).
-Implicit Types m : set T -> \bar R.
-
-Definition measure_dominates m1 m2 :=
-  forall A, measurable A -> m2 A = 0 -> m1 A = 0.
-
-Local Notation "m1 `<< m2" := (measure_dominates m1 m2).
-
-Lemma measure_dominates_trans m1 m2 m3 : m1 `<< m2 -> m2 `<< m3 -> m1 `<< m3.
-Proof. by move=> m12 m23 A mA /m23-/(_ mA) /m12; exact. Qed.
-
-End absolute_continuity.
-Notation "m1 `<< m2" := (measure_dominates m1 m2).

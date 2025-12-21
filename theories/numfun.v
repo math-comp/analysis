@@ -34,7 +34,7 @@ Reserved Notation "[ 'nnfun' 'of' f ]"
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldTopology.Exports.
 
 Local Open Scope classical_set_scope.
@@ -53,7 +53,7 @@ Context (T : Type) (R : numDomainType).
 Variables f g : {fimfun T >-> R}.
 
 Lemma max_fimfun_subproof : @FiniteImage T R (f \max g).
-Proof. by split; apply: (finite_image11 maxr). Qed.
+Proof. by split; apply: (finite_image11 Num.max). Qed.
 HB.instance Definition _ := max_fimfun_subproof.
 
 End fimfun_bin.
@@ -76,7 +76,7 @@ Lemma ler_restrict D f g :
   (forall x, D x -> f x <= g x) -> forall x, (f \_ D) x <= (g \_ D) x.
 Proof. by move=> f0 x; rewrite /patch; case: ifP => // /set_mem/f0->. Qed.
 
-Lemma restrict_normr D f : (normr \o f) \_ D = normr \o (f \_ D).
+Lemma restrict_normr D f : (Num.norm \o f) \_ D = Num.norm \o (f \_ D).
 Proof.
 by apply/funext => t; rewrite /= !patchE; case: ifPn =>// tD; rewrite ger0_norm.
 Qed.
@@ -660,7 +660,7 @@ exists (lim (h_ @ \oo)); split.
   apply: (@cvg_zero R R^o); apply: norm_cvg0; under eq_fun => n.
     rewrite distrC /series /cst /= -mulN1r fct_sumE mulr_sumr.
     under [fun _ : nat => _]eq_fun => ? do rewrite mulN1r -fgE opprB.
-    rewrite telescope_sumr //= addrCA subrr addr0.
+    rewrite telescope_sumr //= subrKC.
     over.
   apply/norm_cvg0P/cvgr0Pnorm_lt => eps epos.
   have /(_ _ epos)  := @cvgr0_norm_lt R _ _ _ eventually_filter (_ : nat -> R^o)

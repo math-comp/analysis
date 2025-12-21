@@ -3,7 +3,7 @@
 (* Copyright (c) - 2015--2018 - Inria                                   *)
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import all_ssreflect all_algebra archimedean.
+From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp.classical Require Import boolp.
 From mathcomp Require Import xfinmap constructive_ereal reals discrete realseq.
 From mathcomp.classical Require Import classical_sets functions.
@@ -14,7 +14,6 @@ Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
 Import Order.TTheory GRing.Theory Num.Theory.
-From mathcomp.classical Require Import mathcomp_extra.
 
 Local Open Scope fset_scope.
 Local Open Scope ring_scope.

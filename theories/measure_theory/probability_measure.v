@@ -1,10 +1,8 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions cardinality fsbigop reals.
+From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import boolp classical_sets functions cardinality reals.
 From mathcomp Require Import interval_inference ereal topology normedtype.
-From mathcomp Require Import sequences esum numfun.
 From mathcomp Require Import measurable_structure measure_function dirac_measure.
 
 (**md**************************************************************************)
@@ -44,7 +42,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import ProperNotations.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -74,6 +72,17 @@ HB.instance Definition _ := finite.
 HB.instance Definition _ := @isSubProbability.Build _ _ _ P sprobability_setT.
 
 HB.end.
+
+Section mzero_subprobability.
+Context d (T : measurableType d) (R : realType).
+
+Let mzero_setT : (@mzero d T R setT <= 1)%E.
+Proof. by rewrite /mzero/=. Qed.
+
+HB.instance Definition _ :=
+  Measure_isSubProbability.Build _ _ _ (@mzero d T R) mzero_setT.
+
+End mzero_subprobability.
 
 HB.mixin Record isProbability d (T : measurableType d) (R : realType)
   (P : set T -> \bar R) := { probability_setT : P setT = 1%E }.

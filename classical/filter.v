@@ -1,7 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
-From mathcomp Require Import archimedean.
+From mathcomp Require Import all_ssreflect all_algebra finmap.
 From mathcomp Require Import boolp classical_sets functions wochoice.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
 

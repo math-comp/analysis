@@ -1,10 +1,9 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions cardinality fsbigop reals.
-From mathcomp Require Import interval_inference ereal topology normedtype.
-From mathcomp Require Import sequences esum numfun.
+From mathcomp Require Import all_ssreflect all_algebra finmap.
+From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
+From mathcomp Require Import reals interval_inference ereal topology normedtype.
+From mathcomp Require Import sequences esum.
 From mathcomp Require Import measurable_structure measurable_function.
 
 (**md**************************************************************************)
@@ -130,7 +129,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import ProperNotations.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -1748,8 +1747,6 @@ Qed.
 
 End g_sigma_algebra_measure_unique_trace.
 Arguments g_sigma_algebra_measure_unique_trace {d R T} G D.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `g_sigma_algebra_measure_unique_trace`")]
-Notation g_salgebra_measure_unique_trace := g_sigma_algebra_measure_unique_trace (only parsing).
 
 Definition lim_sup_set T (F : (set T)^nat) := \bigcap_n \bigcup_(j >= n) F j.
 
@@ -1933,10 +1930,6 @@ Qed.
 
 End g_sigma_algebra_measure_unique.
 Arguments g_sigma_algebra_measure_unique {d R T} G.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `g_sigma_algebra_measure_unique_cover`")]
-Notation g_salgebra_measure_unique_cover := g_sigma_algebra_measure_unique_cover (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `g_sigma_algebra_measure_unique`")]
-Notation g_salgebra_measure_unique := g_sigma_algebra_measure_unique (only parsing).
 
 Section measure_unique.
 Context d (R : realType) (T : measurableType d).

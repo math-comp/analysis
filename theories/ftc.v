@@ -53,7 +53,7 @@ From mathcomp Require Import derive charge.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldNormedType.Exports.
 
 Local Open Scope classical_set_scope.
@@ -96,7 +96,7 @@ apply: cvg_at_right_left_dnbhs.
   pose E x n := `[x, x + d n[%classic%R.
   have muE y n : mu (E y n) = (d n)%:E.
     rewrite /E lebesgue_measure_itv/= lte_fin ltrDl d_gt0.
-    by rewrite -EFinD addrAC subrr add0r.
+    by rewrite -EFinD -addrA subrKC.
   have nice_E y : nicely_shrinking y (E y).
     split=> [n|]; first exact: measurable_itv.
     exists (2%R, fun n => PosNum (d_gt0 n)); split => //= [n z|n].
@@ -150,7 +150,7 @@ apply: cvg_at_right_left_dnbhs.
   pose E x n := `]x + d n, x]%classic%R.
   have muE y n : mu (E y n) = (- d n)%:E.
     rewrite /E lebesgue_measure_itv/= lte_fin -ltrBrDr.
-    by rewrite ltrDl Nd_gt0 -EFinD opprD addrA subrr add0r.
+    by rewrite ltrDl Nd_gt0 -EFinD opprD addNKr.
   have nice_E y : nicely_shrinking y (E y).
     split=> [n|]; first exact: measurable_itv.
     exists (2%R, (fun n => PosNum (Nd_gt0 n))); split => //=.
@@ -441,9 +441,9 @@ rewrite Rintegral_setU//=; last 2 first.
   by rewrite leNgt => /negbTE ->.
 have xbab : `]x, b] `<=` `[a, b].
   by apply: subset_itvr; rewrite bnd_simp; near: x; exact: nbhs_left_ge.
-rewrite -addrAC subrr add0r (le_trans (le_normr_Rintegral _ _))//.
+rewrite -addrA subrKC (le_trans (le_normr_Rintegral _ _))//.
   exact: integrableS intf.
-rewrite [leLHS](_ : _ = (\int[mu]_(t in `]x, b]) normr (fab t)))//; last first.
+rewrite [leLHS](_ : _ = (\int[mu]_(t in `]x, b]) `|fab t|))//; last first.
   apply: eq_Rintegral => //= z; rewrite inE/= in_itv/= => /andP[xz zb].
   rewrite /fab patchE ifT// inE/= in_itv/= zb andbT (le_trans _ (ltW xz))//.
   by near: x; exact: nbhs_left_ge.
@@ -454,14 +454,16 @@ near: x; exists d => // z; rewrite /ball_/= => + zb.
 by rewrite gtr0_norm// ?subr_gt0.
 Unshelve. all: by end_near. Qed.
 
-Lemma parameterized_integral_continuous a b (f : R -> R) : a < b ->
+Lemma parameterized_integral_continuous a b (f : R -> R) : a <= b ->
   mu.-integrable `[a, b] (EFin \o f) ->
   {within `[a, b], continuous (fun x => int a x f)}.
 Proof.
-move=> ab intf; apply/(continuous_within_itvP _ ab); split; first last.
+rewrite le_eqVlt => /predU1P[<- _|ab intf].
+  by rewrite set_itv1; exact: continuous_subspace1.
+apply/(continuous_within_itvP _ ab); split; first last.
   exact: parameterized_integral_cvg_at_left.
   apply/cvg_at_right_filter.
-  rewrite {2}/int /parameterized_integral interval_set1 Rintegral_set1.
+  rewrite {2}/int /parameterized_integral set_itv1 Rintegral_set1.
   exact: (parameterized_integral_cvg_left ab).
 pose fab := f \_ `[a, b].
 have /= int_normr_cont : forall e : R, 0 < e ->
@@ -481,8 +483,7 @@ have [xz|xz|->] := ltgtP x z; last by rewrite subrr normr0 ltW.
     exists `|z - a| => /=; first by rewrite gtr0_norm ?subr_gt0.
     move=> y /= + yz.
     do 2 rewrite gtr0_norm ?subr_gt0//.
-    rewrite ltrBlDr -ltrBlDl; apply: le_lt_trans.
-    by rewrite opprB addrCA subrr addr0.
+    by rewrite ltrBlDr -ltrBlDl opprB subrKC.
   rewrite Rintegral_itvB//; last 3 first.
     by apply: integrableS intf => //; apply: subset_itvl; exact: ltW.
     by rewrite bnd_simp ltW.
@@ -606,7 +607,7 @@ have GacFa : G x @[x --> a^'+] --> (- c + F a)%R.
   have GFac : (G x - F x)%R @[x --> a^'+] --> (- c)%R.
     apply/cvgrPdist_le => /= e e0; near=> t.
     rewrite opprB GFc; last by rewrite in_itv/=; apply/andP.
-    by rewrite addrC subrr normr0 ltW.
+    by rewrite addNr normr0 ltW.
   have := @cvgD _ _ _ _ Fap _ _ _ _ GFac Fa.
   rewrite (_ : (G \- F)%R + F = G)//.
   by apply/funext => x/=; rewrite subrK.
@@ -615,7 +616,7 @@ have GbcFb : G x @[x --> b^'-] --> (- c + F b)%R.
   have GFbc : (G x - F x)%R @[x --> b^'-] --> (- c)%R.
     apply/cvgrPdist_le => /= e e0; near=> t.
     rewrite opprB GFc; last by rewrite in_itv/=; apply/andP.
-    by rewrite addrC subrr normr0 ltW.
+    by rewrite addNr normr0 ltW.
   have := @cvgD _ _ _ _ Fbn _ _ _ _ GFbc Fb.
   rewrite (_ : (G \- F)%R + F = G)//.
   by apply/funext => x/=; rewrite subrK.
@@ -629,10 +630,10 @@ have Ga : G x @[x --> a^'+] --> G a.
    have := parameterized_integral_cvg_left ab iabfab.
    rewrite (_ : 0 = G a)%R.
      by move=> /left_right_continuousP[].
-   by rewrite /G interval_set1 Rintegral_set1.
+   by rewrite /G set_itv1 Rintegral_set1.
 have Gb : G x @[x --> b^'-] --> G b.
   exact: (parameterized_integral_cvg_at_left ab iabfab).
-have Ga0 : G a = 0%R by rewrite /G interval_set1// Rintegral_set1.
+have Ga0 : G a = 0%R by rewrite /G set_itv1// Rintegral_set1.
 have cE : c = F a.
   apply/eqP; rewrite -(opprK c) eq_sym -addr_eq0 addrC.
   by have := cvg_unique _ GacFa Ga; rewrite Ga0 => ->.
@@ -1049,7 +1050,7 @@ Context {R : realType}.
 Notation mu := lebesgue_measure.
 Implicit Types (F G f : R -> R) (a b : R).
 
-Lemma integration_by_substitution_decreasing F G a b : (a < b)%R ->
+Lemma integration_by_substitution_decreasing F G a b : (a <= b)%R ->
   {in `[a, b] &, {homo F : x y /~ (x < y)%R}} ->
   {in `]a, b[, continuous F^`()} ->
   cvg (F^`() x @[x --> a^'+]) ->
@@ -1059,6 +1060,7 @@ Lemma integration_by_substitution_decreasing F G a b : (a < b)%R ->
   \int[mu]_(x in `[F b, F a]) (G x)%:E =
   \int[mu]_(x in `[a, b]) (((G \o F) * - F^`()) x)%:E.
 Proof.
+rewrite le_eqVlt => /predU1P[<- *|]; first by rewrite !set_itv1 !integral_set1.
 move=> ab decrF cF' /cvg_ex[/= r F'ar] /cvg_ex[/= l F'bl] Fab cG.
 have cF := derivable_oo_LRcontinuous_within Fab.
 have FbFa : (F b < F a)%R by apply: decrF; rewrite //= in_itv/= (ltW ab) lexx.
@@ -1084,7 +1086,7 @@ have PGFbFa : derivable_oo_LRcontinuous PG (F b) (F a).
     apply: (continuous_FTC1 xFa intG _ _).1 => /=.
       by move: xFbFa; rewrite lte_fin in_itv/= => /andP[].
     exact: (within_continuous_continuous _ _ xFbFa).
-  - have := parameterized_integral_continuous FbFa intG.
+  - have := parameterized_integral_continuous (ltW FbFa) intG.
     by move=> /(continuous_within_itvP _ FbFa)[].
   - exact: parameterized_integral_cvg_at_left.
 rewrite (@continuous_FTC2 _ _ PG _ _ FbFa cG); last 2 first.
@@ -1092,7 +1094,7 @@ rewrite (@continuous_FTC2 _ _ PG _ _ FbFa cG); last 2 first.
   + move=> x /[dup]xFbFa; rewrite in_itv/= => /andP[Fbx xFa].
     apply: (continuous_FTC1 xFa intG Fbx _).1.
     by move: cG => /(continuous_within_itvP _ FbFa)[+ _ _]; exact.
-  + have := parameterized_integral_continuous FbFa intG.
+  + have := parameterized_integral_continuous (ltW FbFa) intG.
     by move=> /(continuous_within_itvP _ FbFa)[].
   + exact: parameterized_integral_cvg_at_left.
 - move=> x xFbFa.
@@ -1181,7 +1183,7 @@ apply: eq_integral_itv_bounded.
 - by move=> x /[!inE] xab; rewrite mulrN !fctE fE.
 Unshelve. all: end_near. Qed.
 
-Lemma integration_by_substitution_oppr G a b : (a < b)%R ->
+Lemma integration_by_substitution_oppr G a b : (a <= b)%R ->
   {within `[(- b)%R, (- a)%R], continuous G} ->
   \int[mu]_(x in `[(- b)%R, (- a)%R]) (G x)%:E =
   \int[mu]_(x in `[a, b]) ((G \o -%R) x)%:E.
@@ -1200,7 +1202,7 @@ rewrite (@integration_by_substitution_decreasing -%R)//.
   + by rewrite -at_rightN; exact: cvg_at_right_filter.
 Qed.
 
-Lemma integration_by_substitution_increasing F G a b : (a < b)%R ->
+Lemma integration_by_substitution_increasing F G a b : (a <= b)%R ->
   {in `[a, b] &, {homo F : x y / (x < y)%R}} ->
   {in `]a, b[, continuous F^`()} ->
   cvg (F^`() x @[x --> a^'+]) ->
@@ -1210,6 +1212,7 @@ Lemma integration_by_substitution_increasing F G a b : (a < b)%R ->
   \int[mu]_(x in `[F a, F b]) (G x)%:E =
   \int[mu]_(x in `[a, b]) (((G \o F) * F^`()) x)%:E.
 Proof.
+rewrite le_eqVlt => /predU1P[<- *|]; first by rewrite !set_itv1 !integral_set1.
 move=> ab incrF cF' /cvg_ex[/= r F'ar] /cvg_ex[/= l F'bl] Fab cG.
 transitivity (\int[mu]_(x in `[F a, F b]) (((G \o -%R) \o -%R) x)%:E).
   by apply/eq_integral => x ? /=; rewrite opprK.
@@ -1224,7 +1227,7 @@ have cGN : {within `[- F b, - F a]%classic%R, continuous (G \o -%R)}.
     by rewrite /= opprK => /cvg_at_leftNP.
   - move/(continuous_within_itvP _ FaFb) : cG => [_ + _].
     by rewrite /= opprK => /cvg_at_rightNP.
-rewrite -integration_by_substitution_oppr//.
+rewrite -(integration_by_substitution_oppr (ltW FaFb))//.
 rewrite (@integration_by_substitution_decreasing (- F)%R); first last.
 - exact: cGN.
 - split; [|by apply: cvgN; case: Fab..].
@@ -1244,7 +1247,7 @@ rewrite (@integration_by_substitution_decreasing (- F)%R); first last.
   near=> y; rewrite fctE !derive1E deriveN//.
   by case: Fab => + _ _; apply; near: y; exact: near_in_itvoo.
 - by move=> x y xab yab yx; rewrite ltrN2 incrF.
-- by [].
+- exact/ltW.
 have mGF : measurable_fun `]a, b[ (G \o F).
   apply: (@measurable_comp _ _ _ _ _ _ `]F a, F b[%classic) => //.
   - move=> /= _ [x] /[!in_itv]/= /andP[ax xb] <-.
@@ -1399,7 +1402,7 @@ rewrite integration_by_substitution_decreasing.
     rewrite measurable_funU//; split; last exact: measurable_fun_set1.
     by apply: measurable_funS (mGFNF' n) => //; exact: subset_itv_oo_co.
   + by apply: measurable_funS (mGFNF' n) => //; exact: subset_itv_oo_co.
-- by rewrite ltrDl.
+- by rewrite lerDl.
 - move=> x y /=; rewrite !in_itv/= => /andP[ax _] /andP[ay _] yx.
   by apply: decrF; rewrite //in_itv/= ?ax ?ay.
 - move=> x; rewrite in_itv/= => /andP[ax _].
@@ -1799,16 +1802,17 @@ Let mu := (@lebesgue_measure R).
 Local Open Scope ereal_scope.
 
 Lemma integration_by_substitution_onem (G : R -> R) (r : R) :
-  (0 < r <= 1)%R ->
+  (0 <= r <= 1)%R ->
   {within `[0%R, r], continuous G} ->
   \int[mu]_(x in `[0%R, r]) (G x)%:E =
   \int[mu]_(x in `[`1-r, 1%R]) (G `1-x)%:E.
 Proof.
-move=> r01 cG.
+move=> /andP[]; rewrite le_eqVlt => /predU1P[<- *|r0 r1 cG].
+  by rewrite onem0 2!set_itv1 2!integral_set1.
 have := @integration_by_substitution_decreasing R onem G `1-r 1.
 rewrite onemK onem1 => -> //.
 - by apply: eq_integral => x xr; rewrite !fctE derive1_onem opprK mulr1.
-- by rewrite ltrBlDl ltrDr; case/andP : r01.
+- by rewrite lerBlDl lerDr ltW.
 - by move=> x y _ _ xy; rewrite ler_ltB.
 - by rewrite derive1_onem; move=> ? ?; exact: cvg_cst.
 - by rewrite derive1_onem; exact: is_cvg_cst.
@@ -1823,7 +1827,7 @@ rewrite onemK onem1 => -> //.
 Qed.
 
 Lemma Rintegration_by_substitution_onem (G : R -> R) (r : R) :
-  (0 < r <= 1)%R ->
+  (0 <= r <= 1)%R ->
   {within `[0%R, r], continuous G} ->
   (\int[mu]_(x in `[0, r]) (G x) =
   \int[mu]_(x in `[`1-r, 1]) (G `1-x))%R.

@@ -1,11 +1,10 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap.
-From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import set_interval functions cardinality ereal reals.
-From mathcomp Require Import topology prodnormedzmodule normedtype derive.
-From mathcomp Require Import realfun interval_inference.
 From HB Require Import structures.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrint ssrnum interval.
+From mathcomp Require Import interval_inference.
+From mathcomp Require Import mathcomp_extra boolp classical_sets set_interval.
+From mathcomp Require Import functions cardinality ereal reals topology.
+From mathcomp Require Import prodnormedzmodule normedtype derive realfun.
 
 (**md**************************************************************************)
 (* # Convexity                                                                *)
@@ -37,7 +36,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -67,10 +66,8 @@ Lemma pq_sr (R : comPzRingType) (p q r s : R) :
   1 - s = (1 - p) * (1 - q) ->
   (1 - p) * q = s * (1 - r).
 Proof.
-move=> prs spq.
-rewrite -[LHS]opprK -mulrN -[X in - X = _](addrK ((1 - p) * 1)).
-rewrite -mulrDr (addrC _ 1) -spq mulr1 prs.
-by rewrite !opprB addrC subrKA mulrDr mulr1 mulrN mulrC.
+move=> prs spq; rewrite mulrBr [s * r]mulrC -prs mulr1 -[s](subKr 1) spq.
+by rewrite addrAC -[X in _ = X - _]mulr1 -mulrBr subKr.
 Qed.
 
 Lemma sE (R : pzRingType) (p q s : R) :
@@ -84,16 +81,12 @@ Lemma qE (R : comUnitRingType) (p q r s : R) :
   1 - s = (1 - p) * (1 - q) ->
   q = (s * (1 - r)) / (1 - p).
 Proof.
-move=> p1unit /pq_sr /[apply] /(congr1 ( *%R (1 - p)^-1)).
-by rewrite mulrA mulVr// mul1r mulrC.
+by move=> p1unit /pq_sr /[apply] /(canRL (mulKr p1unit)); rewrite mulrC.
 Qed.
 
 Lemma rE (R : unitRingType) (p r s : R) :
   s \is a GRing.unit -> p = r * s -> r = p / s.
-Proof.
-move=> sunit /(congr1 ( *%R^~ s^-1)) ->.
-by rewrite -mulrA divrr// mulr1.
-Qed.
+Proof. by move=> sunit /(canLR (mulrK sunit)) <-. Qed.
 
 End lemmas.
 
@@ -205,17 +198,6 @@ Lemma convRE (a b : R^o) (t : {i01 R}) :
   a <| t |> b = t%:inum * a + `1-(t%:inum) * b.
 Proof. by []. Qed.
 
-Lemma convR_itv (a b : R^o) (t : {i01 R}) : a <= b -> a <| t |> b \in `[a, b].
-Proof.
-move=> ab; rewrite convRE in_itv /=.
-rewrite -{1}(subrKC a b).
-rewrite mulrDr addrA -mulrDl.
-rewrite subrKC mul1r.
-rewrite lerDl mulr_ge0/=; [|by rewrite subr_ge0 le1|by rewrite subr_ge0].
-rewrite -[leRHS](convmm t b) convRE lerD//.
-by rewrite ler_wpM2l.
-Qed.
-
 Let convRCE (a b : R^o) (t : {i01 R}) :
   a <| t |> b = `1-(t%:inum) * b + t%:inum * a.
 Proof. by rewrite addrC convRE. Qed.
@@ -223,6 +205,18 @@ Proof. by rewrite addrC convRE. Qed.
 Lemma convR_line_path (a b : R^o) (t : {i01 R}) :
   a <| t |> b = line_path b a t%:num.
 Proof. by rewrite convRCE. Qed.
+
+Lemma convN (a b : R^o) (t : {i01 R}) : - (a <| t |> b) = - a <| t |> - b.
+Proof. by rewrite !convRE opprD !mulrN. Qed.
+
+Lemma conv_le (a b : R^o) (t : {i01 R}) : a <= b -> a <| t |> b <= b.
+Proof.
+move=> ab; rewrite convRE mulrBl mul1r addrCA -mulrBr gerDl.
+by rewrite mulr_ge0_le0// subr_le0.
+Qed.
+
+Lemma convR_itv (a b : R^o) (t : {i01 R}) : a <= b -> a <| t |> b \in `[a, b].
+Proof. by move=> ab; rewrite in_itv/= -lerN2 convN convC !conv_le ?lerN2. Qed.
 
 End conv_numDomainType.
 
@@ -247,8 +241,8 @@ Let L x := f a + factor a b x * (f b - f a).
 
 Let LE x : a < b -> L x = factor b a x * f a + factor a b x * f b.
 Proof.
-move=> ab; rewrite /L -(@onem_factor _ a) ?lt_eqF// /onem mulrBl mul1r.
-by rewrite -addrA -mulrN -mulrDr (addrC (f b)).
+move=> ab; rewrite /L -(@onem_factor _ a) ?lt_eqF//.
+by rewrite mulrBl mul1r mulrBr addrA addrAC.
 Qed.
 
 Let convexf_ptP : a < b -> (forall x, a <= x <= b -> 0 <= L x - f x) ->
@@ -274,7 +268,7 @@ move/convexf_ptP; apply => x /andP[].
 rewrite le_eqVlt => /predU1P[<-|ax].
   by rewrite /L factorl mul0r addr0 subrr.
 rewrite le_eqVlt => /predU1P[->|xb].
-  by rewrite /L factorr ?lt_eqF// mul1r addrAC addrA subrK subrr.
+  by rewrite /L factorr ?lt_eqF// mul1r subrKC subrr.
 have [c2 Ic2 Hc2] : exists2 c2, x < c2 < b & (f b - f x) / (b - x) = 'D_1 f c2.
   have xbf : {in `]x, b[, forall z, derivable f z 1} :=
     in1_subset_itv (subset_itvW _ _ (ltW ax) (lexx b)) HDf.
@@ -286,7 +280,7 @@ have [c2 Ic2 Hc2] : exists2 c2, x < c2 < b & (f b - f x) / (b - x) = 'D_1 f c2.
     have := derivable_within_continuous HDf.
     rewrite continuous_open_subspace//.
     by apply; rewrite inE/= in_itv/= ax.
-  by exists z => //; rewrite fbfx -mulrA divff ?mulr1// subr_eq0 gt_eqF.
+  by exists z => //; rewrite fbfx mulfK// subr_eq0 gt_eqF.
 have [c1 Ic1 Hc1] : exists2 c1, a < c1 < x & (f x - f a) / (x - a) = 'D_1 f c1.
   have axf : {in `]a, x[, forall z, derivable f z 1} :=
     in1_subset_itv (subset_itvW _ _ (lexx a) (ltW xb)) HDf.
@@ -298,8 +292,7 @@ have [c1 Ic1 Hc1] : exists2 c1, a < c1 < x & (f x - f a) / (x - a) = 'D_1 f c1.
     have := derivable_within_continuous HDf.
     rewrite continuous_open_subspace//.
     by apply; rewrite inE/= in_itv/= ax.
-  exists z; first by [].
-  by rewrite fxfa -mulrA divff ?mulr1// subr_eq0 gt_eqF.
+  by exists z; last rewrite fxfa mulfK// subr_eq0 gt_eqF.
 have c1c2 : c1 < c2.
   by move: Ic2 Ic1 => /andP[+ _] => /[swap] /andP[_] /lt_trans; apply.
 have [d Id h] :
@@ -324,22 +317,15 @@ have [d Id h] :
 have LfE : L x - f x =
     ((x - a) * (b - x)) / (b - a) * ((f b - f x) / (b - x)) -
     ((b - x) * factor a b x) * ((f x - f a) / (x - a)).
-  rewrite !mulrA -(mulrC (b - x)) -(mulrC (b - x)^-1) !mulrA.
-  rewrite mulVf ?mul1r ?subr_eq0 ?gt_eqF//.
-  rewrite -(mulrC (x - a)) -(mulrC (x - a)^-1) !mulrA.
-  rewrite mulVf ?mul1r ?subr_eq0 ?gt_eqF//.
-  rewrite -/(factor a b x).
-  rewrite -(opprB a b) -(opprB x b) invrN mulrNN -/(factor b a x).
-  rewrite -(@onem_factor _ a) ?lt_eqF//.
-  rewrite /onem mulrBl mul1r opprB addrA -mulrDr addrA subrK.
-  by rewrite /L -addrA addrC opprB -addrA (addrC (f a)).
+  rewrite !mulrA 2!(mulrAC _ (b - x)) 2!(mulrAC _ (x - a)).
+  rewrite 2?mulfK ?subr_eq0 ?gt_eqF// 2!mulrBr opprB addrACA -opprD.
+  rewrite -2!mulrDl (addrC (x - a)) subrKA divff ?subr_eq0 ?gt_eqF// mul1r.
+  rewrite -(opprB x b) mulNr -mulrN -invrN opprB -2!/(factor _ _ _).
+  by rewrite -(@onem_factor _ a) ?lt_eqF// /onem mulrBl mul1r addrCA -mulrBr.
 have {Hc1 Hc2} -> : L x - f x = (b - x) * (x - a) * (c2 - c1) / (b - a) *
                                 (('D_1 f c2 - 'D_1 f c1) / (c2 - c1)).
-  rewrite LfE Hc2 Hc1.
-  rewrite -(mulrC (b - x)) [in LHS]mulrA -mulrBr.
-  rewrite (mulrC ('D_1 f c2 - _)) ![in RHS]mulrA; congr *%R.
-rewrite -2![RHS]mulrA; congr *%R.
-  by rewrite mulrCA divff ?mulr1// subr_eq0 gt_eqF.
+  rewrite LfE Hc2 Hc1 -(mulrC (b - x)) [in LHS]mulrA -mulrBr.
+  by rewrite mulrA 2![_ * (c2 - c1) * _]mulrAC mulfK// subr_eq0 gt_eqF.
 rewrite {}h mulr_ge0//; last first.
   rewrite DDf_ge0//; apply/andP; split.
     by rewrite (lt_trans (andP Ic1).1)//; case/andP : Id.

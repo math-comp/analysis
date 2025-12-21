@@ -1,10 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
-From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
-From mathcomp Require Import archimedean.
+From mathcomp Require Import all_ssreflect ssralg ssrnum vector.
 From mathcomp Require Import boolp classical_sets functions cardinality.
-From mathcomp Require Import set_interval ereal reals interval_inference.
+From mathcomp Require Import set_interval reals interval_inference.
 From mathcomp Require Import topology function_spaces.
 
 (**md**************************************************************************)
@@ -546,9 +544,9 @@ rewrite -mulrBl normrM (@le_lt_trans _ _ (`|k - z1| * M)) ?ler_wpM2l//.
     by rewrite -lerBlDl -(normrN x) (le_trans (lerB_normD _ _))// distrC ltW.
   rewrite (@le_trans _ _ (`|x| + r + `|x|)) ?lerD// addrC.
   rewrite [leRHS](_ : _ = M^-1 * (M *  M)); last first.
-    by rewrite mulrA mulVf ?mul1r// gt_eqF.
+    by rewrite mulKf// gt_eqF.
   rewrite [leLHS](_ : _ = M^-1 * (M * (`|x| + `|x|) + `|e| / 2)); last first.
-    by rewrite mulrDr mulrA mulVf ?mul1r ?gt_eqF// mulrC addrA.
+    by rewrite mulrDr mulKf ?gt_eqF// mulrC addrA.
   rewrite ler_wpM2l// ?invr_ge0// ?ltW// -ltrBrDl -mulrBr ltr_pM// ltrBrDl//.
   rewrite (@lt_le_trans _ _ (`|x| + `|x| + 2^-1 + 1)) //.
     by rewrite ltrDl ltr01.
@@ -574,9 +572,7 @@ exists [set B | exists x r, B = ball x r].
   rewrite (@le_lt_trans _ _ (`|l| * `|x - z| + `|1 - l| * `|x - y|))//.
     by rewrite -!normrM ler_normD.
   rewrite (@lt_le_trans _ _ (`|l| * r + `|1 - l| * r ))//.
-    rewrite ltr_leD//.
-      by rewrite -ltr_pdivlMl ?mulrA ?mulVf ?mul1r // ?normrE ?gt_eqF.
-    by rewrite -ler_pdivlMl ?mulrA ?mulVf ?mul1r ?ltW // ?normrE ?gt_eqF.
+    by rewrite ltr_leD// -lter_pdivlMl ?mulKf// ?normrE ?gt_eqF// ltW.
   suff-> : `|1 - l| = 1 - `|l| by rewrite -mulrDl addrC subrK mul1r.
   by move: l0 l1 => /ltW/normr_idP -> /ltW/normr_idP ->.
 split.

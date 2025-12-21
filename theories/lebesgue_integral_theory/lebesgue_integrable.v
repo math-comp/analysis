@@ -90,7 +90,6 @@ have h1 : mu.-integrable D f <-> mu.-integrable D (f \_ (~` N)).
     (\int[mu]_(x in D) (`|(f \_ (~` N)) x| + `|(f \_ N) x|))).
     apply: ge0_le_integral => //.
     - by apply: measurableT_comp => //; exact: emeasurable_funD.
-    - by move=> ? ?; exact: adde_ge0.
     - by apply: emeasurable_funD; exact: measurableT_comp.
     - by move=> *; rewrite lee_abs_add.
   rewrite ge0_integralD//; [|exact: measurableT_comp..].
@@ -134,6 +133,12 @@ Lemma integrable0 : mu_int (cst 0).
 Proof.
 apply/integrableP; split=> //; under eq_integral do rewrite (gee0_abs (lexx 0)).
 by rewrite integral0.
+Qed.
+
+Lemma integrable_set0 f : mu.-integrable set0 f.
+Proof.
+apply/integrableP; split; first exact: measurable_fun_set0.
+by rewrite integral_set0.
 Qed.
 
 Lemma eq_integrable f g : {in D, f =1 g} -> mu_int f -> mu_int g.
@@ -180,7 +185,6 @@ move=> /integrableP[mf foo] /integrableP[mg goo]; apply/integrableP; split.
 apply: (@le_lt_trans _ _ (\int[mu]_(x in D) (`|f x| + `|g x|))).
   apply: ge0_le_integral => //.
   - by apply: measurableT_comp => //; exact: emeasurable_funD.
-  - by move=> ? ?; apply: adde_ge0.
   - by apply: emeasurable_funD; apply: measurableT_comp.
   - by move=> *; exact: lee_abs_add.
 by rewrite ge0_integralD //; [exact: lte_add_pinfty| exact: measurableT_comp..].
@@ -391,18 +395,18 @@ rewrite (@le_lt_trans _ _ (mu setT)) ?le_measure ?inE//.
 by rewrite ?ltry ?fin_num_fun_lty//; exact: fin_num_measure.
 Qed.
 
-Lemma finite_measure_integrable_cst k : mu.-integrable [set: T] (EFin \o cst k).
+Lemma finite_measure_integrable_cst A k :
+  measurable A -> mu.-integrable A (EFin \o cst k).
 Proof.
-apply/integrableP; split; first exact/measurable_EFinP.
+move=> mA; apply/integrableP; split; first exact/measurable_EFinP.
 have [k0|k0] := leP 0%R k.
 - under eq_integral do rewrite /= ger0_norm//.
   rewrite lebesgue_integral_nonneg.integral_cstr//= lte_mul_pinfty//.
-  rewrite fin_num_fun_lty//.
-  exact: fin_num_measure.
+  by rewrite -ge0_fin_numE// fin_num_measure.
 - under eq_integral do rewrite /= ltr0_norm//.
   rewrite lebesgue_integral_nonneg.integral_cstr//= lte_mul_pinfty//.
     by rewrite lee_fin lerNr oppr0 ltW.
-  by rewrite fin_num_fun_lty//; exact: fin_num_measure.
+  by rewrite -ge0_fin_numE// fin_num_measure.
 Qed.
 
 End integrable_finite_measure.
@@ -813,11 +817,19 @@ congr (_ - _); apply: ge0_negligible_integral => //; apply: (measurable_int mu).
 exact: integrable_funeneg.
 Qed.
 
-Lemma null_set_integral (N : set T) (f : T -> \bar R) :
-  measurable N -> mu.-integrable N f ->
-  mu N = 0 -> \int[mu]_(x in N) f x = 0.
+Lemma null_set_integrable (N : set T) (f : T -> \bar R) :
+  measurable N -> measurable_fun N f -> mu N = 0 -> mu.-integrable N f.
 Proof.
-by move=> mN intf ?; rewrite (negligible_integral mN mN)// setDv integral_set0.
+move=> mN mf muN0.
+by rewrite (negligible_integrable mN) ?setDv//; exact: integrable_set0.
+Qed.
+
+Lemma null_set_integral (N : set T) (f : T -> \bar R) :
+  measurable N -> measurable_fun N f -> mu N = 0 -> \int[mu]_(x in N) f x = 0.
+Proof.
+move=> mN mf N0.
+rewrite (negligible_integral mN mN) ?setDv ?integral_set0//.
+exact: null_set_integrable.
 Qed.
 
 End negligible_integral.
@@ -1028,11 +1040,10 @@ have muE j : mu (E j) = 0.
   apply: (@le_trans _ _ (j.+1%:R%:E * \int[mu]_(x in E j) j.+1%:R^-1%:E)).
     by rewrite integral_cst// muleA -EFinM divff// mul1e.
   rewrite lee_pmul//; first exact: integral_ge0.
-  apply: ge0_le_integral => //; [| |by move=> x []].
-  - by move=> x [_/=]; exact: le_trans.
-  - apply: emeasurable_funB.
-    + by apply: measurable_funS msf => //; exact: subIsetl.
-    + by apply: measurable_funS msg => //; exact: subIsetl.
+  apply: ge0_le_integral => //; last by move=> x [].
+  apply: emeasurable_funB.
+  - by apply: measurable_funS msf => //; exact: subIsetl.
+  - by apply: measurable_funS msg => //; exact: subIsetl.
 have nd_E : {homo E : n0 m / (n0 <= m)%N >-> (n0 <= m)%O}.
   move=> i j ij; apply/subsetPset => x [Dx /= ifg]; split => //.
   by move: ifg; apply: le_trans; rewrite lee_fin lef_pV2// ?posrE// ler_nat.

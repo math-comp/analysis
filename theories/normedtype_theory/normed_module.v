@@ -1,12 +1,11 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
-From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
-From mathcomp Require Import archimedean.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import filter functions cardinality set_interval.
-From mathcomp Require Import interval_inference ereal reals topology.
-From mathcomp Require Import function_spaces real_interval.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
+From mathcomp Require Import archimedean rat interval zmodp vector.
+From mathcomp Require Import fieldext falgebra.
+From mathcomp Require Import boolp classical_sets filter functions cardinality.
+From mathcomp Require Import set_interval interval_inference ereal reals.
+From mathcomp Require Import topology function_spaces real_interval.
 From mathcomp Require Import prodnormedzmodule tvs num_normedtype.
 From mathcomp Require Import ereal_normedtype pseudometric_normed_Zmodule.
 
@@ -123,9 +122,7 @@ exists [set B | exists x r, B = ball x r].
   rewrite (@le_lt_trans _ _ (`|l| * `|x - z| + `|1 - l| * `|x - y|))//.
     by rewrite -!normrZ ler_normD.
   rewrite (@lt_le_trans _ _ (`|l| * r + `|1 - l| * r ))//.
-    rewrite ltr_leD//.
-      by rewrite -ltr_pdivlMl ?mulrA ?mulVf ?mul1r // ?normrE ?gt_eqF.
-    by rewrite -ler_pdivlMl ?mulrA ?mulVf ?mul1r ?ltW // ?normrE ?gt_eqF.
+    by rewrite ltr_leD// lter_pM2l// ?normrE ?gt_eqF// ltW.
   by rewrite !gtr0_norm// -mulrDl addrC subrK mul1r.
 split.
   move=> B [x] [r] ->.
@@ -353,12 +350,8 @@ Proof. by move=> nxu; rewrite normrZ normrV// normr_id mulVr. Qed.
 Lemma near_shift (y x : V) (P : set V) :
    (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
 Proof.
-(* rewrite propeqE nbhs0P [X in _ <-> X]nbhs0P/= -propeqE. *)
-(* by apply: eq_near => e; rewrite ![_ + e]addrC addrACA subrr addr0. *)
-rewrite propeqE; split=> /= /nbhs_normP [_/posnumP[e] ye];
-apply/nbhs_normP; exists e%:num => //= t et.
-  by apply: ye; rewrite /= distrC addrCA [x + _]addrC addrK distrC.
-by have /= := ye (t - (x - y)); rewrite opprB addrCA subrKA addrNK; exact.
+rewrite propeqE nbhs0P [X in _ <-> X]nbhs0P/= -propeqE.
+by apply: eq_near => e; rewrite [_ + _ + _]addrC subrKA.
 Qed.
 
 Lemma cvg_comp_shift {T : Type} (x y : V) (f : V -> T) :
@@ -1042,6 +1035,74 @@ move=> n; have : nbhs (x : T) (U n).
   by apply/(nbhs_ballP (x:T) (U n)); rewrite nbhs_ballE; exists n.+1%:R^-1 => //=.
 by move/Ax/cid => [/= an [anx Aan Uan]]; exists an.
 Unshelve. all: by end_near. Qed.
+
+Lemma limit_point_infinite_setP {R : archiRealFieldType} (E : set R) (a : R) :
+  limit_point E a <-> (forall U, nbhs a U -> infinite_set (U `&` E)).
+Proof.
+split=> [Ea V aV|]; last first.
+  move=> aE U /aE /infiniteP /pcard_leP /injfunPex[/= f funf injf].
+  have [f0a|f0a] := eqVneq (f O) a; last first.
+    by exists (f 0); case: (funf 0 Logic.I).
+  have [Uf1 Ef1]:= funf 1 Logic.I.
+  exists (f 1); split=> //; apply/eqP => f1a.
+  have := injf 1 0 (in_setT _) (in_setT _).
+  by rewrite f1a f0a => /(_ erefl); exact/eqP/oner_neq0.
+(* we build 2 sequences a_ and r_ s.t. a_i and r_i have the properties: *)
+pose elt_prop (ar : R * R) := [/\ ball a ar.2 `<=` V,
+  ar.1 \in E, ar.1 \in (ball a ar.2 : set R), ar.2 > 0 & ar.1 != a].
+pose elt_type := {ar : R * R | elt_prop ar}.
+pose a_ (x : elt_type) := (proj1_sig x).2.
+pose r_ (x : elt_type) := (proj1_sig x).1.
+(* two successive (a_i, r_i) and (a_j, r_j) satisfy the relation: *)
+pose elt_rel i j := `|a - r_ i| = a_ j /\ ball a (a_ j) `<=` ball a (a_ i) /\
+  `|a - r_ j| < `|a - r_ i| /\ r_ i != r_ j.
+move: aV => -[r0/= r0_gt0 ar0V].
+pose V0 : set R := ball a r0.
+move/limit_pointP : Ea => [y_ [y_E y_neq_a y_cvg_a]].
+have [a0 [a0a a0V0 a0E]] : exists a0, [/\ a0 != a, a0 \in V0 & a0 \in E].
+  move/cvgrPdist_lt : y_cvg_a => /(_ _ r0_gt0)[M _ May_r0].
+  exists (y_ M); split=> //.
+  - by apply/mem_set/May_r0 => /=.
+  - by apply/mem_set/y_E/imageT.
+have [v [v0 Pv]] : {v : nat -> elt_type |
+    v 0 = exist _ (a0, r0) (And5 ar0V a0E a0V0 r0_gt0 a0a) /\
+    forall n, elt_rel (v n) (v n.+1)}.
+  apply: dependent_choice => -[[ai ri] [/= ariV xE aiari ri_gt0 aia]].
+  pose rj : R := `|a - ai|.
+  have rj_gt0 : 0 < rj by rewrite /rj normr_gt0 subr_eq0 eq_sym.
+  apply/cid; move/cvgrPdist_lt : y_cvg_a => /(_ _ rj_gt0)[M/= _ May_rj].
+  pose Vj : set R := ball a rj.
+  have VjV : Vj `<=` V.
+    apply: subset_trans ariV => z /lt_trans; apply.
+    by move: aiari; rewrite inE.
+  have y_MVj : y_ M \in Vj.
+    rewrite inE; apply: (@lt_le_trans _ _ rj) => //.
+    by apply: May_rj => /=.
+  have y_ME : y_ M \in E by rewrite inE; apply/y_E/imageT.
+  exists (exist _ (y_ M, rj) (And5 VjV y_ME y_MVj rj_gt0 (y_neq_a M))) => /=.
+  split; first exact.
+  split; rewrite /a_ /r_/=.
+    by apply: le_ball; move: aiari; rewrite inE => /ltW.
+  split; first by move: y_MVj; rewrite inE.
+  by apply/eqP => aiyM; move: y_MVj; rewrite -aiyM inE /Vj /ball/= /rj ltxx.
+apply/infiniteP/pcard_leP/injfunPex => /=; exists (r_ \o v).
+  move=> n _; rewrite /r_ /=.
+  by case: (v n) => -[ai ri] [/= ariV /set_mem Eai /set_mem/ariV aiari _ _].
+have arv q p : (p < q)%N -> `|a - r_ (v q)| < `|a - r_ (v p)|.
+  elim: q p => [[]//|q ih p].
+  by rewrite ltnS leq_eqVlt => /predU1P[->|/ih]; last apply: lt_trans;
+    by case: (Pv q) => _ [] _ [].
+move=> p q _ _ /=; apply: contraPP => /eqP.
+by rewrite neq_lt => /orP[] /arv /[swap] ->; rewrite ltxx.
+Qed.
+
+Lemma limit_point_setD {R : archiRealFieldType} (A V : set R) a :
+  finite_set V -> limit_point A a -> limit_point (A `\` V) a.
+Proof.
+move=> finV /limit_point_infinite_setP aA.
+apply/limit_point_infinite_setP => U aU.
+by rewrite setIDA; apply: infinite_setD => //; exact: aA.
+Qed.
 
 Lemma EFin_lim (R : realFieldType) (f : nat -> R) : cvgn f ->
   limn (EFin \o f) = (limn f)%:E.
@@ -1979,9 +2040,8 @@ exists (y + (s / 2) *: (`|x - y|^-1 *: (x - y))); split; [apply: Be|apply: B0y].
   rewrite -mulrBl -scalerA normrZ normfZV ?subr_eq0// mulr1.
   rewrite gtr0_norm; first by rewrite ltrBlDl xye ltrDr mulr_gt0.
   by rewrite subr_gt0 xye ltr_pdivrMr // mulr_natr mulr2n ltr_pwDl.
-rewrite -ball_normE /ball_ /= opprD addrA addrN add0r normrN normrZ.
-rewrite normfZV ?subr_eq0// mulr1 normrM (gtr0_norm s0) gtr0_norm //.
-by rewrite ltr_pdivrMr // ltr_pMr // ltr1n.
+rewrite -ball_normE /ball_ /= opprD addNKr normrN normrZ normfZV ?subr_eq0//.
+by rewrite mulr1 normf_div !gtr0_norm// ltr_pdivrMr// ltr_pMr //ltr1n.
 Qed.
 
 Lemma closed_ball_itv (R : realFieldType) (x r : R) : 0 < r ->
@@ -2036,6 +2096,85 @@ apply: filterS => e xeA y exy; apply: xeA.
 by rewrite -ball_normE/= in exy; exact: ltW.
 Qed.
 
+Lemma open_subball_rat {R : realType} (S : set R) x : open S -> x \in S ->
+  exists c r, let B : set R := ball (@ratr R c) (ratr r) in x \in B /\ B `<=` S.
+Proof.
+move=> oS /set_mem/(open_subball oS)[r/= r0 rS].
+have [y yxr] : exists y, ball x (r / 4) (ratr y).
+  suff : ball x (r / 4) `&` range ratr !=set0.
+    by move=> [/= _ []] /[swap] -[y _ <-]; exists y.
+  apply: dense_rat; last by apply: ball_open; rewrite divr_gt0.
+  by exists x; apply: ballxx; rewrite divr_gt0.
+have [q /andP[rq qr]] : exists q, r / 4 < ratr q < r / 2.
+  have : ball (r / 3) (r / 12) `&` range ratr !=set0.
+    apply: dense_rat; last by apply: ball_open; rewrite divr_gt0.
+    by exists (r / 3); apply: ballxx; rewrite divr_gt0.
+  move=> [/= _ []] /[swap] -[z _ <-].
+  rewrite ball_itv/= in_itv/= => /andP[rz zr]; exists z; apply/andP; split.
+  - rewrite (le_lt_trans _ rz)// -mulrBr ler_pM2l// -(@ler_pM2l _ 12)//.
+    rewrite mulrBr divff// (@natrM _ 3 4) -mulrA divff// mulr1.
+    by rewrite mulrAC divff// mul1r -lerBlDr opprK natr1.
+  - rewrite (lt_le_trans zr)// -mulrDr ler_pM2l// -(@ler_pM2l _ 12)//.
+    rewrite mulrDr divff// (@natrM _ 3 4) mulrAC divff// mul1r.
+    by rewrite natr1 (@natrM _ 2 2) -!mulrA divff// mulr1 -natrM ler_nat.
+have [yqxr xrS] : ball (@ratr R y) (ratr q) `<=` ball x r /\ ball x r `<=` S.
+  split => [z yqz|z /rat_in_itvoo[p]].
+  - rewrite /ball/= -(subrK (ratr y) x) -(addrA _ (ratr y)).
+    rewrite (le_lt_trans (ler_normD _ _))// (splitr r) ltrD//.
+      by apply: le_ball yxr; rewrite ler_pM2l// lef_pV2 ?posrE// ler_nat.
+    by rewrite (lt_trans yqz).
+  - rewrite in_itv/= => /andP[xzp pr]; apply: (rS (ratr p)) => //=.
+    + by rewrite sub0r normrN gtr0_norm// (le_lt_trans _ xzp).
+    + exact: le_lt_trans xzp.
+exists y, q; split; last exact: subset_trans xrS.
+exact/mem_set/ball_sym/(le_ball _ yxr)/ltW.
+Qed.
+
+Section countable_isolated.
+Context {R : realType}.
+Variable S : set R.
+
+Fact isolated_rat_ball (x : R) : isolated S x -> exists cr,
+  let B : set R := ball (@ratr R cr.1) (ratr cr.2) in
+  x \in B /\ (forall y : R, isolated S y -> y \in B -> x = y).
+Proof.
+move=> Sx.
+have [e Sxe] : exists e : {posnum R},
+    forall y : R, isolated S y -> y \in (ball x e%:num : set R) -> x = y.
+  case: Sx => [xS/= [V xV /seteqP[VSx _]]].
+  have [e /= e0 exV] : \forall e \near 0^'+, ball x e `<=` V°.
+    apply: open_subball; first exact: open_interior.
+    by move/nbhs_interior : xV; exact: nbhs_singleton.
+  have e20 : 0 < e / 2 by rewrite divr_gt0.
+  exists (PosNum e20) => y [Sy [/= U yU USy /set_mem xey]].
+  apply/eqP/negPn/negP => xy.
+  suff : (V `&` S) y by move/VSx/esym; exact/eqP.
+  split => //; last exact/set_mem.
+  apply: interior_subset; apply: exV xey => //.
+  by rewrite /ball_/= sub0r normrN gtr0_norm// gtr_pMr// invf_lt1// ltr1n.
+have [c [r [xcr crxe]]] : exists c r,
+  let B : set R := ball (@ratr R c) (ratr r) in x \in B /\ B `<=` ball x e%:num.
+  by apply: open_subball_rat; [exact: ball_open|exact/mem_set/ballxx].
+by exists (c, r); split=> //= y /Sxe /[!inE] /[swap] /crxe /[swap] /[apply].
+Qed.
+
+Lemma countable_isolated : countable (isolated S).
+Proof.
+apply/pcard_injP => /=.
+pose g r := if pselect (isolated S r) is left H then
+  sval (cid (isolated_rat_ball H)) else 0.
+have /card_bijP[h /bij_inj injh] := card_rat2.
+exists (set_val \o h \o to_setT \o g) => x y /set_mem xS /set_mem yS /=.
+rewrite /= /g; case: pselect => // xS'; case: pselect => // yS'.
+case: cid => //= [ar [xar Nxar]]{xS'}; case: cid => //= [bd [ybd Nybd]]{yS'} ab.
+have /injh/(congr1 (fun x => \val x)) : h (to_setT ar) = h (to_setT bd).
+  move: (h (to_setT ar)) (h (to_setT bd)) ab => [n nT] [m mT].
+  by rewrite !set_valE/= => ->; congr exist.
+by rewrite -inv_to_setT !funK ?inE// => {}ab; apply: Nxar => //; rewrite ab.
+Qed.
+
+End countable_isolated.
+
 Lemma closed_disjoint_closed_ball {R : realFieldType} {M : normedModType R}
     (K : set M) z : closed K -> ~ K z ->
   \forall d \near 0^'+, closed_ball z d `&` K = set0.
@@ -2058,7 +2197,7 @@ move=> /= t; rewrite closed_ballE // /interior /= -nbhs_ballE => [[]] s s0.
 have [-> _|nxt] := eqVneq t x; first exact: ballxx.
 near ((0 : R^o)^') => e; rewrite -ball_normE /closed_ball_ => tsxr.
 pose z := t + `|e| *: (t - x); have /tsxr /= : `|t - z| < s.
-  rewrite distrC addrAC subrr add0r normrZ normr_id.
+  rewrite opprD addNKr normrN normrZ normr_id.
   rewrite -ltr_pdivlMr ?(normr_gt0,subr_eq0) //.
   by near: e; apply/dnbhs0_lt; rewrite divr_gt0 // normr_gt0 subr_eq0.
 rewrite /z opprD addrA -scalerN -{1}(scale1r (x - t)) opprB -scalerDl normrZ.

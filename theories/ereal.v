@@ -5,7 +5,7 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
+From mathcomp Require Import all_ssreflect all_algebra finmap.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import fsbigop cardinality set_interval.
 From mathcomp Require Import reals interval_inference topology.
@@ -1324,7 +1324,7 @@ move=> reA.
 have [/eqP|reN1] := eqVneq (contract r%:E - e%:num)%R (-1)%R.
   rewrite subr_eq addrC => /eqP reN1.
   have [re1|] := eqVneq (contract r%:E + e%:num)%R 1%R.
-    move/eqP : reN1; rewrite -re1 opprD addrC subrK -subr_eq0 opprK.
+    move/eqP: reN1; rewrite -re1 -subr_eq0 opprB addrK.
     rewrite -mulr2n mulrn_eq0 orFb contract_eq0 => /eqP[r0].
     move: re1; rewrite r0 contract0 add0r => e1.
     apply/nbhs_ballP; exists 1%R => //= r'; rewrite /ball /= sub0r normrN => r'1.
@@ -1467,12 +1467,9 @@ rewrite predeq2E => x A; split.
       exists (1 - contract M%:E)%R => //=.
       by rewrite subr_gt0 (le_lt_trans _ (contract_lt1 M)) // ler_norm.
     case=> [r| |]/= /xsectionP/=.
-    * rewrite /ereal_ball [_ +oo]/= => rM1.
-      apply: MA; rewrite lte_fin.
-      rewrite ger0_norm in rM1; last first.
+    * rewrite /ereal_ball [_ +oo]/= ger0_norm; last first.
         by rewrite subr_ge0 // (le_trans _ (contract_le1 r%:E)) // ler_norm.
-      rewrite ltrBlDr addrC addrCA addrC -ltrBlDr subrr subr_gt0 in rM1.
-      by rewrite -lte_fin -lt_contract.
+      by rewrite ltrD2l ltrN2 => rM1; apply/MA; rewrite -lt_contract.
     * by rewrite /ereal_ball /= subrr normr0 => h; exact: MA.
     * rewrite /ereal_ball /= opprK ltNge; apply: contraNP => _.
       rewrite [in leRHS]ger0_norm // lerD2l.
@@ -1542,23 +1539,13 @@ Lemma cvg_ereal_loc_seq (R : realType) (x : \bar R) :
 Proof.
 move=> P; rewrite /ereal_loc_seq.
 case: x => /= [x [_/posnumP[d] dP] |[d [dreal dP]] |[d [dreal dP]]]; last 2 first.
-    have /natrP[N Nfloor] : Num.floor (Num.max d 0%R) \is a Num.nat.
-      by rewrite Znat_def floor_ge0 le_max lexx orbC.
-    exists N.+1 => // n ltNn; apply: dP; rewrite lte_fin.
-    have /le_lt_trans : (d <= Num.max d 0)%R by rewrite le_max lexx.
-    apply; rewrite (lt_le_trans (floorD1_gt _))// Nfloor.
-    by rewrite natr1 mulrz_nat ler_nat.
-  have /natrP[N Nfloor] : Num.floor (Num.max (- d)%R 0%R) \is a Num.nat.
-    by rewrite Znat_def floor_ge0 le_max lexx orbC.
-  exists N.+1 => // n ltNn; apply: dP; rewrite lte_fin ltrNl.
-  have /le_lt_trans : (- d <= Num.max (- d) 0)%R by rewrite le_max lexx.
-  apply; rewrite (lt_le_trans (floorD1_gt _))// Nfloor.
-  by rewrite natr1 mulrz_nat ler_nat.
-have /natrP[N Nfloor] : Num.floor d%:num^-1 \is a Num.nat.
-  by rewrite Znat_def floor_ge0.
-exists N => // n leNn; apply: dP; last first.
-  by rewrite eq_sym addrC -subr_eq subrr eq_sym; exact/invr_neq0/lt0r_neq0.
-rewrite /= opprD addrA subrr distrC subr0 gtr0_norm; last by rewrite invr_gt0.
-rewrite -[ltLHS]mulr1 ltr_pdivrMl // -ltr_pdivrMr // div1r.
-by rewrite (lt_le_trans (floorD1_gt _))// Nfloor !natr1 mulrz_nat ler_nat.
+- exists (Num.truncn (d + 1)) => // n /=.
+  by rewrite truncn_le_nat -natr1 ltrD2r => ltdn; apply: dP; rewrite lte_fin.
+- exists (Num.truncn (- d + 1)) => // n /=.
+  rewrite truncn_le_nat -natr1 ltrD2r => ltNdn.
+  by apply: dP; rewrite lte_fin ltrNl.
+exists (Num.truncn d%:num^-1) => // n /=.
+rewrite truncn_le_nat invf_plt ?posrE// => ltnd; apply: dP; last first.
+  by rewrite addrC -subr_eq0 addrK invr_eq0 lt0r_neq0.
+by rewrite /= opprD addNKr normrN normfV natr1 gtr0_norm.
 Qed.

@@ -1,12 +1,11 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum archimedean.
-From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
-From mathcomp Require Import finmap.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions cardinality contra ereal reals.
-From mathcomp Require Import interval_inference topology prodnormedzmodule tvs.
-From mathcomp Require Import normedtype derive sequences real_interval.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
+From mathcomp Require Import archimedean interval.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import cardinality contra ereal reals interval_inference.
+From mathcomp Require Import topology prodnormedzmodule tvs normedtype derive.
+From mathcomp Require Import sequences real_interval.
 
 (**md**************************************************************************)
 (* # Real-valued functions over reals                                         *)
@@ -995,7 +994,7 @@ rewrite lime_inf_lim lime_sup_lim; apply: lee_lim => //.
 near=> r; rewrite le_ereal_sup_tmp//.
 have ? : exists2 x, ball a r x /\ x <> a & f x = f (a + r / 2)%R.
   exists (a + r / 2)%R => //; split.
-    rewrite /ball/= opprD addrA subrr sub0r normrN gtr0_norm ?divr_gt0//.
+    rewrite /ball/= opprD addrCA addKr normrN gtr0_norm ?divr_gt0//.
     by rewrite ltr_pdivrMr// ltr_pMr// ltr1n.
   by apply/eqP; rewrite gt_eqF// ltr_pwDr// divr_gt0.
 by exists (f (a + r / 2))%R => //=; rewrite inf_ballE ereal_inf_lbound.
@@ -2150,7 +2149,7 @@ Lemma variation_le a b f g s :
 Proof.
 rewrite [in leRHS]/variation -big_split/=.
 apply: ler_sum => k _; apply: le_trans; last exact: ler_normD.
-by rewrite /= addrACA addrA opprD addrA.
+by rewrite /= addrACA -opprD.
 Qed.
 
 Lemma nondecreasing_variation a b f s : {in `[a, b] &, nondecreasing_fun f} ->
@@ -2220,8 +2219,7 @@ move: B => B.
 elim/last_ind : L => [|L0 L1 _].
   rewrite !cat0s /=; case: B => [|B0 B1].
     by rewrite big_nil big_cons/= big_nil addr0.
-  rewrite !big_cons/= addrA lerD// [leRHS]addrC.
-  by rewrite (le_trans _ (ler_normD _ _))// addrA subrK.
+  by rewrite !big_cons/= addrA lerD// -(subrKA (f c)) [leRHS]addrC ler_normD.
 rewrite -cats1.
 rewrite (_ : a :: _ ++ B = (a :: L0) ++ [:: L1] ++ B)//; last first.
   by rewrite -!catA -cat_cons.
@@ -2236,7 +2234,7 @@ rewrite -cat1s zip_cat// catA.
 rewrite (_ : [:: L1] ++ _ ++ B1 = ([:: L1] ++ [:: c]) ++ [:: B0] ++ B1); last first.
   by rewrite catA.
 rewrite zip_cat// !big_cat lerD//= !big_cons !big_nil !addr0/= [leRHS]addrC.
-  by rewrite (le_trans _ (ler_normD _ _))// addrA subrK.
+by rewrite (le_trans _ (ler_normD _ _))// subrKA.
 Qed.
 
 Lemma le_variation a b f s x : variation a b f s <= variation a b f (x :: s).
@@ -2244,7 +2242,7 @@ Proof.
 case: s => [|h t].
   by rewrite variation_nil /variation/= big_nat_recl//= big_nil addr0.
 rewrite /variation/= !big_nat_recl//= addrA lerD2r.
-by rewrite (le_trans _ (ler_normD _ _))// (addrC (f x - _)) addrA subrK.
+by rewrite -(subrKA (f x)) addrC ler_normD.
 Qed.
 
 Lemma variation_opp_rev a b f s : itv_partition a b s ->
@@ -2736,7 +2734,7 @@ rewrite EFinB; apply: cvgeB; [by []| |].
     apply/bounded_variationP => //.
     apply: bounded_variationl bvf => //.
     move: xtbx; rewrite distrC ger0_norm ?subr_ge0; last by exact: ltW.
-    by rewrite ltrBrDr -addrA [-_ + _]addrC subrr addr0 => /ltW.
+    by rewrite ltrBrDr subrK => /ltW.
   by apply: total_variation_right_continuous => //; last exact: bvf.
 apply: cvg_comp; first exact: fcts.
 apply/ fine_cvgP; split; first by near=> t => //.
@@ -3113,19 +3111,15 @@ have ch : {within `[a, b], continuous h}.
   rewrite continuous_subspace_in => x xab.
   by apply: cvgB; [exact: cf|apply: cvgM; [exact: cvg_cst|exact: cg]].
 have /(Rolle ab hder ch)[x xab derh] : h a = h b.
-  rewrite /h; apply/eqP; rewrite subr_eq eq_sym -addrA eq_sym addrC -subr_eq.
-  rewrite -mulrN -mulrDr -(addrC (g a)) -[X in _ * X]opprB mulrN -mulrA.
-  rewrite mulVf//.
-    by rewrite mulr1 opprB.
-  by rewrite differentiable_subr_neq0.
+  rewrite /h; apply/eqP; rewrite -subr_eq0 opprD addrACA -opprD subr_eq0.
+  by rewrite -mulrBr -mulrNN -mulNr 2!opprB divfK// differentiable_subr_neq0.
 pose dh (x : R) := df x - (f b - f a) / (g b - g a) * dg x.
 have his_der y : y \in `]a, b[%R -> is_derive x 1 h (dh x).
   by move=> yab; apply: is_deriveB; [exact: fdf|apply: is_deriveZ; exact: gdg].
 exists x => //.
 have := @derive_val _ R _ _ _ _ _ (his_der _ xab).
 have -> := @derive_val _ R _ _ _ _ _ derh.
-move=> /eqP; rewrite eq_sym subr_eq add0r => /eqP ->.
-by rewrite -mulrA divff ?mulr1//; exact: dg0.
+by move=> /eqP; rewrite eq_sym subr_eq add0r => /eqP ->; rewrite mulfK // dg0.
 Qed.
 
 End Cauchy_MVT.

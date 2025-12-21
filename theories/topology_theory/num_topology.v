@@ -1,7 +1,6 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra archimedean.
-From mathcomp Require Import all_classical.
+From mathcomp Require Import all_ssreflect all_algebra all_classical.
 From mathcomp Require Import interval_inference reals topology_structure.
 From mathcomp Require Import uniform_structure pseudometric_structure.
 From mathcomp Require Import order_topology.
@@ -150,7 +149,8 @@ Lemma closure_sup (R : realType) (A : set R) :
   A !=set0 -> has_ubound A -> closure A (sup A).
 Proof.
 move=> A0 ?; have [|AsupA] := pselect (A (sup A)); first exact: subset_closure.
-rewrite closure_limit_point; right => U /nbhs_ballP[_ /posnumP[e]] supAeU.
+rewrite closure_isolated_limit_point.
+right => U /nbhs_ballP[_ /posnumP[e]] supAeU.
 suff [x [Ax /andP[sAex xsA]]] : exists x, A x /\ sup A - e%:num < x < sup A.
   exists x; split => //; first by rewrite lt_eqF.
   apply supAeU; rewrite /ball /= ltr_distl (addrC x e%:num) -ltrBlDl sAex.
@@ -335,20 +335,16 @@ Global Instance Proper_dnbhs_regular_numFieldType (R : numFieldType) (x : R^o) :
   ProperFilter x^'.
 Proof.
 apply: Build_ProperFilter_ex => A /nbhs_ballP[_/posnumP[e] Ae].
-exists (x + e%:num / 2)%R; apply: Ae; last first.
-  by rewrite eq_sym addrC -subr_eq subrr eq_sym.
-rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
-by rewrite {2}(splitr e%:num) ltr_pwDl.
+exists (x + e%:num / 2)%R; apply: Ae; last by rewrite addrC -subr_eq0 addrK.
+by rewrite /ball /= opprD addNKr normrN ger0_norm// [ltRHS]splitr ltr_pwDl.
 Qed.
 
 Global Instance Proper_dnbhs_numFieldType (R : numFieldType) (x : R) :
   ProperFilter x^'.
 Proof.
 apply: Build_ProperFilter_ex => A /nbhs_ballP[_/posnumP[e] Ae].
-exists (x + e%:num / 2)%R; apply: Ae; last first.
-  by rewrite eq_sym addrC -subr_eq subrr eq_sym.
-rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
-by rewrite {2}(splitr e%:num) ltr_pwDl.
+exists (x + e%:num / 2)%R; apply: Ae; last by rewrite addrC -subr_eq0 addrK.
+by rewrite /ball /= opprD addNKr normrN ger0_norm// [ltRHS]splitr ltr_pwDl.
 Qed.
 
 Lemma dense_rat (R : realType) : dense (@ratr R @` setT).

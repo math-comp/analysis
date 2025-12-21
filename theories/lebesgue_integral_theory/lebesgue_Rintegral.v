@@ -30,7 +30,7 @@ From mathcomp Require Import lebesgue_integral_dominated_convergence.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldNormedType.Exports.
 
 Local Open Scope classical_set_scope.
@@ -235,10 +235,10 @@ rewrite (@itv_bndbnd_setU _ _ _ (BLeft x)); last 2 first.
   by case: a ax {itf} => -[].
   by rewrite (le_trans _ xb)// bnd_simp.
 rewrite Rintegral_setU//=.
-- rewrite addrAC Rintegral_itv_bndo_bndc//; last first.
+- rewrite Rintegral_itv_bndo_bndc//; last first.
     apply: integrableS itf => //; apply: subset_itvl.
     by rewrite (le_trans _ xb)// bnd_simp.
-  rewrite subrr add0r Rintegral_itv_obnd_cbnd//.
+  rewrite addrC addKr Rintegral_itv_obnd_cbnd//.
   by apply: integrableS itf => //; exact/subset_itvr/ltW.
 - by rewrite -itv_bndbnd_setU -?ltBRight_leBLeft// ltW.
 - apply/disj_setPS => y [/=]; rewrite 2!in_itv/= => /andP[_ yx] /andP[].

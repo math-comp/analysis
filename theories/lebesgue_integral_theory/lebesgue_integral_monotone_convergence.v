@@ -87,7 +87,6 @@ Variable mu : {measure set T -> \bar R}.
 Variables (D : set T) (mD : measurable D) (f1 f2 : T -> \bar R).
 Hypothesis f10 : forall x, D x -> 0 <= f1 x.
 Hypothesis mf1 : measurable_fun D f1.
-Hypothesis f20 : forall x, D x -> 0 <= f2 x.
 Hypothesis mf2 : measurable_fun D f2.
 
 Import HBNNSimple.
@@ -98,7 +97,8 @@ Proof.
 move=> f12; rewrite !(integral_mkcond D).
 set h1 := f1 \_ D; set h2 := f2 \_ D.
 have h10 x : 0 <= h1 x by apply: erestrict_ge0.
-have h20 x : 0 <= h2 x by apply: erestrict_ge0.
+have h20 x : 0 <= h2 x.
+  by apply: erestrict_ge0 => // t /[dup] Dt /f12; apply: le_trans; exact: f10.
 have mh1 : measurable_fun setT h1 by exact/(measurable_restrictT _ _).1.
 have mh2 : measurable_fun setT h2 by exact/(measurable_restrictT _ _).1.
 have h12 x : h1 x <= h2 x by apply: lee_restrict.
@@ -256,8 +256,6 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
     by move=> *; exact: nd_g.
   have ub n : \int[mu]_x g n x <= \int[mu]_x f x.
     apply: ge0_le_integral => //.
-    - move=> x _; apply: lime_ge => //.
-      by apply: nearW => k; exact/g0.
     - apply: emeasurable_fun_cvg mg _ => x _.
       exact: ereal_nondecreasing_is_cvgn.
     - move=> x Dx; apply: lime_ge => //.
@@ -280,7 +278,7 @@ Lemma cvg_monotone_convergence :
   \int[mu]_(x in D) g' n x @[n \oo] --> \int[mu]_(x in D) f' x.
 Proof.
 rewrite monotone_convergence; apply: ereal_nondecreasing_is_cvgn => m n mn.
-by apply: ge0_le_integral => // t Dt; [exact: g'0|exact: g'0|exact: nd_g'].
+by apply: ge0_le_integral => // t Dt; [exact: g'0|exact: nd_g'].
 Qed.
 
 End monotone_convergence_theorem.
@@ -306,7 +304,7 @@ rewrite limn_einf_lim monotone_convergence //; last first.
   by exists p => //=; rewrite (leq_trans mn).
 apply: lee_lim.
 - apply/cvg_ex; eexists; apply/ereal_nondecreasing_cvgn => a b ab.
-  apply: ge0_le_integral => //; [exact: g0| exact: mg| exact: g0| exact: mg|].
+  apply: ge0_le_integral => //; [exact: g0| exact: mg| exact: mg|].
   move=> x Dx; apply: ereal_inf_le_tmp => _ [n /= bn <-].
   by exists n => //=; rewrite (leq_trans ab).
 - apply/cvg_ex; eexists; apply/ereal_nondecreasing_cvgn => a b ab.
@@ -316,7 +314,7 @@ apply: lee_lim.
   have : forall n p, (p >= n)%N ->
       \int[mu]_(x in D) g n x <= einfs (fun k => \int[mu]_(x in D) f k x) n.
     move=> n p np; apply: le_ereal_inf_tmp => /= _ [k /= nk <-].
-    apply: ge0_le_integral => //; [exact: g0|exact: mg|exact: f0|].
+    apply: ge0_le_integral => //; [exact: g0|exact: mg|].
     by move=> x Dx; apply: ereal_inf_lbound; exists k.
   exact.
 Qed.

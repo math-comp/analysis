@@ -1,8 +1,7 @@
-From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions cardinality fsbigop interval_inference.
-From mathcomp Require Import reals ereal topology normedtype sequences.
-From mathcomp Require Import real_interval numfun esum measure lebesgue_measure.
+From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import boolp classical_sets functions cardinality.
+From mathcomp Require Import reals topology normedtype sequences.
+From mathcomp Require Import measure lebesgue_measure.
 
 (**md**************************************************************************)
 (* # Basic facts about G-delta and F-sigma sets                               *)

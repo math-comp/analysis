@@ -1,7 +1,6 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
-From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
-From mathcomp Require Import archimedean.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
+From mathcomp Require Import archimedean rat.
 From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
 From mathcomp Require Import functions cardinality set_interval.
 From mathcomp Require Import interval_inference reals topology.
@@ -208,9 +207,8 @@ Global Instance Proper_dnbhs_numFieldType (R : numFieldType) (x : R) :
   ProperFilter x^'.
 Proof.
 apply: Build_ProperFilter_ex => A /nbhs_ballP[_/posnumP[e] Ae].
-exists (x + e%:num / 2); apply: Ae; last first.
-  by rewrite eq_sym addrC -subr_eq subrr eq_sym.
-rewrite /ball /= opprD addrCA addKr normrN ger0_norm //.
+exists (x + e%:num / 2); apply: Ae; last by rewrite addrC -subr_eq0 addrK.
+rewrite /ball /= opprD addNKr normrN ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_pwDl.
 Qed.
 
@@ -268,7 +266,7 @@ apply Build_ProperFilter_ex.
   by apply: ltMP; rewrite gtrDl oppr_lt0.
 split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
 - by exists 0.
-- exists (Num.min MP MQ); split=> [|x]; first exact: min_real.
+- exists (minr MP MQ); split=> [|x]; first exact: min_real.
   by rewrite comparable_lt_min ?real_comparable // => /andP[/ltMP ? /ltMQ].
 - by exists M; split => // x /ltM /sPQ.
 Qed.
@@ -589,8 +587,7 @@ move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
   have [i iFan] : exists i, F (a - i.+1%:R) < F a - n%:R.
     move/cvgrNy_lt : nyF => /(_ (F a - n%:R))[z [zreal zFan]].
     exists `|ceil (a - z)|%N.
-    rewrite zFan// ltrBlDr -ltrBlDl.
-    rewrite (le_lt_trans (Num.Theory.ceil_ge _)) ?num_real//.
+    rewrite zFan// ltrBlDr -ltrBlDl (le_lt_trans (ceil_ge _)) ?num_real//.
     by rewrite (le_lt_trans (ler_norm _))// -natr1 -intr_norm ltrDl.
   by exists i => //=; rewrite in_itv/= yFa andbT (lt_le_trans _ Fany).
 - move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].
@@ -622,7 +619,7 @@ Implicit Types x y : R.
 Lemma open_lt y : open [set x | x < y].
 Proof.
 move=> x /=; rewrite -subr_gt0 => yDx_gt0. exists (y - x) => // z.
-by rewrite /= ltr_distlC addrCA subrr addr0 => /andP[].
+by rewrite /= ltr_distlC subrKC => /andP[].
 Qed.
 Hint Resolve open_lt : core.
 
@@ -636,8 +633,7 @@ Hint Resolve open_gt : core.
 Lemma open_neq y : open [set x | x != y].
 Proof.
 rewrite (_ : mkset _ = [set x | x < y] `|` [set x | x > y]); first exact: openU.
-rewrite predeqE => x /=.
-by rewrite eq_le negb_and -!ltNge orbC; symmetry; apply (rwP orP).
+by rewrite predeqE => x /=; rewrite neq_lt; symmetry; apply: (rwP orP).
 Qed.
 
 Lemma interval_open a b : ~~ bound_side true a -> ~~ bound_side false b ->

@@ -286,7 +286,7 @@ Local Lemma mrat_sup s : (0 < size s)%N ->
 Proof.
 move=> gt0_s; rewrite -mulr_suml -natr_sum.
 apply/(mulIf (x := (size s)%:R)); first by rewrite pnatr_eq0 -lt0n.
-rewrite mul1r -mulrA mulVf ?mulr1 ?pnatr_eq0 -?lt0n //; congr (_%:R).
+rewrite mul1r divfK ?pnatr_eq0 -?lt0n//; congr (_%:R).
 rewrite -sum1_size -[in RHS]big_undup_iterop_count/=; apply: eq_bigr => i _.
 by rewrite Monoid.iteropE iter_addn addn0 mul1n.
 Qed.

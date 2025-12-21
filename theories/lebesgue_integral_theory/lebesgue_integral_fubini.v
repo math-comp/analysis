@@ -25,12 +25,14 @@ From mathcomp Require Import lebesgue_integral_nonneg lebesgue_integrable.
 (*                                                                            *)
 (* Detailed contents:                                                         *)
 (* ```                                                                        *)
-(*               m1 \x m2 == product measure over T1 * T2, m1 is a measure    *)
-(*                           over T1, and m2 is a sigma finite measure over   *)
-(*                           T2                                               *)
-(*              m1 \x^ m2 == product measure over T1 * T2, m2 is a measure    *)
-(*                           over T1, and m1 is a sigma finite measure over   *)
-(*                           T2                                               *)
+(*                 m1 \x m2 == product measure over T1 * T2, m1 is a measure  *)
+(*                             over T1, and m2 is a sigma finite measure over *)
+(*                             T2                                             *)
+(* product_subprobability P == P.1 \x P.2 where P is a pair of subprobability *)
+(*                             measures                                       *)
+(*                m1 \x^ m2 == product measure over T1 * T2, m2 is a measure  *)
+(*                             over T1, and m1 is a sigma finite measure over *)
+(*                             T2                                             *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -315,6 +317,48 @@ rewrite ge0_integralZr ?integral_indic ?setIT//; exact: measurableT_comp.
 Qed.
 
 End product_measure1E.
+
+Section product_subprobability.
+Local Open Scope classical_set_scope.
+Local Open Scope ring_scope.
+Local Open Scope ereal_scope.
+Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
+  {R : realType}.
+Variable m12 : subprobability T1 R * subprobability T2 R.
+
+Let prod := m12.1 \x m12.2.
+
+HB.instance Definition _ := Measure.on prod.
+
+Let prod_setT : prod setT <= 1.
+Proof.
+rewrite -setXTT [leLHS]product_measure1E// -[leRHS]mule1.
+by rewrite lee_pmul// sprobability_setT.
+Qed.
+
+HB.instance Definition _ :=
+  Measure_isSubProbability.Build _ _ _ prod prod_setT.
+
+Definition product_subprobability : subprobability (T1 * T2)%type R := prod.
+
+End product_subprobability.
+
+Section product_subprobability_setC.
+Local Open Scope classical_set_scope.
+Local Open Scope ereal_scope.
+Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
+  {R : realType}.
+
+Lemma product_subprobability_setC (P : subprobability T1 R * subprobability T2 R)
+    (A : set (T1 * T2)) : measurable A ->
+  (P.1 \x P.2) (~` A) = (P.1 \x P.2) [set: T1 * T2] - (P.1 \x P.2) A.
+Proof.
+move=> mA.
+rewrite -(setvU A) measureU//=; [|exact: measurableC|exact: setICl].
+by rewrite addeK// (_ : (_ \x _)%E = product_subprobability P)// fin_num_measure.
+Qed.
+
+End product_subprobability_setC.
 
 Section product_measure_unique.
 Local Open Scope ereal_scope.
@@ -719,7 +763,6 @@ rewrite -monotone_convergence => [|//|||]; first exact: eq_integral.
 - move=> x /= _ a b ab; apply: ge0_le_integral => //.
   + by move=> y _; rewrite lee_fin; exact: fun_ge0.
   + exact/measurable_EFinP/measurableT_comp.
-  + by move=> *; rewrite lee_fin; exact: fun_ge0.
   + exact/measurable_EFinP/measurableT_comp.
   + by move=> y _; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 Qed.
@@ -752,7 +795,6 @@ rewrite -monotone_convergence => [|//|||]; first exact: eq_integral.
 - move=> y /= _ a b ab; apply: ge0_le_integral => //.
   + by move=> x _; rewrite lee_fin fun_ge0.
   + exact/measurable_EFinP/measurableT_comp.
-  + by move=> *; rewrite lee_fin fun_ge0.
   + exact/measurable_EFinP/measurableT_comp.
   + by move=> x _; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 Qed.
@@ -817,7 +859,6 @@ have : m1.-integrable setT (fun x => \int[m2]_y `|f (x, y)|).
   apply/integrableP; split; first exact/measurable_fun1.
   rewrite (le_lt_trans _  ((integrable12ltyP mf).1 imf))// ge0_le_integral //.
   - by apply: measurableT_comp => //; exact: measurable_fun1.
-  - by move=> *; exact: integral_ge0.
   - exact: measurable_fun1.
   - by move=> *; rewrite gee0_abs//; exact: integral_ge0.
 move/integrable_ae => /(_ measurableT); apply: filterS => x /= /(_ I) im2f.
@@ -832,7 +873,6 @@ have : m2.-integrable setT (fun y => \int[m1]_x `|f (x, y)|).
   apply/integrableP; split; first exact/measurable_fun2.
   rewrite (le_lt_trans _ ((integrable21ltyP mf).1 imf))// ge0_le_integral //.
   - by apply: measurableT_comp => //; exact: measurable_fun2.
-  - by move=> *; exact: integral_ge0.
   - exact: measurable_fun2.
   - by move=> *; rewrite gee0_abs//; exact: integral_ge0.
 move/integrable_ae => /(_ measurableT); apply: filterS => x /= /(_ I) im2f.
@@ -874,16 +914,15 @@ apply/integrableP; split=> //.
 apply: le_lt_trans ((integrable12ltyP mf).1 imf).
 apply: ge0_le_integral; [by []|by []|..].
 - by apply: measurableT_comp; last apply: measurable_Fplus.
-- by move=> x _; exact: integral_ge0.
 - exact: measurable_fun1.
 - move=> x _; apply: le_trans.
     apply: le_abse_integral => //; apply: measurableT_comp => //.
     exact: measurable_funepos.
   apply: ge0_le_integral => //.
-  - apply: measurableT_comp => //.
+  + apply: measurableT_comp => //.
     by apply: measurableT_comp => //; exact: measurable_funepos.
-  - by apply: measurableT_comp => //; exact/measurableT_comp.
-  - by move=> y _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse leeDl.
+  + by apply: measurableT_comp => //; exact/measurableT_comp.
+  + by move=> y _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse leeDl.
 Qed.
 
 Let integrable_Fminus : m1.-integrable setT Fminus.
@@ -892,7 +931,6 @@ apply/integrableP; split=> //.
 apply: le_lt_trans ((integrable12ltyP mf).1 imf).
 apply: ge0_le_integral; [by []|by []|..].
 - exact: measurableT_comp.
-- by move=> *; exact: integral_ge0.
 - exact: measurable_fun1.
 - move=> x _; apply: le_trans.
     apply: le_abse_integral => //; apply: measurableT_comp => //.
@@ -936,23 +974,21 @@ Let integrable_Gplus : m2.-integrable setT Gplus.
 Proof.
 apply/integrableP; split=> //; apply: le_lt_trans ((integrable21ltyP mf).1 imf).
 apply: ge0_le_integral; [by []|by []|exact: measurableT_comp|..].
-- by move=> *; exact: integral_ge0.
 - exact: measurable_fun2.
 - move=> y _; apply: le_trans.
     apply: le_abse_integral => //; apply: measurableT_comp => //.
     exact: measurable_funepos.
   apply: ge0_le_integral => //.
-  - apply: measurableT_comp => //.
+  + apply: measurableT_comp => //.
     by apply: measurableT_comp => //; exact: measurable_funepos.
-  - by apply: measurableT_comp => //; exact: measurableT_comp.
-  - by move=> x _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse leeDl.
+  + by apply: measurableT_comp => //; exact: measurableT_comp.
+  + by move=> x _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse leeDl.
 Qed.
 
 Let integrable_Gminus : m2.-integrable setT Gminus.
 Proof.
 apply/integrableP; split=> //; apply: le_lt_trans ((integrable21ltyP mf).1 imf).
 apply: ge0_le_integral; [by []|by []|exact: measurableT_comp|..].
-- by move=> *; exact: integral_ge0.
 - exact: measurable_fun2.
 - move=> y _; apply: le_trans.
     apply: le_abse_integral => //; apply: measurableT_comp => //.

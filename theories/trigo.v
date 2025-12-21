@@ -332,8 +332,7 @@ Proof.
 set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
 apply: (@eq_trans _ _ (f 0)); last by rewrite /f sin0 cos0 expr1n expr0n addr0.
 apply: is_derive_0_is_cst => {}x.
-apply: trigger_derive; rewrite /GRing.scale /=.
-by rewrite mulrN ![sin x * _]mulrC -opprD addrC subrr.
+by apply: trigger_derive; rewrite /GRing.scale /= mulrN -opprD mulrC addNr.
 Qed.
 
 Lemma cos_max x : `| cos x | <= 1.
@@ -368,9 +367,9 @@ set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
 apply: (@eq_trans _ _ (f 0)); last first.
   by rewrite /f cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr, expr0n).
 apply: is_derive_0_is_cst => {}x.
-apply: trigger_derive; rewrite /GRing.scale /= !mulr0 !add0r addr0 !mulr1.
-rewrite -!mulr2n  -mulrnDl mulrC !(mulrC (cos y)) !(mulrC (sin y)).
-by rewrite mulNr -mulrDr mulNr -!opprD subrr mulr0 mul0rn.
+apply: trigger_derive; rewrite /GRing.scale/= !mulr0 !add0r addr0 !mulr1.
+rewrite -!mulr2n -mulrnDl 2!mulrN 2!opprB -2!opprD mulrN.
+by rewrite mulrC 2!(mulrC (cos y)) 2!(mulrC (sin y)) subrr mul0rn.
 Qed.
 
 Lemma sinD x y : sin (x + y) = sin x * cos y + cos x * sin y.
@@ -408,7 +407,7 @@ apply: (@eq_trans _ _ (f 0)); last first.
 apply: is_derive_0_is_cst => {}x.
 apply: trigger_derive; rewrite /GRing.scale /=.
 rewrite !mulrN1 !opprK -!mulr2n -mulrnDl mulrC.
-by rewrite -opprB mulNr (addrC (cos x)) subrr mul0rn.
+by rewrite -opprB mulNr [- _ + _]addrC subrr mul0rn.
 Qed.
 
 Lemma sinN x : sin (- x) = - sin x.
@@ -484,7 +483,7 @@ Implicit Types (x y : R) (n k : nat).
 Definition pi : R := get [set x | 0 <= x <= 2 /\ cos x = 0] *+ 2.
 
 Lemma pihalfE : pi / 2 = get [set x | 0 <= x <= 2 /\ cos x = 0].
-Proof. by rewrite /pi -[_ *+ 2]mulr_natr -mulrA divff ?mulr1. Qed.
+Proof. by rewrite -[pi]mulr_natr mulfK. Qed.
 
 Lemma cos2_lt0 : cos 2 < 0 :> R.
 Proof.
@@ -803,13 +802,13 @@ Proof. by move=> cxNZ; rewrite mulr2n tanD. Qed.
 Lemma cos2_tan2 x : cos x != 0 -> (cos x) ^- 2 = 1 + tan x ^+ 2.
 Proof.
 move=> cosx.
-by rewrite /tan expr_div_n sin2cos2 mulrBl divff ?expf_neq0// addrC subrK mul1r.
+by rewrite expr_div_n sin2cos2 mulrBl divff ?expf_neq0// subrKC mul1r.
 Qed.
 
 Lemma tan_pihalf : tan (pi / 2) = 0.
 Proof. by rewrite /tan cos_pihalf invr0 mulr0. Qed.
 
-Lemma tan_piquarter : tan (pi / 4%:R) = 1.
+Lemma tan_piquarter : tan (pi / 4) = 1.
 Proof.
 rewrite /tan -cosBpihalf addrC [pi / 2]splitr opprD -mulrA -invfM -natrM.
 rewrite subrK cosN divff// gt_eqF// cos_gt0_pihalf//.

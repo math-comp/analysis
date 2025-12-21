@@ -424,8 +424,8 @@ Lemma eqadd_some_oP (F : filter_on T) (f g : T -> V) (e : T -> W) h :
   f = g + [o_F e of h] -> littleo_def F (f - g) e.
 Proof.
 rewrite /the_littleo /insubd=> ->.
-case: insubP => /= [u /asboolP fg_o_e ->|_] eps  /=.
-  by rewrite addrAC subrr add0r; apply: fg_o_e.
+case: insubP => /= [u /asboolP fg_o_e ->|_] eps /=.
+  by rewrite -addrA subrKC; apply: fg_o_e.
 by rewrite addrC addKr; apply: littleoP.
 Qed.
 
@@ -629,7 +629,7 @@ Lemma eqadd_some_OP (F : filter_on T) (f g : T -> V) (e : T -> W) h :
 Proof.
 rewrite /the_bigO /insubd=> ->.
 case: insubP => /= [u /asboolP fg_o_e ->|_].
-  by rewrite addrAC subrr add0r; apply: fg_o_e.
+  by rewrite -addrA subrKC; apply: fg_o_e.
 by rewrite addrC addKr; apply: bigOP.
 Qed.
 

@@ -1,8 +1,7 @@
-From mathcomp Require Import all_ssreflect classical_sets boolp topology ssralg.
-From mathcomp Require Import ereal ssrnum sequences reals interval rat.
-From mathcomp Require Import all_analysis archimedean ssrint.
-Import Order.OrdinalOrder Num.Theory Order.POrderTheory finset GRing.Theory.
-Import Num.Def.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
+From mathcomp Require Import classical_sets boolp topology.
+From mathcomp Require Import ereal sequences reals.
+Import Order.POrderTheory GRing.Theory Num.Theory.
 
 (**md**************************************************************************)
 (* # The Prime Number Theorem                                                 *)
@@ -21,9 +20,6 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Local Open Scope ring_scope.
-Local Open Scope ereal_scope.
-Local Open Scope order_scope.
 Local Open Scope classical_set_scope.
 Local Open Scope set_scope.
 Local Open Scope nat_scope.

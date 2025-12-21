@@ -1,7 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra archimedean.
-From mathcomp Require Import all_classical mathcomp_extra unstable.
+From mathcomp Require Import all_ssreflect all_algebra all_classical.
 From mathcomp Require Import interval_inference reals topology_structure.
 From mathcomp Require Import uniform_structure.
 
@@ -377,8 +376,7 @@ Proof. by rewrite /= distrC. Qed.
 Lemma ball_norm_triangle (x y z : R) (e1 e2 : K) :
   ball_ Num.norm x e1 y -> ball_ Num.norm y e2 z -> ball_ Num.norm x (e1 + e2) z.
 Proof.
-move=> /= ? ?; rewrite -(subr0 x) -(subrr y) opprD opprK addrA -(addrA _ y).
-by rewrite (le_lt_trans (ler_normD _ _)) // ltrD.
+by move=> /= ? ?; rewrite -(subrKA y) (le_lt_trans (ler_normD _ _)) // ltrD.
 Qed.
 
 Lemma nbhs_ball_normE :
