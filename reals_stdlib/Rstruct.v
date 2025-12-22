@@ -121,7 +121,7 @@ Qed.
 
 Section Rinvx.
 
-Let Rinvx r := if (r != 0) then / r else r.
+Let Rinvx r := if r != 0 then / r else r.
 
 Let neq0_RinvxE x : x != 0 -> Rinv x = Rinvx x.
 Proof. by move=> x_neq0; rewrite -[RHS]/(if _ then _ else _) x_neq0. Qed.
@@ -151,7 +151,7 @@ Proof. by move=> x; rewrite inE/= RinvxE /Rinvx -if_neg => ->. Qed.
 
 End Rinvx.
 
-#[deprecated(note="To be removed. Use GRing.inv instead.")]
+#[deprecated(since="mathcomp-analysis 1.9.0", note="To be removed. Use GRing.inv instead.")]
 Definition Rinvx := Rinv.
 
 #[hnf]
@@ -192,10 +192,6 @@ Ltac toR := rewrite /GRing.add /GRing.opp /GRing.zero /GRing.mul /GRing.inv
 *)
 
 Section ssreal_struct.
-
-Import GRing.Theory.
-Import Num.Theory.
-Import Num.Def.
 
 Local Open Scope R_scope.
 
@@ -269,8 +265,8 @@ HB.instance Definition _ := Order.POrder_isTotal.Build _ R R_total.
 Lemma Rarchimedean_axiom : Num.archimedean_axiom R.
 Proof.
 move=> x; exists (Z.abs_nat (up x) + 2)%N.
-have [Hx1 Hx2]:= (archimed x).
-have Hz (z : Z): z = (z - 1 + 1)%Z by rewrite Zplus_comm Zplus_minus.
+have [Hx1 Hx2] := archimed x.
+have Hz (z : Z) : z = (z - 1 + 1)%Z by rewrite Zplus_comm Zplus_minus.
 have Zabs_nat_Zopp z : Z.abs_nat (- z)%Z = Z.abs_nat z by case: z.
 apply/RltbP/Rabs_def1.
   apply: (Rlt_trans _ ((Z.abs_nat (up x))%:R)%R); last first.
@@ -321,9 +317,9 @@ have [y [Hy1 Hy2]]:= Hf x eps Heps.
 by exists y; split=> // z; rewrite -!Hfg; exact: Hy2.
 Qed.
 
-Lemma continuity_sum (I : finType) F (P : pred I):
-(forall i, P i -> continuity (F i)) ->
-continuity (fun x => (\sum_(i | P i) ((F i) x)))%R.
+Lemma continuity_sum (I : finType) F (P : pred I) :
+  (forall i, P i -> continuity (F i)) ->
+  continuity (fun x => (\sum_(i | P i) ((F i) x)))%R.
 Proof.
 move=> H; elim: (index_enum I)=> [|a l IHl].
   set f:= fun _ => _.
@@ -340,7 +336,7 @@ have Hf: (fun x => \sum_(i <- l | P i) F i x)%R =1 f.
 exact: (continuity_eq Hf).
 Qed.
 
-Lemma continuity_exp f n: continuity f -> continuity (fun x => (f x)^+ n)%R.
+Lemma continuity_exp f n : continuity f -> continuity (fun x => (f x)^+ n)%R.
 Proof.
 move=> Hf; elim: n=> [|n IHn]; first exact: continuity_const.
 set g:= fun _ => _.
@@ -356,15 +352,15 @@ case Hpa: ((p.[a])%R == 0%R).
   by move=> ? _ ; exists a=> //; rewrite lexx le_eqVlt.
 case Hpb: ((p.[b])%R == 0%R).
   by move=> ? _; exists b=> //; rewrite lexx le_eqVlt andbT.
-case Hab: (a == b).
-  by move=> _; rewrite (eqP Hab) eq_sym Hpb (ltNge 0) /=; case/andP=> /ltW ->.
-rewrite eq_sym Hpb /=; clear=> /RltbP Hab /andP [] /RltbP Hpa /RltbP Hpb.
-suff Hcp: continuity (fun x => (p.[x])%R).
+have [->|Hab] := eqVneq a b.
+  by move=> _; rewrite eq_sym Hpb (ltNge 0) /=; case/andP=> /ltW ->.
+rewrite eq_sym Hpb /=; clear=> /RltbP Hab /andP[/RltbP Hpa /RltbP Hpb].
+suff Hcp : continuity (fun x => (p.[x])%R).
   have [z [[Hza Hzb] /eqP Hz2]]:= IVT _ a b Hcp Hab Hpa Hpb.
   by exists z=> //; apply/andP; split; apply/RlebP.
 rewrite -[p]coefK poly_def.
 set f := fun _ => _.
-have Hf: (fun (x : R) => \sum_(i < size p) (p`_i * x^+i))%R =1 f.
+have Hf: (fun x : R => \sum_(i < size p) (p`_i * x^+i))%R =1 f.
   move=> x; rewrite /f horner_sum.
   by apply: eq_bigr=> i _; rewrite hornerZ hornerXn.
 apply: (continuity_eq Hf); apply: continuity_sum=> i _.
@@ -375,6 +371,8 @@ Qed.
 HB.instance Definition _ := Num.RealField_isClosed.Build R Rreal_closed_axiom.
 
 End ssreal_struct.
+Arguments RleP {x y}.
+Arguments RltP {x y}.
 
 Local Open Scope ring_scope.
 From mathcomp Require Import boolp classical_sets.
@@ -414,7 +412,7 @@ Qed.
 
 (* :TODO: rewrite like this using (a fork of?) Coquelicot *)
 (* Lemma real_sup_adherent (E : pred R) : real_sup E \in closure E. *)
-Lemma real_sup_adherent x0 E (eps : R) : (0 < eps) ->
+Lemma real_sup_adherent x0 E (eps : R) : 0 < eps ->
   has_sup E -> exists2 e, E e & (supremum x0 E - eps) < e.
 Proof.
 move=> eps_gt0 supE; set m := _ - eps; apply: contrapT=> mNsmall.
