@@ -91,6 +91,7 @@ lebesgue_integral_theory/giry.v
 ftc.v
 hoelder.v
 probability.v
+independence.v
 convex.v
 charge.v
 kernel.v
