@@ -111,6 +111,15 @@
   + lemma `finite_range_cvg`
   + theorem `bolzano_weierstrass`
 
+- in `subspace_topology.v`:
+  + lemmas `unif_continuous_set0`, `unif_continuous_set1`
+
+- in `normed_module.v`:
+  + lemma `itv_bounded_fun`
+
+- in `realfun.v`:
+  + lemma `within_continuous_unif`
+
 ### Changed
 
 - in `charge.v`:

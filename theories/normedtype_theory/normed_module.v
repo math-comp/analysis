@@ -1558,6 +1558,50 @@ Qed.
 
 End Rhull.
 
+Lemma itv_bounded_fun {R : realFieldType} (u_ : nat -> R) b0 b1 x y :
+  (forall n, u_ n \in Interval (BSide b0 x) (BSide b1 y)) ->
+  bounded_fun u_.
+Proof.
+have [yx|] := ltP x y; last first.
+  rewrite le_eqVlt => /predU1P[->{y} yx|yx]; last first.
+    move/(_ 0); rewrite in_itv/=.
+    move: b0 b1 => [] [] /= /andP[xu uy].
+    - by have := le_lt_trans xu uy; rewrite ltNge (ltW yx).
+    - by have := le_trans xu uy; rewrite leNgt yx.
+    - by have := lt_trans xu uy; rewrite ltNge (ltW yx).
+    - by have := lt_le_trans xu uy; rewrite ltNge (ltW yx).
+    move: b0 b1 yx => [] [] /= yx.
+    - have := yx 0; rewrite in_itv/= => /andP[/le_lt_trans/[apply]].
+      by rewrite ltxx.
+    - have {yx}-> : u_ = cst x.
+        apply/funext => n.
+        have := yx n.
+        by rewrite in_itv/= -eq_le => /eqP.
+      exact: bounded_cst.
+    - have := yx 0; rewrite in_itv/= => /andP[/lt_trans/[apply]].
+      by rewrite ltxx.
+    - have := yx 0; rewrite in_itv/= => /andP[/lt_le_trans/[apply]].
+      by rewrite ltxx.
+move=> uab.
+rewrite /bounded_fun /bounded_near.
+near=> M => n _ /=.
+rewrite (@le_trans _ _ (Num.max `|x| `|y|))//.
+move: uab => /(_ n); rewrite in_itv/= => /andP[xu uy].
+rewrite le_max.
+have /orP[x0|x0] := le_total 0 (u_ n).
+- rewrite (ger0_norm x0); apply/orP; right.
+  case: b1 in uy *.
+  + by rewrite (le_trans (ltW uy))// ler_norm.
+  + by rewrite (le_trans uy)// ler_norm.
+- rewrite (ler0_norm x0); apply/orP; left.
+  have a0 : x <= 0.
+  + case: b0 in xu *.
+    * by rewrite (le_trans xu).
+    * by rewrite (le_trans (ltW xu)).
+  + rewrite ler0_norm// lerN2.
+  by case: b0 xu => //= /ltW.
+Unshelve. all: by end_near. Qed.
+
 (**md properties of segments in $\bar{R}$ *)
 Section segment.
 Context {R : realType}.
