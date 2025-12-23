@@ -1955,6 +1955,22 @@ Unshelve. end_near. Qed.
 
 End exponential_pdf.
 
+(* PR#1761 *)
+Section exponential_pdf_properties.
+Context {R : realType}.
+Notation mu := lebesgue_measure.
+Variable (mean : R).
+Hypothesis mean0 : (0 < mean)%R.
+
+Lemma exponential_pdfNE (x : R) : x < 0 ->
+  exponential_pdf mean x = 0.
+Proof.
+rewrite ltNge=> /negP x0; rewrite /exponential_pdf patchE ifF//.
+by apply/memNset; rewrite /= in_itv/= andbT.
+Qed.
+
+End exponential_pdf_properties.
+
 Definition exponential_prob {R : realType} (rate : R) :=
   fun V => (\int[lebesgue_measure]_(x in V) (exponential_pdf rate x)%:E)%E.
 
@@ -2937,3 +2953,73 @@ by rewrite -!EFin_beta_fun -EFinM divff// gt_eqF// beta_fun_gt0.
 Qed.
 
 End beta_prob_bernoulliE.
+
+
+Section expR_properties.
+Context {R : realType}.
+
+Let f n (x : R) (i : nat) : R := ((i == 0%nat)%:R + x ^+ n / n`!%:R *+ (i == n)).
+
+Local Lemma F n x m : (n.+1 < m)%nat ->
+  \sum_(0 <= i < m) (f n.+1 x i) = 1 + x ^+ n.+1 / n.+1`!%:R.
+Proof.
+move=> n1m.
+rewrite (@big_cat_nat _ _ _ n.+2)//=.
+rewrite big_nat_recr// big_nat_recl//=.
+rewrite big_nat_cond big1 ?addr0; last first.
+  move=> i; rewrite /f andbT => /andP[_ iltn].
+  by rewrite add0r lt_eqF.
+rewrite big_nat_cond big1 ?addr0; last first.
+  move=> i; rewrite /f andbT => /andP[Sngti iltm].
+  rewrite 2?gt_eqF ?add0r//.
+  exact: ltn_trans Sngti.
+by rewrite /f/= add0r mulr0n addr0 eq_refl 2!mulr1n.
+Qed.
+
+Lemma expR_ge1Dxn' (x : R) (n : nat) : 0 <= x ->
+   1 + x ^+ n.+1 / n.+1`!%:R <= expR x.
+Proof.
+move=> x_ge0; rewrite /expR.
+have -> : 1 + x ^+ n.+1 / n.+1`!%:R = limn (series (f n.+1 x)).
+  by apply/esym/(@lim_near_cst R^o) => //; near=> k; apply: F; near:k.
+apply: ler_lim; first by apply: is_cvg_near_cst; near=> k; apply: F; near: k.
+  exact: is_cvg_series_exp_coeff.
+near=> k; apply: ler_sum => -[|[|i]] _; rewrite /f/exp_coeff/=.
+- by rewrite !(mulr0n, expr0, addr0, divr1).
+- case: n; first by rewrite !(mulr0n, mulr1n, expr0, addr0, add0r, divr1).
+  by move=> n; rewrite addr0 mulr0n expr1 divr1.
+- rewrite add0r.
+  case H : (i.+2 == n.+1); move: H; [move/eqP ->| move=> _].
+    by rewrite mulr1n.
+  rewrite mulr0n.
+  rewrite divr_ge0//.
+  by rewrite exprn_ge0.
+Unshelve. all: by end_near. Qed.
+
+Lemma expR_gt1Dxn (x : R) n : 0 < x ->
+  1 + x ^+ n.+1 / n.+1`!%:R < expR x.
+Proof.
+move=> x0.
+(*
+have [] := @MVT R expR expR _ _ x0 (fun x _ => is_derive_expR x).
+  exact/continuous_subspaceT/continuous_expR.
+move=> c; rewrite in_itv/= => /andP[c0 cx].
+rewrite subr0 expR0 => /eqP /[!subr_eq] /eqP.
+rewrite addrC ltrD2r.
+rewrite exprSr mulrAC.
+rewrite ltr_pM2r//.
+apply: le_lt_trans (IH _ c0).
+
+
+rewrite (@le_trans _ _ (c ^+ n.+1 / (n.+1)`!%:R))//.
+  rewrite factS mulnC natrM invfM mulrA -[leRHS]mulr1.
+  rewrite ler_pM//.
+  - by rewrite mulr_ge0// exprn_ge0// ltW.
+  - rewrite ler_pM2r; last by rewrite invr_gt0 -(mulr0n 1) ltr_nat fact_gt0.
+    rewrite ler_pXn2r//.
+-expR0 ltr_expR.
+Qed.
+*)
+Abort.
+
+End expR_properties.
