@@ -120,6 +120,9 @@
 - in `subspace_topology.v`:
   + notation `{within _, continuous _}` (now uses `from_subspace`)
 
+- in `Rstruct.v`:
+  + lemmas `RleP`, `RltP` (change implicits)
+
 ### Renamed
 
 - in `probability.v`:
