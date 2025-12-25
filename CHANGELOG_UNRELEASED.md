@@ -70,7 +70,7 @@
   + lemmas `measurable_giry_prod`, `giry_int_prod1`, `giry_int_prod2`
 
 - in `measurable_realfun.v`:
-  + lemmas `measurable_funN`
+  + lemma `measurable_funN`
   + lemmas `nondecreasing_measurable`, `nonincreasing_measurable`
 - in `subspace_topology.v`:
   + definition `from_subspace`
@@ -103,6 +103,9 @@
 
 - in `lebesgue_integrable.v`:
   + lemma `integrable_set0`
+
+- in `lebesgue_integrable.v`:
+  + lemma `integrable_norm`
 
 ### Changed
 
