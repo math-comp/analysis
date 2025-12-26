@@ -26,6 +26,7 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 (*                   <-> exists X : {fset T}, A = [set` X]                    *)
 (*                   <-> ~ ([set: nat] #<= A)                                 *)
 (*    infinite_set A := ~ finite_set A                                        *)
+(*    cofinite_set A := finite_set (~` A)                                     *)
 (*       countable A <-> A is countable                                       *)
 (*                   := A #<= [set: nat]                                      *)
 (*        fset_set A == the finite set corresponding if A : set T is finite,  *)
@@ -68,6 +69,7 @@ Notation "A '#!=' B" := (~~ (card_eq A B)) : card_scope.
 
 Definition finite_set {T} (A : set T) := exists n, A #= `I_n.
 Notation infinite_set A := (~ finite_set A).
+Notation cofinite_set A := (finite_set (~` A)).
 
 Lemma injPex {T U} {A : set T} :
    $|{inj A >-> U}| <-> exists f : T -> U, set_inj A f.
@@ -516,6 +518,10 @@ Lemma finite_set0 T : finite_set (set0 : set T).
 Proof. by apply/finite_setP; exists 0%N; rewrite II0. Qed.
 #[global] Hint Resolve finite_set0 : core.
 
+Lemma cofinite_setT T : cofinite_set [set: T].
+Proof. by rewrite setCT. Qed.
+#[global] Hint Resolve cofinite_setT : core.
+
 Lemma infinite_setN0 {T} (A : set T) : infinite_set A -> A !=set0.
 Proof. by rewrite -set0P; apply: contra_not_neq => ->. Qed.
 
@@ -606,6 +612,14 @@ Lemma sub_finite_set T (A B : set T) : A `<=` B ->
   finite_set B -> finite_set A.
 Proof. by move=> ?; apply/card_le_finite/subset_card_le. Qed.
 
+Lemma sub_cofinite_set T (A B : set T) : A `<=` B ->
+  cofinite_set A -> cofinite_set A.
+Proof. by move=> /subsetC/sub_finite_set. Qed.
+
+Lemma sub_infinite_set T (A B : set T) : A `<=` B ->
+  infinite_set A -> infinite_set B.
+Proof. by move=> AB; apply/contra_not/sub_finite_set. Qed.
+
 Lemma finite_set_leP T (A : set T) : finite_set A <-> exists n, A #<= `I_n.
 Proof.
 split=> [[n /card_eqPle[]]|[n leAn]]; first by exists n.
@@ -661,6 +675,16 @@ Qed.
 Lemma finite_setD T (A B : set T) : finite_set A -> finite_set (A `\` B).
 Proof. exact/card_le_finite/card_le_setD. Qed.
 
+Lemma cofinite_setUl T (A B : set T) : cofinite_set A -> cofinite_set (A `|` B).
+Proof. by rewrite setCU -setDE; apply: finite_setD. Qed.
+
+Lemma cofinite_setUr T (A B : set T) : cofinite_set B -> cofinite_set (A `|` B).
+Proof. by rewrite setUC; apply: cofinite_setUl. Qed.
+
+Lemma cofinite_setU T (A B : set T) :
+  cofinite_set A \/ cofinite_set B -> cofinite_set (A `|` B).
+Proof. by move=> [/cofinite_setUl|/cofinite_setUr]. Qed.
+
 Lemma finite_setU T (A B : set T) :
   finite_set (A `|` B) = (finite_set A /\ finite_set B).
 Proof.
@@ -668,6 +692,10 @@ pose fP := @finite_fsetP {classic T}; rewrite propeqE; split.
   by move=> finAUB; split; apply: sub_finite_set finAUB.
 by case=> /fP[X->]/fP[Y->]; apply/fP; exists (X `|` Y)%fset; rewrite set_fsetU.
 Qed.
+
+Lemma cofinite_setI T (A B : set T) :
+  cofinite_set (A `&` B) = (cofinite_set A /\ cofinite_set B).
+Proof. by rewrite setCI finite_setU. Qed.
 
 Lemma finite_set2 T (x y : T) : finite_set [set x; y].
 Proof. by rewrite !finite_setU; split; apply: finite_set1. Qed.
@@ -859,8 +887,8 @@ have Gy : y \in G k by rewrite in_fset_set ?inE//; apply: Ffin.
 by exists (Tagged G [` Gy]%fset).
 Qed.
 
-Lemma infinite_setC {T} (A : set T) : infinite_set [set: T] ->
-  finite_set (~` A) -> infinite_set A.
+Lemma cofinite_set_infinite {T} (A : set T) : infinite_set [set: T] ->
+  cofinite_set A -> infinite_set A.
 Proof. by move=> + ACfin Afin; apply; rewrite -(setvU A) finite_setU. Qed.
 
 Lemma trivIset_sum_card (T : choiceType) (F : nat -> set T) n :
@@ -1033,9 +1061,13 @@ have : finite_set ((A `&` ~` B) `|` B) by rewrite finite_setU.
 by rewrite setUIl setUCl setIT finite_setU => -[].
 Qed.
 
-Lemma infinite_setI {T} (A B : set T) :
-  infinite_set A -> finite_set (~` B) -> infinite_set (A `&` B).
+Lemma infinite_setIl {T} (A B : set T) :
+  infinite_set A -> cofinite_set B -> infinite_set (A `&` B).
 Proof. by move=> /infinite_setD/[apply]; rewrite setDE setCK. Qed.
+
+Lemma infinite_setIr {T} (A B : set T) :
+  cofinite_set A -> infinite_set B -> infinite_set (A `&` B).
+Proof. by rewrite setIC => *; apply: infinite_setIl. Qed.
 
 Lemma infinite_set_fset {T : choiceType} (A : set T) n :
   infinite_set A ->
@@ -1134,7 +1166,7 @@ Proof. exact/eq_card_nat/infinite_prod_nat/countableP. Qed.
 Lemma injective_gtn (f : nat -> nat) : injective f -> forall (n : nat), exists m, (n < f m)%N.
 Proof.
 move=> fI n; suff [m /negP] : ~` (f @^-1` `I_n.+1) !=set0 by rewrite -ltnNge; exists m.
-apply: infinite_setN0; apply: infinite_setC; first exact: infinite_nat.
+apply: infinite_setN0; apply: cofinite_set_infinite; first exact: infinite_nat.
 by rewrite setCK; apply: finite_preimage; first by move=> ? ? ? ?; apply: fI.
 Qed.
 
