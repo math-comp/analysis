@@ -531,6 +531,9 @@ Lemma finite_set0 T : finite_set (set0 : set T).
 Proof. by apply/finite_setP; exists 0%N; rewrite II0. Qed.
 #[global] Hint Resolve finite_set0 : core.
 
+Lemma infinite_setN0 {T} (A : set T) : infinite_set A -> A !=set0.
+Proof. by rewrite -set0P; apply: contra_not_neq => ->. Qed.
+
 Lemma finite_seqP {T : eqType} A :
    finite_set A <-> exists s : seq T, A = [set` s].
 Proof.
@@ -564,6 +567,7 @@ Qed.
 
 Lemma finite_set_countable T (A : set T) : finite_set A -> countable A.
 Proof. by move=> /finite_setP[n /eq_countable->]. Qed.
+
 
 Lemma infiniteP T (A : set T) : infinite_set A <-> [set: nat] #<= A.
 Proof.
@@ -1040,6 +1044,10 @@ move=> + finB finAB; apply.
 have : finite_set ((A `&` ~` B) `|` B) by rewrite finite_setU.
 by rewrite setUIl setUCl setIT finite_setU => -[].
 Qed.
+
+Lemma infinite_setI {T} (A B : set T) :
+  infinite_set A -> finite_set (~` B) -> infinite_set (A `&` B).
+Proof. by move=> /infinite_setD/[apply]; rewrite setDE setCK. Qed.
 
 Lemma infinite_set_fset {T : choiceType} (A : set T) n :
   infinite_set A ->
