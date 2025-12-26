@@ -412,21 +412,6 @@ apply/idP/idP=> [/card_leP[f]|?];
 by have /leq_card := in2TT 'inj_(IIord \o f \o IIord^-1); rewrite !card_ord.
 Qed.
 
-Lemma injectiveT_ltn (A : set nat) (f : {injfun [set: nat] >-> A}) (n : nat) :
-  exists m, (n < f m)%N.
-Proof.
-elim: n => [|n [m ih]].
-  apply/not_existsP => f_le0.
-  have /(_ 0 1 (in_setT _) (in_setT _)) : set_inj setT f by [].
-  have /negP := f_le0 0; rewrite -leqNgt leqn0 => /eqP ->.
-  have /negP := f_le0 1; rewrite -leqNgt leqn0 => /eqP ->.
-  by move=> /(_ erefl)/esym; exact/eqP/oner_neq0.
-apply/not_existsP => f_leS.
-have {}f_leS x : (f x <= n.+1)%N by rewrite leqNgt; exact/negP/f_leS.
-have /subset_card_le : f @` `I_n.+3 `<=` `I_n.+2.
-  by move=> /= _ [y] yn3 <-; rewrite ltnS f_leS.
-by rewrite (card_ge_image f)// card_le_II ltnn.
-Qed.
 
 Lemma ocard_eqP {T U} {A : set T} {B : set U} :
   reflect $|{bij A >-> some @` B}| (A #= B).
@@ -567,7 +552,6 @@ Qed.
 
 Lemma finite_set_countable T (A : set T) : finite_set A -> countable A.
 Proof. by move=> /finite_setP[n /eq_countable->]. Qed.
-
 
 Lemma infiniteP T (A : set T) : infinite_set A <-> [set: nat] #<= A.
 Proof.
@@ -875,6 +859,10 @@ have Gy : y \in G k by rewrite in_fset_set ?inE//; apply: Ffin.
 by exists (Tagged G [` Gy]%fset).
 Qed.
 
+Lemma infinite_setC {T} (A : set T) : infinite_set [set: T] ->
+  finite_set (~` A) -> infinite_set A.
+Proof. by move=> + ACfin Afin; apply; rewrite -(setvU A) finite_setU. Qed.
+
 Lemma trivIset_sum_card (T : choiceType) (F : nat -> set T) n :
   (forall n, finite_set (F n)) -> trivIset [set: nat] F ->
   (\sum_(i < n) #|` fset_set (F i)| =
@@ -1142,6 +1130,13 @@ Proof. by rewrite -setXTT; apply: infinite_setX; exact: infinite_nat. Qed.
 
 Lemma card_nat2 : [set: nat * nat] #= [set: nat].
 Proof. exact/eq_card_nat/infinite_prod_nat/countableP. Qed.
+
+Lemma injective_gtn (f : nat -> nat) : injective f -> forall (n : nat), exists m, (n < f m)%N.
+Proof.
+move=> fI n; suff [m /negP] : ~` (f @^-1` `I_n.+1) !=set0 by rewrite -ltnNge; exists m.
+apply: infinite_setN0; apply: infinite_setC; first exact: infinite_nat.
+by rewrite setCK; apply: finite_preimage; first by move=> ? ? ? ?; apply: fI.
+Qed.
 
 HB.instance Definition _ := isPointed.Build rat 0.
 
