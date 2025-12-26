@@ -2973,63 +2973,47 @@ Qed.
 End adjacent_cut.
 
 Section finite_range_sequence_constant.
-Context {R : realFieldType}.
 
-Lemma finite_range_cst (u_ : R^nat) : finite_set (range u_) ->
-  exists N, exists2 A, infinite_set A & (forall k, A k <-> u_ k = u_ N).
+Lemma finite_range_cst {T} (u_ : T^nat) : finite_set (range u_) ->
+  exists x, exists2 A, infinite_set A & (forall k, A k <-> u_ k = x).
 Proof.
-case=> n; elim: n => [|n ih] in u_ *.
-  by rewrite card_eq_sym => /card_set_bijP[/= f [_ _ /(_ _ (imageT u_ 0))[]]].
-move/eq_cardSP => -[r [N _ uNr]] urn.
-apply: assume_not => /forallNP/(_ N) uN.
-have {uN}[B finB BuN] : exists2 B, finite_set B &
-    (forall k, B k <-> u_ k = u_ N).
-  exists (u_ @^-1` [set u_ N]); last by move=> k; split.
-  by apply: contrapT => u_N; apply: uN; eexists; [exact: u_N|by []].
-have [M BM] : exists M, ~ B M.
-  apply/existsNP => allB.
-  move: finB; rewrite (_ : B = setT); first exact/infinite_nat.
-  by rewrite -subTset => x _; exact: allB.
-have uMuN : u_ M != u_ N by apply: contra_not_neq BM; exact: (BuN _).2.
-pose v_ k := if k \in B then u_ M else u_ k.
-have /ih[k [A infA Ak]] : (range v_ #= `I_n)%card.
-  suff : range v_ = (range u_) `\ u_ N by move=> ->; rewrite uNr.
-  apply/seteqP; split=> [_ [y] _ <-|_ [[y _ <-]] uyuN]; rewrite /v_.
-  - case: ifPn => [yB|]; first by split; [exists M|exact/eqP].
-    by rewrite notin_setE => /BuN.
-  - by exists y => //; case: ifPn => // /set_mem /BuN.
-have [Bk|Bk] := pselect (B k).
-- exists M, (A `\` B); [exact: infinite_setD|move=> m; split=> [[+ Bm]|]].
-  + by move/(Ak _).1; rewrite /v_ memNset// mem_set.
-  + apply: contraPP; rewrite -[~ _]/((~` (_ `\` _)) m) setCD => -[|/BuN ->].
-    * have /iff_not2[+ _] := Ak m.
-      by move/[apply]; rewrite /v_; case: ifPn => mB; rewrite mem_set// eqxx.
-    * exact/nesym/eqP.
-- exists k, (A `\` B); [exact: infinite_setD|move=> m].
-  split=> [[+ Bm]|]; first by move/(Ak _).1; rewrite /v_ memNset// memNset.
-  apply: contraPP; rewrite -[~ _]/((~` (_ `\` _)) m) setCD => -[|Bm].
-  + have /iff_not2[+ _] := Ak m.
-    move=> /[apply]; rewrite /v_; case: ifPn => mB; rewrite memNset//.
-    by move: mB Bk => /set_mem /BuN -> /BuN /nesym.
-  + have /iff_not2[+ _] := BuN k.
-    by move=> /(_ Bk); apply: contra_not; rewrite ((BuN m).1 Bm).
+move=> range_u_finite; pose A x := u_ @^-1` [set x].
+suff [x Aoo] : exists x, infinite_set (A x) by exists x, (A x) => // k.
+apply/existsNP => Afin.
+have: finite_set (\bigcup_(x in range u_) A x) by exact: bigcup_finite.
+rewrite -preimage_bigcup bigcup_imset1 image_id preimage_range.
+exact: infinite_nat.
 Qed.
 
-Lemma finite_range_cvg (x_ : R ^nat) : finite_set (range x_) ->
+Lemma infinite_increasing_seq {d} {T : porderType d} (A : set T) :
+  (forall x, infinite_set [set y | A y /\ (x < y)%O]) ->
+  forall x0 : T, exists f, [/\ increasing_seq f, forall n : nat, (x0 < f n)%O & forall n, A (f n)].
+Proof.
+pose R (x y : T) := A y /\ (x < y)%O => Roo x0.
+have [x|f [f0 /all_and2[fA fS]]] := @dependent_choice T R _ x0.
+  by have /infinite_setN0/cid := Roo x.
+exists (f \o S); split => //=; first by apply/increasing_seqP => n; apply: fS.
+by elim=> /= [|n IHn]; rewrite (le_lt_trans _ (fS _)) ?f0//= ltW.
+Qed.
+
+Lemma infinite_increasing_seq_wf {d} {T : orderType d} (A : set T) :
+  (forall x : T, finite_set [set y | (y <= x)%O]) -> infinite_set A ->
+  forall x0 : T, exists f, [/\ increasing_seq f, forall n : nat, (x0 < f n)%O & forall n, A (f n)].
+Proof.
+move=> Dfin Aoo; apply: infinite_increasing_seq => x; apply: infinite_setI => //.
+by apply: sub_finite_set (Dfin x) => y /=; case: leP.
+Qed.
+
+Lemma finite_range_cvg {T : ptopologicalType} (x_ : T ^nat) :
+  finite_set (range x_) ->
   exists2 f : nat -> nat, increasing_seq f & cvgn (x_ \o f).
 Proof.
-move=> /finite_range_cst[k [A /infiniteP/pcard_leP/unsquash f Ak]].
-have : forall n, {y | (n < y)%N /\ A y}.
-  move=> n; apply/cid.
-  have [m xfm] : exists m, (n < f m)%N by exact: injectiveT_ltn.
-  by exists (f m); split => //; exact: funS.
-move/dependent_choice => /(_ 0)[g [g00 gincr]].
-exists g; first by apply/increasing_seqP => n; exact: (gincr _).1.
-apply/cvg_ex; exists (x_ k); apply/cvgrPdist_le => /= e e0.
-near=> n.
-have := (gincr n.-1).2; rewrite prednK; last by near: n; by exists 1%N.
-by move/(Ak (g n)).1 => ->; rewrite subrr normr0 ltW.
-Unshelve. all: end_near. Qed.
+move=> /finite_range_cst[x [A Aoo Ax_]].
+have /= [|f [fincr _ Af]] := infinite_increasing_seq_wf _ Aoo 0.
+  by move=> n; apply: sub_finite_set (finite_II n.+1) => m /=.
+exists f => //=; suff -> : x_ \o f = fun=> x by apply: is_cvg_cst.
+by apply/funext => k /=; rewrite (Ax_ _).1.
+Qed.
 
 End finite_range_sequence_constant.
 
