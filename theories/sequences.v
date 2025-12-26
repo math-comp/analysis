@@ -3000,7 +3000,7 @@ Lemma infinite_increasing_seq_wf {d} {T : orderType d} (A : set T) :
   (forall x : T, finite_set [set y | (y <= x)%O]) -> infinite_set A ->
   forall x0 : T, exists f, [/\ increasing_seq f, forall n : nat, (x0 < f n)%O & forall n, A (f n)].
 Proof.
-move=> Dfin Aoo; apply: infinite_increasing_seq => x; apply: infinite_setI => //.
+move=> Dfin Aoo; apply: infinite_increasing_seq => x; apply: infinite_setIl => //.
 by apply: sub_finite_set (Dfin x) => y /=; case: leP.
 Qed.
 
