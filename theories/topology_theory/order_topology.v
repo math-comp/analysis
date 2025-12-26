@@ -22,6 +22,21 @@ Unset Printing Implicit Defensive.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+HB.structure Definition POrderedNbhs d :=
+  { T of Nbhs T & Order.isPOrder d T }.
+
+HB.structure Definition POrderedTopological d :=
+  { T of Topological T & Order.isPOrder d T }.
+
+HB.structure Definition POrderedUniform d :=
+  {T of Uniform T & Order.isPOrder d T}.
+
+HB.structure Definition POrderedPseudoMetric d (R : numDomainType) :=
+  {T of PseudoMetric R T & Order.isPOrder d T}.
+
+HB.structure Definition POrderedPointedTopological d :=
+  {T of PointedTopological T & Order.isPOrder d T}.
+
 (** TODO: generalize this to a preOrder once that's available *)
 HB.mixin Record Order_isNbhs d (T : Type) of Nbhs T & Order.Total d T := {
   (** Note that just the intervals `]a, b[ doesn't work when the order has a
@@ -53,21 +68,21 @@ Local Open Scope classical_set_scope.
 Context {d} {T : orderTopologicalType d}.
 Implicit Types x y : T.
 
-Lemma rray_open x : open `]x, +oo[.
+Lemma rray_open x : @open T `]x, +oo[.
 Proof.
 rewrite openE /interior => z xoz; rewrite itv_nbhsE.
 by exists `]x, +oo[%O => //; split => //; left.
 Qed.
 Hint Resolve rray_open : core.
 
-Lemma lray_open x : open `]-oo, x[.
+Lemma lray_open x : @open T `]-oo, x[.
 Proof.
 rewrite openE /interior => z xoz; rewrite itv_nbhsE.
 by exists (`]-oo, x[)%O => //; split => //; left.
 Qed.
 Hint Resolve lray_open : core.
 
-Lemma itv_open x y : open `]x, y[.
+Lemma itv_open x y : @open T `]x, y[.
 Proof. by rewrite set_itv_splitI /=; apply: openI. Qed.
 Hint Resolve itv_open : core.
 
@@ -77,15 +92,15 @@ case: i; rewrite /itv_open_ends => [[[]t1|[]]] [[]t2|[]] []? => //.
 by rewrite set_itvE; exact: openT.
 Qed.
 
-Lemma rray_closed x : closed `[x, +oo[.
+Lemma rray_closed x : @closed T `[x, +oo[.
 Proof. by rewrite -setCitvl closedC. Qed.
 Hint Resolve rray_closed : core.
 
-Lemma lray_closed x : closed `]-oo, x].
+Lemma lray_closed x : @closed T `]-oo, x].
 Proof. by rewrite -setCitvr closedC. Qed.
 Hint Resolve lray_closed : core.
 
-Lemma itv_closed x y : closed `[x, y].
+Lemma itv_closed x y : @closed T `[x, y].
 Proof. by rewrite set_itv_splitI; apply: closedI => /=. Qed.
 Hint Resolve itv_closed : core.
 
