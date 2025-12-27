@@ -35,6 +35,12 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
 
+Lemma split3r (F : numFieldType) (x : F) : x = x / 3 + x / 3 + x / 3.
+Proof.
+rewrite -!mulrDl -[in RHS](mulr1 x) -!mulrDr [in X in X / _](_ : 1 = 1%:R)//.
+by rewrite !natr1 -mulrA divff ?mulr1// pnatr_eq0.
+Qed.
+
 Lemma coprime_prodr (I : Type) (r : seq I) (P : {pred I}) (F : I -> nat) (a : I)
     (l : seq I) :
   all (coprime (F a)) [seq F i | i <- [seq i <- l | P i]] ->

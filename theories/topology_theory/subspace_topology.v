@@ -564,6 +564,22 @@ Proof. by []. Qed.
 
 End SubspacePseudoMetric.
 
+Lemma unif_continuous_set0 R (U V : pseudoMetricType R) (f : U -> V) :
+  @unif_continuous (subspace set0) _ f.
+Proof.
+apply/unif_continuousP => /= e e0; exists 1 => // -[x y]/=.
+by rewrite [X in X -> _]/ball/= /subspace_ball/= in_set0 => ->; exact: ballxx.
+Qed.
+
+Lemma unif_continuous_set1 R (U V : pseudoMetricType R) a (f : U -> V) :
+  @unif_continuous (subspace [set a]) _ f.
+Proof.
+apply/unif_continuousP => /= e e0; exists 1 => // -[x y]/=.
+rewrite [X in X -> _]/ball/= /subspace_ball/=; case: ifPn => [|_ ->].
+  by rewrite inE => -> [->] _; exact: ballxx.
+exact: ballxx.
+Qed.
+
 Section SubspaceWeak.
 Context {T : topologicalType} {U : choiceType}.
 Variables (f : U -> T).
