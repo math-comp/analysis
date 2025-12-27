@@ -6376,8 +6376,9 @@ forall [R : realType],
 (R^o) ^nat ->
 filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointed
   (filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_PointedFiltered
-     (num_topology.numFieldTopology.Real_sort__canonical__filter_PointedNbhs
-        R))
+     (order_topology.POrderedPointedTopological.Exports.join_order_topology_POrderedPointedTopological_between_Order_POrder_and_filter_PointedNbhs
+        (num_topology.numFieldTopology.Real_sort__canonical__order_topology_POrderedPointedTopological
+           R)))
 
 limn_sup is not universe polymorphic
 Arguments limn_sup [R] u

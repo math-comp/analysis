@@ -14195,22 +14195,22 @@ segment_connected :
 forall {R : realType} [a b : R]
   [B : set
          (topology_structure.Topological.sort
-            (join_order_topology_OrderTopological_between_Order_POrder_and_topology_structure_Topological
-               (numFieldTopology.Real_sort__canonical__order_topology_OrderTopological
+            (join_order_topology_POrderedTopological_between_Order_POrder_and_topology_structure_Topological
+               (numFieldTopology.Real_sort__canonical__order_topology_POrderedTopological
                   R)))],
 (B !=set0)%classic ->
 (exists2
    C : set
          (topology_structure.Topological.sort
-            (join_order_topology_OrderTopological_between_Order_POrder_and_topology_structure_Topological
-               (numFieldTopology.Real_sort__canonical__order_topology_OrderTopological
+            (join_order_topology_POrderedTopological_between_Order_POrder_and_topology_structure_Topological
+               (numFieldTopology.Real_sort__canonical__order_topology_POrderedTopological
                   R))),
    topology_structure.open C & B = (`[a, b] `&` C)%classic) ->
 (exists2
    C : set
          (topology_structure.Topological.sort
-            (join_order_topology_OrderTopological_between_Order_POrder_and_topology_structure_Topological
-               (numFieldTopology.Real_sort__canonical__order_topology_OrderTopological
+            (join_order_topology_POrderedTopological_between_Order_POrder_and_topology_structure_Topological
+               (numFieldTopology.Real_sort__canonical__order_topology_POrderedTopological
                   R))),
    topology_structure.closed C & B = (`[a, b] `&` C)%classic) ->
 B = `[a, b]%classic
@@ -14235,15 +14235,15 @@ segment_compact :
 forall {R : realType} [a b : R]
   [F : filter.set_system
          (topology_structure.Topological.sort
-            (join_order_topology_OrderTopological_between_Order_POrder_and_topology_structure_Topological
-               (numFieldTopology.Real_sort__canonical__order_topology_OrderTopological
+            (join_order_topology_POrderedTopological_between_Order_POrder_and_topology_structure_Topological
+               (numFieldTopology.Real_sort__canonical__order_topology_POrderedTopological
                   R)))],
 filter.ProperFilter F ->
 F `[a, b]%classic ->
 exists
   a0 : topology_structure.Topological.sort
-         (join_order_topology_OrderTopological_between_Order_POrder_and_topology_structure_Topological
-            (numFieldTopology.Real_sort__canonical__order_topology_OrderTopological
+         (join_order_topology_POrderedTopological_between_Order_POrder_and_topology_structure_Topological
+            (numFieldTopology.Real_sort__canonical__order_topology_POrderedTopological
                R)),
   (`[a, b] `&` cluster F)%classic a0
 

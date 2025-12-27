@@ -2216,8 +2216,8 @@ Expanded type for implicit arguments
 closed_le :
 forall {R : realFieldType} [y : R]
   [t : topology_structure.Topological.sort
-         (join_order_topology_OrderTopological_between_Order_Preorder_and_topology_structure_Topological
-            (numFieldTopology.RealField_sort__canonical__order_topology_OrderTopological
+         (join_order_topology_POrderedTopological_between_Order_Preorder_and_topology_structure_Topological
+            (numFieldTopology.RealField_sort__canonical__order_topology_POrderedTopological
                R))],
 topology_structure.closure [set x | (x <= y)%R] t -> (t <= y)%R = true
 
@@ -2244,8 +2244,8 @@ Expanded type for implicit arguments
 closed_ge :
 forall {R : realFieldType} [y : R]
   [t : topology_structure.Topological.sort
-         (join_order_topology_OrderTopological_between_Order_Preorder_and_topology_structure_Topological
-            (numFieldTopology.RealField_sort__canonical__order_topology_OrderTopological
+         (join_order_topology_POrderedTopological_between_Order_Preorder_and_topology_structure_Topological
+            (numFieldTopology.RealField_sort__canonical__order_topology_POrderedTopological
                R))],
 topology_structure.closure [set x | (y <= x)%R] t -> (y <= t)%R = true
 
