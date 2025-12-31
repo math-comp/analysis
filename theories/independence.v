@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect interval_inference.
 From mathcomp Require Import ssralg poly ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
@@ -678,7 +678,7 @@ Definition pairRV (X Y : {RV P >-> T'}) : T * T -> T' * T' :=
 Lemma pairM (X Y : {RV P >-> T'}) : measurable_fun setT (pairRV X Y).
 Proof.
 rewrite /pairRV.
-apply/prod_measurable_funP; split => //=.
+apply/measurable_fun_pairP; split => //=.
   rewrite (_ : (fst \o (fun x : T * T => (X x.1, Y x.2))) = (fun x => X x.1))//.
   by apply/measurableT_comp => //=.
 rewrite (_ : (snd \o (fun x : T * T => (X x.1, Y x.2))) = (fun x => Y x.2))//.
@@ -808,10 +808,10 @@ rewrite [ltLHS](_ : _ = \int[distribution P X]_x `|x|%:E *
 rewrite ge0_integral_distribution//=; last exact/measurable_EFinP.
 rewrite ge0_integral_distribution//=; last exact/measurable_EFinP.
 rewrite lte_mul_pinfty//.
-  by apply: integral_ge0 => //.
-  apply: integral_fune_fin_num => //=.
-  by move/integrable_abse : iX => //.
-apply: integral_fune_lt_pinfty => //.
+  exact: integral_ge0.
+  apply: integrable_fin_num => //=.
+  by move/integrable_abse : iX.
+apply: integrable_lty => //.
 by move/integrable_abse : iY => //.
 Qed.
 
@@ -1010,7 +1010,6 @@ apply: (@le_lt_trans _ _ 'E_P[(@normr _ _ \o X) * (@normr _ _ \o Y)]).
     by move/Lfun1_integrable : iY => /measurable_int/measurable_EFinP.
   apply: ge0_le_integral => //=.
   - by apply/measurable_EFinP; exact/measurableT_comp.
-  - by move=> x _; rewrite lee_fin/= mulr_ge0/=.
   - by apply/measurable_EFinP; apply/measurable_funM; exact/measurableT_comp.
   - by move=> t _; rewrite lee_fin/= normrM.
 rewrite expectationM_ge0//=.

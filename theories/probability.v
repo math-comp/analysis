@@ -1490,7 +1490,6 @@ apply: (@le_lt_trans _ _ 'E_P[(@normr _ _ \o X) * (@normr _ _ \o Y)]).
     by move/Lfun1_integrable : iY => /measurable_int.
   apply: ge0_le_integral => //=.
   - by apply/measurable_EFinP; exact/measurableT_comp.
-  - by move=> x _; rewrite lee_fin/= mulr_ge0/=.
   - by apply/measurable_EFinP; apply/measurable_funM; exact/measurableT_comp.
   - by move=> t _; rewrite lee_fin/= normrM.
 rewrite expectationM_ge0//=.
