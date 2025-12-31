@@ -13,22 +13,25 @@ From mathcomp Require Import sequences function_spaces.
 (* theorems such as Tietze's extension theorem.                               *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*  nondecreasing_fun f == the function f is non-decreasing                   *)
-(*  nonincreasing_fun f == the function f is non-increasing                   *)
-(*     increasing_fun f == the function f is (strictly) increasing            *)
-(*     decreasing_fun f == the function f is (strictly) decreasing            *)
-(*  itv_partition a b s == s is a partition of the interval `[a, b]           *)
-(*   itv_partitionL s c == the left side of splitting a partition at c        *)
-(*   itv_partitionR s c == the right side of splitting a partition at c       *)
-(*      {nnfun T >-> R} == type of non-negative functions                     *)
-(*                f ^\+ == the function formed by the non-negative outputs    *)
-(*                         of f (from a type to the type of extended real     *)
-(*                         numbers) and 0 otherwise                           *)
-(*                         rendered as f ⁺ with company-coq (U+207A)          *)
-(*                f ^\- == the function formed by the non-positive outputs    *)
-(*                         of f and 0 o.w.                                    *)
-(*                         rendered as f ⁻ with company-coq (U+207B)          *)
-(*                \1_ A == indicator function 1_A                             *)
+(*     nondecreasing_fun f == the function f is non-decreasing                *)
+(*     nonincreasing_fun f == the function f is non-increasing                *)
+(*        increasing_fun f == the function f is (strictly) increasing         *)
+(*        decreasing_fun f == the function f is (strictly) decreasing         *)
+(*     itv_partition a b s == s is a partition of the interval `[a, b]        *)
+(*      itv_partitionL s c == the left side of splitting a partition at c     *)
+(*      itv_partitionR s c == the right side of splitting a partition at c    *)
+(*       variation a b f s == the sum of f at all points in the partition s   *)
+(*        variations a b f == the set of all variations of f between a and b  *)
+(* bounded_variation a b f == all variations of f are bounded                 *)
+(*         {nnfun T >-> R} == type of non-negative functions                  *)
+(*                   f ^\+ == the function formed by the non-negative outputs *)
+(*                            of f (from a type to the type of extended real  *)
+(*                            numbers) and 0 otherwise                        *)
+(*                            rendered as f ⁺ with company-coq (U+207A)       *)
+(*                   f ^\- == the function formed by the non-positive outputs *)
+(*                            of f and 0 o.w.                                 *)
+(*                            rendered as f ⁻ with company-coq (U+207B)       *)
+(*                   \1_ A == indicator function 1_A                          *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -248,6 +251,344 @@ by rewrite rev_cons last_rcons.
 Qed.
 
 End interval_partition_numDomainType.
+
+Section variation_numDomainType.
+Context {R : numDomainType}.
+Implicit Types (a b : R) (f g : R -> R).
+
+Definition variation a b f s := let F := f \o nth b (a :: s) in
+  \sum_(0 <= n < size s) `|F n.+1 - F n|%R.
+
+Lemma variation_zip a b f s : itv_partition a b s ->
+  variation a b f s = \sum_(x <- zip s (a :: s)) `|f x.1 - f x.2|.
+Proof.
+elim: s a b => // [a b|h t ih a b].
+  by rewrite /itv_partition /= => -[_ /eqP <-]; rewrite /variation/= !big_nil.
+rewrite /itv_partition /variation => -[]/= /andP[ah ht] /eqP htb.
+rewrite big_nat_recl//= big_cons/=; congr +%R.
+have /ih : itv_partition h b t by split => //; exact/eqP.
+by rewrite /variation => ->; rewrite !big_seq; apply/eq_bigr => r rt.
+Qed.
+
+(* NB: not used yet but should allow for "term-by-term" comparisons *)
+Lemma variation_prev a b f s : itv_partition a b s ->
+  variation a b f s = \sum_(x <- s) `|f x - f (prev (locked (a :: s)) x)|.
+Proof.
+move=> [] sa /eqP asb; rewrite /variation [in LHS]/= (big_nth b) !big_nat.
+apply: eq_bigr => i /andP[_ si]; congr (`| _ - f _ |).
+rewrite -lock.
+rewrite prev_nth inE gt_eqF; last first.
+  rewrite -[a]/(nth b (a :: s) 0) -[ltRHS]/(nth b (a :: s) i.+1).
+  exact: lt_sorted_ltn_nth.
+rewrite orFb mem_nth// index_uniq//.
+  by apply: set_nth_default => /=; rewrite ltnS ltnW.
+by apply: (sorted_uniq lt_trans) => //; apply: path_sorted sa.
+Qed.
+
+Lemma variation_next a b f s : itv_partition a b s ->
+  variation a b f s =
+  \sum_(x <- belast a s) `|f (next (locked (a :: s)) x) - f x|.
+Proof.
+move=> [] sa /eqP asb; rewrite /variation [in LHS]/= (big_nth b) !big_nat.
+rewrite size_belast; apply: eq_bigr => i /andP[_ si].
+congr (`| f _ - f _ |); last first.
+  by rewrite lastI -cats1 nth_cat size_belast// si.
+rewrite -lock next_nth.
+rewrite {1}lastI mem_rcons inE mem_nth ?size_belast// orbT.
+rewrite lastI -cats1 index_cat mem_nth ?size_belast//.
+rewrite index_uniq ?size_belast//.
+  exact: set_nth_default.
+have /lt_sorted_uniq : sorted <%R (a :: s) by [].
+by rewrite lastI rcons_uniq => /andP[].
+Qed.
+
+Lemma variation_nil a b f : variation a b f [::] = 0.
+Proof. by rewrite /variation/= big_nil. Qed.
+
+Lemma variation_ge0 a b f s : 0 <= variation a b f s.
+Proof. exact/sumr_ge0. Qed.
+
+Lemma variationN a b f s : variation a b (\- f) s = variation a b f s.
+Proof.
+by rewrite /variation; apply: eq_bigr => k _ /=; rewrite -opprD normrN.
+Qed.
+
+Lemma variation_le a b f g s :
+  variation a b (f \+ g)%R s <= variation a b f s + variation a b g s.
+Proof.
+rewrite [in leRHS]/variation -big_split/=.
+apply: ler_sum => k _; apply: le_trans; last exact: ler_normD.
+by rewrite /= addrACA -opprD.
+Qed.
+
+Lemma nondecreasing_variation a b f s : {in `[a, b] &, nondecreasing_fun f} ->
+  itv_partition a b s -> variation a b f s = f b - f a.
+Proof.
+move=> ndf abs; rewrite /variation; set F : nat -> R := f \o nth _ (a :: s).
+transitivity (\sum_(0 <= n < size s) (F n.+1 - F n)).
+  rewrite !big_nat; apply: eq_bigr => k; rewrite leq0n/= => ks.
+  by rewrite ger0_norm// subr_ge0; exact: nondecreasing_fun_itv_partition.
+by rewrite telescope_sumr// /F/= (itv_partition_nth_size _ abs).
+Qed.
+
+Lemma nonincreasing_variation a b f s : {in `[a, b] &, nonincreasing_fun f} ->
+  itv_partition a b s -> variation a b f s = f a - f b.
+Proof.
+move=> /nonincreasing_funN ndNf abs; have := nondecreasing_variation ndNf abs.
+by rewrite opprK addrC => <-; rewrite variationN.
+Qed.
+
+Lemma variation_cat c a b f s t : a <= c -> c <= b ->
+  itv_partition a c s -> itv_partition c b t ->
+  variation a b f (s ++ t) = variation a c f s + variation c b f t.
+Proof.
+rewrite le_eqVlt => /predU1P[<-{c} cb|ac].
+  by move=> /itv_partitionxx ->; rewrite variation_nil add0r.
+rewrite le_eqVlt => /predU1P[<-{b}|cb].
+  by move=> ? /itv_partitionxx ->; rewrite variation_nil addr0 cats0.
+move=> acs cbt; rewrite /variation /= [in LHS]/index_iota subn0 size_cat.
+rewrite iotaD add0n big_cat/= -[in X in X + _ = _](subn0 (size s)); congr +%R.
+  rewrite -/(index_iota 0 (size s)) 2!big_nat.
+  apply: eq_bigr => k /[!leq0n] /= ks.
+  rewrite nth_cat ks -cat_cons nth_cat /= ltnS (ltnW ks).
+  by rewrite !(set_nth_default b c)//= ltnS ltnW.
+rewrite -[in LHS](addnK (size s) (size t)).
+rewrite -/(index_iota (size s) (size t + size s)).
+rewrite -{1}[in LHS](add0n (size s)) big_addn addnK 2!big_nat; apply: eq_bigr.
+move=> k /[!leq0n]/= kt.
+rewrite nth_cat {1}(addnC k) -ltn_subRL subnn ltn0 addnK.
+case: k kt => [t0 /=|k kt].
+  rewrite add0n -cat_cons nth_cat/= ltnS leqnn -last_nth.
+  by case: acs => _ /eqP ->.
+rewrite addSnnS (addnC k) -cat_cons nth_cat/= -ltn_subRL subnn ltn0.
+by rewrite -(addnC k) addnK.
+Qed.
+
+Lemma le_variation a b f s x : variation a b f s <= variation a b f (x :: s).
+Proof.
+case: s => [|h t].
+  by rewrite variation_nil /variation/= big_nat_recl//= big_nil addr0.
+rewrite /variation/= !big_nat_recl//= addrA lerD2r.
+by rewrite -(subrKA (f x)) addrC ler_normD.
+Qed.
+
+Lemma variation_opp_rev a b f s : itv_partition a b s ->
+  variation a b f s =
+  variation (- b) (- a) (f \o -%R) (rev (belast (- a) (map -%R s))).
+Proof.
+move=> abl; rewrite belast_map /variation /= [LHS]big_nat_rev/= add0n.
+rewrite size_rev size_map size_belast 2!big_nat.
+apply: eq_bigr => k; rewrite leq0n /= => ks.
+rewrite nth_rev ?size_map ?size_belast// [in RHS]distrC.
+rewrite (nth_map a); last first.
+  by rewrite size_belast ltn_subLR// addSn ltnS leq_addl.
+rewrite opprK -rev_rcons nth_rev ?size_rcons ?size_map ?size_belast 1?ltnW//.
+rewrite subSn// -map_rcons (nth_map b) ?size_rcons ?size_belast; last first.
+  by rewrite ltnS ltn_subLR// addSn ltnS leq_addl.
+rewrite opprK nth_rcons size_belast -subSn// subSS.
+rewrite (ltn_subLR _ (ltnW ks)) if_same.
+case: k => [|k] in ks *.
+  rewrite add0n ltnn subn1 (_ : nth b s _ = b); last first.
+    case: abl ks => _.
+    elim/last_ind : s => // h t _; rewrite last_rcons => /eqP -> _.
+    by rewrite nth_rcons size_rcons ltnn eqxx.
+  rewrite (_ : nth b (a :: s) _ = nth a (belast a s) (size s).-1)//.
+  case: abl ks => _.
+  elim/last_ind : s => // h t _; rewrite last_rcons => /eqP -> _.
+  rewrite belast_rcons size_rcons/= -rcons_cons nth_rcons/= ltnS leqnn.
+  exact: set_nth_default.
+rewrite addSn ltnS leq_addl//; congr (`| f _ - f _ |).
+  elim/last_ind : s ks {abl} => // h t _; rewrite size_rcons ltnS => kh.
+  rewrite belast_rcons nth_rcons subSS ltn_subLR//.
+  by rewrite addSn ltnS leq_addl// subSn.
+elim/last_ind : s ks {abl} => // h t _; rewrite size_rcons ltnS => kh.
+rewrite belast_rcons subSS -rcons_cons nth_rcons /= ltn_subLR//.
+rewrite addnS ltnS leq_addl; apply: set_nth_default => //.
+by rewrite /= ltnS leq_subLR leq_addl.
+Qed.
+
+Lemma variation_rev_opp a b f s : itv_partition (- b) (- a) s ->
+  variation a b f (rev (belast b (map -%R s))) =
+  variation (- b) (- a) (f \o -%R) s.
+Proof.
+move=> abs; rewrite [in RHS]variation_opp_rev ?opprK//.
+suff: (f \o -%R) \o -%R = f by move=> ->.
+by apply/funext=> ? /=; rewrite opprK.
+Qed.
+
+End variation_numDomainType.
+#[deprecated(since="mathcomp-analysis 1.12.0", note="use `variation_cat` instead")]
+Notation variationD := variation_cat (only parsing).
+
+Section variation_realDomainType.
+Context {R : realDomainType}.
+Implicit Types (a b : R) (f g : R -> R).
+
+(* NB: this is the only lemma that uses variation_zip *)
+Lemma variation_itv_partitionLR a b c f s : a < c -> c < b ->
+  itv_partition a b s ->
+  variation a b f s <= variation a b f (itv_partitionL s c ++ itv_partitionR s c).
+Proof.
+move=> ac bc abs; have [cl|cl] := boolP (c \in s).
+  by rewrite -in_itv_partition//; case: abs => /path_sorted.
+rewrite /itv_partitionL [in leLHS](notin_itv_partition _ cl)//; last first.
+  by apply: path_sorted; case: abs => + _; exact.
+rewrite -notin_itv_partition//; last first.
+  by apply: path_sorted; case: abs => /= + _; exact.
+rewrite !variation_zip//; last first.
+  by apply: itv_partition_cat;
+    [exact: (itv_partitionLP _ bc)|exact: (itv_partitionRP ac)].
+rewrite [in leLHS](notin_itv_partition _ cl); last first.
+  by apply: path_sorted; case: abs => + _; exact.
+set L := [seq x <- s | x < c].
+rewrite -cats1 -catA.
+move: L => L.
+set B := itv_partitionR s c.
+move: B => B.
+elim/last_ind : L => [|L0 L1 _].
+  rewrite !cat0s /=; case: B => [|B0 B1].
+    by rewrite big_nil big_cons/= big_nil addr0.
+  by rewrite !big_cons/= addrA lerD// -(subrKA (f c)) [leRHS]addrC ler_normD.
+rewrite -cats1.
+rewrite (_ : a :: _ ++ B = (a :: L0) ++ [:: L1] ++ B)//; last first.
+  by rewrite -!catA -cat_cons.
+rewrite zip_cat; last by rewrite cats1 size_rcons.
+rewrite (_ : a :: _ ++ _ ++ B = (a :: L0) ++ [:: L1] ++ [:: c] ++ B); last first.
+  by rewrite -!catA -cat_cons.
+rewrite zip_cat; last by rewrite cats1 size_rcons.
+rewrite !big_cat lerD//.
+case: B => [|B0 B1].
+  by rewrite /= big_nil big_cons big_nil addr0.
+rewrite -cat1s zip_cat// catA.
+rewrite (_ : [:: L1] ++ _ ++ B1 = ([:: L1] ++ [:: c]) ++ [:: B0] ++ B1); last first.
+  by rewrite catA.
+rewrite zip_cat// !big_cat lerD//= !big_cons !big_nil !addr0/= [leRHS]addrC.
+by rewrite (le_trans _ (ler_normD _ _))// subrKA.
+Qed.
+
+Lemma variation_subseq a b f (s t : list R) :
+  itv_partition a b s -> itv_partition a b t ->
+  subseq s t ->
+  variation a b f s <= variation a b f t.
+Proof.
+elim: t s a => [? ? ? /= _ /eqP ->//|a s IH [|x t] w].
+  by rewrite variation_nil // variation_ge0.
+move=> /[dup] /itv_partition_cons itvxb /[dup] /itv_partition_le wb itvxt.
+move=> /[dup] /itv_partition_cons itvas itvws /=.
+have ab : a <= b by exact: (itv_partition_le itvas).
+have wa : w < a by case: itvws => /= /andP[].
+have waW : w <= a := ltW wa.
+case: ifPn => [|] nXA.
+  move/eqP : nXA itvxt itvxb => -> itvat itvt /= ta.
+  rewrite -[_ :: t]cat1s -[_ :: s]cat1s.
+  rewrite ?(@variation_cat _ a)//; [|exact: itv_partition1..].
+  by rewrite lerD// IH.
+move=> xts; rewrite -[_ :: s]cat1s (@variation_cat _ a) => //; last first.
+  exact: itv_partition1.
+have [y [s' s'E]] : exists y s', s = y :: s'.
+  by case: {itvas itvws IH} s xts => // y s' ?; exists y, s'.
+apply: (@le_trans _ _ (variation w b f s)).
+  rewrite IH//.
+  case: itvws => /= /andP[_]; rewrite s'E /= => /andP[ay ys' lyb].
+  by split => //; rewrite (path_lt_head wa)//= ys' andbT.
+by rewrite -variation_cat//; [exact: le_variation | exact: itv_partition1].
+Qed.
+
+End variation_realDomainType.
+
+Section bounded_variation.
+Context {R : numDomainType}.
+Implicit Type (a b : R) (f : R -> R).
+
+Definition variations a b f := [set variation a b f l | l in itv_partition a b].
+
+Lemma variations_variation a b f s : itv_partition a b s ->
+  variations a b f (variation a b f s).
+Proof. by move=> abs; exists s. Qed.
+
+Lemma variations_neq0 a b f : a < b -> variations a b f !=set0.
+Proof.
+move=> ab; exists (variation a b f [:: b]); exists [:: b] => //.
+exact: itv_partition1.
+Qed.
+
+Lemma variationsN a b f : variations a b (\- f) = variations a b f.
+Proof.
+apply/seteqP; split => [_ [s abs] <-|r [s abs]].
+  by rewrite variationN; exact: variations_variation.
+by rewrite -variationN => <-; exact: variations_variation.
+Qed.
+
+Lemma variationsxx a f : variations a a f = [set 0].
+Proof.
+apply/seteqP; split => [x [_ /itv_partitionxx ->]|x ->].
+  by rewrite /variation big_nil => <-.
+by exists [::] => //=; rewrite /variation /= big_nil.
+Qed.
+
+Definition bounded_variation a b f := has_ubound (variations a b f).
+
+Notation BV := bounded_variation.
+
+Lemma bounded_variationxx a f : BV a a f.
+Proof. by exists 0 => r; rewrite variationsxx => ->. Qed.
+
+Lemma bounded_variationD a b f g : a < b ->
+  BV a b f -> BV a b g -> BV a b (f \+ g).
+Proof.
+move=> ab [r abfr] [s abgs]; exists (r + s) => _ [l abl] <-.
+apply: le_trans; first exact: variation_le.
+rewrite lerD//.
+- by apply: abfr; exact: variations_variation.
+- by apply: abgs; exact: variations_variation.
+Qed.
+
+Lemma bounded_variationN a b f : BV a b f -> BV a b (\- f).
+Proof. by rewrite /bounded_variation variationsN. Qed.
+
+Lemma bounded_variationl a c b f : a <= c -> c <= b -> BV a b f -> BV a c f.
+Proof.
+rewrite le_eqVlt => /predU1P[<-{c} ? ?|ac]; first exact: bounded_variationxx.
+rewrite le_eqVlt => /predU1P[<-{b}//|cb].
+move=> [x Hx]; exists x => _ [s acs] <-.
+rewrite (@le_trans _ _ (variation a b f (rcons s b)))//; last first.
+  apply/Hx/variations_variation; case: acs => sa /eqP asc.
+  by rewrite /itv_partition rcons_path last_rcons sa/= asc.
+rewrite {2}/variation size_rcons -[leLHS]addr0 big_nat_recr//= lerD//.
+rewrite /variation !big_nat ler_sum// => k; rewrite leq0n /= => ks.
+rewrite nth_rcons// ks -cats1 -cat_cons nth_cat /= ltnS (ltnW ks).
+by rewrite ![in leRHS](set_nth_default c)//= ltnS ltnW.
+Qed.
+
+Lemma bounded_variationr a c b f : a <= c -> c <= b -> BV a b f -> BV c b f.
+Proof.
+rewrite le_eqVlt => /predU1P[<-{c}//|ac].
+rewrite le_eqVlt => /predU1P[<-{b} ?|cb]; first exact: bounded_variationxx.
+move=> [x Hx]; exists x => _ [s cbs] <-.
+rewrite (@le_trans _ _ (variation a b f (c :: s)))//; last first.
+  apply/Hx/variations_variation; case: cbs => cs csb.
+  by rewrite /itv_partition/= ac/= cs.
+by rewrite {2}/variation/= -[leLHS]add0r big_nat_recl//= lerD.
+Qed.
+
+Lemma variations_opp a b f :
+  variations (- b) (- a) (f \o -%R) = variations a b f.
+Proof.
+rewrite eqEsubset; split=> [_ [s bas <-]| _ [s abs <-]].
+  eexists; last exact: variation_rev_opp.
+  by move/itv_partition_rev : bas; rewrite !opprK.
+eexists; last by exact/esym/variation_opp_rev.
+exact: itv_partition_rev abs.
+Qed.
+
+Lemma nondecreasing_bounded_variation a b f :
+  {in `[a, b] &, {homo f : x y / x <= y}} -> BV a b f.
+Proof.
+move=> incf; exists (f b - f a) => ? [l pabl <-]; rewrite le_eqVlt.
+by rewrite nondecreasing_variation// eqxx.
+Qed.
+
+End bounded_variation.
 
 HB.mixin Record isNonNegFun (aT : Type) (rT : numDomainType) (f : aT -> rT) := {
   fun_ge0 : forall x, (0 <= f x)%R
