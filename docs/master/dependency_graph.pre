@@ -471,6 +471,7 @@ subgraph cluster_analysis { "theories/realfun"[label="realfun",URL="mathcomp.ana
   "theories/derive" -> "theories/realfun";
   "theories/ereal" -> "theories/realfun";
   "theories/normedtype_theory/normedtype" -> "theories/realfun";
+  "theories/numfun" -> "theories/realfun";
   "theories/sequences" -> "theories/realfun";
   "theories/topology_theory/topology" -> "theories/realfun";
   "theories/tvs" -> "theories/realfun";

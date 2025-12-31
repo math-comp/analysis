@@ -44,6 +44,9 @@ digraph depend {
 		"theories/derive"	[URL="mathcomp.analysis.derive.html",
 			fillcolor=5,
 			label=derive];
+		"theories/numfun"	[URL="mathcomp.analysis.numfun.html",
+			fillcolor=5,
+			label=numfun];
 		"theories/exp"	[URL="mathcomp.analysis.exp.html",
 			fillcolor=5,
 			label=exp];
@@ -59,9 +62,6 @@ digraph depend {
 		"theories/esum"	[URL="mathcomp.analysis.esum.html",
 			fillcolor=5,
 			label=esum];
-		"theories/numfun"	[URL="mathcomp.analysis.numfun.html",
-			fillcolor=5,
-			label=numfun];
 		"theories/measurable_realfun"	[URL="mathcomp.analysis.measurable_realfun.html",
 			fillcolor=5,
 			label=measurable_realfun];
@@ -495,7 +495,6 @@ digraph depend {
 	"theories/lebesgue_measure" -> "theories/borel_hierarchy";
 	"theories/lebesgue_measure" -> "theories/lebesgue_integral_theory/simple_functions";
 	"theories/measure_theory/measure" -> "theories/lebesgue_stieltjes_measure";
-	"theories/sequences" -> "theories/realfun";
 	"theories/sequences" -> "theories/numfun";
 	"theories/sequences" -> "theories/measure_theory/measurable_structure";
 	"theories/sequences" -> "theories/showcase/pnt";
@@ -517,6 +516,8 @@ digraph depend {
 	"theories/realfun" -> "theories/convex";
 	"theories/realfun" -> "theories/lebesgue_stieltjes_measure";
 	"theories/derive" -> "theories/realfun";
+	"theories/numfun" -> "theories/realfun";
+	"theories/numfun" -> "theories/esum";
 	"theories/exp" -> "theories/measurable_realfun";
 	"theories/convex" -> "theories/exp";
 	"theories/trigo" -> "theories/gauss_integral";
@@ -527,7 +528,6 @@ digraph depend {
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/hoelder";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/kernel";
 	"theories/esum" -> "theories/measure_theory/measure_function";
-	"theories/numfun" -> "theories/esum";
 	"theories/measure_theory/measurable_structure" -> "theories/measure_theory/measurable_function";
 	"theories/measure_theory/measure_function" -> "theories/measure_theory/counting_measure";
 	"theories/measure_theory/measure_function" -> "theories/measure_theory/dirac_measure";
