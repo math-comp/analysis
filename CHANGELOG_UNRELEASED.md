@@ -153,6 +153,23 @@
 - in `lebesgue_integral_theory/lebesgue_integrable.v`
   + lemma `null_set_integral`
 
+- moved from `realfun.v` to `numfun.v`:
+  + notations `nondecreasing_fun`, `nonincreasing_fun`, `increasing_fun`,
+    `decreasing_fun`
+  + generalized from `realType` to `numDomainType`:
+    * lemmas `nondecreasing_funN`, `nonincreasing_funN`
+  + generalized from `realType` to `porderType`
+    * definitions `itv_partition`, `itv_partitionL`, `itv_partitionR`
+    * lemmas `itv_partition_nil`, `itv_partition_cons`, `itv_partition1`,
+      `itv_partition_size_neq0`, `itv_partitionxx`, `itv_partition_le`,
+      `itv_partition_cat`, `itv_partition_nth_size`, `itv_partition_nth_ge`,
+      `itv_partition_nth_le`, `nondecreasing_fun_itv_partition`
+  + generalized from `realType` to `orderType`
+    * lemmas `itv_partitionLP`, `itv_partitionRP`, `in_itv_partition`,
+      `notin_itv_partition`
+  + generalize from `realType` to `numDomainType`:
+    * lemmas `nonincreasing_fun_itv_partition`, `itv_partition_rev`
+
 ### Deprecated
 
 - in `topology_structure.v`:

@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets fsbigop.
@@ -13,15 +13,22 @@ From mathcomp Require Import sequences function_spaces.
 (* theorems such as Tietze's extension theorem.                               *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*    {nnfun T >-> R} == type of non-negative functions                       *)
-(*              f ^\+ == the function formed by the non-negative outputs      *)
-(*                       of f (from a type to the type of extended real       *)
-(*                       numbers) and 0 otherwise                             *)
-(*                       rendered as f ⁺ with company-coq (U+207A)            *)
-(*              f ^\- == the function formed by the non-positive outputs      *)
-(*                       of f and 0 o.w.                                      *)
-(*                       rendered as f ⁻ with company-coq (U+207B)            *)
-(*              \1_ A == indicator function 1_A                               *)
+(*  nondecreasing_fun f == the function f is non-decreasing                   *)
+(*  nonincreasing_fun f == the function f is non-increasing                   *)
+(*     increasing_fun f == the function f is (strictly) increasing            *)
+(*     decreasing_fun f == the function f is (strictly) decreasing            *)
+(*  itv_partition a b s == s is a partition of the interval `[a, b]           *)
+(*   itv_partitionL s c == the left side of splitting a partition at c        *)
+(*   itv_partitionR s c == the right side of splitting a partition at c       *)
+(*      {nnfun T >-> R} == type of non-negative functions                     *)
+(*                f ^\+ == the function formed by the non-negative outputs    *)
+(*                         of f (from a type to the type of extended real     *)
+(*                         numbers) and 0 otherwise                           *)
+(*                         rendered as f ⁺ with company-coq (U+207A)          *)
+(*                f ^\- == the function formed by the non-positive outputs    *)
+(*                         of f and 0 o.w.                                    *)
+(*                         rendered as f ⁻ with company-coq (U+207B)          *)
+(*                \1_ A == indicator function 1_A                             *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -39,6 +46,208 @@ Import numFieldTopology.Exports.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
+
+Notation "'nondecreasing_fun' f" := ({homo f : n m / (n <= m)%O >-> (n <= m)%O})
+  (at level 10).
+Notation "'nonincreasing_fun' f" := ({homo f : n m / (n <= m)%O >-> (n >= m)%O})
+  (at level 10).
+Notation "'increasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n <= m)%O})
+  (at level 10).
+Notation "'decreasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n >= m)%O})
+  (at level 10).
+
+Lemma nondecreasing_funN {R : numDomainType} a b (f : R -> R) :
+  {in `[a, b] &, nondecreasing_fun f} <->
+  {in `[a, b] &, nonincreasing_fun (\- f)}.
+Proof.
+split=> [h m n mab nab mn|h m n mab nab mn]; first by rewrite lerNr opprK h.
+by rewrite -(opprK (f n)) -lerNr h.
+Qed.
+
+Lemma nonincreasing_funN {R : numDomainType} a b (f : R -> R) :
+  {in `[a, b] &, nonincreasing_fun f} <->
+  {in `[a, b] &, nondecreasing_fun (\- f)}.
+Proof.
+apply: iff_sym; apply: (iff_trans (nondecreasing_funN a b (\- f))).
+rewrite [in X in _ <-> X](_ : f = \- (\- f))//.
+by apply/funext => x /=; rewrite opprK.
+Qed.
+
+Section interval_partition_porderType.
+Context {d} {T : porderType d}.
+Implicit Type (a b : T) (s : seq T).
+
+(** a :: s is a partition of the interval [a, b] *)
+Definition itv_partition a b s := [/\ path <%O a s & last a s == b].
+
+Lemma itv_partition_nil a b : itv_partition a b [::] -> a = b.
+Proof. by move=> [_ /eqP <-]. Qed.
+
+Lemma itv_partition_cons a b x s :
+  itv_partition a b (x :: s) -> itv_partition x b s.
+Proof. by rewrite /itv_partition/= => -[/andP[]]. Qed.
+
+Lemma itv_partition1 a b : (a < b)%O -> itv_partition a b [:: b].
+Proof. by rewrite /itv_partition /= => ->. Qed.
+
+Lemma itv_partition_size_neq0 a b s :
+  (size s > 0)%N -> itv_partition a b s -> (a < b)%O.
+Proof.
+elim: s a => // x [_ a _|h t ih a _]; rewrite /itv_partition /=.
+  by rewrite andbT => -[ax /eqP <-].
+move=> [] /andP[ax /andP[xy] ht /eqP tb].
+by rewrite (lt_trans ax)// ih// /itv_partition /= xy/= tb.
+Qed.
+
+Lemma itv_partitionxx a s : itv_partition a a s -> s = [::].
+Proof.
+case: s => //= h t [/= /andP[ah /lt_path_min/allP ht] /eqP hta].
+suff : (h < a)%O by move/lt_trans => /(_ _ ah); rewrite ltxx.
+apply/ht; rewrite -hta.
+by have := mem_last h t; rewrite inE hta lt_eqF.
+Qed.
+
+Lemma itv_partition_le a b s : itv_partition a b s -> (a <= b)%O.
+Proof.
+case: s => [/itv_partition_nil ->//|h t /itv_partition_size_neq0 - /(_ _)/ltW].
+exact.
+Qed.
+
+Lemma itv_partition_cat a b c s t :
+  itv_partition a b s -> itv_partition b c t -> itv_partition a c (s ++ t).
+Proof.
+rewrite /itv_partition => -[sa /eqP asb] [bt btc].
+by rewrite cat_path// sa /= last_cat asb.
+Qed.
+
+Lemma itv_partition_nth_size def a b s : itv_partition a b s ->
+  nth def (a :: s) (size s) = b.
+Proof.
+by elim: s a => [a/= /itv_partition_nil//|y t ih a /= /itv_partition_cons/ih].
+Qed.
+
+Lemma itv_partition_nth_ge a b s m : (m < (size s).+1)%N ->
+  itv_partition a b s -> (a <= nth b (a :: s) m)%O.
+Proof.
+elim: m s a b => [s a b _//|n ih [//|h t] a b].
+rewrite ltnS => nh [/= /andP[ah ht] lb].
+by rewrite (le_trans (ltW ah))// ih.
+Qed.
+
+Lemma itv_partition_nth_le a b s m : (m < (size s).+1)%N ->
+  itv_partition a b s -> (nth b (a :: s) m <= b)%O.
+Proof.
+elim: m s a => [s a _|n ih]; first exact: itv_partition_le.
+by move=> [//|a h t /= nt] H; rewrite ih//; exact: itv_partition_cons H.
+Qed.
+
+Lemma nondecreasing_fun_itv_partition a b f s :
+  {in `[a, b] &, nondecreasing_fun f} -> itv_partition a b s ->
+  let F : nat -> T := f \o nth b (a :: s) in
+  forall k, (k < size s)%N -> (F k <= F k.+1)%O.
+Proof.
+move=> ndf abs F k ks.
+have [_] := nondecreasing_seqP F; apply => m n mn; rewrite /F/=.
+have [ms|ms] := ltnP m (size s).+1; last first.
+  rewrite nth_default//.
+  have [|ns] := ltnP n (size s).+1; last by rewrite nth_default.
+  by move=> /(leq_ltn_trans mn); rewrite ltnS leqNgt ms.
+have [ns|ns] := ltnP n (size s).+1; last first.
+  rewrite [in leRHS]nth_default//=; apply/ndf/itv_partition_nth_le => //.
+    by rewrite in_itv/= itv_partition_nth_le// andbT itv_partition_nth_ge.
+  by rewrite in_itv/= lexx andbT; exact: (itv_partition_le abs).
+move: abs; rewrite /itv_partition => -[] sa sab.
+move: mn; rewrite leq_eqVlt => /predU1P[->//|mn].
+apply/ndf/ltW/sorted_ltn_nth => //=; last exact: lt_trans.
+  by rewrite in_itv/= itv_partition_nth_le// andbT itv_partition_nth_ge.
+by rewrite in_itv/= itv_partition_nth_le// andbT itv_partition_nth_ge.
+Qed.
+
+(** given a partition of [a, b] and c, returns a partition of [a, c] *)
+Definition itv_partitionL s c := rcons [seq x <- s | (x < c)%O] c.
+
+(** given a partition of [a, b] and c, returns a partition of [c, b] *)
+Definition itv_partitionR s c := [seq x <- s | (c < x)%O].
+
+End interval_partition_porderType.
+
+Section interval_partition_orderType.
+Context {d} {T : orderType d}.
+Implicit Type (a b : T) (s : seq T).
+
+Lemma itv_partitionLP a b c s : (a < c)%O -> (c < b)%O -> itv_partition a b s ->
+  itv_partition a c (itv_partitionL s c).
+Proof.
+move=> ac bc [] al /eqP htb; split.
+  rewrite /itv_partitionL rcons_path/=; apply/andP; split.
+    by apply: path_filter => //; exact: lt_trans.
+  exact: (last_filterP [pred x | (x < c)%O]).
+by rewrite /itv_partitionL last_rcons.
+Qed.
+
+Lemma itv_partitionRP a b c s : (a < c)%O -> (c < b)%O -> itv_partition a b s ->
+  itv_partition c b (itv_partitionR s c).
+Proof.
+move=> ac cb [] sa /eqP alb; rewrite /itv_partition; split.
+  move: sa; rewrite lt_path_sortedE => /andP[allas ss].
+  rewrite lt_path_sortedE filter_all/=.
+  by apply: sorted_filter => //; exact: lt_trans.
+exact/eqP/(path_lt_last_filter ac).
+Qed.
+
+Lemma in_itv_partition c s : sorted <%O s -> c \in s ->
+  s = itv_partitionL s c ++ itv_partitionR s c.
+Proof.
+elim: s c => // h t ih c /= ht.
+rewrite inE => /predU1P[->{c}/=|ct].
+  rewrite ltxx /itv_partitionL /= ltxx /itv_partitionR/= path_lt_filter0//=.
+  by rewrite path_lt_filterT.
+rewrite /itv_partitionL/=; case: ifPn => [hc|].
+  by rewrite ltNge (ltW hc)/= /= [in LHS](ih _ _ ct)//; exact: path_sorted ht.
+rewrite -leNgt le_eqVlt => /predU1P[ch|ch].
+  by rewrite ch ltxx path_lt_filter0//= /itv_partitionR path_lt_filterT.
+move: ht; rewrite lt_path_sortedE => /andP[/allP/(_ _ ct)].
+by move=> /lt_trans-/(_ _ ch); rewrite ltxx.
+Qed.
+
+Lemma notin_itv_partition c s : sorted <%O s -> c \notin s ->
+  s = [seq x <- s | (x < c)%O] ++ itv_partitionR s c.
+Proof.
+elim: s c => // h t ih c /= ht.
+rewrite inE negb_or => /andP[]; rewrite neq_lt => /orP[ch|ch] ct.
+  rewrite ch ltNge (ltW ch)/= path_lt_filter0/= /itv_partitionR; last first.
+    exact: path_lt_head ht.
+  by rewrite path_lt_filterT//; exact: path_lt_head ht.
+by rewrite ch/= ltNge (ltW ch)/= -ih//; exact: path_sorted ht.
+Qed.
+
+End interval_partition_orderType.
+
+Section interval_partition_numDomainType.
+Context {R : numDomainType}.
+Implicit Type (a b : R) (s : seq R).
+
+Lemma nonincreasing_fun_itv_partition a b f s :
+  {in `[a, b] &, nonincreasing_fun f} -> itv_partition a b s ->
+  let F : nat -> R := f \o nth b (a :: s) in
+  forall k, (k < size s)%N -> (F k.+1 <= F k)%O.
+Proof.
+move/nonincreasing_funN => ndNf abs F k ks; rewrite -(opprK (F k)) lerNr.
+exact: (nondecreasing_fun_itv_partition ndNf abs).
+Qed.
+
+Lemma itv_partition_rev a b s : itv_partition a b s ->
+  itv_partition (- b) (- a) (rev (belast (- a) (map -%R s))).
+Proof.
+move=> [sa /eqP alb]; split.
+  rewrite (_ : - b = last (- a) (map -%R s)); last by rewrite last_map alb.
+  rewrite rev_path// path_map.
+  by apply: sub_path sa => x y xy/=; rewrite ltrNr opprK.
+case: s sa alb => [_ <-//|h t] /= /andP[ah ht] <-{b}.
+by rewrite rev_cons last_rcons.
+Qed.
+
+End interval_partition_numDomainType.
 
 HB.mixin Record isNonNegFun (aT : Type) (rT : numDomainType) (f : aT -> rT) := {
   fun_ge0 : forall x, (0 <= f x)%R
