@@ -120,6 +120,43 @@
 - in `subspace_topology.v`:
   + notation `{within _, continuous _}` (now uses `from_subspace`)
 
+- moved from `realfun.v` to `numfun.v`:
+  + notations `nondecreasing_fun`, `nonincreasing_fun`, `increasing_fun`,
+    `decreasing_fun`
+  + generalized from `realType` to `numDomainType`:
+    * lemmas `nondecreasing_funN`, `nonincreasing_funN`
+  + generalized from `realType` to `porderType`
+    * definitions `itv_partition`, `itv_partitionL`, `itv_partitionR`
+    * lemmas `itv_partition_nil`, `itv_partition_cons`, `itv_partition1`,
+      `itv_partition_size_neq0`, `itv_partitionxx`, `itv_partition_le`,
+      `itv_partition_cat`, `itv_partition_nth_size`, `itv_partition_nth_ge`,
+      `itv_partition_nth_le`, `nondecreasing_fun_itv_partition`
+  + generalized from `realType` to `orderType`
+    * lemmas `itv_partitionLP`, `itv_partitionRP`, `in_itv_partition`,
+      `notin_itv_partition`
+  + generalize from `realType` to `numDomainType`:
+    * lemmas `nonincreasing_fun_itv_partition`, `itv_partition_rev`
+
+- moved from `realfun.v` to `numfun.v`:
+  + generalize from `realType` to `numDomainType`
+    * definition `variation`
+    * lemmas `variation_zip`, `variation_prev`, `variation_next`,
+      `variation_nil`, `variation_ge0`, `variationN`, `variation_le`,
+      `nondecreasing_variation`, `nonincreasing_variation`,
+      `variation_cat` (order of parameters also changed), `le_variation`,
+      `variation_opp_rev`, `variation_rev_opp`
+  + generalize from `realType` to `realDomainType`
+    * lemmas `variation_itv_partitionLR`, `variation_subseq`
+
+- moved from `realfun.v` to `numfun.v`:
+  + generalize from `realType` to `numDomainType`
+    * definition `variations`, `bounded_variation`
+    * lemmas `variations_variation`, `variations_neq0`, `variationsN`,
+      `variationsxx`
+    * lemmas `bounded_variationxx`, `bounded_variationD`,
+      `bounded_variationN`, `bounded_variationl`, `bounded_variationr`,
+      `variations_opp`, `nondecreasing_bounded_variation`
+
 ### Renamed
 
 - in `probability.v`:
@@ -152,6 +189,12 @@
 
 - in `lebesgue_integral_theory/lebesgue_integrable.v`
   + lemma `null_set_integral`
+
+- in `realfun.v`:
+  + generalized from `realType` to `realFieldType`:
+    * definition `total_variation`
+    * lemmas `total_variationxx`, `nondecreasing_total_variation`,
+      `total_variationN`
 
 ### Deprecated
 
