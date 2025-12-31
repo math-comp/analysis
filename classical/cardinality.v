@@ -613,7 +613,7 @@ Lemma sub_finite_set T (A B : set T) : A `<=` B ->
 Proof. by move=> ?; apply/card_le_finite/subset_card_le. Qed.
 
 Lemma sub_cofinite_set T (A B : set T) : A `<=` B ->
-  cofinite_set A -> cofinite_set A.
+  cofinite_set A -> cofinite_set B.
 Proof. by move=> /subsetC/sub_finite_set. Qed.
 
 Lemma sub_infinite_set T (A B : set T) : A `<=` B ->

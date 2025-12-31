@@ -2974,7 +2974,7 @@ End adjacent_cut.
 
 Section finite_range_sequence_constant.
 
-Lemma finite_range_cst {T} (u_ : T^nat) : finite_set (range u_) ->
+Lemma finite_range_cst_subsequence {T} (u_ : T^nat) : finite_set (range u_) ->
   exists x, exists2 A, infinite_set A & (forall k, A k <-> u_ k = x).
 Proof.
 move=> range_u_finite; pose A x := u_ @^-1` [set x].
@@ -2987,7 +2987,8 @@ Qed.
 
 Lemma infinite_increasing_seq {d} {T : porderType d} (A : set T) :
   (forall x, infinite_set [set y | A y /\ (x < y)%O]) ->
-  forall x0 : T, exists f, [/\ increasing_seq f, forall n : nat, (x0 < f n)%O & forall n, A (f n)].
+  forall x0 : T, exists f : nat -> T,
+    [/\ increasing_seq f, forall n : nat, (x0 < f n)%O & forall n, A (f n)].
 Proof.
 pose R (x y : T) := A y /\ (x < y)%O => Roo x0.
 have [x|f [f0 /all_and2[fA fS]]] := @dependent_choice T R _ x0.
@@ -2998,17 +2999,19 @@ Qed.
 
 Lemma infinite_increasing_seq_wf {d} {T : orderType d} (A : set T) :
   (forall x : T, finite_set [set y | (y <= x)%O]) -> infinite_set A ->
-  forall x0 : T, exists f, [/\ increasing_seq f, forall n : nat, (x0 < f n)%O & forall n, A (f n)].
+  forall x0 : T, exists f : nat -> T,
+  [/\ increasing_seq f, forall n, (x0 < f n)%O & forall n, A (f n)].
 Proof.
-move=> Dfin Aoo; apply: infinite_increasing_seq => x; apply: infinite_setIl => //.
+move=> Dfin Aoo; apply: infinite_increasing_seq => x.
+apply: infinite_setIl => //.
 by apply: sub_finite_set (Dfin x) => y /=; case: leP.
 Qed.
 
-Lemma finite_range_cvg {T : ptopologicalType} (x_ : T ^nat) :
+Lemma finite_range_cvg_subsequence {T : ptopologicalType} (x_ : T ^nat) :
   finite_set (range x_) ->
   exists2 f : nat -> nat, increasing_seq f & cvgn (x_ \o f).
 Proof.
-move=> /finite_range_cst[x [A Aoo Ax_]].
+move=> /finite_range_cst_subsequence[x [A Aoo Ax_]].
 have /= [|f [fincr _ Af]] := infinite_increasing_seq_wf _ Aoo 0.
   by move=> n; apply: sub_finite_set (finite_II n.+1) => m /=.
 exists f => //=; suff -> : x_ \o f = fun=> x by apply: is_cvg_cst.
@@ -3024,7 +3027,7 @@ move=> bnd_u; set U := range u_.
 have bndU : bounded_set U.
   case: bnd_u => N [Nreal Nu_].
   by exists N; split => // x /Nu_ {}Nu_ /= y [x0 _ <-]; exact: Nu_.
-have [/finite_range_cvg//|infU] := pselect (finite_set U).
+have [/finite_range_cvg_subsequence//|infU] := pselect (finite_set U).
 have [/= l Ul] := infinite_bounded_limit_point_nonempty infU bndU.
 have x_l := limit_point_cluster_eventually Ul.
 have [+ _] := cluster_eventually_cvg u_ l.
