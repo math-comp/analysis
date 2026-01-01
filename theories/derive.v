@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval poly.
 From mathcomp Require Import sesquilinear.
@@ -693,45 +693,6 @@ have @f : {linear 'M[R]_(m, n) -> R}.
 rewrite (_ : (fun _ => _) = f) //; exact/linear_differentiable/coord_continuous.
 Qed.
 
-Lemma differentiable_rsubmx0 {n1 n2} t :
-  differentiable (@rsubmx R 1 n1 n2) t.
-Proof.
-have lin_rsubmx : linear (@rsubmx R 1 n1 n2).
-  move=> a b c.
-  by rewrite linearD//= linearZ.
-pose build_lin_rsubmx := GRing.isLinear.Build _ _ _ _ _ lin_rsubmx.
-pose Rsubmx : {linear 'rV[R^o]_(n1 + n2) -> 'rV[R^o]_n2} := HB.pack (@rsubmx R _ _ _) build_lin_rsubmx.
-apply: (@linear_differentiable _ _ _ _).
-move=> /= u A /=.
-move/nbhs_ballP=> [e /= e0 eA].
-apply/nbhs_ballP; exists e => //= v [? uv].
-apply: eA; split => //.
-(* TODO: lemma *)
-move: uv; rewrite /ball/= /mx_ball/ball /= => uv i j.
-apply: (le_lt_trans _ (uv i (rshift n1 j))).
-by rewrite !mxE.
-Qed.
-
-Lemma differentiable_lsubmx0{n1 n2} t :
-  differentiable (@lsubmx R 1 n1 n2) t.
-Proof.
-have lin_lsubmx : linear (@lsubmx R 1 n1 n2).
-  move=> a b c.
-  by rewrite linearD//= linearZ.
-pose build_lin_lsubmx := GRing.isLinear.Build _ _ _ _ _ lin_lsubmx.
-pose Lsubmx : {linear 'rV[R^o]_(n1 + n2) -> 'rV[R^o]_n1} :=
-  HB.pack (@lsubmx R _ _ _) build_lin_lsubmx.
-apply: (@linear_differentiable _ _ _ _).
-move=> /= u A /=.
-move/nbhs_ballP=> [e /= e0 eA].
-apply/nbhs_ballP; exists e => //= v [? uv].
-apply: eA; split => //.
-(* TODO: lemma *)
-move: uv; rewrite /ball/= /mx_ball/ball /= => uv i j.
-apply: (le_lt_trans _ (uv i (lshift n2 j))).
-by rewrite !mxE.
-Qed.
-
 Lemma linear_lipschitz (V' W' : normedModType R) (f : {linear V' -> W'}) :
   continuous f -> exists2 k, k > 0 & forall x, `|f x| <= k * `|x|.
 Proof.
@@ -799,24 +760,18 @@ move=> dfx dgfx; apply: DiffDef; first exact: differentiable_comp.
 by rewrite diff_comp // !diff_val.
 Qed.
 
-Lemma differentiable_rsubmx {n1 n2}
-    (f : V -> 'rV[R]_(n1 + n2)) t :
-  (forall x, differentiable f x) ->
-  differentiable (fun x => rsubmx (f x)) t.
+Lemma differentiable_rsubmx m {n1 n2} (f : V -> 'M[R]_(m, n1 + n2)) v :
+  (forall x, differentiable f x) -> differentiable (rsubmx \o f) v.
 Proof.
-move=> /= => df1.
-apply: differentiable_comp => //.
-exact: differentiable_rsubmx0.
+move=> df; apply: differentiable_comp => //.
+exact/linear_differentiable/continuous_rsubmx.
 Qed.
 
-Lemma differentiable_lsubmx {n1 n2}
-    (f : V -> 'rV[R]_(n1 + n2)) t :
-  (forall x, differentiable f x) ->
-  differentiable (fun x => lsubmx (f x)) t.
+Lemma differentiable_lsubmx m {n1 n2} (f : V -> 'M[R]_(m, n1 + n2)) v :
+  (forall x, differentiable f x) -> differentiable (lsubmx \o f) v.
 Proof.
-move=> /= => df1.
-apply: differentiable_comp => //.
-exact: differentiable_lsubmx0.
+move=> df1; apply: differentiable_comp => //.
+exact/linear_differentiable/continuous_lsubmx.
 Qed.
 
 Lemma bilinear_schwarz (U V' W' : normedModType R)
