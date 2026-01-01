@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
 From mathcomp Require Import archimedean interval mathcomp_extra.
 
@@ -15,8 +15,10 @@ From mathcomp Require Import archimedean interval mathcomp_extra.
 (* ```                                                                        *)
 (*                 swap x := (x.2, x.1)                                       *)
 (*           map_pair f x := (f x.1, f x.2)                                   *)
-(*         monotonous A f := {in A &, {mono f : x y / x <= y}} \/             *)
-(*                           {in A &, {mono f : x y /~ x <= y}}               *)
+(*          monotonic A f := {in A &, {homo f : x y / x <= y}} \/             *)
+(*                           {in A &, {homo f : x y /~ x <= y}}               *)
+(*   strict_monotonic A f := {in A &, {homo f : x y / x < y}} \/              *)
+(*                           {in A &, {homo f : x y /~ x < y}}                *)
 (*             sigT_fun f := lifts a family of functions f into a function on *)
 (*                           the dependent sum                                *)
 (*                prodA x := sends (X * Y) * Z to X * (Y * Z)                 *)
@@ -164,8 +166,20 @@ rewrite -[X in (_ <= X)%N]prednK ?expn_gt0// -[X in (_ <= X)%N]addn1 leq_add2r.
 by rewrite (leq_trans h2)// -subn1 leq_subRL ?expn_gt0// add1n ltn_exp2l.
 Qed.
 
-Definition monotonous d (T : porderType d) (pT : predType T) (A : pT) (f : T -> T) :=
-  {in A &, {mono f : x y / (x <= y)%O}} \/ {in A &, {mono f : x y /~ (x <= y)%O}}.
+Definition monotonic d (T : porderType d) d' (T' : porderType d')
+    (pT : predType T) (A : pT) (f : T -> T') :=
+  {in A &, nondecreasing f} \/ {in A &, {homo f : x y /~ (x <= y)%O}}.
+
+Definition strict_monotonic d (T : porderType d) d' (T' : porderType d')
+    (pT : predType T) (A : pT) (f : T -> T') :=
+  {in A &, {homo f : x y / (x < y)%O}} \/ {in A &, {homo f : x y /~ (x < y)%O}}.
+
+Lemma strict_monotonicW d (T : orderType d) d' (T' : porderType d')
+    (pT : predType T) (A : pT) (f : T -> T') :
+  strict_monotonic A f -> monotonic A f.
+Proof.
+by move=> [/le_mono_in/monoW_in|/le_nmono_in/monoW_in]; [left|right].
+Qed.
 
 Lemma mono_leq_infl f : {mono f : m n / (m <= n)%N} -> forall n, (n <= f n)%N.
 Proof.
