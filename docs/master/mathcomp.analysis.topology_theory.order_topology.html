@@ -219,8 +219,13 @@
 # Order topology
 
 ```
-            orderTopologicalType == a topology built from intervals
-                order_topology T == the induced order topology on T
+                   POrderedNbhs == join of Nbhs and isPOrder
+            POrderedTopological == join of Topological and isPOrder
+                POrderedUniform == join of Uniform and isPOrder
+           POrderedPseudoMetric == join of PseudoMetric and isPOrder
+     POrderedPointedTopological == join of PointedTopological and isPOrder
+           orderTopologicalType == a topology built from intervals
+               order_topology T == the induced order topology on T
 ```
 </div>
 <br/>
@@ -289,7 +294,7 @@ rray_open is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.rray_open
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 71, characters 6-15
+library mathcomp.analysis.topology_theory.order_topology, line 76, characters 6-15
 ">rray_open</a></span><span class="id"> </span><span id="x:40" class="id"><a name="x:40" class="">x</a></span><span class="id"> :</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_topologies.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#eca7c03119ea7bbb2c5bd6c3655e6974">`]</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#x:40">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#eca7c03119ea7bbb2c5bd6c3655e6974">,</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#eca7c03119ea7bbb2c5bd6c3655e6974"> +oo[</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -309,7 +314,7 @@ lray_open is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.lray_open
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 78, characters 6-15
+library mathcomp.analysis.topology_theory.order_topology, line 83, characters 6-15
 ">lray_open</a></span><span class="id"> </span><span id="x:41" class="id"><a name="x:41" class="">x</a></span><span class="id"> :</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_topologies.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#04b01635776f32698bdf81bda549a814">`]-oo,</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#04b01635776f32698bdf81bda549a814"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#x:41">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#04b01635776f32698bdf81bda549a814">[</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -329,7 +334,7 @@ itv_open is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.itv_open
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 85, characters 6-14
+library mathcomp.analysis.topology_theory.order_topology, line 90, characters 6-14
 ">itv_open</a></span><span class="id"> </span><span id="x:42" class="id"><a name="x:42" class="">x</a></span><span class="id"> </span><span id="y:43" class="id"><a name="y:43" class="">y</a></span><span class="id"> :</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_topologies.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#d9e9ffb4ad57ed1d8357ed0c1824cf0c">`]</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#x:42">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#d9e9ffb4ad57ed1d8357ed0c1824cf0c">,</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#d9e9ffb4ad57ed1d8357ed0c1824cf0c"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#y:43">y</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#d9e9ffb4ad57ed1d8357ed0c1824cf0c">[</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -347,7 +352,7 @@ itv_open_ends_open is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.itv_open_ends_open
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 89, characters 6-24
+library mathcomp.analysis.topology_theory.order_topology, line 94, characters 6-24
 ">itv_open_ends_open</a></span> (<span id="i:44" class="id"><a name="i:44" class="">i</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html#interval">interval</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_topologies.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.set_interval.html#itv_open_ends">itv_open_ends</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#i:44">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">[set`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#i:44">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">]</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -372,7 +377,7 @@ rray_closed is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.rray_closed
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 95, characters 6-17
+library mathcomp.analysis.topology_theory.order_topology, line 100, characters 6-17
 ">rray_closed</a></span><span class="id"> </span><span id="x:45" class="id"><a name="x:45" class="">x</a></span><span class="id"> :</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_topologies.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#15b7e1a0c6e4df0db66b48da271129e4">`[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#x:45">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#15b7e1a0c6e4df0db66b48da271129e4">,</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#15b7e1a0c6e4df0db66b48da271129e4"> +oo[</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -396,7 +401,7 @@ lray_closed is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.lray_closed
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 99, characters 6-17
+library mathcomp.analysis.topology_theory.order_topology, line 104, characters 6-17
 ">lray_closed</a></span><span class="id"> </span><span id="x:46" class="id"><a name="x:46" class="">x</a></span><span class="id"> :</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_topologies.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#5e1b04cba2ff8bb716094037c34db7ee">`]-oo,</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#5e1b04cba2ff8bb716094037c34db7ee"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#x:46">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#5e1b04cba2ff8bb716094037c34db7ee">]</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -420,7 +425,7 @@ itv_closed is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.itv_closed
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 103, characters 6-16
+library mathcomp.analysis.topology_theory.order_topology, line 108, characters 6-16
 ">itv_closed</a></span><span class="id"> </span><span id="x:47" class="id"><a name="x:47" class="">x</a></span><span class="id"> </span><span id="y:48" class="id"><a name="y:48" class="">y</a></span><span class="id"> :</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_topologies.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">`[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#x:47">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">,</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#y:48">y</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">]</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -446,7 +451,7 @@ itv_closure is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.itv_closure
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 107, characters 6-17
+library mathcomp.analysis.topology_theory.order_topology, line 112, characters 6-17
 ">itv_closure</a></span><span class="id"> </span><span id="x:49" class="id"><a name="x:49" class="">x</a></span><span class="id"> </span><span id="y:50" class="id"><a name="y:50" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#d9e9ffb4ad57ed1d8357ed0c1824cf0c">`]</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#x:49">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#d9e9ffb4ad57ed1d8357ed0c1824cf0c">,</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#d9e9ffb4ad57ed1d8357ed0c1824cf0c"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#y:50">y</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#d9e9ffb4ad57ed1d8357ed0c1824cf0c">[</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">`[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#x:49">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">,</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#y:50">y</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">]</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -472,7 +477,7 @@ itv_closed_infimums is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.itv_closed_infimums
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 113, characters 6-25
+library mathcomp.analysis.topology_theory.order_topology, line 118, characters 6-25
 ">itv_closed_infimums</a></span> (<span id="A:51" class="id"><a name="A:51" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_topologies.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#A:51">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#A:51">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#infimums">infimums</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#A:51">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#A:51">A</a></span>.<br/>
 <details>
@@ -513,7 +518,7 @@ itv_closed_supremums is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.itv_closed_supremums
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 134, characters 6-26
+library mathcomp.analysis.topology_theory.order_topology, line 139, characters 6-26
 ">itv_closed_supremums</a></span> (<span id="A:52" class="id"><a name="A:52" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_topologies.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#A:52">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#A:52">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#supremums">supremums</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#A:52">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#A:52">A</a></span>.<br/>
 <details>
@@ -557,7 +562,7 @@ clopen_bigcup_clopen is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.clopen_bigcup_clopen
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 158, characters 6-26
+library mathcomp.analysis.topology_theory.order_topology, line 163, characters 6-26
 ">clopen_bigcup_clopen</a></span><span class="id"> </span><span id="x:56" class="id"><a name="x:56" class="">x</a></span> (<span id="U:57" class="id"><a name="U:57" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_topologies.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#clopen">clopen</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#U:57">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#U:57">U</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#x:56">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#clopen">clopen</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#6c1866a3b78974b64276da9cd4d63a55">\bigcup_</a></span>(<span id="i:58" class="id"><a name="i:58" class="">i</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.classical.classical_sets.html#6c1866a3b78974b64276da9cd4d63a55"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_topologies.sub_open_mem">sub_open_mem</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#x:56">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#U:57">U</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#6c1866a3b78974b64276da9cd4d63a55"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">[set`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#i:58">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">]</a></span>).<br/>
 <details>
@@ -596,7 +601,7 @@ order_topology is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 186, characters 11-25
+library mathcomp.analysis.topology_theory.order_topology, line 191, characters 11-25
 ">order_topology</a></span> (<span id="T:60" class="id"><a name="T:60" class="">T</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#T:60">T</a></span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> induced_order_topology</span>.<br/>
@@ -614,7 +619,7 @@ interval_interval__canonical__classical_sets_Pointed is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.interval_interval__canonical__classical_sets_Pointed
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 194, characters 0-70
+library mathcomp.analysis.topology_theory.order_topology, line 199, characters 0-70
 ">HB</a></span></span>.<span id="interval_interval__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="interval_interval__canonical__classical_sets_Pointed" class="" title="interval_interval__canonical__classical_sets_Pointed :
 forall {d : disp_t}, orderType d -> pointedType
 
@@ -624,7 +629,7 @@ interval_interval__canonical__classical_sets_Pointed is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.interval_interval__canonical__classical_sets_Pointed
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 194, characters 0-70
+library mathcomp.analysis.topology_theory.order_topology, line 199, characters 0-70
 ">instance</a></span></span><span class="vernacular"> Definition</span><span id="interval_interval__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="interval_interval__canonical__classical_sets_Pointed" class="" title="interval_interval__canonical__classical_sets_Pointed :
 forall {d : disp_t}, orderType d -> pointedType
 
@@ -634,7 +639,7 @@ interval_interval__canonical__classical_sets_Pointed is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.interval_interval__canonical__classical_sets_Pointed
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 194, characters 0-70
+library mathcomp.analysis.topology_theory.order_topology, line 199, characters 0-70
 "> _</a></span></span><span id="interval_interval__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="interval_interval__canonical__classical_sets_Pointed" class="" title="interval_interval__canonical__classical_sets_Pointed :
 forall {d : disp_t}, orderType d -> pointedType
 
@@ -644,7 +649,7 @@ interval_interval__canonical__classical_sets_Pointed is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.interval_interval__canonical__classical_sets_Pointed
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 194, characters 0-70
+library mathcomp.analysis.topology_theory.order_topology, line 199, characters 0-70
 "> :=</a></span></span><span id="interval_interval__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="interval_interval__canonical__classical_sets_Pointed" class="" title="interval_interval__canonical__classical_sets_Pointed :
 forall {d : disp_t}, orderType d -> pointedType
 
@@ -654,7 +659,7 @@ interval_interval__canonical__classical_sets_Pointed is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.interval_interval__canonical__classical_sets_Pointed
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 194, characters 0-70
+library mathcomp.analysis.topology_theory.order_topology, line 199, characters 0-70
 "> isPointed</a></span></span>.<span class="id"><a href="mathcomp.classical.classical_sets.html#isPointed.Build">Build</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html#interval">interval</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#induced_order_topology.T">T</a></span>) (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html#2d0f4f3a8486d97a7c68fd4d2f96ccac">`]-oo,+oo[</a></span>).<br/>
 <br/>
 <span id="order_topology_order_topology__canonical__Order_Total" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="order_topology_order_topology__canonical__Order_DistrLattice" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="order_topology_order_topology__canonical__Order_Lattice" class="id"><span id="order_topology_order_topology__canonical__Order_JoinSemilattice" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="order_topology_order_topology__canonical__Order_MeetSemilattice" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="order_topology_order_topology__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="order_topology_order_topology__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="order_topology_order_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="order_topology_order_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="Order_Total__to__Order_DistrLattice_isTotal" class="id"><span id="Order_Total__to__Order_Lattice_isDistributive" class="id"><span id="Order_Total__to__Order_POrder_isJoinSemilattice" class="id"><span id="Order_Total__to__Order_POrder_isMeetSemilattice" class="id"><span id="Order_Total__to__Order_Preorder_isDuallyPOrder" class="id"><span id="Order_Total__to__Order_isDuallyPreorder" class="id"><span id="Order_Total__to__eqtype_hasDecEq" class="id"><span id="Order_Total__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="order_topology_order_topology__canonical__Order_Total" class="" title="order_topology_order_topology__canonical__Order_Total :
@@ -666,7 +671,7 @@ order_topology_order_topology__canonical__Order_Total is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology_order_topology__canonical__Order_Total
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 196, characters 0-46
+library mathcomp.analysis.topology_theory.order_topology, line 201, characters 0-46
 ">HB</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="order_topology_order_topology__canonical__Order_Total" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="order_topology_order_topology__canonical__Order_DistrLattice" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="order_topology_order_topology__canonical__Order_Lattice" class="id"><span id="order_topology_order_topology__canonical__Order_JoinSemilattice" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="order_topology_order_topology__canonical__Order_MeetSemilattice" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="order_topology_order_topology__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="order_topology_order_topology__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="order_topology_order_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="order_topology_order_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="Order_Total__to__Order_DistrLattice_isTotal" class="id"><span id="Order_Total__to__Order_Lattice_isDistributive" class="id"><span id="Order_Total__to__Order_POrder_isJoinSemilattice" class="id"><span id="Order_Total__to__Order_POrder_isMeetSemilattice" class="id"><span id="Order_Total__to__Order_Preorder_isDuallyPOrder" class="id"><span id="Order_Total__to__Order_isDuallyPreorder" class="id"><span id="Order_Total__to__eqtype_hasDecEq" class="id"><span id="Order_Total__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="order_topology_order_topology__canonical__Order_Total" class="" title="order_topology_order_topology__canonical__Order_Total :
 forall {d : disp_t}, orderType d -> orderType d
 
@@ -676,7 +681,7 @@ order_topology_order_topology__canonical__Order_Total is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology_order_topology__canonical__Order_Total
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 196, characters 0-46
+library mathcomp.analysis.topology_theory.order_topology, line 201, characters 0-46
 ">instance</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="order_topology_order_topology__canonical__Order_Total" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="order_topology_order_topology__canonical__Order_DistrLattice" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="order_topology_order_topology__canonical__Order_Lattice" class="id"><span id="order_topology_order_topology__canonical__Order_JoinSemilattice" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="order_topology_order_topology__canonical__Order_MeetSemilattice" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="order_topology_order_topology__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="order_topology_order_topology__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="order_topology_order_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="order_topology_order_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="Order_Total__to__Order_DistrLattice_isTotal" class="id"><span id="Order_Total__to__Order_Lattice_isDistributive" class="id"><span id="Order_Total__to__Order_POrder_isJoinSemilattice" class="id"><span id="Order_Total__to__Order_POrder_isMeetSemilattice" class="id"><span id="Order_Total__to__Order_Preorder_isDuallyPOrder" class="id"><span id="Order_Total__to__Order_isDuallyPreorder" class="id"><span id="Order_Total__to__eqtype_hasDecEq" class="id"><span id="Order_Total__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="order_topology_order_topology__canonical__Order_Total" class="" title="order_topology_order_topology__canonical__Order_Total :
 forall {d : disp_t}, orderType d -> orderType d
 
@@ -686,7 +691,7 @@ order_topology_order_topology__canonical__Order_Total is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology_order_topology__canonical__Order_Total
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 196, characters 0-46
+library mathcomp.analysis.topology_theory.order_topology, line 201, characters 0-46
 "> _</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="order_topology_order_topology__canonical__Order_Total" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="order_topology_order_topology__canonical__Order_DistrLattice" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="order_topology_order_topology__canonical__Order_Lattice" class="id"><span id="order_topology_order_topology__canonical__Order_JoinSemilattice" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="order_topology_order_topology__canonical__Order_MeetSemilattice" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="order_topology_order_topology__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="order_topology_order_topology__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="order_topology_order_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="order_topology_order_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="Order_Total__to__Order_DistrLattice_isTotal" class="id"><span id="Order_Total__to__Order_Lattice_isDistributive" class="id"><span id="Order_Total__to__Order_POrder_isJoinSemilattice" class="id"><span id="Order_Total__to__Order_POrder_isMeetSemilattice" class="id"><span id="Order_Total__to__Order_Preorder_isDuallyPOrder" class="id"><span id="Order_Total__to__Order_isDuallyPreorder" class="id"><span id="Order_Total__to__eqtype_hasDecEq" class="id"><span id="Order_Total__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="order_topology_order_topology__canonical__Order_Total" class="" title="order_topology_order_topology__canonical__Order_Total :
 forall {d : disp_t}, orderType d -> orderType d
 
@@ -696,7 +701,7 @@ order_topology_order_topology__canonical__Order_Total is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology_order_topology__canonical__Order_Total
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 196, characters 0-46
+library mathcomp.analysis.topology_theory.order_topology, line 201, characters 0-46
 "> :=</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="order_topology_order_topology__canonical__Order_Total" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="order_topology_order_topology__canonical__Order_DistrLattice" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="order_topology_order_topology__canonical__Order_Lattice" class="id"><span id="order_topology_order_topology__canonical__Order_JoinSemilattice" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="order_topology_order_topology__canonical__Order_MeetSemilattice" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="order_topology_order_topology__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="order_topology_order_topology__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="order_topology_order_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="order_topology_order_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="Order_Total__to__Order_DistrLattice_isTotal" class="id"><span id="Order_Total__to__Order_Lattice_isDistributive" class="id"><span id="Order_Total__to__Order_POrder_isJoinSemilattice" class="id"><span id="Order_Total__to__Order_POrder_isMeetSemilattice" class="id"><span id="Order_Total__to__Order_Preorder_isDuallyPOrder" class="id"><span id="Order_Total__to__Order_isDuallyPreorder" class="id"><span id="Order_Total__to__eqtype_hasDecEq" class="id"><span id="Order_Total__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="order_topology_order_topology__canonical__Order_Total" class="" title="order_topology_order_topology__canonical__Order_Total :
 forall {d : disp_t}, orderType d -> orderType d
 
@@ -706,7 +711,7 @@ order_topology_order_topology__canonical__Order_Total is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology_order_topology__canonical__Order_Total
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 196, characters 0-46
+library mathcomp.analysis.topology_theory.order_topology, line 201, characters 0-46
 "> Order</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.Total.on">Total</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.Total.on">on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#oT">oT</a></span>.<br/>
 <span id="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="id"><span id="order_topology_order_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_26" class="id"><span id="order_topology_order_topology__canonical__order_topology_POrderedNbhs" class="id"><span id="order_topology_order_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_25" class="id"><span id="order_topology_order_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_24" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_20" class="id"><a name="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="" title="order_topology_order_topology__canonical__order_topology_POrderedTopological :
 forall {d : disp_t}, orderType d -> POrderedTopological.type d
@@ -719,7 +724,7 @@ order_topology_order_topology__canonical__order_topology_POrderedTopological is 
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology_order_topology__canonical__order_topology_POrderedTopological
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 197, characters 0-107
+library mathcomp.analysis.topology_theory.order_topology, line 202, characters 0-107
 ">HB</a></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="id"><span id="order_topology_order_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_26" class="id"><span id="order_topology_order_topology__canonical__order_topology_POrderedNbhs" class="id"><span id="order_topology_order_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_25" class="id"><span id="order_topology_order_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_24" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_20" class="id"><a name="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="" title="order_topology_order_topology__canonical__order_topology_POrderedTopological :
 forall {d : disp_t}, orderType d -> POrderedTopological.type d
 
@@ -731,7 +736,7 @@ order_topology_order_topology__canonical__order_topology_POrderedTopological is 
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology_order_topology__canonical__order_topology_POrderedTopological
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 197, characters 0-107
+library mathcomp.analysis.topology_theory.order_topology, line 202, characters 0-107
 ">instance</a></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="id"><span id="order_topology_order_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_26" class="id"><span id="order_topology_order_topology__canonical__order_topology_POrderedNbhs" class="id"><span id="order_topology_order_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_25" class="id"><span id="order_topology_order_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_24" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_20" class="id"><a name="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="" title="order_topology_order_topology__canonical__order_topology_POrderedTopological :
 forall {d : disp_t}, orderType d -> POrderedTopological.type d
 
@@ -743,7 +748,7 @@ order_topology_order_topology__canonical__order_topology_POrderedTopological is 
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology_order_topology__canonical__order_topology_POrderedTopological
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 197, characters 0-107
+library mathcomp.analysis.topology_theory.order_topology, line 202, characters 0-107
 "> _</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="id"><span id="order_topology_order_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_26" class="id"><span id="order_topology_order_topology__canonical__order_topology_POrderedNbhs" class="id"><span id="order_topology_order_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_25" class="id"><span id="order_topology_order_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_24" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_20" class="id"><a name="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="" title="order_topology_order_topology__canonical__order_topology_POrderedTopological :
 forall {d : disp_t}, orderType d -> POrderedTopological.type d
 
@@ -755,7 +760,7 @@ order_topology_order_topology__canonical__order_topology_POrderedTopological is 
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology_order_topology__canonical__order_topology_POrderedTopological
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 197, characters 0-107
+library mathcomp.analysis.topology_theory.order_topology, line 202, characters 0-107
 "> :=</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="id"><span id="order_topology_order_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_26" class="id"><span id="order_topology_order_topology__canonical__order_topology_POrderedNbhs" class="id"><span id="order_topology_order_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_25" class="id"><span id="order_topology_order_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_24" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_20" class="id"><a name="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="" title="order_topology_order_topology__canonical__order_topology_POrderedTopological :
 forall {d : disp_t}, orderType d -> POrderedTopological.type d
 
@@ -767,7 +772,7 @@ order_topology_order_topology__canonical__order_topology_POrderedTopological is 
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology_order_topology__canonical__order_topology_POrderedTopological
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 197, characters 0-107
+library mathcomp.analysis.topology_theory.order_topology, line 202, characters 0-107
 "> @isSubBaseTopological</a></span></span></span></span></span></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#isSubBaseTopological.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#oT">oT</a></span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html#interval">interval</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#induced_order_topology.T">T</a></span>) (<span class="id"><a href="mathcomp.classical.set_interval.html#itv_is_ray">itv_is_ray</a></span>) (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="i:63" class="id"><a name="i:63" class="">i</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">[set`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#i:63">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">]</a></span>).<br/>
 <br/>
@@ -785,7 +790,7 @@ order_nbhs_itv is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_nbhs_itv
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 200, characters 6-20
+library mathcomp.analysis.topology_theory.order_topology, line 205, characters 6-20
 ">order_nbhs_itv</a></span> (<span id="x:64" class="id"><a name="x:64" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#oT">oT</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#x:64">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#filter_from">filter_from</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="gallina-kwd">fun</span><span class="id"> </span><span id="i:66" class="id"><a name="i:66" class="">i</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.set_interval.html#itv_open_ends">itv_open_ends</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#i:66">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#x:64">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#i:66">i</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="gallina-kwd">fun</span><span class="id"> </span><span id="i:65" class="id"><a name="i:65" class="">i</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">[set`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#i:65">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">]</a></span>).<br/>
@@ -835,7 +840,7 @@ order_topology_order_topology__canonical__order_topology_OrderTopological is tra
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology_order_topology__canonical__order_topology_OrderTopological
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 236, characters 0-67
+library mathcomp.analysis.topology_theory.order_topology, line 241, characters 0-67
 ">HB</a></span></span></span>.<span id="order_topology_order_topology__canonical__order_topology_OrderTopological" class="id"><span id="order_topology_order_topology__canonical__order_topology_OrderNbhs" class="id"><span id="HB_unnamed_factory_27" class="id"><a name="order_topology_order_topology__canonical__order_topology_OrderTopological" class="" title="order_topology_order_topology__canonical__order_topology_OrderTopological :
 forall {d : disp_t}, orderType d -> orderTopologicalType d
 
@@ -847,7 +852,7 @@ order_topology_order_topology__canonical__order_topology_OrderTopological is tra
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology_order_topology__canonical__order_topology_OrderTopological
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 236, characters 0-67
+library mathcomp.analysis.topology_theory.order_topology, line 241, characters 0-67
 ">instance</a></span></span></span><span class="vernacular"> Definition</span><span id="order_topology_order_topology__canonical__order_topology_OrderTopological" class="id"><span id="order_topology_order_topology__canonical__order_topology_OrderNbhs" class="id"><span id="HB_unnamed_factory_27" class="id"><a name="order_topology_order_topology__canonical__order_topology_OrderTopological" class="" title="order_topology_order_topology__canonical__order_topology_OrderTopological :
 forall {d : disp_t}, orderType d -> orderTopologicalType d
 
@@ -859,7 +864,7 @@ order_topology_order_topology__canonical__order_topology_OrderTopological is tra
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology_order_topology__canonical__order_topology_OrderTopological
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 236, characters 0-67
+library mathcomp.analysis.topology_theory.order_topology, line 241, characters 0-67
 "> _</a></span></span></span><span id="order_topology_order_topology__canonical__order_topology_OrderTopological" class="id"><span id="order_topology_order_topology__canonical__order_topology_OrderNbhs" class="id"><span id="HB_unnamed_factory_27" class="id"><a name="order_topology_order_topology__canonical__order_topology_OrderTopological" class="" title="order_topology_order_topology__canonical__order_topology_OrderTopological :
 forall {d : disp_t}, orderType d -> orderTopologicalType d
 
@@ -871,7 +876,7 @@ order_topology_order_topology__canonical__order_topology_OrderTopological is tra
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology_order_topology__canonical__order_topology_OrderTopological
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 236, characters 0-67
+library mathcomp.analysis.topology_theory.order_topology, line 241, characters 0-67
 "> :=</a></span></span></span><span id="order_topology_order_topology__canonical__order_topology_OrderTopological" class="id"><span id="order_topology_order_topology__canonical__order_topology_OrderNbhs" class="id"><span id="HB_unnamed_factory_27" class="id"><a name="order_topology_order_topology__canonical__order_topology_OrderTopological" class="" title="order_topology_order_topology__canonical__order_topology_OrderTopological :
 forall {d : disp_t}, orderType d -> orderTopologicalType d
 
@@ -883,7 +888,7 @@ order_topology_order_topology__canonical__order_topology_OrderTopological is tra
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology_order_topology__canonical__order_topology_OrderTopological
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 236, characters 0-67
+library mathcomp.analysis.topology_theory.order_topology, line 241, characters 0-67
 "> Order_isNbhs</a></span></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#Build">Build</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#oT">oT</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_nbhs_itv">order_nbhs_itv</a></span>.<br/>
 <span class="vernacular">End</span><span class="id"> induced_order_topology</span>.<br/>
 <br/>
@@ -912,7 +917,7 @@ min_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.min_continuous
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 239, characters 6-20
+library mathcomp.analysis.topology_theory.order_topology, line 244, characters 6-20
 ">min_continuous</a></span><span class="id"> {</span><span id="d:82" class="id"><a name="d:82" class="">d</a></span><span class="id">}</span><span class="id"> {</span><span id="T:83" class="id"><a name="T:83" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#orderTopologicalType">orderTopologicalType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#d:82">d</a></span><span class="id">}</span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="xy:84" class="id"><a name="xy:84" class="">xy</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#T:83">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#T:83">T</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.min">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.min">min</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#xy:84">xy</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#xy:84">xy</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span>).<br/>
 <details>
@@ -1019,7 +1024,7 @@ min_fun_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.min_fun_continuous
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 269, characters 6-24
+library mathcomp.analysis.topology_theory.order_topology, line 274, characters 6-24
 ">min_fun_continuous</a></span><span class="id"> {</span><span id="d:89" class="id"><a name="d:89" class="">d</a></span><span class="id">}</span><span class="id"> {</span><span id="X:90" class="id"><a name="X:90" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span><span class="id"> {</span><span id="T:91" class="id"><a name="T:91" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#orderTopologicalType">orderTopologicalType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#d:89">d</a></span><span class="id">}</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="f:92" class="id"><a name="f:92" class="">f</a></span><span class="id"> </span><span id="g:93" class="id"><a name="g:93" class="">g</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#X:90">X</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#T:91">T</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#f:92">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#g:93">g</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#f:92">f</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#1ddacc2fa35f16d1d08484d936bf5a51"> \min</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#1ddacc2fa35f16d1d08484d936bf5a51"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#g:93">g</a></span>).<br/>
@@ -1055,7 +1060,7 @@ max_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.max_continuous
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 277, characters 6-20
+library mathcomp.analysis.topology_theory.order_topology, line 282, characters 6-20
 ">max_continuous</a></span><span class="id"> {</span><span id="d:94" class="id"><a name="d:94" class="">d</a></span><span class="id">}</span><span class="id"> {</span><span id="T:95" class="id"><a name="T:95" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#orderTopologicalType">orderTopologicalType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#d:94">d</a></span><span class="id">}</span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="xy:96" class="id"><a name="xy:96" class="">xy</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#T:95">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#T:95">T</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.max">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.max">max</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#xy:96">xy</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#xy:96">xy</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span>).<br/>
 <details>
@@ -1162,7 +1167,7 @@ max_fun_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.max_fun_continuous
 Declared in
-library mathcomp.analysis.topology_theory.order_topology, line 307, characters 6-24
+library mathcomp.analysis.topology_theory.order_topology, line 312, characters 6-24
 ">max_fun_continuous</a></span><span class="id"> {</span><span id="d:101" class="id"><a name="d:101" class="">d</a></span><span class="id">}</span><span class="id"> {</span><span id="X:102" class="id"><a name="X:102" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span><span class="id"> {</span><span id="T:103" class="id"><a name="T:103" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#orderTopologicalType">orderTopologicalType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#d:101">d</a></span><span class="id">}</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="f:104" class="id"><a name="f:104" class="">f</a></span><span class="id"> </span><span id="g:105" class="id"><a name="g:105" class="">g</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#X:102">X</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#T:103">T</a></span>)<span class="id">:</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#f:104">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#g:105">g</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#f:104">f</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#9fa882acd3350c3368a3f9b893b52971"> \max</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#9fa882acd3350c3368a3f9b893b52971"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#g:105">g</a></span>).<br/>
