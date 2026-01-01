@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
@@ -430,7 +430,7 @@ Qed.
 Lemma card_eq_II {n m} : reflect (n = m) (`I_n #= `I_m).
 Proof. by rewrite card_eq_le !card_le_II -eqn_leq; apply: eqP. Qed.
 
-Lemma sub_setP  {T} {A : set T} (X : set A) : set_val @` X `<=` A.
+Lemma sub_setP {T} {A : set T} (X : set A) : set_val @` X `<=` A.
 Proof. by move=> x [/= a Xa <-]; apply: set_valP. Qed.
 Arguments sub_setP {T A}.
 Arguments image_subset {aT rT} f [A B].
@@ -444,7 +444,7 @@ exists (set_val @` range f); last exact: (subset_trans (sub_setP _)).
 by rewrite ?(card_eql (inj_card_eq _))//; apply: in2W; apply: in2TT; apply: inj.
 Qed.
 
-(* remove *)
+#[deprecated(since="mathcomp-analysis 1.15.0", note="To be removed, use other lemmas instead.")]
 Lemma pigeonhole m n (f : nat -> nat) : {in `I_m &, injective f} ->
   f @` `I_m `<=` `I_n -> (m <= n)%N.
 Proof.

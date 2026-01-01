@@ -106,6 +106,9 @@
 
 - in `lebesgue_integrable.v`:
   + lemma `integrable_norm`
+- in `order_topology.v`:
+  + structures `POrderedNbhs`, `POrderedTopological`, `POrderedUniform`, `POrderedPseudoMetric`,
+    `POrderedPointedTopological`
 
 ### Changed
 
