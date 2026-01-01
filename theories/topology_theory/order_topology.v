@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
 From mathcomp Require Import unstable topology_structure uniform_structure.
@@ -8,8 +8,13 @@ From mathcomp Require Import product_topology pseudometric_structure.
 (* # Order topology                                                           *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*             orderTopologicalType == a topology built from intervals        *)
-(*                 order_topology T == the induced order topology on T        *)
+(*                    POrderedNbhs == join of Nbhs and isPOrder               *)
+(*             POrderedTopological == join of Topological and isPOrder        *)
+(*                 POrderedUniform == join of Uniform and isPOrder            *)
+(*            POrderedPseudoMetric == join of PseudoMetric and isPOrder       *)
+(*      POrderedPointedTopological == join of PointedTopological and isPOrder *)
+(*            orderTopologicalType == a topology built from intervals         *)
+(*                order_topology T == the induced order topology on T         *)
 (* ```                                                                        *)
 (******************************************************************************)
 
