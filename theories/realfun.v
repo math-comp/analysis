@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
 From mathcomp Require Import archimedean interval.
@@ -2267,7 +2267,7 @@ Lemma total_variation_continuous a b (f : R -> R) : a < b ->
   BV a b f ->
   {within `[a,b], continuous (fine \o TV a ^~ f)}.
 Proof.
-move=> ab /(@continuous_within_itvP _ _ _ _ ab) [int l r] bdf.
+move=> ab /(continuous_within_itvP _ ab) [int l r] bdf.
 apply/continuous_within_itvP => //; split.
 - move=> x /[dup] xab; rewrite in_itv /= => /andP [ax xb].
   apply/left_right_continuousP; split.

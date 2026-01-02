@@ -202,6 +202,15 @@
     * lemmas `total_variationxx`, `nondecreasing_total_variation`,
       `total_variationN`
 
+- in `num_topology.v`:
+  + lemma `in_continuous_mksetP`
+
+- in `pseudometric_normed_Zmodule.v`:
+  + lemmas `continuous_within_itvP`, `continuous_within_itvcyP`,
+    `continuous_within_itvNycP`
+  + lemma `within_continuous_continuous`
+  + lemmas `open_itvoo_subset`, `open_itvcc_subset`, `realFieldType`
+
 ### Deprecated
 
 - in `topology_structure.v`:
