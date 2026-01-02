@@ -688,10 +688,13 @@ Proof. by split => [|p]; [exact: contrapT|exact]. Qed.
 #[deprecated(since="mathcomp-analysis 1.15.0", note="Renamed to `not_notP`. Warning: a different `notP` is also provided by `contra.v`.")]
 Notation notP := not_notP (only parsing).
 
-Lemma notE (P : Prop) : (~ ~ P) = P. Proof. by rewrite propeqE not_notP. Qed.
+Lemma not_notE (P : Prop) : (~ ~ P) = P.
+Proof. by rewrite propeqE not_notP. Qed.
+#[deprecated(since="mathcomp-analysis 1.15.0", note="Renamed to `not_notE`.")]
+Notation notE := not_notE (only parsing).
 
 Lemma not_orE (P Q : Prop) : (~ (P \/ Q)) = (~ P /\ ~ Q).
-Proof. by rewrite -[_ /\ _]notE not_andE 2!notE. Qed.
+Proof. by rewrite -[_ /\ _]not_notE not_andE 2!not_notE. Qed.
 
 Lemma not_orP (P Q : Prop) : ~ (P \/ Q) <-> ~ P /\ ~ Q.
 Proof. by rewrite not_orE. Qed.
@@ -700,7 +703,7 @@ Lemma not_implyE (P Q : Prop) : (~ (P -> Q)) = (P /\ ~ Q).
 Proof. by rewrite propeqE not_implyP. Qed.
 
 Lemma implyE (P Q : Prop) : (P -> Q) = (~ P \/ Q).
-Proof. by rewrite -[LHS]notE not_implyE propeqE not_andP notE. Qed.
+Proof. by rewrite -[LHS]not_notE not_implyE propeqE not_andP not_notE. Qed.
 
 Lemma orC : commutative or.
 Proof. by move=> /PropB[] /PropB[] => //; rewrite !orB. Qed.
@@ -1009,10 +1012,10 @@ Proof. by []. Qed.
 Section Inhabited.
 Variable (T : Type).
 
-Lemma inhabitedE: inhabited T = exists x : T, True.
+Lemma inhabitedE : inhabited T = exists x : T, True.
 Proof. by eqProp; case. Qed.
 
-Lemma inhabited_witness: inhabited T -> T.
+Lemma inhabited_witness : inhabited T -> T.
 Proof. by rewrite inhabitedE => /cid[]. Qed.
 
 End Inhabited.

@@ -132,6 +132,7 @@
 
 - in `boolp.v`:
   + `notP` -> `not_notP`
+  + `notE` -> `not_notE`
 
 ### Generalized
 

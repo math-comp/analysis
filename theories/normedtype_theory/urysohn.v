@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean.
@@ -85,7 +85,7 @@ Lemma edist_finP (xy : X * X) :
   (edist xy \is a fin_num)%E <-> exists2 r, 0 < r & ball xy.1 r xy.2.
 Proof.
 rewrite ge0_fin_numE ?edist_ge0// ltey.
-rewrite -(rwP (negPP eqP)); apply/iff_not2; rewrite notE.
+rewrite -(rwP (negPP eqP)); apply/iff_not2; rewrite not_notE.
 apply: (iff_trans (edist_pinftyP _)); apply: (iff_trans _ (forall2NP _ _)).
 by under eq_forall => ? do rewrite implyE.
 Qed.
