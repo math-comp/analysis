@@ -671,24 +671,18 @@ Qed.
 
 End emeasurable_fun_comparison.
 
-Lemma measurable_poweR (R : realType) r :
-  measurable_fun [set: \bar R] (poweR ^~ r).
-Proof.
-under eq_fun do rewrite poweRE.
-rewrite -/(measurable_fun _ _).
-apply: measurable_fun_ifT => //=.
-  apply/measurable_EFinP => //=.
-  apply: measurable_fun_ifT => //=.
-    apply: (measurable_fun_bool true).
-    rewrite setTI (_ : _ @^-1` _ = EFin @` setT).
-      by apply: measurable_image_EFin; exact: measurableT.
-    apply/seteqP; split => [x finx|x [s sx <-//]]/=.
-    by exists (fine x) => //; rewrite fineK.
-  exact: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ r)).
-apply: measurable_fun_ifT => //=; first exact: measurable_fun_eqe.
-apply: measurable_fun_ifT => //=; first exact: measurable_fun_eqe.
-apply/measurable_EFinP => //=.
-exact: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ r)).
+Lemma measurable_poweR (R : realType) y :
+  measurable_fun [set: \bar R] (poweR ^~ y).
+under eq_fun do rewrite poweRE. 
+case: y=> [s||]//=; rewrite -/(measurable_fun _ _).
+- repeat apply: measurable_fun_ifT=>//=.
+  1-3: by apply: measurable_fun_lte + apply: measurable_fun_eqe.
+  apply/measurable_EFinP=>//=.
+  exact: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ s)).
+- repeat apply: measurable_fun_ifT=>//=.  
+  1-4: by apply: measurable_fun_lte + apply: measurable_fun_eqe.
+- repeat apply: measurable_fun_ifT=>//=.   
+  1-5: by apply: measurable_fun_lte + apply: measurable_fun_eqe.
 Qed.
 
 Section measurable_comparison.

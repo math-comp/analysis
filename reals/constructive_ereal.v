@@ -414,6 +414,14 @@ Lemma le0y : (0 : \bar R) <= +oo. Proof. exact: real0. Qed.
 
 Lemma leNy0 : -oo <= (0 : \bar R). Proof. exact: real0. Qed.
 
+Lemma leyr r : +oo <= r%:E = false. Proof. by []. Qed.
+
+Lemma ltyr r : +oo < r%:E = false. Proof. by []. Qed.
+
+Lemma ltrNy r : r%:E < -oo = false. Proof. by []. Qed.
+
+Lemma lerNy r : r%:E <= -oo = false. Proof. by []. Qed.
+
 Lemma cmp0y : ((0 : \bar R) >=< +oo%E)%O.
 Proof. by rewrite /Order.comparable le0y. Qed.
 
