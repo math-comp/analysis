@@ -449,15 +449,15 @@ HB.end.
 
 (** Topology defined by open sets *)
 
-Definition nbhs_of_open (T : Type) (op : set T -> Prop) (p : T) (A : set T) :=
+Definition nbhs_of_open (T : Type) (op : set_system T) (p : T) (A : set T) :=
   exists B, [/\ op B, B p & B `<=` A].
 
 HB.factory Record isOpenTopological T of Choice T := {
-  op : set T -> Prop;
-  opT : op setT;
-  opI : forall (A B : set T), op A -> op B -> op (A `&` B);
+  op : set_system T ;
+  opT : op setT ;
+  opI : forall (A B : set T), op A -> op B -> op (A `&` B) ;
   op_bigU : forall (I : Type) (f : I -> set T), (forall i, op (f i)) ->
-    op (\bigcup_i f i);
+    op (\bigcup_i f i)
 }.
 
 HB.builders Context T of isOpenTopological T.

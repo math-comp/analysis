@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean.
@@ -858,7 +858,7 @@ Unshelve. all: by end_near. Qed.
 End closure_left_right_open.
 
 Section open_itv_subset.
-Context {R : realType}.
+Context {R : realFieldType}.
 Variables (A : set R) (x : R).
 
 Lemma open_itvoo_subset :
@@ -884,7 +884,7 @@ Qed.
 
 End open_itv_subset.
 
-Lemma dense_set1C {R : realType} (r : R) : dense (~` [set r]).
+Lemma dense_set1C {R : realFieldType} (r : R) : dense (~` [set r]).
 Proof.
 move=> /= O O0 oO.
 suff [s Os /eqP sr] : exists2 s, O s & s != r by exists s; split.
@@ -1023,15 +1023,16 @@ Definition nbhs_simpl := (nbhs_simpl,@nbhs_nbhs_norm,@filter_from_norm_nbhs).
 End NbhsNorm.
 
 Section continuous_within_itvP.
-Context {R : realType}.
-Implicit Type f : R -> R.
+Context {R : realFieldType} {K : numDomainType}
+  {U : pseudoMetricNormedZmodType K}.
+Implicit Type f : R -> U.
 
 Let near_at_left (a : itv_bound R) b f eps : (a < BLeft b)%O -> 0 < eps ->
   {within [set` Interval a (BRight b)], continuous f} ->
   \forall t \near b^'-, `|f b - f t| < eps.
 Proof.
 move=> ab eps_gt0 cf.
-move/continuous_withinNx/(@cvgrPdist_lt _ R^o)/(_ _ eps_gt0) : (cf b).
+move/continuous_withinNx/cvgrPdist_lt/(_ _ eps_gt0) : (cf b).
 rewrite /dnbhs/= near_withinE !near_simpl /prop_near1 /nbhs/=.
 rewrite -nbhs_subspace_in//; last first.
   rewrite /= in_itv/= lexx andbT.
@@ -1050,7 +1051,7 @@ Let near_at_right a (b : itv_bound R) f eps : (BRight a < b)%O -> 0 < eps ->
   \forall t \near a^'+, `|f a - f t| < eps.
 Proof.
 move=> ab eps_gt0 cf.
-move/continuous_withinNx/(@cvgrPdist_lt _ R^o)/(_ _ eps_gt0) : (cf a).
+move/continuous_withinNx/cvgrPdist_lt/(_ _ eps_gt0) : (cf a).
 rewrite /dnbhs/= near_withinE !near_simpl// /prop_near1 /nbhs/=.
 rewrite -nbhs_subspace_in//; last first.
   rewrite /= in_itv/= lexx//=.
@@ -1069,7 +1070,7 @@ Lemma continuous_within_itvP a b f : a < b ->
   [/\ {in `]a, b[, continuous f}, f @ a^'+ --> f a & f @b^'- --> f b].
 Proof.
 move=> ab; split=> [abf|].
-  split; [apply/in_continuous_mksetP|apply/(@cvgrPdist_lt _ R^o) => eps eps_gt0 /=..].
+  split; [apply/in_continuous_mksetP|apply/cvgrPdist_lt => eps eps_gt0 /=..].
   - rewrite -continuous_open_subspace; last exact: interval_open.
     by move: abf; exact/continuous_subspaceW/subset_itvW.
   - by apply: near_at_right => //; rewrite bnd_simp.
@@ -1077,13 +1078,13 @@ move=> ab; split=> [abf|].
 case=> ctsoo ctsL ctsR; apply/subspace_continuousP => x /andP[].
 rewrite !bnd_simp/= !le_eqVlt => /predU1P[<-{x}|ax] /predU1P[|].
 - by move/eqP; rewrite lt_eqF.
-- move=> _; apply/(@cvgrPdist_lt _ R^o) => eps eps_gt0 /=.
-  move/(@cvgrPdist_lt _ R^o)/(_ _ eps_gt0): ctsL; rewrite /at_right !near_withinE.
+- move=> _; apply/cvgrPdist_lt => eps eps_gt0 /=.
+  move/cvgrPdist_lt/(_ _ eps_gt0): ctsL; rewrite /at_right !near_withinE.
   apply: filter_app; exists (b - a); rewrite /= ?subr_gt0// => c cba + ac.
   have : a <= c by move: ac => /andP[].
   by rewrite le_eqVlt => /predU1P[->|/[swap] /[apply]//]; rewrite subrr normr0.
-- move=> ->; apply/(@cvgrPdist_lt _ R^o) => eps eps_gt0 /=.
-  move/(@cvgrPdist_lt _ R^o)/(_ _ eps_gt0): ctsR; rewrite /at_left !near_withinE.
+- move=> ->; apply/cvgrPdist_lt => eps eps_gt0 /=.
+  move/cvgrPdist_lt/(_ _ eps_gt0): ctsR; rewrite /at_left !near_withinE.
   apply: filter_app; exists (b - a); rewrite /= ?subr_gt0 // => c cba + ac.
   have : c <= b by move: ac => /andP[].
   by rewrite le_eqVlt => /predU1P[->|/[swap] /[apply]//]; rewrite subrr normr0.
@@ -1093,18 +1094,18 @@ rewrite !bnd_simp/= !le_eqVlt => /predU1P[<-{x}|ax] /predU1P[|].
   by rewrite -open_subsetE; [exact: subset_itvW| exact: interval_open].
 Qed.
 
-Lemma continuous_within_itvcyP a (f : R -> R) :
+Lemma continuous_within_itvcyP a f :
   {within `[a, +oo[, continuous f} <->
   {in `]a, +oo[, continuous f} /\ f x @[x --> a^'+] --> f a.
 Proof.
 split=> [cf|].
-  split; [apply/in_continuous_mksetP|apply/(@cvgrPdist_lt _ R^o) => eps eps_gt0 /=].
+  split; [apply/in_continuous_mksetP|apply/cvgrPdist_lt => eps eps_gt0 /=].
   - rewrite -continuous_open_subspace; last exact: interval_open.
     by apply: continuous_subspaceW cf => ?; rewrite /= !in_itv !andbT/= => /ltW.
   - by apply: near_at_right => //; rewrite bnd_simp.
 move=> [cf fa]; apply/subspace_continuousP => x /andP[].
 rewrite bnd_simp/= le_eqVlt => /predU1P[<-{x}|ax] _.
-- apply/(@cvgrPdist_lt _ R^o) => eps eps_gt0/=; move/(@cvgrPdist_lt _ R^o)/(_ _ eps_gt0) : fa.
+- apply/cvgrPdist_lt => eps eps_gt0/=; move/cvgrPdist_lt/(_ _ eps_gt0) : fa.
   rewrite /at_right !near_withinE; apply: filter_app.
   exists 1%R => //= c c1a /[swap]; rewrite in_itv/= andbT le_eqVlt.
   by move=> /predU1P[->|/[swap]/[apply]//]; rewrite subrr normr0.
@@ -1115,18 +1116,18 @@ rewrite bnd_simp/= le_eqVlt => /predU1P[<-{x}|ax] _.
   by move=> ?/=; rewrite !in_itv/= !andbT; exact: ltW.
 Qed.
 
-Lemma continuous_within_itvNycP b (f : R -> R) :
+Lemma continuous_within_itvNycP b f :
   {within `]-oo, b], continuous f} <->
   {in `]-oo, b[, continuous f} /\ f x @[x --> b^'-] --> f b.
 Proof.
 split=> [cf|].
-  split; [apply/in_continuous_mksetP|apply/(@cvgrPdist_lt _ R^o) => eps eps_gt0 /=].
+  split; [apply/in_continuous_mksetP|apply/cvgrPdist_lt => eps eps_gt0 /=].
   - rewrite -continuous_open_subspace; last exact: interval_open.
     by apply: continuous_subspaceW cf => ?/=; rewrite !in_itv/=; exact: ltW.
   - by apply: near_at_left => //; rewrite bnd_simp.
 move=> [cf fb]; apply/subspace_continuousP => x /andP[_].
 rewrite bnd_simp/= le_eqVlt=> /predU1P[->{x}|xb].
-- apply/(@cvgrPdist_lt _ R^o) => eps eps_gt0/=; move/(@cvgrPdist_lt _ R^o)/(_ _ eps_gt0) : fb.
+- apply/cvgrPdist_lt => eps eps_gt0/=; move/cvgrPdist_lt/(_ _ eps_gt0) : fb.
   rewrite /at_right !near_withinE; apply: filter_app.
   exists 1%R => //= c c1b /[swap]; rewrite in_itv/= le_eqVlt.
   by move=> /predU1P[->|/[swap]/[apply]//]; rewrite subrr normr0.
@@ -1139,7 +1140,8 @@ Qed.
 
 End continuous_within_itvP.
 
-Lemma within_continuous_continuous {R : realType} a b (f : R -> R) x : (a < b)%R ->
+Lemma within_continuous_continuous {R : realFieldType} {K : numDomainType}
+    {U : pseudoMetricNormedZmodType K} a b (f : R -> U) x : (a < b)%R ->
   {within `[a, b], continuous f} -> x \in `]a, b[ -> {for x, continuous f}.
 Proof.
 by move=> ab /continuous_within_itvP-/(_ ab)[+ _] /[swap] xab cf; exact.

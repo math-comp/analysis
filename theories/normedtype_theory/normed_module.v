@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
 From mathcomp Require Import archimedean rat interval zmodp vector.
@@ -43,6 +43,7 @@ From mathcomp Require Import ereal_normedtype pseudometric_normed_Zmodule.
 (*                  lipschitz_on f F == f is lipschitz near F                 *)
 (*               k.-lipschitz_on f F == f is k.-lipschitz near F              *)
 (*                  k.-lipschitz_A f == f is k.-lipschitz on A                *)
+(*                    k.-lipschitz f := k.-lipschitz_setT                     *)
 (*          [lipschitz f x | x in A] == f is lipschitz on A                   *)
 (* [locally [lipschitz f x | x in A] == f is locally lipschitz on A           *)
 (*        [locally k.-lipschitz_A f] == f is locally k.-lipschitz on A        *)

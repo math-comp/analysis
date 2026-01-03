@@ -21,6 +21,7 @@ depends: [
 
 tags: [
   "category:Mathematics/Real Numbers"
+  "category:Mathematics/Real Calculus and Topology"
   "keyword:real numbers"
   "keyword:reals"
   "logpath:mathcomp.reals_stdlib"

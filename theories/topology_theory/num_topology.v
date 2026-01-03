@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
 From mathcomp Require Import interval_inference reals topology_structure.
@@ -258,7 +258,7 @@ move=> s res rs; rewrite -(opprK s); apply: reE; last by rewrite -memNE.
 by rewrite /= opprK -normrN opprD.
 Qed.
 
-Lemma in_continuous_mksetP {T : realFieldType} {U : realFieldType}
+Lemma in_continuous_mksetP {T : realFieldType} {U : nbhsType}
     (i : interval T) (f : T -> U) :
   {in i, continuous f} <-> {in [set` i], continuous f}.
 Proof.

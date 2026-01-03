@@ -229,8 +229,7 @@ Inductive boxed T := Box of T.
 Reserved Notation "`1- r" (format "`1- r", at level 2).
 Reserved Notation "f \^-1" (at level 35, format "f \^-1").
 
-(* TODO: To be backported to finmap *)
-
+(* PR in progress: https://github.com/math-comp/finmap/pull/149 *)
 Lemma fset_nat_maximum (X : choiceType) (A : {fset X})
     (f : X -> nat) : A != fset0 ->
   (exists i, i \in A /\ forall j, j \in A -> f j <= f i)%nat.
@@ -388,9 +387,11 @@ Qed.
 
 End order_min.
 
+(* PR in progress: https://github.com/math-comp/math-comp/pull/1515 *)
 Lemma intrD1 {R : pzRingType} (i : int) : i%:~R + 1 = (i + 1)%:~R :> R.
 Proof. by rewrite intrD. Qed.
 
+(* PR in progress: https://github.com/math-comp/math-comp/pull/1515 *)
 Lemma intr1D {R : pzRingType} (i : int) : 1 + i%:~R = (1 + i)%:~R :> R.
 Proof. by rewrite intrD. Qed.
 
@@ -398,6 +399,7 @@ Section trunc_floor_ceil.
 Context {R : archiRealDomainType}.
 Implicit Type x : R.
 
+(* PR in progress: https://github.com/math-comp/math-comp/pull/1515 *)
 Lemma abs_ceil_ge x : `|x| <= `|Num.ceil x|.+1%:R.
 Proof.
 rewrite -natr1 natr_absz; have [x0|x0] := ltP 0 x.
