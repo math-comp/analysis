@@ -1758,21 +1758,20 @@ library mathcomp.analysis.topology_theory.num_topology, line 251, characters 6-1
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="in_continuous_mksetP" class="id"><a name="in_continuous_mksetP" class="" title="in_continuous_mksetP :
-forall {T U : realFieldType} (i : interval T) (f : T -> U),
+forall {T : realFieldType} {U : filter.Nbhs.type} 
+  (i : interval T) (f : T -> filter.Nbhs.sort U),
 {in i,
   forall
     x : filter.Nbhs.sort
           (numFieldTopology.RealField_sort__canonical__filter_Nbhs T),
   filter.continuous_at
-    (T:=numFieldTopology.RealField_sort__canonical__filter_Nbhs T)
-    (U:=numFieldTopology.RealField_sort__canonical__filter_Nbhs U) x f} <->
+    (T:=numFieldTopology.RealField_sort__canonical__filter_Nbhs T) (U:=U) x f} <->
 {in [set` i]%classic,
   forall
     x : filter.Nbhs.sort
           (numFieldTopology.RealField_sort__canonical__filter_Nbhs T),
   filter.continuous_at
-    (T:=numFieldTopology.RealField_sort__canonical__filter_Nbhs T)
-    (U:=numFieldTopology.RealField_sort__canonical__filter_Nbhs U) x f}
+    (T:=numFieldTopology.RealField_sort__canonical__filter_Nbhs T) (U:=U) x f}
 
 in_continuous_mksetP is not universe polymorphic
 Arguments in_continuous_mksetP {T U} i f%function_scope
@@ -1781,7 +1780,7 @@ Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.in_continuous_mksetP
 Declared in
 library mathcomp.analysis.topology_theory.num_topology, line 261, characters 6-26
-">in_continuous_mksetP</a></span><span class="id"> {</span><span id="T:71" class="id"><a name="T:71" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.RealField.Exports.realFieldType">realFieldType</a></span><span class="id">}</span><span class="id"> {</span><span id="U:72" class="id"><a name="U:72" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.RealField.Exports.realFieldType">realFieldType</a></span><span class="id">}</span><br/>
+">in_continuous_mksetP</a></span><span class="id"> {</span><span id="T:71" class="id"><a name="T:71" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.RealField.Exports.realFieldType">realFieldType</a></span><span class="id">}</span><span class="id"> {</span><span id="U:72" class="id"><a name="U:72" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#Nbhs.Exports.nbhsType">nbhsType</a></span><span class="id">}</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="i:73" class="id"><a name="i:73" class="">i</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html#interval">interval</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#T:71">T</a></span>) (<span id="f:74" class="id"><a name="f:74" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#T:71">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#U:72">U</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#i:73">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#f:74">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> &lt;-&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">[set`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#i:73">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#f:74">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#8c08d4203604dbed63e7afa9b689d858">}</a></span>.<br/>
 <details>
