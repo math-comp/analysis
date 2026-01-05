@@ -685,12 +685,12 @@ Qed.
 
 Lemma not_notP (P : Prop) : ~ ~ P <-> P.
 Proof. by split => [|p]; [exact: contrapT|exact]. Qed.
-#[deprecated(since="mathcomp-analysis 1.15.0", note="Renamed to `not_notP`. Warning: a different `notP` is also provided by `contra.v`.")]
+#[deprecated(since="mathcomp-analysis 1.15.0", note="Renamed to `not_notP`. Warning: a different `notP` is provided by `contra.v`.")]
 Notation notP := not_notP (only parsing).
 
 Lemma not_notE (P : Prop) : (~ ~ P) = P.
 Proof. by rewrite propeqE not_notP. Qed.
-#[deprecated(since="mathcomp-analysis 1.15.0", note="Renamed to `not_notE`.")]
+#[deprecated(since="mathcomp-analysis 1.15.0", note="Renamed to `not_notE`. Warning: a different `notE` is provided by `contra.v`.")]
 Notation notE := not_notE (only parsing).
 
 Lemma not_orE (P Q : Prop) : (~ (P \/ Q)) = (~ P /\ ~ Q).
