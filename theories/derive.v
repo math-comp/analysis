@@ -760,19 +760,13 @@ move=> dfx dgfx; apply: DiffDef; first exact: differentiable_comp.
 by rewrite diff_comp // !diff_val.
 Qed.
 
-Lemma differentiable_rsubmx m {n1 n2} (f : V -> 'M[R]_(m, n1 + n2)) v :
-  (forall x, differentiable f x) -> differentiable (rsubmx \o f) v.
-Proof.
-move=> df; apply: differentiable_comp => //.
-exact/linear_differentiable/continuous_rsubmx.
-Qed.
+Lemma differentiable_rsubmx m {n1 n2} v :
+  differentiable (rsubmx : 'M[R]_(m, n1 + n2) -> 'M[R]_(m, n2)) v.
+Proof. exact/linear_differentiable/continuous_rsubmx. Qed.
 
-Lemma differentiable_lsubmx m {n1 n2} (f : V -> 'M[R]_(m, n1 + n2)) v :
-  (forall x, differentiable f x) -> differentiable (lsubmx \o f) v.
-Proof.
-move=> df1; apply: differentiable_comp => //.
-exact/linear_differentiable/continuous_lsubmx.
-Qed.
+Lemma differentiable_lsubmx m {n1 n2} v :
+  differentiable (lsubmx : 'M[R]_(m, n1 + n2) -> 'M[R]_(m, n1)) v.
+Proof. exact/linear_differentiable/continuous_lsubmx. Qed.
 
 Lemma bilinear_schwarz (U V' W' : normedModType R)
   (f : {bilinear U -> V' -> W'}) : continuous (fun p => f p.1 p.2) ->
