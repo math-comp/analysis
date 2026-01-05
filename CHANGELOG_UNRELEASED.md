@@ -104,6 +104,12 @@
 - in `lebesgue_integrable.v`:
   + lemma `integrable_set0`
 
+- in `lebesgue_integrable.v`:
+  + lemma `integrable_norm`
+- in `order_topology.v`:
+  + structures `POrderedNbhs`, `POrderedTopological`, `POrderedUniform`, `POrderedPseudoMetric`,
+    `POrderedPointedTopological`
+
 - in `measurable_function.v`:
   + lemma `preimage_set_system_compS`
 
@@ -135,50 +141,6 @@
     `independent_RVs2_funrpospos`
   + lemma `expectationM_ge0`, `integrable_expectationM`, `independent_integrableM`,
     ` expectation_prod`
-
-- in `numfun.v`
-  + lemmas `funeposE`, `funenegE`, `funepos_comp`, `funeneg_comp`
-
-- in `classical_sets.v`:
-  + lemmas `xsectionE`, `ysectionE`
-
-- file `constructive_ereal.v`:
-  + definition `iter_mule`
-  + lemma `prodEFin`
-
-- file `exp.v`:
-  + lemma `expR_sum`
-
-- file `lebesgue_integral.v`:
-  + lemma `measurable_fun_le`
-
-- in `trigo.v`:
-  + lemma `integral0oo_atan`
-
-- in `measure.v`:
-  + lemmas `mnormalize_id`, `measurable_fun_eqP`
-
-- in `ftc.v`:
-  + lemma `integrable_locally`
-
-- in `constructive_ereal.v`:
-  + lemma `EFin_bigmax`
-
-- in `mathcomp_extra.v`:
-  + lemmas `inr_inj`, `inl_inj`
-
-- in `classical_sets.v`:
-  + lemmas `in_set1`, `inr_in_set_inr`, `inl_in_set_inr`, `mem_image`, `mem_range`, `image_f`
-  + lemmas `inr_in_set_inl`, `inl_in_set_inl`
-
-- in `lebesgue_integral_approximation.v`:
-  + lemma `measurable_prod`
-
-- in `lebesgue_integrable.v`:
-  + lemma `integrable_norm`
-- in `order_topology.v`:
-  + structures `POrderedNbhs`, `POrderedTopological`, `POrderedUniform`, `POrderedPseudoMetric`,
-    `POrderedPointedTopological`
 
 ### Changed
 
