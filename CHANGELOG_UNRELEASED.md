@@ -72,6 +72,12 @@
 - in `lebesgue_integrable.v`:
   + lemma `integrable_set0`
 
+- in `lebesgue_integrable.v`:
+  + lemma `integrable_norm`
+- in `order_topology.v`:
+  + structures `POrderedNbhs`, `POrderedTopological`, `POrderedUniform`, `POrderedPseudoMetric`,
+    `POrderedPointedTopological`
+
 - in `measurable_function.v`:
   + lemma `preimage_set_system_compS`
 
