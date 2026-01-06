@@ -912,7 +912,7 @@ apply: ge0_le_integral; [by []|by []|..].
   + apply: measurableT_comp => //.
     by apply: measurableT_comp => //; exact: measurable_funepos.
   + by apply: measurableT_comp => //; exact/measurableT_comp.
-  + by move=> y _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse leeDl.
+  + by move=> y _; rewrite gee0_abs// -/((abse \o f) _) -funeposDneg leeDl.
 Qed.
 
 Let integrable_Fminus : m1.-integrable setT Fminus.
@@ -929,7 +929,7 @@ apply: ge0_le_integral; [by []|by []|..].
   + apply: measurableT_comp => //; apply: measurableT_comp => //.
     exact: measurable_funeneg.
   + by apply: measurableT_comp => //; exact: measurableT_comp.
-  + by move=> y _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse leeDr.
+  + by move=> y _; rewrite gee0_abs// -/((abse \o f) _) -funeposDneg leeDr.
 Qed.
 
 Lemma integrable_fubini_F : m1.-integrable setT F.
@@ -972,7 +972,7 @@ apply: ge0_le_integral; [by []|by []|exact: measurableT_comp|..].
   + apply: measurableT_comp => //.
     by apply: measurableT_comp => //; exact: measurable_funepos.
   + by apply: measurableT_comp => //; exact: measurableT_comp.
-  + by move=> x _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse leeDl.
+  + by move=> x _; rewrite gee0_abs// -/((abse \o f) _) -funeposDneg leeDl.
 Qed.
 
 Let integrable_Gminus : m2.-integrable setT Gminus.
@@ -987,7 +987,7 @@ apply: ge0_le_integral; [by []|by []|exact: measurableT_comp|..].
   + apply: measurableT_comp => //.
     by apply: measurableT_comp => //; exact: measurable_funeneg.
   + by apply: measurableT_comp => //; exact: measurableT_comp.
-  + by move=> x _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse leeDr.
+  + by move=> x _; rewrite gee0_abs// -/((abse \o f) _) -funeposDneg leeDr.
 Qed.
 
 Lemma integral12_prod_meas1 : \int[m1]_x F x = \int[m1 \x m2]_z f z.

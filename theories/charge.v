@@ -2175,7 +2175,7 @@ Lemma Radon_Nikodym_change_of_variables f E : measurable E ->
   \int[mu]_(x in E) (f x * ('d (charge_of_finite_measure nu) '/d mu) x) =
   \int[nu]_(x in E) f x.
 Proof.
-move=> mE mf; rewrite [in RHS](funeposneg f) integralB //.
+move=> mE mf; rewrite -[in RHS](funeposBneg f) integralB //.
   - exact: integrable_funepos.
   - exact: integrable_funeneg.
 transitivity (\int[mu]_(x in E) (f x * Radon_Nikodym_SigmaFinite.f nu mu x)).
@@ -2187,7 +2187,7 @@ transitivity (\int[mu]_(x in E) (f x * Radon_Nikodym_SigmaFinite.f nu mu x)).
     exact: measurable_int (Radon_Nikodym_SigmaFinite.f_integrable _).
   - apply: ae_eqe_mul2l.
     exact/ae_eq_sym/ae_eq_Radon_Nikodym_SigmaFinite.
-rewrite [in LHS](funeposneg f).
+rewrite -[in LHS](funeposBneg f).
 under [in LHS]eq_integral => x xE. rewrite muleBl.
   - exact: Radon_Nikodym_SigmaFinite.f_fin_num.
   - exact: add_def_funeposneg.

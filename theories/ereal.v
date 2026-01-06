@@ -62,6 +62,13 @@ Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 Local Open Scope classical_set_scope.
 
+Lemma ge0_addBefctE (T : Type) (R : realDomainType) (a b c d : T -> \bar R) :
+  (forall x, 0 <= c x) -> (forall x, 0 <= d x) ->
+  a \+ b \- (c \+ d) = a \- c \+ (b \- d).
+Proof.
+by move=> ? ?; apply/funext=> x; rewrite addeACA oppeD ?ge0_adde_def ?inE.
+Qed.
+
 Lemma EFin_bigcup T (F : nat -> set T) :
   EFin @` (\bigcup_i F i) = \bigcup_i (EFin @` F i).
 Proof.

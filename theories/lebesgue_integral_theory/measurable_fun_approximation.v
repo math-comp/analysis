@@ -406,7 +406,7 @@ exists (fun n => fp_ n \+ cst (-1) \* fn_ n) => x /=.
 rewrite [X in X @ \oo --> _](_ : _ =
     EFin \o fp_^~ x \+ (-%E \o EFin \o fn_^~ x))%E.
   by apply/funext => n/=; rewrite EFinD mulN1r.
-by move=> Dx; rewrite (funeposneg f); apply: cvgeD;
+by move=> Dx; rewrite -(funeposBneg f); apply: cvgeD;
   [exact: add_def_funeposneg|apply: cvg_nnsfun_approx|apply:cvgeN; apply: cvg_nnsfun_approx].
 Qed.
 

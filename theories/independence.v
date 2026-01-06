@@ -14,6 +14,8 @@ From mathcomp Require Import hoelder.
 (**md**************************************************************************)
 (* # Independence                                                             *)
 (*                                                                            *)
+(* The status of this file is experimental.                                   *)
+(*                                                                            *)
 (* ```                                                                        *)
 (*   independent_events I F == the events F indexed by I are independent      *)
 (*  mutual_independence I F == the set systems F indexed by I are independent *)
@@ -1074,14 +1076,13 @@ transitivity ('E_P[X^\+ - X^\-] * 'E_P[Y^\+ - Y^\-]).
   rewrite -oppeB; last first.
     by rewrite fin_num_adde_defr// fin_numM// expectation_fin_num.
   rewrite -muleBr; last 2 first.
-    by rewrite expectation_fin_num//; exact/Lfun1_integrable.
-    by rewrite fin_num_adde_defr// expectation_fin_num//; exact/Lfun1_integrable.
-  rewrite -muleBl; last 2 first.
-    by rewrite fin_numB// !expectation_fin_num//; exact/Lfun1_integrable.
-    by rewrite fin_num_adde_defr// expectation_fin_num//; exact/Lfun1_integrable.
-    rewrite -expectationB//=; [|exact/Lfun1_integrable..].
-    by rewrite -expectationB//; exact/Lfun1_integrable.
-by congr *%E; congr ('E_P[_]); rewrite funrposBneg.
+    by rewrite expectation_fin_num.
+    by rewrite fin_num_adde_defr// expectation_fin_num.
+  rewrite -muleBl.
+  - by rewrite -!expectationB.
+  - by rewrite fin_numB// !expectation_fin_num.
+  - by rewrite fin_num_adde_defr// expectation_fin_num.
+by rewrite !funrposBneg.
 Qed.
 
 End product_expectation.

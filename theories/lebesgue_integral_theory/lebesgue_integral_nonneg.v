@@ -635,7 +635,7 @@ Proof.
 have [/[!inE] aD|aD] := boolP (a \in D).
   rewrite integralE ge0_integral_dirac//; first exact/measurable_funepos.
   rewrite ge0_integral_dirac//; first exact/measurable_funeneg.
-  by rewrite [in RHS](funeposneg f) diracE mem_set// mul1e.
+  by rewrite -[in RHS](funeposBneg f) diracE mem_set// mul1e.
 rewrite diracE (negbTE aD) mul0e -(integral_measure_zero D f)//.
 apply: eq_measure_integral => //= S mS DS; rewrite /dirac indicE memNset//.
 by move=> /DS/mem_set; exact/negP.
@@ -643,8 +643,8 @@ Qed.
 
 End integral_dirac.
 
-Lemma summable_integral_dirac {R : realType} (a : nat -> \bar R) : summable setT a ->
-  (\sum_(n <oo) `|\int[\d_ n]_x a x| < +oo)%E.
+Lemma summable_integral_dirac {R : realType} (a : (\bar R)^nat) :
+  summable setT a -> (\sum_(n <oo) `|\int[\d_ n]_x a x| < +oo)%E.
 Proof.
 move=> sa.
 apply: (@le_lt_trans _ _ (\sum_(i <oo) `|fine (a i)|%:E))%E.
@@ -748,7 +748,8 @@ transitivity (limn (fun n =>
     \int[measure_add (msum m_ N) (m_ N)]_(x in D) (f_ n x)%:E)).
   rewrite -monotone_convergence//.
     by move=> t Dt a b ab; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
-  by apply: eq_integral => t /[!inE] Dt; apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
+  apply: eq_integral => t /[!inE] Dt; apply/esym/cvg_lim => //.
+  exact: cvg_nnsfun_approx.
 transitivity (limn (fun n =>
   \int[msum m_ N]_(x in D) (f_ n x)%:E + \int[m_ N]_(x in D) (f_ n x)%:E)).
   by congr (limn _); apply/funext => n; by rewrite integral_measure_add_nnsfun.
@@ -1147,14 +1148,14 @@ End ge0_cvgn_integral.
 Lemma le_abse_integral d (T : measurableType d) (R : realType)
   (mu : {measure set T -> \bar R}) (D : set T) (f : T -> \bar R)
   (mD : measurable D) : measurable_fun D f ->
-  (`| \int[mu]_(x in D) (f x) | <= \int[mu]_(x in D) `|f x|)%E.
+  (`| \int[mu]_(x in D) f x | <= \int[mu]_(x in D) `|f x|)%E.
 Proof.
 move=> mf.
 rewrite integralE (le_trans (lee_abs_sub _ _))// gee0_abs.
   exact: integral_ge0.
 rewrite gee0_abs; first exact: integral_ge0.
-by rewrite -ge0_integralD // -?fune_abse//;
-  [exact: measurable_funepos | exact: measurable_funeneg].
+rewrite -ge0_integralD//; [exact: measurable_funepos|exact: measurable_funeneg|].
+by under [in leRHS]eq_integral do rewrite -/((abse \o f) _) -funeposDneg.
 Qed.
 
 Lemma abse_integralP d (T : measurableType d) (R : realType)
@@ -1164,7 +1165,7 @@ Lemma abse_integralP d (T : measurableType d) (R : realType)
 Proof.
 move=> mD mf; split => [|] foo; last first.
   exact: (le_lt_trans (le_abse_integral mu mD mf) foo).
-under eq_integral do rewrite -/((abse \o f) _) fune_abse.
+under eq_integral do rewrite -/((abse \o f) _) -funeposDneg.
 rewrite ge0_integralD//;[exact/measurable_funepos|exact/measurable_funeneg|].
 move: foo; rewrite integralE/= -fin_num_abs fin_numB => /andP[fpoo fnoo].
 by rewrite lte_add_pinfty// ltey_eq ?fpoo ?fnoo.

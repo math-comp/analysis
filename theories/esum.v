@@ -508,14 +508,14 @@ Proof. by move=> Df; rewrite summableN; exact: summableD. Qed.
 
 Lemma summable_funepos D f : summable D f -> summable D f^\+.
 Proof.
-apply: le_lt_trans; apply le_esum => t Dt.
-by rewrite -/((abse \o f) t) fune_abse gee0_abs// leeDl.
+apply: le_lt_trans; apply: le_esum => t Dt.
+by rewrite -/((abse \o f) t) -funeposDneg gee0_abs// leeDl.
 Qed.
 
 Lemma summable_funeneg D f : summable D f -> summable D f^\-.
 Proof.
-apply: le_lt_trans; apply le_esum => t Dt.
-by rewrite -/((abse \o f) t) fune_abse gee0_abs// leeDr.
+apply: le_lt_trans; apply: le_esum => t Dt.
+by rewrite -/((abse \o f) t) -funeposDneg gee0_abs// leeDr.
 Qed.
 
 End summable_lemmas.
@@ -597,9 +597,9 @@ have -> : (C_ = A_ \- B_)%R.
   apply/funext => k.
   rewrite /= /A_ /C_ /B_ -sumrN -big_split/= -summable_fine_sum//.
   apply eq_bigr => i Pi; rewrite -fineB//.
-  - by rewrite fin_num_abs (@summable_pinfty _ _ P) //; exact/summable_funepos.
-  - by rewrite fin_num_abs (@summable_pinfty _ _ P) //; exact/summable_funeneg.
-  - by rewrite [in LHS](funeposneg f).
+  - by rewrite fin_num_abs (@summable_pinfty _ _ P)// summable_funepos.
+  - by rewrite fin_num_abs (@summable_pinfty _ _ P)// summable_funeneg.
+  - by rewrite -[in LHS](funeposBneg f).
 by rewrite distrC; apply: hN; near: n; exists N.
 Unshelve. all: by end_near. Qed.
 
