@@ -9,6 +9,9 @@
 
 - in `cardinality.v`:
   + lemma `infinite_setD`
+- in new file `gamma.v`:
+  - a definition `Gamma`.
+  - lemmas `Gamma1`, `Gamma_add1`, `Gamma_nat`.
 
 - in `convex.v`:
   + lemmas `convN`, `conv_le`
