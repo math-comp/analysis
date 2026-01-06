@@ -85,7 +85,7 @@
   + defintions `funrpos`, `funrneg` with notations `^\+` and `^\-`
   + lemmas `funrpos_ge0`, `funrneg_ge0`, `funrposN`, `funrnegN`, `ge0_funrposE`,
     `ge0_funrnegE`, `le0_funrposE`, `le0_funrnegE`, `ge0_funrposM`, `ge0_funrnegM`,
-    `le0_funrposM`, `le0_funrnegM`, `funr_normr`, `funrposneg`, `funrD_Dpos`,
+    `le0_funrposM`, `le0_funrnegM`, `funrposDneg`, `funrposBneg`,
     `funrD_posD`, `funrpos_le`, `funrneg_le`
   + lemmas `funerpos`, `funerneg`
 
@@ -182,6 +182,11 @@
 
 - in `derive.v`:
   + lemmas `compact_EVT_max`, `compact_EVT_min`, `EVT_max_rV`, `EVT_min_rV`
+- in `functions.v`:
+  + lemma `addBrfctE`
+
+- in `ereal.v`:
+  + lemma `ge0_addBefctE`
 
 ### Changed
 - in set_interval.v
@@ -309,6 +314,10 @@
 
 - in `subspace_topology.v`:
   + lemmas `open_subspaceP` and `closed_subspaceP` (use `exists2` instead of `exists`)
+- in `numfun.v`:
+  + `fune_abse` renamed to `funeposDneg` and direction of the equality changed
+  + `funeposneg` renamed to `funeposBneg` and direction of the equality changed
+  + `funeD_posD` renamed to `funeDB` and direction of the equality changed
 
 ### Renamed
 

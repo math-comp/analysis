@@ -1006,6 +1006,19 @@ Qed.
 
 End measurable_fun_realType.
 
+Section funrposneg_measurable.
+Context {d} {aT : measurableType d} {rT : realType}.
+
+HB.instance Definition _ (f : {mfun aT >-> rT}) :=
+  @isMeasurableFun.Build d _ _ _ f^\+
+    (measurable_funrpos (@measurable_funPT _ _ _ _ f)).
+
+HB.instance Definition _ (f : {mfun aT >-> rT}) :=
+  @isMeasurableFun.Build d _ _ _ f^\-
+    (measurable_funrneg (@measurable_funPT _ _ _ _ f)).
+
+End funrposneg_measurable.
+
 Section mono_measurable.
 Context {R : realType}.
 
