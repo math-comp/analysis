@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint.
 From mathcomp Require Import interval interval_inference archimedean.
@@ -2899,7 +2899,7 @@ have akN1A : a_ k.-1 \in A.
     contra: aiB => ->.
     rewrite /a_ !mul0r addr0; apply/negP => /set_mem/(ABlt _ _ aA).
     by rewrite ltxx.
-  apply/mem_set/boolp.notP => abs.
+  apply/mem_set/not_notP => abs.
   have {}abs : a_ i.-1 \in B.
     by move/seteqP : ABT => [_ /(_ (a_ i.-1) Logic.I)] [//|/mem_set].
   have iN : (i.-1 < N.+1)%N by rewrite prednK ?lt0n// ltnW.
@@ -3253,7 +3253,7 @@ have majball g x : F g -> (ball x0 r%:num) x -> `|g (x - x0)| <= n%:R + n%:R.
   move: (linearB (pack_linear Lg)) => /= -> Ballx.
   apply/(le_trans (ler_normB _ _))/lerD; first exact: majballi.
   by apply: majballi => //; exact/ball_center.
-have ballprop : ball x0 r%:num (2^-1 * (r%:num / `|y|) *: y  + x0).
+have ballprop : ball x0 r%:num (2^-1 * (r%:num / `|y|) *: y + x0).
   rewrite -ball_normE /ball_ /= opprD addrC subrK normrN normrZ.
   rewrite 2!normrM 2!normfV normr_id !mulrA divfK ?normr_eq0//.
   by rewrite !gtr0_norm// gtr_pMl// invf_lt1// ltr1n.

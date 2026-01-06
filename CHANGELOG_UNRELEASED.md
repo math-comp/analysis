@@ -173,6 +173,10 @@
 - in `charge.v`:
   + `induced` -> `induced_charge`
 
+- in `boolp.v`:
+  + `notP` -> `not_notP`
+  + `notE` -> `not_notE`
+
 ### Generalized
 
 - in `lebesgue_integral_under.v`:

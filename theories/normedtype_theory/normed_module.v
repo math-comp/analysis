@@ -2300,7 +2300,7 @@ suff [p_idx [pUq Up]] : exists p_idx,
     by move/set_mem : pUq; exact: bigcup_ointsub_sub.
   exists (g p_idx).
   - rewrite /= => q' Uq' q'p.
-    apply/notP => /eqP/set0P[s [ps ts]].
+    apply/not_notP => /eqP/set0P[s [ps ts]].
     suff : ratr q' \in bigcup_ointsub U q by move/Up; rewrite leqNgt q'p.
     rewrite (@nondisjoint_bigcup_ointsub _ _ _ (g p_idx))//.
     rewrite (@nondisjoint_bigcup_ointsub _ _ _ q') ?bigcup_ointsubxx//.

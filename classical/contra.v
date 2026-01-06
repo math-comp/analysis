@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.
 From mathcomp Require Import boolp.
 
@@ -268,7 +268,9 @@ Lemma lax_notE {t nP} P : (~ nProp t nP P) = nP. Proof. by case: P. Qed.
 Lemma lax_notP {t nP P} : ~ nProp t nP P -> nP. Proof. by rewrite lax_notE. Qed.
 Definition lax_notI {t nP} P : nProp t nP P = (~ nP) := canRL notK (lax_notE P).
 
+#[warn(note="A different `notE` used to be provided by `boolp.v` before MathComp-Analysis 1.15.0.")]
 Definition notE {nP} P : (~ nProp false nP P) = nP := lax_notE P.
+#[warn(note="A different `notP` used to be provided by `boolp.v` before MathComp-Analysis 1.15.0.")]
 Definition notP {nP P} := MoveView (@lax_notP false nP P).
 
 Fact proper_nPropP nP P : (~ pnProp nP P) = nP. Proof. by case: P. Qed.
