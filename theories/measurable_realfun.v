@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean rat.
@@ -991,6 +991,12 @@ by move=> mf mg mD; move: (mD); apply: measurable_fun_if => //;
   [exact: measurable_fun_ltr|exact: measurable_funS mg|exact: measurable_funS mf].
 Qed.
 
+Lemma measurable_funrpos D f : measurable_fun D f -> measurable_fun D f^\+.
+Proof. by move=> mf; exact: measurable_maxr. Qed.
+
+Lemma measurable_funrneg D f : measurable_fun D f -> measurable_fun D f^\-.
+Proof. by move=> mf; apply: measurable_maxr => //; exact: measurableT_comp. Qed.
+
 Lemma measurable_minr D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \min g).
 Proof.
@@ -1082,6 +1088,19 @@ by rewrite -[_ @^-1` _]setTI; exact: m1.
 Qed.
 
 End measurable_fun_realType.
+
+Section funrposneg_measurable.
+Context {d} {aT : measurableType d} {rT : realType}.
+
+HB.instance Definition _ (f : {mfun aT >-> rT}) :=
+  @isMeasurableFun.Build d _ _ _ f^\+
+    (measurable_funrpos (@measurable_funPT _ _ _ _ f)).
+
+HB.instance Definition _ (f : {mfun aT >-> rT}) :=
+  @isMeasurableFun.Build d _ _ _ f^\-
+    (measurable_funrneg (@measurable_funPT _ _ _ _ f)).
+
+End funrposneg_measurable.
 
 Section mono_measurable.
 Context {R : realType}.

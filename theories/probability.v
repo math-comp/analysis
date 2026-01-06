@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg.
 From mathcomp Require Import poly ssrnum ssrint interval archimedean finmap.
@@ -1646,7 +1646,7 @@ pose f_ := nnsfun_approx measurableT mf.
 transitivity (lim (\int[uniform_prob ab]_x (f_ n x)%:E @[n --> \oo])%E).
   rewrite -monotone_convergence//=.
   - apply: eq_integral => ? /[!inE] xD; apply/esym/cvg_lim => //=.
-    exact: cvg_nnsfun_approx.
+    exact/cvg_nnsfun_approx.
   - by move=> n; exact/measurable_EFinP/measurable_funTS.
   - by move=> n ? _; rewrite lee_fin.
   - by move=> ? _ ? ? mn; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.

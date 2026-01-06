@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets fsbigop.
@@ -25,12 +25,15 @@ From mathcomp Require Import sequences function_spaces.
 (* bounded_variation a b f == all variations of f are bounded                 *)
 (*         {nnfun T >-> R} == type of non-negative functions                  *)
 (*                   f ^\+ == the function formed by the non-negative outputs *)
-(*                            of f (from a type to the type of extended real  *)
-(*                            numbers) and 0 otherwise                        *)
-(*                            rendered as f ⁺ with company-coq (U+207A)       *)
+(*                            of f and 0 otherwise                            *)
+(*                            The codomain of f is the real numbers in scope  *)
+(*                            ring_scope and the extended real numbers in     *)
+(*                            scope ereal_scope.                              *)
+(*                            Rendered as f ⁺ with company-coq (U+207A).      *)
 (*                   f ^\- == the function formed by the non-positive outputs *)
 (*                            of f and 0 o.w.                                 *)
-(*                            rendered as f ⁻ with company-coq (U+207B)       *)
+(*                            Similar to ^\+.                                 *)
+(*                            Rendered as f ⁻ with company-coq (U+207B).      *)
 (*                   \1_ A == indicator function 1_A                          *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -679,6 +682,133 @@ Proof. by apply/funext=> x; rewrite /patch/=; case: ifP; rewrite ?mule0. Qed.
 
 End erestrict_lemmas.
 
+Section funrposneg.
+Local Open Scope ring_scope.
+
+Definition funrpos T (R : realDomainType) (f : T -> R) :=
+  fun x => Num.max (f x) 0.
+Definition funrneg T (R : realDomainType) (f : T -> R) :=
+  fun x => Num.max (- f x) 0.
+
+End funrposneg.
+
+Notation "f ^\+" := (funrpos f) : ring_scope.
+Notation "f ^\-" := (funrneg f) : ring_scope.
+
+Section funrposneg_lemmas.
+Local Open Scope ring_scope.
+Variables (T : Type) (R : realDomainType) (D : set T).
+Implicit Types (f g : T -> R) (r : R).
+
+Lemma funrpos_ge0 f x : 0 <= f^\+ x.
+Proof. by rewrite /funrpos /= le_max lexx orbT. Qed.
+
+Lemma funrneg_ge0 f x : 0 <= f^\- x.
+Proof. by rewrite /funrneg le_max lexx orbT. Qed.
+
+Lemma funrposN f : (\- f)^\+ = f^\-. Proof. exact/funext. Qed.
+
+Lemma funrnegN f : (\- f)^\- = f^\+.
+Proof. by apply/funext => x; rewrite /funrneg opprK. Qed.
+
+(* TODO: the following lemmas require a pointed type and realDomainType does
+not seem to be at this point
+
+Lemma funrpos_restrict f : (f \_ D)^\+ = (f^\+) \_ D.
+Proof.
+by apply/funext => x; rewrite /patch/_^\+; case: ifP; rewrite //= maxxx.
+Qed.
+
+Lemma funrneg_restrict f : (f \_ D)^\- = (f^\-) \_ D.
+Proof.
+by apply/funext => x; rewrite /patch/_^\-; case: ifP; rewrite //= oppr0 maxxx.
+Qed.*)
+
+Lemma ge0_funrposE f : (forall x, D x -> 0 <= f x) -> {in D, f^\+ =1 f}.
+Proof. by move=> f0 x; rewrite inE => Dx; apply/max_idPl/f0. Qed.
+
+Lemma ge0_funrnegE f : (forall x, D x -> 0 <= f x) -> {in D, f^\- =1 cst 0}.
+Proof.
+by move=> f0 x; rewrite inE => Dx; apply/max_idPr; rewrite lerNl oppr0 f0.
+Qed.
+
+Lemma le0_funrposE f : (forall x, D x -> f x <= 0) -> {in D, f^\+ =1 cst 0}.
+Proof. by move=> f0 x; rewrite inE => Dx; exact/max_idPr/f0. Qed.
+
+Lemma le0_funrnegE f : (forall x, D x -> f x <= 0) -> {in D, f^\- =1 \- f}.
+Proof.
+by move=> f0 x; rewrite inE => Dx; apply/max_idPl; rewrite lerNr oppr0 f0.
+Qed.
+
+Lemma ge0_funrposM r f : (0 <= r)%R ->
+  (fun x => r * f x)^\+ = (fun x => r * (f^\+ x)).
+Proof. by move=> ?; rewrite funeqE => x; rewrite /funrpos maxr_pMr// mulr0. Qed.
+
+Lemma ge0_funrnegM r f : (0 <= r)%R ->
+  (fun x => r * f x)^\- = (fun x => r * (f^\- x)).
+Proof.
+by move=> r0; rewrite funeqE => x; rewrite /funrneg -mulrN maxr_pMr// mulr0.
+Qed.
+
+Lemma le0_funrposM r f : (r <= 0)%R ->
+  (fun x => r * f x)^\+ = (fun x => - r * (f^\- x)).
+Proof.
+move=> r0; rewrite -[in LHS](opprK r); under eq_fun do rewrite mulNr.
+by rewrite funrposN ge0_funrnegM ?oppr_ge0.
+Qed.
+
+Lemma le0_funrnegM r f : (r <= 0)%R ->
+  (fun x => r * f x)^\- = (fun x => - r * (f^\+ x)).
+Proof.
+move=> r0; rewrite -[in LHS](opprK r); under eq_fun do rewrite mulNr.
+by rewrite funrnegN ge0_funrposM ?oppr_ge0.
+Qed.
+
+Lemma funrposDneg f : f^\+ + f^\- = Num.norm \o f.
+Proof.
+rewrite funeqE => x /=; rewrite !fctE/=; have [fx0|/ltW fx0] := leP (f x) 0.
+- rewrite ler0_norm// /funrpos /funrneg.
+  move/max_idPr : (fx0) => ->; rewrite add0r.
+  by move: fx0; rewrite -{1}oppr0 lerNr => /max_idPl ->.
+- rewrite ger0_norm// /funrpos /funrneg; move/max_idPl : (fx0) => ->.
+  by move: fx0; rewrite -{1}oppr0 lerNl => /max_idPr ->; rewrite addr0.
+Qed.
+
+Lemma funrposBneg f : f^\+ - f^\- = f.
+Proof.
+apply/funext => x.
+rewrite /funrpos /funrneg/= !fctE; have [|/ltW] := leP (f x) 0.
+  by rewrite -{1}oppr0 -lerNr => /max_idPl ->; rewrite opprK add0r.
+by rewrite -{1}oppr0 -lerNl => /max_idPr ->; rewrite subr0.
+Qed.
+
+Lemma funrDB f g : (f^\+ + g^\+) - (f^\- + g^\-) = f + g.
+Proof. by rewrite addBrfctE !funrposBneg. Qed.
+
+Lemma funrpos_le f g :
+  {in D, forall x, f x <= g x} -> {in D, forall x, f^\+ x <= g^\+ x}.
+Proof.
+move=> fg x Dx; rewrite /funrpos /Num.max; case: ifPn => fx; case: ifPn => gx//.
+- by rewrite leNgt.
+- by move: fx; rewrite -leNgt => /(lt_le_trans gx); rewrite ltNge fg.
+- exact: fg.
+Qed.
+
+Lemma funrneg_le f g :
+  {in D, forall x, f x <= g x} -> {in D, forall x, g^\- x <= f^\- x}.
+Proof.
+move=> fg x Dx; rewrite /funrneg /Num.max; case: ifPn => gx; case: ifPn => fx//.
+- by rewrite leNgt.
+- by move: gx; rewrite -leNgt => /(lt_le_trans fx); rewrite ltrN2 ltNge fg.
+- by rewrite lerN2; exact: fg.
+Qed.
+
+End funrposneg_lemmas.
+#[global]
+Hint Extern 0 (is_true (0%R <= _ ^\+ _)%R) => solve [apply: funrpos_ge0] : core.
+#[global]
+Hint Extern 0 (is_true (0%R <= _ ^\- _)%R) => solve [apply: funrneg_ge0] : core.
+
 HB.lock
 Definition funepos T (R : realDomainType) (f : T -> \bar R) :=
   fun x => maxe (f x) 0.
@@ -774,9 +904,9 @@ move=> r0; rewrite -[in LHS](opprK r); under eq_fun do rewrite EFinN mulNe.
 by rewrite funenegN ge0_funeposM ?oppr_ge0.
 Qed.
 
-Lemma fune_abse f : abse \o f = f^\+ \+ f^\-.
+Lemma funeposDneg f : f^\+ + f^\- = abse \o f.
 Proof.
-rewrite funeqE => x /=; have [fx0|/ltW fx0] := leP (f x) 0.
+rewrite funeqE => x /=; rewrite !fctE/=; have /orP[fx0|fx0] := le_total (f x) 0.
 - rewrite lee0_abs// funeposE funenegE.
   move/max_idPr : (fx0) => ->; rewrite add0e.
   by move: fx0; rewrite -{1}oppe0 leeNr => /max_idPl ->.
@@ -784,7 +914,7 @@ rewrite funeqE => x /=; have [fx0|/ltW fx0] := leP (f x) 0.
   by move: fx0; rewrite -{1}oppe0 leeNl => /max_idPr ->; rewrite adde0.
 Qed.
 
-Lemma funeposneg f : f = (fun x => f^\+ x - f^\- x).
+Lemma funeposBneg f : f^\+ \- f^\- = f.
 Proof.
 rewrite funeqE => x; rewrite funeposE funenegE; have [|/ltW] := leP (f x) 0.
   by rewrite -{1}oppe0 -leeNr => /max_idPl ->; rewrite oppeK add0e.
@@ -797,27 +927,13 @@ by rewrite funenegE funeposE; case: (f x) => [r| |];
   [rewrite -fine_max/=|rewrite /maxe /= ltNyr|rewrite /maxe /= ltNyr].
 Qed.
 
-Lemma funeD_Dpos f g : f \+ g = (f \+ g)^\+ \- (f \+ g)^\-.
-Proof.
-apply/funext => x; rewrite funeposE funenegE; have [|/ltW] := leP 0 (f x + g x).
-- by rewrite -{1}oppe0 -leeNl => /max_idPr ->; rewrite sube0.
-- by rewrite -{1}oppe0 -leeNr => /max_idPl ->; rewrite oppeK add0e.
-Qed.
+#[deprecated(since="mathcomp-analysis 1.15.0", note="use `funeposBneg` instead")]
+Lemma funeD_Dpos f g : (f + g)^\+ \- (f + g)^\- = f + g.
+Proof. by rewrite funeposBneg. Qed.
 
-Lemma funeD_posD f g : f \+ g = (f^\+ \+ g^\+) \- (f^\- \+ g^\-).
+Lemma funeDB f g : (f^\+ + g^\+) \- (f^\- + g^\-) = f + g.
 Proof.
-apply/funext => x; rewrite !funeposE !funenegE.
-have [|fx0] := leP 0 (f x); last rewrite add0e.
-- rewrite -{1}oppe0 leeNl => /max_idPr ->; have [|/ltW] := leP 0 (g x).
-    by rewrite -{1}oppe0 leeNl => /max_idPr ->; rewrite adde0 sube0.
-  by rewrite -{1}oppe0 -leeNr => /max_idPl ->; rewrite adde0 sub0e oppeK.
-- move/ltW : (fx0); rewrite -{1}oppe0 leeNr => /max_idPl ->.
-  have [|] := leP 0 (g x); last rewrite add0e.
-    by rewrite -{1}oppe0 leeNl => /max_idPr ->; rewrite adde0 oppeK addeC.
-  move gg' : (g x) => g'; move: g' gg' => [g' gg' g'0|//|goo _].
-  + move/ltW : (g'0); rewrite -{1}oppe0 -leeNr => /max_idPl => ->.
-    by rewrite fin_num_oppeD// 2!oppeK.
-  + by rewrite /maxe /=; case: (f x) fx0.
+by rewrite ge0_addBefctE ?funeposBneg//; by move=> x; rewrite funeneg_ge0.
 Qed.
 
 Lemma funepos_le f g :
@@ -839,12 +955,27 @@ move=> fg x Dx; rewrite !funenegE /maxe; case: ifPn => gx; case: ifPn => fx //.
 Qed.
 
 End funposneg_lemmas.
+#[deprecated(since="mathcomp-analysis 1.15.0", note="use `-funeDB` instead")]
+Notation funeD_posD := funeDB (only parsing).
+
 #[global]
 Hint Extern 0 (is_true (0%R <= _ ^\+ _)%E) => solve [apply: funepos_ge0] : core.
 #[global]
 Hint Extern 0 (is_true (0%R <= _ ^\- _)%E) => solve [apply: funeneg_ge0] : core.
 
+Section funrpos_funepos_lemmas.
+Context {T : Type} {R : realDomainType}.
+
+Lemma funerpos (f : T -> R) : (EFin \o f)^\+%E = (EFin \o f^\+).
+Proof. by apply/funext => x; rewrite funeposE /funrpos/= EFin_max. Qed.
+
+Lemma funerneg (f : T -> R) : (EFin \o f)^\-%E = (EFin \o f^\-).
+Proof. by apply/funext => x; rewrite funenegE /funrneg/= EFin_max. Qed.
+
+End funrpos_funepos_lemmas.
+
 Definition indic {T} {R : pzRingType} (A : set T) (x : T) : R := (x \in A)%:R.
+
 Reserved Notation "'\1_' A" (at level 8, A at level 2, format "'\1_' A") .
 Notation "'\1_' A" := (indic A) : ring_scope.
 

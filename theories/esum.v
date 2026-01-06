@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop reals ereal interval_inference.
@@ -507,14 +507,14 @@ Proof. by move=> Df; rewrite summableN; exact: summableD. Qed.
 
 Lemma summable_funepos D f : summable D f -> summable D f^\+.
 Proof.
-apply: le_lt_trans; apply le_esum => t Dt.
-by rewrite -/((abse \o f) t) fune_abse gee0_abs// leeDl.
+apply: le_lt_trans; apply: le_esum => t Dt.
+by rewrite -/((abse \o f) t) -funeposDneg gee0_abs// leeDl.
 Qed.
 
 Lemma summable_funeneg D f : summable D f -> summable D f^\-.
 Proof.
-apply: le_lt_trans; apply le_esum => t Dt.
-by rewrite -/((abse \o f) t) fune_abse gee0_abs// leeDr.
+apply: le_lt_trans; apply: le_esum => t Dt.
+by rewrite -/((abse \o f) t) -funeposDneg gee0_abs// leeDr.
 Qed.
 
 End summable_lemmas.
@@ -596,7 +596,7 @@ have -> : (C_ = A_ \- B_)%R.
   apply/funext => k.
   rewrite /= /A_ /C_ /B_ -sumrN -big_split/= -summable_fine_sum//.
   apply eq_bigr => i Pi; rewrite -fineB//.
-  - by rewrite [in LHS](funeposneg f).
+  - by rewrite -[in LHS](funeposBneg f).
   - by rewrite fin_num_abs (@summable_pinfty _ _ P) //; exact/summable_funepos.
   - by rewrite fin_num_abs (@summable_pinfty _ _ P) //; exact/summable_funeneg.
 by rewrite distrC; apply: hN; near: n; exists N.
@@ -653,14 +653,14 @@ rewrite [X in _ == X -> _]addeC -sube_eq; last 2 first.
   - rewrite fin_num_adde_defr// ge0_esum_posneg//.
     rewrite (@eq_esum _ _ _ _ (abse \o f))// -?summableE// => i Di.
     by rewrite /= gee0_abs// f0.
-rewrite -addeA addeCA eq_sym [X in _ == X -> _]addeC -sube_eq; last 2 first.
-  - rewrite ge0_esum_posneg//.
-    rewrite (@eq_esum _ _ _ _ (abse \o f))// -?summableE// => i Di.
-    by rewrite /= gee0_abs// f0.
-  - rewrite fin_num_adde_defl// ge0_esum_posneg//.
-    rewrite (@eq_esum _ _ _ _ (abse \o g))// -?summableE// => i Di.
-    by rewrite /= gee0_abs// g0.
-by rewrite ge0_esum_posneg// ge0_esum_posneg// => /eqP ->.
+rewrite -addeA addeCA eq_sym [X in _ == X -> _]addeC -sube_eq.
+- by rewrite ge0_esum_posneg// ge0_esum_posneg// => /eqP ->.
+- rewrite ge0_esum_posneg//.
+  rewrite (@eq_esum _ _ _ _ (abse \o f))// -?summableE// => i Di.
+  by rewrite /= gee0_abs// f0.
+- rewrite fin_num_adde_defl// ge0_esum_posneg//.
+  rewrite (@eq_esum _ _ _ _ (abse \o g))// -?summableE// => i Di.
+  by rewrite /= gee0_abs// g0.
 Qed.
 
 End esumB.

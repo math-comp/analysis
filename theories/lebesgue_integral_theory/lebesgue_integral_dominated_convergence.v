@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import archimedean.
@@ -297,11 +297,11 @@ exists (fun n => p_ n - n_ n)%R; split.
 - move=> n; rewrite /comp; under eq_fun => ? do rewrite sfunB /= EFinB.
   by apply: integrableB => //; [exact: intp | exact: intn].
 - move=> ? ?; rewrite /comp; under eq_fun => ? do rewrite sfunB /= EFinB.
-  rewrite [f]funeposneg; apply: cvgeB => //;[|exact: pf|exact:nf].
+  rewrite -[f]funeposBneg; apply: cvgeB => //;[|exact: pf|exact:nf].
   exact: add_def_funeposneg.
 have fpn z n : f z - ((p_ n - n_ n) z)%:E =
     (f^\+ z - (p_ n z)%:E) - (f^\- z - (n_ n z)%:E).
-  rewrite sfunB EFinB fin_num_oppeB // {1}[f]funeposneg -addeACA.
+  rewrite sfunB EFinB fin_num_oppeB // -{1}[f]funeposBneg -addeACA.
   by congr (_ _); rewrite fin_num_oppeB.
 case/integrableP: (intf) => mf _.
 have mfpn n : mu.-integrable E (fun z => f z - ((p_ n - n_ n) z)%:E).
