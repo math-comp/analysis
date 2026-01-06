@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval poly.
 From mathcomp Require Import sesquilinear.
@@ -759,6 +759,14 @@ Proof.
 move=> dfx dgfx; apply: DiffDef; first exact: differentiable_comp.
 by rewrite diff_comp // !diff_val.
 Qed.
+
+Lemma differentiable_rsubmx m {n1 n2} v :
+  differentiable (rsubmx : 'M[R]_(m, n1 + n2) -> 'M[R]_(m, n2)) v.
+Proof. exact/linear_differentiable/continuous_rsubmx. Qed.
+
+Lemma differentiable_lsubmx m {n1 n2} v :
+  differentiable (lsubmx : 'M[R]_(m, n1 + n2) -> 'M[R]_(m, n1)) v.
+Proof. exact/linear_differentiable/continuous_lsubmx. Qed.
 
 Lemma bilinear_schwarz (U V' W' : normedModType R)
   (f : {bilinear U -> V' -> W'}) : continuous (fun p => f p.1 p.2) ->

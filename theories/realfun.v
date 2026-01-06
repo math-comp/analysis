@@ -1880,6 +1880,10 @@ rewrite -[x]sqrtK//; apply: (@is_derive_inverse _ (fun x => x ^+ 2)).
 - by rewrite mulf_neq0// gt_eqF// sqrtr_gt0 exprn_gt0// sqrtr_gt0.
 Unshelve. all: by end_near. Qed.
 
+Lemma derive_sqrt {K : realType} (r : K) : 0 < r ->
+  'D_1 Num.sqrt r = (2 * Num.sqrt r)^-1.
+Proof. by move=> r0; apply: derive_val; exact: is_derive1_sqrt. Qed.
+
 #[global] Hint Extern 0 (is_derive _ _ (fun _ => (_ _)^-1) _) =>
   (eapply is_deriveV; first by []) : typeclass_instances.
 

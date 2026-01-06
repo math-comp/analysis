@@ -109,6 +109,11 @@
 - in `order_topology.v`:
   + structures `POrderedNbhs`, `POrderedTopological`, `POrderedUniform`, `POrderedPseudoMetric`,
     `POrderedPointedTopological`
+- in `num_topology.v`:
+  + lemmas `continuous_rsubmx`, `continuous_lsubmx`
+
+- in `derive.v`:
+  + lemmas `differentiable_rsubmx`, `differentiable_lsubmx`
 
 ### Changed
 

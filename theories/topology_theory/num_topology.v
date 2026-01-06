@@ -3,13 +3,13 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
 From mathcomp Require Import interval_inference reals topology_structure.
 From mathcomp Require Import uniform_structure pseudometric_structure.
-From mathcomp Require Import order_topology.
+From mathcomp Require Import order_topology matrix_topology.
 
 (**md**************************************************************************)
 (* # Topological notions for numerical types                                  *)
 (*                                                                            *)
 (* We endow `numFieldType` with the types of topological notions (accessible  *)
-(* with `Import numFieldTopology.Exports).                                    *)
+(* with `Import numFieldTopology.Exports`).                                   *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -377,4 +377,20 @@ have inj_nat_of_rat : injective nat_of_rat.
   rewrite /nat_of_rat; apply: inj_comp => //; apply: inj_comp => //.
   exact/bij_inj.
 by exists (nat_of_rat \o f) => i j Di Dj /inj_nat_of_rat/inj_f; exact.
+Qed.
+
+Lemma continuous_rsubmx {R : numFieldType} m {n1 n2} :
+  continuous (rsubmx : 'M[R]_(m, n1 + n2) -> 'M[R]_(m, n2)).
+Proof.
+move=> u A /nbhs_ballP[e /= e0 eA].
+apply/nbhs_ballP; exists e => //= v [_ uv]; apply: eA; split => // i j.
+by apply: (le_lt_trans _ (uv i (rshift n1 j))); rewrite !mxE.
+Qed.
+
+Lemma continuous_lsubmx {R : numFieldType} m {n1 n2} :
+  continuous (lsubmx : 'M[R]_(m, n1 + n2) -> 'M[R]_(m, n1)).
+Proof.
+move=> u A /nbhs_ballP[e /= e0 eA].
+apply/nbhs_ballP; exists e => //= v [_ uv]; apply: eA; split => // i j.
+by apply: (le_lt_trans _ (uv i (lshift n2 j))); rewrite !mxE.
 Qed.
