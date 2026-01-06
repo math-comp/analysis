@@ -1076,21 +1076,21 @@ have fE y k r : (ball 0%R k.+1%:R) y -> (r < 1)%R ->
   rewrite (lt_le_trans xrt)// lerBlDl (le_trans (ltW r1))//.
   rewrite -lerBlDl addrC -lerBrDr (le_trans (ler_norm _))// normrN.
   by rewrite (le_trans (ltW yk1))// lerBrDr natr1 ler_nat -muln2 ltn_Pmulr.
-have := h `|ceil x|.+1%N Logic.I.
-have Bxx : B `|ceil x|.+1 x.
-  rewrite /B /ball/= sub0r normrN (le_lt_trans (unstable.abs_ceil_ge _))// ltr_nat.
-  by rewrite -addnn addSnnS ltn_addl.
+have := h (truncn `|x|) Logic.I.
+have Bxx : B (truncn `|x|) x.
+  rewrite /B /ball/= sub0r normrN doubleS -truncn_le_nat.
+  by rewrite -addnn -addnS leq_addr.
 move=> /(_ Bxx)/fine_cvgP[davg_fk_fin_num davg_fk0].
 have f_fk_ceil : \forall t \near 0^'+,
   \int[mu]_(y in ball x t) `|(f y)%:E - (f x)%:E| =
-  \int[mu]_(y in ball x t) `|fk `|ceil x|.+1 y - fk `|ceil x|.+1 x|%:E.
+  \int[mu]_(y in ball x t) `|fk (truncn `|x|) y - fk (truncn `|x|) x|%:E.
   near=> t.
   apply: eq_integral => /= y /[1!inE] xty.
   rewrite -(fE x _ t)//; last first.
-    by rewrite /ball/= sub0r normrN (le_lt_trans (unstable.abs_ceil_ge _))// ltr_nat.
+    by rewrite /ball/= sub0r normrN -truncn_le_nat.
   rewrite -(fE x _ t)//; last first.
     by apply: ballxx; near: t; exact: nbhs_right_gt.
-  by rewrite /ball/= sub0r normrN (le_lt_trans (unstable.abs_ceil_ge _))// ltr_nat.
+  by rewrite /ball/= sub0r normrN -truncn_le_nat.
 apply/fine_cvgP; split=> [{davg_fk0}|{davg_fk_fin_num}].
 - move: davg_fk_fin_num => -[M /= M0] davg_fk_fin_num.
   apply: filter_app f_fk_ceil; near=> t => Ht.
