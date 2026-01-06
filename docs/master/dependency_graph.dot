@@ -461,7 +461,7 @@ digraph depend {
 	"theories/topology_theory/discrete_topology" -> "theories/topology_theory/bool_topology";
 	"theories/topology_theory/discrete_topology" -> "theories/topology_theory/nat_topology";
 	"theories/topology_theory/discrete_topology" -> "theories/topology_theory/separation_axioms";
-	"theories/topology_theory/matrix_topology" -> "theories/topology_theory/topology";
+	"theories/topology_theory/matrix_topology" -> "theories/topology_theory/num_topology";
 	"theories/topology_theory/nat_topology" -> "theories/topology_theory/topology";
 	"theories/topology_theory/num_topology" -> "theories/topology_theory/separation_axioms";
 	"theories/topology_theory/one_point_compactification" -> "theories/topology_theory/separation_axioms";

@@ -214,13 +214,13 @@
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.all_algebra.html">all_algebra</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_classical.html">all_classical</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html">interval_inference</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html">reals</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html">topology_structure</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html">uniform_structure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html">pseudometric_structure</a></span>.<br/>
-<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html">order_topology</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html">order_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></span>.<br/>
 <br/>
 <div class="ssrdoc md">
 # Topological notions for numerical types
 
 We endow `numFieldType` with the types of topological notions (accessible
-with `Import numFieldTopology.Exports).
+with `Import numFieldTopology.Exports`).
 
 </div>
 <br/>
@@ -2051,6 +2051,126 @@ library mathcomp.analysis.topology_theory.num_topology, line 359, characters 6-3
 &nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> /nat_of_rat;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#inj_comp">inj_comp</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#inj_comp">inj_comp</a></span><span class="id"> =&gt;</span><span class="id"> //</span>.<br/>
 &nbsp;&nbsp;<span class="id">exact/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#bij_inj">bij_inj</a></span>.<br/>
 <span class="gallina-kwd">by</span><span class="gallina-kwd"> exists</span> (<span class="id">nat_of_rat</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id">f</span>)<span class="id"> =&gt;</span><span class="id"> i</span><span class="id"> j</span><span class="id"> Di</span><span class="id"> Dj</span><span class="id"> /inj_nat_of_rat/inj_f;</span><span class="id"> exact</span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_rsubmx" class="id"><a name="continuous_rsubmx" class="" title="continuous_rsubmx :
+forall {R : numFieldType} [m : nat] {n1 n2 : nat}
+  [x : filter.Nbhs.sort
+         (filter.matrix_matrix__canonical__filter_Nbhs m 
+            (n1 + n2)
+            (numFieldTopology.NumField_sort__canonical__filter_Nbhs R))],
+filter.continuous_at
+  (T:=filter.matrix_matrix__canonical__filter_Nbhs m 
+        (n1 + n2) (numFieldTopology.NumField_sort__canonical__filter_Nbhs R))
+  (U:=filter.matrix_matrix__canonical__filter_Nbhs m n2
+        (numFieldTopology.NumField_sort__canonical__filter_Nbhs R))
+  x (rsubmx : 'M_(m, n1 + n2) -> 'M_(m, n2))
+
+continuous_rsubmx is not universe polymorphic
+Expanded type for implicit arguments
+continuous_rsubmx :
+forall {R : numFieldType} [m : nat] {n1 n2 : nat}
+  [x : filter.Nbhs.sort
+         (filter.matrix_matrix__canonical__filter_Nbhs m 
+            (n1 + n2)
+            (numFieldTopology.NumField_sort__canonical__filter_Nbhs R))]
+  [t : set
+         (filter.Nbhs.sort
+            (filter.matrix_matrix__canonical__filter_Nbhs m n2
+               (numFieldTopology.NumField_sort__canonical__filter_Nbhs R)))],
+filter.nbhs ((rsubmx : 'M_(m, n1 + n2) -> 'M_(m, n2)) x) t ->
+exists2
+  i : 'I_m ->
+      'I_(n1 + n2) ->
+      set
+        (filter.Nbhs.sort
+           (numFieldTopology.NumField_sort__canonical__filter_Nbhs R)),
+  [set P | (forall (i0 : 'I_m) (j : 'I_(n1 + n2)),
+            filter.nbhs (x i0 j) (P i0 j))]%classic
+    i &
+  ((fun
+      P : 'I_m ->
+          'I_(n1 + n2) ->
+          set
+            (filter.Nbhs.sort
+               (numFieldTopology.NumField_sort__canonical__filter_Nbhs R)) =>
+    [set my | (forall (i0 : 'I_m) (j : 'I_(n1 + n2)), P i0 j (my i0 j))]) i
+   `<=` (rsubmx : 'M_(m, n1 + n2) -> 'M_(m, n2)) @^-1` t)%classic
+
+Arguments continuous_rsubmx {R} [m]%nat_scope {n1 n2}%nat_scope [x t] _
+continuous_rsubmx is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.num_topology.continuous_rsubmx
+Declared in
+library mathcomp.analysis.topology_theory.num_topology, line 382, characters 6-23
+">continuous_rsubmx</a></span><span class="id"> {</span><span id="R:119" class="id"><a name="R:119" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.NumField.Exports.numFieldType">numFieldType</a></span><span class="id">}</span><span class="id"> </span><span id="m:120" class="id"><a name="m:120" class="">m</a></span><span class="id"> {</span><span id="n1:121" class="id"><a name="n1:121" class="">n1</a></span><span class="id"> </span><span id="n2:122" class="id"><a name="n2:122" class="">n2</a></span><span class="id">}</span><span class="id"> :</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#rsubmx">rsubmx</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">'M[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#R:119">R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">]_</a></span>(<span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#m:120">m</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#n1:121">n1</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#0dacc1786c5ba797d47dd85006231633"> +</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#0dacc1786c5ba797d47dd85006231633"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#n2:122">n2</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">'M[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#R:119">R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">]_</a></span>(<span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#m:120">m</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#n2:122">n2</a></span>)).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> u</span><span class="id"> A</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#nbhs_ballP">nbhs_ballP</a></span><span class="id">[e</span><span class="id"> /=</span><span class="id"> e0</span><span class="id"> eA]</span>.<br/>
+<span class="id">apply/</span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#nbhs_ballP">nbhs_ballP</a></span><span class="id">;</span><span class="gallina-kwd"> exists</span><span class="id"> e</span><span class="id"> =&gt;</span><span class="id"> //=</span><span class="id"> v</span><span class="id"> [_</span><span class="id"> uv];</span><span class="id"> apply:</span><span class="id"> eA;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> i</span><span class="id"> j</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> apply:</span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.le_lt_trans">le_lt_trans</a></span><span class="id"> _</span> (<span class="id">uv</span><span class="id"> i</span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#rshift">rshift</a></span><span class="id"> n1</span><span class="id"> j</span>)))<span class="id">;</span><span class="id"> rewrite</span><span class="id"> !</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#mxE">mxE</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_lsubmx" class="id"><a name="continuous_lsubmx" class="" title="continuous_lsubmx :
+forall {R : numFieldType} [m : nat] {n1 n2 : nat}
+  [x : filter.Nbhs.sort
+         (filter.matrix_matrix__canonical__filter_Nbhs m 
+            (n1 + n2)
+            (numFieldTopology.NumField_sort__canonical__filter_Nbhs R))],
+filter.continuous_at
+  (T:=filter.matrix_matrix__canonical__filter_Nbhs m 
+        (n1 + n2) (numFieldTopology.NumField_sort__canonical__filter_Nbhs R))
+  (U:=filter.matrix_matrix__canonical__filter_Nbhs m n1
+        (numFieldTopology.NumField_sort__canonical__filter_Nbhs R))
+  x (lsubmx : 'M_(m, n1 + n2) -> 'M_(m, n1))
+
+continuous_lsubmx is not universe polymorphic
+Expanded type for implicit arguments
+continuous_lsubmx :
+forall {R : numFieldType} [m : nat] {n1 n2 : nat}
+  [x : filter.Nbhs.sort
+         (filter.matrix_matrix__canonical__filter_Nbhs m 
+            (n1 + n2)
+            (numFieldTopology.NumField_sort__canonical__filter_Nbhs R))]
+  [t : set
+         (filter.Nbhs.sort
+            (filter.matrix_matrix__canonical__filter_Nbhs m n1
+               (numFieldTopology.NumField_sort__canonical__filter_Nbhs R)))],
+filter.nbhs ((lsubmx : 'M_(m, n1 + n2) -> 'M_(m, n1)) x) t ->
+exists2
+  i : 'I_m ->
+      'I_(n1 + n2) ->
+      set
+        (filter.Nbhs.sort
+           (numFieldTopology.NumField_sort__canonical__filter_Nbhs R)),
+  [set P | (forall (i0 : 'I_m) (j : 'I_(n1 + n2)),
+            filter.nbhs (x i0 j) (P i0 j))]%classic
+    i &
+  ((fun
+      P : 'I_m ->
+          'I_(n1 + n2) ->
+          set
+            (filter.Nbhs.sort
+               (numFieldTopology.NumField_sort__canonical__filter_Nbhs R)) =>
+    [set my | (forall (i0 : 'I_m) (j : 'I_(n1 + n2)), P i0 j (my i0 j))]) i
+   `<=` (lsubmx : 'M_(m, n1 + n2) -> 'M_(m, n1)) @^-1` t)%classic
+
+Arguments continuous_lsubmx {R} [m]%nat_scope {n1 n2}%nat_scope [x t] _
+continuous_lsubmx is opaque
+Expands to: Constant
+            mathcomp.analysis.topology_theory.num_topology.continuous_lsubmx
+Declared in
+library mathcomp.analysis.topology_theory.num_topology, line 390, characters 6-23
+">continuous_lsubmx</a></span><span class="id"> {</span><span id="R:123" class="id"><a name="R:123" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.NumField.Exports.numFieldType">numFieldType</a></span><span class="id">}</span><span class="id"> </span><span id="m:124" class="id"><a name="m:124" class="">m</a></span><span class="id"> {</span><span id="n1:125" class="id"><a name="n1:125" class="">n1</a></span><span class="id"> </span><span id="n2:126" class="id"><a name="n2:126" class="">n2</a></span><span class="id">}</span><span class="id"> :</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#lsubmx">lsubmx</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">'M[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#R:123">R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">]_</a></span>(<span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#m:124">m</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#n1:125">n1</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#0dacc1786c5ba797d47dd85006231633"> +</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#0dacc1786c5ba797d47dd85006231633"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#n2:126">n2</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">'M[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#R:123">R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">]_</a></span>(<span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#m:124">m</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#n1:125">n1</a></span>)).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> u</span><span class="id"> A</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#nbhs_ballP">nbhs_ballP</a></span><span class="id">[e</span><span class="id"> /=</span><span class="id"> e0</span><span class="id"> eA]</span>.<br/>
+<span class="id">apply/</span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#nbhs_ballP">nbhs_ballP</a></span><span class="id">;</span><span class="gallina-kwd"> exists</span><span class="id"> e</span><span class="id"> =&gt;</span><span class="id"> //=</span><span class="id"> v</span><span class="id"> [_</span><span class="id"> uv];</span><span class="id"> apply:</span><span class="id"> eA;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> i</span><span class="id"> j</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> apply:</span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.le_lt_trans">le_lt_trans</a></span><span class="id"> _</span> (<span class="id">uv</span><span class="id"> i</span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#lshift">lshift</a></span><span class="id"> n2</span><span class="id"> j</span>)))<span class="id">;</span><span class="id"> rewrite</span><span class="id"> !</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#mxE">mxE</a></span>.<br/>
 Qed.</div></details>
 
       <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>

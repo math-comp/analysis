@@ -242,6 +242,7 @@ subgraph cluster_topology { "theories/topology_theory/weak_topology"[label="weak
   "theories/topology_theory/uniform_structure" -> "theories/topology_theory/weak_topology";
 subgraph cluster_topology { "theories/topology_theory/num_topology"[label="num_topology",URL="mathcomp.analysis.topology_theory.num_topology.html",fillcolor=4,fontcolor=white]}  "classical/all_classical" -> "theories/topology_theory/num_topology";
   "reals/reals" -> "theories/topology_theory/num_topology";
+  "theories/topology_theory/matrix_topology" -> "theories/topology_theory/num_topology";
   "theories/topology_theory/order_topology" -> "theories/topology_theory/num_topology";
   "theories/topology_theory/pseudometric_structure" -> "theories/topology_theory/num_topology";
   "theories/topology_theory/topology_structure" -> "theories/topology_theory/num_topology";
