@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 (* -------------------------------------------------------------------- *)
 (* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)
 (* Copyright (c) - 2015--2018 - Inria                                   *)

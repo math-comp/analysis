@@ -117,7 +117,7 @@
   + defintions `funrpos`, `funrneg` with notations `^\+` and `^\-`
   + lemmas `funrpos_ge0`, `funrneg_ge0`, `funrposN`, `funrnegN`, `ge0_funrposE`,
     `ge0_funrnegE`, `le0_funrposE`, `le0_funrnegE`, `ge0_funrposM`, `ge0_funrnegM`,
-    `le0_funrposM`, `le0_funrnegM`, `funr_normr`, `funrposneg`, `funrD_Dpos`,
+    `le0_funrposM`, `le0_funrnegM`, `funrposDneg`, `funrposBneg`,
     `funrD_posD`, `funrpos_le`, `funrneg_le`
   + lemmas `funerpos`, `funerneg`
 
@@ -156,6 +156,12 @@
   + lemmas `expectationM_nnsfun`, `expectationM_ge0`,
     `ge0_independent_expectationM`, `independent_Lfun1_expectationM_lty`,
     `independent_Lfun1M`, `independent_expectationM`
+
+- in `functions.v`:
+  + lemma `addBrfctE`
+
+- in `ereal.v`:
+  + lemma `ge0_addBefctE`
 
 ### Changed
 
@@ -209,6 +215,11 @@
     * lemmas `bounded_variationxx`, `bounded_variationD`,
       `bounded_variationN`, `bounded_variationl`, `bounded_variationr`,
       `variations_opp`, `nondecreasing_bounded_variation`
+
+- in `numfun.v`:
+  + `fune_abse` renamed to `funeposDneg` and direction of the equality changed
+  + `funeposneg` renamed to `funeposBneg` and direction of the equality changed
+  + `funeD_posD` renamed to `funeDB` and direction of the equality changed
 
 ### Renamed
 

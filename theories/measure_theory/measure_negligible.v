@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp Require Import boolp classical_sets functions cardinality reals.
@@ -273,7 +273,8 @@ Lemma ae_eq_funeposneg (f g : T -> \bar R) :
 Proof.
 split=> [fg|[pfg nfg]].
   by split; near=> x => Dx; rewrite !(funeposE,funenegE) (near fg).
-by near=> x => Dx; rewrite (funeposneg f) (funeposneg g) ?(near pfg, near nfg).
+near=> x => Dx.
+by rewrite -(funeposBneg f) -(funeposBneg g) ?(near pfg, near nfg).
 Unshelve. all: by end_near. Qed.
 Local Close Scope ereal_scope.
 
@@ -283,7 +284,8 @@ Proof. by symmetry. Qed.
 Lemma ae_eq_trans U (f g h : T -> U) : ae_eq f g -> ae_eq g h -> ae_eq f h.
 Proof. by apply transitivity. Qed.
 
-Lemma ae_eq_sub W (f g h i : T -> W) : ae_eq f g -> ae_eq h i -> ae_eq (f \- h) (g \- i).
+Lemma ae_eq_sub W (f g h i : T -> W) : ae_eq f g -> ae_eq h i ->
+  ae_eq (f \- h) (g \- i).
 Proof. by apply: filterS2 => x + + Dx => /= /(_ Dx) -> /(_ Dx) ->. Qed.
 
 Lemma ae_eq_mul2r W (f g h : T -> W) : ae_eq f g -> ae_eq (f \* h) (g \* h).
@@ -295,7 +297,8 @@ Proof. by move=>/(ae_eq_comp2 (fun x y => h x * y)). Qed.
 Lemma ae_eq_mul1l W (f g : T -> W) : ae_eq f (cst 1) -> ae_eq g (g \* f).
 Proof. by apply: filterS => x /= /[apply] ->; rewrite mulr1. Qed.
 
-Lemma ae_eq_abse (f g : T -> \bar R) : ae_eq f g -> ae_eq (abse \o f) (abse \o g).
+Lemma ae_eq_abse (f g : T -> \bar R) : ae_eq f g ->
+  ae_eq (abse \o f) (abse \o g).
 Proof. by apply: filterS => x /[apply] /= ->. Qed.
 
 Lemma ae_foralln (P : nat -> T -> Prop) :
@@ -306,8 +309,8 @@ have seqDUAmeas := seqDU_measurable Ameas.
 exists (\bigcup_n A n); split => //.
 - exact/bigcup_measurable.
 - rewrite seqDU_bigcup_eq measure_bigcup// eseries0// => i _ _.
-  by rewrite (@subset_measure0 _ _ _ _ _ (A i))//=; apply: subset_seqDU.
-- by move=> x /=; rewrite -existsNP => -[n NPnx]; exists n => //; apply: NPA.
+  by rewrite (@subset_measure0 _ _ _ _ _ (A i))//=; exact: subset_seqDU.
+- by move=> x /=; rewrite -existsNP => -[n NPnx]; exists n => //; exact: NPA.
 Qed.
 
 End ae_eq.

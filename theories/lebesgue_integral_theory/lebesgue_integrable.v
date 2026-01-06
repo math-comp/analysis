@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import archimedean.
@@ -207,10 +207,9 @@ Proof. by move=> fi gi; exact/(integrableD fi)/integrableN. Qed.
 Lemma integrable_add_def f : mu_int f ->
   \int[mu]_(x in D) f^\+ x +? - (\int[mu]_(x in D) f^\- x).
 Proof.
-move=> /integrableP[mf]; rewrite -[fun x => _]/(abse \o f) fune_abse => foo.
-rewrite ge0_integralD // in foo; last 2 first.
-- exact: measurable_funepos.
-- exact: measurable_funeneg.
+move=> /integrableP[mf]; rewrite -[fun x => _]/(abse \o f) -funeposDneg => foo.
+rewrite ge0_integralD // in foo; [|exact: measurable_funepos
+                                  |exact: measurable_funeneg].
 apply: ltpinfty_adde_def.
 - by apply: le_lt_trans foo; rewrite leeDl// integral_ge0.
 - by rewrite inE (@le_lt_trans _ _ 0)// leeNl oppe0 integral_ge0.
@@ -223,7 +222,7 @@ move=> /integrableP[Df foo]; apply/integrableP; split.
 apply: le_lt_trans foo; apply: ge0_le_integral => //.
 - by apply/measurableT_comp => //; exact: measurable_funepos.
 - exact/measurableT_comp.
-- by move=> t Dt; rewrite -/((abse \o f) t) fune_abse gee0_abs// leeDl.
+- by move=> t Dt; rewrite -/((abse \o f) t) -funeposDneg gee0_abs// leeDl.
 Qed.
 
 Lemma integrable_funeneg f : mu_int f -> mu_int f^\-.
@@ -233,7 +232,7 @@ move=> /integrableP[Df foo]; apply/integrableP; split.
 apply: le_lt_trans foo; apply: ge0_le_integral => //.
 - by apply/measurableT_comp => //; exact: measurable_funeneg.
 - exact/measurableT_comp.
-- by move=> t Dt; rewrite -/((abse \o f) t) fune_abse gee0_abs// leeDr.
+- by move=> t Dt; rewrite -/((abse \o f) t) -funeposDneg gee0_abs// leeDr.
 Qed.
 
 Lemma integral_funeneg_lt_pinfty f : mu_int f -> \int[mu]_(x in D) f^\- x < +oo.
@@ -241,9 +240,8 @@ Proof.
 move=> /integrableP[mf]; apply: le_lt_trans; apply: ge0_le_integral => //.
 - exact: measurable_funeneg.
 - exact: measurableT_comp.
-- move=> x Dx; have [fx0|/ltW fx0] := leP (f x) 0.
-    rewrite lee0_abs// funenegE.
-    by move: fx0; rewrite -{1}oppe0 -leeNr => /max_idPl ->.
+- move=> x Dx; have /orP[fx0|fx0] := le_total (f x) 0.
+    by rewrite lee0_abs// funenegE ge_max lexx leeNr oppe0 fx0.
   rewrite gee0_abs// funenegE.
   by move: (fx0); rewrite -{1}oppe0 -leeNl => /max_idPr ->.
 Qed.
@@ -268,7 +266,7 @@ rewrite fin_numElt; apply/andP; split.
 case: fi => mf; apply: le_lt_trans; apply: ge0_le_integral => //.
 - exact/measurable_funeneg.
 - exact/measurableT_comp.
-- by move=> x Dx; rewrite -/((abse \o f) x) (fune_abse f) leeDr.
+- by move=> x Dx; rewrite -/((abse \o f) x) -funeposDneg leeDr.
 Qed.
 
 Lemma integrable_pos_fin_num f :
@@ -280,7 +278,7 @@ rewrite fin_numElt; apply/andP; split.
 case: fi => mf; apply: le_lt_trans; apply: ge0_le_integral => //.
 - exact/measurable_funepos.
 - exact/measurableT_comp.
-- by move=> x Dx; rewrite -/((abse \o f) x) (fune_abse f) leeDl.
+- by move=> x Dx; rewrite -/((abse \o f) x) -funeposDneg leeDl.
 Qed.
 
 Lemma integrableMr (h : T -> R) g :
@@ -593,8 +591,8 @@ have : (g1 \+ g2)^\+ \+ g1^\- \+ g2^\- = (g1 \+ g2)^\- \+ g1^\+ \+ g2^\+.
     by rewrite !funeposE -!fine_max.
     by rewrite funeposE !funenegE -!fine_max.
   apply/eqP.
-  rewrite -[LHS]/((g1^\+ \+ g2^\+ \- (g1^\- \+ g2^\-)) x) -funeD_posD.
-  by rewrite -[RHS]/((_ \- _) x) -funeD_Dpos.
+  rewrite -[LHS]/((g1^\+ \+ g2^\+ \- (g1^\- \+ g2^\-)) x) funeDB.
+  by rewrite -[RHS]/((_ \- _) x) funeposBneg.
 move/(congr1 (fun y => \int[mu]_(x in D) (y x) )).
 rewrite (ge0_integralD mu mD); last 4 first.
   - by move=> x _; rewrite adde_ge0.
@@ -741,7 +739,7 @@ Local Open Scope ereal_scope.
 Lemma integrable_lty (f : T -> \bar R) :
   mu.-integrable D f -> \int[mu]_(x in D) f x < +oo.
 Proof.
-move=> intf; rewrite (funeposneg f) integralB//;
+move=> intf; rewrite -(funeposBneg f) integralB//;
   [|exact: integrable_funepos|exact: integrable_funeneg].
 rewrite lte_add_pinfty ?integral_funepos_lt_pinfty// lteNl ltNye_eq.
 by rewrite integrable_neg_fin_num.
@@ -799,7 +797,7 @@ rewrite -[X in _ = _ - X]ge0_integral_pushforward//; last first.
 rewrite -integralB//=; last first.
 - by apply: integrable_funeneg => //=; exact: integrable_pushforward.
 - by apply: integrable_funepos => //=; exact: integrable_pushforward.
-- by apply/eq_integral=> // x _; rewrite /= [in LHS](funeposneg f).
+- by apply/eq_integral=> // x _; rewrite -[in LHS](funeposBneg f).
 Qed.
 
 End transfer.
@@ -813,7 +811,7 @@ Lemma negligible_integral (D N : set T) (f : T -> \bar R) :
   measurable N -> measurable D -> mu.-integrable D f ->
   mu N = 0 -> \int[mu]_(x in D) f x = \int[mu]_(x in D `\` N) f x.
 Proof.
-move=> mN mD mf muN0; rewrite [f]funeposneg ?integralB //; first last.
+move=> mN mD mf muN0; rewrite -[f]funeposBneg ?integralB//; first last.
 - exact: integrable_funeneg.
 - exact: integrable_funepos.
 - apply: (integrableS mD) => //; first exact: measurableD.
@@ -859,7 +857,7 @@ Lemma integral_measure_add : \int[measure_add m1 m2]_(x in D) f x =
 Proof.
 transitivity (\int[m1]_(x in D) (f^\+ \- f^\-) x +
               \int[m2]_(x in D) (f^\+ \- f^\-) x); last first.
-  by congr +%E; apply: eq_integral => x _; rewrite [in RHS](funeposneg f).
+  by congr +%E; apply: eq_integral => x _; rewrite -[in RHS](funeposBneg f).
 rewrite integralB//; [|exact: integrable_funepos|exact: integrable_funeneg].
 rewrite integralB//; [|exact: integrable_funepos|exact: integrable_funeneg].
 rewrite addeACA -ge0_integral_measure_add//; last first.
@@ -908,7 +906,7 @@ have ? : \int[mu]_(x in \bigcup_i F i) g x \is a fin_num.
 transitivity (\int[mu]_(x in \bigcup_i F i) g^\+ x -
               \int[mu]_(x in \bigcup_i F i) g^\- x)%E.
   rewrite -integralB.
-  - by apply: eq_integral => t Ft; rewrite [in LHS](funeposneg g).
+  - by apply: eq_integral => t Ft; rewrite -[in LHS](funeposBneg g).
   - exact: bigcupT_measurable.
   - by apply: integrable_funepos => //; exact: bigcupT_measurable.
   - by apply: integrable_funeneg => //; exact: bigcupT_measurable.

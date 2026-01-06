@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg.
 From mathcomp Require Import poly ssrnum ssrint interval archimedean finmap.
@@ -841,24 +841,6 @@ Notation "'V_ P [ X ]" := (variance P X).
 Definition mmt_gen_fun d (T : measurableType d) (R : realType)
   (P : probability T R) (X : T -> R) (t : R) := ('E_P[expR \o t \o* X])%E.
 Notation "'M_ P X" := (@mmt_gen_fun _ _ _ P X).
-
-(* TODO: move earlier *)
-Section mfun_measurable_realType.
-Context {d} {aT : measurableType d} {rT : realType}.
-
-HB.instance Definition _ (f : {mfun aT >-> rT}) :=
-  @isMeasurableFun.Build d _ _ _ f^\+
-    (measurable_funrpos (@measurable_funPT _ _ _ _ f)).
-
-HB.instance Definition _ (f : {mfun aT >-> rT}) :=
-  @isMeasurableFun.Build d _ _ _ f^\-
-    (measurable_funrneg (@measurable_funPT _ _ _ _ f)).
-
-HB.instance Definition _ (f : {mfun aT >-> rT}) :=
-  @isMeasurableFun.Build d _ _ _ (@normr _ _ \o f)
-    (measurableT_comp (@normr_measurable _ _) (@measurable_funPT _ _ _ _ f)).
-
-End mfun_measurable_realType.
 
 Section markov_chebyshev_cantelli.
 Local Open Scope ereal_scope.

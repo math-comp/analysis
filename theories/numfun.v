@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets fsbigop.
@@ -764,9 +764,9 @@ move=> r0; rewrite -[in LHS](opprK r); under eq_fun do rewrite mulNr.
 by rewrite funrnegN ge0_funrposM ?oppr_ge0.
 Qed.
 
-Lemma funr_normr f : Num.norm \o f = f^\+ \+ f^\-.
+Lemma funrposDneg f : f^\+ + f^\- = Num.norm \o f.
 Proof.
-rewrite funeqE => x /=; have [fx0|/ltW fx0] := leP (f x) 0.
+rewrite funeqE => x /=; rewrite !fctE/=; have [fx0|/ltW fx0] := leP (f x) 0.
 - rewrite ler0_norm// /funrpos /funrneg.
   move/max_idPr : (fx0) => ->; rewrite add0r.
   by move: fx0; rewrite -{1}oppr0 lerNr => /max_idPl ->.
@@ -774,32 +774,16 @@ rewrite funeqE => x /=; have [fx0|/ltW fx0] := leP (f x) 0.
   by move: fx0; rewrite -{1}oppr0 lerNl => /max_idPr ->; rewrite addr0.
 Qed.
 
-Lemma funrposneg f : f = (fun x => f^\+ x - f^\- x).
+Lemma funrposBneg f : f^\+ - f^\- = f.
 Proof.
-rewrite funeqE => x; rewrite /funrpos /funrneg; have [|/ltW] := leP (f x) 0.
+apply/funext => x.
+rewrite /funrpos /funrneg/= !fctE; have [|/ltW] := leP (f x) 0.
   by rewrite -{1}oppr0 -lerNr => /max_idPl ->; rewrite opprK add0r.
 by rewrite -{1}oppr0 -lerNl => /max_idPr ->; rewrite subr0.
 Qed.
 
-Lemma funrD_Dpos f g : f \+ g = (f \+ g)^\+ \- (f \+ g)^\-.
-Proof.
-apply/funext => x; rewrite /funrpos /funrneg/=; have [|/ltW] := lerP 0 (f x + g x).
-- by rewrite -{1}oppr0 -lerNl => /max_idPr ->; rewrite subr0.
-- by rewrite -{1}oppr0 -lerNr => /max_idPl ->; rewrite opprK add0r.
-Qed.
-
-Lemma funrD_posD f g : f \+ g = (f^\+ \+ g^\+) \- (f^\- \+ g^\-).
-Proof.
-apply/funext => x; rewrite /funrpos /funrneg/=.
-have [|fx0] := lerP 0 (f x); last rewrite add0r.
-- rewrite -{1}oppr0 lerNl => /max_idPr ->; have [|/ltW] := lerP 0 (g x).
-    by rewrite -{1}oppr0 lerNl => /max_idPr ->; rewrite addr0 subr0.
-  by rewrite -{1}oppr0 -lerNr => /max_idPl ->; rewrite addr0 sub0r opprK.
-- move/ltW : (fx0); rewrite -{1}oppr0 lerNr => /max_idPl ->.
-  have [|]/= := lerP 0 (g x); last rewrite add0r.
-    by rewrite -{1}oppr0 lerNl => /max_idPr ->; rewrite addr0 opprK addrC.
-  by rewrite -oppr0 ltrNr -{1}oppr0 => /ltW/max_idPl ->; rewrite opprD !opprK.
-Qed.
+Lemma funrDB f g : (f^\+ + g^\+) - (f^\- + g^\-) = f + g.
+Proof. by rewrite addBrfctE !funrposBneg. Qed.
 
 Lemma funrpos_le f g :
   {in D, forall x, f x <= g x} -> {in D, forall x, f^\+ x <= g^\+ x}.
@@ -920,9 +904,9 @@ move=> r0; rewrite -[in LHS](opprK r); under eq_fun do rewrite EFinN mulNe.
 by rewrite funenegN ge0_funeposM ?oppr_ge0.
 Qed.
 
-Lemma fune_abse f : abse \o f = f^\+ \+ f^\-.
+Lemma funeposDneg f : f^\+ + f^\- = abse \o f.
 Proof.
-rewrite funeqE => x /=; have [fx0|/ltW fx0] := leP (f x) 0.
+rewrite funeqE => x /=; rewrite !fctE/=; have /orP[fx0|fx0] := le_total (f x) 0.
 - rewrite lee0_abs// funeposE funenegE.
   move/max_idPr : (fx0) => ->; rewrite add0e.
   by move: fx0; rewrite -{1}oppe0 leeNr => /max_idPl ->.
@@ -930,7 +914,7 @@ rewrite funeqE => x /=; have [fx0|/ltW fx0] := leP (f x) 0.
   by move: fx0; rewrite -{1}oppe0 leeNl => /max_idPr ->; rewrite adde0.
 Qed.
 
-Lemma funeposneg f : f = (fun x => f^\+ x - f^\- x).
+Lemma funeposBneg f : f^\+ \- f^\- = f.
 Proof.
 rewrite funeqE => x; rewrite funeposE funenegE; have [|/ltW] := leP (f x) 0.
   by rewrite -{1}oppe0 -leeNr => /max_idPl ->; rewrite oppeK add0e.
@@ -943,27 +927,13 @@ by rewrite funenegE funeposE; case: (f x) => [r| |];
   [rewrite -fine_max/=|rewrite /maxe /= ltNyr|rewrite /maxe /= ltNyr].
 Qed.
 
-Lemma funeD_Dpos f g : f \+ g = (f \+ g)^\+ \- (f \+ g)^\-.
-Proof.
-apply/funext => x; rewrite funeposE funenegE; have [|/ltW] := leP 0 (f x + g x).
-- by rewrite -{1}oppe0 -leeNl => /max_idPr ->; rewrite sube0.
-- by rewrite -{1}oppe0 -leeNr => /max_idPl ->; rewrite oppeK add0e.
-Qed.
+#[deprecated(since="mathcomp-analysis 1.15.0", note="use `funeposBneg` instead")]
+Lemma funeD_Dpos f g : (f + g)^\+ \- (f + g)^\- = f + g.
+Proof. by rewrite funeposBneg. Qed.
 
-Lemma funeD_posD f g : f \+ g = (f^\+ \+ g^\+) \- (f^\- \+ g^\-).
+Lemma funeDB f g : (f^\+ + g^\+) \- (f^\- + g^\-) = f + g.
 Proof.
-apply/funext => x; rewrite !funeposE !funenegE.
-have [|fx0] := leP 0 (f x); last rewrite add0e.
-- rewrite -{1}oppe0 leeNl => /max_idPr ->; have [|/ltW] := leP 0 (g x).
-    by rewrite -{1}oppe0 leeNl => /max_idPr ->; rewrite adde0 sube0.
-  by rewrite -{1}oppe0 -leeNr => /max_idPl ->; rewrite adde0 sub0e oppeK.
-- move/ltW : (fx0); rewrite -{1}oppe0 leeNr => /max_idPl ->.
-  have [|] := leP 0 (g x); last rewrite add0e.
-    by rewrite -{1}oppe0 leeNl => /max_idPr ->; rewrite adde0 oppeK addeC.
-  move gg' : (g x) => g'; move: g' gg' => [g' gg' g'0|//|goo _].
-  + move/ltW : (g'0); rewrite -{1}oppe0 -leeNr => /max_idPl => ->.
-    by rewrite fin_num_oppeD// 2!oppeK.
-  + by rewrite /maxe /=; case: (f x) fx0.
+by rewrite ge0_addBefctE ?funeposBneg//; by move=> x; rewrite funeneg_ge0.
 Qed.
 
 Lemma funepos_le f g :
@@ -985,6 +955,9 @@ move=> fg x Dx; rewrite !funenegE /maxe; case: ifPn => gx; case: ifPn => fx //.
 Qed.
 
 End funposneg_lemmas.
+#[deprecated(since="mathcomp-analysis 1.15.0", note="use `-funeDB` instead")]
+Notation funeD_posD := funeDB (only parsing).
+
 #[global]
 Hint Extern 0 (is_true (0%R <= _ ^\+ _)%E) => solve [apply: funepos_ge0] : core.
 #[global]
