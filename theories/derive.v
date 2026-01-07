@@ -552,6 +552,7 @@ Proof. by apply/diff_unique; have [] := dcst a x. Qed.
 
 Variables (V W : normedModType R).
 
+
 Lemma differentiable_cst (W' : normedModType R) (a : W') (x : V) :
   differentiable (cst a) x.
 Proof. by apply/diff_locallyP; rewrite diff_cst; have := dcst a x. Qed.
@@ -1267,6 +1268,168 @@ Lemma derive1_onem {R : numFieldType} :
 Proof.
 by apply/funext => x; rewrite derive1E deriveB// derive_id derive_cst sub0r.
 Qed.
+
+Section Derive_max.
+Context {K : realType}.
+Implicit Types f g : K -> K.
+Implicit Type x : K.
+
+Lemma differentiable_max f g x (fg_neq : f x <> g x) (f_diff : differentiable f x) (g_diff : differentiable g x) :
+  differentiable (f \max g) x.
+Proof.
+case: (ltgtP (f x) (g x)) => // fg_order.
+  rewrite /Order.max_fun /maxr -derivable1_diffP /derivable fg_order.
+  have Hnear : \forall y \near nbhs 0^', (f (y%:A + x)%E < g (y%:A + x)%E)%R.
+    near=> y.
+    rewrite scaler1 -subr_lt0.
+    rewrite (_ : f (y + x) - _ = ((f - g) \o shift x) y) => //.
+    near: y.
+    apply/cvgr_lt;
+    last first.
+      move: fg_order.
+      rewrite -subr_lt0.
+      by apply.
+    apply:cvgB;
+    rewrite cvgr_dnbhsP;
+    move=> u [n_neq0 u0].
+      have Hshift : u n + x @[n --> \oo] --> x.
+        rewrite -(add0r x).
+        apply:cvgD.
+          by apply u0.
+        rewrite add0r /=.
+        by apply:cvg_cst.
+      rewrite /=.
+      apply: cvg_comp.
+        by apply Hshift.
+      move:f_diff => /differentiable_continuous.
+      by apply.
+    have Hshift : u n + x @[n --> \oo] --> x.
+      rewrite -(add0r x).
+      apply:cvgD.
+        by apply u0.
+      rewrite add0r /=.
+      by apply:cvg_cst.
+    rewrite (_ : g (u n + x)%E @[n--> \oo] = (g \o shift x) (u n) @[n --> \oo]) => //=.
+    apply: cvg_comp.
+      by apply Hshift.
+    move:g_diff => /differentiable_continuous.
+    by apply.
+  rewrite (_ : (h^-1 *: (_ - g x) @[h --> 0^']) = (fun y => y^-1 *: (shift (- g x) \o (g \o shift x)) y%:A) h @[h --> 0^']).
+    move: g_diff.
+    by rewrite -derivable1_diffP /derivable /=.
+  apply/funext => /= y.
+  apply/propext;
+  split.
+    apply: near_eq_cvg.
+    near=> z.
+    rewrite ifT //=.
+    near: z.
+    by apply Hnear.
+  apply: near_eq_cvg.
+  near=> z.
+  rewrite ifT //=.
+  near: z.
+  by apply Hnear.
+rewrite /Order.max_fun /maxr -derivable1_diffP /derivable.
+have := fg_order.
+rewrite ltNge le_eqVlt negb_or => /andP [_ fg_norder].
+rewrite ifN //.
+have Hnear : \forall y \near nbhs 0^', ~~ (f (y%:A + x)%E < g (y%:A + x)%E)%R.
+  near=> y.
+  rewrite ltNge negbK.
+  rewrite scaler1.
+  rewrite - subr_le0.
+  rewrite (_ : g (y + x) - _ = ((g - f) \o shift x) y) => //.
+  near: y.
+  apply/cvgr_le;
+  last first.
+    move: fg_order.
+    rewrite -subr_lt0.
+    by apply.
+  apply:cvgB;
+  rewrite cvgr_dnbhsP;
+  move=> u [n_neq0 u0].
+    have Hshift : u n + x @[n --> \oo] --> x.
+      rewrite -(add0r x).
+      apply:cvgD.
+        by apply u0.
+      rewrite add0r /=.
+      by apply:cvg_cst.
+    rewrite (_ : g (u n + x)%E @[n--> \oo] = (g \o shift x) (u n) @[n --> \oo]) => //=.
+    rewrite //=.
+    apply: cvg_comp.
+      by apply Hshift.
+    move:g_diff => /differentiable_continuous.
+    by apply.
+  have Hshift : u n + x @[n --> \oo] --> x.
+    rewrite -(add0r x).
+    apply:(cvgD u0).
+    rewrite add0r /=.
+    by apply:cvg_cst.
+  rewrite /=.
+  apply: cvg_comp.
+    by apply Hshift.
+  move:f_diff => /differentiable_continuous.
+  by apply.
+rewrite (_ : (h^-1 *: (_ - f x) @[h --> 0^']) = (fun y => y^-1 *: (shift (- f x) \o (f \o shift x)) y%:A) h @[h --> 0^']).
+  move: f_diff.
+  rewrite -derivable1_diffP /derivable /=.
+  by apply.
+apply/funext => /= y.
+apply/propext;
+  split.
+  apply: near_eq_cvg.
+  near=> z.
+  rewrite ifN //=.
+  near: z.
+  apply Hnear.
+apply: near_eq_cvg.
+near=> z.
+rewrite ifN //=.
+near: z.
+by apply Hnear.
+Unshelve.
+all: end_near.
+Qed.
+
+Lemma max_diffl f g x (f_gt_g : f x > g x) (f_cont : continuous_at x f) (g_cont : continuous_at x g) :
+  (f \max g)^`() x = f^`() x.
+Proof.
+rewrite !derive1E.
+apply near_eq_derive.
+  lra.
+rewrite /Order.max_fun /maxr.
+near=> y.
+rewrite ifN // -leNgt -subr_le0.
+near: y.
+apply:cvgr_le; last first.
+  rewrite -subr_lt0 in f_gt_g.
+  by apply f_gt_g.
+by apply:cvgB.
+Unshelve.
+end_near.
+Qed.
+
+Lemma max_diffr f g x (f_lt_g : f x < g x) (f_cont : continuous_at x f) (g_cont : continuous_at x g) :
+  (f \max g)^`() x = g^`() x.
+Proof.
+rewrite !derive1E.
+apply near_eq_derive=> //=.
+  lra.
+rewrite /Order.max_fun /maxr.
+near=> y.
+rewrite ifT // -subr_lt0.
+near: y.
+apply: cvgr_lt;
+    last first.
+  rewrite -subr_lt0 in f_lt_g.
+  by apply f_lt_g.
+by apply:cvgB.
+Unshelve.
+end_near.
+Qed.
+
+End Derive_max.
 
 Section Derive_lemmasVR.
 Variables (R : numFieldType) (V : normedModType R).
