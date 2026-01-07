@@ -232,6 +232,168 @@ Unshelve. all: end_near. Qed.
 
 End cvgr_fun_cvg_seq.
 
+Section heine_cantorR.
+Context {R : realType}.
+
+Let within_continuous_unif_contra a b (f : R -> R) : a < b ->
+  {within `[a, b], continuous f} ->
+  ~ @unif_continuous (subspace `[a, b]) R f ->
+  exists2 e : R, e > 0 &
+    forall d : R, d > 0 -> exists x : R * R, [/\ x.1 \in `]a, b[,
+      x.2 \in `]a, b[, `|x.1 - x.2| < d & `|f x.1 - f x.2| >= e].
+Proof.
+move=> ab /continuous_within_itvP => /(_ ab)[cf fa fb].
+move/unif_continuousP => /= /existsNP[e /not_implyP[e0 /forall2NP ucf]].
+exists (e / 3); [by rewrite divr_gt0|move=> d d0].
+have [//|{ucf}] := ucf d.
+move/existsNP => -[[x y] /= /not_implyP][xdy efxfy].
+wlog xy : x y xdy efxfy / x < y.
+  move=> wlg; have [xy|xy|xy]:= ltgtP x y.
+  - exact: (wlg x y).
+  - by apply: (wlg y x) => //; [exact/ball_sym|move/ball_sym].
+  - by move: efxfy; rewrite -xy /ball/= subrr normr0 e0.
+have [|xab] := boolP (x \in `[a, b]%classic); last first.
+  move: xdy; rewrite /ball/= /subspace_ball (negPf xab) /= => yx.
+  by move: efxfy; rewrite yx /ball/= subrr normr0 e0.
+rewrite inE/= in_itv/= => /andP[ax xb].
+have [|yab] := boolP (y \in `[a, b]%classic); last first.
+  move: xdy; rewrite /ball/= /subspace_ball mem_setE in_itv/= ax xb/=.
+  by move: yab; rewrite mem_setE/= => /negbTE -> [].
+rewrite inE/= in_itv/= => /andP[ay yb].
+move: ax; rewrite le_eqVlt => /predU1P[xa|xa].
+- move: xy xdy efxfy; rewrite -{}xa => {}ay ady efafy {xb x}.
+  have [r [s [ar rs sy ers]]] : exists r, exists s,
+      [/\ a < r, r < s, s < y & e / 3 <= `|f r - f s| ].
+    near a^'+ => a0; exists a0.
+    near y^'- => y0; exists y0; split => //.
+    move/negP: efafy; rewrite -leNgt [in X in X -> _](split3r e) -addrA.
+    rewrite -lerBrDr => /le_trans; apply; rewrite lerBlDl.
+    rewrite -(subrKA (f a0)) (le_trans (ler_normD _ _))// -addrA lerD//.
+      near: a0.
+      by move/cvgrPdist_le : fa => /(_ (e / 3) ltac:(by rewrite divr_gt0)).
+    rewrite distrC -(subrKA (f y0)) (le_trans (ler_normD _ _))// lerD//.
+      near: y0.
+      move: yb; rewrite le_eqVlt => /predU1P[->|yb].
+        by move/cvgrPdist_le : fb => /(_ (e / 3) ltac:(by rewrite divr_gt0)).
+      have : f x @[x --> (y : R)] --> f y by apply: cf; rewrite in_itv/= ay.
+      move/left_right_continuousP => -[fy _].
+      by move/cvgrPdist_le : fy => /(_ (e / 3) ltac:(by rewrite divr_gt0)).
+    by rewrite distrC.
+  exists (r, s); split => //=.
+  + by rewrite in_itv/= ar/= (lt_trans rs)// (lt_le_trans sy).
+  + by rewrite !in_itv/= (lt_trans ar)// (lt_le_trans sy).
+  + move: ady; rewrite /ball/= /subspace_ball/= mem_setE in_itv/=.
+    rewrite lexx (ltW ab)/= => -[_]; apply: le_lt_trans.
+    do 2 rewrite ltr0_norm ?subr_lt0// opprB.
+    by rewrite (lerB (ltW sy))// ltW.
+- have {}ay : a < y by rewrite (lt_trans xa).
+  have {}xb : x < b by rewrite (lt_le_trans xy).
+  move: yb; rewrite le_eqVlt => /predU1P[{}yb|{}yb].
+  + move: xdy efxfy xy; rewrite {}yb => xdb efxfb {}xb {y ay}.
+    have {}yab : x \in `]a, b[ by rewrite in_itv/= xa xb.
+    near b^'- => b0.
+    exists (x, b0); split => //=.
+    * by rewrite in_itv/=; apply/andP; split.
+    * move: xdb.
+      rewrite /ball/= /subspace_ball/= mem_setE in_itv/= (ltW xa) (ltW xb)/=.
+      move=> -[_]; apply: le_lt_trans.
+      do 2 rewrite ltr0_norm ?subr_lt0//.
+      by rewrite lerN2 lerD2l lerN2.
+    * move: efxfb => /negP; rewrite -leNgt.
+      rewrite [in X in X -> _](split3r e) -addrA -lerBrDr => /le_trans; apply.
+      rewrite lerBlDl -{1}(subrKA (f b0)) (le_trans (ler_normD _ _))//.
+      rewrite addrC lerD2r -mulr2n -mulr_natl distrC.
+      near: b0.
+      move/cvgrPdist_le : fb => /(_ (2 * (e / 3)) ltac:(rewrite !mulr_gt0)).
+      exact.
+  + exists (x, y); split => /=.
+    * by rewrite in_itv/= xa xb.
+    * by rewrite in_itv/= ay yb.
+    * move: xdy; rewrite /ball/= /subspace_ball/=.
+      by rewrite mem_setE/= in_itv/= (ltW xa) (ltW xb)/= => -[].
+    * move: efxfy => /negP; rewrite -leNgt; apply: le_trans.
+      by rewrite ler_piMr ?invf_le1 ?ler1n// ltW.
+Unshelve. all: by end_near. Qed.
+
+Lemma within_continuous_unif a b (f : R -> R) :
+  {within `[a, b], continuous f} -> @unif_continuous (subspace `[a, b]) R f.
+Proof.
+have [ab|] := ltP a b; last first.
+  rewrite le_eqVlt => /predU1P[-> _|ba _].
+    by rewrite set_itv1; exact: unif_continuous_set1.
+  by rewrite set_itv_ge ?bnd_simp -?ltNge//; exact: unif_continuous_set0.
+move=> cf; apply: contrapT => ucf.
+have [e e0 de] := within_continuous_unif_contra ab cf ucf.
+move: cf => /continuous_within_itvP => /(_ ab)[cf fa fb].
+rewrite {ucf}.
+have n0 n : 0 < n.+1%:R^-1 :> R by rewrite invr_gt0.
+pose u_ n := (sval (cid (de _ (n0 n)))).1.
+pose v_ n := (sval (cid (de _ (n0 n)))).2.
+have u_ab n : u_ n \in `]a, b[ by have [] := svalP (cid (de n.+1%:R^-1 (n0 n))).
+have v_ab n : v_ n \in `]a, b[ by have [] := svalP (cid (de n.+1%:R^-1 (n0 n))).
+have u_v n : `|u_ n - v_ n| < n.+1%:R^-1.
+  by have [] := svalP (cid (de n.+1%:R^-1 (n0 n))).
+have /bolzano_weierstrass[g incrg /cvg_ex[/= l u_gl]] : bounded_fun u_.
+  apply: (@itv_bounded_fun _ _ false true a b) => n.
+  by rewrite /u_/=; case: cid => // -[x y] /= [].
+have lab : `[a, b]%classic l.
+  apply: (closed_cvg _ _ _ _ u_gl); first exact: itv_closed.
+  by apply/nearW => n /=; apply: subset_itv_oo_cc; exact: u_ab.
+have v_gl : v_ \o g @ \oo --> l.
+  apply/cvgrPdist_le => /= r r0.
+  have r20 : 0 < r / 2 by rewrite divr_gt0.
+  have {}invrg n : (n <= (g n).+1)%N.
+    elim: n => // n ih; rewrite (leq_ltn_trans ih)// ltnS.
+    by move/increasing_seqP : incrg; exact.
+  near=> n.
+  rewrite -(subrKA (u_ (g n))) (splitr r) (le_trans (ler_normD _ _))// lerD//.
+    by near: n; move/cvgrPdist_le : u_gl; exact.
+  rewrite ltW// (@lt_trans _ _ (g n).+1%:R^-1)// invf_plt ?posrE//.
+  rewrite (@lt_le_trans _ _ n%:R) ?ler_nat//.
+  by near: n; exact: nbhs_infty_gtr.
+have e20 : 0 < e / 2 by rewrite divr_gt0.
+have efufv n : e <= `|f (u_ n) - f (v_ n)|.
+  by have [] := svalP (cid (de n.+1%:R^-1 (n0 n))).
+have [la {lab} | lb {lab} | {}lab] : [\/ l = a, l = b | `]a, b[%classic l].
+  move: lab; rewrite -(@setU1itv _ _ _ a) ?bnd_simp; last exact/ltW.
+  by rewrite -(@setUitv1 _ _ _ b) ?bnd_simp// /setU/= (orC _ (l = b)) or3E.
+- rewrite {}la {l} in u_gl v_gl *.
+  have /cvgrPdist_lt /(_ _ e20) fu_a : (f \o u_ \o g) @ \oo --> f a.
+    move/cvg_at_rightP : fa; apply; split => // n.
+    by move/itvP : (u_ab (g n)) => ->.
+  have /cvgrPdist_lt /(_ _ e20) fv_a : (f \o v_ \o g) @ \oo --> f a.
+    move/cvg_at_rightP : fa; apply; split => // n.
+    by move/itvP : (v_ab (g n)) => ->.
+  near \oo => n.
+  have := efufv (g n); rewrite leNgt => /negP; apply.
+  rewrite (splitr e) -(subrKA (f a)) (le_lt_trans (ler_normD _ _))// ltrD//.
+    by rewrite distrC; near: n.
+  by near: n.
+- rewrite {}lb {l} in u_gl v_gl *.
+  have /cvgrPdist_lt /(_ _ e20) fu_b : (f \o u_ \o g) @ \oo --> f b.
+    move/cvg_at_leftP : fb; apply; split => // n.
+    by move/itvP : (u_ab (g n)) => ->.
+  have /cvgrPdist_lt /(_ _ e20) fv_b : (f \o v_ \o g) @ \oo --> f b.
+    move/cvg_at_leftP : fb; apply; split => // n.
+    by move/itvP: (v_ab (g n)) => ->.
+  near \oo => n.
+  have := efufv (g n); rewrite leNgt => /negP; apply.
+  rewrite (splitr e) -(subrKA (f b)) (le_lt_trans (ler_normD _ _))// ltrD//.
+    by rewrite distrC; near: n.
+  by near: n.
+- have /cvgrPdist_lt /(_ _ e20) fu_l : (f \o u_ \o g) @ \oo --> f l.
+    exact: (continuous_cvg _ (cf _ _)).
+  have /cvgrPdist_lt /(_ _ e20) fv_l : (f \o v_ \o g) @ \oo --> f l.
+    exact: (continuous_cvg _ (cf _ _)).
+  near \oo => n.
+  have := efufv (g n); rewrite leNgt => /negP; apply.
+  rewrite -(subrKA (f l)) (splitr e) (le_lt_trans (ler_normD _ _))// ltrD//.
+    by rewrite distrC; near: n.
+ by near: n.
+Unshelve. all: by end_near. Qed.
+
+End heine_cantorR.
+
 Section cvge_fun_cvg_seq.
 Context {R : realType}.
 
