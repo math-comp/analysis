@@ -959,7 +959,7 @@ under eq_eseriesr do rewrite seqDUE.
 under [in RHS]eq_eseriesr do rewrite seqDUE.
 rewrite [LHS]sum_integral_limn; apply: cvg_lim => //.
 apply: cvgeD; first exact: fin_num_adde_defr; first exact: FGaoo.
-apply: cvgeN.
+apply: cvgeN => //.
 apply: is_cvg_nneseries_cond => n _ _; apply: integral_ge0 => x.
 move=> anx; apply: fG0; rewrite inE/=.
 by apply: subset_itv anx; rewrite bnd_simp// lerDl.
@@ -1103,9 +1103,6 @@ rewrite (@integration_by_partsy_le0_ge0 R (- F)%R G (- f)%R g a (- FGoo))//.
 - by move=> ?; apply: cvgN; exact: cf.
 - exact: derivable_oy_RcontinuousN.
 - by move=> ? ?; rewrite fctE derive1N ?Ff//; move: Foy => [+ _]; apply.
-- by [].
-- by [].
-- by [].
 - by under eq_cvg do rewrite fctE/= mulNr; apply: cvgN.
 - by move=> ? ?; rewrite mulNr EFinN oppe_le0; exact: fG0.
 - by move=> ? ?; rewrite mulNr EFinN oppe_ge0; exact: Fg0.
