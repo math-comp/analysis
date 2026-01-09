@@ -975,7 +975,7 @@ Qed.
 Lemma integration_by_partsy_ge0_ge0 :
   {in `]a, +oo[, forall x, 0 <= (f x * G x)%:E} ->
   {in `]a, +oo[, forall x, 0 <= (F x * g x)%:E} ->
-  \int[mu]_(x in `[a, +oo[) (F x * g x)%:E = (FGoo - F a * G a)%:E +
+  \int[mu]_(x in `[a, +oo[) (F x * g x)%:E = (FGoo - F a * G a)%:E -
   \int[mu]_(x in `[a, +oo[) (f x * G x)%:E.
 Proof.
 move=> fG0 Fg0.
