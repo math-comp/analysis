@@ -975,14 +975,14 @@ Qed.
 Lemma integration_by_partsy_ge0_ge0 :
   {in `]a, +oo[, forall x, 0 <= (f x * G x)%:E} ->
   {in `]a, +oo[, forall x, 0 <= (F x * g x)%:E} ->
-  \int[mu]_(x in `[a, +oo[) (F x * g x)%:E = (FGoo - F a * G a)%:E -
+  \int[mu]_(x in `[a, +oo[) (F x * g x)%:E = (FGoo - F a * G a)%:E +
   \int[mu]_(x in `[a, +oo[) (f x * G x)%:E.
 Proof.
 move=> fG0 Fg0.
 rewrite -integral_itv_obnd_cbnd// -[in RHS]integral_itv_obnd_cbnd//.
 rewrite itv_bndy_bigcup_BRight seqDU_bigcup_eq.
 rewrite 2?ge0_integral_bigcup//= -?seqDU_bigcup_eq -?itv_bndy_bigcup_BRight.
-- rewrite [LHS]sum_integral_limn; apply: cvg_lim => //.
+- rewrite [LHS]sum_integral_limn; apply: cvg_lim => //.
   apply: cvgeD; first exact: fin_num_adde_defr; first exact: FGaoo.
   under eq_cvg do rewrite sumN_Nsum_fG; apply: cvgeN.
   apply: is_cvg_nneseries_cond => n _ _; apply: integral_ge0 => x.
@@ -999,13 +999,17 @@ Qed.
 Lemma integration_by_partsy_le0_ge0 :
   {in `]a, +oo[, forall x, (f x * G x)%:E <= 0} ->
   {in `]a, +oo[, forall x, 0 <= (F x * g x)%:E} ->
-  \int[mu]_(x in `[a, +oo[) (F x * g x)%:E = (FGoo - F a * G a)%:E +
-  \int[mu]_(x in `[a, +oo[) (- (f x * G x)%:E).
+  \int[mu]_(x in `[a, +oo[) (F x * g x)%:E = (FGoo - F a * G a)%:E -
+  \int[mu]_(x in `[a, +oo[) (f x * G x)%:E.
 Proof.
 move=> fG0 Fg0.
 have mMfG : measurable_fun `]a, +oo[ (fun x => (- (f x * G x))%R).
   exact: measurableT_comp.
 rewrite -integral_itv_obnd_cbnd// -[in RHS]integral_itv_obnd_cbnd//.
+rewrite -integralN; last first.
+  rewrite fin_num_adde_defr//.
+  under eq_integral do rewrite (le0_funeposE fG0) 1?inE//.
+  by rewrite integral_cst// mul0e.
 rewrite itv_bndy_bigcup_BRight seqDU_bigcup_eq.
 rewrite 2?ge0_integral_bigcup//= -?seqDU_bigcup_eq -?itv_bndy_bigcup_BRight.
 - rewrite [LHS]sum_integral_limn; apply: cvg_lim => //.
@@ -1051,6 +1055,17 @@ have /continuous_within_itvcyP[+ _] := cg.
 by apply; rewrite inE/= in ax.
 Qed.
 
+Let mfG : measurable_fun `]a, +oo[ (f * G)%R.
+Proof.
+apply: subspace_continuous_measurable_fun => //.
+rewrite continuous_open_subspace// => x ax.
+apply: cvgM.
+  have /continuous_within_itvcyP[+ _] := cf.
+  by apply; rewrite inE/= in ax.
+have [/derivable_within_continuous + _] := Goy.
+by rewrite continuous_open_subspace => [|//]; apply.
+Qed.
+
 Let NintNFg : {in `]a, +oo[, forall x, (F x * g x)%:E <= 0} ->
   \int[mu]_(x in `[a, +oo[) (F x * g x)%:E =
   - \int[mu]_(x in `[a, +oo[) (- F x * g x)%:E.
@@ -1093,14 +1108,14 @@ Qed.
 Lemma integration_by_partsy_ge0_le0 :
   {in `]a, +oo[, forall x, 0 <= (f x * G x)%:E} ->
   {in `]a, +oo[, forall x, (F x * g x)%:E <= 0} ->
-  \int[mu]_(x in `[a, +oo[) (F x * g x)%:E = (FGoo - F a * G a)%:E -
-  \int[mu]_(x in `[a, +oo[) (f x * G x)%:E.
+  \int[mu]_(x in `[a, +oo[) (F x * g x)%:E = (FGoo - F a * G a)%:E +
+  \int[mu]_(x in `[a, +oo[) (- (f x * G x)%:E).
 Proof.
 move=> fG0 Fg0; rewrite NintNFg//.
 rewrite (@integration_by_partsy_le0_ge0 R (- F)%R G (- f)%R g a (- FGoo)).
 - rewrite oppeD; last exact: fin_num_adde_defr.
-  rewrite -EFinN opprD 2!opprK mulNr.
-  by under eq_integral do rewrite mulNr EFinN oppeK.
+  rewrite -EFinN opprD 2!opprK mulNr oppeK.
+  by under eq_integral do rewrite mulNr EFinN.
 - by move=> ?; apply: cvgN; exact: cf.
 - exact: derivable_oy_continuous_bndN.
 - by move=> ? ?; rewrite fctE derive1N ?Ff//; move: Foy => [+ _]; apply.
@@ -1302,24 +1317,6 @@ move: a ab decrF => [[a|a]|[|//]] ab decrF; rewrite bnd_simp in ab.
 Unshelve. all: end_near. Qed.
 
 End integration_by_substitution_preliminaries.
-
-(* PR in progress *)
-Lemma cvgNy_compNP {T : topologicalType} {R : numFieldType} (f : R -> T)
-    (l : set_system T) :
-  f x @[x --> -oo] --> l <-> (f \o -%R) x @[x --> +oo] --> l.
-Proof.
-have f_opp : f =1 (fun x => (f \o -%R) (- x)) by move=> x; rewrite /comp opprK.
-by rewrite (eq_cvg -oo _ f_opp) [in X in X <-> _]fmap_comp ninftyN.
-Qed.
-
-(* PR in progress *)
-Lemma cvgy_compNP {T : topologicalType} {R : numFieldType} (f : R -> T)
-    (l : set_system T) :
-  f x @[x --> +oo] --> l <-> (f \o -%R) x @[x --> -oo] --> l.
-Proof.
-have f_opp : f =1 (fun x => (f \o -%R) (- x)) by move=> x; rewrite /comp opprK.
-by rewrite (eq_cvg +oo _ f_opp) [in X in X <-> _]fmap_comp ninfty.
-Qed.
 
 Section integration_by_substitution.
 Local Open Scope ereal_scope.
