@@ -30,9 +30,11 @@ From mathcomp Require Import num_normedtype.
 (*                                                                            *)
 (* ## Normed topological abelian groups                                       *)
 (* ```                                                                        *)
-(*  pseudoMetricNormedZmodType R  == interface type for a normed topological  *)
-(*                                   abelian group equipped with a norm       *)
-(*                                   The HB class is PseudoMetricNormedZmod.  *)
+(*  pseudoMetricNormedZmodType R == interface type for a normed topological   *)
+(*                                  abelian group equipped with a norm        *)
+(*                                  The HB class is PseudoMetricNormedZmod.   *)
+(*           NormedZmoduleMetric == factory for pseudoMetricNormedZmodType    *)
+(*                                  based on metric structures                *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Closed balls                                                            *)
@@ -59,8 +61,6 @@ From mathcomp Require Import num_normedtype.
 (*                                                                            *)
 (******************************************************************************)
 
-Reserved Notation "x ^'+" (at level 3, left associativity, format "x ^'+").
-Reserved Notation "x ^'-" (at level 3, left associativity, format "x ^'-").
 Reserved Notation "[ 'bounded' E | x 'in' A ]"
   (at level 0, x name, format "[ 'bounded'  E  |  x  'in'  A ]").
 
@@ -96,97 +96,6 @@ Proof. by rewrite oppr0 shift0. Qed.
 End Shift.
 Arguments shift {R} x / y.
 Notation center c := (shift (- c)).
-
-Section at_left_right.
-Variable R : numFieldType.
-
-Definition at_left (x : R) := within (fun u => u < x) (nbhs x).
-Definition at_right (x : R) := within (fun u => x < u) (nbhs x).
-Local Notation "x ^'-" := (at_left x) : classical_set_scope.
-Local Notation "x ^'+" := (at_right x) : classical_set_scope.
-
-Global Instance at_right_proper_filter (x : R) : ProperFilter x^'+.
-Proof.
-apply: Build_ProperFilter => -[_/posnumP[d] /(_ (x + d%:num / 2))].
-apply; last by rewrite ltrDl.
-by rewrite /= opprD addNKr normrN ger0_norm// gtr_pMr// invf_lt1// ltr1n.
-Qed.
-
-Global Instance at_left_proper_filter (x : R) : ProperFilter x^'-.
-Proof.
-apply: Build_ProperFilter => -[_ /posnumP[d] /(_ (x - d%:num / 2))].
-apply; last by rewrite gtrBl.
-by rewrite /= opprB addrC subrK ger0_norm// gtr_pMr// invf_lt1// ltr1n.
-Qed.
-
-Lemma nbhs_right_gt x : \forall y \near x^'+, x < y.
-Proof. by rewrite near_withinE; apply: nearW. Qed.
-
-Lemma nbhs_left_lt x : \forall y \near x^'-, y < x.
-Proof. by rewrite near_withinE; apply: nearW. Qed.
-
-Lemma nbhs_right_neq x : \forall y \near x^'+, y != x.
-Proof. by rewrite near_withinE; apply: nearW => ? /gt_eqF->. Qed.
-
-Lemma nbhs_left_neq x : \forall y \near x^'-, y != x.
-Proof. by rewrite near_withinE; apply: nearW => ? /lt_eqF->. Qed.
-
-Lemma nbhs_right_ge x : \forall y \near x^'+, x <= y.
-Proof. by rewrite near_withinE; apply: nearW; apply/ltW. Qed.
-
-Lemma nbhs_left_le x : \forall y \near x^'-, y <= x.
-Proof. by rewrite near_withinE; apply: nearW => ?; apply/ltW. Qed.
-
-Lemma nbhs_right_lt x z : x < z -> \forall y \near x^'+, y < z.
-Proof.
-move=> xz; exists (z - x) => //=; first by rewrite subr_gt0.
-by move=> y /= + xy; rewrite distrC ?ger0_norm ?subr_ge0 1?ltW// ltrD2r.
-Qed.
-
-Lemma nbhs_right_ltW x z : x < z -> \forall y \near nbhs x^'+, y <= z.
-Proof.
-by move=> xz; near=> y; apply/ltW; near: y; exact: nbhs_right_lt.
-Unshelve. all: by end_near. Qed.
-
-Lemma nbhs_right_ltDr x e : 0 < e -> \forall y \near x ^'+, y - x < e.
-Proof.
-move=> e0; near=> y; rewrite ltrBlDr; near: y.
-by apply: nbhs_right_lt; rewrite ltrDr.
-Unshelve. all: by end_near. Qed.
-
-Lemma nbhs_right_le x z : x < z -> \forall y \near x^'+, y <= z.
-Proof. by move=> xz; near do apply/ltW; apply: nbhs_right_lt.
-Unshelve. all: by end_near. Qed.
-
-(* NB: In not_near_at_rightP (and not_near_at_rightP), R has type numFieldType.
-  It is possible realDomainType could make the proof simpler and at least as
-  useful. *)
-Lemma not_near_at_rightP (p : R) (P : pred R) :
-  ~ (\forall x \near p^'+, P x) <->
-  forall e : {posnum R}, exists2 x, p < x < p + e%:num & ~ P x.
-Proof.
-split=> [pPf e|ex_notPx].
-- apply: contrapT => /forallPNP peP; apply: pPf; near=> t.
-  apply: contrapT; apply: peP; apply/andP; split.
-  + by near: t; exact: nbhs_right_gt.
-  + by near: t; apply: nbhs_right_lt; rewrite ltrDl.
-- rewrite /at_right near_withinE nearE.
-  rewrite -filter_from_ballE /filter_from/= -forallPNP => _ /posnumP[d].
-  have [x /andP[px xpd] notPx] := ex_notPx d; rewrite -existsNP; exists x => /=.
-  apply: contra_not notPx; apply => //.
-  by rewrite /ball/= ltr0_norm ?subr_lt0// opprB ltrBlDl.
-Unshelve. all: by end_near. Qed.
-
-End at_left_right.
-#[global] Typeclasses Opaque at_left at_right.
-Notation "x ^'-" := (at_left x) : classical_set_scope.
-Notation "x ^'+" := (at_right x) : classical_set_scope.
-
-#[global] Hint Extern 0 (Filter (nbhs _^'+)) =>
-  (apply: at_right_proper_filter) : typeclass_instances.
-
-#[global] Hint Extern 0 (Filter (nbhs _^'-)) =>
-  (apply: at_left_proper_filter) : typeclass_instances.
 
 Section at_left_right_topologicalType.
 Variables (R : numFieldType) (V : topologicalType) (f : R -> V) (x : R).
@@ -224,6 +133,25 @@ HB.mixin Record NormedZmod_PseudoMetric_eq (R : numDomainType) T
 HB.structure Definition PseudoMetricNormedZmod (R : numDomainType) :=
   {T of Num.NormedZmodule R T & PseudoMetric R T
    & NormedZmod_PseudoMetric_eq R T & isPointed T}.
+
+(* alternative definition of a PseudoMetricNormedZmod *)
+HB.factory Record NormedZmoduleMetric (R : numDomainType) T
+    of Num.NormedZmodule R T & Metric R T & isPointed T := {
+  mdist_norm : forall x y : T, mdist x y = `|y - x|
+}.
+
+HB.builders Context (R : numDomainType) T of NormedZmoduleMetric R T.
+
+Let pseudo_metric_ball_norm : ball = ball_ (fun x : T => `| x |).
+Proof.
+apply/funext => /= t; apply/funext => d; rewrite ballEmdist.
+by apply/seteqP; split => [y|y]/=; rewrite mdist_norm distrC.
+Qed.
+
+HB.instance Definition _ :=
+  NormedZmod_PseudoMetric_eq.Build R T pseudo_metric_ball_norm.
+
+HB.end.
 
 Section pseudoMetricNormedZmod_numDomainType.
 Context {K : numDomainType} {V : pseudoMetricNormedZmodType K}.
