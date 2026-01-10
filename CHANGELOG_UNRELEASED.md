@@ -104,6 +104,23 @@
 - in `lebesgue_integrable.v`:
   + lemma `integrable_set0`
 
+- in `classical_sets.v`:
+  + lemmas `setUDl`, `setUDr`
+
+- in `cardinality.v`:
+  + notation `cofinite_set`
+  + lemmas `cofinite_setT`, `infinite_setN0`, `sub_cofinite_set`,
+    `sub_infinite_set`, `cofinite_setUl`, `cofinite_setUr`, `cofinite_setU`,
+    `cofinite_setI`, `cofinite_set_infinite`, `infinite_setIl`,
+    `infinite_setIr`
+  + lemma `injective_gtn`
+
+- in `sequences.v`:
+  + lemma `finite_range_cst_subsequence`
+  + lemmas `infinite_increasing_seq`, `infinite_increasing_seq_wf`
+  + lemma `finite_range_cvg_subsequence`
+  + theorem `bolzano_weierstrass`
+
 - in `lebesgue_integrable.v`:
   + lemma `integrable_norm`
 - in `order_topology.v`:
