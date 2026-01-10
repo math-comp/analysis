@@ -17,6 +17,7 @@ install: [make "-C" "analysis_stdlib" "install"]
 depends: [
   "coq-mathcomp-analysis" { = version}
   "coq-mathcomp-reals-stdlib"
+  "coq-interval" {>= "4.11.2"}
 ]
 
 tags: [

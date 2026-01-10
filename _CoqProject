@@ -137,3 +137,4 @@ theories/showcase/pnt.v
 
 analysis_stdlib/Rstruct_topology.v
 analysis_stdlib/showcase/uniform_bigO.v
+analysis_stdlib/sampling.v

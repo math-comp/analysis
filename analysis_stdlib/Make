@@ -7,5 +7,6 @@
 -arg -w -arg -redundant-canonical-projection
 -arg -w -arg -projection-no-head-constant
 
+sampling.v
 Rstruct_topology.v
 showcase/uniform_bigO.v
