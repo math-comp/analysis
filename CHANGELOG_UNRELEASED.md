@@ -184,6 +184,8 @@
     * lemmas `bounded_variationxx`, `bounded_variationD`,
       `bounded_variationN`, `bounded_variationl`, `bounded_variationr`,
       `variations_opp`, `nondecreasing_bounded_variation`
+- in `Rstruct.v`:
+  + lemmas `RleP`, `RltP` (change implicits)
 
 ### Renamed
 
