@@ -132,6 +132,10 @@
 - in `derive.v`:
   + lemmas `differentiable_rsubmx`, `differentiable_lsubmx`
 
+- in `unstable.v`:
+  + definitions `monotonic`, `strict_monotonic`
+  + lemma `strict_monotonicW`
+
 ### Changed
 
 - in `charge.v`:
@@ -238,6 +242,10 @@
     `continuous_within_itvNycP`
   + lemma `within_continuous_continuous`
   + lemmas `open_itvoo_subset`, `open_itvcc_subset`, `realFieldType`
+- in `num_normedtype.v`:
+  + weaken hypothesis in lemmas `mono_mem_image_segment`, `mono_surj_image_segment`,
+    `inc_surj_image_segment`, `dec_surj_image_segment`, `inc_surj_image_segmentP`,
+    `dec_surj_image_segmentP`, `mono_surj_image_segmentP`
 
 ### Deprecated
 
@@ -284,6 +292,9 @@
 
 - in `set_interval.v`:
   + lemma `interval_set1` (use `set_itv1` instead)
+
+- in `unstable.v`:
+  + definition `monotonous` (use `strict_monotonic` instead)
 
 ### Infrastructure
 
