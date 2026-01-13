@@ -251,6 +251,40 @@ Qed.
 
 End itv_realDomainType.
 
+(* generalization of
+  a < b -> `]a, b] `<=` `]r, +oo[ -> `[a, b] `<=` `[r, +oo[. *)
+Lemma subset_itvoSo_cSc {R : realFieldType} (r a : R) (b x : itv_bound R) :
+  (BRight a < b)%O ->
+  (b <= x)%O ->
+  [set` Interval (BRight a)(*open*) b]
+    `<=` [set` Interval (BRight r)(*open*) x] ->
+  [set` Interval (BLeft a)(*closed*) b]
+    `<=` [set` Interval (BLeft r)(*closed*) x].
+Proof.
+move: b => [[|]b ab bx abrx|[//|/= _]]; rewrite ?bnd_simp.
+- apply: subset_itv => //=; rewrite bnd_simp leNgt; apply/negP => ar.
+  have rb : (r <= b)%O.
+    rewrite leNgt; apply/negP => br; have /= := abrx ((a + b) / 2).
+    rewrite !in_itv/= !midf_lt//= => /(_ isT).
+    by rewrite ltNge (le_trans _ (ltW br))//= midf_le// ltW.
+  have /abrx /= : (a + r) / 2 \in `]a, b[.
+    by rewrite in_itv/= midf_lt//= (lt_le_trans _ rb)// midf_lt.
+  by rewrite in_itv/= ltNge midf_le// ltW.
+- apply: subset_itv => //=; rewrite bnd_simp leNgt; apply/negP => ar.
+  have rb : r <= b.
+    rewrite leNgt; apply/negP => br; have /= := abrx ((a + b) / 2).
+    rewrite !in_itv/= midf_lt// (midf_le (ltW _))// => /(_ isT).
+    by rewrite ltNge (le_trans _ (ltW br))//= midf_le// ltW.
+  have /abrx /= : (a + r) / 2 \in `]a, b].
+    by rewrite in_itv/= midf_lt//= (le_trans _ rb)// (midf_le (ltW _)).
+  by rewrite in_itv/= ltNge midf_le// ltW.
+- move/eqP => ->{x} ar.
+  apply/subset_itvr; rewrite bnd_simp leNgt; apply/negP => ra.
+  have /= := ar ((a + r) / 2).
+  rewrite !in_itv/= !andbT midf_lt// => /(_ isT).
+  by rewrite ltNge  midf_le// ltW.
+Qed.
+
 Section set_ereal.
 Context (R : realType) T (f g : T -> \bar R).
 Local Open Scope ereal_scope.
