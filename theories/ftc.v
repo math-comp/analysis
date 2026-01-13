@@ -836,6 +836,18 @@ Qed.
 
 End integration_by_parts.
 
+Section subset_itv_lemmas.
+Context {R : realType}.
+
+Lemma subset_itv_cbnd (a c d : R) :
+  c < d ->
+  `]c, d] `<=` `]a, +oo[ ->
+  `[c, d] `<=` `[a, +oo[.
+Proof.
+Admitted.
+
+End subset_itv_lemmas.
+
 Section integration_by_partsy_ge0.
 Context {R : realType}.
 Notation mu := lebesgue_measure.
@@ -893,44 +905,41 @@ apply: (@cvg_comp _ _ _ _ (F \* G)%R _ +oo%R); last exact: cvgFG.
 by apply: cvg_comp; [apply: cvgr_idn|apply: cvg_addrl].
 Qed.
 
-Let sumN_Nsum_fG n :
-  \sum_(0 <= i < n)
-    (- (\int[mu]_(x in seqDU (fun k => `]a, a + k%:R]) i)
-         (f x * G x)%:E))%E =
-  - (\sum_(0 <= i < n)
-      (\int[mu]_(x in seqDU (fun k => `]a, a + k%:R]) i)
-        (f x * G x)%:E)%E).
+Let fin_num_intfG (c d : R) :
+ `]c, d] `<=` `]a, +oo[ ->
+  \int[mu]_(x in `]c, d]) (f x * G x)%:E
+    \is a fin_num.
 Proof.
-rewrite big_nat_cond fin_num_sumeN -?big_nat_cond// => m _.
-rewrite seqDUE integral_itv_obnd_cbnd; last first.
-  apply: measurable_funS mfG => //.
-  by apply/subset_itv => //; rewrite bnd_simp// lerDl.
+have [dc|cd] := leP d c.
+  admit.
+move=> cda.
+rewrite integral_itv_obnd_cbnd; last first.
+  exact: measurable_funS mfG => //.
 apply: integrable_fin_num => //=.
 apply: continuous_compact_integrable; first exact: segment_compact.
 apply: continuous_subspaceW cfG.
-by apply: subset_itv; rewrite // bnd_simp// lerDl.
-Qed.
+exact: subset_itv_cbnd cda.
+Admitted.
 
-Let sumNint_sumintN_fG n :
-  \sum_(0 <= i < n)
-    (- (\int[mu]_(x in seqDU (fun k => `]a, a + k%:R]) i)
+Let sumNint_sumintN_fG (c d : R) :
+   `]c, d] `<=` `]a, +oo[ ->
+    (- (\int[mu]_(x in `]c, d])
          (f x * G x)%:E))%E =
-  \sum_(0 <= i < n)
-    (\int[mu]_(x in seqDU (fun k => `]a, a + k%:R]) i)
+    (\int[mu]_(x in `]c, d])
          (- (f x * G x))%:E)%E.
 Proof.
-rewrite big_nat_cond [RHS]big_nat_cond.
-apply: eq_bigr => i.
-rewrite seqDUE andbT => i0n.
-rewrite 2?integral_itv_obnd_cbnd; last 2 first.
-- apply: measurableT_comp => //; apply: measurable_funS mfG => //.
-  by apply/subset_itv; rewrite bnd_simp// lerDl.
-- apply: measurable_funS mfG => //.
-  by apply/subset_itv; rewrite bnd_simp// lerDl.
-rewrite -integralN ?integrable_add_def ?continuous_compact_integrable//.
-  exact: segment_compact.
-by apply: continuous_subspaceW cfG; apply/subset_itv; rewrite bnd_simp// lerDl.
-Qed.
+have [dc|cd] := ltP d c.
+  admit.
+move=> ja.
+rewrite -integralN//=.
+apply: fin_num_adde_defr.
+apply: integrable_pos_fin_num => //=.
+apply/integrableP; split.
+  apply/measurable_EFinP.
+  exact: measurable_funS mfG.
+rewrite integral_fin_num_abs//; last exact: measurable_funS mfG.
+exact: fin_num_intfG.
+Admitted.
 
 Let sum_integral_limn :
   \sum_(0 <= i <oo)
@@ -984,7 +993,15 @@ rewrite itv_bndy_bigcup_BRight seqDU_bigcup_eq.
 rewrite 2?ge0_integral_bigcup//= -?seqDU_bigcup_eq -?itv_bndy_bigcup_BRight.
 - rewrite [LHS]sum_integral_limn; apply: cvg_lim => //.
   apply: cvgeD; first exact: fin_num_adde_defr; first exact: FGaoo.
-  under eq_cvg do rewrite sumN_Nsum_fG; apply: cvgeN.
+  under eq_cvg.
+    move=> n.
+    rewrite big_nat_cond fin_num_sumeN -?big_nat_cond//; last first.
+      move=> m _; rewrite seqDUE.
+      case: m => //; first by rewrite set_itvxx integral_set0.
+      move=> m/=; apply: fin_num_intfG.
+      + by apply: subset_itv; rewrite bnd_simp// lerDl.
+    over.
+  apply: cvgeN.
   apply: is_cvg_nneseries_cond => n _ _; apply: integral_ge0 => x.
   rewrite seqDUE => anx; apply: fG0; rewrite inE/=.
   by apply: subset_itv anx; rewrite bnd_simp// lerDl.
@@ -1014,7 +1031,14 @@ rewrite itv_bndy_bigcup_BRight seqDU_bigcup_eq.
 rewrite 2?ge0_integral_bigcup//= -?seqDU_bigcup_eq -?itv_bndy_bigcup_BRight.
 - rewrite [LHS]sum_integral_limn; apply: cvg_lim => //.
   apply: cvgeD; first exact: fin_num_adde_defr; first exact: FGaoo.
-  under eq_cvg do rewrite sumNint_sumintN_fG.
+  rewrite [X in X --> _](_ : _ = \sum_(0 <= i < x)
+    \int[mu]_(x in seqDU (fun k : nat => `]a, (a + k%:R)]) i) (- (f x * G x))%:E
+        @[x --> \oo]); last first.
+    congr (_ @[x --> \oo]); apply: funext => n.
+    apply: eq_bigr; case.
+      by move=> _; rewrite seqDUE addr0 set_itvxx 2!integral_set0 oppe0.
+    move=> m _; rewrite seqDUE sumNint_sumintN_fG//.
+    by apply: subset_itv; rewrite bnd_simp// lerDl.
   apply: is_cvg_nneseries_cond => n _ _; apply: integral_ge0 => x.
   rewrite seqDUE => anx; rewrite EFinN oppe_ge0.
   apply: fG0; rewrite inE/=.
