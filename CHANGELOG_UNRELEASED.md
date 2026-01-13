@@ -100,6 +100,9 @@
            `integration_by_partsy_le0_le0`,
            `integration_by_partsy_ge0_le0`
 
+- in `real_interval.v`:
+  + lemma `subset_itvoSo_cSc`
+
 ### Changed
 - in set_interval.v
   + `itv_is_closed_unbounded` (fix the definition)
