@@ -824,18 +824,6 @@ Qed.
 
 End integration_by_parts.
 
-Section subset_itv_lemmas.
-Context {R : realType}.
-
-Lemma subset_itv_cbnd (a c d : R) :
-  c < d ->
-  `]c, d] `<=` `]a, +oo[ ->
-  `[c, d] `<=` `[a, +oo[.
-Proof.
-Admitted.
-
-End subset_itv_lemmas.
-
 Section integration_by_partsy_ge0.
 Context {R : realType}.
 Notation mu := lebesgue_measure.
