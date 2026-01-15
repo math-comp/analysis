@@ -2,6 +2,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import archimedean.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop reals interval_inference ereal.
 From mathcomp Require Import topology tvs normedtype sequences real_interval.
@@ -1805,11 +1807,11 @@ Lemma integration_by_substitution_onem (G : R -> R) (r : R) :
   (0 <= r <= 1)%R ->
   {within `[0%R, r], continuous G} ->
   \int[mu]_(x in `[0%R, r]) (G x)%:E =
-  \int[mu]_(x in `[`1-r, 1%R]) (G `1-x)%:E.
+  \int[mu]_(x in `[r.~, 1%R]) (G x.~)%:E.
 Proof.
 move=> /andP[]; rewrite le_eqVlt => /predU1P[<- *|r0 r1 cG].
   by rewrite onem0 2!set_itv1 2!integral_set1.
-have := @integration_by_substitution_decreasing R onem G `1-r 1.
+have := @integration_by_substitution_decreasing R onem G r.~ 1.
 rewrite onemK onem1 => -> //.
 - by apply: eq_integral => x xr; rewrite !fctE derive1_onem opprK mulr1.
 - by rewrite lerBlDl lerDr ltW.
@@ -1830,7 +1832,7 @@ Lemma Rintegration_by_substitution_onem (G : R -> R) (r : R) :
   (0 <= r <= 1)%R ->
   {within `[0%R, r], continuous G} ->
   (\int[mu]_(x in `[0, r]) (G x) =
-  \int[mu]_(x in `[`1-r, 1]) (G `1-x))%R.
+  \int[mu]_(x in `[r.~, 1]) (G x.~))%R.
 Proof.
 by move=> r01 cG; rewrite [in LHS]/Rintegral integration_by_substitution_onem.
 Qed.

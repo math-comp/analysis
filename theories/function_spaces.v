@@ -1,9 +1,11 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
-From mathcomp Require Import boolp classical_sets functions.
-From mathcomp Require Import cardinality mathcomp_extra unstable fsbigop reals.
-From mathcomp Require Import interval_inference topology.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import cardinality fsbigop reals interval_inference.
+From mathcomp Require Import topology.
 
 (**md**************************************************************************)
 (* # The topology of functions spaces                                         *)

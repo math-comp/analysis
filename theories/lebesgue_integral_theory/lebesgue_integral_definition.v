@@ -1,12 +1,13 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions cardinality reals fsbigop.
-From mathcomp Require Import interval_inference ereal topology tvs normedtype.
-From mathcomp Require Import sequences real_interval esum measure.
-From mathcomp Require Import lebesgue_measure numfun realfun function_spaces.
-From mathcomp Require Import simple_functions.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import cardinality reals fsbigop interval_inference.
+From mathcomp Require Import ereal topology tvs normedtype sequences.
+From mathcomp Require Import real_interval esum measure lebesgue_measure numfun.
+From mathcomp Require Import realfun function_spaces simple_functions.
 
 (**md**************************************************************************)
 (* # Definition of the Lebesgue integral                                      *)

@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap.
 From mathcomp Require Import boolp classical_sets functions wochoice.
@@ -327,9 +327,6 @@ apply: filter_app f_prop; near do split=> //=.
 have: (f `@ F) setT by apply: fFl; apply: filterT.
 by rewrite fmapiE; apply: filterS => x [y []]; exists y.
 Unshelve. all: by end_near. Qed.
-
-#[deprecated(since="mathcomp-analysis 1.5.0", note="use `cvgi_close` instead")]
-Definition cvg_toi_locally_close := @cvgi_close.
 
 Hypothesis sep : hausdorff_space T.
 

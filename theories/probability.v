@@ -1,7 +1,9 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg.
 From mathcomp Require Import poly ssrnum ssrint interval archimedean finmap.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop.
 From mathcomp Require Import exp numfun lebesgue_measure lebesgue_integral.
@@ -70,7 +72,7 @@ From mathcomp Require Import charge ftc gauss_integral hoelder.
 (*   exponential_prob r == exponential probability measure                    *)
 (*      poisson_pmf r k == pmf of the Poisson distribution with parameter r   *)
 (*       poisson_prob r == Poisson probability measure                        *)
-(*          XMonemX a b := x ^+ a * `1-x ^+ b                                 *)
+(*          XMonemX a b := x ^+ a * x.~ ^+ b                                  *)
 (*         beta_fun a b := \int[mu]_x (XMonemX a.-1 b.-1 \_`[0,1] x)          *)
 (*             beta_pdf == probability density function for beta              *)
 (*            beta_prob == beta probability measure                           *)
@@ -1276,11 +1278,11 @@ Variables (p : R) (p01 : (0 <= p <= 1)%R).
 Local Open Scope ereal_scope.
 
 Lemma bernoulli_probE A :
-  bernoulli_prob p A = p%:E * \d_true A + (`1-p)%:E * \d_false A.
+  bernoulli_prob p A = p%:E * \d_true A + p.~%:E * \d_false A.
 Proof. by case/andP : p01 => p0 p1; rewrite bernoulli_dirac// measure_addE. Qed.
 
 Lemma integral_bernoulli_prob (f : bool -> \bar R) : (forall x, 0 <= f x) ->
-  \int[bernoulli_prob p]_y (f y) = p%:E * f true + (`1-p)%:E * f false.
+  \int[bernoulli_prob p]_y (f y) = p%:E * f true + p.~%:E * f false.
 Proof.
 move=> f0; case/andP : p01 => p0 p1; rewrite bernoulli_dirac/=.
 rewrite ge0_integral_measure_sum// 2!big_ord_recl/= big_ord0 adde0/=.
@@ -1323,7 +1325,7 @@ Section binomial_pmf.
 Local Open Scope ring_scope.
 Context {R : realType} (n : nat) (p : R).
 
-Definition binomial_pmf k := p ^+ k * (`1-p) ^+ (n - k) *+ 'C(n, k).
+Definition binomial_pmf k := p ^+ k * p.~ ^+ (n - k) *+ 'C(n, k).
 
 Lemma binomial_pmf_ge0 k (p01 : (0 <= p <= 1)%R) : 0 <= binomial_pmf k.
 Proof.
@@ -1378,7 +1380,7 @@ Let binomial_setT : binomial [set: _] = 1.
 Proof.
 rewrite /binomial; case: ifPn; last by move=> _; rewrite probability_setT.
 move=> p01; rewrite /binomial_pmf.
-have pkn k : 0%R <= (p ^+ k * `1-p ^+ (n - k) *+ 'C(n, k))%:E.
+have pkn k : 0%R <= (p ^+ k * p.~ ^+ (n - k) *+ 'C(n, k))%:E.
   case/andP : p01 => p0 p1.
   by rewrite lee_fin mulrn_wge0// mulr_ge0 ?exprn_ge0 ?subr_ge0.
 rewrite (esumID `I_n.+1)// [X in _ + X]esum1 ?adde0; last first.
@@ -1420,7 +1422,7 @@ Proof.
 apply/funext => U.
 rewrite /binomial_prob; case: ifPn => [_|]; last by rewrite p1 p0.
 rewrite /msum/= /mscale/= /binomial_pmf.
-have pkn k : (0%R <= (p ^+ k * `1-p ^+ (n - k) *+ 'C(n, k))%:E)%E.
+have pkn k : (0%R <= (p ^+ k * p.~ ^+ (n - k) *+ 'C(n, k))%:E)%E.
   by rewrite lee_fin mulrn_wge0// mulr_ge0 ?exprn_ge0 ?subr_ge0.
 rewrite (esumID `I_n.+1)//= [X in _ + X]esum1 ?adde0; last first.
   by move=> /= k [_ /negP]; rewrite -leqNgt => nk; rewrite bin_small.
@@ -1446,7 +1448,7 @@ End binomial_probability.
 
 Lemma integral_binomial_prob (R : realType) n p U : (0 <= p <= 1)%R ->
   (\int[binomial_prob n p]_y \d_(0 < y)%N U =
-  bernoulli_prob (1 - `1-p ^+ n) U :> \bar R)%E.
+  bernoulli_prob (1 - p.~ ^+ n) U :> \bar R)%E.
 Proof.
 move=> /andP[p0 p1]; rewrite bernoulli_probE//=; last first.
   rewrite subr_ge0 exprn_ile1//=; [|exact/onem_ge0|exact/onem_le1].
@@ -1460,12 +1462,12 @@ rewrite -ge0_sume_distrl; last first.
   move=> i _.
   by apply/mulrn_wge0/mulr_ge0; apply/exprn_ge0 => //; exact/onem_ge0.
 congr *%E.
-transitivity (\sum_(i < n.+1) (`1-p ^+ (n - i) * p ^+ i *+ 'C(n, i))%:E -
-              (`1-p ^+ n)%:E)%E.
+transitivity (\sum_(i < n.+1) (p.~ ^+ (n - i) * p ^+ i *+ 'C(n, i))%:E -
+              (p.~ ^+ n)%:E)%E.
   rewrite big_ord_recl/=.
   rewrite expr0 mulr1 subn0 bin0 mulr1n addrAC -EFinD subrr add0e.
   by rewrite /bump; under [RHS]eq_bigr do rewrite leq0n add1n mulrC.
-rewrite sumEFin -(@exprDn_comm _ `1-p p n)//.
+rewrite sumEFin -(@exprDn_comm _ p.~ p n)//.
   by rewrite subrK expr1n.
 by rewrite /GRing.comm/onem mulrC.
 Qed.
@@ -2176,21 +2178,21 @@ Section about_onemXn.
 Context {R : realType}.
 Implicit Types x y : R.
 
-Lemma continuous_onemXn n x : {for x, continuous (fun y => `1-y ^+ n)}.
+Lemma continuous_onemXn n x : {for x, continuous (fun y => y.~ ^+ n)}.
 Proof.
 apply: (@continuous_comp _ _ _ (@onem R) (fun x => x ^+ n)).
   by apply: (@cvgB _ R^o); [exact: cvg_cst|exact: cvg_id].
 exact: exprn_continuous.
 Qed.
 
-Lemma onemXn_derivable n x : derivable (fun y => `1-y ^+ n) x 1.
+Lemma onemXn_derivable n x : derivable (fun y => y.~ ^+ n) x 1.
 Proof.
 have := @derivableX _ _ (@onem R) n x 1.
 by rewrite fctE; apply; exact: derivableB.
 Qed.
 
 Lemma derivable_oo_LRcontinuous_onemXnMr n x :
-  derivable_oo_LRcontinuous (fun y => `1-y ^+ n * x) 0 1.
+  derivable_oo_LRcontinuous (fun y => y.~ ^+ n * x) 0 1.
 Proof.
 split.
 - by move=> y y01; apply: derivableM => //=; exact: onemXn_derivable.
@@ -2207,7 +2209,7 @@ split.
 Qed.
 
 Lemma derive_onemXn n x :
-  (fun y => `1-y ^+ n)^`()%classic x = - n%:R * `1-x ^+ n.-1.
+  (fun y => y.~ ^+ n)^`()%classic x = - n%:R * x.~ ^+ n.-1.
 Proof.
 rewrite (@derive1_comp _ (@onem _) (fun x => x ^+ n))//; last first.
   exact: exprn_derivable.
@@ -2216,10 +2218,10 @@ by rewrite derive1_cst derive_id sub0r mulrN1 [in RHS]mulNr scaler1.
 Qed.
 
 Lemma Rintegral_onemXn n :
-  \int[lebesgue_measure]_(x in `[0, 1]) (`1-x ^+ n) = n.+1%:R^-1 :> R.
+  \int[lebesgue_measure]_(x in `[0, 1]) (x.~ ^+ n) = n.+1%:R^-1 :> R.
 Proof.
 rewrite /Rintegral.
-rewrite (@continuous_FTC2 _ _ (fun x => `1-x ^+ n.+1 / - n.+1%:R))//=.
+rewrite (@continuous_FTC2 _ _ (fun x => x.~ ^+ n.+1 / - n.+1%:R))//=.
 - rewrite onem1 expr0n/= mul0r onem0 expr1n mul1r sub0r.
   by rewrite -invrN -2!mulNrn opprK.
 - by apply: continuous_in_subspaceT => x x01; exact: continuous_onemXn.
@@ -2237,7 +2239,7 @@ Section XMonemX.
 Context {R : numDomainType}.
 Implicit Types (x : R) (a b : nat).
 
-Definition XMonemX a b := fun x => x ^+ a * `1-x ^+ b.
+Definition XMonemX a b := fun x => x ^+ a * x.~ ^+ b.
 
 Lemma XMonemX_ge0 a b x : x \in `[0, 1] -> 0 <= XMonemX a b x.
 Proof.
@@ -2250,7 +2252,7 @@ rewrite in_itv/= => /andP[t0 t1].
 by rewrite mulr_ile1// ?(exprn_ge0,onem_ge0,exprn_ile1,onem_le1).
 Qed.
 
-Lemma XMonemX0n n x : XMonemX 0 n x = `1-x ^+ n.
+Lemma XMonemX0n n x : XMonemX 0 n x = x.~ ^+ n.
 Proof. by rewrite /XMonemX/= expr0 mul1r. Qed.
 
 Lemma XMonemXn0 n x : XMonemX n 0 x = x ^+ n.
@@ -2385,7 +2387,7 @@ Lemma beta_funSSnSm a b :
   beta_fun a.+2 b.+1 = a.+1%:R / b.+1%:R * beta_fun a.+1 b.+2.
 Proof.
 rewrite -[LHS]Rintegral_mkcond.
-rewrite (@Rintegration_by_parts _ _ (fun x => `1-x ^+ b.+1 / - b.+1%:R)
+rewrite (@Rintegration_by_parts _ _ (fun x => x.~ ^+ b.+1 / - b.+1%:R)
     (fun x => a.+1%:R * x ^+ a)); last 7 first.
   exact: ltr01.
   apply/continuous_subspaceT => x.
@@ -2396,7 +2398,7 @@ rewrite (@Rintegration_by_parts _ _ (fun x => `1-x ^+ b.+1 / - b.+1%:R)
     by apply: cvg_at_left_filter; exact: exprn_continuous.
   by move=> x x01; rewrite derive1E exp_derive scaler1.
   by apply/continuous_subspaceT => x x01; exact: continuous_onemXn.
-  exact: derivable_oo_continuous_bnd_onemXnMr.
+  exact: derivable_oo_LRcontinuous_onemXnMr.
   move=> x x01; rewrite derive1Mr; last exact: onemXn_derivable.
   by rewrite derive_onemXn mulrAC divff// mul1r.
 rewrite {1}/onem !(expr1n,mul1r,expr0n,subr0,subrr,mul0r,oppr0,sub0r)/=.
@@ -2699,7 +2701,7 @@ Qed.
 Local Close Scope ereal_scope.
 
 Lemma integral_beta_prob_bernoulli_prob_onemX_lty {R : realType} n a b U :
-  (\int[beta_prob a b]_x `|bernoulli_prob (`1-x ^+ n) U| < +oo :> \bar R)%E.
+  (\int[beta_prob a b]_x `|bernoulli_prob (x.~ ^+ n) U| < +oo :> \bar R)%E.
 Proof.
 apply: integral_beta_prob_bernoulli_prob_lty => //=.
   by apply: measurable_funX => //; exact: measurable_funB.
@@ -2709,7 +2711,7 @@ by rewrite lerBlDl -lerBlDr subrr.
 Qed.
 
 Lemma integral_beta_prob_bernoulli_prob_onem_lty {R : realType} n a b U :
-  (\int[beta_prob a b]_x `|bernoulli_prob (1 - `1-x ^+ n) U| < +oo :> \bar R)%E.
+  (\int[beta_prob a b]_x `|bernoulli_prob (1 - x.~ ^+ n) U| < +oo :> \bar R)%E.
 Proof.
 apply: integral_beta_prob_bernoulli_prob_lty => //=.
   apply: measurable_funB => //.
@@ -2740,7 +2742,7 @@ Qed.
 
 Lemma beta_prob_integrable_onem {R : realType} a b a' b' :
   (beta_prob a b).-integrable `[0, 1]
-    (fun x : measurableTypeR R => (`1-(XMonemX a' b' x))%:E).
+    (fun x : measurableTypeR R => (XMonemX a' b' x).~%:E).
 Proof.
 apply: (eq_integrable _ (cst 1 \- (fun x : measurableTypeR R =>
   (XMonemX a' b' x)%:E))%E) => //.
@@ -2777,7 +2779,7 @@ Qed.
 
 Lemma beta_prob_integrable_onem_dirac {R : realType} a b a' b' (c : bool) U :
   (beta_prob a b).-integrable `[0, 1]
-    (fun x : measurableTypeR R => (`1-(XMonemX a' b' x))%:E * \d_c U)%E.
+    (fun x : measurableTypeR R => (XMonemX a' b' x).~%:E * \d_c U)%E.
 Proof.
 apply: integrableMl => //=; last first.
   exists 1; split => // x x1/= _ _; rewrite (le_trans _ (ltW x1))//.
@@ -2885,7 +2887,7 @@ congr (_ + _).
     by apply/measurableT_comp => //; exact: measurable_XMonemX.
     by have /integrableP[_] := @beta_prob_integrable R a b c d.
   transitivity ((\int[mu]_(x in `[0%R, 1%R])
-      ((`1-x ^+ d)%:E * ((beta_pdf a b x)%:E * (x ^+ c)%:E)))%E : \bar R).
+      ((x.~ ^+ d)%:E * ((beta_pdf a b x)%:E * (x ^+ c)%:E)))%E : \bar R).
     apply: eq_integral => /= x _.
     by rewrite [in LHS]EFinM -[LHS]muleA [LHS]muleC -[LHS]muleA.
   transitivity ((beta_fun a b)^-1%:E * \int[mu]_(x in `[0%R, 1%R])

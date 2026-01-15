@@ -1,13 +1,15 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import archimedean.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions cardinality reals fsbigop.
-From mathcomp Require Import interval_inference topology ereal tvs normedtype.
-From mathcomp Require Import sequences real_interval function_spaces esum.
-From mathcomp Require Import measure lebesgue_measure numfun realfun.
-From mathcomp Require Import simple_functions measurable_fun_approximation.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import cardinality reals fsbigop interval_inference.
+From mathcomp Require Import topology ereal tvs normedtype sequences.
+From mathcomp Require Import real_interval function_spaces esum measure.
+From mathcomp Require Import lebesgue_measure numfun realfun simple_functions.
+From mathcomp Require Import measurable_fun_approximation.
 From mathcomp Require Import lebesgue_integral_definition.
 From mathcomp Require Import lebesgue_integral_monotone_convergence.
 
@@ -1034,10 +1036,6 @@ Lemma integralEpatch (D : set T) (mD : measurable D) (f : T -> \bar R) :
 Proof. by rewrite -[in LHS](setIid D) integral_mkcondr. Qed.
 
 End integral_patch.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="use `integral_mkcondr` instead")]
-Notation integral_setI_indic := __deprecated__integral_setI_indic (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="use `integralEpatch` instead")]
-Notation integralEindic := __deprecated__integralEindic (only parsing).
 
 Section ge0_cvgn_integral.
 Local Open Scope ereal_scope.

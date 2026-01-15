@@ -1,6 +1,8 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality reals.
 From mathcomp Require Import ereal topology normedtype sequences.
 
@@ -214,8 +216,6 @@ Definition lambda_system :=
 Definition monotone := ndseq_closed /\ niseq_closed.
 
 End set_systems.
-(*#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `setSD_closed`")]
-Notation setD_closed := setSD_closed (only parsing).*)
 #[deprecated(since="mathcomp-analysis 1.9.0", note="renamed `setD_closed`")]
 Notation setDI_closed := setD_closed (only parsing).
 #[deprecated(since="mathcomp-analysis 1.9.0", note="renamed `setD_semi_setD_closed`")]
@@ -1571,8 +1571,6 @@ rewrite setXT setTX; apply: measurableI.
 - by apply: sub_sigma_algebra; left; exists A => //; rewrite setTI.
 - by apply: sub_sigma_algebra; right; exists B => //; rewrite setTI.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `measurableX`")]
-Notation measurableM := measurableX (only parsing).
 
 Section product_salgebra_algebraOfSetsType.
 Context d1 d2 (T1 : algebraOfSetsType d1) (T2 : algebraOfSetsType d2).

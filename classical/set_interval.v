@@ -1,7 +1,9 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum interval.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
+From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions.
 
 (**md**************************************************************************)
@@ -208,8 +210,6 @@ Qed.
 
 End set_itv_porderType.
 Arguments neitv {disp T} _.
-#[deprecated(since="mathcomp-analysis 1.4.0", note="renamed to `subset_itvScc`")]
-Notation subset_itvS := subset_itvScc (only parsing).
 #[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itvNyy`")]
 Notation set_itv_infty_infty := set_itvNyy (only parsing).
 #[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itvoy`")]
@@ -707,7 +707,7 @@ Lemma range_factor ba bb a b : a < b ->
                  [set` Interval (BSide ba 0) (BSide bb 1)].
 Proof. by move=> /(factor_itv_bij ba bb)/Pbij[f ->]; rewrite image_eq. Qed.
 
-Lemma onem_factor a b x : a != b -> `1-(factor a b x) = factor b a x.
+Lemma onem_factor a b x : a != b -> (factor a b x).~ = factor b a x.
 Proof.
 rewrite eq_sym -subr_eq0 => ab; rewrite /onem /factor -(divff ab) -mulrBl.
 by rewrite opprB addrA subrK -mulrNN opprB -invrN opprB.
