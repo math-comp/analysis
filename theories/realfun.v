@@ -199,37 +199,6 @@ apply: cvg_at_right_left_dnbhs.
 - by apply/cvg_at_leftP => u [pu ?]; apply: pfl; split => // n; rewrite lt_eqF.
 Unshelve. all: end_near. Qed.
 
-Lemma cvg_nbhsP f p l : f x @[x --> p] --> l <->
-  (forall u : R^nat, (u n @[n --> \oo] --> p) -> f (u n) @[n --> \oo] --> l).
-Proof.
-split=> [/cvgrPdist_le /= fpl u /cvgrPdist_lt /= uyp|pfl].
-  apply/cvgrPdist_le => e /fpl[d d0 pdf].
-  by apply: filterS (uyp d d0) => t /pdf.
-apply: contrapT => fpl; move: pfl; apply/existsNP.
-suff: exists2 x : R ^nat,
-    x n @[n --> \oo] --> p & ~ f (x n) @[n --> \oo] --> l.
-  by move=> [x_] hp; exists x_; exact/not_implyP.
-have [e He] : exists e : {posnum R}, forall d : {posnum R},
-    exists xn, `|xn - p| < d%:num /\ `|f xn - l| >= e%:num.
-  apply: contrapT; apply: contra_not fpl => /forallNP h.
-  apply/cvgrPdist_le => e e0; have /existsNP[d] := h (PosNum e0).
-  move/forallNP => {}h; near=> t.
-  have /not_andP[abs|/negP] := h t.
-  - exfalso; apply: abs.
-    by near: t; exists d%:num => //= z/=; rewrite distrC.
-  - by rewrite -ltNge distrC => /ltW.
-have invn n : 0 < n.+1%:R^-1 :> R by rewrite invr_gt0.
-exists (fun n => sval (cid (He (PosNum (invn n))))).
-  apply/cvgrPdist_lt => r r0; near=> t.
-  rewrite /sval/=; case: cid => x [xpt _].
-  rewrite distrC (lt_le_trans xpt)// -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0//.
-  near: t; exists (truncn r^-1) => // s /= rs.
-  by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
-move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
-rewrite /sval/=; case: cid => // x [px xpn].
-by rewrite ltNge distrC => /negP.
-Unshelve. all: end_near. Qed.
-
 End cvgr_fun_cvg_seq.
 
 Section cvge_fun_cvg_seq.

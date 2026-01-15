@@ -19,3 +19,4 @@ From mathcomp Require Export one_point_compactification.
 From mathcomp Require Export sigT_topology.
 From mathcomp Require Export discrete_topology.
 From mathcomp Require Export separation_axioms.
+From mathcomp Require Export metric_structure.
