@@ -409,20 +409,6 @@ Proof. by rewrite intrD. Qed.
 Lemma intr1D {R : pzRingType} (i : int) : 1 + i%:~R = (1 + i)%:~R :> R.
 Proof. by rewrite intrD. Qed.
 
-Section trunc_floor_ceil.
-Context {R : archiRealDomainType}.
-Implicit Type x : R.
-
-(* PR in progress: https://github.com/math-comp/math-comp/pull/1515 *)
-Lemma abs_ceil_ge x : `|x| <= `|Num.ceil x|.+1%:R.
-Proof.
-rewrite -natr1 natr_absz; have [x0|x0] := ltP 0 x.
-  by rewrite !gtr0_norm ?ceil_gt0// (le_trans (Num.Theory.ceil_ge _))// lerDl.
-by rewrite !ler0_norm ?ceil_le0// ?ceilNfloor opprK intrD1 ltW// floorD1_gt.
-Qed.
-
-End trunc_floor_ceil.
-
 Section bijection_forall.
 
 Lemma bij_forall A B (f : A -> B) (P : B -> Prop) :

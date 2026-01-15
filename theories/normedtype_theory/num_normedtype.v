@@ -560,9 +560,9 @@ move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
     by exists (truncn (z - a)); rewrite zFan// -ltrBlDl truncnS_gt.
   by exists i => //=; rewrite in_itv/= yFa (lt_le_trans _ Fany).
 - move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].
-  exists `|ceil (F (a + n.+1%:R) - F a)%R|.+1 => //=.
-  rewrite in_itv/= zFa andbT lerBlDr -lerBlDl (le_trans _ (abs_ceil_ge _))//.
-  by rewrite ler_normr orbC opprB lerB// ltW.
+  exists (truncn (F a - F (a + n.+1%:R))).+1 => //=.
+  rewrite in_itv/= zFa andbT lerBlDr -lerBlDl ltW//.
+  by rewrite -truncn_le_nat le_truncn// lerB// ltW.
 Qed.
 
 Lemma decreasing_itvoo_bigcup F a n :
@@ -586,14 +586,13 @@ move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
 - move=> y/= [n _]/=; rewrite in_itv/= => /andP[Fany yFa].
   have [i iFan] : exists i, F (a - i.+1%:R) < F a - n%:R.
     move/cvgrNy_lt : nyF => /(_ (F a - n%:R))[z [zreal zFan]].
-    exists `|ceil (a - z)|%N.
-    rewrite zFan// ltrBlDr -ltrBlDl (le_lt_trans (ceil_ge _)) ?num_real//.
-    by rewrite (le_lt_trans (ler_norm _))// -natr1 -intr_norm ltrDl.
+    exists (truncn (a - z)).
+    by rewrite zFan// ltrBlDr -ltrBlDl -truncn_le_nat.
   by exists i => //=; rewrite in_itv/= yFa andbT (lt_le_trans _ Fany).
 - move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].
-  exists `|ceil (F (a - n.+1%:R) - F a)|.+1 => //=.
-  rewrite in_itv/= zFa andbT lerBlDr -lerBlDl (le_trans _ (abs_ceil_ge _))//.
-  by rewrite ler_normr orbC opprB lerB// ltW.
+  exists (truncn (F a - F (a - n.+1%:R))).+1 => //=.
+  rewrite in_itv/= zFa andbT lerBlDr -lerBlDl ltW//.
+  by rewrite -truncn_le_nat le_truncn// lerB// ltW.
 Qed.
 
 Lemma increasing_itvoc_bigcup F a n :
