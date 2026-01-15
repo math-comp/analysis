@@ -1,6 +1,373 @@
 # Changelog
 
-Latest releases: [[1.14.0] - 2025-11-07](#1140---2025-11-07), [[1.13.0] - 2025-08-16](#1130---2025-08-16), and [[1.12.0] - 2025-07-03](#1120---2025-07-03)
+Latest releases: [[1.15.0] - 2026-01-15](#1150---2026-01-15), [[1.14.0] - 2025-11-07](#1140---2025-11-07), and [[1.13.0] - 2025-08-16](#1130---2025-08-16)
+
+## [1.15.0] - 2026-01-15
+
+### Added
+
+- in `unstable.v`:
+  + definitions `monotonic`, `strict_monotonic`
+  + lemma `strict_monotonicW`
+  + notation `.~` for `onem`
+
+- in `classical_sets.v`:
+  + lemma `nonemptyPn`
+  + lemmas `setUDl`, `setUDr`
+
+- in `cardinality.v`:
+  + lemma `infinite_setD`
+  + lemmas `finite_setX_or`, `infinite_setX`
+  + lemmas `infinite_prod_rat`, ``card_rat2`
+  + notation `cofinite_set`
+  + lemmas `cofinite_setT`, `infinite_setN0`, `sub_cofinite_set`,
+    `sub_infinite_set`, `cofinite_setUl`, `cofinite_setUr`, `cofinite_setU`,
+    `cofinite_setI`, `cofinite_set_infinite`, `infinite_setIl`,
+    `infinite_setIr`
+  + lemma `injective_gtn`
+
+- in `topology_structure.v`:
+  + definition `isolated`
+  + lemma `isolatedS`
+  + lemma `disjoint_isolated_limit_point`
+  + lemma `closure_isolated_limit_point`
+
+- in `subspace_topology.v`:
+  + definition `from_subspace`
+
+- in `order_topology.v`:
+  + structures `POrderedNbhs`, `POrderedTopological`, `POrderedUniform`, `POrderedPseudoMetric`,
+    `POrderedPointedTopological`
+
+- in `num_topology.v`:
+  + lemmas `continuous_rsubmx`, `continuous_lsubmx`
+
+- new file `metric_structure.v`:
+  + mixin `PseudoMetric_isMetric`, structure `Metric`, type `metricType`
+    * with fields `mdist`, `mdist_ge0`, `mdist_positivity`, `ballEmdist`
+  + lemmas `metric_sym`, `mdistxx`, `mdist_gt0`, `metric_triangle`,
+    `metric_hausdorff`
+  + `R^o` declared to be an instance of `metricType`
+  + module `metricType_numDomainType`
+    * lemmas `ball_mdistE`, `nbhs_nbhs_mdist`, `nbhs_mdistP`,
+      `filter_from_mdist_nbhs`, `fcvgrPdist_lt`, `cvgrPdist_lt`,
+      `cvgr_dist_lt`, `cvgr_dist_le`, `nbhsr0P`, `cvgrPdist_le`
+  + factory `isMetric`
+
+- in `separation_axioms.v`:
+  + lemma `perfectP`
+
+- in `reals.v`:
+  + lemma `nat_has_minimum`
+
+- in `normed_module.v`:
+  + lemma `limit_point_infinite_setP`
+  + lemma `open_subball_rat`
+  + fact `isolated_rat_ball`
+  + lemma `countable_isolated`
+  + lemma `limit_point_setD`
+
+- in `convex.v`:
+  + lemmas `convN`, `conv_le`
+
+- in `sequences.v`:
+  + lemma `increasing_seq_injective`
+  + definition `adjacent_set`
+  + lemmas `adjacent_sup_inf`, `adjacent_sup_inf_unique`
+  + definition `cut`
+  + lemmas `cut_adjacent`, `infinite_bounded_limit_point_nonempty`
+  + lemma `cluster_eventuallyP`
+  + lemmas `cluster_eventually_cvg`, `limit_point_cluster_eventually`
+  + lemma `finite_range_cst_subsequence`
+  + lemmas `infinite_increasing_seq`, `infinite_increasing_seq_wf`
+  + lemma `finite_range_cvg_subsequence`
+  + theorem `bolzano_weierstrass`
+
+- in `derive.v`:
+  + lemmas `differentiable_rsubmx`, `differentiable_lsubmx`
+
+- in `measurable_structure.v`:
+  + lemma `dynkin_induction`
+
+- in `measure_negligible.v`:
+  + definition `null_set` with notation `_.-null_set`
+  + lemma `subset_null_set`
+  + lemma `negligible_null_set`
+  + lemma `measure0_null_setP`
+  + lemma `null_setU`
+  + definition `null_dominates`
+  + lemma `null_dominates_trans`
+  + lemma `null_content_dominatesP`
+
+- in `measurable_realfun.v`:
+  + lemma `measurable_funN`
+  + lemmas `nondecreasing_measurable`, `nonincreasing_measurable`
+
+- in `lebesgue_integrable.v`
+  + lemma `null_set_integrable`
+  + lemma `integrable_set0`
+  + lemma `integrable_norm`
+
+- in `lebesgue_integral_fubini.v`:
+  + definition `product_subprobability`
+  + lemma `product_subprobability_setC`
+
+- new file `lebesgue_integral_theory/giry.v`
+  + definition `measure_eq`
+  + definition `giry`
+  + definition `giry_ev`
+  + definition `giry_measurable`
+  + definition `preimg_giry_ev`
+  + definition `giry_display`
+  + lemma `measurable_giry_ev`
+  + definition `giry_int`
+  + lemmas `measurable_giry_int`, `measurable_giry_codensity`
+  + definition `giry_map`
+  + lemmas `measurable_giry_map`, `giry_int_map`, `giry_map_dirac`
+  + definition `giry_ret`
+  + lemmas `measurable_giry_ret`, `giry_int_ret`
+  + definition `giry_join`
+  + lemmas `measurable_giry_join`, `sintegral_giry_join`, `giry_int_join`
+  + definition `giry_bind`
+  + lemmas `measurable_giry_bind`, `giry_int_bind`
+  + lemmas `giry_joinA`, `giry_join_id1`, `giry_join_id2`, `giry_map_zero`
+  + definition `giry_prod`
+  + lemmas `measurable_giry_prod`, `giry_int_prod1`, `giry_int_prod2`
+
+- in `charge.v`:
+  + definition `charge_dominates`
+  + lemma `charge_null_dominatesP`
+  + lemma `content_charge_dominatesP`
+
+### Changed
+
+- in `Rstruct.v`:
+  + lemmas `RleP`, `RltP` (change implicits)
+
+- in `subspace_topology.v`:
+  + notation `{within _, continuous _}` (now uses `from_subspace`)
+
+- in `pseudometric_normed_Zmodule.v`:
+  + factory `NormedZmoduleMetric` with field `mdist_norm`
+
+- moved from `pseudometric_normed_Zmodule.v` to `num_topology.v`:
+  + notations `^'+`, `^'-`
+  + definitions `at_left`, `at_right`
+  + instances `at_right_proper_filter`, `at_left_proper_filter`
+  + lemmas `nbhs_right_gt`, `nbhs_left_lt`, `nbhs_right_neq`, `nbhs_left_neq`,
+    `nbhs_left_neq`, `nbhs_left_le`, `nbhs_right_lt`, `nbhs_right_ltW`,
+    `nbhs_right_ltDr`, `nbhs_right_le`, `not_near_at_rightP`
+
+- in `measurable_structure.v`:
+  + the notation ``` `<< ``` is now for `null_set_dominates`,
+    the previous definition can be recovered with the lemma
+    `null_dominatesP`
+
+- moved from `realfun.v` to `numfun.v`:
+  + notations `nondecreasing_fun`, `nonincreasing_fun`, `increasing_fun`,
+    `decreasing_fun`
+  + generalized from `realType` to `numDomainType`:
+    * lemmas `nondecreasing_funN`, `nonincreasing_funN`
+  + generalized from `realType` to `porderType`
+    * definitions `itv_partition`, `itv_partitionL`, `itv_partitionR`
+    * lemmas `itv_partition_nil`, `itv_partition_cons`, `itv_partition1`,
+      `itv_partition_size_neq0`, `itv_partitionxx`, `itv_partition_le`,
+      `itv_partition_cat`, `itv_partition_nth_size`, `itv_partition_nth_ge`,
+      `itv_partition_nth_le`, `nondecreasing_fun_itv_partition`
+  + generalized from `realType` to `orderType`
+    * lemmas `itv_partitionLP`, `itv_partitionRP`, `in_itv_partition`,
+      `notin_itv_partition`
+  + generalize from `realType` to `numDomainType`:
+    * lemmas `nonincreasing_fun_itv_partition`, `itv_partition_rev`
+
+- moved from `realfun.v` to `numfun.v`:
+  + generalize from `realType` to `numDomainType`
+    * definition `variation`
+    * lemmas `variation_zip`, `variation_prev`, `variation_next`,
+      `variation_nil`, `variation_ge0`, `variationN`, `variation_le`,
+      `nondecreasing_variation`, `nonincreasing_variation`,
+      `variation_cat` (order of parameters also changed), `le_variation`,
+      `variation_opp_rev`, `variation_rev_opp`
+  + generalize from `realType` to `realDomainType`
+    * lemmas `variation_itv_partitionLR`, `variation_subseq`
+
+- moved from `realfun.v` to `numfun.v`:
+  + generalize from `realType` to `numDomainType`
+    * definition `variations`, `bounded_variation`
+    * lemmas `variations_variation`, `variations_neq0`, `variationsN`,
+      `variationsxx`
+    * lemmas `bounded_variationxx`, `bounded_variationD`,
+      `bounded_variationN`, `bounded_variationl`, `bounded_variationr`,
+      `variations_opp`, `nondecreasing_bounded_variation`
+
+- moved from `realfun.v` to `metric_structure.v` and generalized:
+  + lemma `cvg_nbhsP`
+
+- in `lebesgue_integral_monotone_convergence.v`:
+  + lemma `ge0_le_integral` (remove superfluous hypothesis)
+
+- in `charge.v`:
+  + `dominates_cscalel` specialized from
+    `set _ -> \bar _` to `{measure set _ -> \bar _}`
+
+### Renamed
+
+- in `boolp.v`:
+  + `notP` -> `not_notP`
+  + `notE` -> `not_notE`
+
+- in `measure_negligible.v`:
+  + `measure_dominates_ae_eq` -> `null_dominates_ae_eq`
+
+- in `probability.v`:
+  + `derivable_oo_continuous_bnd_onemXnMr` -> `derivable_oo_LRcontinuous_onemXnMr`
+
+- in `charge.v`:
+  + `induced` -> `induced_charge`
+
+### Generalized
+
+- in `num_topology.v`:
+  + lemma `in_continuous_mksetP`
+
+- in `pseudometric_normed_Zmodule.v`:
+  + lemmas `continuous_within_itvP`, `continuous_within_itvcyP`,
+    `continuous_within_itvNycP`
+  + lemma `within_continuous_continuous`
+  + lemmas `open_itvoo_subset`, `open_itvcc_subset`, `realFieldType`
+
+- in `num_normedtype.v`:
+  + weaken hypothesis in lemmas `mono_mem_image_segment`, `mono_surj_image_segment`,
+    `inc_surj_image_segment`, `dec_surj_image_segment`, `inc_surj_image_segmentP`,
+    `dec_surj_image_segmentP`, `mono_surj_image_segmentP`
+
+- in `derive.v`:
+  + definition `jacobian`
+  + lemmas `deriveEjacobian`, `differentiable_coord`
+
+- in `lebesgue_integral_under.v`:
+  + weaken an hypothesis of lemma `continuity_under_integral`
+
+- in `lebesgue_integrable.v`:
+  + weaken an hypothesis of lemma `finite_measure_integrable_cst`
+  + lemma `null_set_integral`
+
+- in `realfun.v`:
+  + generalized from `realType` to `realFieldType`:
+    * definition `total_variation`
+    * lemmas `total_variationxx`, `nondecreasing_total_variation`,
+      `total_variationN`
+
+- in `ftc.v`:
+  + lemmas `parameterized_integral_continuous`,
+    `integration_by_substitution_decreasing`,
+    `integration_by_substitution_oppr`,
+    `integration_by_substitution_increasing`,
+    `integration_by_substitution_onem`,
+    `Rintegration_by_substitution_onem`
+
+### Deprecated
+
+- in `unstable.v`:
+  + notation ``` `1- ```
+
+- in `topology_structure.v`:
+  + lemma `closure_limit_point` (use `closure_limit_point_isolated` instead)
+
+### Removed
+
+- in `unstable.v`:
+  + definition `monotonous` (use `strict_monotonic` instead)
+  + lemma `abs_ceil_ge`
+
+- in `set_interval.v`:
+  + lemma `interval_set1` (use `set_itv1` instead)
+  + notation `subset_itvS` (deprecated since 1.4.0)
+
+- in `classical_sets.v`:
+  + notation `notin_set` (deprecated since 1.2.0)
+  + notations `in_setM`, `setM0`, `set0M`, `setMTT`, `setMT`, `setTM`,
+    `setMI`, `setM_bigcupr`, `setM_bigcupl`, `setSM`, `bigcupM1l`,
+    `bigcupM1r`, `setM`, `setMR`, `setML`, `bigcup_setM_dep`,
+    `bigcup_setM`, `fst_setM`, `snd_setM`, `fst_setMR`,
+    `in_xsectionM`, `in_ysectionM`, `notin_xsectionM`, `notin_ysectionM`
+    (deprecared since 1.3.0)
+
+- in `cardinality.v`:
+  + notations `finite_setM`, `fset_setM`, `finite_setMR`, `finite_setML`,
+    `countableMR`, `countableM`, `countableML`, `infiniteMRl`,
+    `cardMR_eq_nat`
+    (deprecared since 1.3.0)
+
+- in `signed.v`:
+  + notations `num_le_maxr`, `num_le_maxl`, `num_le_minr`, `num_le_minl`,
+    `num_lt_maxr`, `num_lt_maxl`, `num_lt_minr`, `num_lt_minl`
+    (deprecated since 1.2.0)
+
+- in `separation_axioms.v`:
+  + definition `cvg_toi_locally_close` (deprecated since 1.5.0)
+
+- in `pseudometric_structure.v`:
+  + definition `cvg_toi_locally` (deprecated since 1.6.0)
+
+- in `constructive_ereal.v`:
+  + notations `gee_pmull`, `gee_addl`, `gee_addr`, `gte_addr`, `gte_addl`,
+    `lte_subl_addr`, `lte_subl_addl`, `lte_subr_addr`, `lte_subr_addl`,
+    `lee_subl_addr`, `lee_subl_addl`, `lee_subr_addr`, `lee_subr_addl`
+    (deprecated since 1.2.0)
+  + notations `gte_dopp`, `lte_le_add`, `lee_lt_add`, `lte_le_sub`,
+    `lee_opp2`, `lte_opp2`, `lte_dadd`, `lee_daddl`, `lee_daddr`
+    `gee_daddl`, `gee_daddr`, `lte_daddl`, `lte_daddr`, `gte_dsubl`,
+    `gte_dsubr`, `gte_daddl`, `gte_daddr`, `lte_dadd2lE`, `lee_dadd2rE`,
+    `lee_dadd2l`, `lee_dadd2r`, `lee_dadd`, `lee_dsub`, `lte_dsubl_addr`,
+    `lte_dsubl_addl`, `lte_dsubr_addr`, `lte_dsubr_addl`, `lte_le_dadd`,
+    `lee_lt_dadd`, `lte_le_dsub`, `lte_pdivr_mull`, `lte_pdivr_mulr`,
+    `lte_pdivl_mull`, `lte_pdivl_mulr`, `lee_pdivr_mull`, `lee_pdivr_mulr`,
+    `lee_pdivl_mull`, `lee_pdivl_mulr`, `lte_ndivr_mull`, `lte_ndivr_mulr`,
+    `lte_ndivl_mull`, `lte_ndivl_mulr`, `lee_ndivr_mull`, `lee_ndivr_mulr`,
+    `lee_ndivl_mull`, `lee_ndivl_mulr`, `eqe_pdivr_mull`
+    (deprecared since 1.3.0)
+
+- in `reals.v`:
+  + lemma `le_ceil` (deprecated since 1.3.0)
+
+- in `sequences.v`:
+  + notation `eq_bigsetU_seqD`(deprecated since 1.2.0)
+
+- in `realfun.v`:
+  + notation `lime_sup_ge0` (deprecated since 1.3.0)
+
+- in `measurable_structure.v`:
+  + notations `monotone_class`, `monotone_class_g_salgebra`,
+    `smallest_monotone_classE`, `monotone_class_subset`,
+    `setI_closed_gdynkin_salgebra`, `dynkin_g_dynkin`, `dynkin_monotone`,
+    `salgebraType`
+    (deprecated since 1.2.0)
+  + definition `measure_dominates` (use `null_set_dominates` instead)
+  + lemma `measure_dominates_trans`
+  + notation `measurableM` (deprecated since 1.3.0)
+
+- in `measure_function.v`:
+  + notations `g_salgebra_measure_unique_trace`,
+    `g_salgebra_measure_unique_cover`, `g_salgebra_measure_unique`
+    (deprecated since 1.2.0)
+
+- in `measurable_realfun.v`:
+  + notations `measurable_fine`, `measurable_exprn`, `measurable_mulrl`,
+    `measurable_mulrr`, `measurable_oppr`, `measurable_normr`,
+    `measurable_fun_pow`, `measurable_oppe`, `measurable_abse`,
+    `measurable_EFin`, `measurable_natmul`
+    (deprecated since 1.4.0)
+  + notation `EFin_measurable_fun` (deprecated since 1.6.0)
+
+- in `lebesgue_stieltjes_measure.v`:
+  + notation `wlength_sigma_sub_additive` (deprecated since 1.1.0)
+
+- in `lebesgue_integral_nonneg.v`:
+  + notations `integral_setI_indic`, `integralEindic` (deprecated since 1.3.0)
+
+- in `charge.v`:
+  + lemma `dominates_charge_variation` (use `charge_null_dominatesP` instead)
 
 ## [1.14.0] - 2025-11-07
 
