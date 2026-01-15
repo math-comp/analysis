@@ -93,6 +93,7 @@
 <li><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></li>
 <li><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.metric_structure.html">metric_structure</a></li>
 <li><a href="mathcomp.analysis.topology_theory.nat_topology.html">nat_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.num_topology.html">num_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.one_point_compactification.html">one_point_compactification</a></li>
@@ -493,8 +494,7 @@ Declared in library mathcomp.analysis.esum, line 126, characters 6-13
 forall [R : realType] [T : choiceType] [I : set T] [a b : T -> \bar R],
 (forall i : T, I i -> (0%R <= a i)%E) ->
 (forall i : T, I i -> (0%R <= b i)%E) ->
-(\esum_(i in I) (a i + b i)%E)%R =
-((\esum_(i in I) a i)%R + (\esum_(i in I) b i)%R)%E
+(\esum_(i in I) (a i + b i))%R = (\esum_(i in I) a i + \esum_(i in I) b i)%R
 
 esumD is not universe polymorphic
 Arguments esumD [R T] [I]%classical_set_scope [a b]%function_scope
@@ -609,7 +609,7 @@ Qed.</div></details>
 forall {R : realType} {I : choiceType} (B A : set I) (F : I -> \bar R),
 (forall i : I, A i -> (0%R <= F i)%E) ->
 (\esum_(i in A) F i)%R =
-((\esum_(i in A `&` B) F i)%R + (\esum_(i in A `&` ~` B) F i)%R)%E
+(\esum_(i in A `&` B) F i + \esum_(i in A `&` ~` B) F i)%R
 
 esumID is not universe polymorphic
 Arguments esumID {R I} (B A)%classical_set_scope (F _)%function_scope

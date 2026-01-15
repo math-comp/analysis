@@ -234,6 +234,10 @@ digraph depend {
 			fillcolor=4,
 			fontcolor=white,
 			label=matrix_topology];
+		"theories/topology_theory/metric_structure"	[URL="mathcomp.analysis.topology_theory.metric_structure.html",
+			fillcolor=4,
+			fontcolor=white,
+			label=metric_structure];
 		"theories/topology_theory/nat_topology"	[URL="mathcomp.analysis.topology_theory.nat_topology.html",
 			fillcolor=4,
 			fontcolor=white,
@@ -422,8 +426,8 @@ digraph depend {
 	"classical/functions" -> "classical/cardinality";
 	"classical/functions" -> "classical/set_interval";
 	"classical/mathcomp_extra" -> "classical/boolp";
-	"classical/mathcomp_extra" -> "classical/unstable";
 	"classical/mathcomp_extra" -> "reals/constructive_ereal";
+	"classical/mathcomp_extra" -> "reals/signed";
 	"classical/set_interval" -> "classical/classical_orders";
 	"classical/set_interval" -> "classical/filter";
 	"classical/set_interval" -> "reals/reals";
@@ -462,6 +466,7 @@ digraph depend {
 	"theories/topology_theory/discrete_topology" -> "theories/topology_theory/nat_topology";
 	"theories/topology_theory/discrete_topology" -> "theories/topology_theory/separation_axioms";
 	"theories/topology_theory/matrix_topology" -> "theories/topology_theory/num_topology";
+	"theories/topology_theory/metric_structure" -> "theories/topology_theory/topology";
 	"theories/topology_theory/nat_topology" -> "theories/topology_theory/topology";
 	"theories/topology_theory/num_topology" -> "theories/topology_theory/separation_axioms";
 	"theories/topology_theory/one_point_compactification" -> "theories/topology_theory/separation_axioms";
@@ -472,7 +477,7 @@ digraph depend {
 	"theories/topology_theory/pseudometric_structure" -> "theories/topology_theory/compact";
 	"theories/topology_theory/pseudometric_structure" -> "theories/topology_theory/matrix_topology";
 	"theories/topology_theory/quotient_topology" -> "theories/topology_theory/topology";
-	"theories/topology_theory/separation_axioms" -> "theories/topology_theory/topology";
+	"theories/topology_theory/separation_axioms" -> "theories/topology_theory/metric_structure";
 	"theories/topology_theory/sigT_topology" -> "theories/topology_theory/separation_axioms";
 	"theories/topology_theory/subspace_topology" -> "theories/topology_theory/sigT_topology";
 	"theories/topology_theory/subspace_topology" -> "theories/topology_theory/subtype_topology";

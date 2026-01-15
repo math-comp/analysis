@@ -93,6 +93,7 @@
 <li><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></li>
 <li><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.metric_structure.html">metric_structure</a></li>
 <li><a href="mathcomp.analysis.topology_theory.nat_topology.html">nat_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.num_topology.html">num_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.one_point_compactification.html">one_point_compactification</a></li>
@@ -211,7 +212,9 @@
       <p><a href="./index.html">Top</a></p>
       <h1 class="title">Module mathcomp.analysis.topology_theory.product_topology</h1>
 <span class="vernacular">From</span><span class="id"> HB</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for HB.structures">structures</a></span>.<br/>
-<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.all_algebra.html">all_algebra</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_classical.html">all_classical</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html">unstable</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.all_algebra.html">all_algebra</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_classical.html">all_classical</a></span>.<br/>
+<span class="id">#[warning=</span><span class="id">&quot;-warn-library-file-internal-analysis&quot;</span><span class="id">]</span><br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html">unstable</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html">interval_inference</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html">topology_structure</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html">uniform_structure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html">pseudometric_structure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html">compact</a></span>.<br/>
 <br/>
@@ -254,7 +257,7 @@ prod_nbhs_filter is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_nbhs_filter
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 30, characters 6-22
+library mathcomp.analysis.topology_theory.product_topology, line 32, characters 6-22
 ">prod_nbhs_filter</a></span> (<span id="p:4" class="id"><a name="p:4" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.U">U</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#ProperFilter">ProperFilter</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.prod_nbhs">prod_nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#p:4">p</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -280,7 +283,7 @@ prod_nbhs_singleton is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_nbhs_singleton
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 33, characters 6-25
+library mathcomp.analysis.topology_theory.product_topology, line 35, characters 6-25
 ">prod_nbhs_singleton</a></span> (<span id="p:5" class="id"><a name="p:5" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.U">U</a></span>) (<span id="A:6" class="id"><a name="A:6" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.U">U</a></span>))<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.prod_nbhs">prod_nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#p:5">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:6">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:6">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#p:5">p</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -314,7 +317,7 @@ prod_nbhs_nbhs is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_nbhs_nbhs
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 38, characters 6-20
+library mathcomp.analysis.topology_theory.product_topology, line 40, characters 6-20
 ">prod_nbhs_nbhs</a></span> (<span id="p:7" class="id"><a name="p:7" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.U">U</a></span>) (<span id="A:8" class="id"><a name="A:8" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.U">U</a></span>))<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.prod_nbhs">prod_nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#p:7">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:8">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.prod_nbhs">prod_nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#p:7">p</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.prod_nbhs">prod_nbhs</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f">^~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:8">A</a></span>).<br/>
 <details>
@@ -342,7 +345,7 @@ filter_hasNbhs__to__filter_isFiltered is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.filter_hasNbhs__to__filter_isFiltered
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 45, characters 0-65
+library mathcomp.analysis.topology_theory.product_topology, line 47, characters 0-65
 ">HB</a></span></span></span>.<span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="filter_hasNbhs__to__filter_isFiltered" class="" title="filter_hasNbhs__to__filter_isFiltered :
 forall {T U : topology_structure.Topological.type},
 filter.isFiltered.axioms_
@@ -361,7 +364,7 @@ filter_hasNbhs__to__filter_isFiltered is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.filter_hasNbhs__to__filter_isFiltered
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 45, characters 0-65
+library mathcomp.analysis.topology_theory.product_topology, line 47, characters 0-65
 ">instance</a></span></span></span><span class="vernacular"> Definition</span><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="filter_hasNbhs__to__filter_isFiltered" class="" title="filter_hasNbhs__to__filter_isFiltered :
 forall {T U : topology_structure.Topological.type},
 filter.isFiltered.axioms_
@@ -380,7 +383,7 @@ filter_hasNbhs__to__filter_isFiltered is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.filter_hasNbhs__to__filter_isFiltered
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 45, characters 0-65
+library mathcomp.analysis.topology_theory.product_topology, line 47, characters 0-65
 "> _</a></span></span></span><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="filter_hasNbhs__to__filter_isFiltered" class="" title="filter_hasNbhs__to__filter_isFiltered :
 forall {T U : topology_structure.Topological.type},
 filter.isFiltered.axioms_
@@ -399,7 +402,7 @@ filter_hasNbhs__to__filter_isFiltered is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.filter_hasNbhs__to__filter_isFiltered
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 45, characters 0-65
+library mathcomp.analysis.topology_theory.product_topology, line 47, characters 0-65
 "> :=</a></span></span></span><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="filter_hasNbhs__to__filter_isFiltered" class="" title="filter_hasNbhs__to__filter_isFiltered :
 forall {T U : topology_structure.Topological.type},
 filter.isFiltered.axioms_
@@ -418,7 +421,7 @@ filter_hasNbhs__to__filter_isFiltered is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.filter_hasNbhs__to__filter_isFiltered
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 45, characters 0-65
+library mathcomp.analysis.topology_theory.product_topology, line 47, characters 0-65
 "> hasNbhs</a></span></span></span>.<span class="id"><a href="mathcomp.classical.filter.html#hasNbhs.Build">Build</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.U">U</a></span>)<span class="id">%type</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.prod_nbhs">prod_nbhs</a></span>.<br/>
 <br/>
 <span id="Datatypes_prod__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_4" class="id"><a name="Datatypes_prod__canonical__topology_structure_Topological" class="" title="Datatypes_prod__canonical__topology_structure_Topological :
@@ -431,7 +434,7 @@ Datatypes_prod__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.Datatypes_prod__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 47, characters 0-124
+library mathcomp.analysis.topology_theory.product_topology, line 49, characters 0-124
 ">HB</a></span></span></span></span>.<span id="Datatypes_prod__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_4" class="id"><a name="Datatypes_prod__canonical__topology_structure_Topological" class="" title="Datatypes_prod__canonical__topology_structure_Topological :
 topology_structure.Topological.type ->
 topology_structure.Topological.type -> topology_structure.Topological.type
@@ -442,7 +445,7 @@ Datatypes_prod__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.Datatypes_prod__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 47, characters 0-124
+library mathcomp.analysis.topology_theory.product_topology, line 49, characters 0-124
 ">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="Datatypes_prod__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_4" class="id"><a name="Datatypes_prod__canonical__topology_structure_Topological" class="" title="Datatypes_prod__canonical__topology_structure_Topological :
 topology_structure.Topological.type ->
 topology_structure.Topological.type -> topology_structure.Topological.type
@@ -453,7 +456,7 @@ Datatypes_prod__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.Datatypes_prod__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 47, characters 0-124
+library mathcomp.analysis.topology_theory.product_topology, line 49, characters 0-124
 "> _</a></span></span></span></span><span id="Datatypes_prod__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_4" class="id"><a name="Datatypes_prod__canonical__topology_structure_Topological" class="" title="Datatypes_prod__canonical__topology_structure_Topological :
 topology_structure.Topological.type ->
 topology_structure.Topological.type -> topology_structure.Topological.type
@@ -464,7 +467,7 @@ Datatypes_prod__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.Datatypes_prod__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 47, characters 0-124
+library mathcomp.analysis.topology_theory.product_topology, line 49, characters 0-124
 "> :=</a></span></span></span></span><span id="Datatypes_prod__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_4" class="id"><a name="Datatypes_prod__canonical__topology_structure_Topological" class="" title="Datatypes_prod__canonical__topology_structure_Topological :
 topology_structure.Topological.type ->
 topology_structure.Topological.type -> topology_structure.Topological.type
@@ -475,7 +478,7 @@ Datatypes_prod__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.Datatypes_prod__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 47, characters 0-124
+library mathcomp.analysis.topology_theory.product_topology, line 49, characters 0-124
 "> Nbhs_isNbhsTopological</a></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Nbhs_isNbhsTopological.Build">Build</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.U">U</a></span>)<span class="id">%type</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_nbhs_filter">prod_nbhs_filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_nbhs_singleton">prod_nbhs_singleton</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_nbhs_nbhs">prod_nbhs_nbhs</a></span>.<br/>
 <br/>
@@ -495,7 +498,7 @@ fst_open is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.fst_open
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 52, characters 6-14
+library mathcomp.analysis.topology_theory.product_topology, line 54, characters 6-14
 ">fst_open</a></span><span class="id"> {</span><span id="U:9" class="id"><a name="U:9" class="">U</a></span><span class="id"> </span><span id="V:10" class="id"><a name="V:10" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span> (<span id="A:11" class="id"><a name="A:11" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#U:9">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#V:10">V</a></span>))<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:11">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#fst">fst</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:11">A</a></span>).<br/>
 <details>
@@ -520,7 +523,7 @@ snd_open is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.snd_open
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 60, characters 6-14
+library mathcomp.analysis.topology_theory.product_topology, line 62, characters 6-14
 ">snd_open</a></span><span class="id"> {</span><span id="U:12" class="id"><a name="U:12" class="">U</a></span><span class="id"> </span><span id="V:13" class="id"><a name="V:13" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span> (<span id="A:14" class="id"><a name="A:14" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#U:12">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#V:13">V</a></span>))<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:14">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#snd">snd</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:14">A</a></span>).<br/>
 <details>
@@ -546,7 +549,7 @@ prod_ent is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ent
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 75, characters 11-19
+library mathcomp.analysis.topology_theory.product_topology, line 77, characters 11-19
 ">prod_ent</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span id="A:17" class="id"><a name="A:17" class="">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> :</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> ((<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.V">V</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.V">V</a></span>))<span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> |</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#filter_prod">filter_prod</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.U">U</a></span>) (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.V">V</a></span>)<br/>
@@ -564,7 +567,7 @@ prod_entP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_entP
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 80, characters 6-15
+library mathcomp.analysis.topology_theory.product_topology, line 82, characters 6-15
 ">prod_entP</a></span> (<span id="A:19" class="id"><a name="A:19" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.U">U</a></span>)) (<span id="B:20" class="id"><a name="B:20" class="">B</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.V">V</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.V">V</a></span>))<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:19">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#B:20">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ent">prod_ent</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="xy:21" class="id"><a name="xy:21" class="">xy</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:19">A</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#xy:21">xy</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#xy:21">xy</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#B:20">B</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#xy:21">xy</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#xy:21">xy</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
@@ -583,7 +586,7 @@ prod_ent_filter is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ent_filter
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 88, characters 6-21
+library mathcomp.analysis.topology_theory.product_topology, line 90, characters 6-21
 ">prod_ent_filter</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#Filter">Filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ent">prod_ent</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -613,7 +616,7 @@ prod_ent_refl is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ent_refl
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 100, characters 6-19
+library mathcomp.analysis.topology_theory.product_topology, line 102, characters 6-19
 ">prod_ent_refl</a></span><span class="id"> </span><span id="A:22" class="id"><a name="A:22" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ent">prod_ent</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:22">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#diagonal">diagonal</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:22">A</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -637,7 +640,7 @@ prod_ent_inv is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ent_inv
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 111, characters 6-18
+library mathcomp.analysis.topology_theory.product_topology, line 113, characters 6-18
 ">prod_ent_inv</a></span><span class="id"> </span><span id="A:23" class="id"><a name="A:23" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ent">prod_ent</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:23">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ent">prod_ent</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:23">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#526392bd33090c726b8e04e001f3937a">^-1</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -660,7 +663,7 @@ prod_ent_split is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ent_split
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 119, characters 6-20
+library mathcomp.analysis.topology_theory.product_topology, line 121, characters 6-20
 ">prod_ent_split</a></span><span class="id"> </span><span id="A:24" class="id"><a name="A:24" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ent">prod_ent</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:24">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span id="B:26" class="id"><span id="B:25" class="id"><a name="B:26" class="">B</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ent">prod_ent</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#B:25">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> &amp;</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#B:26">B</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#81eb8036320f8a2cb60adf38daaca4f6"> \;</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#81eb8036320f8a2cb60adf38daaca4f6"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#B:26">B</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#A:24">A</a></span>).<br/>
 <details>
@@ -684,7 +687,7 @@ prod_ent_nbhsE is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ent_nbhsE
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 132, characters 6-20
+library mathcomp.analysis.topology_theory.product_topology, line 134, characters 6-20
 ">prod_ent_nbhsE</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#nbhs_">nbhs_</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ent">prod_ent</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -712,7 +715,7 @@ Datatypes_prod__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.Datatypes_prod__canonical__uniform_structure_Uniform
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 148, characters 0-137
+library mathcomp.analysis.topology_theory.product_topology, line 150, characters 0-137
 ">HB</a></span></span></span></span></span>.<span id="Datatypes_prod__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_7" class="id"><a name="Datatypes_prod__canonical__uniform_structure_Uniform" class="" title="Datatypes_prod__canonical__uniform_structure_Uniform :
 uniformType -> uniformType -> uniformType
 
@@ -722,7 +725,7 @@ Datatypes_prod__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.Datatypes_prod__canonical__uniform_structure_Uniform
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 148, characters 0-137
+library mathcomp.analysis.topology_theory.product_topology, line 150, characters 0-137
 ">instance</a></span></span></span></span></span><span class="vernacular"> Definition</span><span id="Datatypes_prod__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_7" class="id"><a name="Datatypes_prod__canonical__uniform_structure_Uniform" class="" title="Datatypes_prod__canonical__uniform_structure_Uniform :
 uniformType -> uniformType -> uniformType
 
@@ -732,7 +735,7 @@ Datatypes_prod__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.Datatypes_prod__canonical__uniform_structure_Uniform
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 148, characters 0-137
+library mathcomp.analysis.topology_theory.product_topology, line 150, characters 0-137
 "> _</a></span></span></span></span></span><span id="Datatypes_prod__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_7" class="id"><a name="Datatypes_prod__canonical__uniform_structure_Uniform" class="" title="Datatypes_prod__canonical__uniform_structure_Uniform :
 uniformType -> uniformType -> uniformType
 
@@ -742,7 +745,7 @@ Datatypes_prod__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.Datatypes_prod__canonical__uniform_structure_Uniform
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 148, characters 0-137
+library mathcomp.analysis.topology_theory.product_topology, line 150, characters 0-137
 "> :=</a></span></span></span></span></span><span id="Datatypes_prod__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_7" class="id"><a name="Datatypes_prod__canonical__uniform_structure_Uniform" class="" title="Datatypes_prod__canonical__uniform_structure_Uniform :
 uniformType -> uniformType -> uniformType
 
@@ -752,7 +755,7 @@ Datatypes_prod__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.Datatypes_prod__canonical__uniform_structure_Uniform
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 148, characters 0-137
+library mathcomp.analysis.topology_theory.product_topology, line 150, characters 0-137
 "> Nbhs_isUniform</a></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#Nbhs_isUniform.Build">Build</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.V">V</a></span>)<span class="id">%type</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ent_filter">prod_ent_filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ent_refl">prod_ent_refl</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ent_inv">prod_ent_inv</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ent_split">prod_ent_split</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ent_nbhsE">prod_ent_nbhsE</a></span>.<br/>
 <br/>
@@ -773,7 +776,7 @@ prod_ball is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ball
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 158, characters 11-20
+library mathcomp.analysis.topology_theory.product_topology, line 160, characters 11-20
 ">prod_ball</a></span><span class="id"> </span><span id="x:34" class="id"><a name="x:34" class="">x</a></span> (<span id="eps:35" class="id"><a name="eps:35" class="">eps</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_PseudoMetric.R">R</a></span>)<span class="id"> </span><span id="y:36" class="id"><a name="y:36" class="">y</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#ball">ball</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#fst">fst</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#x:34">x</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#eps:35">eps</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#fst">fst</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#y:36">y</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#ball">ball</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#snd">snd</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#x:34">x</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#eps:35">eps</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#snd">snd</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#y:36">y</a></span>).<br/>
 <br/>
@@ -787,7 +790,7 @@ prod_ball_center is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ball_center
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 161, characters 6-22
+library mathcomp.analysis.topology_theory.product_topology, line 163, characters 6-22
 ">prod_ball_center</a></span><span class="id"> </span><span id="x:37" class="id"><a name="x:37" class="">x</a></span> (<span id="eps:38" class="id"><a name="eps:38" class="">eps</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_PseudoMetric.R">R</a></span>)<span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#eps:38">eps</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ball">prod_ball</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#x:37">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#eps:38">eps</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#x:37">x</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -804,7 +807,7 @@ prod_ball_sym is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ball_sym
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 164, characters 6-19
+library mathcomp.analysis.topology_theory.product_topology, line 166, characters 6-19
 ">prod_ball_sym</a></span><span class="id"> </span><span id="x:39" class="id"><a name="x:39" class="">x</a></span><span class="id"> </span><span id="y:40" class="id"><a name="y:40" class="">y</a></span> (<span id="eps:41" class="id"><a name="eps:41" class="">eps</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_PseudoMetric.R">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ball">prod_ball</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#x:39">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#eps:41">eps</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#y:40">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ball">prod_ball</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#y:40">y</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#eps:41">eps</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#x:39">x</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -822,7 +825,7 @@ prod_ball_triangle is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ball_triangle
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 167, characters 6-24
+library mathcomp.analysis.topology_theory.product_topology, line 169, characters 6-24
 ">prod_ball_triangle</a></span><span class="id"> </span><span id="x:42" class="id"><a name="x:42" class="">x</a></span><span class="id"> </span><span id="y:43" class="id"><a name="y:43" class="">y</a></span><span class="id"> </span><span id="z:44" class="id"><a name="z:44" class="">z</a></span> (<span id="e1:45" class="id"><a name="e1:45" class="">e1</a></span><span class="id"> </span><span id="e2:46" class="id"><a name="e2:46" class="">e2</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_PseudoMetric.R">R</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ball">prod_ball</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#x:42">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#e1:45">e1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#y:43">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ball">prod_ball</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#y:43">y</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#e2:46">e2</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#z:44">z</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ball">prod_ball</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#x:42">x</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#e1:45">e1</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#e2:46">e2</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#z:44">z</a></span>.<br/>
 <details>
@@ -841,7 +844,7 @@ prod_entourage is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_entourage
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 173, characters 6-20
+library mathcomp.analysis.topology_theory.product_topology, line 175, characters 6-20
 ">prod_entourage</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#entourage_">entourage_</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ball">prod_ball</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -872,7 +875,7 @@ Datatypes_prod__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.Datatypes_prod__canonical__pseudometric_structure_PseudoMetric
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 190, characters 0-139
+library mathcomp.analysis.topology_theory.product_topology, line 192, characters 0-139
 ">HB</a></span></span>.<span id="Datatypes_prod__canonical__pseudometric_structure_PseudoMetric" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="Datatypes_prod__canonical__pseudometric_structure_PseudoMetric" class="" title="Datatypes_prod__canonical__pseudometric_structure_PseudoMetric :
 forall {R : numDomainType},
 pseudoMetricType R -> pseudoMetricType R -> pseudoMetricType R
@@ -884,7 +887,7 @@ Datatypes_prod__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.Datatypes_prod__canonical__pseudometric_structure_PseudoMetric
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 190, characters 0-139
+library mathcomp.analysis.topology_theory.product_topology, line 192, characters 0-139
 ">instance</a></span></span><span class="vernacular"> Definition</span><span id="Datatypes_prod__canonical__pseudometric_structure_PseudoMetric" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="Datatypes_prod__canonical__pseudometric_structure_PseudoMetric" class="" title="Datatypes_prod__canonical__pseudometric_structure_PseudoMetric :
 forall {R : numDomainType},
 pseudoMetricType R -> pseudoMetricType R -> pseudoMetricType R
@@ -896,7 +899,7 @@ Datatypes_prod__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.Datatypes_prod__canonical__pseudometric_structure_PseudoMetric
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 190, characters 0-139
+library mathcomp.analysis.topology_theory.product_topology, line 192, characters 0-139
 "> _</a></span></span><span id="Datatypes_prod__canonical__pseudometric_structure_PseudoMetric" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="Datatypes_prod__canonical__pseudometric_structure_PseudoMetric" class="" title="Datatypes_prod__canonical__pseudometric_structure_PseudoMetric :
 forall {R : numDomainType},
 pseudoMetricType R -> pseudoMetricType R -> pseudoMetricType R
@@ -908,7 +911,7 @@ Datatypes_prod__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.Datatypes_prod__canonical__pseudometric_structure_PseudoMetric
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 190, characters 0-139
+library mathcomp.analysis.topology_theory.product_topology, line 192, characters 0-139
 "> :=</a></span></span><span id="Datatypes_prod__canonical__pseudometric_structure_PseudoMetric" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="Datatypes_prod__canonical__pseudometric_structure_PseudoMetric" class="" title="Datatypes_prod__canonical__pseudometric_structure_PseudoMetric :
 forall {R : numDomainType},
 pseudoMetricType R -> pseudoMetricType R -> pseudoMetricType R
@@ -920,7 +923,7 @@ Datatypes_prod__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.Datatypes_prod__canonical__pseudometric_structure_PseudoMetric
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 190, characters 0-139
+library mathcomp.analysis.topology_theory.product_topology, line 192, characters 0-139
 "> Uniform_isPseudoMetric</a></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#Uniform_isPseudoMetric.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_PseudoMetric.R">R</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_PseudoMetric.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_PseudoMetric.V">V</a></span>)<span class="id">%type</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ball_center">prod_ball_center</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ball_sym">prod_ball_sym</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_ball_triangle">prod_ball_triangle</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_entourage">prod_entourage</a></span>.<br/>
 <br/>
@@ -947,7 +950,7 @@ fcvg_ball2P is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.fcvg_ball2P
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 197, characters 6-17
+library mathcomp.analysis.topology_theory.product_topology, line 199, characters 6-17
 ">fcvg_ball2P</a></span><span class="id"> {</span><span id="F:55" class="id"><a name="F:55" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Nbhs_fct2.U">U</a></span><span class="id">}</span><span class="id"> {</span><span id="G:56" class="id"><a name="G:56" class="">G</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Nbhs_fct2.V">V</a></span><span class="id">}</span><br/>
 &nbsp;&nbsp;<span class="id">{</span><span id="FF:57" class="id"><a name="FF:57" class="">FF</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#Filter">Filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#F:55">F</a></span><span class="id">}</span><span class="id"> {</span><span id="FG:58" class="id"><a name="FG:58" class="">FG</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#Filter">Filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#G:56">G</a></span><span class="id">}</span> (<span id="y:59" class="id"><a name="y:59" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Nbhs_fct2.U">U</a></span>) (<span id="z:60" class="id"><a name="z:60" class="">z</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Nbhs_fct2.V">V</a></span>)<span class="id">:</span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#F:55">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#G:56">G</a></span>)<span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#y:59">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#z:60">z</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> &lt;-&gt;</a></span><br/>
@@ -980,7 +983,7 @@ cvg_ball2P is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.cvg_ball2P
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 204, characters 6-16
+library mathcomp.analysis.topology_theory.product_topology, line 206, characters 6-16
 ">cvg_ball2P</a></span><span class="id"> {</span><span id="I:64" class="id"><a name="I:64" class="">I</a></span><span class="id"> </span><span id="J:65" class="id"><a name="J:65" class="">J</a></span><span class="id">}</span><span class="id"> {</span><span id="F:66" class="id"><a name="F:66" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#I:64">I</a></span><span class="id">}</span><span class="id"> {</span><span id="G:67" class="id"><a name="G:67" class="">G</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#J:65">J</a></span><span class="id">}</span><br/>
 &nbsp;&nbsp;<span class="id">{</span><span id="FF:68" class="id"><a name="FF:68" class="">FF</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#Filter">Filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#F:66">F</a></span><span class="id">}</span><span class="id"> {</span><span id="FG:69" class="id"><a name="FG:69" class="">FG</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#Filter">Filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#G:67">G</a></span><span class="id">}</span> (<span id="f:70" class="id"><a name="f:70" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#I:64">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Nbhs_fct2.U">U</a></span>) (<span id="g:71" class="id"><a name="g:71" class="">g</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#J:65">J</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Nbhs_fct2.V">V</a></span>) (<span id="y:72" class="id"><a name="y:72" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Nbhs_fct2.U">U</a></span>) (<span id="z:73" class="id"><a name="z:73" class="">z</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Nbhs_fct2.V">V</a></span>)<span class="id">:</span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#f:70">f</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#F:66">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#g:71">g</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#G:67">G</a></span>)<span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#y:72">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#z:73">z</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> &lt;-&gt;</a></span><br/>
@@ -1026,7 +1029,7 @@ compact_setX is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.compact_setX
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 217, characters 6-18
+library mathcomp.analysis.topology_theory.product_topology, line 219, characters 6-18
 ">compact_setX</a></span><span class="id"> {</span><span id="U:77" class="id"><a name="U:77" class="">U</a></span><span class="id"> </span><span id="V:78" class="id"><a name="V:78" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span> (<span id="P:79" class="id"><a name="P:79" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#U:77">U</a></span>) (<span id="Q:80" class="id"><a name="Q:80" class="">Q</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#V:78">V</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#P:79">P</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Q:80">Q</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#P:79">P</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3bd2d3ba5f22ac825c14018530a2318c"> `*`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3bd2d3ba5f22ac825c14018530a2318c"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Q:80">Q</a></span>).<br/>
 <details>
@@ -1118,7 +1121,7 @@ swap_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.swap_continuous
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 231, characters 6-21
+library mathcomp.analysis.topology_theory.product_topology, line 233, characters 6-21
 ">swap_continuous</a></span><span class="id"> {</span><span id="X:85" class="id"><a name="X:85" class="">X</a></span><span class="id"> </span><span id="Y:86" class="id"><a name="Y:86" class="">Y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.unstable.html#swap">swap</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#X:85">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Y:86">Y</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -1229,7 +1232,7 @@ prodA_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prodA_continuous
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 240, characters 6-22
+library mathcomp.analysis.topology_theory.product_topology, line 242, characters 6-22
 ">prodA_continuous</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.unstable.html#prodA">prodA</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#reassociate_continuous.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#reassociate_continuous.Y">Y</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#reassociate_continuous.Z">Z</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -1341,7 +1344,7 @@ prodAr_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prodAr_continuous
 Declared in
-library mathcomp.analysis.topology_theory.product_topology, line 250, characters 6-23
+library mathcomp.analysis.topology_theory.product_topology, line 252, characters 6-23
 ">prodAr_continuous</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.unstable.html#prodAr">prodAr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#reassociate_continuous.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#reassociate_continuous.Y">Y</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#reassociate_continuous.Z">Z</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>

@@ -93,6 +93,7 @@
 <li><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></li>
 <li><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.metric_structure.html">metric_structure</a></li>
 <li><a href="mathcomp.analysis.topology_theory.nat_topology.html">nat_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.num_topology.html">num_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.one_point_compactification.html">one_point_compactification</a></li>
@@ -1864,7 +1865,7 @@ Declared in library mathcomp.analysis.kernel, line 459, characters 0-97
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sprob_kernelP" class="id"><a name="sprob_kernelP" class="" title="sprob_kernelP :
 forall [d d' : measure_display] [X : measurableType d]
   [Y : measurableType d'] [R : realType] (k : X -> set Y -> \bar R),
-(ereal_sup (R:=R) [set k x [set: Y]%classic | x in [set: X]] <= 1)%E <->
+(ereal.ereal_sup (R:=R) [set k x [set: Y]%classic | x in [set: X]] <= 1)%E <->
 (forall x : X, (k x [set: Y]%classic <= 1)%E)
 
 sprob_kernelP is not universe polymorphic

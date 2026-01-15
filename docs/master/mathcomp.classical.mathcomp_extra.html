@@ -93,6 +93,7 @@
 <li><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></li>
 <li><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.metric_structure.html">metric_structure</a></li>
 <li><a href="mathcomp.analysis.topology_theory.nat_topology.html">nat_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.num_topology.html">num_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.one_point_compactification.html">one_point_compactification</a></li>
@@ -210,7 +211,7 @@
     <div class="content">
       <p><a href="./index.html">Top</a></p>
       <h1 class="title">Module mathcomp.classical.mathcomp_extra</h1>
-<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap">finmap</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html">ssralg</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.ssrnum.html">ssrnum</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap">finmap</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html">ssralg</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.ssrnum.html">ssrnum</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssrint.html">ssrint</a></span>.<br/>
 <br/>
 <div class="ssrdoc md">
 # MathComp extra
@@ -410,6 +411,38 @@ Declared in library mathcomp.finmap.finmap, line 2316, characters 6-20
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#big_seq_fsetE">big_seq_fsetE</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#sum1_card">sum1_card</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#cardfE">cardfE</a></span>. Qed.</div></details>
+<br/>
+<pre class="ssrdoc">
+MathComp 2.6 additions
+</pre>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="intrD1" class="id"><a name="intrD1" class="" title="intrD1 : forall {R : pzRingType} (i : int), (i + 1)%:~R%R = (i%:~R + 1)%R
+
+intrD1 is not universe polymorphic
+Arguments intrD1 {R} i%ring_scope
+intrD1 is opaque
+Expands to: Constant mathcomp.classical.mathcomp_extra.intrD1
+Declared in
+library mathcomp.classical.mathcomp_extra, line 92, characters 6-12
+">intrD1</a></span><span class="id"> {</span><span id="R:51" class="id"><a name="R:51" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.PzRing.Exports.pzRingType">pzRingType</a></span><span class="id">}</span> (<span id="i:52" class="id"><a name="i:52" class="">i</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssrint.html#int">int</a></span>)<span class="id"> :</span> (<span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:52">i</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id">1</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssrint.html#fd24b924079f6f5906ec417190abcf00">%:~R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:52">i</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssrint.html#fd24b924079f6f5906ec417190abcf00">%:~R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id">1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> :&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#R:51">R</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssrint.html#intrD">intrD</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="intr1D" class="id"><a name="intr1D" class="" title="intr1D : forall {R : pzRingType} (i : int), (1 + i)%:~R%R = (1 + i%:~R)%R
+
+intr1D is not universe polymorphic
+Arguments intr1D {R} i%ring_scope
+intr1D is opaque
+Expands to: Constant mathcomp.classical.mathcomp_extra.intr1D
+Declared in
+library mathcomp.classical.mathcomp_extra, line 96, characters 6-12
+">intr1D</a></span><span class="id"> {</span><span id="R:53" class="id"><a name="R:53" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.PzRing.Exports.pzRingType">pzRingType</a></span><span class="id">}</span> (<span id="i:54" class="id"><a name="i:54" class="">i</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssrint.html#int">int</a></span>)<span class="id"> :</span> (<span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:54">i</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssrint.html#fd24b924079f6f5906ec417190abcf00">%:~R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#i:54">i</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssrint.html#fd24b924079f6f5906ec417190abcf00">%:~R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> :&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#R:53">R</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssrint.html#intrD">intrD</a></span>. Qed.</div></details>
 
       <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>
     </div>

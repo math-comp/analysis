@@ -35,7 +35,6 @@ subgraph cluster_classical { "classical/classical_sets"[label="classical_sets",U
   "classical/wochoice" -> "classical/classical_sets";
 subgraph cluster_classical { "classical/mathcomp_extra"[label="mathcomp_extra",URL="mathcomp.classical.mathcomp_extra.html",fillcolor=1]}
 subgraph cluster_classical { "classical/unstable"[label="unstable",URL="mathcomp.classical.unstable.html",fillcolor=1]}
-  "classical/mathcomp_extra" -> "classical/unstable";
 subgraph cluster_classical { "classical/functions"[label="functions",URL="mathcomp.classical.functions.html",fillcolor=1]}
   "classical/boolp" -> "classical/functions";
   "classical/classical_sets" -> "classical/functions";
@@ -77,6 +76,7 @@ subgraph cluster_classical { "classical/filter"[label="filter",URL="mathcomp.cla
 subgraph cluster_reals { "reals/constructive_ereal"[label="constructive_ereal",URL="mathcomp.reals.constructive_ereal.html",fillcolor=2,fontcolor=white]}  "classical/mathcomp_extra" -> "reals/constructive_ereal";
 subgraph cluster_reals { "reals/reals"[label="reals",URL="mathcomp.reals.reals.html",fillcolor=2,fontcolor=white]}  "classical/boolp" -> "reals/reals";
   "classical/classical_sets" -> "reals/reals";
+  "classical/mathcomp_extra" -> "reals/reals";
   "classical/set_interval" -> "reals/reals";
   "classical/unstable" -> "reals/reals";
 subgraph cluster_reals { "reals/real_interval"[label="real_interval",URL="mathcomp.reals.real_interval.html",fillcolor=2,fontcolor=white]}  "classical/boolp" -> "reals/real_interval";
@@ -151,6 +151,7 @@ subgraph cluster_topology { "theories/topology_theory/topology"[label="topology"
   "theories/topology_theory/connected" -> "theories/topology_theory/topology";
   "theories/topology_theory/discrete_topology" -> "theories/topology_theory/topology";
   "theories/topology_theory/matrix_topology" -> "theories/topology_theory/topology";
+  "theories/topology_theory/metric_structure" -> "theories/topology_theory/topology";
   "theories/topology_theory/nat_topology" -> "theories/topology_theory/topology";
   "theories/topology_theory/num_topology" -> "theories/topology_theory/topology";
   "theories/topology_theory/one_point_compactification" -> "theories/topology_theory/topology";
@@ -289,6 +290,18 @@ subgraph cluster_topology { "theories/topology_theory/separation_axioms"[label="
   "theories/topology_theory/supremum_topology" -> "theories/topology_theory/separation_axioms";
   "theories/topology_theory/topology_structure" -> "theories/topology_theory/separation_axioms";
   "theories/topology_theory/uniform_structure" -> "theories/topology_theory/separation_axioms";
+subgraph cluster_topology { "theories/topology_theory/metric_structure"[label="metric_structure",URL="mathcomp.analysis.topology_theory.metric_structure.html",fillcolor=4,fontcolor=white]}  "classical/boolp" -> "theories/topology_theory/metric_structure";
+  "classical/classical_sets" -> "theories/topology_theory/metric_structure";
+  "classical/contra" -> "theories/topology_theory/metric_structure";
+  "classical/mathcomp_extra" -> "theories/topology_theory/metric_structure";
+  "classical/unstable" -> "theories/topology_theory/metric_structure";
+  "reals/reals" -> "theories/topology_theory/metric_structure";
+  "theories/topology_theory/num_topology" -> "theories/topology_theory/metric_structure";
+  "theories/topology_theory/product_topology" -> "theories/topology_theory/metric_structure";
+  "theories/topology_theory/pseudometric_structure" -> "theories/topology_theory/metric_structure";
+  "theories/topology_theory/separation_axioms" -> "theories/topology_theory/metric_structure";
+  "theories/topology_theory/topology_structure" -> "theories/topology_theory/metric_structure";
+  "theories/topology_theory/uniform_structure" -> "theories/topology_theory/metric_structure";
 subgraph cluster_analysis { "theories/homotopy_theory/homotopy"[label="homotopy",URL="mathcomp.analysis.homotopy.html",fillcolor=5]}  "theories/homotopy_theory/continuous_path" -> "theories/homotopy_theory/homotopy";
   "theories/homotopy_theory/wedge_sigT" -> "theories/homotopy_theory/homotopy";
 subgraph cluster_analysis { "theories/homotopy_theory/wedge_sigT"[label="wedge_sigT",URL="mathcomp.analysis.wedge_sigT.html",fillcolor=5]}  "classical/boolp" -> "theories/homotopy_theory/wedge_sigT";
@@ -394,6 +407,7 @@ subgraph cluster_normedtype { "theories/normedtype_theory/normed_module"[label="
   "classical/filter" -> "theories/normedtype_theory/normed_module";
   "classical/functions" -> "theories/normedtype_theory/normed_module";
   "classical/set_interval" -> "theories/normedtype_theory/normed_module";
+  "classical/unstable" -> "theories/normedtype_theory/normed_module";
   "reals/prodnormedzmodule" -> "theories/normedtype_theory/normed_module";
   "reals/real_interval" -> "theories/normedtype_theory/normed_module";
   "reals/reals" -> "theories/normedtype_theory/normed_module";
@@ -416,6 +430,7 @@ subgraph cluster_normedtype { "theories/normedtype_theory/urysohn"[label="urysoh
   "classical/classical_sets" -> "theories/normedtype_theory/urysohn";
   "classical/functions" -> "theories/normedtype_theory/urysohn";
   "classical/set_interval" -> "theories/normedtype_theory/urysohn";
+  "classical/unstable" -> "theories/normedtype_theory/urysohn";
   "reals/reals" -> "theories/normedtype_theory/urysohn";
   "theories/ereal" -> "theories/normedtype_theory/urysohn";
   "theories/function_spaces" -> "theories/normedtype_theory/urysohn";
@@ -429,6 +444,7 @@ subgraph cluster_normedtype { "theories/normedtype_theory/vitali_lemma"[label="v
   "classical/classical_sets" -> "theories/normedtype_theory/vitali_lemma";
   "classical/functions" -> "theories/normedtype_theory/vitali_lemma";
   "classical/set_interval" -> "theories/normedtype_theory/vitali_lemma";
+  "classical/unstable" -> "theories/normedtype_theory/vitali_lemma";
   "reals/reals" -> "theories/normedtype_theory/vitali_lemma";
   "theories/ereal" -> "theories/normedtype_theory/vitali_lemma";
   "theories/function_spaces" -> "theories/normedtype_theory/vitali_lemma";
@@ -454,6 +470,7 @@ subgraph cluster_analysis { "theories/sequences"[label="sequences",URL="mathcomp
   "classical/functions" -> "theories/sequences";
   "classical/mathcomp_extra" -> "theories/sequences";
   "classical/set_interval" -> "theories/sequences";
+  "classical/unstable" -> "theories/sequences";
   "reals/reals" -> "theories/sequences";
   "theories/ereal" -> "theories/sequences";
   "theories/landau" -> "theories/sequences";
@@ -466,6 +483,7 @@ subgraph cluster_analysis { "theories/realfun"[label="realfun",URL="mathcomp.ana
   "classical/contra" -> "theories/realfun";
   "classical/functions" -> "theories/realfun";
   "classical/mathcomp_extra" -> "theories/realfun";
+  "classical/unstable" -> "theories/realfun";
   "reals/prodnormedzmodule" -> "theories/realfun";
   "reals/real_interval" -> "theories/realfun";
   "reals/reals" -> "theories/realfun";
@@ -539,6 +557,7 @@ subgraph cluster_analysis { "theories/numfun"[label="numfun",URL="mathcomp.analy
   "classical/functions" -> "theories/numfun";
   "classical/mathcomp_extra" -> "theories/numfun";
   "classical/set_interval" -> "theories/numfun";
+  "classical/unstable" -> "theories/numfun";
   "reals/reals" -> "theories/numfun";
   "theories/ereal" -> "theories/numfun";
   "theories/function_spaces" -> "theories/numfun";
@@ -549,6 +568,7 @@ subgraph cluster_measure { "theories/measure_theory/measurable_structure"[label=
   "classical/cardinality" -> "theories/measure_theory/measurable_structure";
   "classical/classical_sets" -> "theories/measure_theory/measurable_structure";
   "classical/functions" -> "theories/measure_theory/measurable_structure";
+  "classical/unstable" -> "theories/measure_theory/measurable_structure";
   "reals/reals" -> "theories/measure_theory/measurable_structure";
   "theories/ereal" -> "theories/measure_theory/measurable_structure";
   "theories/normedtype_theory/normedtype" -> "theories/measure_theory/measurable_structure";
@@ -559,6 +579,7 @@ subgraph cluster_measure { "theories/measure_theory/measure_function"[label="mea
   "classical/classical_sets" -> "theories/measure_theory/measure_function";
   "classical/fsbigop" -> "theories/measure_theory/measure_function";
   "classical/functions" -> "theories/measure_theory/measure_function";
+  "classical/unstable" -> "theories/measure_theory/measure_function";
   "reals/reals" -> "theories/measure_theory/measure_function";
   "theories/ereal" -> "theories/measure_theory/measure_function";
   "theories/esum" -> "theories/measure_theory/measure_function";
@@ -608,6 +629,7 @@ subgraph cluster_measure { "theories/measure_theory/measure_negligible"[label="m
   "classical/cardinality" -> "theories/measure_theory/measure_negligible";
   "classical/classical_sets" -> "theories/measure_theory/measure_negligible";
   "classical/functions" -> "theories/measure_theory/measure_negligible";
+  "classical/unstable" -> "theories/measure_theory/measure_negligible";
   "reals/reals" -> "theories/measure_theory/measure_negligible";
   "theories/ereal" -> "theories/measure_theory/measure_negligible";
   "theories/measure_theory/measurable_structure" -> "theories/measure_theory/measure_negligible";
@@ -634,6 +656,7 @@ subgraph cluster_measure { "theories/measure_theory/measurable_function"[label="
   "classical/cardinality" -> "theories/measure_theory/measurable_function";
   "classical/classical_sets" -> "theories/measure_theory/measurable_function";
   "classical/functions" -> "theories/measure_theory/measurable_function";
+  "classical/unstable" -> "theories/measure_theory/measurable_function";
   "reals/reals" -> "theories/measure_theory/measurable_function";
   "theories/ereal" -> "theories/measure_theory/measurable_function";
   "theories/measure_theory/measurable_structure" -> "theories/measure_theory/measurable_function";
@@ -688,6 +711,7 @@ subgraph cluster_analysis { "theories/lebesgue_measure"[label="lebesgue_measure"
   "classical/fsbigop" -> "theories/lebesgue_measure";
   "classical/functions" -> "theories/lebesgue_measure";
   "classical/mathcomp_extra" -> "theories/lebesgue_measure";
+  "classical/unstable" -> "theories/lebesgue_measure";
   "reals/real_interval" -> "theories/lebesgue_measure";
   "reals/reals" -> "theories/lebesgue_measure";
   "theories/ereal" -> "theories/lebesgue_measure";
@@ -1007,6 +1031,7 @@ subgraph cluster_analysis { "theories/ftc"[label="ftc",URL="mathcomp.analysis.ft
   "classical/fsbigop" -> "theories/ftc";
   "classical/functions" -> "theories/ftc";
   "classical/mathcomp_extra" -> "theories/ftc";
+  "classical/unstable" -> "theories/ftc";
   "reals/real_interval" -> "theories/ftc";
   "reals/reals" -> "theories/ftc";
   "theories/charge" -> "theories/ftc";
@@ -1049,6 +1074,7 @@ subgraph cluster_analysis { "theories/probability"[label="probability",URL="math
   "classical/fsbigop" -> "theories/probability";
   "classical/functions" -> "theories/probability";
   "classical/mathcomp_extra" -> "theories/probability";
+  "classical/unstable" -> "theories/probability";
   "reals/reals" -> "theories/probability";
   "theories/charge" -> "theories/probability";
   "theories/derive" -> "theories/probability";
@@ -1074,6 +1100,7 @@ subgraph cluster_analysis { "theories/convex"[label="convex",URL="mathcomp.analy
   "classical/functions" -> "theories/convex";
   "classical/mathcomp_extra" -> "theories/convex";
   "classical/set_interval" -> "theories/convex";
+  "classical/unstable" -> "theories/convex";
   "reals/prodnormedzmodule" -> "theories/convex";
   "reals/reals" -> "theories/convex";
   "theories/derive" -> "theories/convex";
@@ -1196,6 +1223,7 @@ subgraph cluster_analysis { "theories/showcase/summability"[label="summability",
   "theories/topology_theory/topology" -> "theories/showcase/summability";
 subgraph cluster_analysis { "theories/showcase/pnt"[label="pnt",URL="mathcomp.analysis.pnt.html",fillcolor=5]}  "classical/boolp" -> "theories/showcase/pnt";
   "classical/classical_sets" -> "theories/showcase/pnt";
+  "classical/unstable" -> "theories/showcase/pnt";
   "reals/reals" -> "theories/showcase/pnt";
   "theories/ereal" -> "theories/showcase/pnt";
   "theories/sequences" -> "theories/showcase/pnt";

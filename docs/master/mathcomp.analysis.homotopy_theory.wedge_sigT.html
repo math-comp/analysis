@@ -93,6 +93,7 @@
 <li><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></li>
 <li><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.metric_structure.html">metric_structure</a></li>
 <li><a href="mathcomp.analysis.topology_theory.nat_topology.html">nat_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.num_topology.html">num_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.one_point_compactification.html">one_point_compactification</a></li>
@@ -212,9 +213,10 @@
       <h1 class="title">Module mathcomp.analysis.homotopy_theory.wedge_sigT</h1>
 <span class="vernacular">From</span><span class="id"> HB</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for HB.structures">structures</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.all_algebra.html">all_algebra</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap">finmap</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient">generic_quotient</a></span>.<br/>
-<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html">mathcomp_extra</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html">unstable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html">boolp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html">classical_sets</a></span>.<br/>
-<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.functions.html">functions</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html">cardinality</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html">fsbigop</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html">reals</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology.html">topology</a></span>.<br/>
-<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.function_spaces.html">function_spaces</a></span>.<br/>
+<span class="id">#[warning=</span><span class="id">&quot;-warn-library-file-internal-analysis&quot;</span><span class="id">]</span><br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html">unstable</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html">mathcomp_extra</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html">boolp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html">classical_sets</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.functions.html">functions</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html">cardinality</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html">fsbigop</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html">reals</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology.html">topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.function_spaces.html">function_spaces</a></span>.<br/>
 <br/>
 <div class="ssrdoc md">
 # wedge sum for sigT
@@ -306,7 +308,7 @@ Arguments wedge_rel {I} [X]%function_scope p0%function_scope
 wedge_rel is opaque but may be made transparent
 Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_rel
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 78, characters 11-20
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 79, characters 11-20
 ">wedge_rel</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#EquivRel">EquivRel</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_rel_refl">wedge_rel_refl</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_rel_sym">wedge_rel_sym</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_rel_trans">wedge_rel_trans</a></span>.<br/>
 <span class="id">Global</span><span class="vernacular"> Opaque</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_rel">wedge_rel</a></span>.<br/>
 <br/>
@@ -319,7 +321,7 @@ Arguments wedge {I} [X]%function_scope p0%function_scope
 wedge is opaque but may be made transparent
 Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.wedge
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 81, characters 11-16
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 82, characters 11-16
 ">wedge</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#0dc587318a1236d89082bca629a5db9b">{eq_quot</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#0dc587318a1236d89082bca629a5db9b"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_rel">wedge_rel</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#0dc587318a1236d89082bca629a5db9b">}</a></span>.<br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="wedge_lift" class="id"><a name="wedge_lift" class="" title="wedge_lift :
 forall {I : choiceType} [X : I -> topology_structure.Topological.type]
@@ -332,7 +334,7 @@ Arguments wedge_lift {I} [X]%function_scope p0%function_scope [i] _
 wedge_lift is transparent
 Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_lift
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 82, characters 11-21
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 83, characters 11-21
 ">wedge_lift</a></span><span class="id"> </span><span id="i:8" class="id"><a name="i:8" class="">i</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:8">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#3337bf2cd4a8dc684c396fc9814b46a9">\pi_</a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:8">i</a></span>.<br/>
 <br/>
 <span id="wedge_sigT_wedge__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="wedge_sigT_wedge__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="wedge_sigT_wedge__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="wedge_sigT_wedge__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="wedge_sigT_wedge__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_7" class="id"><span id="topology_structure_Topological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_Topological__to__filter_isFiltered" class="id"><span id="topology_structure_Topological__to__filter_selfFiltered" class="id"><span id="topology_structure_Topological__to__eqtype_hasDecEq" class="id"><span id="topology_structure_Topological__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="wedge_sigT_wedge__canonical__topology_structure_Topological" class="" title="wedge_sigT_wedge__canonical__topology_structure_Topological :
@@ -347,7 +349,7 @@ wedge_sigT_wedge__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 84, characters 0-77
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 85, characters 0-77
 ">HB</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="wedge_sigT_wedge__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="wedge_sigT_wedge__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="wedge_sigT_wedge__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="wedge_sigT_wedge__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="wedge_sigT_wedge__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_7" class="id"><span id="topology_structure_Topological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_Topological__to__filter_isFiltered" class="id"><span id="topology_structure_Topological__to__filter_selfFiltered" class="id"><span id="topology_structure_Topological__to__eqtype_hasDecEq" class="id"><span id="topology_structure_Topological__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="wedge_sigT_wedge__canonical__topology_structure_Topological" class="" title="wedge_sigT_wedge__canonical__topology_structure_Topological :
 forall {I : choiceType} [X : I -> topology_structure.Topological.type],
 (forall i : I, topology_structure.Topological.sort (X i)) ->
@@ -360,7 +362,7 @@ wedge_sigT_wedge__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 84, characters 0-77
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 85, characters 0-77
 ">instance</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="wedge_sigT_wedge__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="wedge_sigT_wedge__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="wedge_sigT_wedge__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="wedge_sigT_wedge__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="wedge_sigT_wedge__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_7" class="id"><span id="topology_structure_Topological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_Topological__to__filter_isFiltered" class="id"><span id="topology_structure_Topological__to__filter_selfFiltered" class="id"><span id="topology_structure_Topological__to__eqtype_hasDecEq" class="id"><span id="topology_structure_Topological__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="wedge_sigT_wedge__canonical__topology_structure_Topological" class="" title="wedge_sigT_wedge__canonical__topology_structure_Topological :
 forall {I : choiceType} [X : I -> topology_structure.Topological.type],
 (forall i : I, topology_structure.Topological.sort (X i)) ->
@@ -373,7 +375,7 @@ wedge_sigT_wedge__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 84, characters 0-77
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 85, characters 0-77
 "> _</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="wedge_sigT_wedge__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="wedge_sigT_wedge__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="wedge_sigT_wedge__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="wedge_sigT_wedge__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="wedge_sigT_wedge__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_7" class="id"><span id="topology_structure_Topological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_Topological__to__filter_isFiltered" class="id"><span id="topology_structure_Topological__to__filter_selfFiltered" class="id"><span id="topology_structure_Topological__to__eqtype_hasDecEq" class="id"><span id="topology_structure_Topological__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="wedge_sigT_wedge__canonical__topology_structure_Topological" class="" title="wedge_sigT_wedge__canonical__topology_structure_Topological :
 forall {I : choiceType} [X : I -> topology_structure.Topological.type],
 (forall i : I, topology_structure.Topological.sort (X i)) ->
@@ -386,7 +388,7 @@ wedge_sigT_wedge__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 84, characters 0-77
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 85, characters 0-77
 "> :=</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="wedge_sigT_wedge__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="wedge_sigT_wedge__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="wedge_sigT_wedge__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="wedge_sigT_wedge__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="wedge_sigT_wedge__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_7" class="id"><span id="topology_structure_Topological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_Topological__to__filter_isFiltered" class="id"><span id="topology_structure_Topological__to__filter_selfFiltered" class="id"><span id="topology_structure_Topological__to__eqtype_hasDecEq" class="id"><span id="topology_structure_Topological__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="wedge_sigT_wedge__canonical__topology_structure_Topological" class="" title="wedge_sigT_wedge__canonical__topology_structure_Topological :
 forall {I : choiceType} [X : I -> topology_structure.Topological.type],
 (forall i : I, topology_structure.Topological.sort (X i)) ->
@@ -399,7 +401,7 @@ wedge_sigT_wedge__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 84, characters 0-77
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 85, characters 0-77
 "> Topological</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.copy">copy</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#quotient_topology">quotient_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span>).<br/>
 <span id="wedge_sigT_wedge__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="generic_quotient_Quotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_12" class="id"><a name="wedge_sigT_wedge__canonical__generic_quotient_Quotient" class="" title="wedge_sigT_wedge__canonical__generic_quotient_Quotient :
 forall {I : choiceType} [X : I -> topology_structure.Topological.type],
@@ -413,7 +415,7 @@ wedge_sigT_wedge__canonical__generic_quotient_Quotient is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge__canonical__generic_quotient_Quotient
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 85, characters 0-46
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 86, characters 0-46
 ">HB</a></span></span></span></span>.<span id="wedge_sigT_wedge__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="generic_quotient_Quotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_12" class="id"><a name="wedge_sigT_wedge__canonical__generic_quotient_Quotient" class="" title="wedge_sigT_wedge__canonical__generic_quotient_Quotient :
 forall {I : choiceType} [X : I -> topology_structure.Topological.type],
 (forall i : I, topology_structure.Topological.sort (X i)) ->
@@ -426,7 +428,7 @@ wedge_sigT_wedge__canonical__generic_quotient_Quotient is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge__canonical__generic_quotient_Quotient
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 85, characters 0-46
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 86, characters 0-46
 ">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="wedge_sigT_wedge__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="generic_quotient_Quotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_12" class="id"><a name="wedge_sigT_wedge__canonical__generic_quotient_Quotient" class="" title="wedge_sigT_wedge__canonical__generic_quotient_Quotient :
 forall {I : choiceType} [X : I -> topology_structure.Topological.type],
 (forall i : I, topology_structure.Topological.sort (X i)) ->
@@ -439,7 +441,7 @@ wedge_sigT_wedge__canonical__generic_quotient_Quotient is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge__canonical__generic_quotient_Quotient
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 85, characters 0-46
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 86, characters 0-46
 "> _</a></span></span></span></span><span id="wedge_sigT_wedge__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="generic_quotient_Quotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_12" class="id"><a name="wedge_sigT_wedge__canonical__generic_quotient_Quotient" class="" title="wedge_sigT_wedge__canonical__generic_quotient_Quotient :
 forall {I : choiceType} [X : I -> topology_structure.Topological.type],
 (forall i : I, topology_structure.Topological.sort (X i)) ->
@@ -452,7 +454,7 @@ wedge_sigT_wedge__canonical__generic_quotient_Quotient is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge__canonical__generic_quotient_Quotient
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 85, characters 0-46
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 86, characters 0-46
 "> :=</a></span></span></span></span><span id="wedge_sigT_wedge__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="generic_quotient_Quotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_12" class="id"><a name="wedge_sigT_wedge__canonical__generic_quotient_Quotient" class="" title="wedge_sigT_wedge__canonical__generic_quotient_Quotient :
 forall {I : choiceType} [X : I -> topology_structure.Topological.type],
 (forall i : I, topology_structure.Topological.sort (X i)) ->
@@ -465,7 +467,7 @@ wedge_sigT_wedge__canonical__generic_quotient_Quotient is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge__canonical__generic_quotient_Quotient
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 85, characters 0-46
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 86, characters 0-46
 "> Quotient</a></span></span></span></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#Quotient.on">on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span>.<br/>
 <span class="id">Global</span><span class="vernacular"> Opaque</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span>.<br/>
 <br/>
@@ -511,7 +513,7 @@ wedge_lift_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_lift_continuous
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 88, characters 6-27
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 89, characters 6-27
 ">wedge_lift_continuous</a></span><span class="id"> </span><span id="i:9" class="id"><a name="i:9" class="">i</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_lift">wedge_lift</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:9">i</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -534,7 +536,7 @@ wedge_sigT_wedge_lift__canonical__topology_structure_Continuous is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge_lift__canonical__topology_structure_Continuous
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 91, characters 0-99
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 92, characters 0-99
 ">HB</a></span></span></span>.<span id="wedge_sigT_wedge_lift__canonical__topology_structure_Continuous" class="id"><span id="HB_unnamed_factory_16" class="id"><span id="wedge.hb_instance_15.i" class="id"><a name="wedge_sigT_wedge_lift__canonical__topology_structure_Continuous" class="" title="wedge_sigT_wedge_lift__canonical__topology_structure_Continuous :
 forall {I : choiceType} [X : I -> topology_structure.Topological.type]
   (p0 : forall i : I, topology_structure.Topological.sort (X i)) 
@@ -551,7 +553,7 @@ wedge_sigT_wedge_lift__canonical__topology_structure_Continuous is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge_lift__canonical__topology_structure_Continuous
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 91, characters 0-99
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 92, characters 0-99
 ">instance</a></span></span></span><span class="vernacular"> Definition</span><span id="wedge_sigT_wedge_lift__canonical__topology_structure_Continuous" class="id"><span id="HB_unnamed_factory_16" class="id"><span id="wedge.hb_instance_15.i" class="id"><a name="wedge_sigT_wedge_lift__canonical__topology_structure_Continuous" class="" title="wedge_sigT_wedge_lift__canonical__topology_structure_Continuous :
 forall {I : choiceType} [X : I -> topology_structure.Topological.type]
   (p0 : forall i : I, topology_structure.Topological.sort (X i)) 
@@ -568,7 +570,7 @@ wedge_sigT_wedge_lift__canonical__topology_structure_Continuous is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge_lift__canonical__topology_structure_Continuous
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 91, characters 0-99
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 92, characters 0-99
 "> _</a></span></span></span><span id="wedge_sigT_wedge_lift__canonical__topology_structure_Continuous" class="id"><span id="HB_unnamed_factory_16" class="id"><span id="wedge.hb_instance_15.i" class="id"><a name="wedge_sigT_wedge_lift__canonical__topology_structure_Continuous" class="" title="wedge_sigT_wedge_lift__canonical__topology_structure_Continuous :
 forall {I : choiceType} [X : I -> topology_structure.Topological.type]
   (p0 : forall i : I, topology_structure.Topological.sort (X i)) 
@@ -585,7 +587,7 @@ wedge_sigT_wedge_lift__canonical__topology_structure_Continuous is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge_lift__canonical__topology_structure_Continuous
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 91, characters 0-99
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 92, characters 0-99
 "> i</a></span></span></span><span id="wedge_sigT_wedge_lift__canonical__topology_structure_Continuous" class="id"><span id="HB_unnamed_factory_16" class="id"><span id="wedge.hb_instance_15.i" class="id"><a name="wedge_sigT_wedge_lift__canonical__topology_structure_Continuous" class="" title="wedge_sigT_wedge_lift__canonical__topology_structure_Continuous :
 forall {I : choiceType} [X : I -> topology_structure.Topological.type]
   (p0 : forall i : I, topology_structure.Topological.sort (X i)) 
@@ -602,7 +604,7 @@ wedge_sigT_wedge_lift__canonical__topology_structure_Continuous is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge_lift__canonical__topology_structure_Continuous
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 91, characters 0-99
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 92, characters 0-99
 "> :=</a></span></span></span><br/>
 &nbsp;&nbsp;<span id="wedge_sigT_wedge_lift__canonical__topology_structure_Continuous" class="id"><span id="HB_unnamed_factory_16" class="id"><span id="wedge.hb_instance_15.i" class="id"><a name="wedge_sigT_wedge_lift__canonical__topology_structure_Continuous" class="" title="wedge_sigT_wedge_lift__canonical__topology_structure_Continuous :
 forall {I : choiceType} [X : I -> topology_structure.Topological.type]
@@ -620,7 +622,7 @@ wedge_sigT_wedge_lift__canonical__topology_structure_Continuous is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge_lift__canonical__topology_structure_Continuous
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 91, characters 0-99
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 92, characters 0-99
 ">@isContinuous</a></span></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#isContinuous.Build">Build</a></span><span class="id"> _</span><span class="id"> _</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_lift">wedge_lift</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:10">i</a></span>) (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_lift_continuous">wedge_lift_continuous</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:10">i</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="wedge_lift_nbhs" class="id"><a name="wedge_lift_nbhs" class="" title="wedge_lift_nbhs :
@@ -638,7 +640,7 @@ wedge_lift_nbhs is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_lift_nbhs
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 94, characters 6-21
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 95, characters 6-21
 ">wedge_lift_nbhs</a></span><span class="id"> </span><span id="i:11" class="id"><a name="i:11" class="">i</a></span> (<span id="x:12" class="id"><a name="x:12" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:11">i</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:11">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#x:12">x</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> _</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_lift">wedge_lift</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:11">i</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#x:12">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_lift">wedge_lift</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#x:12">x</a></span>).<br/>
 <details>
@@ -672,7 +674,7 @@ Arguments wedge_liftE {I} [X]%function_scope p0%function_scope [i] x [j] y
 wedge_liftE is opaque
 Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_liftE
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 111, characters 6-17
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 112, characters 6-17
 ">wedge_liftE</a></span><span class="id"> </span><span id="i:13" class="id"><a name="i:13" class="">i</a></span> (<span id="x:14" class="id"><a name="x:14" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:13">i</a></span>)<span class="id"> </span><span id="j:15" class="id"><a name="j:15" class="">j</a></span> (<span id="y:16" class="id"><a name="y:16" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#j:15">j</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_lift">wedge_lift</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#j:15">j</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_lift">wedge_lift</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:13">i</a></span>).<br/>
 <details>
@@ -693,7 +695,7 @@ Arguments wedge_openP {I} [X p0]%function_scope U%classical_set_scope
 wedge_openP is opaque
 Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_openP
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 115, characters 6-17
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 116, characters 6-17
 ">wedge_openP</a></span> (<span id="U:17" class="id"><a name="U:17" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#U:17">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> &lt;-&gt;</a></span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="i:18" class="id"><a name="i:18" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_lift">wedge_lift</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:18">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#U:17">U</a></span>).<br/>
 <details>
@@ -729,7 +731,7 @@ wedge_point_nbhs is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_point_nbhs
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 135, characters 6-22
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 136, characters 6-22
 ">wedge_point_nbhs</a></span><span class="id"> </span><span id="i0:20" class="id"><a name="i0:20" class="">i0</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_lift">wedge_lift</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i0:20">i0</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0f075d0e59a6e8ec7e140f5f44f5e4cc">\bigcap_</a></span><span id="i:21" class="id"><a name="i:21" class="">i</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_lift">wedge_lift</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:21">i</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:21">i</a></span>).<br/>
 <details>
@@ -774,7 +776,7 @@ wedge_nbhs_specP is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_nbhs_specP
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 164, characters 6-22
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 165, characters 6-22
 ">wedge_nbhs_specP</a></span> (<span id="z:32" class="id"><a name="z:32" class="">z</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span>)<span class="id"> :</span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:33" class="id"><a name="i:33" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:33">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_nbhs_spec">wedge_nbhs_spec</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#z:32">z</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#z:32">z</a></span> (<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#z:32">z</a></span>).<br/>
 <details>
@@ -797,7 +799,7 @@ Arguments wedgeTE {I} [X]%function_scope p0%function_scope
 wedgeTE is opaque
 Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.wedgeTE
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 173, characters 6-13
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 174, characters 6-13
 ">wedgeTE</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#4652af423267d4923a164c1104e1273f">\bigcup_</a></span><span id="i:34" class="id"><a name="i:34" class="">i</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_lift">wedge_lift</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:34">i</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT">setT</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -838,7 +840,7 @@ wedge_compact is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_compact
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 179, characters 6-19
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 180, characters 6-19
 ">wedge_compact</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html#finite_set">finite_set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.I">I</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:35" class="id"><a name="i:35" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:35">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>.<br/>
 <details>
@@ -889,7 +891,7 @@ wedge_connected is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_connected
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 189, characters 6-21
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 190, characters 6-21
 ">wedge_connected</a></span><span class="id"> :</span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:36" class="id"><a name="i:36" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:36">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>.<br/>
 <details>
@@ -919,7 +921,7 @@ Arguments wedge_fun {I} [X p0]%function_scope {Z}%type_scope
 wedge_fun is transparent
 Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_fun
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 203, characters 11-20
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 204, characters 11-20
 ">wedge_fun</a></span><span class="id"> {</span><span id="Z:38" class="id"><a name="Z:38" class="">Z</a></span><span class="id"> :</span><span class="id"> Type}</span> (<span id="f:40" class="id"><a name="f:40" class="">f</a></span><span class="id"> :</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="i:39" class="id"><a name="i:39" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:39">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#Z:38">Z</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#Z:38">Z</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.unstable.html#sigT_fun">sigT_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#f:40">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#repr">repr</a></span>.<br/>
 <br/>
@@ -988,7 +990,7 @@ wedge_fun_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_fun_continuous
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 206, characters 6-26
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 207, characters 6-26
 ">wedge_fun_continuous</a></span><span class="id"> {</span><span id="Z:41" class="id"><a name="Z:41" class="">Z</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span> (<span id="f:43" class="id"><a name="f:43" class="">f</a></span><span class="id"> :</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="i:42" class="id"><a name="i:42" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:42">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#Z:41">Z</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:44" class="id"><a name="i:44" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#f:43">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:44">i</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:45" class="id"><a name="i:45" class="">i</a></span><span class="id"> </span><span id="j:46" class="id"><a name="j:46" class="">j</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#f:43">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:45">i</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:45">i</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#f:43">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#j:46">j</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#j:46">j</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_fun">wedge_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#f:43">f</a></span>).<br/>
@@ -1016,7 +1018,7 @@ wedge_lift_funE is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_lift_funE
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 215, characters 6-21
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 216, characters 6-21
 ">wedge_lift_funE</a></span><span class="id"> {</span><span id="Z:47" class="id"><a name="Z:47" class="">Z</a></span><span class="id"> :</span><span class="id"> Type}</span> (<span id="f:49" class="id"><a name="f:49" class="">f</a></span><span class="id"> :</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="i:48" class="id"><a name="i:48" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:48">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#Z:47">Z</a></span>)<span class="id"> </span><span id="i0:50" class="id"><a name="i0:50" class="">i0</a></span> (<span id="a:51" class="id"><a name="a:51" class="">a</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i0:50">i0</a></span>)<span class="id">:</span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:52" class="id"><a name="i:52" class="">i</a></span><span class="id"> </span><span id="j:53" class="id"><a name="j:53" class="">j</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#f:49">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:52">i</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:52">i</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#f:49">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#j:53">j</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#j:53">j</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_fun">wedge_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#f:49">f</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_lift">wedge_lift</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#a:51">a</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#f:49">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i0:50">i0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#a:51">a</a></span>.<br/>
 <details>
@@ -1042,7 +1044,7 @@ wedge_fun_comp is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_fun_comp
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 223, characters 6-20
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 224, characters 6-20
 ">wedge_fun_comp</a></span><span class="id"> {</span><span id="Z1:54" class="id"><a name="Z1:54" class="">Z1</a></span><span class="id"> </span><span id="Z2:55" class="id"><a name="Z2:55" class="">Z2</a></span><span class="id"> :</span><span class="id"> Type}</span> (<span id="h:56" class="id"><a name="h:56" class="">h</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#Z1:54">Z1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#Z2:55">Z2</a></span>) (<span id="f:58" class="id"><a name="f:58" class="">f</a></span><span class="id"> :</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="i:57" class="id"><a name="i:57" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:57">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#Z1:54">Z1</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#h:56">h</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_fun">wedge_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#f:58">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_fun">wedge_fun</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="i:59" class="id"><a name="i:59" class="">i</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#h:56">h</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#f:58">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:59">i</a></span>).<br/>
 <details>
@@ -1063,7 +1065,7 @@ Arguments wedge_prod {I} [X p0]%function_scope _ i
 wedge_prod is transparent
 Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_prod
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 236, characters 11-21
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 237, characters 11-21
 ">wedge_prod</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.function_spaces.html#prod_topology">prod_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_fun">wedge_fun</a></span> (<span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith">dfwith</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="wedge_prod_pointE" class="id"><a name="wedge_prod_pointE" class="" title="wedge_prod_pointE :
@@ -1078,7 +1080,7 @@ wedge_prod_pointE is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_prod_pointE
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 238, characters 6-23
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 239, characters 6-23
 ">wedge_prod_pointE</a></span> (<span id="i:60" class="id"><a name="i:60" class="">i</a></span><span class="id"> </span><span id="j:61" class="id"><a name="j:61" class="">j</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.I">I</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith">dfwith</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:60">i</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:60">i</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith">dfwith</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#j:61">j</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#j:61">j</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -1105,7 +1107,7 @@ wedge_prod_inj is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_prod_inj
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 244, characters 6-20
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 245, characters 6-20
 ">wedge_prod_inj</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#injective">injective</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_prod">wedge_prod</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -1154,7 +1156,7 @@ wedge_prod_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_prod_continuous
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 261, characters 6-27
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 262, characters 6-27
 ">wedge_prod_continuous</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_prod">wedge_prod</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -1180,7 +1182,7 @@ wedge_prod_open is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_prod_open
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 267, characters 6-21
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 268, characters 6-21
 ">wedge_prod_open</a></span> (<span id="x:62" class="id"><a name="x:62" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span>) (<span id="A:63" class="id"><a name="A:63" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.cardinality.html#finite_set">finite_set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.I">I</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:64" class="id"><a name="i:64" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:64">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
@@ -1264,7 +1266,7 @@ wedge_hausdorff is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_hausdorff
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 329, characters 6-21
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 330, characters 6-21
 ">wedge_hausdorff</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:71" class="id"><a name="i:71" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#hausdorff_space">hausdorff_space</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:71">i</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#hausdorff_space">hausdorff_space</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span>.<br/>
 <details>
@@ -1406,7 +1408,7 @@ wedge_fun_joint_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_fun_joint_continuous
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 338, characters 6-32
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 339, characters 6-32
 ">wedge_fun_joint_continuous</a></span> (<span id="T:72" class="id"><a name="T:72" class="">T</a></span><span class="id"> </span><span id="R:73" class="id"><a name="R:73" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span>)<br/>
 &nbsp;&nbsp;(<span id="k:75" class="id"><a name="k:75" class="">k</a></span><span class="id"> :</span><span class="gallina-kwd"> forall</span> (<span id="x:74" class="id"><a name="x:74" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.I">I</a></span>)<span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#T:72">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#x:74">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#R:73">R</a></span>)<span class="id">:</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.cardinality.html#finite_set">finite_set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.I">I</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
@@ -1461,7 +1463,7 @@ Arguments pwedge {I} X%function_scope
 pwedge is transparent
 Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.pwedge
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 381, characters 11-17
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 382, characters 11-17
 ">pwedge</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="i:88" class="id"><a name="i:88" class="">i</a></span><span class="id"> =&gt;</span><span class="id"> @</span><span class="id"><a href="mathcomp.classical.classical_sets.html#point">point</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#pwedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:88">i</a></span>)).<br/>
 <br/>
 <span class="vernacular">Let</span><span class="id"> </span><span id="pwedge.pwedge_point" class="id"><a name="pwedge.pwedge_point" class="">pwedge_point</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#pwedge">pwedge</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_lift">wedge_lift</a></span><span class="id"> _</span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.classical_sets.html#point">point</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#pwedge.X">X</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.classical_sets.html#point">point</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#pwedge.I">I</a></span>))).<br/>
@@ -1478,7 +1480,7 @@ wedge_sigT_pwedge__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_pwedge__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 385, characters 0-50
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 386, characters 0-50
 ">HB</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="wedge_sigT_pwedge__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_33" class="id"><span id="wedge_sigT_pwedge__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_32" class="id"><span id="wedge_sigT_pwedge__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_31" class="id"><span id="wedge_sigT_pwedge__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_30" class="id"><span id="wedge_sigT_pwedge__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_29" class="id"><span id="topology_structure_Topological__to__topology_structure_Nbhs_isTopological__28" class="id"><span id="topology_structure_Topological__to__filter_isFiltered__26" class="id"><span id="topology_structure_Topological__to__filter_selfFiltered__24" class="id"><span id="topology_structure_Topological__to__eqtype_hasDecEq__22" class="id"><span id="topology_structure_Topological__to__choice_hasChoice__20" class="id"><span id="HB_unnamed_factory_18" class="id"><a name="wedge_sigT_pwedge__canonical__topology_structure_Topological" class="" title="wedge_sigT_pwedge__canonical__topology_structure_Topological :
 forall {I : pointedType},
 (I -> topology_structure.PointedTopological.type) ->
@@ -1491,7 +1493,7 @@ wedge_sigT_pwedge__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_pwedge__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 385, characters 0-50
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 386, characters 0-50
 ">instance</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="wedge_sigT_pwedge__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_33" class="id"><span id="wedge_sigT_pwedge__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_32" class="id"><span id="wedge_sigT_pwedge__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_31" class="id"><span id="wedge_sigT_pwedge__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_30" class="id"><span id="wedge_sigT_pwedge__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_29" class="id"><span id="topology_structure_Topological__to__topology_structure_Nbhs_isTopological__28" class="id"><span id="topology_structure_Topological__to__filter_isFiltered__26" class="id"><span id="topology_structure_Topological__to__filter_selfFiltered__24" class="id"><span id="topology_structure_Topological__to__eqtype_hasDecEq__22" class="id"><span id="topology_structure_Topological__to__choice_hasChoice__20" class="id"><span id="HB_unnamed_factory_18" class="id"><a name="wedge_sigT_pwedge__canonical__topology_structure_Topological" class="" title="wedge_sigT_pwedge__canonical__topology_structure_Topological :
 forall {I : pointedType},
 (I -> topology_structure.PointedTopological.type) ->
@@ -1504,7 +1506,7 @@ wedge_sigT_pwedge__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_pwedge__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 385, characters 0-50
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 386, characters 0-50
 "> _</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="wedge_sigT_pwedge__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_33" class="id"><span id="wedge_sigT_pwedge__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_32" class="id"><span id="wedge_sigT_pwedge__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_31" class="id"><span id="wedge_sigT_pwedge__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_30" class="id"><span id="wedge_sigT_pwedge__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_29" class="id"><span id="topology_structure_Topological__to__topology_structure_Nbhs_isTopological__28" class="id"><span id="topology_structure_Topological__to__filter_isFiltered__26" class="id"><span id="topology_structure_Topological__to__filter_selfFiltered__24" class="id"><span id="topology_structure_Topological__to__eqtype_hasDecEq__22" class="id"><span id="topology_structure_Topological__to__choice_hasChoice__20" class="id"><span id="HB_unnamed_factory_18" class="id"><a name="wedge_sigT_pwedge__canonical__topology_structure_Topological" class="" title="wedge_sigT_pwedge__canonical__topology_structure_Topological :
 forall {I : pointedType},
 (I -> topology_structure.PointedTopological.type) ->
@@ -1517,7 +1519,7 @@ wedge_sigT_pwedge__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_pwedge__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 385, characters 0-50
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 386, characters 0-50
 "> :=</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="wedge_sigT_pwedge__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_33" class="id"><span id="wedge_sigT_pwedge__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_32" class="id"><span id="wedge_sigT_pwedge__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_31" class="id"><span id="wedge_sigT_pwedge__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_30" class="id"><span id="wedge_sigT_pwedge__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_29" class="id"><span id="topology_structure_Topological__to__topology_structure_Nbhs_isTopological__28" class="id"><span id="topology_structure_Topological__to__filter_isFiltered__26" class="id"><span id="topology_structure_Topological__to__filter_selfFiltered__24" class="id"><span id="topology_structure_Topological__to__eqtype_hasDecEq__22" class="id"><span id="topology_structure_Topological__to__choice_hasChoice__20" class="id"><span id="HB_unnamed_factory_18" class="id"><a name="wedge_sigT_pwedge__canonical__topology_structure_Topological" class="" title="wedge_sigT_pwedge__canonical__topology_structure_Topological :
 forall {I : pointedType},
 (I -> topology_structure.PointedTopological.type) ->
@@ -1530,7 +1532,7 @@ wedge_sigT_pwedge__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_pwedge__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 385, characters 0-50
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 386, characters 0-50
 "> Topological</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.on">on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#pwedge">pwedge</a></span>.<br/>
 <span id="wedge_sigT_pwedge__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_37" class="id"><span id="generic_quotient_Quotient__to__generic_quotient_isQuotient__36" class="id"><span id="HB_unnamed_factory_34" class="id"><a name="wedge_sigT_pwedge__canonical__generic_quotient_Quotient" class="" title="wedge_sigT_pwedge__canonical__generic_quotient_Quotient :
 forall {I : pointedType}
@@ -1550,7 +1552,7 @@ wedge_sigT_pwedge__canonical__generic_quotient_Quotient is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_pwedge__canonical__generic_quotient_Quotient
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 386, characters 0-47
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 387, characters 0-47
 ">HB</a></span></span></span></span>.<span id="wedge_sigT_pwedge__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_37" class="id"><span id="generic_quotient_Quotient__to__generic_quotient_isQuotient__36" class="id"><span id="HB_unnamed_factory_34" class="id"><a name="wedge_sigT_pwedge__canonical__generic_quotient_Quotient" class="" title="wedge_sigT_pwedge__canonical__generic_quotient_Quotient :
 forall {I : pointedType}
   (X : I -> topology_structure.PointedTopological.type),
@@ -1569,7 +1571,7 @@ wedge_sigT_pwedge__canonical__generic_quotient_Quotient is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_pwedge__canonical__generic_quotient_Quotient
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 386, characters 0-47
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 387, characters 0-47
 ">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="wedge_sigT_pwedge__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_37" class="id"><span id="generic_quotient_Quotient__to__generic_quotient_isQuotient__36" class="id"><span id="HB_unnamed_factory_34" class="id"><a name="wedge_sigT_pwedge__canonical__generic_quotient_Quotient" class="" title="wedge_sigT_pwedge__canonical__generic_quotient_Quotient :
 forall {I : pointedType}
   (X : I -> topology_structure.PointedTopological.type),
@@ -1588,7 +1590,7 @@ wedge_sigT_pwedge__canonical__generic_quotient_Quotient is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_pwedge__canonical__generic_quotient_Quotient
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 386, characters 0-47
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 387, characters 0-47
 "> _</a></span></span></span></span><span id="wedge_sigT_pwedge__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_37" class="id"><span id="generic_quotient_Quotient__to__generic_quotient_isQuotient__36" class="id"><span id="HB_unnamed_factory_34" class="id"><a name="wedge_sigT_pwedge__canonical__generic_quotient_Quotient" class="" title="wedge_sigT_pwedge__canonical__generic_quotient_Quotient :
 forall {I : pointedType}
   (X : I -> topology_structure.PointedTopological.type),
@@ -1607,7 +1609,7 @@ wedge_sigT_pwedge__canonical__generic_quotient_Quotient is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_pwedge__canonical__generic_quotient_Quotient
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 386, characters 0-47
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 387, characters 0-47
 "> :=</a></span></span></span></span><span id="wedge_sigT_pwedge__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_37" class="id"><span id="generic_quotient_Quotient__to__generic_quotient_isQuotient__36" class="id"><span id="HB_unnamed_factory_34" class="id"><a name="wedge_sigT_pwedge__canonical__generic_quotient_Quotient" class="" title="wedge_sigT_pwedge__canonical__generic_quotient_Quotient :
 forall {I : pointedType}
   (X : I -> topology_structure.PointedTopological.type),
@@ -1626,7 +1628,7 @@ wedge_sigT_pwedge__canonical__generic_quotient_Quotient is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_pwedge__canonical__generic_quotient_Quotient
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 386, characters 0-47
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 387, characters 0-47
 "> Quotient</a></span></span></span></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#Quotient.on">on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#pwedge">pwedge</a></span>.<br/>
 <span id="wedge_sigT_pwedge__canonical__topology_structure_PointedTopological" class="id"><span id="wedge_sigT_pwedge__canonical__filter_PointedNbhs" class="id"><span id="wedge_sigT_pwedge__canonical__filter_PointedFiltered" class="id"><span id="wedge_sigT_pwedge__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_38" class="id"><a name="wedge_sigT_pwedge__canonical__topology_structure_PointedTopological" class="" title="wedge_sigT_pwedge__canonical__topology_structure_PointedTopological :
 forall {I : pointedType},
@@ -1640,7 +1642,7 @@ wedge_sigT_pwedge__canonical__topology_structure_PointedTopological is transpare
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_pwedge__canonical__topology_structure_PointedTopological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 387, characters 0-64
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 388, characters 0-64
 ">HB</a></span></span></span></span></span>.<span id="wedge_sigT_pwedge__canonical__topology_structure_PointedTopological" class="id"><span id="wedge_sigT_pwedge__canonical__filter_PointedNbhs" class="id"><span id="wedge_sigT_pwedge__canonical__filter_PointedFiltered" class="id"><span id="wedge_sigT_pwedge__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_38" class="id"><a name="wedge_sigT_pwedge__canonical__topology_structure_PointedTopological" class="" title="wedge_sigT_pwedge__canonical__topology_structure_PointedTopological :
 forall {I : pointedType},
 (I -> topology_structure.PointedTopological.type) ->
@@ -1653,7 +1655,7 @@ wedge_sigT_pwedge__canonical__topology_structure_PointedTopological is transpare
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_pwedge__canonical__topology_structure_PointedTopological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 387, characters 0-64
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 388, characters 0-64
 ">instance</a></span></span></span></span></span><span class="vernacular"> Definition</span><span id="wedge_sigT_pwedge__canonical__topology_structure_PointedTopological" class="id"><span id="wedge_sigT_pwedge__canonical__filter_PointedNbhs" class="id"><span id="wedge_sigT_pwedge__canonical__filter_PointedFiltered" class="id"><span id="wedge_sigT_pwedge__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_38" class="id"><a name="wedge_sigT_pwedge__canonical__topology_structure_PointedTopological" class="" title="wedge_sigT_pwedge__canonical__topology_structure_PointedTopological :
 forall {I : pointedType},
 (I -> topology_structure.PointedTopological.type) ->
@@ -1666,7 +1668,7 @@ wedge_sigT_pwedge__canonical__topology_structure_PointedTopological is transpare
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_pwedge__canonical__topology_structure_PointedTopological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 387, characters 0-64
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 388, characters 0-64
 "> _</a></span></span></span></span></span><span id="wedge_sigT_pwedge__canonical__topology_structure_PointedTopological" class="id"><span id="wedge_sigT_pwedge__canonical__filter_PointedNbhs" class="id"><span id="wedge_sigT_pwedge__canonical__filter_PointedFiltered" class="id"><span id="wedge_sigT_pwedge__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_38" class="id"><a name="wedge_sigT_pwedge__canonical__topology_structure_PointedTopological" class="" title="wedge_sigT_pwedge__canonical__topology_structure_PointedTopological :
 forall {I : pointedType},
 (I -> topology_structure.PointedTopological.type) ->
@@ -1679,7 +1681,7 @@ wedge_sigT_pwedge__canonical__topology_structure_PointedTopological is transpare
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_pwedge__canonical__topology_structure_PointedTopological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 387, characters 0-64
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 388, characters 0-64
 "> :=</a></span></span></span></span></span><span id="wedge_sigT_pwedge__canonical__topology_structure_PointedTopological" class="id"><span id="wedge_sigT_pwedge__canonical__filter_PointedNbhs" class="id"><span id="wedge_sigT_pwedge__canonical__filter_PointedFiltered" class="id"><span id="wedge_sigT_pwedge__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_38" class="id"><a name="wedge_sigT_pwedge__canonical__topology_structure_PointedTopological" class="" title="wedge_sigT_pwedge__canonical__topology_structure_PointedTopological :
 forall {I : pointedType},
 (I -> topology_structure.PointedTopological.type) ->
@@ -1692,7 +1694,7 @@ wedge_sigT_pwedge__canonical__topology_structure_PointedTopological is transpare
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_pwedge__canonical__topology_structure_PointedTopological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 387, characters 0-64
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 388, characters 0-64
 "> isPointed</a></span></span></span></span></span>.<span class="id"><a href="mathcomp.classical.classical_sets.html#isPointed.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#pwedge">pwedge</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#pwedge.pwedge_point">pwedge_point</a></span>.<br/>
 <br/>
 <span class="vernacular">End</span><span class="id"> pwedge</span>.<br/>
@@ -1710,7 +1712,7 @@ bpwedge_shared_pt is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.bpwedge_shared_pt
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 394, characters 11-28
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 395, characters 11-28
 ">bpwedge_shared_pt</a></span><span class="id"> </span><span id="b:91" class="id"><a name="b:91" class="">b</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">if</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'return'_x_'then'_x_'else'_x"> </a></span><span id="b:95" class="id"><span id="b:94" class="id"><span id="b:93" class="id"><span id="b:92" class="id"><a name="b:95" class="">b</a></span></span></span></span><span class="gallina-kwd"> return</span> (<span class="gallina-kwd">if</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#b:92">b</a></span><span class="gallina-kwd"> then</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#bpwedge.X">X</a></span><span class="gallina-kwd"> else</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#bpwedge.Y">Y</a></span>)<span class="gallina-kwd"> then</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'return'_x_'then'_x_'else'_x"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.classical.classical_sets.html#one">one</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#bpwedge.X">X</a></span><span class="gallina-kwd"> else</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'return'_x_'then'_x_'else'_x"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.classical.classical_sets.html#zero">zero</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#bpwedge.Y">Y</a></span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="bpwedge" class="id"><a name="bpwedge" class="">bpwedge</a></span><span class="id"> :=</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#bpwedge_shared_pt">bpwedge_shared_pt</a></span>).<br/>
@@ -1744,7 +1746,7 @@ wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological is transpar
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 407, characters 0-119
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 408, characters 0-119
 ">HB</a></span></span></span>.<span id="wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological" class="id"><span id="wedge_sigT_wedge__canonical__classical_sets_BiPointed" class="id"><span id="HB_unnamed_factory_40" class="id"><a name="wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological" class="" title="wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological :
 topology_structure.BiPointedTopological.type ->
 topology_structure.BiPointedTopological.type ->
@@ -1758,7 +1760,7 @@ wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological is transpar
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 407, characters 0-119
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 408, characters 0-119
 ">instance</a></span></span></span><span class="vernacular"> Definition</span><span id="wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological" class="id"><span id="wedge_sigT_wedge__canonical__classical_sets_BiPointed" class="id"><span id="HB_unnamed_factory_40" class="id"><a name="wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological" class="" title="wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological :
 topology_structure.BiPointedTopological.type ->
 topology_structure.BiPointedTopological.type ->
@@ -1772,7 +1774,7 @@ wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological is transpar
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 407, characters 0-119
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 408, characters 0-119
 "> _</a></span></span></span><span id="wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological" class="id"><span id="wedge_sigT_wedge__canonical__classical_sets_BiPointed" class="id"><span id="HB_unnamed_factory_40" class="id"><a name="wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological" class="" title="wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological :
 topology_structure.BiPointedTopological.type ->
 topology_structure.BiPointedTopological.type ->
@@ -1786,7 +1788,7 @@ wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological is transpar
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 407, characters 0-119
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 408, characters 0-119
 "> :=</a></span></span></span><span id="wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological" class="id"><span id="wedge_sigT_wedge__canonical__classical_sets_BiPointed" class="id"><span id="HB_unnamed_factory_40" class="id"><a name="wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological" class="" title="wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological :
 topology_structure.BiPointedTopological.type ->
 topology_structure.BiPointedTopological.type ->
@@ -1800,7 +1802,7 @@ wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological is transpar
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_sigT_wedge__canonical__topology_structure_BiPointedTopological
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 407, characters 0-119
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 408, characters 0-119
 "> @isBiPointed</a></span></span></span>.<span class="id"><a href="mathcomp.classical.classical_sets.html#isBiPointed.Build">Build</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#bpwedge">bpwedge</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#bpwedge_lift">bpwedge_lift</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#zero">zero</a></span>) (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#bpwedge_lift">bpwedge_lift</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#one">one</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_neq">wedge_neq</a></span>.<br/>
 <span class="vernacular">End</span><span class="id"> bpwedge</span>.<br/>

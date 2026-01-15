@@ -93,6 +93,7 @@
 <li><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></li>
 <li><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.metric_structure.html">metric_structure</a></li>
 <li><a href="mathcomp.analysis.topology_theory.nat_topology.html">nat_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.num_topology.html">num_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.one_point_compactification.html">one_point_compactification</a></li>
@@ -211,7 +212,9 @@
       <p><a href="./index.html">Top</a></p>
       <h1 class="title">Module mathcomp.analysis.topology_theory.weak_topology</h1>
 <span class="vernacular">From</span><span class="id"> HB</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for HB.structures">structures</a></span>.<br/>
-<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.all_algebra.html">all_algebra</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_classical.html">all_classical</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html">unstable</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.all_algebra.html">all_algebra</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_classical.html">all_classical</a></span>.<br/>
+<span class="id">#[warning=</span><span class="id">&quot;-warn-library-file-internal-analysis&quot;</span><span class="id">]</span><br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html">unstable</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html">interval_inference</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html">reals</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html">topology_structure</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html">uniform_structure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html">order_topology</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html">pseudometric_structure</a></span>.<br/>
@@ -248,7 +251,7 @@ weak_topology is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 32, characters 11-24
+library mathcomp.analysis.topology_theory.weak_topology, line 34, characters 11-24
 ">weak_topology</a></span><span class="id"> {</span><span id="S:1" class="id"><a name="S:1" class="">S</a></span><span class="id"> :</span><span class="id"> Type}</span><span class="id"> {</span><span id="T:2" class="id"><a name="T:2" class="">T</a></span><span class="id"> :</span><span class="id"> Type}</span><br/>
 &nbsp;&nbsp;(<span id="f:3" class="id"><a name="f:3" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#S:1">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#T:2">T</a></span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#S:1">S</a></span>.<br/>
 <br/>
@@ -265,7 +268,7 @@ Arguments wopen [S T] f%function_scope _
 wopen is transparent
 Expands to: Constant mathcomp.analysis.topology_theory.weak_topology.wopen
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 39, characters 11-16
+library mathcomp.analysis.topology_theory.weak_topology, line 41, characters 11-16
 ">wopen</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#Weak_Topology.f">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#A:10">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span id="A:10" class="id"><a name="A:10" class="">A</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">]</a></span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Lemma</span><span class="id"> </span><span id="wopT" class="id"><a name="wopT" class="" title="wopT not a defined object.
@@ -311,7 +314,7 @@ weak_topology_weak_topology__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__choice_Choice
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 63, characters 0-40
+library mathcomp.analysis.topology_theory.weak_topology, line 65, characters 0-40
 ">HB</a></span></span></span></span></span></span></span>.<span id="weak_topology_weak_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="weak_topology_weak_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="weak_topology_weak_topology__canonical__choice_Choice" class="" title="weak_topology_weak_topology__canonical__choice_Choice :
 forall [S : choiceType] [T : topology_structure.Topological.type],
 (S -> topology_structure.Topological.sort T) -> choiceType
@@ -323,7 +326,7 @@ weak_topology_weak_topology__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__choice_Choice
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 63, characters 0-40
+library mathcomp.analysis.topology_theory.weak_topology, line 65, characters 0-40
 ">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="weak_topology_weak_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="weak_topology_weak_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="weak_topology_weak_topology__canonical__choice_Choice" class="" title="weak_topology_weak_topology__canonical__choice_Choice :
 forall [S : choiceType] [T : topology_structure.Topological.type],
 (S -> topology_structure.Topological.sort T) -> choiceType
@@ -335,7 +338,7 @@ weak_topology_weak_topology__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__choice_Choice
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 63, characters 0-40
+library mathcomp.analysis.topology_theory.weak_topology, line 65, characters 0-40
 "> _</a></span></span></span></span></span></span></span><span id="weak_topology_weak_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="weak_topology_weak_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="weak_topology_weak_topology__canonical__choice_Choice" class="" title="weak_topology_weak_topology__canonical__choice_Choice :
 forall [S : choiceType] [T : topology_structure.Topological.type],
 (S -> topology_structure.Topological.sort T) -> choiceType
@@ -347,7 +350,7 @@ weak_topology_weak_topology__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__choice_Choice
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 63, characters 0-40
+library mathcomp.analysis.topology_theory.weak_topology, line 65, characters 0-40
 "> :=</a></span></span></span></span></span></span></span><span id="weak_topology_weak_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="weak_topology_weak_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="weak_topology_weak_topology__canonical__choice_Choice" class="" title="weak_topology_weak_topology__canonical__choice_Choice :
 forall [S : choiceType] [T : topology_structure.Topological.type],
 (S -> topology_structure.Topological.sort T) -> choiceType
@@ -359,7 +362,7 @@ weak_topology_weak_topology__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__choice_Choice
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 63, characters 0-40
+library mathcomp.analysis.topology_theory.weak_topology, line 65, characters 0-40
 "> Choice</a></span></span></span></span></span></span></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.on">on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#W">W</a></span>.<br/>
 <span id="weak_topology_weak_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="weak_topology_weak_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="weak_topology_weak_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="topology_structure_isOpenTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="weak_topology_weak_topology__canonical__topology_structure_Topological" class="" title="weak_topology_weak_topology__canonical__topology_structure_Topological :
 forall [S : choiceType] [T : topology_structure.Topological.type],
@@ -374,7 +377,7 @@ weak_topology_weak_topology__canonical__topology_structure_Topological is transp
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 64, characters 0-75
+library mathcomp.analysis.topology_theory.weak_topology, line 66, characters 0-75
 ">HB</a></span></span></span></span></span></span></span></span></span></span>.<span id="weak_topology_weak_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="weak_topology_weak_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="weak_topology_weak_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="topology_structure_isOpenTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="weak_topology_weak_topology__canonical__topology_structure_Topological" class="" title="weak_topology_weak_topology__canonical__topology_structure_Topological :
 forall [S : choiceType] [T : topology_structure.Topological.type],
 (S -> topology_structure.Topological.sort T) ->
@@ -388,7 +391,7 @@ weak_topology_weak_topology__canonical__topology_structure_Topological is transp
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 64, characters 0-75
+library mathcomp.analysis.topology_theory.weak_topology, line 66, characters 0-75
 ">instance</a></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="weak_topology_weak_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="weak_topology_weak_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="weak_topology_weak_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="topology_structure_isOpenTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="weak_topology_weak_topology__canonical__topology_structure_Topological" class="" title="weak_topology_weak_topology__canonical__topology_structure_Topological :
 forall [S : choiceType] [T : topology_structure.Topological.type],
 (S -> topology_structure.Topological.sort T) ->
@@ -402,7 +405,7 @@ weak_topology_weak_topology__canonical__topology_structure_Topological is transp
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 64, characters 0-75
+library mathcomp.analysis.topology_theory.weak_topology, line 66, characters 0-75
 "> _</a></span></span></span></span></span></span></span></span></span></span><span id="weak_topology_weak_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="weak_topology_weak_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="weak_topology_weak_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="topology_structure_isOpenTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="weak_topology_weak_topology__canonical__topology_structure_Topological" class="" title="weak_topology_weak_topology__canonical__topology_structure_Topological :
 forall [S : choiceType] [T : topology_structure.Topological.type],
 (S -> topology_structure.Topological.sort T) ->
@@ -416,7 +419,7 @@ weak_topology_weak_topology__canonical__topology_structure_Topological is transp
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_Topological
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 64, characters 0-75
+library mathcomp.analysis.topology_theory.weak_topology, line 66, characters 0-75
 "> :=</a></span></span></span></span></span></span></span></span></span></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#isOpenTopological.Build">isOpenTopological</a></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#isOpenTopological.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#W">W</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#wopT">wopT</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#wopI">wopI</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#wop_bigU">wop_bigU</a></span>.<br/>
 <br/>
@@ -457,7 +460,7 @@ weak_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_continuous
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 67, characters 6-21
+library mathcomp.analysis.topology_theory.weak_topology, line 69, characters 6-21
 ">weak_continuous</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#Weak_Topology.f">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#W">W</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#Weak_Topology.T">T</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -484,7 +487,7 @@ cvg_image is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.cvg_image
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 70, characters 6-15
+library mathcomp.analysis.topology_theory.weak_topology, line 72, characters 6-15
 ">cvg_image</a></span> (<span id="F:28" class="id"><a name="F:28" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#Weak_Topology.S">S</a></span>) (<span id="s:29" class="id"><a name="s:29" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#Weak_Topology.S">S</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#Filter">Filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#F:28">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#Weak_Topology.f">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT">setT</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT">setT</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#F:28">F</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#s:29">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#W">W</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> &lt;-&gt;</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#Weak_Topology.f">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#A:30">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span id="A:30" class="id"><a name="A:30" class="">A</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#F:28">F</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">]</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> _</span>)<span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#Weak_Topology.f">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#s:29">s</a></span>.<br/>
@@ -517,7 +520,7 @@ weak_topology_weak_topology__canonical__topology_structure_PointedTopological is
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_PointedTopological
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 87, characters 0-112
+library mathcomp.analysis.topology_theory.weak_topology, line 89, characters 0-112
 ">HB</a></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="weak_topology_weak_topology__canonical__topology_structure_PointedTopological" class="id"><span id="weak_topology_weak_topology__canonical__filter_PointedNbhs" class="id"><span id="weak_topology_weak_topology__canonical__filter_PointedFiltered" class="id"><span id="weak_topology_weak_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.S" class="id"><a name="weak_topology_weak_topology__canonical__topology_structure_PointedTopological" class="" title="weak_topology_weak_topology__canonical__topology_structure_PointedTopological :
 forall [S : pointedType] [T : topology_structure.Topological.type],
 (S -> topology_structure.Topological.sort T) ->
@@ -531,7 +534,7 @@ weak_topology_weak_topology__canonical__topology_structure_PointedTopological is
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_PointedTopological
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 87, characters 0-112
+library mathcomp.analysis.topology_theory.weak_topology, line 89, characters 0-112
 ">instance</a></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="weak_topology_weak_topology__canonical__topology_structure_PointedTopological" class="id"><span id="weak_topology_weak_topology__canonical__filter_PointedNbhs" class="id"><span id="weak_topology_weak_topology__canonical__filter_PointedFiltered" class="id"><span id="weak_topology_weak_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.S" class="id"><a name="weak_topology_weak_topology__canonical__topology_structure_PointedTopological" class="" title="weak_topology_weak_topology__canonical__topology_structure_PointedTopological :
 forall [S : pointedType] [T : topology_structure.Topological.type],
 (S -> topology_structure.Topological.sort T) ->
@@ -545,7 +548,7 @@ weak_topology_weak_topology__canonical__topology_structure_PointedTopological is
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_PointedTopological
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 87, characters 0-112
+library mathcomp.analysis.topology_theory.weak_topology, line 89, characters 0-112
 "> _</a></span></span></span></span></span></span></span></span></span></span></span></span> (<span id="weak_topology_weak_topology__canonical__topology_structure_PointedTopological" class="id"><span id="weak_topology_weak_topology__canonical__filter_PointedNbhs" class="id"><span id="weak_topology_weak_topology__canonical__filter_PointedFiltered" class="id"><span id="weak_topology_weak_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.S" class="id"><a name="weak_topology_weak_topology__canonical__topology_structure_PointedTopological" class="" title="weak_topology_weak_topology__canonical__topology_structure_PointedTopological :
 forall [S : pointedType] [T : topology_structure.Topological.type],
 (S -> topology_structure.Topological.sort T) ->
@@ -559,7 +562,7 @@ weak_topology_weak_topology__canonical__topology_structure_PointedTopological is
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_PointedTopological
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 87, characters 0-112
+library mathcomp.analysis.topology_theory.weak_topology, line 89, characters 0-112
 ">S</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="weak_topology_weak_topology__canonical__topology_structure_PointedTopological" class="id"><span id="weak_topology_weak_topology__canonical__filter_PointedNbhs" class="id"><span id="weak_topology_weak_topology__canonical__filter_PointedFiltered" class="id"><span id="weak_topology_weak_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.S" class="id"><a name="weak_topology_weak_topology__canonical__topology_structure_PointedTopological" class="" title="weak_topology_weak_topology__canonical__topology_structure_PointedTopological :
 forall [S : pointedType] [T : topology_structure.Topological.type],
 (S -> topology_structure.Topological.sort T) ->
@@ -573,7 +576,7 @@ weak_topology_weak_topology__canonical__topology_structure_PointedTopological is
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_PointedTopological
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 87, characters 0-112
+library mathcomp.analysis.topology_theory.weak_topology, line 89, characters 0-112
 "> :</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="weak_topology_weak_topology__canonical__topology_structure_PointedTopological" class="id"><span id="weak_topology_weak_topology__canonical__filter_PointedNbhs" class="id"><span id="weak_topology_weak_topology__canonical__filter_PointedFiltered" class="id"><span id="weak_topology_weak_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.S" class="id"><a name="weak_topology_weak_topology__canonical__topology_structure_PointedTopological" class="" title="weak_topology_weak_topology__canonical__topology_structure_PointedTopological :
 forall [S : pointedType] [T : topology_structure.Topological.type],
 (S -> topology_structure.Topological.sort T) ->
@@ -587,7 +590,7 @@ weak_topology_weak_topology__canonical__topology_structure_PointedTopological is
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_PointedTopological
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 87, characters 0-112
+library mathcomp.analysis.topology_theory.weak_topology, line 89, characters 0-112
 "> pointedType</a></span></span></span></span></span></span></span></span></span></span></span></span>) (<span class="id">T</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span>) (<span class="id">f</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#S:31">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#T:32">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.on">Pointed</a></span>.<span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.on">on</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_topology">weak_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#f:33">f</a></span>).<br/>
 <br/>
@@ -606,7 +609,7 @@ Arguments weak_ent [pS U] [f]%function_scope _
 weak_ent is transparent
 Expands to: Constant mathcomp.analysis.topology_theory.weak_topology.weak_ent
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 96, characters 11-19
+library mathcomp.analysis.topology_theory.weak_topology, line 98, characters 11-19
 ">weak_ent</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_uniform.S">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_uniform.S">S</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#filter_from">filter_from</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_uniform.U">U</a></span>) (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="V:40" class="id"><a name="V:40" class="">V</a></span><span class="id"> =&gt;</span> (<span class="id"><a href="mathcomp.classical.unstable.html#map_pair">map_pair</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_uniform.f">f</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c">@^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#V:40">V</a></span>).<br/>
 <br/>
@@ -620,7 +623,7 @@ weak_ent_filter is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_ent_filter
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 99, characters 6-21
+library mathcomp.analysis.topology_theory.weak_topology, line 101, characters 6-21
 ">weak_ent_filter</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#Filter">Filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_ent">weak_ent</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -648,7 +651,7 @@ weak_ent_refl is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_ent_refl
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 105, characters 6-19
+library mathcomp.analysis.topology_theory.weak_topology, line 107, characters 6-19
 ">weak_ent_refl</a></span><span class="id"> </span><span id="A:41" class="id"><a name="A:41" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_ent">weak_ent</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#A:41">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#diagonal">diagonal</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#A:41">A</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -668,7 +671,7 @@ weak_ent_inv is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_ent_inv
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 110, characters 6-18
+library mathcomp.analysis.topology_theory.weak_topology, line 112, characters 6-18
 ">weak_ent_inv</a></span><span class="id"> </span><span id="A:42" class="id"><a name="A:42" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_ent">weak_ent</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#A:42">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_ent">weak_ent</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#A:42">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#526392bd33090c726b8e04e001f3937a">^-1</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -690,7 +693,7 @@ weak_ent_split is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_ent_split
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 116, characters 6-20
+library mathcomp.analysis.topology_theory.weak_topology, line 118, characters 6-20
 ">weak_ent_split</a></span><span class="id"> </span><span id="A:43" class="id"><a name="A:43" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_ent">weak_ent</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#A:43">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span id="B:45" class="id"><span id="B:44" class="id"><a name="B:45" class="">B</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_ent">weak_ent</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#B:44">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#B:45">B</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#81eb8036320f8a2cb60adf38daaca4f6"> \;</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#81eb8036320f8a2cb60adf38daaca4f6"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#B:45">B</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#A:43">A</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -711,7 +714,7 @@ weak_ent_nbhs is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_ent_nbhs
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 124, characters 6-19
+library mathcomp.analysis.topology_theory.weak_topology, line 126, characters 6-19
 ">weak_ent_nbhs</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#nbhs_">nbhs_</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_ent">weak_ent</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -737,7 +740,7 @@ weak_topology_weak_topology__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_Uniform
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 137, characters 0-151
+library mathcomp.analysis.topology_theory.weak_topology, line 139, characters 0-151
 ">HB</a></span></span></span></span></span>.<span id="weak_topology_weak_topology__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_22" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="weak_topology_weak_topology__canonical__uniform_structure_Uniform" class="" title="weak_topology_weak_topology__canonical__uniform_structure_Uniform :
 forall [pS : choiceType] [U : uniformType], (pS -> U) -> uniformType
 
@@ -748,7 +751,7 @@ weak_topology_weak_topology__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_Uniform
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 137, characters 0-151
+library mathcomp.analysis.topology_theory.weak_topology, line 139, characters 0-151
 ">instance</a></span></span></span></span></span><span class="vernacular"> Definition</span><span id="weak_topology_weak_topology__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_22" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="weak_topology_weak_topology__canonical__uniform_structure_Uniform" class="" title="weak_topology_weak_topology__canonical__uniform_structure_Uniform :
 forall [pS : choiceType] [U : uniformType], (pS -> U) -> uniformType
 
@@ -759,7 +762,7 @@ weak_topology_weak_topology__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_Uniform
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 137, characters 0-151
+library mathcomp.analysis.topology_theory.weak_topology, line 139, characters 0-151
 "> _</a></span></span></span></span></span><span id="weak_topology_weak_topology__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_22" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="weak_topology_weak_topology__canonical__uniform_structure_Uniform" class="" title="weak_topology_weak_topology__canonical__uniform_structure_Uniform :
 forall [pS : choiceType] [U : uniformType], (pS -> U) -> uniformType
 
@@ -770,7 +773,7 @@ weak_topology_weak_topology__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_Uniform
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 137, characters 0-151
+library mathcomp.analysis.topology_theory.weak_topology, line 139, characters 0-151
 "> :=</a></span></span></span></span></span><span id="weak_topology_weak_topology__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_22" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="weak_topology_weak_topology__canonical__uniform_structure_Uniform" class="" title="weak_topology_weak_topology__canonical__uniform_structure_Uniform :
 forall [pS : choiceType] [U : uniformType], (pS -> U) -> uniformType
 
@@ -781,7 +784,7 @@ weak_topology_weak_topology__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_Uniform
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 137, characters 0-151
+library mathcomp.analysis.topology_theory.weak_topology, line 139, characters 0-151
 "> @Nbhs_isUniform</a></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#Nbhs_isUniform.Build">Build</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_topology">weak_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_uniform.f">f</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_ent">weak_ent</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_ent_filter">weak_ent_filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_ent_refl">weak_ent_refl</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_ent_inv">weak_ent_inv</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_ent_split">weak_ent_split</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_ent_nbhs">weak_ent_nbhs</a></span>.<br/>
 <br/>
@@ -798,7 +801,7 @@ weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is tran
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 142, characters 0-110
+library mathcomp.analysis.topology_theory.weak_topology, line 144, characters 0-110
 ">HB</a></span></span></span></span></span></span></span></span>.<span id="weak_topology_weak_topology__canonical__uniform_structure_PointedUniform" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq__30" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice__28" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed__26" class="id"><span id="HB_unnamed_factory_24" class="id"><span id="hb_instance_23.f" class="id"><span id="hb_instance_23.U" class="id"><span id="hb_instance_23.pS" class="id"><a name="weak_topology_weak_topology__canonical__uniform_structure_PointedUniform" class="" title="weak_topology_weak_topology__canonical__uniform_structure_PointedUniform :
 forall [pS : pointedType] [U : uniformType], (pS -> U) -> puniformType
 
@@ -810,7 +813,7 @@ weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is tran
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 142, characters 0-110
+library mathcomp.analysis.topology_theory.weak_topology, line 144, characters 0-110
 ">instance</a></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="weak_topology_weak_topology__canonical__uniform_structure_PointedUniform" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq__30" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice__28" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed__26" class="id"><span id="HB_unnamed_factory_24" class="id"><span id="hb_instance_23.f" class="id"><span id="hb_instance_23.U" class="id"><span id="hb_instance_23.pS" class="id"><a name="weak_topology_weak_topology__canonical__uniform_structure_PointedUniform" class="" title="weak_topology_weak_topology__canonical__uniform_structure_PointedUniform :
 forall [pS : pointedType] [U : uniformType], (pS -> U) -> puniformType
 
@@ -822,7 +825,7 @@ weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is tran
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 142, characters 0-110
+library mathcomp.analysis.topology_theory.weak_topology, line 144, characters 0-110
 "> _</a></span></span></span></span></span></span></span></span> (<span id="weak_topology_weak_topology__canonical__uniform_structure_PointedUniform" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq__30" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice__28" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed__26" class="id"><span id="HB_unnamed_factory_24" class="id"><span id="hb_instance_23.f" class="id"><span id="hb_instance_23.U" class="id"><span id="hb_instance_23.pS" class="id"><a name="weak_topology_weak_topology__canonical__uniform_structure_PointedUniform" class="" title="weak_topology_weak_topology__canonical__uniform_structure_PointedUniform :
 forall [pS : pointedType] [U : uniformType], (pS -> U) -> puniformType
 
@@ -834,7 +837,7 @@ weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is tran
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 142, characters 0-110
+library mathcomp.analysis.topology_theory.weak_topology, line 144, characters 0-110
 ">pS</a></span></span></span></span></span></span></span></span><span id="weak_topology_weak_topology__canonical__uniform_structure_PointedUniform" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq__30" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice__28" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed__26" class="id"><span id="HB_unnamed_factory_24" class="id"><span id="hb_instance_23.f" class="id"><span id="hb_instance_23.U" class="id"><span id="hb_instance_23.pS" class="id"><a name="weak_topology_weak_topology__canonical__uniform_structure_PointedUniform" class="" title="weak_topology_weak_topology__canonical__uniform_structure_PointedUniform :
 forall [pS : pointedType] [U : uniformType], (pS -> U) -> puniformType
 
@@ -846,7 +849,7 @@ weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is tran
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 142, characters 0-110
+library mathcomp.analysis.topology_theory.weak_topology, line 144, characters 0-110
 "> :</a></span></span></span></span></span></span></span></span><span id="weak_topology_weak_topology__canonical__uniform_structure_PointedUniform" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq__30" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice__28" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed__26" class="id"><span id="HB_unnamed_factory_24" class="id"><span id="hb_instance_23.f" class="id"><span id="hb_instance_23.U" class="id"><span id="hb_instance_23.pS" class="id"><a name="weak_topology_weak_topology__canonical__uniform_structure_PointedUniform" class="" title="weak_topology_weak_topology__canonical__uniform_structure_PointedUniform :
 forall [pS : pointedType] [U : uniformType], (pS -> U) -> puniformType
 
@@ -858,7 +861,7 @@ weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is tran
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 142, characters 0-110
+library mathcomp.analysis.topology_theory.weak_topology, line 144, characters 0-110
 "> pointedType</a></span></span></span></span></span></span></span></span>) (<span class="id">U</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#Uniform.Exports.uniformType">uniformType</a></span>) (<span class="id">f</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#pS:47">pS</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#U:48">U</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.on">Pointed</a></span>.<span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.on">on</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_topology">weak_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#f:49">f</a></span>).<br/>
 <br/>
@@ -879,7 +882,7 @@ weak_ball is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_ball
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 151, characters 11-20
+library mathcomp.analysis.topology_theory.weak_topology, line 153, characters 11-20
 ">weak_ball</a></span> (<span id="x:55" class="id"><a name="x:55" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#S">S</a></span>) (<span id="r:56" class="id"><a name="r:56" class="">r</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_pseudoMetric.R">R</a></span>) (<span id="y:57" class="id"><a name="y:57" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#S">S</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#ball">ball</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_pseudoMetric.f">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#x:55">x</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#r:56">r</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_pseudoMetric.f">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#y:57">y</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="weak_pseudo_metric_ball_center" class="id"><a name="weak_pseudo_metric_ball_center" class="" title="weak_pseudo_metric_ball_center :
@@ -894,7 +897,7 @@ weak_pseudo_metric_ball_center is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_pseudo_metric_ball_center
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 153, characters 6-36
+library mathcomp.analysis.topology_theory.weak_topology, line 155, characters 6-36
 ">weak_pseudo_metric_ball_center</a></span> (<span id="x:58" class="id"><a name="x:58" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#S">S</a></span>) (<span id="e:59" class="id"><a name="e:59" class="">e</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_pseudoMetric.R">R</a></span>)<span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#e:59">e</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_ball">weak_ball</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#x:58">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#e:59">e</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#x:58">x</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -912,7 +915,7 @@ weak_pseudo_metric_entourageE is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_pseudo_metric_entourageE
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 156, characters 6-35
+library mathcomp.analysis.topology_theory.weak_topology, line 158, characters 6-35
 ">weak_pseudo_metric_entourageE</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#entourage_">entourage_</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_ball">weak_ball</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -951,7 +954,7 @@ weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric is t
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 180, characters 0-211
+library mathcomp.analysis.topology_theory.weak_topology, line 182, characters 0-211
 ">HB</a></span></span>.<span id="weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric" class="id"><span id="HB_unnamed_factory_31" class="id"><a name="weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric" class="" title="weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric :
 forall {R : realType} [pS : choiceType] [U : pseudoMetricType R],
 (pS -> U) -> pseudoMetricType R
@@ -964,7 +967,7 @@ weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric is t
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 180, characters 0-211
+library mathcomp.analysis.topology_theory.weak_topology, line 182, characters 0-211
 ">instance</a></span></span><span class="vernacular"> Definition</span><span id="weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric" class="id"><span id="HB_unnamed_factory_31" class="id"><a name="weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric" class="" title="weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric :
 forall {R : realType} [pS : choiceType] [U : pseudoMetricType R],
 (pS -> U) -> pseudoMetricType R
@@ -977,7 +980,7 @@ weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric is t
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 180, characters 0-211
+library mathcomp.analysis.topology_theory.weak_topology, line 182, characters 0-211
 "> _</a></span></span><span id="weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric" class="id"><span id="HB_unnamed_factory_31" class="id"><a name="weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric" class="" title="weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric :
 forall {R : realType} [pS : choiceType] [U : pseudoMetricType R],
 (pS -> U) -> pseudoMetricType R
@@ -990,7 +993,7 @@ weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric is t
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 180, characters 0-211
+library mathcomp.analysis.topology_theory.weak_topology, line 182, characters 0-211
 "> :=</a></span></span><span id="weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric" class="id"><span id="HB_unnamed_factory_31" class="id"><a name="weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric" class="" title="weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric :
 forall {R : realType} [pS : choiceType] [U : pseudoMetricType R],
 (pS -> U) -> pseudoMetricType R
@@ -1003,7 +1006,7 @@ weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric is t
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 180, characters 0-211
+library mathcomp.analysis.topology_theory.weak_topology, line 182, characters 0-211
 "> Uniform_isPseudoMetric</a></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#Uniform_isPseudoMetric.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_pseudoMetric.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#S">S</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_pseudo_metric_ball_center">weak_pseudo_metric_ball_center</a></span> (<span class="gallina-kwd">fun</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> =&gt;</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#ball_sym">ball_sym</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span>)<br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">fun</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> =&gt;</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#ball_triangle">ball_triangle</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span>)<br/>
@@ -1020,7 +1023,7 @@ weak_ballE is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_ballE
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 185, characters 6-16
+library mathcomp.analysis.topology_theory.weak_topology, line 187, characters 6-16
 ">weak_ballE</a></span> (<span id="e:68" class="id"><a name="e:68" class="">e</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_pseudoMetric.R">R</a></span>) (<span id="x:69" class="id"><a name="x:69" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#S">S</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_pseudoMetric.f">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#ball">ball</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_pseudoMetric.f">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#x:69">x</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#e:68">e</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#ball">ball</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#x:69">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#e:68">e</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -1051,7 +1054,7 @@ open_order_weak is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.open_order_weak
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 201, characters 6-21
+library mathcomp.analysis.topology_theory.weak_topology, line 203, characters 6-21
 ">open_order_weak</a></span> (<span id="U:73" class="id"><a name="U:73" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_order_refine.Y">Y</a></span>)<span class="id"> :</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_order_refine.OrdU">OrdU</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#U:73">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_order_refine.WeakU">WeakU</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#U:73">U</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -1138,7 +1141,7 @@ continuous_comp_weak is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.continuous_comp_weak
 Declared in
-library mathcomp.analysis.topology_theory.weak_topology, line 219, characters 6-26
+library mathcomp.analysis.topology_theory.weak_topology, line 221, characters 6-26
 ">continuous_comp_weak</a></span><span class="id"> {</span><span id="Y:74" class="id"><a name="Y:74" class="">Y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span><span class="id"> {</span><span id="X:75" class="id"><a name="X:75" class="">X</a></span><span class="id"> </span><span id="Z:76" class="id"><a name="Z:76" class="">Z</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span> (<span id="w:77" class="id"><a name="w:77" class="">w</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#Y:74">Y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#Z:76">Z</a></span>)<br/>
 &nbsp;&nbsp;(<span id="f:78" class="id"><a name="f:78" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#X:75">X</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_topology">weak_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#w:77">w</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#w:77">w</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#f:78">f</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#f:78">f</a></span>.<br/>
