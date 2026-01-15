@@ -1,4 +1,6 @@
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import classical_sets boolp topology.
 From mathcomp Require Import ereal sequences reals.
 Import Order.POrderTheory GRing.Theory Num.Theory.

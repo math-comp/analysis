@@ -41,7 +41,6 @@ From mathcomp Require Import measurable_structure measure_function dirac_measure
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import ProperNotations.
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope classical_set_scope.

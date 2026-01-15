@@ -1,7 +1,9 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean rat.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality.
 From mathcomp Require Import set_interval interval_inference ereal reals.
 From mathcomp Require Import topology function_spaces tvs num_normedtype.

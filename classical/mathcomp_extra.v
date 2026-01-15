@@ -1,5 +1,5 @@
-(* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect finmap ssralg ssrnum.
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
 
 (**md**************************************************************************)
 (* # MathComp extra                                                           *)
@@ -83,3 +83,15 @@ Proof. by move=> F0; elim/big_rec : _ => // i x Pi; apply/ler_wnDl/F0. Qed.
 Lemma card_fset_sum1 (T : choiceType) (A : {fset T}) :
   #|` A| = (\sum_(i <- A) 1)%N.
 Proof. by rewrite big_seq_fsetE/= sum1_card cardfE. Qed.
+
+(**************************)
+(* MathComp 2.6 additions *)
+(**************************)
+
+(* PR in progress: https://github.com/math-comp/math-comp/pull/1515 *)
+Lemma intrD1 {R : pzRingType} (i : int) : (i + 1)%:~R = i%:~R + 1 :> R.
+Proof. by rewrite intrD. Qed.
+
+(* PR in progress: https://github.com/math-comp/math-comp/pull/1515 *)
+Lemma intr1D {R : pzRingType} (i : int) : (1 + i)%:~R = 1 + i%:~R :> R.
+Proof. by rewrite intrD. Qed.

@@ -2,6 +2,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint.
 From mathcomp Require Import interval interval_inference archimedean.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp contra classical_sets.
 From mathcomp Require Import functions cardinality set_interval reals.
 From mathcomp Require Import ereal topology tvs normedtype landau.
@@ -3063,8 +3065,8 @@ have /le_trans -> // : `| y n - y (n + m)| <=
   rewrite [_ * `|_|]mulrC exprD mulrA geometric_seriesE ?lt_eqF//=.
   pose q' := Itv01 [elaborate ge0 q] (ltW q1).
   rewrite -[q%:num]/(q'%:num) -!mulrA -mulrDr ler_pM// {}/q'/=.
-  rewrite -!/(`1-_) -mulrDr exprSr onemM -addrA.
-  rewrite -[in leRHS](mulrC _ `1-(_ ^+ m)) -onemMr onemK.
+  rewrite -!/(_.~) -mulrDr exprSr onemM -addrA.
+  rewrite -[in leRHS](mulrC _ (_ ^+ m).~) -onemMr onemK.
   by rewrite [in leRHS]mulrDl mulrAC mulfV ?mul1r// gt_eqF// onem_gt0.
 rewrite geometric_seriesE ?lt_eqF//= -[leRHS]mulr1 (ACl (1*4*2*3))/= -/C.
 by rewrite ler_wpM2l// 1?mulr_ge0// lerBlDr lerDl.

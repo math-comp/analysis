@@ -3,6 +3,8 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
 From mathcomp Require Import archimedean rat interval zmodp vector.
 From mathcomp Require Import fieldext falgebra.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets filter functions cardinality.
 From mathcomp Require Import set_interval interval_inference ereal reals.
 From mathcomp Require Import topology function_spaces real_interval.

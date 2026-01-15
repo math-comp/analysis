@@ -2,8 +2,10 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval poly.
 From mathcomp Require Import sesquilinear.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions reals interval_inference topology.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import reals interval_inference topology.
 From mathcomp Require Import prodnormedzmodule tvs normedtype landau.
 
 (**md**************************************************************************)
@@ -1261,7 +1263,7 @@ Proof. by have /derivableP := @derivable_id x v; rewrite derive_val. Qed.
 End derive_id.
 
 Lemma derive1_onem {R : numFieldType} :
-  (fun x => `1-x : R^o)^`()%classic = cst (-1).
+  (fun x => x.~ : R^o)^`()%classic = cst (-1).
 Proof.
 by apply/funext => x; rewrite derive1E deriveB// derive_id derive_cst sub0r.
 Qed.

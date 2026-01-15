@@ -1,7 +1,9 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
-From mathcomp Require Import mathcomp_extra unstable boolp interval_inference.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
+From mathcomp Require Import mathcomp_extra boolp interval_inference.
 From mathcomp Require Import classical_sets functions cardinality fsbigop reals.
 From mathcomp Require Import ereal topology normedtype sequences real_interval.
 From mathcomp Require Import esum measure ess_sup_inf lebesgue_measure.
@@ -534,7 +536,7 @@ Lemma convex_powR p : 1 <= p ->
 Proof.
 move=> p1 t x y /[!inE] /= /[!in_itv] /= /[!andbT] x_ge0 y_ge0.
 have p0 : 0 < p by rewrite (lt_le_trans _ p1).
-rewrite !convRE; set w1 := t%:num; set w2 := `1-(t%:inum).
+rewrite !convRE; set w1 := t%:num; set w2 := t%:inum.~.
 have [->|w20] := eqVneq w2 0.
   rewrite !mul0r !addr0; have [->|w10] := eqVneq w1 0.
     by rewrite !mul0r powR0// gt_eqF.
@@ -693,7 +695,7 @@ rewrite ge0_integralD//; last 2 first.
       exact: measurableT_comp.
     exact/measurableT_comp_powR/measurableT_comp/measurable_funD.
 rewrite [leRHS](_ : _ = ('N_p%:E[f] + 'N_p%:E[g]) *
-    (\int[mu]_x (`|f x + g x| `^ p)%:E) `^ `1-(p^-1)).
+    (\int[mu]_x (`|f x + g x| `^ p)%:E) `^ p^-1.~).
   rewrite muleDl; last 2 first.
     - rewrite fin_num_poweR//.
       under eq_integral do rewrite -poweR_EFin -abse_EFin.

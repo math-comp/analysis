@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
@@ -21,7 +21,6 @@ Reserved Notation "'\d_' a" (at level 8, a at level 2, format "'\d_' a").
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import ProperNotations.
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope classical_set_scope.

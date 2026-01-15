@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 (* -------------------------------------------------------------------- *)
 (* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)
 (* Copyright (c) - 2015--2018 - Inria                                   *)
@@ -45,7 +45,9 @@
 
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra.
-From mathcomp Require Import boolp classical_sets set_interval.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
+From mathcomp Require Import mathcomp_extra boolp classical_sets set_interval.
 
 Declare Scope real_scope.
 
@@ -55,7 +57,6 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Theory.
-From mathcomp Require Import unstable.
 
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.
@@ -430,8 +431,7 @@ Notation inf_lbound := ge_inf (only parsing).
 (* -------------------------------------------------------------------- *)
 Section FloorTheory.
 Variable R : realType.
-
-Implicit Types x y : R.
+Implicit Types (x y : R) (i : int).
 
 Lemma has_sup_floor_set x : has_sup (floor_set x).
 Proof.
@@ -469,7 +469,7 @@ Lemma RfloorE x : Rfloor x = (Num.floor x)%:~R.
 Proof. by []. Qed.
 
 Lemma mem_rg1_floor x : (range1 (Num.floor x)%:~R) x.
-Proof. by rewrite /range1 /mkset intrD1 floor_le_tmp floorD1_gt. Qed.
+Proof. by rewrite /range1 /mkset -intrD1 floor_le_tmp floorD1_gt. Qed.
 
 Lemma mem_rg1_Rfloor x : (range1 (Rfloor x)) x.
 Proof. exact: mem_rg1_floor. Qed.
@@ -480,27 +480,26 @@ Proof. by case/andP: (mem_rg1_Rfloor x). Qed.
 Lemma lt_succ_Rfloor x : x < Rfloor x + 1.
 Proof. by case/andP: (mem_rg1_Rfloor x). Qed.
 
-Lemma range1z_inj x (m1 m2 : int) :
-  (range1 m1%:~R) x -> (range1 m2%:~R) x -> m1 = m2.
+Lemma range1z_inj x i1 i2 : (range1 i1%:~R) x -> (range1 i2%:~R) x -> i1 = i2.
 Proof.
-move=> /andP[m1x x_m1] /andP[m2x x_m2].
-wlog suffices: m1 m2 m1x {x_m1 m2x} x_m2 / (m1 <= m2).
+move=> /andP[i1x x_i1] /andP[i2x x_i2].
+wlog suffices: i1 i2 i1x {x_i1 i2x} x_i2 / (i1 <= i2).
   by move=> ih; apply/eqP; rewrite eq_le !ih.
 rewrite -(lerD2r 1) lezD1 -(@ltr_int R) intrD.
-exact/(le_lt_trans m1x).
+exact/(le_lt_trans i1x).
 Qed.
 
 Lemma range1rr x : (range1 x) x.
 Proof. by rewrite /range1/mkset lexx /= ltrDl ltr01. Qed.
 
-Lemma range1zP (m : int) x : Rfloor x = m%:~R <-> (range1 m%:~R) x.
+Lemma range1zP i x : Rfloor x = i%:~R <-> (range1 i%:~R) x.
 Proof.
 split=> [<-|h]; first exact/mem_rg1_Rfloor.
-by congr intmul; apply/floor_def; rewrite -intrD1.
+by congr intmul; apply/floor_def; rewrite intrD1.
 Qed.
 
-Lemma Rfloor_natz (z : int) : Rfloor z%:~R = z%:~R :> R.
-Proof. by apply/range1zP/range1rr. Qed.
+Lemma Rfloor_natz i : Rfloor i%:~R = i%:~R :> R.
+Proof. exact/range1zP/range1rr. Qed.
 
 Lemma Rfloor0 : Rfloor 0 = 0 :> R. Proof. by rewrite /Rfloor floor0. Qed.
 
@@ -509,10 +508,10 @@ Lemma Rfloor1 : Rfloor 1 = 1 :> R. Proof. by rewrite /Rfloor floor1. Qed.
 Lemma le_Rfloor : {homo (@Rfloor R) : x y / x <= y}.
 Proof. by move=> x y /Num.Theory.le_floor; rewrite ler_int. Qed.
 
-Lemma Rfloor_ge_int x (n : int) : (n%:~R <= x)= (n%:~R <= Rfloor x).
+Lemma Rfloor_ge_int x (i : int) : (i%:~R <= x)= (i%:~R <= Rfloor x).
 Proof. by rewrite ler_int floor_ge_int_tmp. Qed.
 
-Lemma Rfloor_lt_int x (z : int) : (x < z%:~R) = (Rfloor x < z%:~R).
+Lemma Rfloor_lt_int x (i : int) : (x < i%:~R) = (Rfloor x < i%:~R).
 Proof. by rewrite ltr_int -floor_lt_int. Qed.
 
 Lemma Rfloor_le0 x : x <= 0 -> Rfloor x <= 0.
@@ -521,7 +520,7 @@ Proof. by move=> ?; rewrite -Rfloor0 le_Rfloor. Qed.
 Lemma Rfloor_lt0 x : x < 0 -> Rfloor x < 0.
 Proof. by move=> x0; rewrite (le_lt_trans _ x0) // Rfloor_le. Qed.
 
-Lemma ltr_add_invr (y x : R) : y < x -> exists k, y + k.+1%:R^-1 < x.
+Lemma ltr_add_invr y x : y < x -> exists k, y + k.+1%:R^-1 < x.
 Proof.
 move=> yx; exists (Num.truncn (x - y)^-1).
 by rewrite -ltrBrDl invf_plt 1?posrE 1?subr_gt0// truncnS_gt.
@@ -551,10 +550,6 @@ Proof. by move=> x0; rewrite /Rceil ler0z -(ceil0 R) le_ceil_tmp. Qed.
 
 Lemma RceilE x : Rceil x = (Num.ceil x)%:~R.
 Proof. by []. Qed.
-
-#[deprecated(since="mathcomp-analysis 1.3.0", note="use `Num.Theory.ceil_le` instead")]
-Lemma le_ceil : {homo @Num.ceil R : x y / x <= y}.
-Proof. exact: le_ceil_tmp. Qed.
 
 End CeilTheory.
 

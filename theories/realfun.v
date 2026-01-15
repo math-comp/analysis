@@ -2,6 +2,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
 From mathcomp Require Import archimedean interval.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality contra ereal reals interval_inference.
 From mathcomp Require Import topology prodnormedzmodule tvs normedtype derive.
@@ -1092,8 +1094,6 @@ move=> supfal inffal; apply/cvg_at_leftNP/lime_sup_inf_at_right.
 Qed.
 
 End lime_sup_inf.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="use `limf_esup_ge0` instead")]
-Notation lime_sup_ge0 := __deprecated__lime_sup_ge0 (only parsing).
 
 Section derivable_oo_LRcontinuous.
 Context {R : numFieldType} {V : normedModType R}.
