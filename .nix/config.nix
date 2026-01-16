@@ -7,6 +7,7 @@ let
     mathcomp-reals-stdlib.job = true;
     mathcomp-analysis-stdlib.job = true;
     ssprove.override.version = "main";
+    mathcomp-infotheo.override.version = "master";
   };
 in {
   ## DO NOT CHANGE THIS
@@ -55,6 +56,7 @@ in {
   bundles."8.20-2.4.0".coqPackages = common-bundle // {
     coq.override.version = "8.20";
     mathcomp.override.version = "2.4.0";
+    mathcomp-infotheo.job = false;
   };
 
   bundles."9.0" = {
@@ -94,6 +96,7 @@ in {
       mathcomp-bigenough.override.version = "master";
       mathcomp-finmap.override.version = "master";
       ssprove.job = false;
+      mathcomp-infotheo.job = false;
     };
   };
 
