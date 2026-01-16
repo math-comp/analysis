@@ -20,6 +20,8 @@
 - in probability.v
   + lemma `pmf_ge0`
   + lemmas `pmf_gt0_countable`, `pmf_measurable`
+- in set_interval.v
+  + definitions `itv_is_closed_unbounded`, `itv_is_cc`, `itv_closed_ends`
 
 ### Changed
 - in set_interval.v
@@ -135,6 +137,8 @@
     * definition `pmf`
     * lemmas `pmf_ge0`, `pmf_gt0_countable`, `pmf_measurable`, `dRV_expectation`,
       `expectation_pmf`
+- in set_interval.v
+  + `itv_is_open_unbounded`, `itv_is_oo`, `itv_open_ends` (Prop to bool)
 
 ### Renamed
 - in `set_interval.v`:
@@ -162,6 +166,9 @@
   + `weak_sep_nbhsE` -> `initial_sep_nbhsE`
   + `weak_sep_openE` -> `initial_sep_openE`
   + `join_product_weak` -> `join_product_initial`
+- in set_interval.v
+  + `itv_is_ray` -> `itv_is_open_unbounded`,
+  + `itv_is_bd_open` -> `itv_is_oo`,
 
 ### Generalized
 
