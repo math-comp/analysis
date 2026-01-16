@@ -496,7 +496,7 @@ apply/seteqP; split=> A.
   + case=> M [Mreal MA].
     exists `]-oo, M%:E[ => [|y/=]; rewrite in_itv/= ?ltNyr; last exact: MA.
     by split => //; left.
-- move=> [[ [[]/= r|[]] [[]/= s|[]] ]] [] /orP []// _.
+- move=> [[ [[]/= r|[]] [[]/= s|[]] ]][]// _.
   + move=> /[dup]/ltgte_fin_num/fineK <-; rewrite in_itv/=.
     move=> /andP[rx sx] rsA; apply: (nbhs_interval rx sx) => z rz zs.
     by apply: rsA =>/=; rewrite in_itv/= rz.

@@ -90,7 +90,7 @@ rewrite eqEsubset; split => U.
     by rewrite in_itv/= -lter_distl subrr normr0.
   apply: subset_trans xeU => z /=.
   by rewrite in_itv /= -lter_distl distrC.
-case => [][[[]l|[]]] [[]r|[]] [] /orP[]//= _.
+case => [][[[]l|[]]] [[]r|[]] []//= _.
 - move=> xlr lrU; exists (Order.min (x - l) (r - x)).
     by rewrite /= lt_min ?lterBDr ?add0r ?(itvP xlr).
   apply/(subset_trans _ lrU)/subset_ball_prop_in_itv.

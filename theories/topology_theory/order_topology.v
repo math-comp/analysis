@@ -95,7 +95,7 @@ Hint Resolve itv_open : core.
 
 Lemma itv_open_ends_open (i : interval T) : itv_open_ends i -> open [set` i].
 Proof.
-case: i; rewrite /itv_open_ends => [[[]t1|[]]] [[]t2|[]] /orP[]? => //.
+case: i; rewrite /itv_open_ends => [[[]t1|[]]] [[]t2|[]]// ?.
 by rewrite set_itvE; exact: openT.
 Qed.
 
@@ -225,7 +225,7 @@ pose j := \big[Order.meet/`]-oo, +oo[]_(i <- F) i.
 exists j; first split.
 - rewrite /j (@eq_fbig_cond _ _ _ _ _ F _ (mem F) _ id)//.
   + apply: (big_ind itv_open_ends) => //=; first exact: itv_open_endsI.
-    by rewrite /itv_open_ends;  move=> i /rayF /set_mem ->.
+    by rewrite /itv_open_ends; move=> i /rayF /set_mem ->.
   + by move=> p /=; rewrite !inE/=; exact: andb_id2l.
 - pose f (i : interval T) : Prop := x \in i; suff : f j by [].
   rewrite /j (@eq_fbig_cond _ _ _ _ _ F _ (mem F) _ id)//=.

@@ -868,8 +868,8 @@ End closed_endpoints.
 Lemma itv_open_endsI {d} {T : orderType d} (i j : interval T) :
   itv_open_ends i -> itv_open_ends j -> itv_open_ends (i `&` j)%O.
 Proof.
-move: i => [][[]a|[]] [[]b|[]] /orP []//= _;
-move: j => [][[]x|[]] [[]y|[]] /orP []//= _;
+move: i => [][[]a|[]] [[]b|[]]//=;
+move: j => [][[]x|[]] [[]y|[]]//=;
 by rewrite /itv_open_ends/= ?orbF ?andbT -?negb_or ?le_total//=;
   try ((by left)||(by right)).
 Qed.
