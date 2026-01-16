@@ -707,7 +707,7 @@ Lemma setDE A B : A `\` B = A `&` ~` B. Proof. by []. Qed.
 Lemma setUDl A B C : (A `\` B) `|` C = (A `|` C) `\` (B `\` C).
 Proof.
 apply/seteqP; split => x /=; first tauto.
-by move=> [[a|c]]; rewrite not_andE notE; tauto.
+#[warnings="-deprecated-syntactic-definition"] by move=> [[a|c]]; rewrite not_andE notE; tauto.
 Qed.
 
 Lemma setUDr A B C : A `|` (B `\` C) = (A `|` B) `\` (C `\` A).
