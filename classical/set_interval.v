@@ -12,22 +12,28 @@ From mathcomp Require Import functions.
 (* This files contains lemmas about sets and intervals.                       *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*              neitv i == the interval i is non-empty                        *)
-(*                         when the support type is a numFieldType, this      *)
-(*                         is equivalent to (i.1 < i.2)%O (lemma neitvE)      *)
-(*   set_itv_infty_set0 == multirule to simplify empty intervals              *)
-(*      line_path a b t := (1 - t) * a + t * b, convexity operator over a     *)
-(*                         numDomainType                                      *)
-(*          ndline_path == line_path a b with the constraint that a < b       *)
-(*         factor a b x := (x - a) / (b - a)                                  *)
-(*             set_itvE == multirule to turn intervals into inequalities      *)
-(*     disjoint_itv i j == intervals i and j are disjoint                     *)
-(*         itv_is_ray i == i is either `]x, +oo[ or `]-oo, x[                 *)
-(*     itv_is_bd_open i == i is `]x, y[                                       *)
-(*      itv_open_ends i == i has open endpoints, i.e., it is one of the two   *)
-(*                         above                                              *)
-(*        is_open_itv A == the set A can be written as an open interval       *)
-(*     open_itv_cover A == the set A can be covered by open intervals         *)
+(*                   neitv i == the interval i is non-empty                   *)
+(*                              when the support type is a numFieldType, this *)
+(*                              is equivalent to (i.1 < i.2)%O (lemma neitvE) *)
+(*        set_itv_infty_set0 == multirule to simplify empty intervals         *)
+(*           line_path a b t := (1 - t) * a + t * b, convexity operator over  *)
+(*                              a numDomainType                               *)
+(*               ndline_path == line_path a b with the constraint that a < b  *)
+(*              factor a b x := (x - a) / (b - a)                             *)
+(*                  set_itvE == multirule to turn intervals into inequalities *)
+(*          disjoint_itv i j == intervals i and j are disjoint                *)
+(*   itv_is_open_unbounded i == i is either `]x, +oo[, `]-oo, x[ or           *)
+(*                              `]-oo, +oo[                                   *)
+(*               itv_is_oo i == i is `]x, y[                                  *)
+(*           itv_open_ends i == i has open endpoints, i.e., it is one of the  *)
+(*                              two above                                     *)
+(* itv_is_closed_unbounded i == i is either `[x, +oo[, `]-oo, x] or           *)
+(*                              `]-oo, +oo[                                   *)
+(*               itv_is_cc i == i is `[x, y]                                  *)
+(*         itv_closed_ends i == i has closed endpoints, i.e., it is one of    *)
+(*                              the two above                                 *)
+(*             is_open_itv A == the set A can be written as an open interval  *)
+(*          open_itv_cover A == the set A can be covered by open intervals    *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -806,22 +812,17 @@ Definition is_open_itv (A : set T) := exists ab, A = `]ab.1, ab.2[%classic.
 Definition open_itv_cover (A : set T) := [set F : nat -> set T |
   (forall i, is_open_itv (F i)) /\ A `<=` \bigcup_k (F k)].
 
-Definition itv_is_ray (i : interval T) : Prop :=
+Definition itv_is_open_unbounded (i : interval T) : bool :=
   match i with
-  | Interval -oo%O (BLeft _) => True
-  | Interval (BRight _) +oo%O => True
-  | Interval -oo%O +oo%O => True
-  | _ => False
+  | `]-oo, _[ | `]_, +oo[ | `]-oo, +oo[ => true
+  | _ => false
   end.
 
-Definition itv_is_bd_open (i : interval T) : Prop :=
-  match i with
-  | Interval (BRight _) (BLeft _) => True
-  | _ => False
-  end.
+Definition itv_is_oo (i : interval T) : bool :=
+  if i is `]_, _[ then true else false.
 
-Definition itv_open_ends (i : interval T) : Prop :=
-  itv_is_ray i \/ itv_is_bd_open i.
+Definition itv_open_ends (i : interval T) : bool :=
+  (itv_is_open_unbounded i) || (itv_is_oo i).
 
 Lemma itv_open_ends_rside l b (t : T) :
   itv_open_ends (Interval l (BSide b t)) -> b = true.
@@ -840,17 +841,35 @@ Lemma itv_open_ends_linfty l b :
 Proof. by case: b => //; move: l => [[]?|[]] // []. Qed.
 
 Lemma is_open_itv_itv_is_bd_openP (i : interval T) :
-  itv_is_bd_open i -> is_open_itv [set` i].
+  itv_is_oo i -> is_open_itv [set` i].
 Proof.
 by case: i=> [] [[]l|[]] // [[]r|[]] // ?; exists (l,r).
 Qed.
 
 End open_endpoints.
 
+Section closed_endpoints.
+Context {d} {T : porderType d}.
+
+Definition itv_is_closed_unbounded (i : interval T) : bool :=
+  match i with
+  | `[_, +oo[ | `]-oo, _[ | `]-oo, +oo[ => true
+  | _ => false
+  end.
+
+Definition itv_is_cc (i : interval T) : bool :=
+  if i is `[_, _] then true else false.
+
+Definition itv_closed_ends (i : interval T) : bool :=
+  (itv_is_closed_unbounded i) || (itv_is_cc i).
+
+End closed_endpoints.
+
 Lemma itv_open_endsI {d} {T : orderType d} (i j : interval T) :
   itv_open_ends i -> itv_open_ends j -> itv_open_ends (i `&` j)%O.
 Proof.
-move: i => [][[]a|[]] [[]b|[]] []//= _; move: j => [][[]x|[]] [[]y|[]] []//= _;
+move: i => [][[]a|[]] [[]b|[]] /orP []//= _;
+move: j => [][[]x|[]] [[]y|[]] /orP []//= _;
 by rewrite /itv_open_ends/= ?orbF ?andbT -?negb_or ?le_total//=;
   try ((by left)||(by right)).
 Qed.

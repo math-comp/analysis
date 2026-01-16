@@ -30,9 +30,9 @@ Proof.
 rewrite nbhs_principalE eqEsubset; split=> U; first last.
   by case => V [_ Vb] VU; apply/principal_filterP/VU; apply: Vb.
 move/principal_filterP; case: b.
-  move=> Ut; exists `]false, +oo[; first split => //; first by left.
+  move=> Ut; exists `]false, +oo[; first split => //.
   by move=> r /=; rewrite in_itv /=; case: r.
-move=> Ut; exists `]-oo, true[; first split => //; first by left.
+move=> Ut; exists `]-oo, true[; first split => //.
 by move=> r /=; rewrite in_itv /=; case: r.
 Qed.
 

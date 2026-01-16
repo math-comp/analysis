@@ -203,7 +203,7 @@ Let WeakU : topologicalType := @weak_topology (sub_type Y) X val.
 Lemma open_order_weak (U : set Y) : @open OrdU U -> @open WeakU U.
 Proof.
 rewrite ?openE /= /interior => + x Ux => /(_ x Ux); rewrite itv_nbhsE /=.
-move=> [][][[]l|[]] [[]r|[]][][]//= _ xlr /filterS; apply.
+move=> [][][[]l|[]] [[]r|[]][]/orP[]//= _ xlr /filterS; apply.
 - exists `]l, r[%classic; split => //=; exists `]\val l, \val r[%classic.
     exact: itv_open.
   by rewrite eqEsubset; split => z; rewrite preimage_itv.

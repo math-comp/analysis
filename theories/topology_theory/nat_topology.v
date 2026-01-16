@@ -27,9 +27,9 @@ Proof.
 rewrite nbhs_principalE eqEsubset; split=> U; first last.
   by case => V [_ Vb] VU; apply/principal_filterP/VU; apply: Vb.
 move/principal_filterP; case: n.
-  move=> U0; exists `]-oo, 1[; first split => //; first by left.
+  move=> U0; exists `]-oo, 1[; first split => //.
   by move=> r /=; rewrite in_itv /=; case: r.
-move=> n USn; exists `]n, n.+2[; first split => //; first by right.
+move=> n USn; exists `]n, n.+2[; first split => //.
   by rewrite in_itv; apply/andP;split => //=; rewrite /Order.lt //=.
 move=> r /=; rewrite in_itv /= => nr2; suff: r = n.+1 by move=> ->.
 exact/esym/le_anti.
