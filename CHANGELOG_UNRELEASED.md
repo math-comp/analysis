@@ -167,8 +167,8 @@
   + `weak_sep_openE` -> `initial_sep_openE`
   + `join_product_weak` -> `join_product_initial`
 - in set_interval.v
-  + `itv_is_ray` -> `itv_is_open_unbounded`,
-  + `itv_is_bd_open` -> `itv_is_oo`,
+  + `itv_is_ray` -> `itv_is_open_unbounded`
+  + `itv_is_bd_open` -> `itv_is_oo`
 
 ### Generalized
 
