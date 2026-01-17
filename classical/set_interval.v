@@ -811,7 +811,7 @@ Implicit Types (i : interval T).
 Definition is_open_itv (A : set T) := exists ab, A = `]ab.1, ab.2[%classic.
 
 Definition open_itv_cover (A : set T) := [set F : nat -> set T |
-  (forall i : nat , is_open_itv (F i)) /\ A `<=` \bigcup_k (F k)].
+  (forall k, is_open_itv (F k)) /\ A `<=` \bigcup_k (F k)].
 
 Definition itv_is_open_unbounded i : bool :=
   match i with
