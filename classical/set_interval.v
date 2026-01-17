@@ -806,23 +806,22 @@ End disjoint_itv_numDomain.
 
 Section open_endpoints.
 Context {d} {T : porderType d}.
+Implicit Types (i : interval T).
 
 Definition is_open_itv (A : set T) := exists ab, A = `]ab.1, ab.2[%classic.
 
 Definition open_itv_cover (A : set T) := [set F : nat -> set T |
-  (forall i, is_open_itv (F i)) /\ A `<=` \bigcup_k (F k)].
+  (forall i : nat , is_open_itv (F i)) /\ A `<=` \bigcup_k (F k)].
 
-Definition itv_is_open_unbounded (i : interval T) : bool :=
+Definition itv_is_open_unbounded i : bool :=
   match i with
   | `]-oo, _[ | `]_, +oo[ | `]-oo, +oo[ => true
   | _ => false
   end.
 
-Definition itv_is_oo (i : interval T) : bool :=
-  if i is `]_, _[ then true else false.
+Definition itv_is_oo i : bool := if i is `]_, _[ then true else false.
 
-Definition itv_open_ends (i : interval T) : bool :=
-  (itv_is_open_unbounded i) || (itv_is_oo i).
+Definition itv_open_ends i : bool := itv_is_open_unbounded i || itv_is_oo i.
 
 Lemma itv_open_ends_rside l b (t : T) :
   itv_open_ends (Interval l (BSide b t)) -> b = true.
@@ -840,38 +839,33 @@ Lemma itv_open_ends_linfty l b :
   itv_open_ends (Interval (BInfty T b) l) -> b = true.
 Proof. by case: b => //; move: l => [[]?|[]] // []. Qed.
 
-Lemma is_open_itv_itv_is_bd_openP (i : interval T) :
-  itv_is_oo i -> is_open_itv [set` i].
-Proof.
-by case: i=> [] [[]l|[]] // [[]r|[]] // ?; exists (l,r).
-Qed.
+Lemma is_open_itv_itv_is_bd_openP i : itv_is_oo i -> is_open_itv [set` i].
+Proof. by case: i=> [] [[]l|[]] // [[]r|[]] // ?; exists (l,r). Qed.
 
 End open_endpoints.
 
 Section closed_endpoints.
 Context {d} {T : porderType d}.
+Implicit Types (i : interval T).
 
-Definition itv_is_closed_unbounded (i : interval T) : bool :=
+Definition itv_is_closed_unbounded i : bool :=
   match i with
   | `[_, +oo[ | `]-oo, _[ | `]-oo, +oo[ => true
   | _ => false
   end.
 
-Definition itv_is_cc (i : interval T) : bool :=
-  if i is `[_, _] then true else false.
+Definition itv_is_cc i : bool := if i is `[_, _] then true else false.
 
-Definition itv_closed_ends (i : interval T) : bool :=
-  (itv_is_closed_unbounded i) || (itv_is_cc i).
+Definition itv_closed_ends i : bool := itv_is_closed_unbounded i || itv_is_cc i.
 
 End closed_endpoints.
 
+Arguments itv_open_ends {d T} !i /.
 Lemma itv_open_endsI {d} {T : orderType d} (i j : interval T) :
   itv_open_ends i -> itv_open_ends j -> itv_open_ends (i `&` j)%O.
 Proof.
-move: i => [][[]a|[]] [[]b|[]]//=;
-move: j => [][[]x|[]] [[]y|[]]//=;
-by rewrite /itv_open_ends/= ?orbF ?andbT -?negb_or ?le_total//=;
-  try ((by left)||(by right)).
+by move: i => [][[]a|[]] [[]b|[]]//=; move: j => [][[]x|[]] [[]y|[]]//=;
+   rewrite /itv_open_ends/= ?orbF ?andbT -?negb_or ?le_total//=.
 Qed.
 
 Lemma itv_setU {d} {T : orderType d} (i j : interval T) :
