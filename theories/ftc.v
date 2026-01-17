@@ -1097,7 +1097,7 @@ rewrite (@integration_by_partsy_ge0_ge0 R (- F)%R G (- f)%R g a (- FGoo)).
   rewrite -EFinN opprD 2!opprK mulNr.
   by under eq_integral do rewrite mulNr EFinN.
 - by move=> ?; apply: cvgN; exact: cf.
-- exact: derivable_oy_continuous_bndN.
+- exact: derivable_oy_RcontinuousN.
 - by move=> ? ?; rewrite fctE derive1N ?Ff => [//|//|]; apply: Foy.1.
 - by [].
 - by [].
@@ -1119,7 +1119,7 @@ rewrite (@integration_by_partsy_le0_ge0 R (- F)%R G (- f)%R g a (- FGoo)).
   rewrite -EFinN opprD 2!opprK mulNr oppeK.
   by under eq_integral do rewrite mulNr EFinN.
 - by move=> ?; apply: cvgN; exact: cf.
-- exact: derivable_oy_continuous_bndN.
+- exact: derivable_oy_RcontinuousN.
 - by move=> ? ?; rewrite fctE derive1N ?Ff//; move: Foy => [+ _]; apply.
 - by [].
 - by [].
