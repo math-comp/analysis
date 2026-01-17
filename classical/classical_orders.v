@@ -329,7 +329,7 @@ Lemma big_lexi_order_interval_prefix (i : interval (big_lexi_order K))
   itv_open_ends i -> x \in i ->
   exists n, same_prefix n x `<=` [set` i].
 Proof.
-move: i; case=> [][[]l|[]] [[]r|[]] [][]; rewrite ?in_itv /= ?andbT.
+move: i; case=> [][[]l|[]] [[]r|[]]// ?; rewrite ?in_itv /= ?andbT.
 - move=> /andP[lx xr].
   case E1 : (first_diff l x) => [m|]; first last.
     by move: lx; move/first_diff_NoneP : E1 ->; rewrite bnd_simp.

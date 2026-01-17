@@ -95,7 +95,7 @@ Hint Resolve itv_open : core.
 
 Lemma itv_open_ends_open (i : interval T) : itv_open_ends i -> open [set` i].
 Proof.
-case: i; rewrite /itv_open_ends => [[[]t1|[]]] [[]t2|[]] []? => //.
+case: i; rewrite /itv_open_ends => [[[]t1|[]]] [[]t2|[]]// ?.
 by rewrite set_itvE; exact: openT.
 Qed.
 
@@ -202,19 +202,19 @@ HB.instance Definition _ := isPointed.Build (interval T) (`]-oo,+oo[).
 
 HB.instance Definition _ := Order.Total.on oT.
 HB.instance Definition _ := @isSubBaseTopological.Build oT
-  (interval T) (itv_is_ray) (fun i => [set` i]).
+  (interval T) (itv_is_open_unbounded) (fun i => [set` i]).
 
 Lemma order_nbhs_itv (x : oT) : nbhs x = filter_from
     (fun i => itv_open_ends i /\ x \in i)
     (fun i => [set` i]).
 Proof.
 rewrite eqEsubset; split => U; first last.
-  case=> /= i [ro xi /filterS]; apply; move: ro => [rayi|].
+  case=> /= i [ro xi /filterS]; apply; move: ro => /orP [rayi|].
     exists [set` i]; split => //=.
     exists [set [set` i]]; last by rewrite bigcup_set1.
     move=> A ->; exists (fset1 i); last by rewrite set_fset1 bigcap_set1.
     by move=> ?; rewrite !inE => /eqP ->.
-  case: i xi => [][[]l|[]] [[]r|[]] xlr []//=; exists `]l, r[%classic.
+  case: i xi => [][[]l|[]] [[]r|[]] xlr//= ?; exists `]l, r[%classic.
   split => //; exists [set `]l, r[%classic]; last by rewrite bigcup_set1.
   move=> ? ->; exists [fset `]-oo, r[ ; `]l, +oo[]%fset.
     by move=> ?; rewrite !inE => /orP[] /eqP ->.
@@ -224,8 +224,8 @@ case=> ? [[ I Irp] <-] [?] /[dup] /(Irp _) [F rayF <-] IF Fix IU.
 pose j := \big[Order.meet/`]-oo, +oo[]_(i <- F) i.
 exists j; first split.
 - rewrite /j (@eq_fbig_cond _ _ _ _ _ F _ (mem F) _ id)//.
-  + apply: big_ind; [by left| exact: itv_open_endsI|].
-    by move=> i /rayF /set_mem ?; left.
+  + apply: (big_ind itv_open_ends) => //=; first exact: itv_open_endsI.
+    by rewrite /itv_open_ends; move=> i /rayF /set_mem ->.
   + by move=> p /=; rewrite !inE/=; exact: andb_id2l.
 - pose f (i : interval T) : Prop := x \in i; suff : f j by [].
   rewrite /j (@eq_fbig_cond _ _ _ _ _ F _ (mem F) _ id)//=.
