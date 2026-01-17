@@ -92,7 +92,7 @@
            `derivable_Nyo_continuousW`
 
 - in `realfun.v`:
-  + lemma `derivable_oy_continuous_bndN`
+  + lemma `derivable_oy_RcontinuousN`
 
 - in `ftc.v`:
   + lemmas `integration_by_partsy_ge0_ge0`,
