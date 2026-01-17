@@ -860,7 +860,6 @@ Definition itv_closed_ends i : bool := itv_is_closed_unbounded i || itv_is_cc i.
 
 End closed_endpoints.
 
-Arguments itv_open_ends {d T} !i /.
 Lemma itv_open_endsI {d} {T : orderType d} (i j : interval T) :
   itv_open_ends i -> itv_open_ends j -> itv_open_ends (i `&` j)%O.
 Proof.
