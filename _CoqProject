@@ -133,6 +133,8 @@ theories/gauss_integral.v
 
 theories/all_analysis.v
 
+theories/cpo.v
+
 theories/showcase/summability.v
 theories/showcase/pnt.v
 
