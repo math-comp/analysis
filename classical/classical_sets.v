@@ -422,6 +422,11 @@ Lemma nat_nonempty : [set: nat] !=set0. Proof. by exists 1%N. Qed.
 
 #[global] Hint Resolve nat_nonempty : core.
 
+Lemma in_set1_eq {T : eqType} (a : T) (x : T) : x \in [set a] = (x == a).
+Proof.
+by apply/(sameP _ idP)/(equivP idP); rewrite inE eq_opE.
+Qed.
+
 Lemma itv_sub_in2 d (T : porderType d) (P : T -> T -> Prop) (i j : interval T) :
   [set` j] `<=` [set` i] ->
   {in i &, forall x y, P x y} -> {in j &, forall x y, P x y}.

@@ -1072,6 +1072,80 @@ Qed.
 
 End distribution_dRV.
 
+Definition pmf d (T : measurableType d) (R : realType) (P : probability T R)
+  (X : {RV P >-> R}) (r : R) : R := fine (P (X @^-1` [set r])).
+
+Section pmf_measurable.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType)
+  (P : probability T R) (X : {RV P >-> R}).
+
+Lemma pmf_positive_countable : countable [set r | (0 < pmf X r)%R].
+Proof.
+have ->: [set r | 0 < (pmf X r)%:E] =
+  \bigcup_n [set r | (n.+1%:R^-1 < pmf X r)%R].
+  rewrite seteqP; split => [r /ltr_add_invr [l] | r [k] _]; last exact: lt_trans.
+  by rewrite add0r => lpmf; exists l.
+apply: bigcup_countable => // n _.
+apply: finite_set_countable; apply: contrapT => /infiniteP/pcard_leP/injfunPex.
+case=> q q_fun q_inj /=.
+have pre1 k : measurable (X @^-1` [set q k]).
+  by apply: measurable_funPTI; exact: measurable_set1.
+rewrite -falseE -(ltxx (1:R)%:E).
+apply: (@lt_le_trans _ _ (P (\bigcup_k X @^-1` [set q k])));
+  last by apply/probability_le1/bigcup_measurable => k _.
+have <-: \big[+%R/0%R]_(0 <= k <oo | k \in setT) P (X @^-1` [set q k]) =
+  P (\bigcup_k X @^-1` [set q k]).
+  apply/esym/measure_bigcup => //=.
+  move: (trivIset_comp (fun r => X @^-1` [set r]) q_inj); rewrite /comp => ->.
+  exact: trivIset_preimage1.
+apply: (@lt_le_trans _ _
+  (\sum_(0 <= k < n.+1 | k \in setT) P (X @^-1` [set q k])));
+  last exact: nneseries_lim_ge.
+rewrite (eq_bigl xpredT) => [| ?]; last by rewrite in_setT.
+under eq_bigr => k _ do
+  rewrite -(@fineK _ (P _)) ?fin_num_measure// -/(pmf X (q k)).
+have ->: 1%R = (\sum_(0 <= k < n.+1) n.+1%:R^-1:R)%R
+  by rewrite sumr_const_nat subn0 -(mulr_natr _^-1) mulVf.
+by rewrite !sumEFin lte_fin; apply: ltr_sum => // k _; exact: q_fun.
+Qed.
+
+Lemma pmf_measurable : measurable_fun setT (pmf X).
+Proof.
+have : countable [set r | (0 < pmf X r)%R] by exact pmf_positive_countable.
+case/countable_bijP => S.
+rewrite card_eq_sym; case/pcard_eqP/bijPex => /= h h_bij.
+apply/measurable_EFinP.
+pose sfun r :=
+  \big[+%R/0%R]_(0 <= k <oo | in_set S k) (pmf X (h k) * \1_[set h k] r)%:E.
+have pmf_ge0 s : 0 <= (pmf X s)%:E by rewrite fineK ?fin_num_measure.
+have pmf1_ge0 k s : 0%R <= (pmf X (h k) * \1_[set h k] s)%:E.
+  by rewrite EFinM; apply: mule_ge0.
+apply: (eq_measurable_fun sfun) => [r _|].
+  case: (pselect ([set h k | k in S] r)) => [rS | nrS].
+  - pose kr := (pinv S h r).
+    have neqh k : in_set S k && (k != kr) -> r != h k.
+      move/andP=>[Sk]; apply: contra_neq.
+      by rewrite /kr => ->; rewrite pinvKV//; exact: (set_bij_inj h_bij).
+    rewrite /sfun (@nneseriesD1 _ _ kr)//; last by rewrite in_setE; apply: invS.
+      rewrite eseries0 => [| k k_ge0 /(neqh _)/negPf].
+        by rewrite indicE in_set1_eq pinvK ?in_setE// eq_refl mulr1 addr0.
+      by rewrite indicE in_set1_eq => ->; rewrite mulr0.
+  - rewrite /sfun eseries0 => [|k k_ge0 Sk]/=.
+      apply: le_anti; rewrite pmf_ge0 lee_fin leNgt.
+      apply/negP/contra_not/nrS.
+      by rewrite (surj_image_eq _ (set_bij_surj h_bij))//; exact: set_bij_sub.
+    rewrite indicE in_set1_eq.
+    have ->: (r == h k) = false; rewrite ?mulr0// -eq_opE eqbF_neg; apply/negP.
+    apply/contra_not/nrS; rewrite eq_opE => ->.
+    by exists k; rewrite -?(in_setE S k).
+apply: ge0_emeasurable_sum => //= k _.
+apply/measurable_EFinP/measurable_funM;
+  [exact: measurable_cst | exact/measurable_indicP].
+Qed.
+
+End pmf_measurable.
+
 Section discrete_distribution.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
@@ -1122,11 +1196,10 @@ apply: eq_eseriesr => k _; case: ifPn => kX.
 by rewrite integral_set0 mule0 /enum_prob patchE (negbTE kX) mul0e.
 Qed.
 
-Definition pmf (X : {RV P >-> R}) (r : R) : R := fine (P (X @^-1` [set r])).
-
 Lemma expectation_pmf (X : {dRV P >-> R}) :
-    P.-integrable [set: T] (EFin \o X) -> 'E_P[X] =
-  \sum_(n <oo | n \in dRV_dom X) (pmf X (dRV_enum X n))%:E * (dRV_enum X n)%:E.
+  P.-integrable [set: T] (EFin \o X) ->
+  'E_P[X] = \sum_(n <oo | n \in dRV_dom X)
+              (pmf(P:=P) X (dRV_enum X n))%:E * (dRV_enum X n)%:E.
 Proof.
 move=> iX; rewrite dRV_expectation// [in RHS]eseries_mkcond.
 apply: eq_eseriesr => k _.
