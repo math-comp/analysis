@@ -93,16 +93,13 @@ Lemma cvg_sum (T : Type) (U : TopologicalNmodule.type) (F : set_system T)
   \sum_(i <- r | P i) Ff i x @[x --> F] --> \sum_(i <- r| P i) Fa i.
 Proof. by move=> FF Ffa; apply: cvg_big => //; apply: add_continuous. Qed.
 
-Lemma sum_continuous (T : topologicalType) (M : TopologicalNmodule.type) 
+Lemma sum_continuous (T : topologicalType) (M : TopologicalNmodule.type)
   (I : Type) (r : seq I) (P : pred I) (F : I -> T -> M) :
   (forall i : I, P i -> continuous (F i)) ->
   continuous (fun x1 : T => \sum_(i <- r | P i) F i x1).
 Proof. by move=> FC0; apply: continuous_big => //; apply: add_continuous. Qed.
 
 End TopologicalNmodule_Theory.
-
-HB.structure Definition PreTopologicalZmodule :=
-  {M of Topological M & GRing.Zmodule M}.
 
 HB.mixin Record TopologicalNmodule_isTopologicalZmodule M
     & Topological M & GRing.Zmodule M := {
