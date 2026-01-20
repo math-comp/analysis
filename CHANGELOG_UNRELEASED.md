@@ -9,12 +9,18 @@
 - in `tvs.v`
   + lemmas `cvg_sum`, `sum_continuous`
 
+- in `unstable.v`:
+  + structure `Norm`
+  + lemmas `normMn`, `normN`, `ler_norm_sum`
+  + definitions `max_norm`, `max_space`
+  + lemmas `max_norm_ge0`, `le_coord_max_norm`, `max_norm0`, `ler_max_normD`,
+    `max_norm0_eq0`, `max_normZ`, `max_normMn`, `max_normN`
+
 - in `normed_module.v`:
   + structure `NormedVector`
-  + definitions `normedVectType`, `max_norm`, `max_space`
-  + lemmas `max_norm_ge0`, `le_coord_max_norm`, `ler_max_normD`, `max_norm0_eq0`,
-    `max_normZ`, `max_normMn`, `max_normN`, `sup_closed_ball_compact`,
-    `equivalence_norms`, `linear_findim_continuous`
+  + definition `normedVectType`
+  + lemmas `sup_closed_ball_compact`, `equivalence_norms`,
+    `linear_findim_continuous`
 
 ### Changed
 - in set_interval.v
