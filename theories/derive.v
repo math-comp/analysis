@@ -1427,7 +1427,7 @@ Lemma exp_derive1 {R : numFieldType} n x :
 Proof. by rewrite derive1E exp_derive [LHS]mulr1. Qed.
 
 Lemma compact_EVT_max (T : topologicalType) (R : realType) (f : T -> R)
-    (A : set T) : (* TODO : Filter not infered *)
+    (A : set T) :
   A !=set0 -> compact A -> {within A, continuous f} ->
   exists2 c, c \in A & forall t, t \in A -> f t <= f c.
 Proof.
@@ -1464,6 +1464,17 @@ rewrite -[ltRHS]invrK ltf_pV2//.
 by rewrite posrE invr_gt0 subr_gt0 imf_ltsup// inE.
 Qed.
 
+Lemma compact_EVT_min (T : topologicalType) (R : realType) (f : T -> R)
+    (A : set T) :
+  A !=set0 -> compact A -> {within A, continuous f} ->
+  exists2 c, c \in A & forall t, t \in A -> f c <= f t.
+Proof.
+move=> A0 cA cf.
+have /(compact_EVT_max A0 cA)[c cinA fcmin] : {within A, continuous (- f)}.
+  by move=> ?; apply: continuousN => ?; exact: cf.
+by exists c => // t tA; rewrite -lerN2 fcmin.
+Qed.
+
 Lemma EVT_max (R : realType) (f : R -> R) (a b : R) :
   a <= b -> {within `[a, b], continuous f} ->
   exists2 c, c \in `[a, b]%R & forall t, t \in `[a, b]%R -> f t <= f c.
@@ -1478,10 +1489,10 @@ Lemma EVT_min (R : realType) (f : R -> R) (a b : R) :
   a <= b -> {within `[a, b], continuous f} ->
   exists2 c, c \in `[a, b]%R & forall t, t \in `[a, b]%R -> f c <= f t.
 Proof.
-move=> leab fcont.
-have /(EVT_max leab) [c clr fcmax] : {within `[a, b], continuous (- f)}.
-  by move=> ?; apply: continuousN => ?; exact: fcont.
-by exists c => // ? /fcmax; rewrite lerN2.
+move=> ab cf.
+have ab0 : `[a, b] !=set0 by exists a => /=; rewrite in_itv/= lexx.
+have [/= c cab minf] := compact_EVT_min ab0 (@segment_compact _ a b) cf.
+by rewrite inE in cab; exists c => //= t tab; apply: minf; rewrite inE.
 Qed.
 
 Lemma EVT_max_rV (R : realType) n (f : 'rV[R]_n -> R) (A : set 'rV[R]_n) :
@@ -1492,12 +1503,7 @@ Proof. by move=> A0 cA cf; exact: compact_EVT_max. Qed.
 Lemma EVT_min_rV (R : realType) n (f : 'rV[R]_n -> R) (A : set 'rV[R]_n) :
   A !=set0 -> compact A -> {within A, continuous f} ->
   exists2 c, c \in A & forall t, t \in A -> f c <= f t.
-Proof.
-move=> A0 cA cf.
-have /(EVT_max_rV A0 cA) [c clr fcmax] : {within A, continuous (- f)}.
-  by move=> ?; apply: continuousN => ?; exact: cf.
-by exists c => // ? /fcmax; rewrite lerN2.
-Qed.
+Proof. by move=> A0 cA cf; exact: compact_EVT_min. Qed.
 
 Lemma cvg_at_rightE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
   cvg (f @ x^') -> lim (f @ x^') = lim (f @ at_right x).
