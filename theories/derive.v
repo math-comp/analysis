@@ -4,8 +4,8 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval poly.
 From mathcomp Require Import sesquilinear.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import reals interval_inference topology.
+From mathcomp Require Import mathcomp_extra boolp contra classical_sets.
+From mathcomp Require Import functions reals interval_inference topology.
 From mathcomp Require Import prodnormedzmodule tvs normedtype landau.
 
 (**md**************************************************************************)
@@ -1426,95 +1426,57 @@ Lemma exp_derive1 {R : numFieldType} n x :
   (@GRing.exp R ^~ n)^`() x = n%:R *: x ^+ n.-1.
 Proof. by rewrite derive1E exp_derive [LHS]mulr1. Qed.
 
-Lemma EVT_max (R : realType) (f : R -> R) (a b : R) : (* TODO : Filter not infered *)
-  a <= b -> {within `[a, b], continuous f} -> exists2 c, c \in `[a, b]%R &
-  forall t, t \in `[a, b]%R -> f t <= f c.
+Lemma compact_EVT_max (T : topologicalType) (R : realType) (f : T -> R)
+    (A : set T) : (* TODO : Filter not infered *)
+  A !=set0 -> compact A -> {within A, continuous f} ->
+  exists2 c, c \in A & forall t, t \in A -> f t <= f c.
 Proof.
-move=> leab fcont; set imf := f @` `[a, b].
+move=> A0 cA cf; set imf := f @` A.
+have /set0P imf0 : imf != set0.
+  by move/set0P : A0; contra; exact: image_set0_set0.
 have imf_sup : has_sup imf.
-  split; first by exists (f a); apply/imageP; rewrite /= in_itv /= lexx.
-  have [M [Mreal imfltM]] : bounded_set (f @` `[a, b]).
-    by apply/compact_bounded/continuous_compact => //; exact: segment_compact.
-  exists (M + 1) => y /imfltM yleM.
-  by rewrite (le_trans _ (yleM _ _)) ?ler_norm ?ltrDl.
-have [|imf_ltsup] := pselect (exists2 c, c \in `[a, b]%R & f c = sup imf).
-  move=> [c cab fceqsup]; exists c => // t tab; rewrite fceqsup.
-  by apply/sup_upper_bound => //; exact/imageP.
-have {}imf_ltsup t : t \in `[a, b]%R -> f t < sup imf.
-  move=> tab; case: (ltrP (f t) (sup imf)) => // supleft.
-  rewrite falseE; apply: imf_ltsup; exists t => //; apply/eqP.
-  by rewrite eq_le supleft andbT sup_upper_bound//; exact/imageP.
-pose g t : R := (sup imf - f t)^-1.
-have invf_continuous : {within `[a, b], continuous g}.
-  rewrite continuous_subspace_in => t tab; apply: cvgV => //=.
-    by rewrite subr_eq0 gt_eqF // imf_ltsup //; rewrite inE in tab.
-  by apply: cvgD; [exact: cst_continuous | apply: cvgN; exact: (fcont t)].
-have /ex_strict_bound_gt0 [k k_gt0 /= imVfltk] : bounded_set (g @` `[a, b]).
-  apply/compact_bounded/continuous_compact; last exact: segment_compact.
-  exact: invf_continuous.
-have [_ [t tab <-]] : exists2 y, imf y & sup imf - k^-1 < y.
-  by apply: sup_adherent => //; rewrite invr_gt0.
-rewrite ltrBlDr -ltrBlDl.
-suff : sup imf - f t > k^-1 by move=> /ltW; rewrite leNgt => /negbTE ->.
-rewrite -[ltRHS]invrK ltf_pV2// ?qualifE/= ?invr_gt0 ?subr_gt0 ?imf_ltsup//.
-by rewrite (le_lt_trans (ler_norm _) _) ?imVfltk//; exact: imageP.
-Qed.
-
-Lemma EVT_max_rV (R : realType) n (f : 'rV[R]_n -> R) (A : set 'rV[R]_n) :
-  A !=set0 ->
-  compact A ->
-  {within A, continuous f} -> exists2 c, c \in A &
-  forall t, t \in A -> f t <= f c.
-Proof.
-move=> A0 compactA fcont; set imf := f @` A.
-have imf_sup : has_sup imf.
-  split.
-    case: A0 => a Aa.
-    by exists (f a); apply/imageP.
+  split => //.
   have [M [Mreal imfltM]] : bounded_set (f @` A).
     exact/compact_bounded/continuous_compact.
   exists (M + 1) => y /imfltM yleM.
   by rewrite (le_trans _ (yleM _ _)) ?ler_norm ?ltrDl.
 have [|imf_ltsup] := pselect (exists2 c, c \in A & f c = sup imf).
-  move=> [c cab fceqsup]; exists c => // t tab; rewrite fceqsup.
-  apply/sup_upper_bound => //.
-  exact/imageP/set_mem.
+  move=> [c cinA fceqsup]; exists c => // t tA; rewrite fceqsup.
+  by apply/sup_upper_bound => //; exact/imageP/set_mem.
 have {}imf_ltsup t : t \in A -> f t < sup imf.
-  move=> tab; case: (ltrP (f t) (sup imf)) => // supleft.
-  rewrite falseE; apply: imf_ltsup; exists t => //; apply/eqP.
-  rewrite eq_le supleft andbT sup_upper_bound//.
+  move=> tA; have [//|supleft] := ltrP (f t) (sup imf).
+  rewrite falseE; apply: imf_ltsup; exists t => //.
+  apply/eqP; rewrite eq_le supleft andbT sup_upper_bound//.
   exact/imageP/set_mem.
 pose g t : R := (sup imf - f t)^-1.
 have invf_continuous : {within A, continuous g}.
-  rewrite continuous_subspace_in => t tab; apply: cvgV => //=.
-    by rewrite subr_eq0 gt_eqF // imf_ltsup //; rewrite inE in tab.
-  by apply: cvgD; [exact: cst_continuous | apply: cvgN; exact: (fcont t)].
+  rewrite continuous_subspace_in => t tA; apply: cvgV => //=.
+    by rewrite subr_eq0 gt_eqF// imf_ltsup//; rewrite inE in tA.
+  by apply: cvgD; [exact: cst_continuous | apply: cvgN; exact: cf].
 have /ex_strict_bound_gt0 [k k_gt0 /= imVfltk] : bounded_set (g @` A).
-  by apply/compact_bounded/continuous_compact.
-have [_ [t tab <-]] : exists2 y, imf y & sup imf - k^-1 < y.
+  exact/compact_bounded/continuous_compact.
+have [_ [t tA <-]] : exists2 y, imf y & sup imf - k^-1 < y.
   by apply: sup_adherent => //; rewrite invr_gt0.
 rewrite ltrBlDr -ltrBlDl.
 suff : sup imf - f t > k^-1 by move=> /ltW; rewrite leNgt => /negbTE ->.
-rewrite -[ltRHS]invrK ltf_pV2// ?qualifE/= ?invr_gt0 ?subr_gt0 ?imf_ltsup//; last first.
-  exact/mem_set.
-by rewrite (le_lt_trans (ler_norm _) _) ?imVfltk//; exact: imageP.
+rewrite -[ltRHS]invrK ltf_pV2//.
+  by rewrite (le_lt_trans (ler_norm _))// ?imVfltk//; exact: imageP.
+by rewrite posrE invr_gt0 subr_gt0 imf_ltsup// inE.
 Qed.
 
-Lemma EVT_min_rV (R : realType) n (f : 'rV[R]_n -> R) (A : set 'rV[R]_n) :
-  A !=set0 ->
-  compact A ->
-  {within A, continuous f} -> exists2 c, c \in A &
-  forall t, t \in A -> f c <= f t.
+Lemma EVT_max (R : realType) (f : R -> R) (a b : R) :
+  a <= b -> {within `[a, b], continuous f} ->
+  exists2 c, c \in `[a, b]%R & forall t, t \in `[a, b]%R -> f t <= f c.
 Proof.
-move=> A0 cA fcont.
-have /(EVT_max_rV A0 cA) [c clr fcmax] : {within A, continuous (- f)}.
-  by move=> ?; apply: continuousN => ?; exact: fcont.
-by exists c => // ? /fcmax; rewrite lerN2.
+move=> ab cf.
+have ab0 : `[a, b] !=set0 by exists a => /=; rewrite in_itv/= lexx.
+have [/= c cab maxf] := compact_EVT_max ab0 (@segment_compact _ a b) cf.
+by rewrite inE in cab; exists c => //= t tab; apply: maxf; rewrite inE.
 Qed.
 
 Lemma EVT_min (R : realType) (f : R -> R) (a b : R) :
-  a <= b -> {within `[a, b], continuous f} -> exists2 c, c \in `[a, b]%R &
-  forall t, t \in `[a, b]%R -> f c <= f t.
+  a <= b -> {within `[a, b], continuous f} ->
+  exists2 c, c \in `[a, b]%R & forall t, t \in `[a, b]%R -> f c <= f t.
 Proof.
 move=> leab fcont.
 have /(EVT_max leab) [c clr fcmax] : {within `[a, b], continuous (- f)}.
@@ -1522,22 +1484,36 @@ have /(EVT_max leab) [c clr fcmax] : {within `[a, b], continuous (- f)}.
 by exists c => // ? /fcmax; rewrite lerN2.
 Qed.
 
+Lemma EVT_max_rV (R : realType) n (f : 'rV[R]_n -> R) (A : set 'rV[R]_n) :
+    A !=set0 -> compact A -> {within A, continuous f} ->
+  exists2 c, c \in A & forall t, t \in A -> f t <= f c.
+Proof. by move=> A0 cA cf; exact: compact_EVT_max. Qed.
+
+Lemma EVT_min_rV (R : realType) n (f : 'rV[R]_n -> R) (A : set 'rV[R]_n) :
+  A !=set0 -> compact A -> {within A, continuous f} ->
+  exists2 c, c \in A & forall t, t \in A -> f c <= f t.
+Proof.
+move=> A0 cA cf.
+have /(EVT_max_rV A0 cA) [c clr fcmax] : {within A, continuous (- f)}.
+  by move=> ?; apply: continuousN => ?; exact: cf.
+by exists c => // ? /fcmax; rewrite lerN2.
+Qed.
+
 Lemma cvg_at_rightE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
   cvg (f @ x^') -> lim (f @ x^') = lim (f @ at_right x).
 Proof.
-move=> cvfx; apply/Logic.eq_sym.
-apply: (@cvg_lim _ _ _ (at_right _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
-by exists e%:num => //= y xe_y; rewrite lt_def => /andP [xney _]; apply: xe_A.
+move=> cvfx; apply/esym/(@cvg_lim _ _ _ (at_right _)) => //.
+move=> A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
+by exists e%:num => //= y xe_y /gt_eqF/negbT/xe_A; exact.
 Qed.
 Arguments cvg_at_rightE {R V} f x.
 
 Lemma cvg_at_leftE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
   cvg (f @ x^') -> lim (f @ x^') = lim (f @ at_left x).
 Proof.
-move=> cvfx; apply/Logic.eq_sym.
-apply: (@cvg_lim _ _ _ (at_left _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
-exists e%:num => //= y xe_y; rewrite lt_def => /andP [xney _].
-by apply: xe_A => //; rewrite eq_sym.
+move=> cvfx; apply/esym/(@cvg_lim _ _ _ (at_left _)) => //.
+move=> A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
+by exists e%:num => //= y xe_y /lt_eqF/negbT/xe_A; exact.
 Qed.
 Arguments cvg_at_leftE {R V} f x.
 
