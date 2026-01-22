@@ -1426,42 +1426,43 @@ Lemma exp_derive1 {R : numFieldType} n x :
   (@GRing.exp R ^~ n)^`() x = n%:R *: x ^+ n.-1.
 Proof. by rewrite derive1E exp_derive [LHS]mulr1. Qed.
 
+(* TODO: move *)
+Lemma compact_has_sup (R : realType) (A : set R) :
+  A !=set0 -> compact A -> has_sup A.
+Proof.
+move=> A0 cA; split => //; have [M [_ MA]] := compact_bounded cA.
+by exists (M + 1) => y /MA My; rewrite (le_trans _ (My _ _)) ?ler_norm ?ltrDl.
+Qed.
+
 Lemma compact_EVT_max (T : topologicalType) (R : realType) (f : T -> R)
     (A : set T) :
   A !=set0 -> compact A -> {within A, continuous f} ->
   exists2 c, c \in A & forall t, t \in A -> f t <= f c.
 Proof.
-move=> A0 cA cf; set imf := f @` A.
-have /set0P imf0 : imf != set0.
-  by move/set0P : A0; contra; exact: image_set0_set0.
-have imf_sup : has_sup imf.
-  split => //.
-  have [M [Mreal imfltM]] : bounded_set (f @` A).
-    exact/compact_bounded/continuous_compact.
-  exists (M + 1) => y /imfltM yleM.
-  by rewrite (le_trans _ (yleM _ _)) ?ler_norm ?ltrDl.
-have [|imf_ltsup] := pselect (exists2 c, c \in A & f c = sup imf).
-  move=> [c cinA fceqsup]; exists c => // t tA; rewrite fceqsup.
+move=> A0 cA cf.
+have sup_fA : has_sup (f @` A).
+  by apply/compact_has_sup; [exact: image_nonempty A0|exact/continuous_compact].
+have [|imf_ltsup] := pselect (exists2 c, c \in A & f c = sup (f @` A)).
+  move=> [c cinA fcsupfA]; exists c => // t tA; rewrite fcsupfA.
   by apply/sup_upper_bound => //; exact/imageP/set_mem.
-have {}imf_ltsup t : t \in A -> f t < sup imf.
-  move=> tA; have [//|supleft] := ltrP (f t) (sup imf).
+have {}AfsupfA t : t \in A -> f t < sup (f @` A).
+  move=> tA; have [//|supfAft] := ltrP (f t) (sup (f @` A)).
   rewrite falseE; apply: imf_ltsup; exists t => //.
-  apply/eqP; rewrite eq_le supleft andbT sup_upper_bound//.
+  apply/eqP; rewrite eq_le supfAft andbT sup_upper_bound//.
   exact/imageP/set_mem.
-pose g t : R := (sup imf - f t)^-1.
+pose g t : R := (sup (f @` A) - f t)^-1.
 have invf_continuous : {within A, continuous g}.
   rewrite continuous_subspace_in => t tA; apply: cvgV => //=.
-    by rewrite subr_eq0 gt_eqF// imf_ltsup//; rewrite inE in tA.
+    by rewrite subr_eq0 gt_eqF// AfsupfA//; rewrite inE in tA.
   by apply: cvgD; [exact: cst_continuous | apply: cvgN; exact: cf].
-have /ex_strict_bound_gt0 [k k_gt0 /= imVfltk] : bounded_set (g @` A).
+have /ex_strict_bound_gt0[k k_gt0 /= imVfltk] : bounded_set (g @` A).
   exact/compact_bounded/continuous_compact.
-have [_ [t tA <-]] : exists2 y, imf y & sup imf - k^-1 < y.
+have [_ [t tA <-]] : exists2 y, (f @` A) y & sup (f @` A) - k^-1 < y.
   by apply: sup_adherent => //; rewrite invr_gt0.
 rewrite ltrBlDr -ltrBlDl.
-suff : sup imf - f t > k^-1 by move=> /ltW; rewrite leNgt => /negbTE ->.
-rewrite -[ltRHS]invrK ltf_pV2//.
-  by rewrite (le_lt_trans (ler_norm _))// ?imVfltk//; exact: imageP.
-by rewrite posrE invr_gt0 subr_gt0 imf_ltsup// inE.
+suff : sup (f @` A) - f t > k^-1 by move=> /ltW; rewrite leNgt => /negbTE ->.
+rewrite invf_plt ?posrE ?subr_gt0 ?AfsupfA//; last exact/mem_set.
+by rewrite (le_lt_trans (ler_norm _))// imVfltk//; exact: imageP.
 Qed.
 
 Lemma compact_EVT_min (T : topologicalType) (R : realType) (f : T -> R)
