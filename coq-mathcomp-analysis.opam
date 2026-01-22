@@ -19,6 +19,7 @@ depends: [
   "coq-mathcomp-solvable"
   "coq-mathcomp-field"
   "coq-mathcomp-bigenough" { (>= "1.0.0") }
+  "coq-mathcomp-real-closed" { (>= "1.4.0") }
 ]
 
 tags: [
