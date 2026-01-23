@@ -14,6 +14,11 @@
   + lemma `itv_closed_ends_closed`
 - in `classical_sets.v`
   + lemma `in_set1_eq`
+- in `analysis_stdlib/Rstruct_topology.v`:
+  + lemma `RlnE`
+
+- in `classical_sets.v`:
+  + lemma `nonemptyPn`
 
 - in `set_interval.v`
   + definitions `itv_is_closed_unbounded`, `itv_is_cc`, `itv_closed_ends`
