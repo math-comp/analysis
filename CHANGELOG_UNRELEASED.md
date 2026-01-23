@@ -6,6 +6,9 @@
 - in set_interval.v
   + definitions `itv_is_closed_unbounded`, `itv_is_cc`, `itv_closed_ends`
 
+- in `Rstruct_topology.v`:
+  + lemma `RlnE`
+
 ### Changed
 - in set_interval.v
   + `itv_is_open_unbounded`, `itv_is_oo`, `itv_open_ends` (Prop to bool)
