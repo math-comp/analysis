@@ -203,8 +203,7 @@ Lemma giry_map_dirac (mu1 : giry T1 R) (B : set T2) : measurable B ->
 Proof.
 move=> mB.
 rewrite -[in LHS](setIT B) -[LHS]integral_indic// [LHS]giry_int_map//.
-  exact/measurable_EFinP/measurable_indic.
-by move=> ?; rewrite lee_fin.
+exact/measurable_EFinP/measurable_indic.
 Qed.
 
 End giry_map_lemmas.

@@ -1,6 +1,6 @@
-(* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
-From mathcomp Require Import archimedean interval mathcomp_extra.
+From mathcomp Require Import archimedean interval.
 
 (**md**************************************************************************)
 (* # MathComp extra                                                           *)
@@ -15,8 +15,10 @@ From mathcomp Require Import archimedean interval mathcomp_extra.
 (* ```                                                                        *)
 (*                 swap x := (x.2, x.1)                                       *)
 (*           map_pair f x := (f x.1, f x.2)                                   *)
-(*         monotonous A f := {in A &, {mono f : x y / x <= y}} \/             *)
-(*                           {in A &, {mono f : x y /~ x <= y}}               *)
+(*          monotonic A f := {in A &, {homo f : x y / x <= y}} \/             *)
+(*                           {in A &, {homo f : x y /~ x <= y}}               *)
+(*   strict_monotonic A f := {in A &, {homo f : x y / x < y}} \/              *)
+(*                           {in A &, {homo f : x y /~ x < y}}                *)
 (*             sigT_fun f := lifts a family of functions f into a function on *)
 (*                           the dependent sum                                *)
 (*                prodA x := sends (X * Y) * Z to X * (Y * Z)                 *)
@@ -164,8 +166,20 @@ rewrite -[X in (_ <= X)%N]prednK ?expn_gt0// -[X in (_ <= X)%N]addn1 leq_add2r.
 by rewrite (leq_trans h2)// -subn1 leq_subRL ?expn_gt0// add1n ltn_exp2l.
 Qed.
 
-Definition monotonous d (T : porderType d) (pT : predType T) (A : pT) (f : T -> T) :=
-  {in A &, {mono f : x y / (x <= y)%O}} \/ {in A &, {mono f : x y /~ (x <= y)%O}}.
+Definition monotonic d (T : porderType d) d' (T' : porderType d')
+    (pT : predType T) (A : pT) (f : T -> T') :=
+  {in A &, nondecreasing f} \/ {in A &, {homo f : x y /~ (x <= y)%O}}.
+
+Definition strict_monotonic d (T : porderType d) d' (T' : porderType d')
+    (pT : predType T) (A : pT) (f : T -> T') :=
+  {in A &, {homo f : x y / (x < y)%O}} \/ {in A &, {homo f : x y /~ (x < y)%O}}.
+
+Lemma strict_monotonicW d (T : orderType d) d' (T' : porderType d')
+    (pT : predType T) (A : pT) (f : T -> T') :
+  strict_monotonic A f -> monotonic A f.
+Proof.
+by move=> [/le_mono_in/monoW_in|/le_nmono_in/monoW_in]; [left|right].
+Qed.
 
 Lemma mono_leq_infl f : {mono f : m n / (m <= n)%N} -> forall n, (n <= f n)%N.
 Proof.
@@ -261,27 +275,31 @@ by rewrite (leq_trans (leq_card_setU _ _))// leq_add.
 Qed.
 
 Definition onem {R : pzRingType} (r : R) : R := 1 - r.
+#[deprecated(since="mathcomp-analysis 1.15.0")]
 Notation "`1- r" := (onem r) : ring_scope.
+
+Reserved Notation "p '.~'" (format "p .~", at level 1).
+Notation "p '.~'" := (onem p) : ring_scope.
 
 Section onem_ring.
 Context {R : pzRingType}.
 Implicit Type r : R.
 
-Lemma onem0 : `1-0 = 1 :> R. Proof. by rewrite /onem subr0. Qed.
+Lemma onem0 : 0.~ = 1 :> R. Proof. by rewrite /onem subr0. Qed.
 
-Lemma onem1 : `1-1 = 0 :> R. Proof. by rewrite /onem subrr. Qed.
+Lemma onem1 : 1.~ = 0 :> R. Proof. by rewrite /onem subrr. Qed.
 
-Lemma onemK r : `1-(`1-r) = r. Proof. exact: subKr. Qed.
+Lemma onemK r : (r.~).~ = r. Proof. exact: subKr. Qed.
 
-Lemma add_onemK r : r + `1- r = 1. Proof. by rewrite /onem addrC subrK. Qed.
+Lemma add_onemK r : r + r.~ = 1. Proof. by rewrite /onem addrC subrK. Qed.
 
-Lemma onemD r s : `1-(r + s) = `1-r - s.
+Lemma onemD r s : (r + s).~ = r.~ - s.
 Proof. by rewrite /onem opprD addrA. Qed.
 
-Lemma onemMr r s : s * `1-r = s - s * r.
+Lemma onemMr r s : s * r.~ = s - s * r.
 Proof. by rewrite /onem mulrBr mulr1. Qed.
 
-Lemma onemM r s : `1-(r * s) = `1-r + `1-s - `1-r * `1-s.
+Lemma onemM r s : (r * s).~ = r.~ + s.~ - r.~ * s.~.
 Proof. by rewrite /onem mulrBl 2!mulrBr !mul1r mulr1 addrKA opprK subrKA. Qed.
 
 End onem_ring.
@@ -290,34 +308,34 @@ Section onem_order.
 Variable R : numDomainType.
 Implicit Types r : R.
 
-Lemma onem_gt0 r : r < 1 -> 0 < `1-r. Proof. by rewrite subr_gt0. Qed.
+Lemma onem_gt0 r : r < 1 -> 0 < r.~. Proof. by rewrite subr_gt0. Qed.
 
-Lemma onem_ge0 r : r <= 1 -> 0 <= `1-r.
+Lemma onem_ge0 r : r <= 1 -> 0 <= r.~.
 Proof. by rewrite le_eqVlt => /predU1P[->|/onem_gt0/ltW]; rewrite ?onem1. Qed.
 
-Lemma onem_le1 r : 0 <= r -> `1-r <= 1.
+Lemma onem_le1 r : 0 <= r -> r.~ <= 1.
 Proof. by rewrite lerBlDr lerDl. Qed.
 
-Lemma onem_lt1 r : 0 < r -> `1-r < 1.
+Lemma onem_lt1 r : 0 < r -> r.~ < 1.
 Proof. by rewrite ltrBlDr ltrDl. Qed.
 
-Lemma onemX_ge0 r n : 0 <= r -> r <= 1 -> 0 <= `1-(r ^+ n).
+Lemma onemX_ge0 r n : 0 <= r -> r <= 1 -> 0 <= (r ^+ n).~.
 Proof. by move=> ? ?; rewrite subr_ge0 exprn_ile1. Qed.
 
-Lemma onemX_lt1 r n : 0 < r -> `1-(r ^+ n) < 1.
+Lemma onemX_lt1 r n : 0 < r -> (r ^+ n).~ < 1.
 Proof. by move=> ?; rewrite onem_lt1// exprn_gt0. Qed.
 
 End onem_order.
 
 Lemma normr_onem {R : realDomainType} (x : R) :
-  (0 <= x <= 1 -> `| `1-x | <= 1)%R.
+  (0 <= x <= 1 -> `| x.~ | <= 1)%R.
 Proof.
 move=> /andP[x0 x1]; rewrite ler_norml; apply/andP; split.
   by rewrite lerBrDl lerBlDr (le_trans x1)// lerDl.
 by rewrite lerBlDr lerDl.
 Qed.
 
-Lemma onemV (F : numFieldType) (x : F) : x != 0 -> `1-(x^-1) = (x - 1) / x.
+Lemma onemV (F : numFieldType) (x : F) : x != 0 -> x^-1.~ = (x - 1) / x.
 Proof. by move=> ?; rewrite mulrDl divff// mulN1r. Qed.
 
 Lemma lez_abs2 (a b : int) : 0 <= a -> a <= b -> (`|a| <= `|b|)%N.
@@ -386,28 +404,6 @@ rewrite /Order.min/=; case: ifPn => xz; case: ifPn => yz; rewrite ?ltxx//.
 Qed.
 
 End order_min.
-
-(* PR in progress: https://github.com/math-comp/math-comp/pull/1515 *)
-Lemma intrD1 {R : pzRingType} (i : int) : i%:~R + 1 = (i + 1)%:~R :> R.
-Proof. by rewrite intrD. Qed.
-
-(* PR in progress: https://github.com/math-comp/math-comp/pull/1515 *)
-Lemma intr1D {R : pzRingType} (i : int) : 1 + i%:~R = (1 + i)%:~R :> R.
-Proof. by rewrite intrD. Qed.
-
-Section trunc_floor_ceil.
-Context {R : archiRealDomainType}.
-Implicit Type x : R.
-
-(* PR in progress: https://github.com/math-comp/math-comp/pull/1515 *)
-Lemma abs_ceil_ge x : `|x| <= `|Num.ceil x|.+1%:R.
-Proof.
-rewrite -natr1 natr_absz; have [x0|x0] := ltP 0 x.
-  by rewrite !gtr0_norm ?ceil_gt0// (le_trans (Num.Theory.ceil_ge _))// lerDl.
-by rewrite !ler0_norm ?ceil_le0// ?ceilNfloor opprK intrD1 ltW// floorD1_gt.
-Qed.
-
-End trunc_floor_ceil.
 
 Section bijection_forall.
 

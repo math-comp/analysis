@@ -2,6 +2,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrint ssrnum interval.
 From mathcomp Require Import interval_inference.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets set_interval.
 From mathcomp Require Import functions cardinality ereal reals topology.
 From mathcomp Require Import prodnormedzmodule normedtype derive realfun.
@@ -54,7 +56,7 @@ Local Notation "x <| p |> y" := (conv p x y).
 
 Definition law := forall (p q r s : {i01 R}) (a b c : T),
   p%:num = r%:num * s%:num ->
-  `1- (s%:num) = `1- (p%:num) * `1- (q%:num) ->
+  s%:num.~ = p%:num.~ * q%:num.~ ->
   a <| p |> (b <| q |> c) = (a <| r |> b) <| s |> c.
 End def.
 
@@ -130,7 +132,7 @@ Implicit Type p q r : {i01 R}.
 
 Let E := convex_lmodType E'.
 
-Let avg p (a b : E) := p%:inum *: a + `1-(p%:inum) *: b.
+Let avg p (a b : E) := p%:inum *: a + p%:inum.~ *: b.
 
 Let avg1 a b : avg 1%:i01 a b = a.
 Proof. by rewrite /avg/= onem1 scale0r scale1r addr0. Qed.
@@ -195,11 +197,11 @@ by rewrite subr_gt0 lt_neqAle t1 le1.
 Qed.
 
 Lemma convRE (a b : R^o) (t : {i01 R}) :
-  a <| t |> b = t%:inum * a + `1-(t%:inum) * b.
+  a <| t |> b = t%:inum * a + t%:inum.~ * b.
 Proof. by []. Qed.
 
 Let convRCE (a b : R^o) (t : {i01 R}) :
-  a <| t |> b = `1-(t%:inum) * b + t%:inum * a.
+  a <| t |> b = t%:inum.~ * b + t%:inum * a.
 Proof. by rewrite addrC convRE. Qed.
 
 Lemma convR_line_path (a b : R^o) (t : {i01 R}) :

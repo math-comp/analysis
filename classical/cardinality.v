@@ -26,6 +26,7 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 (*                   <-> exists X : {fset T}, A = [set` X]                    *)
 (*                   <-> ~ ([set: nat] #<= A)                                 *)
 (*    infinite_set A := ~ finite_set A                                        *)
+(*    cofinite_set A := finite_set (~` A)                                     *)
 (*       countable A <-> A is countable                                       *)
 (*                   := A #<= [set: nat]                                      *)
 (*        fset_set A == the finite set corresponding if A : set T is finite,  *)
@@ -68,6 +69,7 @@ Notation "A '#!=' B" := (~~ (card_eq A B)) : card_scope.
 
 Definition finite_set {T} (A : set T) := exists n, A #= `I_n.
 Notation infinite_set A := (~ finite_set A).
+Notation cofinite_set A := (finite_set (~` A)).
 
 Lemma injPex {T U} {A : set T} :
    $|{inj A >-> U}| <-> exists f : T -> U, set_inj A f.
@@ -412,6 +414,7 @@ apply/idP/idP=> [/card_leP[f]|?];
 by have /leq_card := in2TT 'inj_(IIord \o f \o IIord^-1); rewrite !card_ord.
 Qed.
 
+
 Lemma ocard_eqP {T U} {A : set T} {B : set U} :
   reflect $|{bij A >-> some @` B}| (A #= B).
 Proof.
@@ -515,6 +518,13 @@ Lemma finite_set0 T : finite_set (set0 : set T).
 Proof. by apply/finite_setP; exists 0%N; rewrite II0. Qed.
 #[global] Hint Resolve finite_set0 : core.
 
+Lemma cofinite_setT T : cofinite_set [set: T].
+Proof. by rewrite setCT. Qed.
+#[global] Hint Resolve cofinite_setT : core.
+
+Lemma infinite_setN0 {T} (A : set T) : infinite_set A -> A !=set0.
+Proof. by rewrite -set0P; apply: contra_not_neq => ->. Qed.
+
 Lemma finite_seqP {T : eqType} A :
    finite_set A <-> exists s : seq T, A = [set` s].
 Proof.
@@ -602,6 +612,14 @@ Lemma sub_finite_set T (A B : set T) : A `<=` B ->
   finite_set B -> finite_set A.
 Proof. by move=> ?; apply/card_le_finite/subset_card_le. Qed.
 
+Lemma sub_cofinite_set T (A B : set T) : A `<=` B ->
+  cofinite_set A -> cofinite_set B.
+Proof. by move=> /subsetC/sub_finite_set. Qed.
+
+Lemma sub_infinite_set T (A B : set T) : A `<=` B ->
+  infinite_set A -> infinite_set B.
+Proof. by move=> AB; apply/contra_not/sub_finite_set. Qed.
+
 Lemma finite_set_leP T (A : set T) : finite_set A <-> exists n, A #<= `I_n.
 Proof.
 split=> [[n /card_eqPle[]]|[n leAn]]; first by exists n.
@@ -657,6 +675,16 @@ Qed.
 Lemma finite_setD T (A B : set T) : finite_set A -> finite_set (A `\` B).
 Proof. exact/card_le_finite/card_le_setD. Qed.
 
+Lemma cofinite_setUl T (A B : set T) : cofinite_set A -> cofinite_set (A `|` B).
+Proof. by rewrite setCU -setDE; apply: finite_setD. Qed.
+
+Lemma cofinite_setUr T (A B : set T) : cofinite_set B -> cofinite_set (A `|` B).
+Proof. by rewrite setUC; apply: cofinite_setUl. Qed.
+
+Lemma cofinite_setU T (A B : set T) :
+  cofinite_set A \/ cofinite_set B -> cofinite_set (A `|` B).
+Proof. by move=> [/cofinite_setUl|/cofinite_setUr]. Qed.
+
 Lemma finite_setU T (A B : set T) :
   finite_set (A `|` B) = (finite_set A /\ finite_set B).
 Proof.
@@ -664,6 +692,10 @@ pose fP := @finite_fsetP {classic T}; rewrite propeqE; split.
   by move=> finAUB; split; apply: sub_finite_set finAUB.
 by case=> /fP[X->]/fP[Y->]; apply/fP; exists (X `|` Y)%fset; rewrite set_fsetU.
 Qed.
+
+Lemma cofinite_setI T (A B : set T) :
+  cofinite_set (A `&` B) = (cofinite_set A /\ cofinite_set B).
+Proof. by rewrite setCI finite_setU. Qed.
 
 Lemma finite_set2 T (x y : T) : finite_set [set x; y].
 Proof. by rewrite !finite_setU; split; apply: finite_set1. Qed.
@@ -710,8 +742,6 @@ move=> /finite_fsetP[{}A ->] /finite_fsetP[{}B ->].
 apply/finite_fsetP; exists (A `*` B)%fset; apply/predeqP => x.
 by split; rewrite /= inE => /andP.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to finite_setX.")]
-Notation finite_setM := finite_setX (only parsing).
 
 Lemma finite_image2 [aT bT rT : Type] [A : set aT] [B : set bT]
     (f : aT -> bT -> rT) :
@@ -811,8 +841,6 @@ apply/fsetP => i; apply/idP/idP; rewrite !(inE, in_fset_set)//=.
   by move=> [/mem_set-> /mem_set->].
 by move=> /andP[]; rewrite !inE.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to fset_setX.")]
-Notation fset_setM := fset_setX (only parsing).
 
 Definition fst_fset (T1 T2 : choiceType) (A : {fset (T1 * T2)}) : {fset T1} :=
   [fset x.1 | x in A]%fset.
@@ -855,6 +883,10 @@ have Gy : y \in G k by rewrite in_fset_set ?inE//; apply: Ffin.
 by exists (Tagged G [` Gy]%fset).
 Qed.
 
+Lemma cofinite_set_infinite {T} (A : set T) : infinite_set [set: T] ->
+  cofinite_set A -> infinite_set A.
+Proof. by move=> + ACfin Afin; apply; rewrite -(setvU A) finite_setU. Qed.
+
 Lemma trivIset_sum_card (T : choiceType) (F : nat -> set T) n :
   (forall n, finite_set (F n)) -> trivIset [set: nat] F ->
   (\sum_(i < n) #|` fset_set (F i)| =
@@ -876,8 +908,6 @@ Proof.
 move=> Afin Bfin; rewrite -bigcupX1l.
 by apply: bigcup_finite => // i Ai; exact/finite_setX/Bfin.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to finite_setXR.")]
-Notation finite_setMR := finite_setXR (only parsing).
 
 Lemma finite_setXL (T T' : choiceType) (A : T' -> set T) (B : set T') :
   (forall x, B x -> finite_set (A x)) -> finite_set B -> finite_set (A ``*` B).
@@ -885,8 +915,6 @@ Proof.
 move=> Afin Bfin; rewrite -bigcupX1r.
 by apply: bigcup_finite => // i Ai; apply/finite_setX => //; exact: Afin.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to finite_setXL.")]
-Notation finite_setML := finite_setXL (only parsing).
 
 Lemma fset_set_II n : fset_set `I_n = [fset val i | i in 'I_n]%fset.
 Proof.
@@ -1025,6 +1053,14 @@ have : finite_set ((A `&` ~` B) `|` B) by rewrite finite_setU.
 by rewrite setUIl setUCl setIT finite_setU => -[].
 Qed.
 
+Lemma infinite_setIl {T} (A B : set T) :
+  infinite_set A -> cofinite_set B -> infinite_set (A `&` B).
+Proof. by move=> /infinite_setD/[apply]; rewrite setDE setCK. Qed.
+
+Lemma infinite_setIr {T} (A B : set T) :
+  cofinite_set A -> infinite_set B -> infinite_set (A `&` B).
+Proof. by rewrite setIC => *; apply: infinite_setIl. Qed.
+
 Lemma infinite_set_fset {T : choiceType} (A : set T) n :
   infinite_set A ->
     exists2 B : {fset T}, [set` B] `<=` A & (#|` B| >= n)%N.
@@ -1119,6 +1155,13 @@ Proof. by rewrite -setXTT; apply: infinite_setX; exact: infinite_nat. Qed.
 Lemma card_nat2 : [set: nat * nat] #= [set: nat].
 Proof. exact/eq_card_nat/infinite_prod_nat/countableP. Qed.
 
+Lemma injective_gtn (f : nat -> nat) : injective f -> forall (n : nat), exists m, (n < f m)%N.
+Proof.
+move=> fI n; suff [m /negP] : ~` (f @^-1` `I_n.+1) !=set0 by rewrite -ltnNge; exists m.
+apply: infinite_setN0; apply: cofinite_set_infinite; first exact: infinite_nat.
+by rewrite setCK; apply: finite_preimage; first by move=> ? ? ? ?; apply: fI.
+Qed.
+
 HB.instance Definition _ := isPointed.Build rat 0.
 
 Lemma infinite_rat : infinite_set [set: rat].
@@ -1181,14 +1224,10 @@ have /ppcard_leP[f] := Bc i Ai; apply/pcard_geP/surjPex.
 exists (fun k => (i, f^-1%FUN k)) => -[_ j]/= [-> dj].
 by exists (f j) => //=; rewrite funK ?inE.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to countableXR.")]
-Notation countableMR := countableXR (only parsing).
 
 Lemma countableX T1 T2 (D1 : set T1) (D2 : set T2) :
   countable D1 -> countable D2 -> countable (D1 `*` D2).
 Proof. by move=> D1c D2c; exact: countableXR (fun _ _ => D2c). Qed.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to countableX.")]
-Notation countableM := countableX (only parsing).
 
 Lemma countableXL T T' (A : T' -> set T) (B : set T') :
   countable B -> (forall i, B i -> countable (A i)) -> countable (A ``*` B).
@@ -1196,8 +1235,6 @@ Proof.
 move=> Bc Ac; rewrite -bigcupX1r; apply: bigcup_countable => // i Bi.
 by apply: countableX => //; exact: Ac.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to countableXL.")]
-Notation countableML := countableXL (only parsing).
 
 Lemma infiniteXRl T T' (A : set T) (B : T -> set T') :
   infinite_set A -> (forall i, B i !=set0) -> infinite_set (A `*`` B).
@@ -1206,8 +1243,6 @@ move=> /infiniteP/pcard_geP[f] /(_ _)/cid-/all_sig[b Bb].
 apply/infiniteP/pcard_geP/surjPex; exists (fun x => f x.1).
 by move=> i iT; have [a Aa fa] := 'oinvP_f iT; exists (a, b a).
 Qed.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to infiniteXRl.")]
-Notation infiniteMRl := infiniteXRl (only parsing).
 
 Lemma cardXR_eq_nat T T' (A : set T) (B : T -> set T') :
     (A #= [set: nat] -> (forall i, countable (B i) /\ B i !=set0) ->
@@ -1216,8 +1251,6 @@ Proof.
 rewrite !card_eq_le => /andP[Acnt /infiniteP Ainfty] /all_and2[Bcnt Bn0].
 by rewrite [(_ #<= _)%card]countableXR//=; exact/infiniteP/infiniteXRl.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to cardXR_eq_nat.")]
-Notation cardMR_eq_nat := cardXR_eq_nat (only parsing).
 
 Lemma eq_cardSP {T : Type} (A : set T) n :
   reflect (exists2 x, A x & A `\ x #= `I_n) (A #= `I_n.+1).

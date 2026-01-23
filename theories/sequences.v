@@ -2,6 +2,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint.
 From mathcomp Require Import interval interval_inference archimedean.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp contra classical_sets.
 From mathcomp Require Import functions cardinality set_interval reals.
 From mathcomp Require Import ereal topology tvs normedtype landau.
@@ -2972,6 +2974,68 @@ Qed.
 
 End adjacent_cut.
 
+Section finite_range_sequence_constant.
+
+Lemma finite_range_cst_subsequence {T} (u_ : T^nat) : finite_set (range u_) ->
+  exists x, exists2 A, infinite_set A & (forall k, A k <-> u_ k = x).
+Proof.
+move=> range_u_finite; pose A x := u_ @^-1` [set x].
+suff [x Aoo] : exists x, infinite_set (A x) by exists x, (A x) => // k.
+apply/existsNP => Afin.
+have: finite_set (\bigcup_(x in range u_) A x) by exact: bigcup_finite.
+rewrite -preimage_bigcup bigcup_imset1 image_id preimage_range.
+exact: infinite_nat.
+Qed.
+
+Lemma infinite_increasing_seq {d} {T : porderType d} (A : set T) :
+  (forall x, infinite_set [set y | A y /\ (x < y)%O]) ->
+  forall x0 : T, exists f : nat -> T,
+    [/\ increasing_seq f, forall n : nat, (x0 < f n)%O & forall n, A (f n)].
+Proof.
+pose R (x y : T) := A y /\ (x < y)%O => Roo x0.
+have [x|f [f0 /all_and2[fA fS]]] := @dependent_choice T R _ x0.
+  by have /infinite_setN0/cid := Roo x.
+exists (f \o S); split => //=; first by apply/increasing_seqP => n; apply: fS.
+by elim=> /= [|n IHn]; rewrite (le_lt_trans _ (fS _)) ?f0//= ltW.
+Qed.
+
+Lemma infinite_increasing_seq_wf {d} {T : orderType d} (A : set T) :
+  (forall x : T, finite_set [set y | (y <= x)%O]) -> infinite_set A ->
+  forall x0 : T, exists f : nat -> T,
+  [/\ increasing_seq f, forall n, (x0 < f n)%O & forall n, A (f n)].
+Proof.
+move=> Dfin Aoo; apply: infinite_increasing_seq => x.
+apply: infinite_setIl => //.
+by apply: sub_finite_set (Dfin x) => y /=; case: leP.
+Qed.
+
+Lemma finite_range_cvg_subsequence {T : ptopologicalType} (x_ : T ^nat) :
+  finite_set (range x_) ->
+  exists2 f : nat -> nat, increasing_seq f & cvgn (x_ \o f).
+Proof.
+move=> /finite_range_cst_subsequence[x [A Aoo Ax_]].
+have /= [|f [fincr _ Af]] := infinite_increasing_seq_wf _ Aoo 0.
+  by move=> n; apply: sub_finite_set (finite_II n.+1) => m /=.
+exists f => //=; suff -> : x_ \o f = fun=> x by apply: is_cvg_cst.
+by apply/funext => k /=; rewrite (Ax_ _).1.
+Qed.
+
+End finite_range_sequence_constant.
+
+Theorem bolzano_weierstrass {R : realType} (u_ : R^nat):
+  bounded_fun u_ -> exists2 f : nat -> nat, increasing_seq f & cvgn (u_ \o f).
+Proof.
+move=> bnd_u; set U := range u_.
+have bndU : bounded_set U.
+  case: bnd_u => N [Nreal Nu_].
+  by exists N; split => // x /Nu_ {}Nu_ /= y [x0 _ <-]; exact: Nu_.
+have [/finite_range_cvg_subsequence//|infU] := pselect (finite_set U).
+have [/= l Ul] := infinite_bounded_limit_point_nonempty infU bndU.
+have x_l := limit_point_cluster_eventually Ul.
+have [+ _] := cluster_eventually_cvg u_ l.
+by move=> /(_ x_l)[f fi fl]; exists f => //; apply/cvg_ex; exists l.
+Qed.
+
 Section banach_contraction.
 
 Context {R : realType} {X : completeNormedModType R} (U : set X).
@@ -3001,8 +3065,8 @@ have /le_trans -> // : `| y n - y (n + m)| <=
   rewrite [_ * `|_|]mulrC exprD mulrA geometric_seriesE ?lt_eqF//=.
   pose q' := Itv01 [elaborate ge0 q] (ltW q1).
   rewrite -[q%:num]/(q'%:num) -!mulrA -mulrDr ler_pM// {}/q'/=.
-  rewrite -!/(`1-_) -mulrDr exprSr onemM -addrA.
-  rewrite -[in leRHS](mulrC _ `1-(_ ^+ m)) -onemMr onemK.
+  rewrite -!/(_.~) -mulrDr exprSr onemM -addrA.
+  rewrite -[in leRHS](mulrC _ (_ ^+ m).~) -onemMr onemK.
   by rewrite [in leRHS]mulrDl mulrAC mulfV ?mul1r// gt_eqF// onem_gt0.
 rewrite geometric_seriesE ?lt_eqF//= -[leRHS]mulr1 (ACl (1*4*2*3))/= -/C.
 by rewrite ler_wpM2l// 1?mulr_ge0// lerBlDr lerDl.

@@ -1,8 +1,10 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice order ssralg ssrnum ssrint.
-From mathcomp Require Import mathcomp_extra unstable.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
+From mathcomp Require Import mathcomp_extra.
 
 Attributes deprecated(since="mathcomp-analysis 1.9.0",
   note="Use ""From mathcomp Require Import interval_inference."" instead.").
@@ -1203,14 +1205,14 @@ Section onem_signed.
 Variable R : numDomainType.
 Implicit Types r : R.
 
-Lemma onem_PosNum r (r1 : r < 1) : `1-r = (PosNum (onem_gt0 r1))%:num.
+Lemma onem_PosNum r (r1 : r < 1) : r.~ = (PosNum (onem_gt0 r1))%:num.
 Proof. by []. Qed.
 
 Lemma onemX_NngNum r (r1 : r <= 1) (r0 : 0 <= r) n :
-  `1-(r ^+ n) = (NngNum (onemX_ge0 n r0 r1))%:num.
+  (r ^+ n).~ = (NngNum (onemX_ge0 n r0 r1))%:num.
 Proof. by []. Qed.
 
-Lemma onem_nonneg_proof (p : {nonneg R}) : p%:num <= 1 -> 0 <= `1-(p%:num).
+Lemma onem_nonneg_proof (p : {nonneg R}) : p%:num <= 1 -> 0 <= (p%:num).~.
 Proof. by rewrite /onem/= subr_ge0. Qed.
 
 Definition onem_nonneg (p : {nonneg R}) (p1 : p%:num <= 1) :=

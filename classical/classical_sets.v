@@ -337,14 +337,8 @@ Arguments setU _ _ _ _ /.
 Arguments setC _ _ _ /.
 Arguments setD _ _ _ _ /.
 Arguments setX _ _ _ _ _ /.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setX.")]
-Notation setM := setX (only parsing).
 Arguments setXR _ _ _ _ _ /.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setXR.")]
-Notation setMR := setXR (only parsing).
 Arguments setXL _ _ _ _ _ /.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setXL.")]
-Notation setML := setXL (only parsing).
 Arguments fst_set _ _ _ _ /.
 Arguments snd_set _ _ _ _ /.
 Arguments subsetP {T A B}.
@@ -709,6 +703,15 @@ move=> h; apply/seteqP; split => [x [Ax|Bx]|x [Cx|Bx]]; [|by right| |by right].
 Qed.
 
 Lemma setDE A B : A `\` B = A `&` ~` B. Proof. by []. Qed.
+
+Lemma setUDl A B C : (A `\` B) `|` C = (A `|` C) `\` (B `\` C).
+Proof.
+apply/seteqP; split => x /=; first tauto.
+#[warnings="-deprecated-syntactic-definition"] by move=> [[a|c]]; rewrite not_andE notE; tauto.
+Qed.
+
+Lemma setUDr A B C : A `|` (B `\` C) = (A `|` B) `\` (C `\` A).
+Proof. by rewrite setUC setUDl setUC. Qed.
 
 Lemma setDUK A B : A `<=` B -> A `|` (B `\` A) = B.
 Proof.
@@ -1180,33 +1183,7 @@ Arguments subsetT {T} A.
 
 #[global]
 Hint Resolve subsetUl subsetUr subIsetl subIsetr subDsetl subDsetr : core.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="Use notin_setE instead.")]
-Notation notin_set := notin_setE (only parsing).
 Arguments setU_id2r {T} C {A B}.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to in_setX.")]
-Notation in_setM := in_setX (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setX0.")]
-Notation setM0 := setX0 (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to set0X.")]
-Notation set0M := set0X (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setXTT.")]
-Notation setMTT := setXTT (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setXT.")]
-Notation setMT := setXT (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setTX.")]
-Notation setTM := setTX (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setXI.")]
-Notation setMI := setXI (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setX_bigcupr.")]
-Notation setM_bigcupr := setX_bigcupr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setX_bigcupl.")]
-Notation setM_bigcupl := setX_bigcupl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setSX.")]
-Notation setSM := setSX (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to bigcupX1l.")]
-Notation bigcupM1l := bigcupX1l (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to bigcupX1r.")]
-Notation bigcupM1r := bigcupX1r (only parsing).
 
 Lemma set_cst {T I} (x : T) (A : set I) :
   [set x | _ in A] = if A == set0 then set0 else [set x].
@@ -2080,11 +2057,6 @@ Qed.
 End bigop_lemmas.
 Arguments bigcup_setD1 {T I} x.
 Arguments bigcap_setD1 {T I} x.
-
-#[deprecated(since="mathcomp-analysis 1.3.0",note="renamed to bigcup_setX_dep")]
-Notation bigcup_setM_dep := bigcup_setX_dep (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0",note="renamed to bigcup_setX")]
-Notation bigcup_setM := bigcup_setX (only parsing).
 
 Lemma setD_bigcup {T} (I : eqType) (F : I -> set T) (P : set I) (j : I) : P j ->
   F j `\` \bigcup_(i in [set k | P k /\ k != j]) (F j `\` F i) =
@@ -3241,12 +3213,6 @@ Lemma fst_setXR (X : set T1) (Y : T1 -> set T2) : (X `*`` Y).`1 `<=` X.
 Proof. by move=> x [y [//]]. Qed.
 
 End product.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to fst_setX.")]
-Notation fst_setM := fst_setX (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to snd_setX.")]
-Notation snd_setM := snd_setX (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to fst_setXR instead.")]
-Notation fst_setMR := fst_setXR (only parsing).
 
 Section section.
 Variables (T1 T2 : Type).
@@ -3367,14 +3333,6 @@ Lemma ysection_preimage_fst (A : set T1) y : ysection (fst @^-1` A) y = A.
 Proof. by apply/seteqP; split; move=> x/=; rewrite /ysection/= inE. Qed.
 
 End section.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to in_xsectionX.")]
-Notation in_xsectionM := in_xsectionX (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to in_ysectionX.")]
-Notation in_ysectionM := in_ysectionX (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to notin_xsectionX.")]
-Notation notin_xsectionM := notin_xsectionX (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to notin_ysectionX.")]
-Notation notin_ysectionM := notin_ysectionX (only parsing).
 
 Declare Scope relation_scope.
 Delimit Scope relation_scope with relation.

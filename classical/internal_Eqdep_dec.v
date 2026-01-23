@@ -2,7 +2,7 @@
 
 Attributes deprecated(since="mathcomp-analysis 1.10.0",
   note="This file is for internal purpose only and should not \
-  be imported nor used. It may removed in the future.").
+  be imported nor used. It may be removed in the future.").
 
 Import EqNotations.
 

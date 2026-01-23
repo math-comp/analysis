@@ -1,10 +1,11 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean rat.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions cardinality set_interval.
-From mathcomp Require Import interval_inference reals topology.
-From mathcomp Require Import function_spaces real_interval.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import cardinality set_interval interval_inference reals.
+From mathcomp Require Import topology function_spaces real_interval.
 From mathcomp Require Import prodnormedzmodule tvs.
 
 (**md**************************************************************************)
@@ -80,7 +81,7 @@ Section image_interval.
 Variable R : realDomainType.
 Implicit Types (a b : R) (f : R -> R).
 
-Lemma mono_mem_image_segment a b f : monotonous `[a, b] f ->
+Lemma mono_mem_image_segment a b f : monotonic `[a, b] f ->
   {homo f : x / x \in `[a, b] >-> x \in f @`[a, b]}.
 Proof.
 move=> [fle|fge] x xab; have leab : a <= b by rewrite (itvP xab).
@@ -90,22 +91,22 @@ have: f a >= f b by rewrite fge ?bound_itvE.
 by case: leP => // fafb _; rewrite in_itv/= !fge ?(itvP xab).
 Qed.
 
-Lemma mono_mem_image_itvoo a b f : monotonous `[a, b] f ->
+Lemma mono_mem_image_itvoo a b f : strict_monotonic `[a, b] f ->
   {homo f : x / x \in `]a, b[ >-> x \in f @`]a, b[}.
 Proof.
-move=> []/[dup] => [/leW_mono_in|/leW_nmono_in] flt fle x xab;
+move=> []/[dup] => [/le_mono_in|/le_nmono_in] flt fle x xab;
     have ltab : a < b by rewrite (itvP xab).
-  have: f a <= f b by rewrite ?fle ?bound_itvE ?ltW.
-  by case: leP => // fafb _; rewrite in_itv/= ?flt ?in_itv/= ?(itvP xab, lexx).
-have: f a >= f b by rewrite fle ?bound_itvE ?ltW.
-by case: leP => // fafb _; rewrite in_itv/= ?flt ?in_itv/= ?(itvP xab, lexx).
+  have: f a <= f b by rewrite flt ?bound_itvE ltW.
+  by case: leP => // fafb _; rewrite in_itv/= !fle ?in_itv/= ?(itvP xab, lexx).
+have: f a >= f b by rewrite flt ?bound_itvE ?ltW.
+by case: leP => // fafb _; rewrite in_itv/= !fle ?in_itv/= ?(itvP xab, lexx).
 Qed.
 
 Lemma mono_surj_image_segment a b f : a <= b ->
-    monotonous `[a, b] f -> set_surj `[a, b] (f @`[a, b]) f ->
+    monotonic `[a, b] f -> set_surj `[a, b] (f @`[a, b]) f ->
   (f @` `[a, b] = f @`[a, b])%classic.
 Proof.
-move=> leab fmono; apply: surj_image_eq => _ /= [x xab <-];
+move=> leab fmono; apply: surj_image_eq => _ /= [x xab <-].
 exact: mono_mem_image_segment.
 Qed.
 
@@ -116,7 +117,7 @@ Lemma dec_segment_image a b f : f b <= f a -> f @`[a, b] = `[f b, f a].
 Proof. by case: ltrP. Qed.
 
 Lemma inc_surj_image_segment a b f : a <= b ->
-    {in `[a, b] &, {mono f : x y / x <= y}} ->
+    {in `[a, b] &, {homo f : x y / x <= y}} ->
     set_surj `[a, b] `[f a, f b] f ->
   f @` `[a, b] = `[f a, f b]%classic.
 Proof.
@@ -125,7 +126,7 @@ by rewrite mono_surj_image_segment ?inc_segment_image//; left.
 Qed.
 
 Lemma dec_surj_image_segment a b f : a <= b ->
-    {in `[a, b] &, {mono f : x y /~ x <= y}} ->
+    {in `[a, b] &, {homo f : x y /~ x <= y}} ->
     set_surj `[a, b] `[f b, f a] f ->
   f @` `[a, b] = `[f b, f a]%classic.
 Proof.
@@ -134,7 +135,7 @@ by rewrite mono_surj_image_segment ?dec_segment_image//; right.
 Qed.
 
 Lemma inc_surj_image_segmentP a b f : a <= b ->
-    {in `[a, b] &, {mono f : x y / x <= y}} ->
+    {in `[a, b] &, {homo f : x y / x <= y}} ->
     set_surj `[a, b] `[f a, f b] f ->
   forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f a, f b]).
 Proof.
@@ -143,7 +144,7 @@ by apply/(equivP idP); symmetry.
 Qed.
 
 Lemma dec_surj_image_segmentP a b f : a <= b ->
-    {in `[a, b] &, {mono f : x y /~ x <= y}} ->
+    {in `[a, b] &, {homo f : x y /~ x <= y}} ->
     set_surj `[a, b] `[f b, f a] f ->
   forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in `[f b, f a]).
 Proof.
@@ -152,7 +153,7 @@ by apply/(equivP idP); symmetry.
 Qed.
 
 Lemma mono_surj_image_segmentP a b f : a <= b ->
-    monotonous `[a, b] f -> set_surj `[a, b] (f @`[a, b]) f ->
+    monotonic `[a, b] f -> set_surj `[a, b] (f @`[a, b]) f ->
   forall y, reflect (exists2 x, x \in `[a, b] & f x = y) (y \in f @`[a, b]).
 Proof.
 move=> /mono_surj_image_segment/[apply]/[apply]/predeqP + y => /(_ y) fab.
@@ -560,9 +561,9 @@ move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
     by exists (truncn (z - a)); rewrite zFan// -ltrBlDl truncnS_gt.
   by exists i => //=; rewrite in_itv/= yFa (lt_le_trans _ Fany).
 - move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].
-  exists `|ceil (F (a + n.+1%:R) - F a)%R|.+1 => //=.
-  rewrite in_itv/= zFa andbT lerBlDr -lerBlDl (le_trans _ (abs_ceil_ge _))//.
-  by rewrite ler_normr orbC opprB lerB// ltW.
+  exists (truncn (F a - F (a + n.+1%:R))).+1 => //=.
+  rewrite in_itv/= zFa andbT lerBlDr -lerBlDl ltW//.
+  by rewrite -truncn_le_nat le_truncn// lerB// ltW.
 Qed.
 
 Lemma decreasing_itvoo_bigcup F a n :
@@ -586,14 +587,13 @@ move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
 - move=> y/= [n _]/=; rewrite in_itv/= => /andP[Fany yFa].
   have [i iFan] : exists i, F (a - i.+1%:R) < F a - n%:R.
     move/cvgrNy_lt : nyF => /(_ (F a - n%:R))[z [zreal zFan]].
-    exists `|ceil (a - z)|%N.
-    rewrite zFan// ltrBlDr -ltrBlDl (le_lt_trans (ceil_ge _)) ?num_real//.
-    by rewrite (le_lt_trans (ler_norm _))// -natr1 -intr_norm ltrDl.
+    exists (truncn (a - z)).
+    by rewrite zFan// ltrBlDr -ltrBlDl -truncn_le_nat.
   by exists i => //=; rewrite in_itv/= yFa andbT (lt_le_trans _ Fany).
 - move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].
-  exists `|ceil (F (a - n.+1%:R) - F a)|.+1 => //=.
-  rewrite in_itv/= zFa andbT lerBlDr -lerBlDl (le_trans _ (abs_ceil_ge _))//.
-  by rewrite ler_normr orbC opprB lerB// ltW.
+  exists (truncn (F a - F (a - n.+1%:R))).+1 => //=.
+  rewrite in_itv/= zFa andbT lerBlDr -lerBlDl ltW//.
+  by rewrite -truncn_le_nat le_truncn// lerB// ltW.
 Qed.
 
 Lemma increasing_itvoc_bigcup F a n :

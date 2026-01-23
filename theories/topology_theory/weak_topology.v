@@ -1,6 +1,8 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra all_classical unstable.
+From mathcomp Require Import all_ssreflect all_algebra all_classical.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import interval_inference reals topology_structure.
 From mathcomp Require Import uniform_structure order_topology.
 From mathcomp Require Import pseudometric_structure.
@@ -201,7 +203,7 @@ Let WeakU : topologicalType := @weak_topology (sub_type Y) X val.
 Lemma open_order_weak (U : set Y) : @open OrdU U -> @open WeakU U.
 Proof.
 rewrite ?openE /= /interior => + x Ux => /(_ x Ux); rewrite itv_nbhsE /=.
-move=> [][][[]l|[]] [[]r|[]][][]//= _ xlr /filterS; apply.
+move=> [][][[]l|[]] [[]r|[]][]//= _ xlr /filterS; apply.
 - exists `]l, r[%classic; split => //=; exists `]\val l, \val r[%classic.
     exact: itv_open.
   by rewrite eqEsubset; split => z; rewrite preimage_itv.

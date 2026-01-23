@@ -117,157 +117,23 @@
 
 - in `derive.v`:
   + lemmas `differentiable_rsubmx`, `differentiable_lsubmx`
+- in set_interval.v
+  + definitions `itv_is_closed_unbounded`, `itv_is_cc`, `itv_closed_ends`
 
 ### Changed
-
-- in `charge.v`:
-  + `dominates_cscalel` specialized from
-    `set _ -> \bar _` to `{measure set _ -> \bar _}`
-
-- in `measurable_structure.v`:
-  + the notation ``` `<< ``` is now for `null_set_dominates`,
-    the previous definition can be recovered with the lemma
-    `null_dominatesP`
-
-- in `lebesgue_integral_monotone_convergence.v`:
-  + lemma `ge0_le_integral` (remove superfluous hypothesis)
-- in `subspace_topology.v`:
-  + notation `{within _, continuous _}` (now uses `from_subspace`)
-
-- moved from `realfun.v` to `numfun.v`:
-  + notations `nondecreasing_fun`, `nonincreasing_fun`, `increasing_fun`,
-    `decreasing_fun`
-  + generalized from `realType` to `numDomainType`:
-    * lemmas `nondecreasing_funN`, `nonincreasing_funN`
-  + generalized from `realType` to `porderType`
-    * definitions `itv_partition`, `itv_partitionL`, `itv_partitionR`
-    * lemmas `itv_partition_nil`, `itv_partition_cons`, `itv_partition1`,
-      `itv_partition_size_neq0`, `itv_partitionxx`, `itv_partition_le`,
-      `itv_partition_cat`, `itv_partition_nth_size`, `itv_partition_nth_ge`,
-      `itv_partition_nth_le`, `nondecreasing_fun_itv_partition`
-  + generalized from `realType` to `orderType`
-    * lemmas `itv_partitionLP`, `itv_partitionRP`, `in_itv_partition`,
-      `notin_itv_partition`
-  + generalize from `realType` to `numDomainType`:
-    * lemmas `nonincreasing_fun_itv_partition`, `itv_partition_rev`
-
-- moved from `realfun.v` to `numfun.v`:
-  + generalize from `realType` to `numDomainType`
-    * definition `variation`
-    * lemmas `variation_zip`, `variation_prev`, `variation_next`,
-      `variation_nil`, `variation_ge0`, `variationN`, `variation_le`,
-      `nondecreasing_variation`, `nonincreasing_variation`,
-      `variation_cat` (order of parameters also changed), `le_variation`,
-      `variation_opp_rev`, `variation_rev_opp`
-  + generalize from `realType` to `realDomainType`
-    * lemmas `variation_itv_partitionLR`, `variation_subseq`
-
-- moved from `realfun.v` to `numfun.v`:
-  + generalize from `realType` to `numDomainType`
-    * definition `variations`, `bounded_variation`
-    * lemmas `variations_variation`, `variations_neq0`, `variationsN`,
-      `variationsxx`
-    * lemmas `bounded_variationxx`, `bounded_variationD`,
-      `bounded_variationN`, `bounded_variationl`, `bounded_variationr`,
-      `variations_opp`, `nondecreasing_bounded_variation`
+- in set_interval.v
+  + `itv_is_open_unbounded`, `itv_is_oo`, `itv_open_ends` (Prop to bool)
 
 ### Renamed
-
-- in `probability.v`:
-  + `derivable_oo_continuous_bnd_onemXnMr` -> `derivable_oo_LRcontinuous_onemXnMr`
-- in `measure_negligible.v`:
-  + `measure_dominates_ae_eq` -> `null_dominates_ae_eq`
-
-- in `charge.v`:
-  + `induced` -> `induced_charge`
-
-- in `boolp.v`:
-  + `notP` -> `not_notP`
-  + `notE` -> `not_notE`
+- in set_interval.v
+  + `itv_is_ray` -> `itv_is_open_unbounded`
+  + `itv_is_bd_open` -> `itv_is_oo`
 
 ### Generalized
 
-- in `lebesgue_integral_under.v`:
-  + weaken an hypothesis of lemma `continuity_under_integral`
-
-- in `lebesgue_integrable.v`:
-  + weaken an hypothesis of lemma `finite_measure_integrable_cst`
-
-- in `derive.v`:
-  + definition `jacobian`
-  + lemmas `deriveEjacobian`, `differentiable_coord`
-
-- in `ftc.v`:
-  + lemmas `parameterized_integral_continuous`,
-    `integration_by_substitution_decreasing`,
-    `integration_by_substitution_oppr`,
-    `integration_by_substitution_increasing`,
-    `integration_by_substitution_onem`,
-    `Rintegration_by_substitution_onem`
-
-- in `lebesgue_integral_theory/lebesgue_integrable.v`
-  + lemma `null_set_integral`
-
-- in `realfun.v`:
-  + generalized from `realType` to `realFieldType`:
-    * definition `total_variation`
-    * lemmas `total_variationxx`, `nondecreasing_total_variation`,
-      `total_variationN`
-
-- in `num_topology.v`:
-  + lemma `in_continuous_mksetP`
-
-- in `pseudometric_normed_Zmodule.v`:
-  + lemmas `continuous_within_itvP`, `continuous_within_itvcyP`,
-    `continuous_within_itvNycP`
-  + lemma `within_continuous_continuous`
-  + lemmas `open_itvoo_subset`, `open_itvcc_subset`, `realFieldType`
-
 ### Deprecated
 
-- in `topology_structure.v`:
-  + lemma `closure_limit_point` (use `closure_limit_point_isolated` instead)
-
 ### Removed
-
-- in `lebesgue_stieltjes_measure.v`:
-  + notation `wlength_sigma_sub_additive` (deprecated since 1.1.0)
-
-- in `constructive_ereal.v`:
-  + notations `gee_pmull`, `gee_addl`, `gee_addr`, `gte_addr`, `gte_addl`,
-    `lte_subl_addr`, `lte_subl_addl`, `lte_subr_addr`, `lte_subr_addl`,
-    `lee_subl_addr`, `lee_subl_addl`, `lee_subr_addr`, `lee_subr_addl`
-    (deprecated since 1.2.0)
-
-- in `signed.v`:
-  + notations `num_le_maxr`, `num_le_maxl`, `num_le_minr`, `num_le_minl`,
-    `num_lt_maxr`, `num_lt_maxl`, `num_lt_minr`, `num_lt_minl`
-    (deprecated since 1.2.0)
-
-- in `measure_function.v`:
-  + notations `g_salgebra_measure_unique_trace`,
-    `g_salgebra_measure_unique_cover`, `g_salgebra_measure_unique`
-    (deprecated since 1.2.0)
-
-- in `measurable_structure.v`:
-  + notations `monotone_class`, `monotone_class_g_salgebra`,
-    `smallest_monotone_classE`, `monotone_class_subset`,
-    `setI_closed_gdynkin_salgebra`, `dynkin_g_dynkin`, `dynkin_monotone`,
-    `salgebraType`
-    (deprecated since 1.2.0)
-
-- in `sequences.v`:
-  + notation `eq_bigsetU_seqD`
-    (deprecated since 1.2.0)
-- in `measurable_structure.v`:
-  + definition `measure_dominates` (use `null_set_dominates` instead)
-  + lemma `measure_dominates_trans`
-
-- in `charge.v`:
-  + lemma `dominates_charge_variation` (use `charge_null_dominatesP` instead)
-
-- in `set_interval.v`:
-  + lemma `interval_set1` (use `set_itv1` instead)
 
 ### Infrastructure
 

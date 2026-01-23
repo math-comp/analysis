@@ -81,7 +81,6 @@ Reserved Notation "mu .-cara.-measurable" (format "mu .-cara.-measurable").
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Import ProperNotations.
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope classical_set_scope.

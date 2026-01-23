@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
 From mathcomp Require Import interval_inference reals topology_structure.
@@ -259,9 +259,6 @@ rewrite near_simpl near_mapi; near=> x.
 have [//|z [fxz yz]] := near (Fy _ (gt0 eps)) x.
 by exists z => //; split => //; apply: subP.
 Unshelve. all: end_near. Qed.
-
-#[deprecated(since="mathcomp-analysis 1.6.0", note="use `cvgi_ballP` instead")]
-Definition cvg_toi_locally := @cvgi_ballP.
 
 Lemma cvgi_ball T {F} {FF : Filter F} (f : T -> M -> Prop) y :
   f `@ F --> y ->

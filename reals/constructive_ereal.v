@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 (* -------------------------------------------------------------------- *)
 (* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)
 (* Copyright (c) - 2015--2018 - Inria                                   *)
@@ -1721,9 +1721,6 @@ Qed.
 
 End DualERealArithTh_numDomainType.
 
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `gte_dN`")]
-Notation gte_dopp := gte_dN (only parsing).
-
 End DualAddTheoryNumDomain.
 
 Section ERealArithTh_realDomainType.
@@ -2957,16 +2954,6 @@ Arguments lee_sum_nneg_natl {R}.
 Arguments lee_sum_npos_natl {R}.
 #[global] Hint Extern 0 (is_true (0 <= `| _ |)%E) => solve [apply: abse_ge0] : core.
 
-#[deprecated(since="mathcomp-analysis 1.3.0", note="Use `lte_leD` instead.")]
-Notation lte_le_add := lte_leD (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="Use `lee_ltD` instead.")]
-Notation lee_lt_add := lee_ltD (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="Use `lte_leB` instead.")]
-Notation lte_le_sub := lte_leB (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="Use leeN2 instead.")]
-Notation lee_opp2 := leeN2 (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="Use lteN2 instead.")]
-Notation lte_opp2 := lteN2 (only parsing).
 #[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to maxe_pMr")]
 Notation maxeMr := maxe_pMr (only parsing).
 #[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to maxe_pMl")]
@@ -3380,55 +3367,6 @@ Arguments lee_dsum_npos_natr {R}.
 Arguments lee_dsum_nneg_natl {R}.
 Arguments lee_dsum_npos_natl {R}.
 
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dD`")]
-Notation lte_dadd := lte_dD (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_dDl`")]
-Notation lee_daddl := lee_dDl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_dDr`")]
-Notation lee_daddr := lee_dDr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `gee_dDl`")]
-Notation gee_daddl := gee_dDl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `gee_dDr`")]
-Notation gee_daddr := gee_dDr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dDl`")]
-Notation lte_daddl := lte_dDl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dDr`")]
-Notation lte_daddr := lte_dDr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `gte_dBl`")]
-Notation gte_dsubl := gte_dBl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `gte_dBr`")]
-Notation gte_dsubr := gte_dBr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `gte_dDl`")]
-Notation gte_daddl := gte_dDl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `gte_dDr`")]
-Notation gte_daddr := gte_dDr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dD2lE`")]
-Notation lte_dadd2lE := lte_dD2lE (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_dD2rE`")]
-Notation lee_dadd2rE := lee_dD2rE (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_dD2l`")]
-Notation lee_dadd2l := lee_dD2l (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_dD2r`")]
-Notation lee_dadd2r := lee_dD2r (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_dD`")]
-Notation lee_dadd := lee_dD (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_dB`")]
-Notation lee_dsub := lee_dB (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dBlDr`")]
-Notation lte_dsubl_addr := lte_dBlDr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dBlDl`")]
-Notation lte_dsubl_addl := lte_dBlDl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dBrDr`")]
-Notation lte_dsubr_addr := lte_dBrDr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dBrDl`")]
-Notation lte_dsubr_addl := lte_dBrDl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_le_dD`")]
-Notation lte_le_dadd := lte_le_dD (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_lt_dD`")]
-Notation lee_lt_dadd := lee_lt_dD (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_le_dB`")]
-Notation lte_le_dsub := lte_le_dD (only parsing).
-
 End DualAddTheoryRealDomain.
 
 Section realFieldType_lemmas.
@@ -3728,40 +3666,6 @@ rewrite neq_lt => /orP[|] r0.
 Qed.
 
 End realFieldType_lemmas.
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_pdivrMl`")]
-Notation lte_pdivr_mull := lte_pdivrMl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_pdivrMr`")]
-Notation lte_pdivr_mulr := lte_pdivrMr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_pdivlMl`")]
-Notation lte_pdivl_mull := lte_pdivlMl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_pdivlMr`")]
-Notation lte_pdivl_mulr := lte_pdivlMr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_pdivrMl`")]
-Notation lee_pdivr_mull := lee_pdivrMl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_pdivrMr`")]
-Notation lee_pdivr_mulr := lee_pdivrMr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_pdivlMl`")]
-Notation lee_pdivl_mull := lee_pdivlMl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_pdivlMr`")]
-Notation lee_pdivl_mulr := lee_pdivlMr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_ndivrMl`")]
-Notation lte_ndivr_mull := lte_ndivrMl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_ndivrMr`")]
-Notation lte_ndivr_mulr := lte_ndivrMr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_ndivlMl`")]
-Notation lte_ndivl_mull := lte_ndivlMl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_ndivlMr`")]
-Notation lte_ndivl_mulr := lte_ndivlMr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_ndivrMl`")]
-Notation lee_ndivr_mull := lee_ndivrMl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_ndivrMr`")]
-Notation lee_ndivr_mulr := lee_ndivrMr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_ndivlMl`")]
-Notation lee_ndivl_mull := lee_ndivlMl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_ndivlMr`")]
-Notation lee_ndivl_mulr := lee_ndivlMr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `eqe_pdivrMl`")]
-Notation eqe_pdivr_mull := eqe_pdivrMl (only parsing).
 
 Module DualAddTheoryRealField.
 

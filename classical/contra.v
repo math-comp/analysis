@@ -297,19 +297,19 @@ Canonical and_nProp P tQ nQ Q :=
   ProperNegatedProp (@and_nPropP P tQ nQ Q).
 
 Fact and3_nPropP P Q tR nR R : (~ [/\ P, Q & nProp tR nR R]) = (P -> Q -> nR).
-Proof. by hnf; rewrite and3E notE. Qed.
+Proof. #[warnings="-user-warn"] by hnf; rewrite and3E notE. Qed.
 Canonical and3_nProp P Q tR nR R :=
   ProperNegatedProp (@and3_nPropP P Q tR nR R).
 
 Fact and4_nPropP P Q R tS nS S :
   (~ [/\ P, Q, R & nProp tS nS S]) = (P -> Q -> R -> nS).
-Proof. by hnf; rewrite and4E notE. Qed.
+Proof. #[warnings="-user-warn"] by hnf; rewrite and4E notE. Qed.
 Canonical and4_nProp P Q R tS nS S :=
   ProperNegatedProp (@and4_nPropP P Q R tS nS S).
 
 Fact and5_nPropP P Q R S tT nT T :
   (~ [/\ P, Q, R, S & nProp tT nT T]) = (P -> Q -> R -> S -> nT).
-Proof. by hnf; rewrite and5E notE. Qed.
+Proof. #[warnings="-user-warn"] by hnf; rewrite and5E notE. Qed.
 Canonical and5_nProp P Q R S tT nT T :=
   ProperNegatedProp (@and5_nPropP P Q R S tT nT T).
 
@@ -321,14 +321,14 @@ Canonical or_nProp tP nP P tQ nQ Q :=
 
 Fact or3_nPropP tP nP P tQ nQ Q tR nR R :
   (~ [\/ nProp tP nP P, nProp tQ nQ Q | nProp tR nR R]) = [/\ nP, nQ & nR].
-Proof. by rewrite or3E notE and3E. Qed.
+Proof. #[warnings="-user-warn"] by rewrite or3E notE and3E. Qed.
 Canonical or3_nProp tP nP P tQ nQ Q tR nR R :=
   ProperNegatedProp (@or3_nPropP tP nP P tQ nQ Q tR nR R).
 
 Fact or4_nPropP tP nP P tQ nQ Q tR nR R tS nS S :
   (~ [\/ nProp tP nP P, nProp tQ nQ Q, nProp tR nR R | nProp tS nS S])
      = [/\ nP, nQ, nR & nS].
-Proof. by rewrite or4E notE and4E. Qed.
+Proof. #[warnings="-user-warn"] by rewrite or4E notE and4E. Qed.
 Canonical or4_nProp tP nP P tQ nQ Q tR nR R tS nS S :=
   ProperNegatedProp (@or4_nPropP tP nP P tQ nQ Q tR nR R tS nS S).
 
@@ -363,12 +363,12 @@ Canonical exists_nProp A tP nP P :=
 
 Fact exists2_nPropP A P tQ nQ Q :
   (~ exists2 x : A, P x & nPred tQ nQ Q x) = (forall x : A, P x -> nQ x).
-Proof. by rewrite exists2E notE. Qed.
+Proof. #[warnings="-user-warn"] by rewrite exists2E notE. Qed.
 Canonical exists2_nProp A P tQ nQ Q :=
   ProperNegatedProp (@exists2_nPropP A P tQ nQ Q).
 
 Fact inhabited_nPropP T : (~ inhabited T) = (T -> False).
-Proof. by rewrite inhabitedE notE. Qed.
+Proof. #[warnings="-user-warn"] by rewrite inhabitedE notE. Qed.
 Canonical inhabited_nProp T := ProperNegatedProp (inhabited_nPropP T).
 
 (**md**************************************************************************)
@@ -463,7 +463,7 @@ Local Fact negb_negP P (b : positedBool P) : (~ ~~ b) = P.
 Proof. by rewrite (reflect_eq negP) negbK; case: b. Qed.
 Canonical negb_neg P b := NegatedBool (@negb_negP P b).
 Local Fact negb_posP nP (b : negatedBool nP) : (~~ b = nP :> Prop).
-Proof. by rewrite -(reflect_eq negP) notE. Qed.
+Proof. #[warnings="-user-warn"] by rewrite -(reflect_eq negP) notE. Qed.
 Canonical negb_pos nP b := PositedBool (@negb_posP nP b).
 
 (**md**************************************************************************)
@@ -479,7 +479,7 @@ Canonical neg_ltn_LHS n m := @NegatedLeqLHS n (n <= m) m.+1 erefl.
 Canonical neg_leq_LHS n m := @NegatedLeqLHS n (n < m) m erefl.
 
 Local Fact leq_negP n lt_nm (m : negatedLeqLHS n lt_nm) : (~ m <= n) = lt_nm.
-Proof. by rewrite notE -ltnNge; case: m => /= m ->. Qed.
+Proof. #[warnings="-user-warn"] by rewrite notE -ltnNge; case: m => /= m ->. Qed.
 Canonical leq_neg n lt_nm m := NegatedBool (@leq_negP n lt_nm m).
 
 (**md**************************************************************************)
@@ -792,7 +792,7 @@ Proof. by rewrite 2!lax_notE. Qed.
 
 End Internals.
 Import Internals.
-Definition notP := @Internals.notP.
+#[warnings="-user-warn"] Definition notP := @Internals.notP.
 Hint View for move/ move_viewP|2.
 Hint View for move/ Internals.equivT_LR|2 Internals.equivT_RL|2.
 Hint View for apply/ Internals.equivT_RL|2 Internals.equivT_LR|2.
@@ -815,7 +815,7 @@ Ltac assume_not :=
 (* Caveat: absurd_not cannot be used as a move/ view because its conclusion   *)
 (* is indeterminate. The more general notP defined above can be used instead. *)
 (******************************************************************************)
-Lemma absurd_not {P} : (~ P -> False) -> P. Proof. by move/Internals.notP. Qed.
+Lemma absurd_not {P} : (~ P -> False) -> P. Proof. #[warnings="-user-warn"] by move/Internals.notP. Qed.
 Ltac absurd_not := assume_not; apply: Internals.absurdW.
 
 (**md**************************************************************************)

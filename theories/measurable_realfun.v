@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean rat.
@@ -360,8 +360,6 @@ by apply: measurableU; [exact: measurable_image_EFin|exact: measurableU].
 Qed.
 #[global] Hint Extern 0 (measurable_fun _ fine) =>
   solve [exact: fine_measurable] : core.
-#[deprecated(since="mathcomp-analysis 1.4.0", note="use `fine_measurable` instead")]
-Notation measurable_fine := fine_measurable (only parsing).
 
 Section measurable_fun_measurable.
 Local Open Scope ereal_scope.
@@ -895,16 +893,6 @@ End standard_measurable_fun.
   solve [exact: mulrl_measurable] : core.
 #[global] Hint Extern 0 (measurable_fun _ (fun x => x ^+ _)) =>
   solve [exact: exprn_measurable] : core.
-#[deprecated(since="mathcomp-analysis 1.4.0", note="use `exprn_measurable` instead")]
-Notation measurable_exprn := exprn_measurable (only parsing).
-#[deprecated(since="mathcomp-analysis 1.4.0", note="use `mulrl_measurable` instead")]
-Notation measurable_mulrl := mulrl_measurable (only parsing).
-#[deprecated(since="mathcomp-analysis 1.4.0", note="use `mulrr_measurable` instead")]
-Notation measurable_mulrr := mulrr_measurable (only parsing).
-#[deprecated(since="mathcomp-analysis 1.4.0", note="use `oppr_measurable` instead")]
-Notation measurable_oppr := oppr_measurable (only parsing).
-#[deprecated(since="mathcomp-analysis 1.4.0", note="use `normr_measurable` instead")]
-Notation measurable_normr := normr_measurable (only parsing).
 
 Lemma measurable_funX d (T : measurableType d) {R : realType} D (f : T -> R) n :
   measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
@@ -912,8 +900,6 @@ Proof.
 move=> mf.
 exact: (@measurable_comp _ _ _ _ _ _ setT (fun x : R => x ^+ n) _ f).
 Qed.
-#[deprecated(since="mathcomp-analysis 1.4.0", note="use `measurable_funX` instead")]
-Notation measurable_fun_pow := measurable_funX (only parsing).
 
 Section measurable_fun_realType.
 Context d (T : measurableType d) (R : realType).
@@ -1455,14 +1441,6 @@ End standard_emeasurable_fun.
   solve [exact: EFin_measurable] : core.
 #[global] Hint Extern 0 (measurable_fun _ -%E) =>
   solve [exact: oppe_measurable] : core.
-#[deprecated(since="mathcomp-analysis 1.4.0", note="use `oppe_measurable` instead")]
-Notation measurable_oppe := oppe_measurable (only parsing).
-#[deprecated(since="mathcomp-analysis 1.4.0", note="use `abse_measurable` instead")]
-Notation measurable_abse := abse_measurable (only parsing).
-#[deprecated(since="mathcomp-analysis 1.4.0", note="use `EFin_measurable` instead")]
-Notation measurable_EFin := EFin_measurable (only parsing).
-#[deprecated(since="mathcomp-analysis 1.4.0", note="use `natmul_measurable` instead")]
-Notation measurable_natmul := natmul_measurable (only parsing).
 
 (* NB: real-valued function *)
 Lemma measurable_EFinP d (T : measurableType d) (R : realType) (D : set T)
@@ -1475,8 +1453,6 @@ rewrite [X in measurable X](_ : _ = D `&` (EFin \o g) @^-1` (EFin @` A)).
 congr (_ `&` _);rewrite eqEsubset; split=> [|? []/= _ /[swap] -[->//]].
 by move=> ? ?; exact: preimage_image.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.6.0", note="use `measurable_EFinP` instead")]
-Notation EFin_measurable_fun := measurable_EFinP (only parsing).
 
 Lemma measurable_fun_dirac
     d {T : measurableType d} {R : realType} D (U : set T) :

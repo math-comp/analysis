@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 (* -------------------------------------------------------------------- *)
 (* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)
 (* Copyright (c) - 2015--2018 - Inria                                   *)
@@ -6,10 +6,11 @@
 (* -------------------------------------------------------------------- *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap.
-From mathcomp Require Import boolp classical_sets functions.
-From mathcomp Require Import fsbigop cardinality set_interval.
-From mathcomp Require Import reals interval_inference topology.
-From mathcomp Require Export constructive_ereal unstable.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import fsbigop cardinality set_interval reals.
+From mathcomp Require Export interval_inference topology constructive_ereal.
 
 (**md**************************************************************************)
 (* # Extended real numbers, classical part ($\overline{\mathbb{R}}$)          *)
@@ -55,12 +56,9 @@ Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldTopology.Exports.
-From mathcomp Require Import mathcomp_extra unstable.
 
 Local Open Scope ring_scope.
-
 Local Open Scope ereal_scope.
-
 Local Open Scope classical_set_scope.
 
 Lemma EFin_bigcup T (F : nat -> set T) :
