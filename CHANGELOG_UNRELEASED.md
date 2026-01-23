@@ -4,6 +4,9 @@
 
 ### Added
 
+- in `analysis_stdlib/Rstruct_topology.v`:
+  + lemma `RlnE`
+
 - in `classical_sets.v`:
   + lemma `nonemptyPn`
 
