@@ -1,5 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
+From HB Require Import structures.
+From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint vector.
 From mathcomp Require Import archimedean interval.
 
 (**md**************************************************************************)
@@ -553,3 +554,114 @@ End ProperNotations.
 
 Lemma sqrtK {K : rcfType} : {in Num.nneg, cancel (@Num.sqrt K) (fun x => x ^+ 2)}.
 Proof. by move=> r r0; rewrite sqr_sqrtr. Qed.
+
+Module Norm.
+
+HB.mixin Record isNorm (K : numDomainType) (L : lmodType K) (norm : L -> K) := {
+  norm0 : norm 0 = 0;
+  norm_ge0 : forall x, 0 <= norm x;
+  norm0_eq0 : forall x, norm x = 0 -> x = 0;
+  ler_normD : forall x y, norm (x + y) <= norm x + norm y;
+  normZ : forall r x, norm (r *: x) = `|r| * norm x;
+}.
+
+#[export]
+HB.structure Definition Norm K L := { norm of @isNorm K L norm }.
+
+Module Import Theory.
+Section Theory.
+Variables (K : numDomainType) (L : lmodType K) (norm : Norm.type L).
+
+Lemma normMn x n : norm (x *+ n) = norm x *+ n.
+Proof. by rewrite -scaler_nat normZ normr_nat mulr_natl. Qed.
+
+Lemma normN x : norm (- x) = norm x.
+Proof. by rewrite -scaleN1r normZ normrN1 mul1r. Qed.
+
+Lemma ler_norm_sum (I : Type) (r : seq I) (F : I -> L) :
+    norm (\sum_(i <- r) F i) <= \sum_(i <- r) norm (F i).
+Proof.
+by elim/big_ind2 : _ => *; rewrite ?norm0// (le_trans (ler_normD _ _))// lerD.
+Qed.
+
+End Theory.
+End Theory.
+
+Module Import Exports. HB.reexport. End Exports.
+End Norm.
+Export Norm.Exports.
+
+Section InfiniteNorm.
+Variables (K : numFieldType) (V : vectType K).
+Let V' := @fullv _ V.
+Variable B : (\dim V').-tuple V.
+Hypothesis Bbasis : basis_of V' B.
+
+Definition max_norm x := \big[Order.max/0]_(i < \dim V') `|coord B i x|.
+
+Definition max_space : Type := (fun=> V) Bbasis.
+
+HB.instance Definition _ := Vector.on max_space.
+
+Lemma max_norm_ge0 x : 0 <= max_norm x.
+Proof.
+rewrite /max_norm.
+by elim/big_ind : _ => //= ? ? ? ?; rewrite /Order.max; case: ifP.
+Qed.
+
+Lemma le_coord_max_norm x i : `|coord B i x| <= max_norm x.
+Proof.
+rewrite /max_norm; elim: (index_enum _) (mem_index_enum i) => //= j l IHl.
+rewrite inE big_cons [X in _ <= X _ _]/Order.max/= => /predU1P[<-|/IHl {}IHl];
+  case: ifP => [/ltW|]// /negbT.
+set b := (X in _ < X).
+have bR : b \is Num.real by apply: bigmax_real => // a _; apply: normr_real.
+have /comparable_leNgt <- := real_comparable bR (normr_real (coord B j x)).
+by move=> /(le_trans IHl).
+Qed.
+
+Lemma max_norm0 : max_norm 0 = 0.
+Proof.
+apply: le_anti; rewrite max_norm_ge0 andbT.
+apply: bigmax_le => // i _.
+have <-: \sum_(i < \dim V') 0 *: B`_i = 0.
+  under eq_bigr do rewrite scale0r.
+  by rewrite sumr_const mul0rn.
+by rewrite coord_sum_free ?normr0// (basis_free Bbasis).
+Qed.
+
+Lemma ler_max_normD x y : max_norm (x + y) <= max_norm x + max_norm y.
+Proof.
+apply: bigmax_le => [|/= i _]; first by rewrite addr_ge0// max_norm_ge0.
+by rewrite raddfD/= (le_trans (ler_normD _ _))// lerD// le_coord_max_norm.
+Qed.
+
+Lemma max_norm0_eq0 x : max_norm x = 0 -> x = 0.
+Proof.
+move=> x0; rewrite (coord_basis Bbasis (memvf x)).
+suff: forall i, coord B i x = 0.
+  by move=> {}x0; rewrite big1//= => j _; rewrite x0 scale0r.
+by move=> i; apply/normr0_eq0/le_anti; rewrite normr_ge0 -x0 le_coord_max_norm.
+Qed.
+
+Lemma max_normZ r x : max_norm (r *: x) = `|r| * max_norm x.
+Proof.
+rewrite /max_norm.
+under eq_bigr do rewrite linearZ/= normrM.
+elim: (index_enum _) => [|i l IHl]; first by rewrite !big_nil mulr0.
+by rewrite !big_cons IHl maxr_pMr.
+Qed.
+
+HB.instance Definition _ := Norm.isNorm.Build K V max_norm
+  max_norm0 max_norm_ge0 max_norm0_eq0 ler_max_normD max_normZ.
+
+Lemma max_normMn x n : max_norm (x *+ n) = max_norm x *+ n.
+Proof. exact: Norm.Theory.normMn. Qed.
+
+Lemma max_normN x : max_norm (- x) = max_norm x.
+Proof. exact: Norm.Theory.normN. Qed.
+
+HB.instance Definition _ := Num.Zmodule_isNormed.Build K
+  max_space ler_max_normD max_norm0_eq0 max_normMn max_normN.
+
+End InfiniteNorm.
