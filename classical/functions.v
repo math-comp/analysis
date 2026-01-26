@@ -2677,6 +2677,10 @@ Lemma mul_funC (T : Type) {R : comPzSemiRingType} (f : T -> R) (r : R) :
   r \*o f = r \o* f.
 Proof. by apply/funext => x/=; rewrite mulrC. Qed.
 
+Lemma fun_maxC d d' (T : orderType d) (T' : orderType d') (f g : T -> T') :
+  f \max g = g \max f.
+Proof. by apply/funext => z/=; rewrite Order.TotalTheory.maxC. Qed.
+
 End function_space.
 
 Section function_space_lemmas.
