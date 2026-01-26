@@ -235,6 +235,15 @@
   + `closure_subset` -> `closureS`
 
 - in `set_interval.v`:
+- in `functions.v`:
+  + lemma `fun_maxC`
+
+- in `derive.v`:
+  + lemmas `differentiable_max`, `derive1_maxl`, `derive1_maxr`
+
+### Renamed
+
+- in set_interval.v
   + `itv_is_ray` -> `itv_is_open_unbounded`
   + `itv_is_bd_open` -> `itv_is_oo`
 
