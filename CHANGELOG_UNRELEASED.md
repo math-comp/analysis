@@ -10,7 +10,7 @@
   + definitions `itv_is_closed_unbounded`, `itv_is_cc`, `itv_closed_ends`
 
 - in probability.v
-  + lemmas `pmf_positive_countable`, `pmf_measurable`
+  + lemmas `pmf_gt0_countable`, `pmf_measurable`
 
 ### Changed
 - in set_interval.v
