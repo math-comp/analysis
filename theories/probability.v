@@ -1080,11 +1080,11 @@ Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType)
   (P : probability T R) (X : {RV P >-> R}).
 
-Lemma pmf_positive_countable : countable [set r | (0 < pmf X r)%R].
+Lemma pmf_gt0_countable : countable [set r | (0 < pmf X r)%R].
 Proof.
 have ->: [set r | 0 < (pmf X r)%:E] =
   \bigcup_n [set r | (n.+1%:R^-1 < pmf X r)%R].
-  rewrite seteqP; split => [r /ltr_add_invr [l] | r [k] _]; last exact: lt_trans.
+  apply/seteqP; split => [r /ltr_add_invr [l] | r [k] _]; last exact: lt_trans.
   by rewrite add0r => lpmf; exists l.
 apply: bigcup_countable => // n _.
 apply: finite_set_countable; apply: contrapT => /infiniteP/pcard_leP/injfunPex.
@@ -1096,8 +1096,7 @@ apply: (@lt_le_trans _ _ (P (\bigcup_k X @^-1` [set q k])));
   last by apply/probability_le1/bigcup_measurable => k _.
 have <-: \big[+%R/0%R]_(0 <= k <oo | k \in setT) P (X @^-1` [set q k]) =
   P (\bigcup_k X @^-1` [set q k]).
-  apply/esym/measure_bigcup => //=.
-  move: (trivIset_comp (fun r => X @^-1` [set r]) q_inj); rewrite /comp => ->.
+  rewrite measure_bigcup// (trivIset_comp (fun r => X@^-1` [set r]))//.
   exact: trivIset_preimage1.
 apply: (@lt_le_trans _ _
   (\sum_(0 <= k < n.+1 | k \in setT) P (X @^-1` [set q k])));
@@ -1112,7 +1111,7 @@ Qed.
 
 Lemma pmf_measurable : measurable_fun setT (pmf X).
 Proof.
-have : countable [set r | (0 < pmf X r)%R] by exact pmf_positive_countable.
+have : countable [set r | (0 < pmf X r)%R] by exact pmf_gt0_countable.
 case/countable_bijP => S.
 rewrite card_eq_sym; case/pcard_eqP/bijPex => /= h h_bij.
 apply/measurable_EFinP.
@@ -1122,9 +1121,9 @@ have pmf_ge0 s : 0 <= (pmf X s)%:E by rewrite fineK ?fin_num_measure.
 have pmf1_ge0 k s : 0%R <= (pmf X (h k) * \1_[set h k] s)%:E.
   by rewrite EFinM; apply: mule_ge0.
 apply: (eq_measurable_fun sfun) => [r _|].
-  case: (pselect ([set h k | k in S] r)) => [rS | nrS].
+  case/asboolP: ([set h k | k in S] r) => [rS | nrS].
   - pose kr := (pinv S h r).
-    have neqh k : in_set S k && (k != kr) -> r != h k.
+    have neqh k : (k \in S) && (k != kr) -> r != h k.
       move/andP=>[Sk]; apply: contra_neq.
       by rewrite /kr => ->; rewrite pinvKV//; exact: (set_bij_inj h_bij).
     rewrite /sfun (@nneseriesD1 _ _ kr)//; last by rewrite in_setE; apply: invS.
@@ -1136,9 +1135,8 @@ apply: (eq_measurable_fun sfun) => [r _|].
       apply/negP/contra_not/nrS.
       by rewrite (surj_image_eq _ (set_bij_surj h_bij))//; exact: set_bij_sub.
     rewrite indicE in_set1_eq.
-    have ->: (r == h k) = false; rewrite ?mulr0// -eq_opE eqbF_neg; apply/negP.
-    apply/contra_not/nrS; rewrite eq_opE => ->.
-    by exists k; rewrite -?(in_setE S k).
+    suff ->: (r == h k) = false by rewrite mulr0.
+    by apply/eqP/contra_not/nrS => ->; exists k => //; rewrite -(in_setE S k).
 apply: ge0_emeasurable_sum => //= k _.
 apply/measurable_EFinP/measurable_funM;
   [exact: measurable_cst | exact/measurable_indicP].
