@@ -18,7 +18,7 @@
 - in `Rstruct_topology.v`:
   + lemma `RlnE`
 - in probability.v
-  + lemmas `pmf_positive_countable`, `pmf_measurable`
+  + lemmas `pmf_gt0_countable`, `pmf_measurable`
 
 ### Changed
 - in set_interval.v
