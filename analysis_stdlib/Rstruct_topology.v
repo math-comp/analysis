@@ -14,8 +14,6 @@ From mathcomp Require Export Rstruct.
 From mathcomp Require Import topology.
 (* The following line is for RexpE. *)
 From mathcomp Require normedtype sequences.
-(* The following line is for RlnE. *)
-From mathcomp Require exp.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -109,12 +107,3 @@ Unshelve. all: by end_near. Qed.
 End RexpE.
 
 Definition RexpE := RexpE.RexpE.
-
-Lemma RlnE (x : R) : Rpower.ln x = exp.ln x.
-Proof.
-rewrite /Rpower.ln /Rln.
-have [xle0|xgt0] := leP x 0.
-  by case: Rlt_dec => //= /[dup] /RltP + ?; rewrite exp.ln0// ltNge xle0.
-case: (Rlt_dec 0 x) => [/= ? | /RltP/[!xgt0]//].
-by case: ln_exists => y ->; rewrite RexpE exp.expRK.
-Qed.
