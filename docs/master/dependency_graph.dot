@@ -503,7 +503,6 @@ digraph depend {
 	"theories/sequences" -> "theories/numfun";
 	"theories/sequences" -> "theories/measure_theory/measurable_structure";
 	"theories/sequences" -> "theories/showcase/pnt";
-	"theories/sequences" -> "analysis_stdlib/Rstruct_topology";
 	"theories/cantor" -> "theories/all_analysis";
 	"theories/tvs" -> "theories/normedtype_theory/num_normedtype";
 	"theories/normedtype_theory/num_normedtype" -> "theories/normedtype_theory/pseudometric_normed_Zmodule";
@@ -524,6 +523,7 @@ digraph depend {
 	"theories/numfun" -> "theories/realfun";
 	"theories/numfun" -> "theories/esum";
 	"theories/exp" -> "theories/measurable_realfun";
+	"theories/exp" -> "analysis_stdlib/Rstruct_topology";
 	"theories/convex" -> "theories/exp";
 	"theories/trigo" -> "theories/gauss_integral";
 	"theories/trigo" -> "theories/pi_irrational";
