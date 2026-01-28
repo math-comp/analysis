@@ -242,10 +242,10 @@
 
 - in `set_interval.v`:
 - in `functions.v`:
-  + lemma `fun_maxC`
+  + lemmas `fun_maxC`, `fun_minC`, `min_fun_to_max`, `max_fun_to_min`
 
 - in `derive.v`:
-  + lemmas `differentiable_max`, `derive1_maxl`, `derive1_maxr`
+  + lemmas `derivable_max`, `derive_maxl`, `derive_maxr` `derivable_min`, `derive_minl`, `derive_minr`
 
 ### Renamed
 
