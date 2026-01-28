@@ -21,6 +21,7 @@
   + lemma `nonemptyPn`
 
 - in `set_interval.v`
+- in set_interval.v
   + definitions `itv_is_closed_unbounded`, `itv_is_cc`, `itv_closed_ends`
 
 - in `Rstruct.v`:

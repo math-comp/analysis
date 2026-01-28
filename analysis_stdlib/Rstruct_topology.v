@@ -14,8 +14,6 @@ From mathcomp Require Export Rstruct.
 From mathcomp Require Import topology.
 (* The following line is for RexpE. *)
 From mathcomp Require normedtype sequences.
-(* The following line is for RlnE. *)
-From mathcomp Require exp.
 
 Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
