@@ -110,22 +110,11 @@ End RexpE.
 
 Definition RexpE := RexpE.RexpE.
 
-Lemma RlnE (x : R) : 0 < x -> Rpower.ln x = exp.ln x.
+Lemma RlnE (x : R) : Rpower.ln x = exp.ln x.
 Proof.
-rewrite /ln /Rpower.ln /= /Rln /=.
-case: (Rlt_dec 0 x) => [/= x_pos | ? /RltP //].
-have ln_res := ln_exists x x_pos.
-have : ln_exists x x_pos = ln_res.
-  apply: eq_sig.
-    case: ln_res => y x_ey.
-    case: (ln_exists x x_pos) => z z_ey /=.
-    apply:exp.expR_inj.
-    rewrite -!RexpE.
-    by rewrite -z_ey -x_ey.
-  case: ln_res.
-  by case: (ln_exists x x_pos) => [y ?] z ? /= ?; subst y.
-move=> -> _ /=.
-move: ln_res => [y x_ey].
-rewrite x_ey RexpE.
-by rewrite exp.expRK.
+rewrite /Rpower.ln /Rln.
+have [xle0|xgt0] := leP x 0.
+  by case: Rlt_dec => //= /[dup] /RltP + ?; rewrite exp.ln0// ltNge xle0.
+case: (Rlt_dec 0 x) => [/= ? | /RltP/[!xgt0]//].
+by case: ln_exists => y ->; rewrite RexpE exp.expRK.
 Qed.
