@@ -323,7 +323,6 @@ Unshelve.
 end_near.
 Qed.
 
-
 Lemma is_derive0 (f : V -> W) (x : V) : is_derive x 0 f 0.
 Proof. split; [by apply/derivable0 | by rewrite derive0]. Qed.
 
