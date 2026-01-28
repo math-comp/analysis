@@ -17,7 +17,6 @@
   + lemmas `derivable_max`, `derive_maxl`, `derive_maxr` `derivable_min`, `derive_minl`, `derive_minr`
 
 ### Renamed
-
 - in set_interval.v
   + `itv_is_ray` -> `itv_is_open_unbounded`
   + `itv_is_bd_open` -> `itv_is_oo`

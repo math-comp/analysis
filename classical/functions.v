@@ -2695,7 +2695,6 @@ Lemma fun_minC d (T : Type) (T' : orderType d) (f g : T -> T') :
   f \min g = g \min f.
 Proof. by apply/funext => z/=; rewrite Order.TotalTheory.minC. Qed.
 
-
 End function_space.
 
 Section function_space_lemmas.
