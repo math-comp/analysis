@@ -2677,6 +2677,24 @@ Lemma mul_funC (T : Type) {R : comPzSemiRingType} (f : T -> R) (r : R) :
   r \*o f = r \o* f.
 Proof. by apply/funext => x/=; rewrite mulrC. Qed.
 
+Lemma min_fun_to_max (T : Type) (T' : numDomainType) (f g : T -> T') :
+  (f \min g) = (f + g) - (f \max g).
+Proof.
+apply/funext=> x /=; by rewrite Num.Theory.minr_to_max. Qed.
+
+Lemma max_fun_to_min (T : Type) (T' : numDomainType) (f g : T -> T') :
+  (f \max g) = (f + g) - (f \min g).
+Proof.
+apply/funext => x /=; by rewrite Num.Theory.maxr_to_min. Qed.
+
+Lemma fun_maxC d (T : Type) (T' : orderType d) (f g : T -> T') :
+  f \max g = g \max f.
+Proof. by apply/funext => z/=; rewrite Order.TotalTheory.maxC. Qed.
+
+Lemma fun_minC d (T : Type) (T' : orderType d) (f g : T -> T') :
+  f \min g = g \min f.
+Proof. by apply/funext => z/=; rewrite Order.TotalTheory.minC. Qed.
+
 End function_space.
 
 Section function_space_lemmas.
