@@ -2161,8 +2161,8 @@ Lemma derivable_min f g x v :
   {for x, continuous f} -> {for x, continuous g} ->
   derivable (f \min g) x v.
 Proof.
-case: (boolP (v == 0)) => [/eqP -> /= gx_fx cf cg | v0].
-  by rewrite !derive0.
+case: (boolP (v == 0)) => [/eqP -> /= _ _ _ _ _| v0].
+  by apply/derivable0.
 rewrite min_fun_to_max=> fx_gx df dg cf cg.
 apply/derivableB; [by apply/(derivableD df dg) | by apply/derivable_max].
 Qed.
