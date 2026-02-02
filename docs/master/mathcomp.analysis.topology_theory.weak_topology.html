@@ -246,7 +246,7 @@ respect to $f$.
 <span class="vernacular">Definition</span><span class="id"> </span><span id="weak_topology" class="id"><a name="weak_topology" class="" title="weak_topology : forall {S T : Type}, (S -> T) -> Type
 
 weak_topology is not universe polymorphic
-Arguments weak_topology {S T}%type_scope f%function_scope
+Arguments weak_topology {S T}%_type_scope f%_function_scope
 weak_topology is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology
@@ -264,7 +264,7 @@ forall [S : choiceType] [T : topology_structure.Topological.type],
 (S -> topology_structure.Topological.sort T) -> set (set S)
 
 wopen is not universe polymorphic
-Arguments wopen [S T] f%function_scope _
+Arguments wopen [S T] f%_function_scope _
 wopen is transparent
 Expands to: Constant mathcomp.analysis.topology_theory.weak_topology.wopen
 Declared in
@@ -309,7 +309,7 @@ forall [S : choiceType] [T : topology_structure.Topological.type],
 
 weak_topology_weak_topology__canonical__choice_Choice is not universe polymorphic
 Arguments weak_topology_weak_topology__canonical__choice_Choice 
-  [S T] f%function_scope
+  [S T] f%_function_scope
 weak_topology_weak_topology__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__choice_Choice
@@ -321,7 +321,7 @@ forall [S : choiceType] [T : topology_structure.Topological.type],
 
 weak_topology_weak_topology__canonical__choice_Choice is not universe polymorphic
 Arguments weak_topology_weak_topology__canonical__choice_Choice 
-  [S T] f%function_scope
+  [S T] f%_function_scope
 weak_topology_weak_topology__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__choice_Choice
@@ -333,7 +333,7 @@ forall [S : choiceType] [T : topology_structure.Topological.type],
 
 weak_topology_weak_topology__canonical__choice_Choice is not universe polymorphic
 Arguments weak_topology_weak_topology__canonical__choice_Choice 
-  [S T] f%function_scope
+  [S T] f%_function_scope
 weak_topology_weak_topology__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__choice_Choice
@@ -345,7 +345,7 @@ forall [S : choiceType] [T : topology_structure.Topological.type],
 
 weak_topology_weak_topology__canonical__choice_Choice is not universe polymorphic
 Arguments weak_topology_weak_topology__canonical__choice_Choice 
-  [S T] f%function_scope
+  [S T] f%_function_scope
 weak_topology_weak_topology__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__choice_Choice
@@ -357,7 +357,7 @@ forall [S : choiceType] [T : topology_structure.Topological.type],
 
 weak_topology_weak_topology__canonical__choice_Choice is not universe polymorphic
 Arguments weak_topology_weak_topology__canonical__choice_Choice 
-  [S T] f%function_scope
+  [S T] f%_function_scope
 weak_topology_weak_topology__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__choice_Choice
@@ -372,7 +372,7 @@ topology_structure.Topological.type
 weak_topology_weak_topology__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__topology_structure_Topological
-  [S T] f%function_scope
+  [S T] f%_function_scope
 weak_topology_weak_topology__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_Topological
@@ -386,7 +386,7 @@ topology_structure.Topological.type
 weak_topology_weak_topology__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__topology_structure_Topological
-  [S T] f%function_scope
+  [S T] f%_function_scope
 weak_topology_weak_topology__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_Topological
@@ -400,7 +400,7 @@ topology_structure.Topological.type
 weak_topology_weak_topology__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__topology_structure_Topological
-  [S T] f%function_scope
+  [S T] f%_function_scope
 weak_topology_weak_topology__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_Topological
@@ -414,7 +414,7 @@ topology_structure.Topological.type
 weak_topology_weak_topology__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__topology_structure_Topological
-  [S T] f%function_scope
+  [S T] f%_function_scope
 weak_topology_weak_topology__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_Topological
@@ -455,7 +455,7 @@ exists B : set (weak_topology f),
        `<=` (f : weak_topology f -> topology_structure.Topological.sort T) @^-1`
             t)%classic]
 
-Arguments weak_continuous [S T] [f]%function_scope [x t] _
+Arguments weak_continuous [S T] [f]%_function_scope [x t] _
 weak_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_continuous
@@ -482,7 +482,7 @@ filter.cvg_to
   (filter.nbhs (f s))
 
 cvg_image is not universe polymorphic
-Arguments cvg_image [S T] [f]%function_scope [F] s _ _
+Arguments cvg_image [S T] [f]%_function_scope [F] s _ _
 cvg_image is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.cvg_image
@@ -515,7 +515,7 @@ topology_structure.PointedTopological.type
 weak_topology_weak_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__topology_structure_PointedTopological
-  [S T] f%function_scope
+  [S T] f%_function_scope
 weak_topology_weak_topology__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_PointedTopological
@@ -529,7 +529,7 @@ topology_structure.PointedTopological.type
 weak_topology_weak_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__topology_structure_PointedTopological
-  [S T] f%function_scope
+  [S T] f%_function_scope
 weak_topology_weak_topology__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_PointedTopological
@@ -543,7 +543,7 @@ topology_structure.PointedTopological.type
 weak_topology_weak_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__topology_structure_PointedTopological
-  [S T] f%function_scope
+  [S T] f%_function_scope
 weak_topology_weak_topology__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_PointedTopological
@@ -557,7 +557,7 @@ topology_structure.PointedTopological.type
 weak_topology_weak_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__topology_structure_PointedTopological
-  [S T] f%function_scope
+  [S T] f%_function_scope
 weak_topology_weak_topology__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_PointedTopological
@@ -571,7 +571,7 @@ topology_structure.PointedTopological.type
 weak_topology_weak_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__topology_structure_PointedTopological
-  [S T] f%function_scope
+  [S T] f%_function_scope
 weak_topology_weak_topology__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_PointedTopological
@@ -585,7 +585,7 @@ topology_structure.PointedTopological.type
 weak_topology_weak_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__topology_structure_PointedTopological
-  [S T] f%function_scope
+  [S T] f%_function_scope
 weak_topology_weak_topology__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__topology_structure_PointedTopological
@@ -605,7 +605,7 @@ forall [pS : choiceType] [U : uniformType] [f : pS -> U],
 filter.set_system (weak_topology f * weak_topology f)
 
 weak_ent is not universe polymorphic
-Arguments weak_ent [pS U] [f]%function_scope _
+Arguments weak_ent [pS U] [f]%_function_scope _
 weak_ent is transparent
 Expands to: Constant mathcomp.analysis.topology_theory.weak_topology.weak_ent
 Declared in
@@ -618,7 +618,7 @@ forall [pS : choiceType] [U : uniformType] (f : pS -> U),
 filter.Filter (weak_ent (pS:=pS) (U:=U) (f:=f))
 
 weak_ent_filter is not universe polymorphic
-Arguments weak_ent_filter [pS U] f%function_scope
+Arguments weak_ent_filter [pS U] f%_function_scope
 weak_ent_filter is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_ent_filter
@@ -645,8 +645,8 @@ forall [pS : choiceType] [U : uniformType] [f : pS -> U]
 weak_ent (pS:=pS) (U:=U) (f:=f) A ->
 forall [t : weak_topology f * weak_topology f], diagonal t -> A t
 
-Arguments weak_ent_refl [pS U] [f]%function_scope 
-  [A]%classical_set_scope _ [t] _
+Arguments weak_ent_refl [pS U] [f]%_function_scope 
+  [A]%_classical_set_scope _ [t] _
 weak_ent_refl is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_ent_refl
@@ -666,7 +666,7 @@ weak_ent (pS:=pS) (U:=U) (f:=f) A ->
 weak_ent (pS:=pS) (U:=U) (f:=f) A^-1%relation
 
 weak_ent_inv is not universe polymorphic
-Arguments weak_ent_inv [pS U] [f]%function_scope [A]%classical_set_scope _
+Arguments weak_ent_inv [pS U] [f]%_function_scope [A]%_classical_set_scope _
 weak_ent_inv is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_ent_inv
@@ -688,7 +688,8 @@ exists2 B : set (weak_topology f * weak_topology f),
   weak_ent (pS:=pS) (U:=U) (f:=f) B & ((B \; B)%relation `<=` A)%classic
 
 weak_ent_split is not universe polymorphic
-Arguments weak_ent_split [pS U] [f]%function_scope [A]%classical_set_scope _
+Arguments weak_ent_split [pS U] [f]%_function_scope 
+  [A]%_classical_set_scope _
 weak_ent_split is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_ent_split
@@ -709,7 +710,7 @@ forall [pS : choiceType] [U : uniformType] (f : pS -> U),
 filter.nbhs = nbhs_ (weak_ent (pS:=pS) (U:=U) (f:=f))
 
 weak_ent_nbhs is not universe polymorphic
-Arguments weak_ent_nbhs [pS U] f%function_scope
+Arguments weak_ent_nbhs [pS U] f%_function_scope
 weak_ent_nbhs is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_ent_nbhs
@@ -735,7 +736,7 @@ forall [pS : choiceType] [U : uniformType], (pS -> U) -> uniformType
 
 weak_topology_weak_topology__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments weak_topology_weak_topology__canonical__uniform_structure_Uniform
-  [pS U] f%function_scope
+  [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_Uniform
@@ -746,7 +747,7 @@ forall [pS : choiceType] [U : uniformType], (pS -> U) -> uniformType
 
 weak_topology_weak_topology__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments weak_topology_weak_topology__canonical__uniform_structure_Uniform
-  [pS U] f%function_scope
+  [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_Uniform
@@ -757,7 +758,7 @@ forall [pS : choiceType] [U : uniformType], (pS -> U) -> uniformType
 
 weak_topology_weak_topology__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments weak_topology_weak_topology__canonical__uniform_structure_Uniform
-  [pS U] f%function_scope
+  [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_Uniform
@@ -768,7 +769,7 @@ forall [pS : choiceType] [U : uniformType], (pS -> U) -> uniformType
 
 weak_topology_weak_topology__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments weak_topology_weak_topology__canonical__uniform_structure_Uniform
-  [pS U] f%function_scope
+  [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_Uniform
@@ -779,7 +780,7 @@ forall [pS : choiceType] [U : uniformType], (pS -> U) -> uniformType
 
 weak_topology_weak_topology__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments weak_topology_weak_topology__canonical__uniform_structure_Uniform
-  [pS U] f%function_scope
+  [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_Uniform
@@ -796,7 +797,7 @@ forall [pS : pointedType] [U : uniformType], (pS -> U) -> puniformType
 weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
-  [pS U] f%function_scope
+  [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
@@ -808,7 +809,7 @@ forall [pS : pointedType] [U : uniformType], (pS -> U) -> puniformType
 weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
-  [pS U] f%function_scope
+  [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
@@ -820,7 +821,7 @@ forall [pS : pointedType] [U : uniformType], (pS -> U) -> puniformType
 weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
-  [pS U] f%function_scope
+  [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
@@ -832,7 +833,7 @@ forall [pS : pointedType] [U : uniformType], (pS -> U) -> puniformType
 weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
-  [pS U] f%function_scope
+  [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
@@ -844,7 +845,7 @@ forall [pS : pointedType] [U : uniformType], (pS -> U) -> puniformType
 weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
-  [pS U] f%function_scope
+  [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
@@ -856,7 +857,7 @@ forall [pS : pointedType] [U : uniformType], (pS -> U) -> puniformType
 weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
-  [pS U] f%function_scope
+  [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__uniform_structure_PointedUniform
@@ -877,7 +878,7 @@ forall {R : realType} [pS : choiceType] [U : pseudoMetricType R]
 weak_topology f -> R -> weak_topology f -> Prop
 
 weak_ball is not universe polymorphic
-Arguments weak_ball {R} [pS U] [f]%function_scope x r%ring_scope y
+Arguments weak_ball {R} [pS U] [f]%_function_scope x r%_ring_scope y
 weak_ball is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_ball
@@ -892,7 +893,7 @@ forall {R : realType} [pS : choiceType] [U : pseudoMetricType R]
 
 weak_pseudo_metric_ball_center is not universe polymorphic
 Arguments weak_pseudo_metric_ball_center {R} [pS U] 
-  [f]%function_scope x [e]%ring_scope _
+  [f]%_function_scope x [e]%_ring_scope _
 weak_pseudo_metric_ball_center is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_pseudo_metric_ball_center
@@ -910,7 +911,7 @@ forall {R : realType} [pS : choiceType] [U : pseudoMetricType R]
 entourage = entourage_ (weak_ball (pS:=pS) (U:=U) (f:=f))
 
 weak_pseudo_metric_entourageE is not universe polymorphic
-Arguments weak_pseudo_metric_entourageE {R} [pS U] f%function_scope
+Arguments weak_pseudo_metric_entourageE {R} [pS U] f%_function_scope
 weak_pseudo_metric_entourageE is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_pseudo_metric_entourageE
@@ -949,7 +950,7 @@ forall {R : realType} [pS : choiceType] [U : pseudoMetricType R],
 weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric
-  {R} [pS U] f%function_scope
+  {R} [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric
@@ -962,7 +963,7 @@ forall {R : realType} [pS : choiceType] [U : pseudoMetricType R],
 weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric
-  {R} [pS U] f%function_scope
+  {R} [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric
@@ -975,7 +976,7 @@ forall {R : realType} [pS : choiceType] [U : pseudoMetricType R],
 weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric
-  {R} [pS U] f%function_scope
+  {R} [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric
@@ -988,7 +989,7 @@ forall {R : realType} [pS : choiceType] [U : pseudoMetricType R],
 weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric
-  {R} [pS U] f%function_scope
+  {R} [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric
@@ -1001,7 +1002,7 @@ forall {R : realType} [pS : choiceType] [U : pseudoMetricType R],
 weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments
   weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric
-  {R} [pS U] f%function_scope
+  {R} [pS U] f%_function_scope
 weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_topology_weak_topology__canonical__pseudometric_structure_PseudoMetric
@@ -1018,7 +1019,7 @@ forall {R : realType} [pS : choiceType] [U : pseudoMetricType R]
 (f @^-1` ball (f x) e)%classic = ball x e
 
 weak_ballE is not universe polymorphic
-Arguments weak_ballE {R} [pS U] [f]%function_scope e%ring_scope x
+Arguments weak_ballE {R} [pS U] [f]%_function_scope e%_ring_scope x
 weak_ballE is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.weak_ballE
@@ -1049,7 +1050,7 @@ forall {d : disp_t} {X : orderTopologicalType d} {Y : subType (T:=X) X}
 topology_structure.open U -> topology_structure.open U
 
 open_order_weak is not universe polymorphic
-Arguments open_order_weak {d X Y} [U]%classical_set_scope _
+Arguments open_order_weak {d X Y} [U]%_classical_set_scope _
 open_order_weak is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.open_order_weak
@@ -1135,8 +1136,8 @@ filter.nbhs (f x) t ->
       class) in
  nbhs) x (f @^-1` t)%classic
 
-Arguments continuous_comp_weak {Y X Z} [w f]%function_scope 
-  _%function_scope [x t] _
+Arguments continuous_comp_weak {Y X Z} [w f]%_function_scope
+  _%_function_scope [x t] _
 continuous_comp_weak is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.weak_topology.continuous_comp_weak

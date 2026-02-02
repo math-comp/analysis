@@ -501,7 +501,7 @@ filter.prop_near1 filter.eventually (P:=fun n : nat => N < n)
   (inPhantom (forall n : nat, N < n))
 
 nbhs_infty_gt is not universe polymorphic
-Arguments nbhs_infty_gt N%nat_scope
+Arguments nbhs_infty_gt N%_nat_scope
 nbhs_infty_gt is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.nat_topology.nbhs_infty_gt
@@ -520,7 +520,7 @@ filter.prop_near1 filter.eventually (P:=fun n : nat => N <= n)
   (inPhantom (forall n : nat, N <= n))
 
 nbhs_infty_ge is not universe polymorphic
-Arguments nbhs_infty_ge N%nat_scope
+Arguments nbhs_infty_ge N%_nat_scope
 nbhs_infty_ge is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.nat_topology.nbhs_infty_ge
@@ -538,7 +538,7 @@ filter.prop_near1 filter.eventually (P:=fun n : nat => (r <= n%:R)%R)
   (inPhantom (forall n : nat, (r <= n%:R)%R))
 
 nbhs_infty_ger is not universe polymorphic
-Arguments nbhs_infty_ger {R} r%ring_scope
+Arguments nbhs_infty_ger {R} r%_ring_scope
 nbhs_infty_ger is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.nat_topology.nbhs_infty_ger
@@ -560,7 +560,7 @@ filter.cvg_to
   (filter.nbhs filter.eventually)
 
 cvg_addnl is not universe polymorphic
-Arguments cvg_addnl N%nat_scope t _
+Arguments cvg_addnl N%_nat_scope t _
 cvg_addnl is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.nat_topology.cvg_addnl
 Declared in
@@ -579,7 +579,7 @@ filter.cvg_to
   (filter.nbhs filter.eventually)
 
 cvg_addnr is not universe polymorphic
-Arguments cvg_addnr N%nat_scope t _
+Arguments cvg_addnr N%_nat_scope t _
 cvg_addnr is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.nat_topology.cvg_addnr
 Declared in
@@ -597,7 +597,7 @@ filter.cvg_to
   (filter.nbhs filter.eventually)
 
 cvg_subnr is not universe polymorphic
-Arguments cvg_subnr N%nat_scope t _
+Arguments cvg_subnr N%_nat_scope t _
 cvg_subnr is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.nat_topology.cvg_subnr
 Declared in
@@ -618,7 +618,7 @@ filter.cvg_to
   (filter.nbhs filter.eventually)
 
 cvg_mulnl is not universe polymorphic
-Arguments cvg_mulnl N%nat_scope _ t _
+Arguments cvg_mulnl N%_nat_scope _ t _
 cvg_mulnl is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.nat_topology.cvg_mulnl
 Declared in
@@ -639,7 +639,7 @@ filter.cvg_to
   (filter.nbhs filter.eventually)
 
 cvg_mulnr is not universe polymorphic
-Arguments cvg_mulnr N%nat_scope _ t _
+Arguments cvg_mulnr N%_nat_scope _ t _
 cvg_mulnr is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.nat_topology.cvg_mulnr
 Declared in
@@ -659,7 +659,7 @@ filter.cvg_to
   (filter.nbhs filter.eventually)
 
 cvg_divnr is not universe polymorphic
-Arguments cvg_divnr N%nat_scope _ t _
+Arguments cvg_divnr N%_nat_scope _ t _
 cvg_divnr is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.nat_topology.cvg_divnr
 Declared in
@@ -679,7 +679,7 @@ filter.prop_near1 filter.eventually (P:=fun x : nat => P x.+1)
 filter.prop_near1 filter.eventually (P:=P) (inPhantom (forall x : nat, P x))
 
 near_inftyS is not universe polymorphic
-Arguments near_inftyS P%classical_set_scope _
+Arguments near_inftyS P%_classical_set_scope _
 near_inftyS is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.nat_topology.near_inftyS
@@ -730,7 +730,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
    (inPhantom (forall x : I, A <= f x)))
 
 cvgnyPge is not universe polymorphic
-Arguments cvgnyPge {I}%type_scope {F FF} f%function_scope
+Arguments cvgnyPge {I}%_type_scope {F FF} f%_function_scope
 cvgnyPge is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.nat_topology.cvgnyPge
 Declared in
@@ -753,7 +753,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
    (inPhantom (forall x : I, A < f x)))
 
 cvgnyPgt is not universe polymorphic
-Arguments cvgnyPgt {I}%type_scope {F FF} f%function_scope
+Arguments cvgnyPgt {I}%_type_scope {F FF} f%_function_scope
 cvgnyPgt is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.nat_topology.cvgnyPgt
 Declared in
@@ -781,7 +781,7 @@ filter.prop_near1 filter.eventually
         (inPhantom (forall x : I, A < f x))))
 
 cvgnyPgty is not universe polymorphic
-Arguments cvgnyPgty {I}%type_scope {F FF} f%function_scope
+Arguments cvgnyPgty {I}%_type_scope {F FF} f%_function_scope
 cvgnyPgty is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.nat_topology.cvgnyPgty
 Declared in
@@ -809,7 +809,7 @@ filter.prop_near1 filter.eventually
         (inPhantom (forall x : I, A <= f x))))
 
 cvgnyPgey is not universe polymorphic
-Arguments cvgnyPgey {I}%type_scope {F FF} f%function_scope
+Arguments cvgnyPgey {I}%_type_scope {F FF} f%_function_scope
 cvgnyPgey is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.nat_topology.cvgnyPgey
 Declared in

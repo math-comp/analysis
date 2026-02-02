@@ -245,7 +245,7 @@ forall {T : topology_structure.Topological.type},
 set (topology_structure.Topological.sort T) -> Prop
 
 Gdelta is not universe polymorphic
-Arguments Gdelta {T} S%classical_set_scope
+Arguments Gdelta {T} S%_classical_set_scope
 Gdelta is transparent
 Expands to: Constant mathcomp.analysis.borel_hierarchy.Gdelta
 Declared in
@@ -259,7 +259,7 @@ forall {T : topology_structure.Topological.type}
 topology_structure.open S -> Gdelta S
 
 open_Gdelta is not universe polymorphic
-Arguments open_Gdelta {T} [S]%classical_set_scope _
+Arguments open_Gdelta {T} [S]%_classical_set_scope _
 open_Gdelta is opaque
 Expands to: Constant mathcomp.analysis.borel_hierarchy.open_Gdelta
 Declared in
@@ -275,7 +275,7 @@ forall {T : topology_structure.Topological.type},
 set (topology_structure.Topological.sort T) -> Prop
 
 Gdelta_dense is not universe polymorphic
-Arguments Gdelta_dense {T} S%classical_set_scope
+Arguments Gdelta_dense {T} S%_classical_set_scope
 Gdelta_dense is transparent
 Expands to: Constant mathcomp.analysis.borel_hierarchy.Gdelta_dense
 Declared in
@@ -289,7 +289,7 @@ forall {T : topology_structure.Topological.type},
 set (topology_structure.Topological.sort T) -> Prop
 
 Fsigma is not universe polymorphic
-Arguments Fsigma {T} S%classical_set_scope
+Arguments Fsigma {T} S%_classical_set_scope
 Fsigma is transparent
 Expands to: Constant mathcomp.analysis.borel_hierarchy.Fsigma
 Declared in
@@ -303,7 +303,7 @@ forall {T : topology_structure.Topological.type}
 topology_structure.closed S -> Fsigma S
 
 closed_Fsigma is not universe polymorphic
-Arguments closed_Fsigma {T} [S]%classical_set_scope _
+Arguments closed_Fsigma {T} [S]%_classical_set_scope _
 closed_Fsigma is opaque
 Expands to: Constant mathcomp.analysis.borel_hierarchy.closed_Fsigma
 Declared in
@@ -337,7 +337,7 @@ forall
   i ->
 i S
 
-Arguments Gdelta_measurable {R} [S]%classical_set_scope _ [i] _
+Arguments Gdelta_measurable {R} [S]%_classical_set_scope _ [i] _
 Gdelta_measurable is opaque
 Expands to: Constant mathcomp.analysis.borel_hierarchy.Gdelta_measurable
 Declared in
@@ -355,7 +355,7 @@ forall {R : realType} [A : set R] [S : set (subspace A)],
 topology_structure.open A -> Gdelta S -> Gdelta (A `&` S)
 
 Gdelta_subspace_open is not universe polymorphic
-Arguments Gdelta_subspace_open {R} [A S]%classical_set_scope _ _
+Arguments Gdelta_subspace_open {R} [A S]%_classical_set_scope _ _
 Gdelta_subspace_open is opaque
 Expands to: Constant mathcomp.analysis.borel_hierarchy.Gdelta_subspace_open
 Declared in

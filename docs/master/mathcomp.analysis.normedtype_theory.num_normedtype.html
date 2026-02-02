@@ -275,7 +275,7 @@ forall [R : numDomainType] (a b : R),
 (a \in `[a, +oo[%R) * (a \in `]-oo, a]%R)
 
 bound_itvE is not universe polymorphic
-Arguments bound_itvE [R] (a b)%ring_scope
+Arguments bound_itvE [R] (a b)%_ring_scope
 bound_itvE is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.bound_itvE
@@ -320,8 +320,8 @@ forall [x : R],
 (fun x0 : R => is_true (x0 \in `[a, b]%R)) x ->
 (f x \in (f @`[a, b])%R) = true
 
-Arguments mono_mem_image_segment [R] [a b]%ring_scope 
-  [f]%function_scope _ [x] _
+Arguments mono_mem_image_segment [R] [a b]%_ring_scope 
+  [f]%_function_scope _ [x] _
 mono_mem_image_segment is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.mono_mem_image_segment
@@ -352,8 +352,8 @@ strict_monotonic (T:=R) (T':=R) (pT:=itvPredType R) `[a, b]%R f ->
 forall [x : R],
 (fun x0 : R => is_true (x0 \in `]a, b[%R)) x -> (f x \in f @`]a, b[%R) = true
 
-Arguments mono_mem_image_itvoo [R] [a b]%ring_scope 
-  [f]%function_scope _ [x] _
+Arguments mono_mem_image_itvoo [R] [a b]%_ring_scope 
+  [f]%_function_scope _ [x] _
 mono_mem_image_itvoo is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.mono_mem_image_itvoo
@@ -380,8 +380,8 @@ set_surj `[a, b] (f @`[a, b]) f ->
 [set f x | x in `[a, b]]%classic = (f @`[a, b])%classic
 
 mono_surj_image_segment is not universe polymorphic
-Arguments mono_surj_image_segment [R] [a b]%ring_scope 
-  [f]%function_scope _ _ _
+Arguments mono_surj_image_segment [R] [a b]%_ring_scope 
+  [f]%_function_scope _ _ _
 mono_surj_image_segment is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.mono_surj_image_segment
@@ -402,7 +402,7 @@ forall [R : realDomainType] [a b : R] [f : R -> R],
 (f a <= f b)%R -> (f @`[a, b])%R = `[f a, f b]%R
 
 inc_segment_image is not universe polymorphic
-Arguments inc_segment_image [R] [a b]%ring_scope [f]%function_scope _
+Arguments inc_segment_image [R] [a b]%_ring_scope [f]%_function_scope _
 inc_segment_image is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.inc_segment_image
@@ -419,7 +419,7 @@ forall [R : realDomainType] [a b : R] [f : R -> R],
 (f b <= f a)%R -> (f @`[a, b])%R = `[f b, f a]%R
 
 dec_segment_image is not universe polymorphic
-Arguments dec_segment_image [R] [a b]%ring_scope [f]%function_scope _
+Arguments dec_segment_image [R] [a b]%_ring_scope [f]%_function_scope _
 dec_segment_image is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.dec_segment_image
@@ -439,8 +439,8 @@ set_surj `[a, b] `[f a, f b] f ->
 [set f x | x in `[a, b]]%classic = `[f a, f b]%classic
 
 inc_surj_image_segment is not universe polymorphic
-Arguments inc_surj_image_segment [R] [a b]%ring_scope 
-  [f]%function_scope _ _ _
+Arguments inc_surj_image_segment [R] [a b]%_ring_scope 
+  [f]%_function_scope _ _ _
 inc_surj_image_segment is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.inc_surj_image_segment
@@ -465,8 +465,8 @@ set_surj `[a, b] `[f b, f a] f ->
 [set f x | x in `[a, b]]%classic = `[f b, f a]%classic
 
 dec_surj_image_segment is not universe polymorphic
-Arguments dec_surj_image_segment [R] [a b]%ring_scope 
-  [f]%function_scope _ _ _
+Arguments dec_surj_image_segment [R] [a b]%_ring_scope 
+  [f]%_function_scope _ _ _
 dec_surj_image_segment is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.dec_surj_image_segment
@@ -492,8 +492,8 @@ forall y : R,
 reflect (exists2 x : R, x \in `[a, b]%R & f x = y) (y \in `[f a, f b]%R)
 
 inc_surj_image_segmentP is not universe polymorphic
-Arguments inc_surj_image_segmentP [R] [a b]%ring_scope 
-  [f]%function_scope _ _ _ y%ring_scope
+Arguments inc_surj_image_segmentP [R] [a b]%_ring_scope 
+  [f]%_function_scope _ _ _ y%_ring_scope
 inc_surj_image_segmentP is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.inc_surj_image_segmentP
@@ -519,8 +519,8 @@ forall y : R,
 reflect (exists2 x : R, x \in `[a, b]%R & f x = y) (y \in `[f b, f a]%R)
 
 dec_surj_image_segmentP is not universe polymorphic
-Arguments dec_surj_image_segmentP [R] [a b]%ring_scope 
-  [f]%function_scope _ _ _ y%ring_scope
+Arguments dec_surj_image_segmentP [R] [a b]%_ring_scope 
+  [f]%_function_scope _ _ _ y%_ring_scope
 dec_surj_image_segmentP is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.dec_surj_image_segmentP
@@ -546,8 +546,8 @@ forall y : R,
 reflect (exists2 x : R, x \in `[a, b]%R & f x = y) (y \in (f @`[a, b])%R)
 
 mono_surj_image_segmentP is not universe polymorphic
-Arguments mono_surj_image_segmentP [R] [a b]%ring_scope 
-  [f]%function_scope _ _ _ y%ring_scope
+Arguments mono_surj_image_segmentP [R] [a b]%_ring_scope 
+  [f]%_function_scope _ _ _ y%_ring_scope
 mono_surj_image_segmentP is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.mono_surj_image_segmentP
@@ -595,7 +595,7 @@ forall {R : numDomainType} {T : pseudoMetricType R} [x : T] [P : set T],
 {d : {posnum R}%R | (ball x d%:num `<=` ~` P)%classic}
 
 ex_ball_sig is not universe polymorphic
-Arguments ex_ball_sig {R T} [x] [P]%classical_set_scope _
+Arguments ex_ball_sig {R T} [x] [P]%_classical_set_scope _
 ex_ball_sig is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.ex_ball_sig
@@ -619,7 +619,7 @@ forall {R : numDomainType} {T : pseudoMetricType R} [x : T] [P : set T],
 filter.nbhs x (~` P)%classic
 
 nbhsC is not universe polymorphic
-Arguments nbhsC {R T} [x] [P]%classical_set_scope _
+Arguments nbhsC {R T} [x] [P]%_classical_set_scope _
 nbhsC is opaque
 Expands to: Constant mathcomp.analysis.normedtype_theory.num_normedtype.nbhsC
 Declared in
@@ -638,7 +638,7 @@ filter.nbhs x (~` P)%classic ->
 {d : {posnum R}%R | (ball x d%:num `<=` ~` P)%classic}
 
 nbhsC_ball is not universe polymorphic
-Arguments nbhsC_ball {R T} [x] [P]%classical_set_scope _
+Arguments nbhsC_ball {R T} [x] [P]%_classical_set_scope _
 nbhsC_ball is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.nbhsC_ball
@@ -658,7 +658,7 @@ forall {R : numDomainType} {T : pseudoMetricType R} [x : T] [P : T -> Prop],
 filter.nbhs x P -> {d : {posnum R}%R | forall y : T, ball x d%:num y -> P y}
 
 nbhs_ex is not universe polymorphic
-Arguments nbhs_ex {R T} [x] [P]%function_scope _
+Arguments nbhs_ex {R T} [x] [P]%_function_scope _
 nbhs_ex is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.nbhs_ex
@@ -802,7 +802,7 @@ filter.prop_near1 +oo%R (P:=fun x : R => (r < x)%R)
   (inPhantom (forall x : R, (r < x)%R))
 
 nbhs_pinfty_gt is not universe polymorphic
-Arguments nbhs_pinfty_gt {R} [r]%ring_scope _
+Arguments nbhs_pinfty_gt {R} [r]%_ring_scope _
 nbhs_pinfty_gt is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.nbhs_pinfty_gt
@@ -821,7 +821,7 @@ filter.prop_near1 +oo%R (P:=fun x : R => (r <= x)%R)
   (inPhantom (forall x : R, (r <= x)%R))
 
 nbhs_pinfty_ge is not universe polymorphic
-Arguments nbhs_pinfty_ge {R} [r]%ring_scope _
+Arguments nbhs_pinfty_ge {R} [r]%_ring_scope _
 nbhs_pinfty_ge is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.nbhs_pinfty_ge
@@ -840,7 +840,7 @@ filter.prop_near1 -oo%R (P:=fun x : R => (x < r)%R)
   (inPhantom (forall x : R, (x < r)%R))
 
 nbhs_ninfty_lt is not universe polymorphic
-Arguments nbhs_ninfty_lt {R} [r]%ring_scope _
+Arguments nbhs_ninfty_lt {R} [r]%_ring_scope _
 nbhs_ninfty_lt is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.nbhs_ninfty_lt
@@ -859,7 +859,7 @@ filter.prop_near1 -oo%R (P:=fun x : R => (x <= r)%R)
   (inPhantom (forall x : R, (x <= r)%R))
 
 nbhs_ninfty_le is not universe polymorphic
-Arguments nbhs_ninfty_le {R} [r]%ring_scope _
+Arguments nbhs_ninfty_le {R} [r]%_ring_scope _
 nbhs_ninfty_le is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.nbhs_ninfty_le
@@ -914,7 +914,7 @@ filter.prop_near1 +oo%R (P:=A) (inPhantom (forall k : R, A k)) ->
 exists2 M : R, (m < M)%R & A M
 
 pinfty_ex_gt is not universe polymorphic
-Arguments pinfty_ex_gt {R} [m]%ring_scope [A]%classical_set_scope _ _
+Arguments pinfty_ex_gt {R} [m]%_ring_scope [A]%_classical_set_scope _ _
 pinfty_ex_gt is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.pinfty_ex_gt
@@ -936,7 +936,7 @@ filter.prop_near1 +oo%R (P:=A) (inPhantom (forall k : R, A k)) ->
 exists2 M : R, (m <= M)%R & A M
 
 pinfty_ex_ge is not universe polymorphic
-Arguments pinfty_ex_ge {R} [m]%ring_scope [A]%classical_set_scope _ _
+Arguments pinfty_ex_ge {R} [m]%_ring_scope [A]%_classical_set_scope _ _
 pinfty_ex_ge is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.pinfty_ex_ge
@@ -960,7 +960,7 @@ exists2
   (0 < M)%R & A M
 
 pinfty_ex_gt0 is not universe polymorphic
-Arguments pinfty_ex_gt0 {R} [A]%classical_set_scope _
+Arguments pinfty_ex_gt0 {R} [A]%_classical_set_scope _
 pinfty_ex_gt0 is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.pinfty_ex_gt0
@@ -980,7 +980,7 @@ filter.prop_near1 +oo%R (P:=fun k : R => A (k / 2)%R)
   (inPhantom (forall k : R, A (k / 2)%R))
 
 near_pinfty_div2 is not universe polymorphic
-Arguments near_pinfty_div2 {R} [A]%classical_set_scope _
+Arguments near_pinfty_div2 {R} [A]%_classical_set_scope _
 near_pinfty_div2 is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.near_pinfty_div2
@@ -1110,7 +1110,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
    (inPhantom (forall x : T, (A <= f x)%R)))
 
 cvgryPger is not universe polymorphic
-Arguments cvgryPger {R} {T}%type_scope {F FF} f%function_scope
+Arguments cvgryPger {R} {T}%_type_scope {F FF} f%_function_scope
 cvgryPger is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgryPger
@@ -1135,7 +1135,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
    (inPhantom (forall x : T, (A < f x)%R)))
 
 cvgryPgtr is not universe polymorphic
-Arguments cvgryPgtr {R} {T}%type_scope {F FF} f%function_scope
+Arguments cvgryPgtr {R} {T}%_type_scope {F FF} f%_function_scope
 cvgryPgtr is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgryPgtr
@@ -1164,7 +1164,7 @@ filter.prop_near1 +oo%R
         (inPhantom (forall x : T, (A < f x)%R))))
 
 cvgryPgty is not universe polymorphic
-Arguments cvgryPgty {R} {T}%type_scope {F FF} f%function_scope
+Arguments cvgryPgty {R} {T}%_type_scope {F FF} f%_function_scope
 cvgryPgty is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgryPgty
@@ -1193,7 +1193,7 @@ filter.prop_near1 +oo%R
         (inPhantom (forall x : T, (A <= f x)%R))))
 
 cvgryPgey is not universe polymorphic
-Arguments cvgryPgey {R} {T}%type_scope {F FF} f%function_scope
+Arguments cvgryPgey {R} {T}%_type_scope {F FF} f%_function_scope
 cvgryPgey is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgryPgey
@@ -1218,7 +1218,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
    (inPhantom (forall x : T, (f x <= A)%R)))
 
 cvgrNyPler is not universe polymorphic
-Arguments cvgrNyPler {R} {T}%type_scope {F FF} f%function_scope
+Arguments cvgrNyPler {R} {T}%_type_scope {F FF} f%_function_scope
 cvgrNyPler is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgrNyPler
@@ -1243,7 +1243,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
    (inPhantom (forall x : T, (f x < A)%R)))
 
 cvgrNyPltr is not universe polymorphic
-Arguments cvgrNyPltr {R} {T}%type_scope {F FF} f%function_scope
+Arguments cvgrNyPltr {R} {T}%_type_scope {F FF} f%_function_scope
 cvgrNyPltr is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgrNyPltr
@@ -1272,7 +1272,7 @@ filter.prop_near1 -oo%R
         (inPhantom (forall x : T, (f x < A)%R))))
 
 cvgrNyPltNy is not universe polymorphic
-Arguments cvgrNyPltNy {R} {T}%type_scope {F FF} f%function_scope
+Arguments cvgrNyPltNy {R} {T}%_type_scope {F FF} f%_function_scope
 cvgrNyPltNy is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgrNyPltNy
@@ -1301,7 +1301,7 @@ filter.prop_near1 -oo%R
         (inPhantom (forall x : T, (f x <= A)%R))))
 
 cvgrNyPleNy is not universe polymorphic
-Arguments cvgrNyPleNy {R} {T}%type_scope {F FF} f%function_scope
+Arguments cvgrNyPleNy {R} {T}%_type_scope {F FF} f%_function_scope
 cvgrNyPleNy is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgrNyPleNy
@@ -1326,7 +1326,7 @@ filter.prop_near1 F (P:=fun x : T => (A <= f x)%R)
   (inPhantom (forall x : T, (A <= f x)%R))
 
 cvgry_ger is not universe polymorphic
-Arguments cvgry_ger {R} {T}%type_scope {F FF} [f]%function_scope _ [A] _
+Arguments cvgry_ger {R} {T}%_type_scope {F FF} [f]%_function_scope _ [A] _
 cvgry_ger is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgry_ger
@@ -1351,7 +1351,7 @@ filter.prop_near1 F (P:=fun x : T => (A < f x)%R)
   (inPhantom (forall x : T, (A < f x)%R))
 
 cvgry_gtr is not universe polymorphic
-Arguments cvgry_gtr {R} {T}%type_scope {F FF} [f]%function_scope _ [A] _
+Arguments cvgry_gtr {R} {T}%_type_scope {F FF} [f]%_function_scope _ [A] _
 cvgry_gtr is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgry_gtr
@@ -1376,7 +1376,7 @@ filter.prop_near1 F (P:=fun x : T => (f x <= A)%R)
   (inPhantom (forall x : T, (f x <= A)%R))
 
 cvgrNy_ler is not universe polymorphic
-Arguments cvgrNy_ler {R} {T}%type_scope {F FF} [f]%function_scope _ [A] _
+Arguments cvgrNy_ler {R} {T}%_type_scope {F FF} [f]%_function_scope _ [A] _
 cvgrNy_ler is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgrNy_ler
@@ -1401,7 +1401,7 @@ filter.prop_near1 F (P:=fun x : T => (f x < A)%R)
   (inPhantom (forall x : T, (f x < A)%R))
 
 cvgrNy_ltr is not universe polymorphic
-Arguments cvgrNy_ltr {R} {T}%type_scope {F FF} [f]%function_scope _ [A] _
+Arguments cvgrNy_ltr {R} {T}%_type_scope {F FF} [f]%_function_scope _ [A] _
 cvgrNy_ltr is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgrNy_ltr
@@ -1424,7 +1424,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
   (filter.nbhs -oo%R)
 
 cvgNry is not universe polymorphic
-Arguments cvgNry {R} {T}%type_scope {F FF} f%function_scope
+Arguments cvgNry {R} {T}%_type_scope {F FF} f%_function_scope
 cvgNry is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgNry
@@ -1448,7 +1448,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
   (filter.nbhs +oo%R)
 
 cvgNrNy is not universe polymorphic
-Arguments cvgNrNy {R} {T}%type_scope {F FF} f%function_scope
+Arguments cvgNrNy {R} {T}%_type_scope {F FF} f%_function_scope
 cvgNrNy is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgNrNy
@@ -1477,7 +1477,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
    (inPhantom (forall x : T, (A <= f x)%R)))
 
 cvgryPge is not universe polymorphic
-Arguments cvgryPge {R} {T}%type_scope {F FF} f%function_scope
+Arguments cvgryPge {R} {T}%_type_scope {F FF} f%_function_scope
 cvgryPge is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgryPge
@@ -1501,7 +1501,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
    (inPhantom (forall x : T, (A < f x)%R)))
 
 cvgryPgt is not universe polymorphic
-Arguments cvgryPgt {R} {T}%type_scope {F FF} f%function_scope
+Arguments cvgryPgt {R} {T}%_type_scope {F FF} f%_function_scope
 cvgryPgt is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgryPgt
@@ -1525,7 +1525,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
    (inPhantom (forall x : T, (f x <= A)%R)))
 
 cvgrNyPle is not universe polymorphic
-Arguments cvgrNyPle {R} {T}%type_scope {F FF} f%function_scope
+Arguments cvgrNyPle {R} {T}%_type_scope {F FF} f%_function_scope
 cvgrNyPle is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgrNyPle
@@ -1549,7 +1549,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
    (inPhantom (forall x : T, (f x < A)%R)))
 
 cvgrNyPlt is not universe polymorphic
-Arguments cvgrNyPlt {R} {T}%type_scope {F FF} f%function_scope
+Arguments cvgrNyPlt {R} {T}%_type_scope {F FF} f%_function_scope
 cvgrNyPlt is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgrNyPlt
@@ -1573,7 +1573,7 @@ filter.prop_near1 F (P:=fun x : T => (A <= f x)%R)
   (inPhantom (forall x : T, (A <= f x)%R))
 
 cvgry_ge is not universe polymorphic
-Arguments cvgry_ge {R} {T}%type_scope {F FF} [f]%function_scope _ A
+Arguments cvgry_ge {R} {T}%_type_scope {F FF} [f]%_function_scope _ A
 cvgry_ge is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgry_ge
@@ -1596,7 +1596,7 @@ filter.prop_near1 F (P:=fun x : T => (A < f x)%R)
   (inPhantom (forall x : T, (A < f x)%R))
 
 cvgry_gt is not universe polymorphic
-Arguments cvgry_gt {R} {T}%type_scope {F FF} [f]%function_scope _ A
+Arguments cvgry_gt {R} {T}%_type_scope {F FF} [f]%_function_scope _ A
 cvgry_gt is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgry_gt
@@ -1619,7 +1619,7 @@ filter.prop_near1 F (P:=fun x : T => (f x <= A)%R)
   (inPhantom (forall x : T, (f x <= A)%R))
 
 cvgrNy_le is not universe polymorphic
-Arguments cvgrNy_le {R} {T}%type_scope {F FF} [f]%function_scope _ A
+Arguments cvgrNy_le {R} {T}%_type_scope {F FF} [f]%_function_scope _ A
 cvgrNy_le is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgrNy_le
@@ -1642,7 +1642,7 @@ filter.prop_near1 F (P:=fun x : T => (f x < A)%R)
   (inPhantom (forall x : T, (f x < A)%R))
 
 cvgrNy_lt is not universe polymorphic
-Arguments cvgrNy_lt {R} {T}%type_scope {F FF} [f]%function_scope _ A
+Arguments cvgrNy_lt {R} {T}%_type_scope {F FF} [f]%_function_scope _ A
 cvgrNy_lt is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgrNy_lt
@@ -1727,7 +1727,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
   (filter.nbhs filter.eventually)
 
 cvgrnyP is not universe polymorphic
-Arguments cvgrnyP {R} {T}%type_scope {F FF} f%function_scope
+Arguments cvgrnyP {R} {T}%_type_scope {F FF} f%_function_scope
 cvgrnyP is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgrnyP
@@ -1773,7 +1773,7 @@ filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs F)))
 forall [t : set R],
 filter.nbhs -oo%R t -> F ((fun r : R => (f r * M)%R) @^-1` t)%classic
 
-Arguments gt0_cvgMlNy {R F FF} [M]%ring_scope [f]%function_scope M0 _ [t] _
+Arguments gt0_cvgMlNy {R F FF} [M]%_ring_scope [f]%_function_scope M0 _ [t] _
 gt0_cvgMlNy is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.gt0_cvgMlNy
@@ -1810,7 +1810,7 @@ filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs F)))
 forall [t : set R],
 filter.nbhs -oo%R t -> F ((fun r : R => (M * f r)%R) @^-1` t)%classic
 
-Arguments gt0_cvgMrNy {R F FF} [M]%ring_scope [f]%function_scope M0 _ [t] _
+Arguments gt0_cvgMrNy {R F FF} [M]%_ring_scope [f]%_function_scope M0 _ [t] _
 gt0_cvgMrNy is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.gt0_cvgMrNy
@@ -1845,7 +1845,7 @@ filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs F)))
 forall [t : set R],
 filter.nbhs +oo%R t -> F ((fun r : R => (f r * M)%R) @^-1` t)%classic
 
-Arguments gt0_cvgMly {R F FF} [M]%ring_scope [f]%function_scope M0 _ [t] _
+Arguments gt0_cvgMly {R F FF} [M]%_ring_scope [f]%_function_scope M0 _ [t] _
 gt0_cvgMly is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.gt0_cvgMly
@@ -1882,7 +1882,7 @@ filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs F)))
 forall [t : set R],
 filter.nbhs +oo%R t -> F ((fun r : R => (M * f r)%R) @^-1` t)%classic
 
-Arguments gt0_cvgMry {R F FF} [M]%ring_scope [f]%function_scope M0 _ [t] _
+Arguments gt0_cvgMry {R F FF} [M]%_ring_scope [f]%_function_scope M0 _ [t] _
 gt0_cvgMry is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.gt0_cvgMry
@@ -1907,7 +1907,7 @@ filter.cvg_to
   (filter.nbhs l)
 
 cvgNy_compNP is not universe polymorphic
-Arguments cvgNy_compNP {T R} f%function_scope l
+Arguments cvgNy_compNP {T R} f%_function_scope l
 cvgNy_compNP is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgNy_compNP
@@ -1936,7 +1936,7 @@ filter.cvg_to
   (filter.nbhs l)
 
 cvgy_compNP is not universe polymorphic
-Arguments cvgy_compNP {T R} f%function_scope l
+Arguments cvgy_compNP {T R} f%_function_scope l
 cvgy_compNP is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.cvgy_compNP
@@ -1964,7 +1964,8 @@ filter.cvg_to (filter.nbhs (filter.fmap [eta F] (filter.nbhs +oo%R)))
 `]-oo, F a[%classic = (\bigcup_i `]F (a + i.+1%:R)%R, F a[)%classic
 
 decreasing_itvNyo_bigcup is not universe polymorphic
-Arguments decreasing_itvNyo_bigcup {R} [F]%function_scope [a]%ring_scope _ _
+Arguments decreasing_itvNyo_bigcup {R} [F]%_function_scope 
+  [a]%_ring_scope _ _
 decreasing_itvNyo_bigcup is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.decreasing_itvNyo_bigcup
@@ -1997,8 +1998,8 @@ forall {R : realType} [F : R -> R] [a : R] (n : nat),
 (\bigcup_(i < n) `]F (a + i.+1%:R)%R, F a[)%classic
 
 decreasing_itvoo_bigcup is not universe polymorphic
-Arguments decreasing_itvoo_bigcup {R} [F]%function_scope 
-  [a]%ring_scope n%nat_scope _
+Arguments decreasing_itvoo_bigcup {R} [F]%_function_scope 
+  [a]%_ring_scope n%_nat_scope _
 decreasing_itvoo_bigcup is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.decreasing_itvoo_bigcup
@@ -2026,7 +2027,8 @@ filter.cvg_to (filter.nbhs (filter.fmap [eta F] (filter.nbhs -oo%R)))
 `]-oo, F a]%classic = (\bigcup_i `]F (a - i.+1%:R)%R, F a])%classic
 
 increasing_itvNyo_bigcup is not universe polymorphic
-Arguments increasing_itvNyo_bigcup {R} [F]%function_scope [a]%ring_scope _ _
+Arguments increasing_itvNyo_bigcup {R} [F]%_function_scope 
+  [a]%_ring_scope _ _
 increasing_itvNyo_bigcup is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.increasing_itvNyo_bigcup
@@ -2059,8 +2061,8 @@ forall {R : realType} [F : R -> R] [a : R] (n : nat),
 (\bigcup_(i < n) `]F (a - i.+1%:R)%R, F a])%classic
 
 increasing_itvoc_bigcup is not universe polymorphic
-Arguments increasing_itvoc_bigcup {R} [F]%function_scope 
-  [a]%ring_scope n%nat_scope _
+Arguments increasing_itvoc_bigcup {R} [F]%_function_scope 
+  [a]%_ring_scope n%_nat_scope _
 increasing_itvoc_bigcup is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.increasing_itvoc_bigcup
@@ -2099,7 +2101,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] t i `<=` [set x | (x < y)%R])%classic
 
-Arguments open_lt {R} [y]%ring_scope [t] _
+Arguments open_lt {R} [y]%_ring_scope [t] _
 open_lt is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.open_lt
@@ -2127,7 +2129,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] t i `<=` [set x | (y < x)%R])%classic
 
-Arguments open_gt {R} [y]%ring_scope [t] _
+Arguments open_gt {R} [y]%_ring_scope [t] _
 open_gt is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.open_gt
@@ -2155,7 +2157,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] t i `<=` [set x | x != y])%classic
 
-Arguments open_neq {R} [y]%ring_scope [t] _
+Arguments open_neq {R} [y]%_ring_scope [t] _
 open_neq is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.open_neq
@@ -2222,7 +2224,7 @@ forall {R : realFieldType} [y : R]
                R))],
 topology_structure.closure [set x | (x <= y)%R] t -> (t <= y)%R = true
 
-Arguments closed_le {R} [y]%ring_scope [t] _
+Arguments closed_le {R} [y]%_ring_scope [t] _
 closed_le is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.closed_le
@@ -2250,7 +2252,7 @@ forall {R : realFieldType} [y : R]
                R))],
 topology_structure.closure [set x | (y <= x)%R] t -> (y <= t)%R = true
 
-Arguments closed_ge {R} [y]%ring_scope [t] _
+Arguments closed_ge {R} [y]%_ring_scope [t] _
 closed_ge is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.closed_ge
@@ -2276,7 +2278,7 @@ forall {R : realFieldType} [y : R]
             R)],
 topology_structure.closure [set x | x = y] t -> t = y
 
-Arguments closed_eq {R} [y]%ring_scope [t] _
+Arguments closed_eq {R} [y]%_ring_scope [t] _
 closed_eq is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.closed_eq
@@ -2358,7 +2360,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` (fun z : R => z \in `]a, b[%R))%classic
 
-Arguments near_in_itvoo {R} [a b]%ring_scope [x] _
+Arguments near_in_itvoo {R} [a b]%_ring_scope [x] _
 near_in_itvoo is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.near_in_itvoo
@@ -2389,7 +2391,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` (fun z : R => z \in `]a, +oo[%R))%classic
 
-Arguments near_in_itvoy {R} [a]%ring_scope [x] _
+Arguments near_in_itvoy {R} [a]%_ring_scope [x] _
 near_in_itvoy is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.near_in_itvoy
@@ -2420,7 +2422,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` (fun z : R => z \in `]-oo, b[%R))%classic
 
-Arguments near_in_itvNyo {R} [b]%ring_scope [x] _
+Arguments near_in_itvNyo {R} [b]%_ring_scope [x] _
 near_in_itvNyo is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.near_in_itvNyo
@@ -2444,7 +2446,7 @@ filter.prop_near1 filter.eventually (P:=fun n : nat => (r < n%:R)%R)
   (inPhantom (forall n : nat, (r < n%:R)%R))
 
 nbhs_infty_gtr is not universe polymorphic
-Arguments nbhs_infty_gtr {R} r%ring_scope
+Arguments nbhs_infty_gtr {R} r%_ring_scope
 nbhs_infty_gtr is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.nbhs_infty_gtr
@@ -2517,7 +2519,7 @@ library mathcomp.analysis.normedtype_theory.num_normedtype, line 731, characters
 <span class="vernacular">Definition</span><span class="id"> </span><span id="is_interval" class="id"><a name="is_interval" class="" title="is_interval : forall [R : numDomainType], set R -> Prop
 
 is_interval is not universe polymorphic
-Arguments is_interval [R] E%classical_set_scope
+Arguments is_interval [R] E%_classical_set_scope
 is_interval is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.is_interval
@@ -2532,7 +2534,7 @@ is_interval (R:=R) E <->
 (forall x y : R, E x -> E y -> forall z : R, (x < z < y)%R -> E z)
 
 is_intervalPlt is not universe polymorphic
-Arguments is_intervalPlt [R] E%classical_set_scope
+Arguments is_intervalPlt [R] E%_classical_set_scope
 is_intervalPlt is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.is_intervalPlt
@@ -2582,7 +2584,7 @@ is_interval (R:=R) X ->
 ~ has_lbound (T:=R) X -> ~ has_ubound (T:=R) X -> X = [set: R]%classic
 
 interval_unbounded_setT is not universe polymorphic
-Arguments interval_unbounded_setT {R} [X]%classical_set_scope _ _ _
+Arguments interval_unbounded_setT {R} [X]%_classical_set_scope _ _ _
 interval_unbounded_setT is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.interval_unbounded_setT
@@ -2616,7 +2618,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="bigcup_ointsub" class="id"><a name="bigcup_ointsub" class="" title="bigcup_ointsub : forall [R : realType], set R -> rat -> set R
 
 bigcup_ointsub is not universe polymorphic
-Arguments bigcup_ointsub [R] U%classical_set_scope q%ring_scope _
+Arguments bigcup_ointsub [R] U%_classical_set_scope q%_ring_scope _
 bigcup_ointsub is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.bigcup_ointsub
@@ -2628,7 +2630,7 @@ library mathcomp.analysis.normedtype_theory.num_normedtype, line 787, characters
 forall (R : realType) (q : rat), bigcup_ointsub (R:=R) set0 q = set0
 
 bigcup_ointsub0 is not universe polymorphic
-Arguments bigcup_ointsub0 R q%ring_scope
+Arguments bigcup_ointsub0 R q%_ring_scope
 bigcup_ointsub0 is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.bigcup_ointsub0
@@ -2653,8 +2655,8 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] t i `<=` bigcup_ointsub (R:=R) U q)%classic
 
-Arguments open_bigcup_ointsub [R] [U]%classical_set_scope 
-  [q]%ring_scope [t] _
+Arguments open_bigcup_ointsub [R] [U]%_classical_set_scope 
+  [q]%_ring_scope [t] _
 open_bigcup_ointsub is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.open_bigcup_ointsub
@@ -2687,8 +2689,8 @@ exists2 i : set R,
     U q i &
   id i z
 
-Arguments is_interval_bigcup_ointsub [R] [U]%classical_set_scope
-  [q]%ring_scope [x y] _ _ [z] _
+Arguments is_interval_bigcup_ointsub [R] [U]%_classical_set_scope
+  [q]%_ring_scope [x y] _ _ [z] _
 is_interval_bigcup_ointsub is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.is_interval_bigcup_ointsub
@@ -2714,7 +2716,8 @@ bigcup_ointsub_sub :
 forall [R : realType] [U : set R] [q : rat] [t : R],
 bigcup_ointsub (R:=R) U q t -> U t
 
-Arguments bigcup_ointsub_sub [R] [U]%classical_set_scope [q]%ring_scope [t] _
+Arguments bigcup_ointsub_sub [R] [U]%_classical_set_scope 
+  [q]%_ring_scope [t] _
 bigcup_ointsub_sub is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.bigcup_ointsub_sub
@@ -2752,9 +2755,9 @@ exists2 i : set R,
     U q i &
   id i t
 
-Arguments bigcup_ointsub_sup [R] [U]%classical_set_scope 
-  [q]%ring_scope [A]%classical_set_scope _ _ _ _ [t] 
-  _
+Arguments bigcup_ointsub_sup [R] [U]%_classical_set_scope 
+  [q]%_ring_scope [A]%_classical_set_scope _ _ _ _ 
+  [t] _
 bigcup_ointsub_sup is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.bigcup_ointsub_sup
@@ -2773,7 +2776,7 @@ forall [R : realType] [U : set R] [q : rat] [r : R],
 bigcup_ointsub (R:=R) U q r -> ratr q \in U
 
 bigcup_ointsub_mem is not universe polymorphic
-Arguments bigcup_ointsub_mem [R] [U]%classical_set_scope [q r]%ring_scope _
+Arguments bigcup_ointsub_mem [R] [U]%_classical_set_scope [q r]%_ring_scope _
 bigcup_ointsub_mem is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.bigcup_ointsub_mem
@@ -2793,7 +2796,7 @@ topology_structure.open U ->
 U = (\bigcup_(q in [set q | ratr q \in U]) bigcup_ointsub (R:=R) U q)%classic
 
 open_bigcup_rat is not universe polymorphic
-Arguments open_bigcup_rat [R] [U]%classical_set_scope _
+Arguments open_bigcup_rat [R] [U]%_classical_set_scope _
 open_bigcup_rat is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.open_bigcup_rat
@@ -2830,7 +2833,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ball0" class="id"><a name="ball0" class="" title="ball0 : forall [R : realFieldType] (a r : R), ball a r = set0 <-> (r <= 0)%R
 
 ball0 is not universe polymorphic
-Arguments ball0 [R] (a r)%ring_scope
+Arguments ball0 [R] (a r)%_ring_scope
 ball0 is opaque
 Expands to: Constant mathcomp.analysis.normedtype_theory.num_normedtype.ball0
 Declared in
@@ -2859,7 +2862,7 @@ has_ubound (T:=R) X ->
 topology_structure.interior X = [set r | (r < sup X)%R]%classic
 
 interval_left_unbounded_interior is not universe polymorphic
-Arguments interval_left_unbounded_interior [R] [X]%classical_set_scope _ _ _
+Arguments interval_left_unbounded_interior [R] [X]%_classical_set_scope _ _ _
 interval_left_unbounded_interior is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.interval_left_unbounded_interior
@@ -2886,7 +2889,8 @@ has_lbound (T:=R) X ->
 topology_structure.interior X = [set r | (inf X < r)%R]%classic
 
 interval_right_unbounded_interior is not universe polymorphic
-Arguments interval_right_unbounded_interior [R] [X]%classical_set_scope _ _ _
+Arguments interval_right_unbounded_interior [R] [X]%_classical_set_scope 
+  _ _ _
 interval_right_unbounded_interior is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.interval_right_unbounded_interior
@@ -2913,7 +2917,7 @@ has_ubound (T:=R) X ->
 topology_structure.interior X = [set r | (inf X < r < sup X)%R]%classic
 
 interval_bounded_interior is not universe polymorphic
-Arguments interval_bounded_interior [R] [X]%classical_set_scope _ _ _
+Arguments interval_bounded_interior [R] [X]%_classical_set_scope _ _ _
 interval_bounded_interior is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.interval_bounded_interior
@@ -2943,7 +2947,7 @@ Qed.</div></details>
 forall [R : realType] (a : R), topology_structure.interior [set a] = set0
 
 interior_set1 is not universe polymorphic
-Arguments interior_set1 [R] a%ring_scope
+Arguments interior_set1 [R] a%_ring_scope
 interior_set1 is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.interior_set1
@@ -2967,7 +2971,7 @@ topology_structure.interior [set` Interval (BSide a x) (BSide b y)] =
 `]x, y[%classic
 
 interior_itv_bnd is not universe polymorphic
-Arguments interior_itv_bnd [R] (x y)%ring_scope (a b)%bool_scope
+Arguments interior_itv_bnd [R] (x y)%_ring_scope (a b)%_bool_scope
 interior_itv_bnd is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.interior_itv_bnd
@@ -2996,7 +3000,7 @@ topology_structure.interior [set` Interval (BSide b x) +oo%O] =
 `]x, +oo[%classic
 
 interior_itv_bndy is not universe polymorphic
-Arguments interior_itv_bndy [R] x%ring_scope b%bool_scope
+Arguments interior_itv_bndy [R] x%_ring_scope b%_bool_scope
 interior_itv_bndy is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.interior_itv_bndy
@@ -3020,7 +3024,7 @@ topology_structure.interior [set` Interval -oo%O (BSide b y)] =
 `]-oo, y[%classic
 
 interior_itv_Nybnd is not universe polymorphic
-Arguments interior_itv_Nybnd [R] y%ring_scope b%bool_scope
+Arguments interior_itv_Nybnd [R] y%_ring_scope b%_bool_scope
 interior_itv_Nybnd is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.num_normedtype.interior_itv_Nybnd

@@ -343,7 +343,7 @@ continuity_pt f x <->
  filter.nbhs x (fun u : R => (`|f u - f x| < eps%:num)%R))
 
 continuity_pt_nbhs is not universe polymorphic
-Arguments continuity_pt_nbhs f%function_scope x%R_scope
+Arguments continuity_pt_nbhs f%_function_scope x%_R_scope
 continuity_pt_nbhs is opaque
 Expands to: Constant
             mathcomp.analysis_stdlib.Rstruct_topology.continuity_pt_nbhs
@@ -376,7 +376,7 @@ continuity_pt f x <->
     (U:=RbaseSymbolsImpl_R__canonical__filter_Nbhs) x0 f}
 
 continuity_pt_cvg is not universe polymorphic
-Arguments continuity_pt_cvg f%function_scope x%R_scope
+Arguments continuity_pt_cvg f%_function_scope x%_R_scope
 continuity_pt_cvg is opaque
 Expands to: Constant
             mathcomp.analysis_stdlib.Rstruct_topology.continuity_pt_cvg
@@ -412,7 +412,7 @@ continuity_pt f x <->
     (U:=RbaseSymbolsImpl_R__canonical__filter_Nbhs) x0 f}
 
 continuity_ptE is not universe polymorphic
-Arguments continuity_ptE f%function_scope x%R_scope
+Arguments continuity_ptE f%_function_scope x%_R_scope
 continuity_ptE is opaque
 Expands to: Constant mathcomp.analysis_stdlib.Rstruct_topology.continuity_ptE
 Declared in
@@ -434,7 +434,7 @@ filter.cvg_to
   (filter.nbhs (f x))
 
 continuity_pt_cvg' is not universe polymorphic
-Arguments continuity_pt_cvg' f%function_scope x%R_scope
+Arguments continuity_pt_cvg' f%_function_scope x%_R_scope
 continuity_pt_cvg' is opaque
 Expands to: Constant
             mathcomp.analysis_stdlib.Rstruct_topology.continuity_pt_cvg'
@@ -492,7 +492,7 @@ continuity_pt f x <->
     (`|f x - f u| < eps)%R))
 
 continuity_pt_dnbhs is not universe polymorphic
-Arguments continuity_pt_dnbhs f%function_scope x%R_scope
+Arguments continuity_pt_dnbhs f%_function_scope x%_R_scope
 continuity_pt_dnbhs is opaque
 Expands to: Constant
             mathcomp.analysis_stdlib.Rstruct_topology.continuity_pt_dnbhs
@@ -515,7 +515,7 @@ filter.prop_near1 x (P:=fun x0 : R => P (f x0))
   (inPhantom (forall x0 : R, P (f x0)))
 
 nbhs_pt_comp is not universe polymorphic
-Arguments nbhs_pt_comp [P f]%function_scope [x]%R_scope _ _
+Arguments nbhs_pt_comp [P f]%_function_scope [x]%_R_scope _ _
 nbhs_pt_comp is opaque
 Expands to: Constant mathcomp.analysis_stdlib.Rstruct_topology.nbhs_pt_comp
 Declared in
@@ -535,7 +535,7 @@ library mathcomp.analysis_stdlib.Rstruct_topology, line 86, characters 6-18
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RexpE.RexpE" class="id"><a name="RexpE.RexpE" class="" title="RexpE.RexpE : forall x : R, exp x = expR x
 
 RexpE.RexpE is not universe polymorphic
-Arguments RexpE.RexpE x%R_scope
+Arguments RexpE.RexpE x%_R_scope
 RexpE.RexpE is opaque
 Expands to: Constant mathcomp.analysis_stdlib.Rstruct_topology.RexpE.RexpE
 Declared in
@@ -560,7 +560,7 @@ library mathcomp.analysis_stdlib.Rstruct_topology, line 96, characters 6-11
 <span class="vernacular">Definition</span><span class="id"> </span><span id="RexpE" class="id"><a name="RexpE" class="" title="RexpE : forall x : R, exp x = expR x
 
 RexpE is not universe polymorphic
-Arguments RexpE x%R_scope
+Arguments RexpE x%_R_scope
 RexpE is transparent
 Expands to: Constant mathcomp.analysis_stdlib.Rstruct_topology.RexpE
 Declared in
@@ -571,7 +571,7 @@ library mathcomp.analysis_stdlib.Rstruct_topology, line 111, characters 11-16
 forall x : R, ln x = exp.ln (R:=RbaseSymbolsImpl_R__canonical__reals_Real) x
 
 RlnE is not universe polymorphic
-Arguments RlnE x%R_scope
+Arguments RlnE x%_R_scope
 RlnE is opaque
 Expands to: Constant mathcomp.analysis_stdlib.Rstruct_topology.RlnE
 Declared in

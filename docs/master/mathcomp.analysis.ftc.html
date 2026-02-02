@@ -286,8 +286,8 @@ lebesgue_measure.-integrable A (EFin \o f) ->
 locally_integrable [set: R] (f \_ A)
 
 integrable_locally is not universe polymorphic
-Arguments integrable_locally {R} [f]%function_scope 
-  [A]%classical_set_scope _ _
+Arguments integrable_locally {R} [f]%_function_scope 
+  [A]%_classical_set_scope _ _
 integrable_locally is opaque
 Expands to: Constant mathcomp.analysis.ftc.integrable_locally
 Declared in library mathcomp.analysis.ftc, line 70, characters 6-24
@@ -502,8 +502,8 @@ let F :=
 lebesgue_pt f x -> derivable F x 1 /\ F^`()%classic x = f x
 
 FTC1_lebesgue_pt is not universe polymorphic
-Arguments FTC1_lebesgue_pt {R} [f]%function_scope 
-  [a x] [u]%ring_scope _ _ _ _
+Arguments FTC1_lebesgue_pt {R} [f]%_function_scope 
+  [a x] [u]%_ring_scope _ _ _ _
 FTC1_lebesgue_pt is opaque
 Expands to: Constant mathcomp.analysis.ftc.FTC1_lebesgue_pt
 Declared in library mathcomp.analysis.ftc, line 265, characters 6-22
@@ -537,7 +537,7 @@ let F :=
                                 derivable F x 1 /\ F^`()%classic x = f x
 
 FTC1 is not universe polymorphic
-Arguments FTC1 {R} [f]%function_scope [a] _%function_scope _
+Arguments FTC1 {R} [f]%_function_scope [a] _%_function_scope _
 FTC1 is opaque
 Expands to: Constant mathcomp.analysis.ftc.FTC1
 Declared in library mathcomp.analysis.ftc, line 281, characters 10-14
@@ -563,7 +563,7 @@ let F := fun x : R => (\int[lebesgue_measure]_(t in `]-oo, x]) f t)%R in
 \forall x \ae lebesgue_measure, derivable F x 1 /\ F^`()%classic x = f x
 
 FTC1Ny is not universe polymorphic
-Arguments FTC1Ny {R} [f]%function_scope _%function_scope _
+Arguments FTC1Ny {R} [f]%_function_scope _%_function_scope _
 FTC1Ny is opaque
 Expands to: Constant mathcomp.analysis.ftc.FTC1Ny
 Declared in library mathcomp.analysis.ftc, line 293, characters 10-16
@@ -626,7 +626,8 @@ let F :=
 derivable F x 1 /\ F^`()%classic x = f x
 
 continuous_FTC1 is not universe polymorphic
-Arguments continuous_FTC1 {R} [f]%function_scope [a x] [u]%ring_scope _ _ _ _
+Arguments continuous_FTC1 {R} [f]%_function_scope 
+  [a x] [u]%_ring_scope _ _ _ _
 continuous_FTC1 is opaque
 Expands to: Constant mathcomp.analysis.ftc.continuous_FTC1
 Declared in library mathcomp.analysis.ftc, line 330, characters 10-25
@@ -661,8 +662,8 @@ let F := fun x0 : R => (\int[lebesgue_measure]_(t in `[a, x0]) f t)%R in
 derivable F x 1 /\ F^`()%classic x = f x
 
 continuous_FTC1_closed is not universe polymorphic
-Arguments continuous_FTC1_closed {R} [f]%function_scope 
-  [a x u]%ring_scope _ _ _ _
+Arguments continuous_FTC1_closed {R} [f]%_function_scope 
+  [a x u]%_ring_scope _ _ _ _
 continuous_FTC1_closed is opaque
 Expands to: Constant mathcomp.analysis.ftc.continuous_FTC1_closed
 Declared in library mathcomp.analysis.ftc, line 343, characters 10-32
@@ -683,7 +684,7 @@ forall {R : realType},
 measure (measurableTypeR R) R -> R -> R -> (R -> R) -> R
 
 parameterized_integral is not universe polymorphic
-Arguments parameterized_integral {R} mu a x f%function_scope
+Arguments parameterized_integral {R} mu a x f%_function_scope
 parameterized_integral is transparent
 Expands to: Constant mathcomp.analysis.ftc.parameterized_integral
 Declared in library mathcomp.analysis.ftc, line 352, characters 11-33
@@ -711,8 +712,8 @@ filter.prop_near1 a
       (a <= c)%R -> (`|parameterized_integral lebesgue_measure a c f| < e)%R))
 
 parameterized_integral_near_left is not universe polymorphic
-Arguments parameterized_integral_near_left {R} [a b e]%ring_scope
-  [f]%function_scope _ _ _
+Arguments parameterized_integral_near_left {R} [a b e]%_ring_scope
+  [f]%_function_scope _ _ _
 parameterized_integral_near_left is opaque
 Expands to: Constant mathcomp.analysis.ftc.parameterized_integral_near_left
 Declared in library mathcomp.analysis.ftc, line 363, characters 6-38
@@ -785,7 +786,7 @@ exists2 i : R,
    `<=` (parameterized_integral lebesgue_measure a)^~ f @^-1` t)%classic
 
 Arguments parameterized_integral_cvg_left {R} [a b] 
-  [f]%function_scope _ _ [t] _
+  [f]%_function_scope _ _ [t] _
 parameterized_integral_cvg_left is opaque
 Expands to: Constant mathcomp.analysis.ftc.parameterized_integral_cvg_left
 Declared in library mathcomp.analysis.ftc, line 406, characters 6-37
@@ -832,7 +833,7 @@ exists2 i : R,
          ((parameterized_integral lebesgue_measure a)^~ f @^-1` t) t0))%classic
 
 Arguments parameterized_integral_cvg_at_left {R} [a b] 
-  [f]%function_scope _ _ [t] _
+  [f]%_function_scope _ _ [t] _
 parameterized_integral_cvg_at_left is opaque
 Expands to: Constant mathcomp.analysis.ftc.parameterized_integral_cvg_at_left
 Declared in library mathcomp.analysis.ftc, line 421, characters 6-40
@@ -905,7 +906,7 @@ filter.nbhs
    t)%classic
 
 Arguments parameterized_integral_continuous {R} [a b] 
-  [f]%function_scope _ _ [x t] _
+  [f]%_function_scope _ _ [x t] _
 parameterized_integral_continuous is opaque
 Expands to: Constant mathcomp.analysis.ftc.parameterized_integral_continuous
 Declared in library mathcomp.analysis.ftc, line 459, characters 6-39
@@ -1012,8 +1013,8 @@ derivable_oo_LRcontinuous F a b ->
 (\int[lebesgue_measure]_(x in `[a, b]) (f x)%:E)%E = ((F b)%:E - (F a)%:E)%E
 
 continuous_FTC2 is not universe polymorphic
-Arguments continuous_FTC2 {R} [f F]%function_scope 
-  [a b]%ring_scope _ _%function_scope _ _
+Arguments continuous_FTC2 {R} [f F]%_function_scope 
+  [a b]%_ring_scope _ _%_function_scope _ _
 continuous_FTC2 is opaque
 Expands to: Constant mathcomp.analysis.ftc.continuous_FTC2
 Declared in library mathcomp.analysis.ftc, line 548, characters 10-25
@@ -1135,8 +1136,8 @@ filter.cvg_to
 (\int[lebesgue_measure]_(x in `[a, +oo[) (f x)%:E)%E = (l%:E - (F a)%:E)%E
 
 ge0_continuous_FTC2y is not universe polymorphic
-Arguments ge0_continuous_FTC2y {R} [f F]%function_scope 
-  [a l]%ring_scope (_ _)%function_scope _ _%function_scope 
+Arguments ge0_continuous_FTC2y {R} [f F]%_function_scope 
+  [a l]%_ring_scope (_ _)%_function_scope _ _%_function_scope 
   _ _
 ge0_continuous_FTC2y is opaque
 Expands to: Constant mathcomp.analysis.ftc.ge0_continuous_FTC2y
@@ -1252,8 +1253,8 @@ filter.cvg_to
 (\int[lebesgue_measure]_(x in `[a, +oo[) f x)%R = (l - F a)%R
 
 Rintegral_ge0_continuous_FTC2y is not universe polymorphic
-Arguments Rintegral_ge0_continuous_FTC2y {R} [f F]%function_scope
-  [a l]%ring_scope (_ _)%function_scope _ _%function_scope 
+Arguments Rintegral_ge0_continuous_FTC2y {R} [f F]%_function_scope
+  [a l]%_ring_scope (_ _)%_function_scope _ _%_function_scope 
   _ _
 Rintegral_ge0_continuous_FTC2y is opaque
 Expands to: Constant mathcomp.analysis.ftc.Rintegral_ge0_continuous_FTC2y
@@ -1286,8 +1287,8 @@ filter.cvg_to
 (\int[lebesgue_measure]_(x in `[a, +oo[) (f x)%:E)%E = (l%:E - (F a)%:E)%E
 
 le0_continuous_FTC2y is not universe polymorphic
-Arguments le0_continuous_FTC2y {R} [f F]%function_scope 
-  [a l]%ring_scope (_ _)%function_scope _ _ _%function_scope 
+Arguments le0_continuous_FTC2y {R} [f F]%_function_scope 
+  [a l]%_ring_scope (_ _)%_function_scope _ _ _%_function_scope 
   _
 le0_continuous_FTC2y is opaque
 Expands to: Constant mathcomp.analysis.ftc.le0_continuous_FTC2y
@@ -1346,8 +1347,8 @@ derivable_oo_LRcontinuous G a b ->
  \int[lebesgue_measure]_(x in `[a, b]) (f x * G x)%:E)%E
 
 integration_by_parts is not universe polymorphic
-Arguments integration_by_parts {R} [F G f g]%function_scope 
-  [a b]%ring_scope _ _%function_scope _ _ _%function_scope 
+Arguments integration_by_parts {R} [F G f g]%_function_scope
+  [a b]%_ring_scope _ _%_function_scope _ _ _%_function_scope 
   _ _
 integration_by_parts is opaque
 Expands to: Constant mathcomp.analysis.ftc.integration_by_parts
@@ -1419,8 +1420,8 @@ derivable_oo_LRcontinuous G a b ->
 (F b * G b - F a * G a - \int[lebesgue_measure]_(x in `[a, b]) (f x * G x))%R
 
 Rintegration_by_parts is not universe polymorphic
-Arguments Rintegration_by_parts {R} [F G f g]%function_scope 
-  [a b]%ring_scope _ _%function_scope _ _ _%function_scope 
+Arguments Rintegration_by_parts {R} [F G f g]%_function_scope
+  [a b]%_ring_scope _ _%_function_scope _ _ _%_function_scope 
   _ _
 Rintegration_by_parts is opaque
 Expands to: Constant mathcomp.analysis.ftc.Rintegration_by_parts
@@ -1472,8 +1473,8 @@ forall {R : realType} [F : R -> R] [a b : R],
 forall [t : R],
 [set F x | x in `]a, b[]%classic t -> (t \in `]F a, F b[%R) = true
 
-Arguments increasing_image_oo {R} [F]%function_scope 
-  [a b]%ring_scope _ _ [t] _
+Arguments increasing_image_oo {R} [F]%_function_scope 
+  [a b]%_ring_scope _ _ [t] _
 increasing_image_oo is opaque
 Expands to: Constant mathcomp.analysis.ftc.increasing_image_oo
 Declared in library mathcomp.analysis.ftc, line 877, characters 6-25
@@ -1503,8 +1504,8 @@ forall {R : realType} [F : R -> R] [a b : R],
 forall [t : R],
 [set F x | x in `]a, b[]%classic t -> (t \in `]F b, F a[%R) = true
 
-Arguments decreasing_image_oo {R} [F]%function_scope 
-  [a b]%ring_scope _ _ [t] _
+Arguments decreasing_image_oo {R} [F]%_function_scope 
+  [a b]%_ring_scope _ _ [t] _
 decreasing_image_oo is opaque
 Expands to: Constant mathcomp.analysis.ftc.decreasing_image_oo
 Declared in library mathcomp.analysis.ftc, line 886, characters 6-25
@@ -1553,8 +1554,9 @@ exists2 i : R,
    `<=` (fun t0 : R =>
          (fun u : R => is_true (a < u)%R) t0 -> ([eta G \o F] @^-1` t) t0))%classic
 
-Arguments increasing_cvg_at_right_comp {R} [F G]%function_scope
-  [a]%ring_scope [b] [l]%ring_scope _ _ _ _ [t] _
+Arguments increasing_cvg_at_right_comp {R} [F G]%_function_scope
+  [a]%_ring_scope [b] [l]%_ring_scope _ _ _ _ [t] 
+  _
 increasing_cvg_at_right_comp is opaque
 Expands to: Constant mathcomp.analysis.ftc.increasing_cvg_at_right_comp
 Declared in library mathcomp.analysis.ftc, line 895, characters 6-34
@@ -1629,8 +1631,8 @@ exists2 i : R,
    `<=` (fun t0 : R =>
          (fun u : R => is_true (u < b)%R) t0 -> ([eta G \o F] @^-1` t) t0))%classic
 
-Arguments increasing_cvg_at_left_comp {R} [F G]%function_scope 
-  [a] [b l]%ring_scope _ _ _ _ [t] _
+Arguments increasing_cvg_at_left_comp {R} [F G]%_function_scope 
+  [a] [b l]%_ring_scope _ _ _ _ [t] _
 increasing_cvg_at_left_comp is opaque
 Expands to: Constant mathcomp.analysis.ftc.increasing_cvg_at_left_comp
 Declared in library mathcomp.analysis.ftc, line 930, characters 6-33
@@ -1703,8 +1705,9 @@ exists2 i : R,
    `<=` (fun t0 : R =>
          (fun u : R => is_true (a < u)%R) t0 -> ([eta G \o F] @^-1` t) t0))%classic
 
-Arguments decreasing_cvg_at_right_comp {R} [F G]%function_scope
-  [a]%ring_scope [b] [l]%ring_scope _ _ _ _ [t] _
+Arguments decreasing_cvg_at_right_comp {R} [F G]%_function_scope
+  [a]%_ring_scope [b] [l]%_ring_scope _ _ _ _ [t] 
+  _
 decreasing_cvg_at_right_comp is opaque
 Expands to: Constant mathcomp.analysis.ftc.decreasing_cvg_at_right_comp
 Declared in library mathcomp.analysis.ftc, line 963, characters 6-34
@@ -1777,8 +1780,8 @@ exists2 i : R,
    `<=` (fun t0 : R =>
          (fun u : R => is_true (u < b)%R) t0 -> ([eta G \o F] @^-1` t) t0))%classic
 
-Arguments decreasing_cvg_at_left_comp {R} [F G]%function_scope 
-  [a] [b l]%ring_scope _ _ _ _ [t] _
+Arguments decreasing_cvg_at_left_comp {R} [F G]%_function_scope 
+  [a] [b l]%_ring_scope _ _ _ _ [t] _
 decreasing_cvg_at_left_comp is opaque
 Expands to: Constant mathcomp.analysis.ftc.decreasing_cvg_at_left_comp
 Declared in library mathcomp.analysis.ftc, line 996, characters 6-33
@@ -1830,7 +1833,7 @@ filter.cvg_to
   (filter.nbhs l)
 
 cvgNy_compNP is not universe polymorphic
-Arguments cvgNy_compNP {T R} f%function_scope l
+Arguments cvgNy_compNP {T R} f%_function_scope l
 cvgNy_compNP is opaque
 Expands to: Constant mathcomp.analysis.ftc.cvgNy_compNP
 Declared in library mathcomp.analysis.ftc, line 1032, characters 6-18
@@ -1855,7 +1858,7 @@ filter.cvg_to
   (filter.nbhs l)
 
 cvgy_compNP is not universe polymorphic
-Arguments cvgy_compNP {T R} f%function_scope l
+Arguments cvgy_compNP {T R} f%_function_scope l
 cvgy_compNP is opaque
 Expands to: Constant mathcomp.analysis.ftc.cvgy_compNP
 Declared in library mathcomp.analysis.ftc, line 1041, characters 6-17
@@ -1906,8 +1909,8 @@ derivable_oo_LRcontinuous F a b ->
 
 integration_by_substitution_decreasing is not universe polymorphic
 Arguments integration_by_substitution_decreasing {R} 
-  [F G]%function_scope [a b]%ring_scope _ _ _ _ _ 
-  _ _%function_scope
+  [F G]%_function_scope [a b]%_ring_scope _ _ _ _ 
+  _ _ _%_function_scope
 integration_by_substitution_decreasing is opaque
 Expands to: Constant
             mathcomp.analysis.ftc.integration_by_substitution_decreasing
@@ -2055,8 +2058,8 @@ forall {R : realType} [G : R -> R] [a b : R],
 (\int[lebesgue_measure]_(x in `[a, b]) ((G \o -%R) x)%:E)%E
 
 integration_by_substitution_oppr is not universe polymorphic
-Arguments integration_by_substitution_oppr {R} [G]%function_scope
-  [a b]%ring_scope _ _%function_scope
+Arguments integration_by_substitution_oppr {R} [G]%_function_scope
+  [a b]%_ring_scope _ _%_function_scope
 integration_by_substitution_oppr is opaque
 Expands to: Constant mathcomp.analysis.ftc.integration_by_substitution_oppr
 Declared in library mathcomp.analysis.ftc, line 1188, characters 6-38
@@ -2112,8 +2115,8 @@ derivable_oo_LRcontinuous F a b ->
 
 integration_by_substitution_increasing is not universe polymorphic
 Arguments integration_by_substitution_increasing {R} 
-  [F G]%function_scope [a b]%ring_scope _ _ _ _ _ 
-  _ _%function_scope
+  [F G]%_function_scope [a b]%_ring_scope _ _ _ _ 
+  _ _ _%_function_scope
 integration_by_substitution_increasing is opaque
 Expands to: Constant
             mathcomp.analysis.ftc.integration_by_substitution_increasing
@@ -2223,8 +2226,8 @@ filter.cvg_to (filter.nbhs (filter.fmap [eta F] (filter.nbhs +oo%R)))
 
 decreasing_ge0_integration_by_substitutiony is not universe polymorphic
 Arguments decreasing_ge0_integration_by_substitutiony 
-  {R} [F G]%function_scope [a]%ring_scope _ _ _ _ 
-  _ _ _%function_scope _
+  {R} [F G]%_function_scope [a]%_ring_scope _ _ _ 
+  _ _ _ _%_function_scope _
 decreasing_ge0_integration_by_substitutiony is opaque
 Expands to: Constant
             mathcomp.analysis.ftc.decreasing_ge0_integration_by_substitutiony
@@ -2392,8 +2395,8 @@ forall {R : realType} [G : R -> R] [a : R],
 (\int[lebesgue_measure]_(x in `[a, +oo[) ((G \o -%R) x)%:E)%E
 
 ge0_integration_by_substitutionNy is not universe polymorphic
-Arguments ge0_integration_by_substitutionNy {R} [G]%function_scope
-  [a]%ring_scope _%function_scope _
+Arguments ge0_integration_by_substitutionNy {R} [G]%_function_scope
+  [a]%_ring_scope _%_function_scope _
 ge0_integration_by_substitutionNy is opaque
 Expands to: Constant mathcomp.analysis.ftc.ge0_integration_by_substitutionNy
 Declared in library mathcomp.analysis.ftc, line 1431, characters 6-39
@@ -2455,8 +2458,8 @@ filter.cvg_to (filter.nbhs (filter.fmap [eta F] (filter.nbhs +oo%R)))
 
 increasing_ge0_integration_by_substitutiony is not universe polymorphic
 Arguments increasing_ge0_integration_by_substitutiony 
-  {R} [F G]%function_scope [a]%ring_scope _ _ _ _ 
-  _ _ _%function_scope _
+  {R} [F G]%_function_scope [a]%_ring_scope _ _ _ 
+  _ _ _ _%_function_scope _
 increasing_ge0_integration_by_substitutiony is opaque
 Expands to: Constant
             mathcomp.analysis.ftc.increasing_ge0_integration_by_substitutiony
@@ -2592,8 +2595,8 @@ filter.cvg_to (filter.nbhs (filter.fmap [eta F] (filter.nbhs -oo%R)))
 
 increasing_ge0_integration_by_substitutionNy is not universe polymorphic
 Arguments increasing_ge0_integration_by_substitutionNy 
-  {R} [F G]%function_scope [b]%ring_scope _ _ _ _ 
-  _ _ _%function_scope _
+  {R} [F G]%_function_scope [b]%_ring_scope _ _ _ 
+  _ _ _ _%_function_scope _
 increasing_ge0_integration_by_substitutionNy is opaque
 Expands to: Constant
             mathcomp.analysis.ftc.increasing_ge0_integration_by_substitutionNy
@@ -2821,8 +2824,8 @@ filter.cvg_to (filter.nbhs (filter.fmap [eta F] (filter.nbhs +oo%R)))
 
 increasing_ge0_integration_by_substitutionT is not universe polymorphic
 Arguments increasing_ge0_integration_by_substitutionT 
-  {R} [F G]%function_scope _ _%function_scope _ _ 
-  _%function_scope _ _ (_ _)%function_scope
+  {R} [F G]%_function_scope _ _%_function_scope _ 
+  _ _%_function_scope _ _ (_ _)%_function_scope
 increasing_ge0_integration_by_substitutionT is opaque
 Expands to: Constant
             mathcomp.analysis.ftc.increasing_ge0_integration_by_substitutionT
@@ -2906,8 +2909,8 @@ forall {R : realType} [G : R -> R] [r : R],
 (\int[lebesgue_measure]_(x in `[r.~%R, 1%R]) (G x.~)%:E)%E
 
 integration_by_substitution_onem is not universe polymorphic
-Arguments integration_by_substitution_onem {R} [G]%function_scope
-  [r]%ring_scope _ _%function_scope
+Arguments integration_by_substitution_onem {R} [G]%_function_scope
+  [r]%_ring_scope _ _%_function_scope
 integration_by_substitution_onem is opaque
 Expands to: Constant mathcomp.analysis.ftc.integration_by_substitution_onem
 Declared in library mathcomp.analysis.ftc, line 1806, characters 6-38
@@ -2946,8 +2949,8 @@ forall {R : realType} [G : R -> R] [r : R],
 (\int[lebesgue_measure]_(x in `[r.~, 1]) G x.~)%R
 
 Rintegration_by_substitution_onem is not universe polymorphic
-Arguments Rintegration_by_substitution_onem {R} [G]%function_scope
-  [r]%ring_scope _ _%function_scope
+Arguments Rintegration_by_substitution_onem {R} [G]%_function_scope
+  [r]%_ring_scope _ _%_function_scope
 Rintegration_by_substitution_onem is opaque
 Expands to: Constant mathcomp.analysis.ftc.Rintegration_by_substitution_onem
 Declared in library mathcomp.analysis.ftc, line 1831, characters 6-39
@@ -2983,7 +2986,8 @@ f =1 f \o -%R%R ->
 (2 * \int[lebesgue_measure]_(x in [set x | (0 <= x)%R]) (f x)%:E)%E
 
 ge0_symfun_integralT is not universe polymorphic
-Arguments ge0_symfun_integralT {R} [f]%function_scope (_ _)%function_scope _
+Arguments ge0_symfun_integralT {R} [f]%_function_scope 
+  (_ _)%_function_scope _
 ge0_symfun_integralT is opaque
 Expands to: Constant mathcomp.analysis.ftc.ge0_symfun_integralT
 Declared in library mathcomp.analysis.ftc, line 1847, characters 6-26

@@ -260,7 +260,7 @@ forall {I : choiceType} {R : GRing.Zmodule.Exports.zmodType},
 (I -> R) -> {fset I} -> R
 
 partial_sum is not universe polymorphic
-Arguments partial_sum {I R} x%function_scope A
+Arguments partial_sum {I R} x%_function_scope A
 partial_sum is transparent
 Expands to: Constant mathcomp.analysis.showcase.summability.partial_sum
 Declared in
@@ -273,7 +273,7 @@ forall [I : choiceType] {K : numDomainType} {R : normedModType K},
 (I -> R) -> R
 
 sum is not universe polymorphic
-Arguments sum [I] {K R} x%function_scope
+Arguments sum [I] {K R} x%_function_scope
 sum is transparent
 Expands to: Constant mathcomp.analysis.showcase.summability.sum
 Declared in
@@ -286,7 +286,7 @@ forall [I : choiceType] {K : realType} {R : normedModType K},
 (I -> R) -> Prop
 
 summable is not universe polymorphic
-Arguments summable [I] {K R} x%function_scope
+Arguments summable [I] {K R} x%_function_scope
 summable is transparent
 Expands to: Constant mathcomp.analysis.showcase.summability.summable
 Declared in

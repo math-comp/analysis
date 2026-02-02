@@ -278,7 +278,7 @@ forall {T U : topology_structure.Topological.type}
 A p
 
 prod_nbhs_singleton is not universe polymorphic
-Arguments prod_nbhs_singleton {T U} [p] [A]%classical_set_scope _
+Arguments prod_nbhs_singleton {T U} [p] [A]%_classical_set_scope _
 prod_nbhs_singleton is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_nbhs_singleton
@@ -312,7 +312,7 @@ forall {T U : topology_structure.Topological.type}
     filter.filter_prod (filter.nbhs p0.1) (filter.nbhs p0.2))^~ A)
 
 prod_nbhs_nbhs is not universe polymorphic
-Arguments prod_nbhs_nbhs {T U} [p] [A]%classical_set_scope _
+Arguments prod_nbhs_nbhs {T U} [p] [A]%_classical_set_scope _
 prod_nbhs_nbhs is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_nbhs_nbhs
@@ -493,7 +493,7 @@ topology_structure.open A ->
 topology_structure.open [set x.1 | x in A]%classic
 
 fst_open is not universe polymorphic
-Arguments fst_open {U V} [A]%classical_set_scope _
+Arguments fst_open {U V} [A]%_classical_set_scope _
 fst_open is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.fst_open
@@ -518,7 +518,7 @@ topology_structure.open A ->
 topology_structure.open [set x.2 | x in A]%classic
 
 snd_open is not universe polymorphic
-Arguments snd_open {U V} [A]%classical_set_scope _
+Arguments snd_open {U V} [A]%_classical_set_scope _
 snd_open is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.snd_open
@@ -562,7 +562,7 @@ entourage B ->
 prod_ent [set xy | A (xy.1.1, xy.2.1) /\ B (xy.1.2, xy.2.2)]%classic
 
 prod_entP is not universe polymorphic
-Arguments prod_entP {U V} [A B]%classical_set_scope _ _
+Arguments prod_entP {U V} [A B]%_classical_set_scope _ _
 prod_entP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_entP
@@ -611,7 +611,7 @@ prod_ent_refl :
 forall {U V : uniformType} [A : set (U * V * (U * V))],
 prod_ent A -> forall [t : U * V * (U * V)], diagonal t -> A t
 
-Arguments prod_ent_refl {U V} [A]%classical_set_scope _ [t] _
+Arguments prod_ent_refl {U V} [A]%_classical_set_scope _ [t] _
 prod_ent_refl is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ent_refl
@@ -635,7 +635,7 @@ forall {U V : uniformType} [A : set (U * V * (U * V))],
 prod_ent A -> prod_ent A^-1%relation
 
 prod_ent_inv is not universe polymorphic
-Arguments prod_ent_inv {U V} [A]%classical_set_scope _
+Arguments prod_ent_inv {U V} [A]%_classical_set_scope _
 prod_ent_inv is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ent_inv
@@ -658,7 +658,7 @@ exists2 B : set (U * V * (U * V)),
   prod_ent B & ((B \; B)%relation `<=` A)%classic
 
 prod_ent_split is not universe polymorphic
-Arguments prod_ent_split {U V} [A]%classical_set_scope _
+Arguments prod_ent_split {U V} [A]%_classical_set_scope _
 prod_ent_split is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ent_split
@@ -771,7 +771,7 @@ forall {R : numDomainType} {U V : pseudoMetricType R},
 U * V -> R -> U * V -> Prop
 
 prod_ball is not universe polymorphic
-Arguments prod_ball {R U V} x eps%ring_scope y
+Arguments prod_ball {R U V} x eps%_ring_scope y
 prod_ball is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ball
@@ -785,7 +785,7 @@ forall {R : numDomainType} {U V : pseudoMetricType R} (x : U * V) [eps : R],
 (0 < eps)%R -> prod_ball x eps x
 
 prod_ball_center is not universe polymorphic
-Arguments prod_ball_center {R U V} x [eps]%ring_scope _
+Arguments prod_ball_center {R U V} x [eps]%_ring_scope _
 prod_ball_center is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ball_center
@@ -802,7 +802,7 @@ forall {R : numDomainType} {U V : pseudoMetricType R} [x y : U * V] [eps : R],
 prod_ball x eps y -> prod_ball y eps x
 
 prod_ball_sym is not universe polymorphic
-Arguments prod_ball_sym {R U V} [x y] [eps]%ring_scope _
+Arguments prod_ball_sym {R U V} [x y] [eps]%_ring_scope _
 prod_ball_sym is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ball_sym
@@ -820,7 +820,7 @@ forall {R : numDomainType} {U V : pseudoMetricType R}
 prod_ball x e1 y -> prod_ball y e2 z -> prod_ball x (e1 + e2) z
 
 prod_ball_triangle is not universe polymorphic
-Arguments prod_ball_triangle {R U V} [x y z] [e1 e2]%ring_scope _ _
+Arguments prod_ball_triangle {R U V} [x y z] [e1 e2]%_ring_scope _ _
 prod_ball_triangle is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.prod_ball_triangle
@@ -977,8 +977,8 @@ filter.cvg_to
    (inPhantom (forall (i : I) (j : J), ball y eps (f i) /\ ball z eps (g j))))
 
 cvg_ball2P is not universe polymorphic
-Arguments cvg_ball2P {R U V} {I J}%type_scope {F G FF FG}
-  (f g)%function_scope y z
+Arguments cvg_ball2P {R U V} {I J}%_type_scope {F G FF FG}
+  (f g)%_function_scope y z
 cvg_ball2P is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.cvg_ball2P
@@ -1024,7 +1024,7 @@ exists
         Datatypes_prod__canonical__topology_structure_Topological,
   (P `*` Q `&` cluster F)%classic a
 
-Arguments compact_setX {U V} [P Q]%classical_set_scope _ _ [F] _ _
+Arguments compact_setX {U V} [P Q]%_classical_set_scope _ _ [F] _ _
 compact_setX is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.product_topology.compact_setX

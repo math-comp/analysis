@@ -265,7 +265,7 @@ complete spaces, which extends uniform in the hierarchy.
 forall {T T' : Type}, filter.set_system (T * T') -> T -> filter.set_system T'
 
 nbhs_ is not universe polymorphic
-Arguments nbhs_ {T T'}%type_scope ent x _
+Arguments nbhs_ {T T'}%_type_scope ent x _
 nbhs_ is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.nbhs_
@@ -279,7 +279,7 @@ forall {T T' : Type} (ent : filter.set_system (T * T')) (x : T),
 nbhs_ ent x = filter.filter_from ent ((xsection (T2:=T'))^~ x)
 
 nbhs_E is not universe polymorphic
-Arguments nbhs_E {T T'}%type_scope ent x
+Arguments nbhs_E {T T'}%_type_scope ent x
 nbhs_E is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.nbhs_E
@@ -399,7 +399,7 @@ topology_structure.Topological.type
 
 Builders_1.Builders_1_M__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__topology_structure_Topological
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -449,7 +449,7 @@ topology_structure.Topological.type
 
 Builders_1.Builders_1_M__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__topology_structure_Topological
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -499,7 +499,7 @@ topology_structure.Topological.type
 
 Builders_1.Builders_1_M__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__topology_structure_Topological
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -549,7 +549,7 @@ topology_structure.Topological.type
 
 Builders_1.Builders_1_M__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__topology_structure_Topological
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -599,7 +599,7 @@ topology_structure.Topological.type
 
 Builders_1.Builders_1_M__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__topology_structure_Topological
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -652,7 +652,7 @@ uniformType
 
 Builders_1.Builders_1_M__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__uniform_structure_Uniform
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -702,7 +702,7 @@ uniformType
 
 Builders_1.Builders_1_M__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__uniform_structure_Uniform
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -752,7 +752,7 @@ uniformType
 
 Builders_1.Builders_1_M__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__uniform_structure_Uniform
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -802,7 +802,7 @@ uniformType
 
 Builders_1.Builders_1_M__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__uniform_structure_Uniform
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -852,7 +852,7 @@ uniformType
 
 Builders_1.Builders_1_M__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__uniform_structure_Uniform
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -904,7 +904,7 @@ filter.Nbhs.type
 
 Builders_8.Builders_8_M__canonical__filter_Nbhs is not universe polymorphic
 Arguments Builders_8.Builders_8_M__canonical__filter_Nbhs 
-  [M]%type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
+  [M]%_type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
   fresh_name_9
 Builders_8.Builders_8_M__canonical__filter_Nbhs is transparent
 Expands to: Constant
@@ -934,7 +934,7 @@ filter.Nbhs.type
 
 Builders_8.Builders_8_M__canonical__filter_Nbhs is not universe polymorphic
 Arguments Builders_8.Builders_8_M__canonical__filter_Nbhs 
-  [M]%type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
+  [M]%_type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
   fresh_name_9
 Builders_8.Builders_8_M__canonical__filter_Nbhs is transparent
 Expands to: Constant
@@ -964,7 +964,7 @@ filter.Nbhs.type
 
 Builders_8.Builders_8_M__canonical__filter_Nbhs is not universe polymorphic
 Arguments Builders_8.Builders_8_M__canonical__filter_Nbhs 
-  [M]%type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
+  [M]%_type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
   fresh_name_9
 Builders_8.Builders_8_M__canonical__filter_Nbhs is transparent
 Expands to: Constant
@@ -994,7 +994,7 @@ filter.Nbhs.type
 
 Builders_8.Builders_8_M__canonical__filter_Nbhs is not universe polymorphic
 Arguments Builders_8.Builders_8_M__canonical__filter_Nbhs 
-  [M]%type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
+  [M]%_type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
   fresh_name_9
 Builders_8.Builders_8_M__canonical__filter_Nbhs is transparent
 Expands to: Constant
@@ -1024,7 +1024,7 @@ filter.Nbhs.type
 
 Builders_8.Builders_8_M__canonical__filter_Nbhs is not universe polymorphic
 Arguments Builders_8.Builders_8_M__canonical__filter_Nbhs 
-  [M]%type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
+  [M]%_type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
   fresh_name_9
 Builders_8.Builders_8_M__canonical__filter_Nbhs is transparent
 Expands to: Constant
@@ -1056,7 +1056,7 @@ uniformType
 
 Builders_8.Builders_8_M__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Builders_8.Builders_8_M__canonical__uniform_structure_Uniform
-  [M]%type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
+  [M]%_type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
   fresh_name_9
 Builders_8.Builders_8_M__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
@@ -1086,7 +1086,7 @@ uniformType
 
 Builders_8.Builders_8_M__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Builders_8.Builders_8_M__canonical__uniform_structure_Uniform
-  [M]%type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
+  [M]%_type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
   fresh_name_9
 Builders_8.Builders_8_M__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
@@ -1116,7 +1116,7 @@ uniformType
 
 Builders_8.Builders_8_M__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Builders_8.Builders_8_M__canonical__uniform_structure_Uniform
-  [M]%type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
+  [M]%_type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
   fresh_name_9
 Builders_8.Builders_8_M__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
@@ -1146,7 +1146,7 @@ uniformType
 
 Builders_8.Builders_8_M__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Builders_8.Builders_8_M__canonical__uniform_structure_Uniform
-  [M]%type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
+  [M]%_type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
   fresh_name_9
 Builders_8.Builders_8_M__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
@@ -1176,7 +1176,7 @@ uniformType
 
 Builders_8.Builders_8_M__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Builders_8.Builders_8_M__canonical__uniform_structure_Uniform
-  [M]%type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
+  [M]%_type_scope [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq]
   fresh_name_9
 Builders_8.Builders_8_M__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
@@ -1208,7 +1208,7 @@ forall {X Y : Type} (E : X * Y -> Prop) (x : X) (y : Y),
 E (x, y) <-> E^-1%relation (y, x)
 
 entourage_sym is not universe polymorphic
-Arguments entourage_sym {X Y}%type_scope E%function_scope x y
+Arguments entourage_sym {X Y}%_type_scope E%_function_scope x y
 entourage_sym is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.entourage_sym
@@ -1263,7 +1263,7 @@ forall {M : uniformType} (x : M) (P : set M),
 filter.nbhs x P <-> nbhs_ entourage x P
 
 nbhsP is not universe polymorphic
-Arguments nbhsP {M} x P%classical_set_scope
+Arguments nbhsP {M} x P%_classical_set_scope
 nbhsP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.nbhsP
@@ -1280,7 +1280,7 @@ forall {T : Type} [F : set (set (T * T))],
 filter.Filter F -> filter.Filter [set V^-1%relation | V in F]%classic
 
 filter_inv is not universe polymorphic
-Arguments filter_inv {T}%type_scope [F]%classical_set_scope _
+Arguments filter_inv {T}%_type_scope [F]%_classical_set_scope _
 filter_inv is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.filter_inv
@@ -1307,7 +1307,7 @@ Qed.</div></details>
 forall {M : uniformType} [A : set (M * M)] (x : M), entourage A -> A (x, x)
 
 entourage_refl is not universe polymorphic
-Arguments entourage_refl {M} [A]%classical_set_scope x _
+Arguments entourage_refl {M} [A]%_classical_set_scope x _
 entourage_refl is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.entourage_refl
@@ -1346,7 +1346,7 @@ forall {M : uniformType} [A : set (M * M)],
 entourage A -> entourage A^-1%relation
 
 entourage_inv is not universe polymorphic
-Arguments entourage_inv {M} [A]%classical_set_scope _
+Arguments entourage_inv {M} [A]%_classical_set_scope _
 entourage_inv is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.entourage_inv
@@ -1364,7 +1364,7 @@ entourage A ->
 exists2 B : set (M * M), entourage B & ((B \; B)%relation `<=` A)%classic
 
 entourage_split_ex is not universe polymorphic
-Arguments entourage_split_ex {M} [A]%classical_set_scope _
+Arguments entourage_split_ex {M} [A]%_classical_set_scope _
 entourage_split_ex is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.entourage_split_ex
@@ -1384,7 +1384,7 @@ prod__canonical__classical_sets_Pointed
   (fun=> sort__canonical__classical_sets_Pointed)
 
 split_ent is not universe polymorphic
-Arguments split_ent {M} A%classical_set_scope t
+Arguments split_ent {M} A%_classical_set_scope t
 split_ent is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.split_ent
@@ -1400,7 +1400,7 @@ entourage (split_ent A) /\
 ((split_ent A \; split_ent A)%relation `<=` A)%classic
 
 split_entP is not universe polymorphic
-Arguments split_entP {M} [A]%classical_set_scope _
+Arguments split_entP {M} [A]%_classical_set_scope _
 split_entP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.split_entP
@@ -1418,7 +1418,7 @@ forall {M : uniformType} [A : set (M * M)],
 entourage A -> entourage (split_ent A)
 
 entourage_split_ent is not universe polymorphic
-Arguments entourage_split_ent {M} [A]%classical_set_scope _
+Arguments entourage_split_ent {M} [A]%_classical_set_scope _
 entourage_split_ent is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.entourage_split_ent
@@ -1442,7 +1442,7 @@ forall {M : uniformType} [A : set (M * M)],
 entourage A ->
 forall [t : M * M], (split_ent A \; split_ent A)%relation t -> A t
 
-Arguments subset_split_ent {M} [A]%classical_set_scope _ [t] _
+Arguments subset_split_ent {M} [A]%_classical_set_scope _ [t] _
 subset_split_ent is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.subset_split_ent
@@ -1460,7 +1460,7 @@ forall {M : uniformType} (z : M) {x y : M} {A : set (M * M)},
 entourage A -> split_ent A (x, z) -> split_ent A (z, y) -> A (x, y)
 
 entourage_split is not universe polymorphic
-Arguments entourage_split {M} z {x y} {A}%classical_set_scope _ _ _
+Arguments entourage_split {M} z {x y} {A}%_classical_set_scope _ _ _
 entourage_split is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.entourage_split
@@ -1478,7 +1478,7 @@ forall {M : uniformType} (x : M) [A : set (M * M)],
 entourage A -> filter.nbhs x (xsection A x)
 
 nbhs_entourage is not universe polymorphic
-Arguments nbhs_entourage {M} x [A]%classical_set_scope _
+Arguments nbhs_entourage {M} x [A]%_classical_set_scope _
 nbhs_entourage is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.nbhs_entourage
@@ -1528,7 +1528,7 @@ filter.prop_near1 F (P:=fun y : M => A (x, y))
   (inPhantom (forall y : M, A (x, y)))
 
 cvg_entourage is not universe polymorphic
-Arguments cvg_entourage {M F FF} [x] _ [A]%classical_set_scope _
+Arguments cvg_entourage {M F FF} [x] _ [A]%_classical_set_scope _
 cvg_entourage is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.cvg_entourage
@@ -1552,7 +1552,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs p) <->
    (inPhantom (forall t : T, A (p, f t))))
 
 cvg_app_entourageP is not universe polymorphic
-Arguments cvg_app_entourageP {M} [T]%type_scope f%function_scope [F] FF p
+Arguments cvg_app_entourageP {M} [T]%_type_scope f%_function_scope [F] FF p
 cvg_app_entourageP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.cvg_app_entourageP
@@ -1570,7 +1570,7 @@ forall {M : uniformType} [E : set (M * M)],
 entourage E -> entourage (E `&` E^-1%relation)%classic
 
 entourage_invI is not universe polymorphic
-Arguments entourage_invI {M} [E]%classical_set_scope _
+Arguments entourage_invI {M} [E]%_classical_set_scope _
 entourage_invI is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.entourage_invI
@@ -1592,7 +1592,7 @@ split_ent_subset :
 forall {M : uniformType} [E : set (M * M)],
 entourage E -> forall [t : M * M], split_ent E t -> E t
 
-Arguments split_ent_subset {M} [E]%classical_set_scope _ [t] _
+Arguments split_ent_subset {M} [E]%_classical_set_scope _ [t] _
 split_ent_subset is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.split_ent_subset
@@ -1641,7 +1641,7 @@ forall [t : topology_structure.Topological.sort M],
 topology_structure.closure (xsection (split_ent E) x) t ->
 ((x, t) \in E) = true
 
-Arguments ent_closure {M} [x] [E]%classical_set_scope _ [t] _
+Arguments ent_closure {M} [x] [E]%_classical_set_scope _ [t] _
 ent_closure is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.ent_closure
@@ -1668,7 +1668,7 @@ filter.cvg_to
   (filter.nbhs (f x))
 
 continuous_withinNx is not universe polymorphic
-Arguments continuous_withinNx {U V} f%function_scope x
+Arguments continuous_withinNx {U V} f%_function_scope x
 continuous_withinNx is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.continuous_withinNx
@@ -1747,8 +1747,8 @@ filter.nbhs (topology_structure.dnbhs (f x)) t ->
     is_true (y != x)) t0 ->
    (f @^-1` t)%classic t0)
 
-Arguments continuous_injective_withinNx [T U] [f]%function_scope 
-  [x] _ _%function_scope [t] _
+Arguments continuous_injective_withinNx [T U] [f]%_function_scope 
+  [x] _ _%_function_scope [t] _
 continuous_injective_withinNx is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.continuous_injective_withinNx
@@ -1820,7 +1820,7 @@ entourage A ->
 topology_structure.open_nbhs x (topology_structure.interior (xsection A x))
 
 open_nbhs_entourage is not universe polymorphic
-Arguments open_nbhs_entourage [U] x [A]%classical_set_scope _
+Arguments open_nbhs_entourage [U] x [A]%_classical_set_scope _
 open_nbhs_entourage is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.open_nbhs_entourage
@@ -1838,7 +1838,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="unif_continuous" class="id"><a name="unif_continuous" class="" title="unif_continuous : forall [U V : uniformType], (U -> V) -> Prop
 
 unif_continuous is not universe polymorphic
-Arguments unif_continuous [U V] f%function_scope
+Arguments unif_continuous [U V] f%_function_scope
 unif_continuous is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.unif_continuous
@@ -1850,7 +1850,7 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 327, character
 <span class="vernacular">Definition</span><span class="id"> </span><span id="entourage_set" class="id"><a name="entourage_set" class="" title="entourage_set : forall [U : uniformType], set (set U * set U) -> Prop
 
 entourage_set is not universe polymorphic
-Arguments entourage_set [U] A%classical_set_scope
+Arguments entourage_set [U] A%_classical_set_scope
 entourage_set is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.entourage_set

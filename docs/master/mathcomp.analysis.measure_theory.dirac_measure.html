@@ -247,7 +247,7 @@ forall {d : measure_display} {T : sigmaRingType d},
 T -> forall {R : realFieldType}, set T -> \bar R
 
 dirac is not universe polymorphic
-Arguments dirac {d}%measure_display_scope {T} a {R} A%classical_set_scope
+Arguments dirac {d}%_measure_display_scope {T} a {R} A%_classical_set_scope
 dirac is transparent
 Expands to: Constant mathcomp.analysis.measure_theory.dirac_measure.dirac
 Declared in
@@ -292,7 +292,7 @@ T -> forall R : realFieldType, measure T R
 
 dirac_measure_dirac__canonical__measure_function_Measure is not universe polymorphic
 Arguments dirac_measure_dirac__canonical__measure_function_Measure
-  [d]%measure_display_scope [T] a R
+  [d]%_measure_display_scope [T] a R
 dirac_measure_dirac__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.dirac_measure.dirac_measure_dirac__canonical__measure_function_Measure
@@ -304,7 +304,7 @@ T -> forall R : realFieldType, measure T R
 
 dirac_measure_dirac__canonical__measure_function_Measure is not universe polymorphic
 Arguments dirac_measure_dirac__canonical__measure_function_Measure
-  [d]%measure_display_scope [T] a R
+  [d]%_measure_display_scope [T] a R
 dirac_measure_dirac__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.dirac_measure.dirac_measure_dirac__canonical__measure_function_Measure
@@ -316,7 +316,7 @@ T -> forall R : realFieldType, measure T R
 
 dirac_measure_dirac__canonical__measure_function_Measure is not universe polymorphic
 Arguments dirac_measure_dirac__canonical__measure_function_Measure
-  [d]%measure_display_scope [T] a R
+  [d]%_measure_display_scope [T] a R
 dirac_measure_dirac__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.dirac_measure.dirac_measure_dirac__canonical__measure_function_Measure
@@ -328,7 +328,7 @@ T -> forall R : realFieldType, measure T R
 
 dirac_measure_dirac__canonical__measure_function_Measure is not universe polymorphic
 Arguments dirac_measure_dirac__canonical__measure_function_Measure
-  [d]%measure_display_scope [T] a R
+  [d]%_measure_display_scope [T] a R
 dirac_measure_dirac__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.dirac_measure.dirac_measure_dirac__canonical__measure_function_Measure
@@ -340,7 +340,7 @@ T -> forall R : realFieldType, measure T R
 
 dirac_measure_dirac__canonical__measure_function_Measure is not universe polymorphic
 Arguments dirac_measure_dirac__canonical__measure_function_Measure
-  [d]%measure_display_scope [T] a R
+  [d]%_measure_display_scope [T] a R
 dirac_measure_dirac__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.dirac_measure.dirac_measure_dirac__canonical__measure_function_Measure
@@ -364,7 +364,7 @@ forall [d : measure_display] [T : sigmaRingType d]
 (\d_a)%R A = ((a \in A)%:R)%:E
 
 diracE is not universe polymorphic
-Arguments diracE [d]%measure_display_scope [T] R a A%classical_set_scope
+Arguments diracE [d]%_measure_display_scope [T] R a A%_classical_set_scope
 diracE is opaque
 Expands to: Constant mathcomp.analysis.measure_theory.dirac_measure.diracE
 Declared in
@@ -381,7 +381,7 @@ forall [d : measure_display] [T : sigmaRingType d]
 (\d_a)%R set0 = 0%R
 
 dirac0 is not universe polymorphic
-Arguments dirac0 [d]%measure_display_scope [T] R a
+Arguments dirac0 [d]%_measure_display_scope [T] R a
 dirac0 is opaque
 Expands to: Constant mathcomp.analysis.measure_theory.dirac_measure.dirac0
 Declared in
@@ -398,7 +398,7 @@ forall [d : measure_display] [T : sigmaRingType d]
 (\d_a)%R [set: T] = 1%E
 
 diracT is not universe polymorphic
-Arguments diracT [d]%measure_display_scope [T] R a
+Arguments diracT [d]%_measure_display_scope [T] R a
 diracT is opaque
 Expands to: Constant mathcomp.analysis.measure_theory.dirac_measure.diracT
 Declared in
@@ -420,8 +420,8 @@ forall [d : measure_display] [T : sigmaRingType d] (R : realType) [A : set T],
 finite_set A -> (\esum_(_ in A) 1%E)%R = (#|` fset_set (T:=T) A|%:R)%:E
 
 finite_card_sum is not universe polymorphic
-Arguments finite_card_sum [d]%measure_display_scope 
-  [T] R [A]%classical_set_scope _
+Arguments finite_card_sum [d]%_measure_display_scope 
+  [T] R [A]%_classical_set_scope _
 finite_card_sum is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.dirac_measure.finite_card_sum
@@ -441,8 +441,8 @@ forall [d : measure_display] [T : sigmaRingType d] (R : realType) [A : set T],
 finite_set A -> (\esum_(i in A) \d_i A)%R = (#|` fset_set (T:=T) A|%:R)%:E
 
 finite_card_dirac is not universe polymorphic
-Arguments finite_card_dirac [d]%measure_display_scope 
-  [T] R [A]%classical_set_scope _
+Arguments finite_card_dirac [d]%_measure_display_scope 
+  [T] R [A]%_classical_set_scope _
 finite_card_dirac is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.dirac_measure.finite_card_dirac
@@ -463,8 +463,8 @@ forall [d : measure_display] [T : sigmaRingType d] (R : realType) [A : set T],
 infinite_set A -> (\esum_(i in A) \d_i A)%R = +oo%E
 
 infinite_card_dirac is not universe polymorphic
-Arguments infinite_card_dirac [d]%measure_display_scope 
-  [T] R [A]%classical_set_scope _
+Arguments infinite_card_dirac [d]%_measure_display_scope 
+  [T] R [A]%_classical_set_scope _
 infinite_card_dirac is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.dirac_measure.infinite_card_dirac

@@ -272,7 +272,7 @@ forall {R : numDomainType} {T T' : Type},
 (T -> R -> set T') -> filter.set_system (T * T')
 
 entourage_ is not universe polymorphic
-Arguments entourage_ {R} {T T'}%type_scope ball%function_scope _
+Arguments entourage_ {R} {T T'}%_type_scope ball%_function_scope _
 entourage_ is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.entourage_
@@ -288,7 +288,7 @@ filter.filter_from [set x | (0 < x)%R]
   (fun e : R => [set xy | ball xy.1 e xy.2]%classic)
 
 entourage_E is not universe polymorphic
-Arguments entourage_E {R} {T T'}%type_scope ball%function_scope
+Arguments entourage_E {R} {T T'}%_type_scope ball%_function_scope
 entourage_E is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.entourage_E
@@ -423,7 +423,7 @@ uniformType
 
 Builders_1.Builders_1_M__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__uniform_structure_Uniform
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -473,7 +473,7 @@ uniformType
 
 Builders_1.Builders_1_M__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__uniform_structure_Uniform
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -523,7 +523,7 @@ uniformType
 
 Builders_1.Builders_1_M__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__uniform_structure_Uniform
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -573,7 +573,7 @@ uniformType
 
 Builders_1.Builders_1_M__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__uniform_structure_Uniform
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -623,7 +623,7 @@ uniformType
 
 Builders_1.Builders_1_M__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__uniform_structure_Uniform
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -679,7 +679,7 @@ pseudoMetricType R
 Builders_1.Builders_1_M__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments
   Builders_1.Builders_1_M__canonical__pseudometric_structure_PseudoMetric 
-  [R] [M]%type_scope
+  [R] [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -731,7 +731,7 @@ pseudoMetricType R
 Builders_1.Builders_1_M__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments
   Builders_1.Builders_1_M__canonical__pseudometric_structure_PseudoMetric 
-  [R] [M]%type_scope
+  [R] [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -783,7 +783,7 @@ pseudoMetricType R
 Builders_1.Builders_1_M__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments
   Builders_1.Builders_1_M__canonical__pseudometric_structure_PseudoMetric 
-  [R] [M]%type_scope
+  [R] [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -835,7 +835,7 @@ pseudoMetricType R
 Builders_1.Builders_1_M__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments
   Builders_1.Builders_1_M__canonical__pseudometric_structure_PseudoMetric 
-  [R] [M]%type_scope
+  [R] [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -887,7 +887,7 @@ pseudoMetricType R
 Builders_1.Builders_1_M__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments
   Builders_1.Builders_1_M__canonical__pseudometric_structure_PseudoMetric 
-  [R] [M]%type_scope
+  [R] [M]%_type_scope
   [local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   fresh_name_2
@@ -964,7 +964,7 @@ forall {R : numDomainType} {T T' : Type},
 (T -> R -> set T') -> T -> filter.set_system T'
 
 nbhs_ball_ is not universe polymorphic
-Arguments nbhs_ball_ {R} {T T'}%type_scope ball%function_scope x _
+Arguments nbhs_ball_ {R} {T T'}%_type_scope ball%_function_scope x _
 nbhs_ball_ is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.nbhs_ball_
@@ -1052,7 +1052,7 @@ forall {R : numDomainType} {M : pseudoMetricType R} (x : M) (P : set M),
 filter.nbhs x P <-> nbhs_ball x P
 
 nbhs_ballP is not universe polymorphic
-Arguments nbhs_ballP {R M} x P%classical_set_scope
+Arguments nbhs_ballP {R M} x P%_classical_set_scope
 nbhs_ballP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.nbhs_ballP
@@ -1094,7 +1094,7 @@ forall {R : numDomainType} {M : pseudoMetricType R} (x : M) [e : R],
 (0 < e)%R -> ball x e x
 
 ballxx is not universe polymorphic
-Arguments ballxx {R M} x [e]%ring_scope _
+Arguments ballxx {R M} x [e]%_ring_scope _
 ballxx is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.ballxx
@@ -1111,7 +1111,7 @@ forall {R : numDomainType} {M : pseudoMetricType R} [x y : M] [e : R],
 ball x e y -> ball y e x
 
 ball_sym is not universe polymorphic
-Arguments ball_sym {R M} [x y] [e]%ring_scope _
+Arguments ball_sym {R M} [x y] [e]%_ring_scope _
 ball_sym is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.ball_sym
@@ -1128,7 +1128,7 @@ forall {R : numDomainType} {M : pseudoMetricType R} (x y : M) (e : R),
 ball x e y = ball y e x
 
 ball_symE is not universe polymorphic
-Arguments ball_symE {R M} x y e%ring_scope
+Arguments ball_symE {R M} x y e%_ring_scope
 ball_symE is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.ball_symE
@@ -1145,7 +1145,7 @@ forall {R : numDomainType} {M : pseudoMetricType R} [y x z : M] [e1 e2 : R],
 ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z
 
 ball_triangle is not universe polymorphic
-Arguments ball_triangle {R M} [y x z] [e1 e2]%ring_scope _ _
+Arguments ball_triangle {R M} [y x z] [e1 e2]%_ring_scope _ _
 ball_triangle is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.ball_triangle
@@ -1163,7 +1163,7 @@ forall {R : numDomainType} {M : pseudoMetricType R} (x : M) (eps : R),
 (0 < eps)%R -> filter.nbhs x (ball x eps)
 
 nbhsx_ballx is not universe polymorphic
-Arguments nbhsx_ballx {R M} x eps%ring_scope _
+Arguments nbhsx_ballx {R M} x eps%_ring_scope _
 nbhsx_ballx is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.nbhsx_ballx
@@ -1214,7 +1214,7 @@ ball x e1 t ->
       class) in
  ball) x e2 t
 
-Arguments le_ball {R M} [x] [e1 e2]%ring_scope _ [t] _
+Arguments le_ball {R M} [x] [e1 e2]%_ring_scope _ [t] _
 le_ball is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.le_ball
@@ -1235,7 +1235,7 @@ filter.prop_near1 y (P:=ball y eps)
   (inPhantom (forall y' : M, ball y eps y'))
 
 near_ball is not universe polymorphic
-Arguments near_ball {R M} y eps%ring_scope _
+Arguments near_ball {R M} y eps%_ring_scope _
 near_ball is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.near_ball
@@ -1252,7 +1252,7 @@ forall {R : numDomainType} {M : pseudoMetricType R} (x : M) [e : R],
 (0 < e)%R -> topology_structure.dnbhs x (ball x e `\ x)%classic
 
 dnbhs_ball is not universe polymorphic
-Arguments dnbhs_ball {R M} x [e]%ring_scope _
+Arguments dnbhs_ball {R M} x [e]%_ring_scope _
 dnbhs_ball is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.dnbhs_ball
@@ -1302,7 +1302,7 @@ filter.prop_near1 F (P:=ball y eps)
   (inPhantom (forall y' : M, ball y eps y'))
 
 fcvg_ball is not universe polymorphic
-Arguments fcvg_ball {R M F FF} [y] _ [eps]%ring_scope _
+Arguments fcvg_ball {R M F FF} [y] _ [eps]%_ring_scope _
 fcvg_ball is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.fcvg_ball
@@ -1327,7 +1327,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) <->
    (inPhantom (forall x : T, ball y eps (f x))))
 
 cvg_ballP is not universe polymorphic
-Arguments cvg_ballP {R M} {T}%type_scope {F FF} f%function_scope y
+Arguments cvg_ballP {R M} {T}%_type_scope {F FF} f%_function_scope y
 cvg_ballP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.cvg_ballP
@@ -1352,8 +1352,8 @@ filter.prop_near1 F (P:=fun x : T => ball y eps (f x))
   (inPhantom (forall x : T, ball y eps (f x)))
 
 cvg_ball is not universe polymorphic
-Arguments cvg_ball {R M} {T}%type_scope {F FF} [f]%function_scope 
-  [y] _ [eps]%ring_scope _
+Arguments cvg_ball {R M} {T}%_type_scope {F FF} [f]%_function_scope 
+  [y] _ [eps]%_ring_scope _
 cvg_ball is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.cvg_ball
@@ -1378,7 +1378,7 @@ filter.cvg_to (filter.nbhs (filter.fmapi f (filter.nbhs F))) (filter.nbhs y) <->
    (inPhantom (forall x : T, exists z : M, f x z /\ ball y eps z)))
 
 cvgi_ballP is not universe polymorphic
-Arguments cvgi_ballP {R M} [T]%type_scope {F FF} f%function_scope y
+Arguments cvgi_ballP {R M} [T]%_type_scope {F FF} f%_function_scope y
 cvgi_ballP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.cvgi_ballP
@@ -1407,8 +1407,8 @@ forall [eps : R],
 (0 < eps)%R -> F [set x | (exists z : M, f x z /\ ball y eps z)]%classic
 
 cvgi_ball is not universe polymorphic
-Arguments cvgi_ball {R M} [T]%type_scope {F FF} [f]%function_scope 
-  [y] _ [eps]%ring_scope _
+Arguments cvgi_ball {R M} [T]%_type_scope {F FF} [f]%_function_scope 
+  [y] _ [eps]%_ring_scope _
 cvgi_ball is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.cvgi_ball
@@ -1446,7 +1446,7 @@ forall {R : numFieldType} {M : pseudoMetricType R} [z x y : M] [e : R],
 ball x (e / 2) z -> ball z (e / 2) y -> ball x e y
 
 ball_split is not universe polymorphic
-Arguments ball_split {R M} [z x y] [e]%ring_scope _ _
+Arguments ball_split {R M} [z x y] [e]%_ring_scope _ _
 ball_split is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.ball_split
@@ -1464,7 +1464,7 @@ forall {R : numFieldType} {M : pseudoMetricType R} [z x y : M] [e : R],
 ball z (e / 2) x -> ball z (e / 2) y -> ball x e y
 
 ball_splitr is not universe polymorphic
-Arguments ball_splitr {R M} [z x y] [e]%ring_scope _ _
+Arguments ball_splitr {R M} [z x y] [e]%_ring_scope _ _
 ball_splitr is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.ball_splitr
@@ -1482,7 +1482,7 @@ forall {R : numFieldType} {M : pseudoMetricType R} [z x y : M] [e : R],
 ball x (e / 2) z -> ball y (e / 2) z -> ball x e y
 
 ball_splitl is not universe polymorphic
-Arguments ball_splitl {R M} [z x y] [e]%ring_scope _ _
+Arguments ball_splitl {R M} [z x y] [e]%_ring_scope _ _
 ball_splitl is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.ball_splitl
@@ -1513,7 +1513,7 @@ unif_continuous (U:=U) (V:=V) f <->
    (0 < d)%R & forall x : U * U, ball x.1 d x.2 -> ball (f x.1) e (f x.2))
 
 unif_continuousP is not universe polymorphic
-Arguments unif_continuousP [R U V] f%function_scope
+Arguments unif_continuousP [R U V] f%_function_scope
 unif_continuousP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.unif_continuousP
@@ -1625,7 +1625,7 @@ forall {R : numDomainType} {V : GRing.Zmodule.Exports.zmodType},
 (V -> R) -> V -> R -> set V
 
 ball_ is not universe polymorphic
-Arguments ball_ {R V} norm x e%ring_scope y /
+Arguments ball_ {R V} norm x e%_ring_scope y /
   (where some original arguments have been renamed)
 The reduction tactics unfold ball_ when applied to 6 arguments
 ball_ is transparent
@@ -1644,7 +1644,8 @@ forall [R : realDomainType] (x e : R) (P : set R),
 {in `]x - e, x + e[%R, forall y : R, P y}
 
 subset_ball_prop_in_itv is not universe polymorphic
-Arguments subset_ball_prop_in_itv [R] (x e)%ring_scope P%classical_set_scope
+Arguments subset_ball_prop_in_itv [R] (x e)%_ring_scope
+  P%_classical_set_scope
 subset_ball_prop_in_itv is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.subset_ball_prop_in_itv
@@ -1682,8 +1683,8 @@ forall
           R],
 x0 \in `[x - e, x + e]%R -> P x0
 
-Arguments subset_ball_prop_in_itvcc [R] [x]%ring_scope 
-  [e] [P]%classical_set_scope _ _ [x] _
+Arguments subset_ball_prop_in_itvcc [R] [x]%_ring_scope 
+  [e] [P]%_classical_set_scope _ _ [x] _
 subset_ball_prop_in_itvcc is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.subset_ball_prop_in_itvcc
@@ -1723,7 +1724,7 @@ forall {K : numDomainType} {R : normedZmodType K} (x : R) [e : K],
 (0 < e)%R -> ball_ normr x e x
 
 ball_norm_center is not universe polymorphic
-Arguments ball_norm_center {K R} x%ring_scope [e]%ring_scope _
+Arguments ball_norm_center {K R} x%_ring_scope [e]%_ring_scope _
 ball_norm_center is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.ball_norm_center
@@ -1740,7 +1741,7 @@ forall {K : numDomainType} {R : normedZmodType K} [x y : R] [e : K],
 ball_ normr x e y -> ball_ normr y e x
 
 ball_norm_symmetric is not universe polymorphic
-Arguments ball_norm_symmetric {K R} [x y e]%ring_scope _
+Arguments ball_norm_symmetric {K R} [x y e]%_ring_scope _
 ball_norm_symmetric is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.ball_norm_symmetric
@@ -1758,7 +1759,7 @@ forall {K : numDomainType} {R : normedZmodType K} [x y z : R] [e1 e2 : K],
 ball_ normr x e1 y -> ball_ normr y e2 z -> ball_ normr x (e1 + e2) z
 
 ball_norm_triangle is not universe polymorphic
-Arguments ball_norm_triangle {K R} [x y z e1 e2]%ring_scope _ _
+Arguments ball_norm_triangle {K R} [x y z e1 e2]%_ring_scope _ _
 ball_norm_triangle is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.pseudometric_structure.ball_norm_triangle

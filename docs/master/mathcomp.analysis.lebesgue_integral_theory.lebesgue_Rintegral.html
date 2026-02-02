@@ -258,8 +258,8 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 measure T R -> set T -> (T -> R) -> R
 
 Rintegral is not universe polymorphic
-Arguments Rintegral [d]%measure_display_scope [T R] 
-  mu D%classical_set_scope f%function_scope
+Arguments Rintegral [d]%_measure_display_scope [T R] 
+  mu D%_classical_set_scope f%_function_scope
 Rintegral is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.Rintegral
@@ -288,8 +288,8 @@ mu.-integrable A (EFin \o f) ->
 `|\int[mu]_(x in A) f x|%:E = `|\int[mu]_(x in A) (f x)%:E|%E
 
 EFin_normr_Rintegral is not universe polymorphic
-Arguments EFin_normr_Rintegral [d]%measure_display_scope 
-  {T R} [mu] [A]%classical_set_scope [f]%function_scope 
+Arguments EFin_normr_Rintegral [d]%_measure_display_scope 
+  {T R} [mu] [A]%_classical_set_scope [f]%_function_scope 
   _ _
 EFin_normr_Rintegral is opaque
 Expands to: Constant
@@ -315,8 +315,8 @@ forall [d : measure_display] {T : measurableType d}
 {in D, f =1 g} -> (\int[mu]_(x in D) f x)%R = (\int[mu]_(x in D) g x)%R
 
 eq_Rintegral is not universe polymorphic
-Arguments eq_Rintegral [d]%measure_display_scope {T R} 
-  mu [D]%classical_set_scope [g f]%function_scope 
+Arguments eq_Rintegral [d]%_measure_display_scope 
+  {T R} mu [D]%_classical_set_scope [g f]%_function_scope 
   _
 eq_Rintegral is opaque
 Expands to: Constant
@@ -336,8 +336,8 @@ forall [d : measure_display] {T : measurableType d}
 (\int[mu]_(x in D) f x)%R = (\int[mu]_x (f \_ D) x)%R
 
 Rintegral_mkcond is not universe polymorphic
-Arguments Rintegral_mkcond [d]%measure_display_scope 
-  {T R} mu D%classical_set_scope f%function_scope
+Arguments Rintegral_mkcond [d]%_measure_display_scope 
+  {T R} mu D%_classical_set_scope f%_function_scope
 Rintegral_mkcond is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.Rintegral_mkcond
@@ -358,8 +358,8 @@ forall [d : measure_display] {T : measurableType d}
 (\int[mu]_(x in D `&` P) f x)%R = (\int[mu]_(x in D) (f \_ P) x)%R
 
 Rintegral_mkcondr is not universe polymorphic
-Arguments Rintegral_mkcondr [d]%measure_display_scope 
-  {T R} mu (D P)%classical_set_scope f%function_scope
+Arguments Rintegral_mkcondr [d]%_measure_display_scope 
+  {T R} mu (D P)%_classical_set_scope f%_function_scope
 Rintegral_mkcondr is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.Rintegral_mkcondr
@@ -381,8 +381,8 @@ forall [d : measure_display] {T : measurableType d}
 (\int[mu]_(x in P `&` D) f x)%R = (\int[mu]_(x in D) (f \_ P) x)%R
 
 Rintegral_mkcondl is not universe polymorphic
-Arguments Rintegral_mkcondl [d]%measure_display_scope 
-  {T R} mu (D P)%classical_set_scope f%function_scope
+Arguments Rintegral_mkcondl [d]%_measure_display_scope 
+  {T R} mu (D P)%_classical_set_scope f%_function_scope
 Rintegral_mkcondl is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.Rintegral_mkcondl
@@ -404,9 +404,9 @@ mu.-integrable D (EFin \o f) ->
 (\int[mu]_(x in D) (r * f x))%R = (r * \int[mu]_(x in D) f x)%R
 
 RintegralZl is not universe polymorphic
-Arguments RintegralZl [d]%measure_display_scope {T R} 
-  [mu] [D]%classical_set_scope [f]%function_scope 
-  r%ring_scope _ _
+Arguments RintegralZl [d]%_measure_display_scope {T R} 
+  [mu] [D]%_classical_set_scope [f]%_function_scope 
+  r%_ring_scope _ _
 RintegralZl is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.RintegralZl
@@ -431,9 +431,9 @@ mu.-integrable D (EFin \o f) ->
 (\int[mu]_(x in D) (f x * r))%R = (\int[mu]_(x in D) f x * r)%R
 
 RintegralZr is not universe polymorphic
-Arguments RintegralZr [d]%measure_display_scope {T R} 
-  [mu] [D]%classical_set_scope [f]%function_scope 
-  r%ring_scope _ _
+Arguments RintegralZr [d]%_measure_display_scope {T R} 
+  [mu] [D]%_classical_set_scope [f]%_function_scope 
+  r%_ring_scope _ _
 RintegralZr is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.RintegralZr
@@ -454,9 +454,9 @@ forall [d : measure_display] {T : measurableType d}
 (forall x : T, D x -> (0 <= f x)%R) -> (0 <= \int[mu]_(x in D) f x)%R
 
 Rintegral_ge0 is not universe polymorphic
-Arguments Rintegral_ge0 [d]%measure_display_scope 
-  {T R} mu [D]%classical_set_scope [f]%function_scope 
-  _%function_scope
+Arguments Rintegral_ge0 [d]%_measure_display_scope 
+  {T R} mu [D]%_classical_set_scope [f]%_function_scope 
+  _%_function_scope
 Rintegral_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.Rintegral_ge0
@@ -477,8 +477,8 @@ mu.-integrable D (EFin \o f) ->
 (`|\int[mu]_(t in D) f t| <= \int[mu]_(t in D) `|f t|)%R
 
 le_normr_Rintegral is not universe polymorphic
-Arguments le_normr_Rintegral [d]%measure_display_scope 
-  {T R} [mu] [D]%classical_set_scope [f]%function_scope 
+Arguments le_normr_Rintegral [d]%_measure_display_scope 
+  {T R} [mu] [D]%_classical_set_scope [f]%_function_scope 
   _ _
 le_normr_Rintegral is opaque
 Expands to: Constant
@@ -516,8 +516,8 @@ mu.-integrable (A `|` B) (EFin \o f) ->
 (\int[mu]_(x in A) f x + \int[mu]_(x in B) f x)%R
 
 Rintegral_setU is not universe polymorphic
-Arguments Rintegral_setU [d]%measure_display_scope 
-  {T R} [mu] [A B]%classical_set_scope [f]%function_scope 
+Arguments Rintegral_setU [d]%_measure_display_scope 
+  {T R} [mu] [A B]%_classical_set_scope [f]%_function_scope 
   _ _ _ _
 Rintegral_setU is opaque
 Expands to: Constant
@@ -550,7 +550,8 @@ forall [d : measure_display] {T : measurableType d}
 (\int[mu]_(x in set0) f x)%R = 0%R
 
 Rintegral_set0 is not universe polymorphic
-Arguments Rintegral_set0 [d]%measure_display_scope {T R} mu f%function_scope
+Arguments Rintegral_set0 [d]%_measure_display_scope 
+  {T R} mu f%_function_scope
 Rintegral_set0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.Rintegral_set0
@@ -569,8 +570,8 @@ d.-measurable%classic D ->
 forall r : R, (\int[mu]_(x in D) cst r x)%R = (r * fine (mu D))%R
 
 Rintegral_cst is not universe polymorphic
-Arguments Rintegral_cst [d]%measure_display_scope 
-  {T R} mu [D]%classical_set_scope _ r%ring_scope
+Arguments Rintegral_cst [d]%_measure_display_scope 
+  {T R} mu [D]%_classical_set_scope _ r%_ring_scope
 Rintegral_cst is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.Rintegral_cst
@@ -600,9 +601,9 @@ mu.-integrable D (EFin \o f2) ->
 (\int[mu]_(x in D) f1 x <= \int[mu]_(x in D) f2 x)%R
 
 le_Rintegral is not universe polymorphic
-Arguments le_Rintegral [d]%measure_display_scope {T R} 
-  [mu] [D]%classical_set_scope [f1 f2]%function_scope 
-  _ _ _ _%function_scope
+Arguments le_Rintegral [d]%_measure_display_scope 
+  {T R} [mu] [D]%_classical_set_scope [f1 f2]%_function_scope 
+  _ _ _ _%_function_scope
 le_Rintegral is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.le_Rintegral
@@ -634,8 +635,8 @@ mu.-integrable D (EFin \o f2) ->
 (\int[mu]_(x in D) f1 x + \int[mu]_(x in D) f2 x)%R
 
 RintegralD is not universe polymorphic
-Arguments RintegralD [d]%measure_display_scope {T R} 
-  [mu] [D]%classical_set_scope [f1 f2]%function_scope 
+Arguments RintegralD [d]%_measure_display_scope {T R} 
+  [mu] [D]%_classical_set_scope [f1 f2]%_function_scope 
   _ _ _
 RintegralD is opaque
 Expands to: Constant
@@ -663,8 +664,8 @@ mu.-integrable D (EFin \o f2) ->
 (\int[mu]_(x in D) f1 x - \int[mu]_(x in D) f2 x)%R
 
 RintegralB is not universe polymorphic
-Arguments RintegralB [d]%measure_display_scope {T R} 
-  [mu] [D]%classical_set_scope [f1 f2]%function_scope 
+Arguments RintegralB [d]%_measure_display_scope {T R} 
+  [mu] [D]%_classical_set_scope [f1 f2]%_function_scope 
   _ _ _
 RintegralB is opaque
 Expands to: Constant
@@ -700,7 +701,8 @@ lebesgue_measure.-integrable [set` Interval a (BLeft r)] (EFin \o f) ->
 (\int[lebesgue_measure]_(x in [set` Interval a (BRight r)]) f x)%R
 
 Rintegral_itv_bndo_bndc is not universe polymorphic
-Arguments Rintegral_itv_bndo_bndc {R} [a] [r]%ring_scope [f]%function_scope _
+Arguments Rintegral_itv_bndo_bndc {R} [a] [r]%_ring_scope 
+  [f]%_function_scope _
 Rintegral_itv_bndo_bndc is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.Rintegral_itv_bndo_bndc
@@ -724,7 +726,8 @@ lebesgue_measure.-integrable [set` Interval (BRight r) b] (EFin \o f) ->
 (\int[lebesgue_measure]_(x in [set` Interval (BLeft r) b]) f x)%R
 
 Rintegral_itv_obnd_cbnd is not universe polymorphic
-Arguments Rintegral_itv_obnd_cbnd {R} [r]%ring_scope [b] [f]%function_scope _
+Arguments Rintegral_itv_obnd_cbnd {R} [r]%_ring_scope 
+  [b] [f]%_function_scope _
 Rintegral_itv_obnd_cbnd is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.Rintegral_itv_obnd_cbnd
@@ -746,7 +749,7 @@ forall {R : realType} (f : R -> R) (r : R),
 (\int[lebesgue_measure]_(x in [set r]) f x)%R = 0%R
 
 Rintegral_set1 is not universe polymorphic
-Arguments Rintegral_set1 {R} f%function_scope r%ring_scope
+Arguments Rintegral_set1 {R} f%_function_scope r%_ring_scope
 Rintegral_set1 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.Rintegral_set1
@@ -768,7 +771,7 @@ lebesgue_measure.-integrable [set` Interval a b] (EFin \o f) ->
 (\int[lebesgue_measure]_(x0 in [set` Interval (BRight x) b]) f x0)%R
 
 Rintegral_itvB is not universe polymorphic
-Arguments Rintegral_itvB {R} [f]%function_scope [a b x] _ _ _
+Arguments Rintegral_itvB {R} [f]%_function_scope [a b x] _ _ _
 Rintegral_itvB is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.Rintegral_itvB

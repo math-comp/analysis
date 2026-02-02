@@ -338,7 +338,7 @@ forall [R : numDomainType] [p : R^o] [A : set R], filter.nbhs p A -> A p
 
 TopologicalNumDomainType.nbhs_singleton is not universe polymorphic
 Arguments TopologicalNumDomainType.nbhs_singleton 
-  [R p] [A]%classical_set_scope _
+  [R p] [A]%_classical_set_scope _
 TopologicalNumDomainType.nbhs_singleton is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.TopologicalNumDomainType.nbhs_singleton
@@ -357,7 +357,7 @@ forall [R : numDomainType] [p : R^o] [A : set R],
 filter.nbhs p A -> filter.nbhs p (filter.nbhs^~ A)
 
 TopologicalNumDomainType.nbhs_nbhs is not universe polymorphic
-Arguments TopologicalNumDomainType.nbhs_nbhs [R p] [A]%classical_set_scope _
+Arguments TopologicalNumDomainType.nbhs_nbhs [R p] [A]%_classical_set_scope _
 TopologicalNumDomainType.nbhs_nbhs is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.TopologicalNumDomainType.nbhs_nbhs
@@ -1439,7 +1439,7 @@ library mathcomp.analysis.topology_theory.num_topology, line 139, characters 0-1
 <span class="vernacular">Definition</span><span class="id"> </span><span id="at_left" class="id"><a name="at_left" class="" title="at_left : forall [R : numFieldType], R -> filter.set_system R
 
 at_left is not universe polymorphic
-Arguments at_left [R] x%ring_scope _
+Arguments at_left [R] x%_ring_scope _
 at_left is transparent
 Expands to: Constant mathcomp.analysis.topology_theory.num_topology.at_left
 Declared in
@@ -1448,7 +1448,7 @@ library mathcomp.analysis.topology_theory.num_topology, line 154, characters 11-
 <span class="vernacular">Definition</span><span class="id"> </span><span id="at_right" class="id"><a name="at_right" class="" title="at_right : forall [R : numFieldType], R -> filter.set_system R
 
 at_right is not universe polymorphic
-Arguments at_right [R] x%ring_scope _
+Arguments at_right [R] x%_ring_scope _
 at_right is transparent
 Expands to: Constant mathcomp.analysis.topology_theory.num_topology.at_right
 Declared in
@@ -1481,7 +1481,7 @@ filter.prop_near1 (x^'+)%classic (P:=fun y : R => (x < y)%R)
   (inPhantom (forall y : R, (x < y)%R))
 
 nbhs_right_gt is not universe polymorphic
-Arguments nbhs_right_gt [R] x%ring_scope
+Arguments nbhs_right_gt [R] x%_ring_scope
 nbhs_right_gt is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.nbhs_right_gt
@@ -1499,7 +1499,7 @@ filter.prop_near1 (x^'-)%classic (P:=fun y : R => (y < x)%R)
   (inPhantom (forall y : R, (y < x)%R))
 
 nbhs_left_lt is not universe polymorphic
-Arguments nbhs_left_lt [R] x%ring_scope
+Arguments nbhs_left_lt [R] x%_ring_scope
 nbhs_left_lt is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.nbhs_left_lt
@@ -1517,7 +1517,7 @@ filter.prop_near1 (x^'+)%classic (P:=fun y : R => y != x)
   (inPhantom (forall y : R, y != x))
 
 nbhs_right_neq is not universe polymorphic
-Arguments nbhs_right_neq [R] x%ring_scope
+Arguments nbhs_right_neq [R] x%_ring_scope
 nbhs_right_neq is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.nbhs_right_neq
@@ -1535,7 +1535,7 @@ filter.prop_near1 (x^'-)%classic (P:=fun y : R => y != x)
   (inPhantom (forall y : R, y != x))
 
 nbhs_left_neq is not universe polymorphic
-Arguments nbhs_left_neq [R] x%ring_scope
+Arguments nbhs_left_neq [R] x%_ring_scope
 nbhs_left_neq is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.nbhs_left_neq
@@ -1553,7 +1553,7 @@ filter.prop_near1 (x^'+)%classic (P:=fun y : R => (x <= y)%R)
   (inPhantom (forall y : R, (x <= y)%R))
 
 nbhs_right_ge is not universe polymorphic
-Arguments nbhs_right_ge [R] x%ring_scope
+Arguments nbhs_right_ge [R] x%_ring_scope
 nbhs_right_ge is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.nbhs_right_ge
@@ -1571,7 +1571,7 @@ filter.prop_near1 (x^'-)%classic (P:=fun y : R => (y <= x)%R)
   (inPhantom (forall y : R, (y <= x)%R))
 
 nbhs_left_le is not universe polymorphic
-Arguments nbhs_left_le [R] x%ring_scope
+Arguments nbhs_left_le [R] x%_ring_scope
 nbhs_left_le is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.nbhs_left_le
@@ -1633,7 +1633,7 @@ filter.prop_near1 (x^'+)%classic (P:=fun y : R => (y - x < e)%R)
   (inPhantom (forall y : R, (y - x < e)%R))
 
 nbhs_right_ltDr is not universe polymorphic
-Arguments nbhs_right_ltDr [R] x%ring_scope [e] _
+Arguments nbhs_right_ltDr [R] x%_ring_scope [e] _
 nbhs_right_ltDr is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.nbhs_right_ltDr
@@ -1675,7 +1675,7 @@ filter.prop_near1 (p^'+)%classic (P:=fun x : R => P x)
 (forall e : {posnum R}%R, exists2 x : R, (p < x < p + e%:num)%R & ~ P x)
 
 not_near_at_rightP is not universe polymorphic
-Arguments not_near_at_rightP [R] p%ring_scope P
+Arguments not_near_at_rightP [R] p%_ring_scope P
 not_near_at_rightP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.not_near_at_rightP
@@ -1733,7 +1733,7 @@ exists
            R),
   (A `&` B)%classic a
 
-Arguments closure_sup [R] [A]%classical_set_scope _ _ [B] _
+Arguments closure_sup [R] [A]%_classical_set_scope _ _ [B] _
 closure_sup is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.closure_sup
@@ -1777,7 +1777,7 @@ forall
                R))],
 topology_structure.interior X t -> (t < sup X)%R = true
 
-Arguments right_bounded_interior [R] [X]%classical_set_scope _ [t] _
+Arguments right_bounded_interior [R] [X]%_classical_set_scope _ [t] _
 right_bounded_interior is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.right_bounded_interior
@@ -1817,7 +1817,7 @@ forall
                R))],
 topology_structure.interior X t -> (inf X < t)%R = true
 
-Arguments left_bounded_interior [R] [X]%classical_set_scope _ [t] _
+Arguments left_bounded_interior [R] [X]%_classical_set_scope _ [t] _
 left_bounded_interior is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.left_bounded_interior
@@ -1845,7 +1845,7 @@ forall {R : numFieldType} (x : R),
 filter.nbhs (- x)%R = filter.fmap -%R%R (filter.nbhs x)
 
 nbhsN is not universe polymorphic
-Arguments nbhsN {R} x%ring_scope
+Arguments nbhsN {R} x%_ring_scope
 nbhsN is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.num_topology.nbhsN
 Declared in
@@ -1869,7 +1869,7 @@ filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs (- a)%R)))
   (filter.nbhs l)
 
 cvg_compNP is not universe polymorphic
-Arguments cvg_compNP {T R} f%function_scope a%ring_scope l
+Arguments cvg_compNP {T R} f%_function_scope a%_ring_scope l
 cvg_compNP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.cvg_compNP
@@ -1889,7 +1889,7 @@ filter.nbhs (- x)%R =
 [set [set (- x)%R | x in A] | A in filter.nbhs x]%classic
 
 nbhsNimage is not universe polymorphic
-Arguments nbhsNimage {R} x%ring_scope
+Arguments nbhsNimage {R} x%_ring_scope
 nbhsNimage is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.nbhsNimage
@@ -1911,7 +1911,7 @@ filter.prop_near1 x (P:=fun x0 : R => P (- x0)%R)
   (inPhantom (forall x0 : R, P (- x0)%R))
 
 nearN is not universe polymorphic
-Arguments nearN {R} x%ring_scope P%function_scope
+Arguments nearN {R} x%_ring_scope P%_function_scope
 nearN is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.num_topology.nearN
 Declared in
@@ -1939,7 +1939,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] t i `<=` [set (- x)%R | x in A])%classic
 
-Arguments openN {R} [A]%classical_set_scope _ [t] _
+Arguments openN {R} [A]%_classical_set_scope _ [t] _
 openN is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.num_topology.openN
 Declared in
@@ -1969,7 +1969,7 @@ forall
 topology_structure.closure [set (- x)%R | x in A] t ->
 exists2 x : R, A x & [eta -%R%R] x = t
 
-Arguments closedN [R] [A]%classical_set_scope _ [t] _
+Arguments closedN [R] [A]%_classical_set_scope _ [t] _
 closedN is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.num_topology.closedN
 Declared in
@@ -1993,7 +1993,7 @@ topology_structure.dnbhs (- r)%R =
 [set [set (- x)%R | x in A] | A in topology_structure.dnbhs r]%classic
 
 dnbhsN is not universe polymorphic
-Arguments dnbhsN {R} r%ring_scope
+Arguments dnbhsN {R} r%_ring_scope
 dnbhsN is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.num_topology.dnbhsN
 Declared in
@@ -2021,7 +2021,7 @@ filter.fmap [eta -%R%R]
   (filter.nbhs (filter.within [set (- x)%R | x in A] (filter.nbhs r)))
 
 withinN is not universe polymorphic
-Arguments withinN {R} A%classical_set_scope r%ring_scope
+Arguments withinN {R} A%_classical_set_scope r%_ring_scope
 withinN is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.num_topology.withinN
 Declared in
@@ -2055,7 +2055,7 @@ forall {T : realFieldType} {U : filter.Nbhs.type}
     (T:=numFieldTopology.RealField_sort__canonical__filter_Nbhs T) (U:=U) x f}
 
 in_continuous_mksetP is not universe polymorphic
-Arguments in_continuous_mksetP {T U} i f%function_scope
+Arguments in_continuous_mksetP {T U} i f%_function_scope
 in_continuous_mksetP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.in_continuous_mksetP
@@ -2077,7 +2077,7 @@ filter.prop_near1 (filter.nbhs (0%R : R)) (P:=fun r : R => (r <= x)%R)
   (inPhantom (forall r : R, (r <= x)%R))
 
 nbhs0_ltW is not universe polymorphic
-Arguments nbhs0_ltW [R] [x]%ring_scope _
+Arguments nbhs0_ltW [R] [x]%_ring_scope _
 nbhs0_ltW is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.num_topology.nbhs0_ltW
 Declared in
@@ -2098,7 +2098,7 @@ filter.prop_near1 (filter.nbhs (0%R : R)) (P:=fun r : R => (r < x)%R)
   (inPhantom (forall r : R, (r < x)%R))
 
 nbhs0_lt is not universe polymorphic
-Arguments nbhs0_lt [R] [x]%ring_scope _
+Arguments nbhs0_lt [R] [x]%_ring_scope _
 nbhs0_lt is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.num_topology.nbhs0_lt
 Declared in
@@ -2119,7 +2119,7 @@ filter.prop_near1 (filter.nbhs x) (P:=fun y : R => (y < a)%R)
   (inPhantom (forall y : R, (y < a)%R))
 
 lt_nbhsl is not universe polymorphic
-Arguments lt_nbhsl {R} [x a]%ring_scope _
+Arguments lt_nbhsl {R} [x a]%_ring_scope _
 lt_nbhsl is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.num_topology.lt_nbhsl
 Declared in
@@ -2141,7 +2141,7 @@ filter.prop_near1 (filter.nbhs x) (P:=fun y : R => (- y < a)%R)
   (inPhantom (forall y : R, (- y < a)%R))
 
 Nlt_nbhsl is not universe polymorphic
-Arguments Nlt_nbhsl {R} [x a]%ring_scope _
+Arguments Nlt_nbhsl {R} [x a]%_ring_scope _
 Nlt_nbhsl is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.num_topology.Nlt_nbhsl
 Declared in
@@ -2168,7 +2168,7 @@ filter.prop_near1 x (P:=fun y : R => (x <= y)%R -> (y < z)%R)
   (inPhantom (forall y : R, (x <= y)%R -> (y < z)%R))
 
 lt_nbhsl_lt is not universe polymorphic
-Arguments lt_nbhsl_lt {R} [x z]%ring_scope _
+Arguments lt_nbhsl_lt {R} [x z]%_ring_scope _
 lt_nbhsl_lt is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.lt_nbhsl_lt
@@ -2192,7 +2192,7 @@ filter.prop_near1 x (P:=fun y : R => (x <= y)%R -> (y <= z)%R)
   (inPhantom (forall y : R, (x <= y)%R -> (y <= z)%R))
 
 lt_nbhsl_le is not universe polymorphic
-Arguments lt_nbhsl_le {R} [x z]%ring_scope _
+Arguments lt_nbhsl_le {R} [x z]%_ring_scope _
 lt_nbhsl_le is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.lt_nbhsl_le
@@ -2218,7 +2218,7 @@ filter.prop_near1 z (P:=fun x : R => (a < x)%R)
   (inPhantom (forall x : R, (a < x)%R))
 
 lt_nbhsr is not universe polymorphic
-Arguments lt_nbhsr {R} [a z]%ring_scope _
+Arguments lt_nbhsr {R} [a z]%_ring_scope _
 lt_nbhsr is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.num_topology.lt_nbhsr
 Declared in
@@ -2301,8 +2301,8 @@ forall {R : realType} [I : Type] [B : I -> set R] [D : set I],
 trivIset (T:=R) D B -> countable (T:=I) D
 
 separated_open_countable is not universe polymorphic
-Arguments separated_open_countable {R} [I]%type_scope 
-  [B]%function_scope [D]%classical_set_scope (_ _)%function_scope 
+Arguments separated_open_countable {R} [I]%_type_scope 
+  [B]%_function_scope [D]%_classical_set_scope (_ _)%_function_scope 
   _
 separated_open_countable is opaque
 Expands to: Constant
@@ -2378,7 +2378,7 @@ exists2
     [set my | (forall (i0 : 'I_m) (j : 'I_(n1 + n2)), P i0 j (my i0 j))]) i
    `<=` (rsubmx : 'M_(m, n1 + n2) -> 'M_(m, n2)) @^-1` t)%classic
 
-Arguments continuous_rsubmx {R} [m]%nat_scope {n1 n2}%nat_scope [x t] _
+Arguments continuous_rsubmx {R} [m]%_nat_scope {n1 n2}%_nat_scope [x t] _
 continuous_rsubmx is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.continuous_rsubmx
@@ -2438,7 +2438,7 @@ exists2
     [set my | (forall (i0 : 'I_m) (j : 'I_(n1 + n2)), P i0 j (my i0 j))]) i
    `<=` (lsubmx : 'M_(m, n1 + n2) -> 'M_(m, n1)) @^-1` t)%classic
 
-Arguments continuous_lsubmx {R} [m]%nat_scope {n1 n2}%nat_scope [x t] _
+Arguments continuous_lsubmx {R} [m]%_nat_scope {n1 n2}%_nat_scope [x t] _
 continuous_lsubmx is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.num_topology.continuous_lsubmx

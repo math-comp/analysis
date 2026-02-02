@@ -255,7 +255,7 @@
 <span class="vernacular">Definition</span><span class="id"> </span><span id="subspace" class="id"><a name="subspace" class="" title="subspace : forall {T : Type}, set T -> Type
 
 subspace is not universe polymorphic
-Arguments subspace {T}%type_scope A%classical_set_scope : simpl never
+Arguments subspace {T}%_type_scope A%_classical_set_scope : simpl never
 The reduction tactics never unfold subspace
 subspace is transparent
 Expands to: Constant
@@ -268,7 +268,7 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 43, characters
 <span class="vernacular">Definition</span><span class="id"> </span><span id="incl_subspace" class="id"><a name="incl_subspace" class="" title="incl_subspace : forall {T : Type} {A : set T}, subspace A -> T
 
 incl_subspace is not universe polymorphic
-Arguments incl_subspace {T}%type_scope {A}%classical_set_scope x
+Arguments incl_subspace {T}%_type_scope {A}%_classical_set_scope x
 incl_subspace is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.incl_subspace
@@ -284,7 +284,7 @@ forall {T : topology_structure.Topological.type}
 subspace A -> filter.set_system (subspace A)
 
 nbhs_subspace is not universe polymorphic
-Arguments nbhs_subspace {T} [A]%classical_set_scope x _
+Arguments nbhs_subspace {T} [A]%_classical_set_scope x _
 nbhs_subspace is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.nbhs_subspace
@@ -306,7 +306,7 @@ forall {T : topology_structure.Topological.type}
 nbhs_subspace_spec A x (A x) (~ A x) (x \in A) (nbhs_subspace (A:=A) x)
 
 nbhs_subspaceP_subproof is not universe polymorphic
-Arguments nbhs_subspaceP_subproof {T} A%classical_set_scope x
+Arguments nbhs_subspaceP_subproof {T} A%_classical_set_scope x
 nbhs_subspaceP_subproof is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.nbhs_subspaceP_subproof
@@ -329,7 +329,7 @@ forall {T : topology_structure.Topological.type}
 A x -> filter.within A (filter.nbhs x) = nbhs_subspace (A:=A) x
 
 nbhs_subspace_in is not universe polymorphic
-Arguments nbhs_subspace_in {T} [A]%classical_set_scope [x] _
+Arguments nbhs_subspace_in {T} [A]%_classical_set_scope [x] _
 nbhs_subspace_in is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.nbhs_subspace_in
@@ -348,7 +348,7 @@ forall {T : topology_structure.Topological.type}
 ~ A x -> filter.globally [set x] = nbhs_subspace (A:=A) x
 
 nbhs_subspace_out is not universe polymorphic
-Arguments nbhs_subspace_out {T} [A]%classical_set_scope [x] _
+Arguments nbhs_subspace_out {T} [A]%_classical_set_scope [x] _
 nbhs_subspace_out is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.nbhs_subspace_out
@@ -367,7 +367,7 @@ forall {T : topology_structure.Topological.type}
 filter.ProperFilter (nbhs_subspace (A:=A) x)
 
 nbhs_subspace_filter is not universe polymorphic
-Arguments nbhs_subspace_filter {T} [A]%classical_set_scope x
+Arguments nbhs_subspace_filter {T} [A]%_classical_set_scope x
 nbhs_subspace_filter is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.nbhs_subspace_filter
@@ -387,7 +387,7 @@ set (topology_structure.Topological.sort T) -> choiceType
 
 subspace_topology_subspace__canonical__choice_Choice is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__choice_Choice 
-  {T} A%classical_set_scope
+  {T} A%_classical_set_scope
 subspace_topology_subspace__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__choice_Choice
@@ -399,7 +399,7 @@ set (topology_structure.Topological.sort T) -> choiceType
 
 subspace_topology_subspace__canonical__choice_Choice is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__choice_Choice 
-  {T} A%classical_set_scope
+  {T} A%_classical_set_scope
 subspace_topology_subspace__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__choice_Choice
@@ -411,7 +411,7 @@ set (topology_structure.Topological.sort T) -> choiceType
 
 subspace_topology_subspace__canonical__choice_Choice is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__choice_Choice 
-  {T} A%classical_set_scope
+  {T} A%_classical_set_scope
 subspace_topology_subspace__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__choice_Choice
@@ -423,7 +423,7 @@ set (topology_structure.Topological.sort T) -> choiceType
 
 subspace_topology_subspace__canonical__choice_Choice is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__choice_Choice 
-  {T} A%classical_set_scope
+  {T} A%_classical_set_scope
 subspace_topology_subspace__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__choice_Choice
@@ -435,7 +435,7 @@ set (topology_structure.Topological.sort T) -> choiceType
 
 subspace_topology_subspace__canonical__choice_Choice is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__choice_Choice 
-  {T} A%classical_set_scope
+  {T} A%_classical_set_scope
 subspace_topology_subspace__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__choice_Choice
@@ -449,7 +449,7 @@ set (topology_structure.Topological.sort T) -> filter.Nbhs.type
 
 subspace_topology_subspace__canonical__filter_Nbhs is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__filter_Nbhs 
-  {T} A%classical_set_scope
+  {T} A%_classical_set_scope
 subspace_topology_subspace__canonical__filter_Nbhs is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__filter_Nbhs
@@ -461,7 +461,7 @@ set (topology_structure.Topological.sort T) -> filter.Nbhs.type
 
 subspace_topology_subspace__canonical__filter_Nbhs is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__filter_Nbhs 
-  {T} A%classical_set_scope
+  {T} A%_classical_set_scope
 subspace_topology_subspace__canonical__filter_Nbhs is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__filter_Nbhs
@@ -473,7 +473,7 @@ set (topology_structure.Topological.sort T) -> filter.Nbhs.type
 
 subspace_topology_subspace__canonical__filter_Nbhs is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__filter_Nbhs 
-  {T} A%classical_set_scope
+  {T} A%_classical_set_scope
 subspace_topology_subspace__canonical__filter_Nbhs is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__filter_Nbhs
@@ -485,7 +485,7 @@ set (topology_structure.Topological.sort T) -> filter.Nbhs.type
 
 subspace_topology_subspace__canonical__filter_Nbhs is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__filter_Nbhs 
-  {T} A%classical_set_scope
+  {T} A%_classical_set_scope
 subspace_topology_subspace__canonical__filter_Nbhs is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__filter_Nbhs
@@ -497,7 +497,7 @@ set (topology_structure.Topological.sort T) -> filter.Nbhs.type
 
 subspace_topology_subspace__canonical__filter_Nbhs is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__filter_Nbhs 
-  {T} A%classical_set_scope
+  {T} A%_classical_set_scope
 subspace_topology_subspace__canonical__filter_Nbhs is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__filter_Nbhs
@@ -512,7 +512,7 @@ forall {T : topology_structure.Topological.type}
 nbhs_subspace_spec A x (A x) (~ A x) (x \in A) (filter.nbhs x)
 
 nbhs_subspaceP is not universe polymorphic
-Arguments nbhs_subspaceP {T} A%classical_set_scope x
+Arguments nbhs_subspaceP {T} A%_classical_set_scope x
 nbhs_subspaceP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.nbhs_subspaceP
@@ -532,8 +532,8 @@ forall {T : topology_structure.Topological.type}
 filter.nbhs p B -> B p
 
 nbhs_subspace_singleton is not universe polymorphic
-Arguments nbhs_subspace_singleton {T} [A]%classical_set_scope 
-  [p] [B]%classical_set_scope _
+Arguments nbhs_subspace_singleton {T} [A]%_classical_set_scope 
+  [p] [B]%_classical_set_scope _
 nbhs_subspace_singleton is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.nbhs_subspace_singleton
@@ -552,8 +552,8 @@ forall {T : topology_structure.Topological.type}
 filter.nbhs p B -> filter.nbhs p (filter.nbhs^~ B)
 
 nbhs_subspace_nbhs is not universe polymorphic
-Arguments nbhs_subspace_nbhs {T} [A]%classical_set_scope 
-  [p] [B]%classical_set_scope _
+Arguments nbhs_subspace_nbhs {T} [A]%_classical_set_scope 
+  [p] [B]%_classical_set_scope _
 nbhs_subspace_nbhs is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.nbhs_subspace_nbhs
@@ -576,7 +576,7 @@ topology_structure.Topological.type
 subspace_topology_subspace__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__topology_structure_Topological 
-  {T} A%classical_set_scope
+  {T} A%_classical_set_scope
 subspace_topology_subspace__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__topology_structure_Topological
@@ -590,7 +590,7 @@ topology_structure.Topological.type
 subspace_topology_subspace__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__topology_structure_Topological 
-  {T} A%classical_set_scope
+  {T} A%_classical_set_scope
 subspace_topology_subspace__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__topology_structure_Topological
@@ -604,7 +604,7 @@ topology_structure.Topological.type
 subspace_topology_subspace__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__topology_structure_Topological 
-  {T} A%classical_set_scope
+  {T} A%_classical_set_scope
 subspace_topology_subspace__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__topology_structure_Topological
@@ -618,7 +618,7 @@ topology_structure.Topological.type
 subspace_topology_subspace__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__topology_structure_Topological 
-  {T} A%classical_set_scope
+  {T} A%_classical_set_scope
 subspace_topology_subspace__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__topology_structure_Topological
@@ -632,7 +632,7 @@ topology_structure.Topological.type
 subspace_topology_subspace__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__topology_structure_Topological 
-  {T} A%classical_set_scope
+  {T} A%_classical_set_scope
 subspace_topology_subspace__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__topology_structure_Topological
@@ -652,7 +652,7 @@ filter.cvg_to (filter.nbhs F) (filter.nbhs (x : subspace A)) <->
 filter.cvg_to (filter.nbhs F) (filter.nbhs (filter.within A (filter.nbhs x)))
 
 subspace_cvgP is not universe polymorphic
-Arguments subspace_cvgP {T} [A]%classical_set_scope [F x] _ _
+Arguments subspace_cvgP {T} [A]%_classical_set_scope [F x] _ _
 subspace_cvgP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_cvgP
@@ -687,7 +687,8 @@ forall {T : topology_structure.Topological.type}
    (filter.nbhs (f x)))
 
 subspace_continuousP is not universe polymorphic
-Arguments subspace_continuousP {T} A%classical_set_scope {S} f%function_scope
+Arguments subspace_continuousP {T} A%_classical_set_scope 
+  {S} f%_function_scope
 subspace_continuousP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_continuousP
@@ -757,8 +758,8 @@ filter.nbhs (g x) t ->
  then filter.within A (filter.nbhs x)
  else filter.globally [set x]) (g @^-1` t)%classic
 
-Arguments subspace_eq_continuous {T} [A]%classical_set_scope 
-  {S} [f g]%function_scope _ _%function_scope [x t] 
+Arguments subspace_eq_continuous {T} [A]%_classical_set_scope 
+  {S} [f g]%_function_scope _ _%_function_scope [x t] 
   _
 subspace_eq_continuous is opaque
 Expands to: Constant
@@ -798,8 +799,8 @@ forall {T : topology_structure.Topological.type}
     x f}
 
 continuous_subspace_in is not universe polymorphic
-Arguments continuous_subspace_in {T} [A]%classical_set_scope 
-  {U} f%function_scope
+Arguments continuous_subspace_in {T} [A]%_classical_set_scope 
+  {U} f%_function_scope
 continuous_subspace_in is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.continuous_subspace_in
@@ -823,7 +824,7 @@ topology_structure.interior A x ->
 filter.nbhs x = filter.nbhs (x : subspace A)
 
 nbhs_subspace_interior is not universe polymorphic
-Arguments nbhs_subspace_interior {T} [A]%classical_set_scope [x] _
+Arguments nbhs_subspace_interior {T} [A]%_classical_set_scope [x] _
 nbhs_subspace_interior is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.nbhs_subspace_interior
@@ -850,8 +851,8 @@ filter.nbhs (x : subspace A) U <->
    (U `&` A)%classic = (V `&` A)%classic)
 
 nbhs_subspace_ex is not universe polymorphic
-Arguments nbhs_subspace_ex {T} [A]%classical_set_scope 
-  U%classical_set_scope [x] _
+Arguments nbhs_subspace_ex {T} [A]%_classical_set_scope
+  U%_classical_set_scope [x] _
 nbhs_subspace_ex is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.nbhs_subspace_ex
@@ -892,7 +893,7 @@ filter.nbhs (incl_subspace x) t ->
  then filter.within A (filter.nbhs x)
  else filter.globally [set x]) (incl_subspace @^-1` t)%classic
 
-Arguments incl_subspace_continuous {T} [A]%classical_set_scope [x t] _
+Arguments incl_subspace_continuous {T} [A]%_classical_set_scope [x t] _
 incl_subspace_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.incl_subspace_continuous
@@ -925,7 +926,7 @@ forall [t : subspace A],
  then filter.within A (filter.nbhs t)
  else filter.globally [set t]) [set x]%classic
 
-Arguments open_subspace1out {T} [A]%classical_set_scope [x] _ [t] _
+Arguments open_subspace1out {T} [A]%_classical_set_scope [x] _ [t] _
 open_subspace1out is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.open_subspace1out
@@ -959,7 +960,7 @@ U t ->
  then filter.within A (filter.nbhs t)
  else filter.globally [set t]) U
 
-Arguments open_subspace_out {T} [A U]%classical_set_scope _ [t] _
+Arguments open_subspace_out {T} [A U]%_classical_set_scope _ [t] _
 open_subspace_out is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.open_subspace_out
@@ -990,7 +991,7 @@ forall {T : topology_structure.Topological.type}
  then filter.within A (filter.nbhs t)
  else filter.globally [set t]) (A : set (subspace A))
 
-Arguments open_subspaceT {T} [A]%classical_set_scope [t] _
+Arguments open_subspaceT {T} [A]%_classical_set_scope [t] _
 open_subspaceT is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.open_subspaceT
@@ -1009,7 +1010,7 @@ forall {T : topology_structure.Topological.type}
 topology_structure.open (U `&` A)%classic = topology_structure.open U
 
 open_subspaceIT is not universe polymorphic
-Arguments open_subspaceIT {T} [A]%classical_set_scope U%classical_set_scope
+Arguments open_subspaceIT {T} [A]%_classical_set_scope U%_classical_set_scope
 open_subspaceIT is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.open_subspaceIT
@@ -1034,7 +1035,7 @@ topology_structure.open ((A `&` U)%classic : set (subspace A)) =
 topology_structure.open U
 
 open_subspaceTI is not universe polymorphic
-Arguments open_subspaceTI {T} [A]%classical_set_scope U%classical_set_scope
+Arguments open_subspaceTI {T} [A]%_classical_set_scope U%_classical_set_scope
 open_subspaceTI is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.open_subspaceTI
@@ -1062,7 +1063,7 @@ forall {T : topology_structure.Topological.type}
             A)],
 topology_structure.closure (A : set (subspace A)) t -> A t
 
-Arguments closed_subspaceT {T} [A]%classical_set_scope [t] _
+Arguments closed_subspaceT {T} [A]%_classical_set_scope [t] _
 closed_subspaceT is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.closed_subspaceT
@@ -1085,7 +1086,7 @@ topology_structure.open (U : set (subspace A)) <->
    (V `&` A)%classic = (U `&` A)%classic)
 
 open_subspaceP is not universe polymorphic
-Arguments open_subspaceP {T} (A U)%classical_set_scope
+Arguments open_subspaceP {T} (A U)%_classical_set_scope
 open_subspaceP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.open_subspaceP
@@ -1135,7 +1136,7 @@ topology_structure.closed (U : set (subspace A)) <->
    (V `&` A)%classic = (U `&` A)%classic)
 
 closed_subspaceP is not universe polymorphic
-Arguments closed_subspaceP {T} (A U)%classical_set_scope
+Arguments closed_subspaceP {T} (A U)%_classical_set_scope
 closed_subspaceP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.closed_subspaceP
@@ -1171,7 +1172,7 @@ forall [t : subspace A],
  then filter.within A (filter.nbhs t)
  else filter.globally [set t]) (U : set (subspace A))
 
-Arguments open_subspaceW {T} [A U]%classical_set_scope _ [t] _
+Arguments open_subspaceW {T} [A U]%_classical_set_scope _ [t] _
 open_subspaceW is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.open_subspaceW
@@ -1202,7 +1203,7 @@ forall
             A)],
 topology_structure.closure (U : set (subspace A)) t -> U t
 
-Arguments closed_subspaceW {T} [A U]%classical_set_scope _ [t] _
+Arguments closed_subspaceW {T} [A U]%_classical_set_scope _ [t] _
 closed_subspaceW is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.closed_subspaceW
@@ -1225,7 +1226,7 @@ topology_structure.open
 topology_structure.open U
 
 open_setIS is not universe polymorphic
-Arguments open_setIS {T} [A]%classical_set_scope U%classical_set_scope _
+Arguments open_setIS {T} [A]%_classical_set_scope U%_classical_set_scope _
 open_setIS is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.open_setIS
@@ -1249,7 +1250,7 @@ topology_structure.open A ->
 topology_structure.open (A `&` U)%classic = topology_structure.open U
 
 open_setSI is not universe polymorphic
-Arguments open_setSI {T} [A]%classical_set_scope U%classical_set_scope _
+Arguments open_setSI {T} [A]%_classical_set_scope U%_classical_set_scope _
 open_setSI is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.open_setSI
@@ -1271,7 +1272,7 @@ topology_structure.closed
 topology_structure.closed U
 
 closed_setIS is not universe polymorphic
-Arguments closed_setIS {T} [A]%classical_set_scope U%classical_set_scope _
+Arguments closed_setIS {T} [A]%_classical_set_scope U%_classical_set_scope _
 closed_setIS is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.closed_setIS
@@ -1295,7 +1296,7 @@ topology_structure.closed A ->
 topology_structure.closed (A `&` U) = topology_structure.closed U
 
 closed_setSI is not universe polymorphic
-Arguments closed_setSI {T} [A]%classical_set_scope U%classical_set_scope _
+Arguments closed_setSI {T} [A]%_classical_set_scope U%_classical_set_scope _
 closed_setSI is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.closed_setSI
@@ -1317,7 +1318,7 @@ topology_structure.closure (U : set (subspace A)) =
  `&` A)%classic
 
 closure_subspaceW is not universe polymorphic
-Arguments closure_subspaceW {T} [A U]%classical_set_scope _
+Arguments closure_subspaceW {T} [A U]%_classical_set_scope _
 closure_subspaceW is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.closure_subspaceW
@@ -1348,7 +1349,7 @@ compact ((U `&` A)%classic : set (subspace A)) <->
 compact ((U `&` A)%classic : set (topology_structure.Topological.sort T))
 
 compact_subspaceIP is not universe polymorphic
-Arguments compact_subspaceIP {T} (A U)%classical_set_scope
+Arguments compact_subspaceIP {T} (A U)%_classical_set_scope
 compact_subspaceIP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.compact_subspaceIP
@@ -1378,7 +1379,7 @@ connected A <->
  (U `<=` A)%classic -> (U !=set0)%classic -> U = A)
 
 clopen_connectedP is not universe polymorphic
-Arguments clopen_connectedP {T} A%classical_set_scope
+Arguments clopen_connectedP {T} A%_classical_set_scope
 clopen_connectedP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.clopen_connectedP
@@ -1412,7 +1413,7 @@ topology_structure.PointedTopological.type
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__topology_structure_PointedTopological
-  [T] A%classical_set_scope
+  [T] A%_classical_set_scope
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__topology_structure_PointedTopological
@@ -1426,7 +1427,7 @@ topology_structure.PointedTopological.type
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__topology_structure_PointedTopological
-  [T] A%classical_set_scope
+  [T] A%_classical_set_scope
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__topology_structure_PointedTopological
@@ -1440,7 +1441,7 @@ topology_structure.PointedTopological.type
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__topology_structure_PointedTopological
-  [T] A%classical_set_scope
+  [T] A%_classical_set_scope
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__topology_structure_PointedTopological
@@ -1454,7 +1455,7 @@ topology_structure.PointedTopological.type
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__topology_structure_PointedTopological
-  [T] A%classical_set_scope
+  [T] A%_classical_set_scope
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__topology_structure_PointedTopological
@@ -1468,7 +1469,7 @@ topology_structure.PointedTopological.type
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__topology_structure_PointedTopological
-  [T] A%classical_set_scope
+  [T] A%_classical_set_scope
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__topology_structure_PointedTopological
@@ -1482,7 +1483,7 @@ topology_structure.PointedTopological.type
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__topology_structure_PointedTopological
-  [T] A%classical_set_scope
+  [T] A%_classical_set_scope
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__topology_structure_PointedTopological
@@ -1502,8 +1503,8 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 303, character
 <span class="vernacular">Definition</span><span class="id"> </span><span id="from_subspace" class="id"><a name="from_subspace" class="" title="from_subspace : forall {T U : Type} (A : set T), (T -> U) -> subspace A -> U
 
 from_subspace is not universe polymorphic
-Arguments from_subspace {T U}%type_scope A%classical_set_scope
-  f%function_scope _
+Arguments from_subspace {T U}%_type_scope A%_classical_set_scope
+  f%_function_scope _
 from_subspace is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.from_subspace
@@ -1545,7 +1546,7 @@ filter.nbhs (x : subspace B) t ->
  then filter.within A (filter.nbhs (x : subspace A))
  else filter.globally [set x  : subspace A]) t
 
-Arguments nbhs_subspace_subset {T} [A B]%classical_set_scope [x] _ [t] _
+Arguments nbhs_subspace_subset {T} [A B]%_classical_set_scope [x] _ [t] _
 nbhs_subspace_subset is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.nbhs_subspace_subset
@@ -1592,8 +1593,8 @@ filter.nbhs (from_subspace A f x) t ->
  then filter.within A (filter.nbhs x)
  else filter.globally [set x]) (from_subspace A f @^-1` t)%classic
 
-Arguments continuous_subspaceW {T U} [A B]%classical_set_scope
-  [f]%function_scope _ _%function_scope [x t] _
+Arguments continuous_subspaceW {T U} [A B]%_classical_set_scope
+  [f]%_function_scope _ _%_function_scope [x t] _
 continuous_subspaceW is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.continuous_subspaceW
@@ -1689,8 +1690,8 @@ filter.nbhs ((f : subspace A -> topology_structure.Topological.sort U) x) t ->
  else filter.globally [set x])
   ((f : subspace A -> topology_structure.Topological.sort U) @^-1` t)%classic
 
-Arguments continuous_subspaceT_for {T U} [A]%classical_set_scope
-  [f]%function_scope [x] _ _ [t] _
+Arguments continuous_subspaceT_for {T U} [A]%_classical_set_scope
+  [f]%_function_scope [x] _ _ [t] _
 continuous_subspaceT_for is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.continuous_subspaceT_for
@@ -1754,8 +1755,8 @@ filter.nbhs (from_subspace A f x) t ->
  then filter.within A (filter.nbhs x)
  else filter.globally [set x]) (from_subspace A f @^-1` t)%classic
 
-Arguments continuous_in_subspaceT {T U} [A]%classical_set_scope
-  [f]%function_scope _ [x t] _
+Arguments continuous_in_subspaceT {T U} [A]%_classical_set_scope
+  [f]%_function_scope _ [x t] _
 continuous_in_subspaceT is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.continuous_in_subspaceT
@@ -1816,8 +1817,8 @@ filter.nbhs (from_subspace A f x) t ->
  then filter.within A (filter.nbhs x)
  else filter.globally [set x]) (from_subspace A f @^-1` t)%classic
 
-Arguments continuous_subspaceT {T U} [A]%classical_set_scope
-  [f]%function_scope _%function_scope [x t] _
+Arguments continuous_subspaceT {T U} [A]%_classical_set_scope
+  [f]%_function_scope _%_function_scope [x t] _
 continuous_subspaceT is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.continuous_subspaceT
@@ -1852,8 +1853,8 @@ topology_structure.open A ->
     x f}
 
 continuous_open_subspace is not universe polymorphic
-Arguments continuous_open_subspace {T U} [A]%classical_set_scope
-  f%function_scope _
+Arguments continuous_open_subspace {T U} [A]%_classical_set_scope
+  f%_function_scope _
 continuous_open_subspace is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.continuous_open_subspace
@@ -1891,7 +1892,7 @@ topology_structure.open A ->
  topology_structure.open (A `&` f @^-1` X)%classic)
 
 continuous_inP is not universe polymorphic
-Arguments continuous_inP {T U} [A]%classical_set_scope f%function_scope _
+Arguments continuous_inP {T U} [A]%_classical_set_scope f%_function_scope _
 continuous_inP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.continuous_inP
@@ -1942,8 +1943,8 @@ filter.nbhs (from_subspace (A `|` B) f x) t ->
  then filter.within (A `|` B) (filter.nbhs x)
  else filter.globally [set x]) (from_subspace (A `|` B) f @^-1` t)%classic
 
-Arguments withinU_continuous {T U} [A B]%classical_set_scope
-  [f]%function_scope _ _ (_ _)%function_scope [x t] 
+Arguments withinU_continuous {T U} [A B]%_classical_set_scope
+  [f]%_function_scope _ _ (_ _)%_function_scope [x t] 
   _
 withinU_continuous is opaque
 Expands to: Constant
@@ -2000,8 +2001,8 @@ filter.nbhs ((f : subspace A -> subspace B) x) t ->
  else filter.globally [set x])
   ((f : subspace A -> subspace B) @^-1` t)%classic
 
-Arguments subspaceT_continuous {T U} [A B]%classical_set_scope 
-  [f] _%function_scope [x t] _
+Arguments subspaceT_continuous {T U} [A B]%_classical_set_scope 
+  [f] _%_function_scope [x t] _
 subspaceT_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspaceT_continuous
@@ -2043,7 +2044,7 @@ filter.nbhs (from_subspace set0 f x) t ->
  then filter.within set0 (filter.nbhs x)
  else filter.globally [set x]) (from_subspace set0 f @^-1` t)%classic
 
-Arguments continuous_subspace0 {T U} [f]%function_scope [x t] _
+Arguments continuous_subspace0 {T U} [f]%_function_scope [x t] _
 continuous_subspace0 is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.continuous_subspace0
@@ -2083,7 +2084,7 @@ filter.nbhs (from_subspace [set a] f x) t ->
  then filter.within [set a] (filter.nbhs x)
  else filter.globally [set x]) (from_subspace [set a] f @^-1` t)%classic
 
-Arguments continuous_subspace1 {T U} [a] [f]%function_scope [x t] _
+Arguments continuous_subspace1 {T U} [a] [f]%_function_scope [x t] _
 continuous_subspace1 is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.continuous_subspace1
@@ -2108,7 +2109,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="subspace_ent" class="id"><a name="subspace_ent" class="" title="subspace_ent : forall {X : uniformType}, set X -> filter.set_system (X * X)
 
 subspace_ent is not universe polymorphic
-Arguments subspace_ent {X} A%classical_set_scope _
+Arguments subspace_ent {X} A%_classical_set_scope _
 subspace_ent is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_ent
@@ -2198,7 +2199,7 @@ forall {X : uniformType}, set X -> uniformType
 
 subspace_topology_subspace__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__uniform_structure_Uniform
-  {X} A%classical_set_scope
+  {X} A%_classical_set_scope
 subspace_topology_subspace__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__uniform_structure_Uniform
@@ -2209,7 +2210,7 @@ forall {X : uniformType}, set X -> uniformType
 
 subspace_topology_subspace__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__uniform_structure_Uniform
-  {X} A%classical_set_scope
+  {X} A%_classical_set_scope
 subspace_topology_subspace__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__uniform_structure_Uniform
@@ -2220,7 +2221,7 @@ forall {X : uniformType}, set X -> uniformType
 
 subspace_topology_subspace__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__uniform_structure_Uniform
-  {X} A%classical_set_scope
+  {X} A%_classical_set_scope
 subspace_topology_subspace__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__uniform_structure_Uniform
@@ -2231,7 +2232,7 @@ forall {X : uniformType}, set X -> uniformType
 
 subspace_topology_subspace__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__uniform_structure_Uniform
-  {X} A%classical_set_scope
+  {X} A%_classical_set_scope
 subspace_topology_subspace__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__uniform_structure_Uniform
@@ -2242,7 +2243,7 @@ forall {X : uniformType}, set X -> uniformType
 
 subspace_topology_subspace__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__uniform_structure_Uniform
-  {X} A%classical_set_scope
+  {X} A%_classical_set_scope
 subspace_topology_subspace__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__uniform_structure_Uniform
@@ -2264,7 +2265,7 @@ forall {R : numDomainType} {X : pseudoMetricType R} [A : set X],
 subspace A -> R -> set X
 
 subspace_ball is not universe polymorphic
-Arguments subspace_ball {R X} [A]%classical_set_scope x r%ring_scope _
+Arguments subspace_ball {R X} [A]%_classical_set_scope x r%_ring_scope _
 subspace_ball is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_ball
@@ -2328,7 +2329,7 @@ set X -> pseudoMetricType R
 subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric
-  {R X} A%classical_set_scope
+  {R X} A%_classical_set_scope
 subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric
@@ -2341,7 +2342,7 @@ set X -> pseudoMetricType R
 subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric
-  {R X} A%classical_set_scope
+  {R X} A%_classical_set_scope
 subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric
@@ -2354,7 +2355,7 @@ set X -> pseudoMetricType R
 subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric
-  {R X} A%classical_set_scope
+  {R X} A%_classical_set_scope
 subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric
@@ -2367,7 +2368,7 @@ set X -> pseudoMetricType R
 subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric
-  {R X} A%classical_set_scope
+  {R X} A%_classical_set_scope
 subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric
@@ -2381,7 +2382,7 @@ set X -> pseudoMetricType R
 subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments
   subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric
-  {R X} A%classical_set_scope
+  {R X} A%_classical_set_scope
 subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.subspace_topology_subspace__canonical__pseudometric_structure_PseudoMetric
@@ -2397,7 +2398,7 @@ forall {R : numDomainType} {X : pseudoMetricType R}
 ball x r y = subspace_ball (A:=A) x r y
 
 ball_subspace_ball is not universe polymorphic
-Arguments ball_subspace_ball {R X} [A]%classical_set_scope x r%ring_scope y
+Arguments ball_subspace_ball {R X} [A]%_classical_set_scope x r%_ring_scope y
 ball_subspace_ball is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.ball_subspace_ball
@@ -2438,8 +2439,8 @@ forall [t : subspace (range f)],
  else filter.globally [set t])
   ([set f x | x in A]%classic : set (subspace (range f)))
 
-Arguments weak_subspace_open {T U} [f]%function_scope 
-  [A]%classical_set_scope _ [t] _
+Arguments weak_subspace_open {T U} [f]%_function_scope
+  [A]%_classical_set_scope _ [t] _
 weak_subspace_open is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.weak_subspace_open
@@ -2479,9 +2480,9 @@ F [set f x | x in A]%classic ->
 exists a : topology_structure.Topological.sort U,
   ([set f x | x in A] `&` cluster F)%classic a
 
-Arguments continuous_compact {T U} [f]%function_scope 
-  [A]%classical_set_scope _%function_scope _ [F] _ 
-  _
+Arguments continuous_compact {T U} [f]%_function_scope
+  [A]%_classical_set_scope _%_function_scope _ [F] 
+  _ _
 continuous_compact is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.continuous_compact
@@ -2531,8 +2532,9 @@ forall [B : set (topology_structure.Topological.sort U)],
    topology_structure.closed C & B = ([set f x | x in A] `&` C)%classic) ->
 B = [set f x | x in A]%classic
 
-Arguments connected_continuous_connected [T U] [A]%classical_set_scope
-  [f]%function_scope _ _%function_scope [B] _ _ _
+Arguments connected_continuous_connected [T U] [A]%_classical_set_scope
+  [f]%_function_scope _ _%_function_scope [B] _ _ 
+  _
 connected_continuous_connected is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.connected_continuous_connected
@@ -2606,7 +2608,7 @@ forall {X Y : topology_structure.Topological.type}
        {within U, continuous f}%classic)))
 
 continuous_localP is not universe polymorphic
-Arguments continuous_localP {X Y} f%function_scope
+Arguments continuous_localP {X Y} f%_function_scope
 continuous_localP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.continuous_localP
@@ -2646,7 +2648,7 @@ forall {T U : topology_structure.Topological.type}
 {within [set: topology_structure.Topological.sort T], continuous f}%classic
 
 continuous_subspace_setT is not universe polymorphic
-Arguments continuous_subspace_setT {T U} f%function_scope
+Arguments continuous_subspace_setT {T U} f%_function_scope
 continuous_subspace_setT is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.continuous_subspace_setT
@@ -2671,7 +2673,7 @@ forall {X Y : topology_structure.Topological.type}
 (A `*` B)%classic x -> filter.nbhs (x : subspace (A `*` B)) = filter.nbhs x
 
 nbhs_prodX_subspace_inE is not universe polymorphic
-Arguments nbhs_prodX_subspace_inE {X Y} [A B]%classical_set_scope [x] _
+Arguments nbhs_prodX_subspace_inE {X Y} [A B]%_classical_set_scope [x] _
 nbhs_prodX_subspace_inE is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.nbhs_prodX_subspace_inE
@@ -2718,8 +2720,8 @@ forall {X Y Z : topology_structure.Topological.type}
 {within A `*` B, continuous f}%classic
 
 continuous_subspace_prodP is not universe polymorphic
-Arguments continuous_subspace_prodP {X Y Z} (A B)%classical_set_scope
-  f%function_scope
+Arguments continuous_subspace_prodP {X Y Z} (A B)%_classical_set_scope
+  f%_function_scope
 continuous_subspace_prodP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.continuous_subspace_prodP
@@ -2767,7 +2769,7 @@ topology_structure.isContinuous.axioms_ (subspace A)
   (g \o f)
 
 HB_unnamed_factory_21 is not universe polymorphic
-Arguments HB_unnamed_factory_21 {X Y Z} [A B C]%classical_set_scope {f g}
+Arguments HB_unnamed_factory_21 {X Y Z} [A B C]%_classical_set_scope {f g}
 HB_unnamed_factory_21 is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.HB_unnamed_factory_21
@@ -2786,7 +2788,7 @@ topology_structure.isContinuous.axioms_ (subspace A)
   (g \o f)
 
 HB_unnamed_factory_21 is not universe polymorphic
-Arguments HB_unnamed_factory_21 {X Y Z} [A B C]%classical_set_scope {f g}
+Arguments HB_unnamed_factory_21 {X Y Z} [A B C]%_classical_set_scope {f g}
 HB_unnamed_factory_21 is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.HB_unnamed_factory_21
@@ -2805,7 +2807,7 @@ topology_structure.isContinuous.axioms_ (subspace A)
   (g \o f)
 
 HB_unnamed_factory_21 is not universe polymorphic
-Arguments HB_unnamed_factory_21 {X Y Z} [A B C]%classical_set_scope {f g}
+Arguments HB_unnamed_factory_21 {X Y Z} [A B C]%_classical_set_scope {f g}
 HB_unnamed_factory_21 is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.HB_unnamed_factory_21
@@ -2824,7 +2826,7 @@ topology_structure.isContinuous.axioms_ (subspace A)
   (g \o f)
 
 HB_unnamed_factory_21 is not universe polymorphic
-Arguments HB_unnamed_factory_21 {X Y Z} [A B C]%classical_set_scope {f g}
+Arguments HB_unnamed_factory_21 {X Y Z} [A B C]%_classical_set_scope {f g}
 HB_unnamed_factory_21 is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.HB_unnamed_factory_21
@@ -2844,7 +2846,7 @@ topology_structure.isContinuous.axioms_ (subspace A)
   (g \o f)
 
 HB_unnamed_factory_21 is not universe polymorphic
-Arguments HB_unnamed_factory_21 {X Y Z} [A B C]%classical_set_scope {f g}
+Arguments HB_unnamed_factory_21 {X Y Z} [A B C]%_classical_set_scope {f g}
 HB_unnamed_factory_21 is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.subspace_topology.HB_unnamed_factory_21

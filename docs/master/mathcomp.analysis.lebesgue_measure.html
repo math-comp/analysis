@@ -269,7 +269,7 @@ completed_lebesgue_measure == the completed Lebesgue measure
 <span class="vernacular">Definition</span><span class="id"> </span><span id="LebesgueMeasure.hlength" class="id"><a name="LebesgueMeasure.hlength" class="" title="LebesgueMeasure.hlength : forall {R : realType}, set (ocitv_type R) -> \bar R
 
 LebesgueMeasure.hlength is not universe polymorphic
-Arguments LebesgueMeasure.hlength {R} A%classical_set_scope
+Arguments LebesgueMeasure.hlength {R} A%_classical_set_scope
 LebesgueMeasure.hlength is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.LebesgueMeasure.hlength
@@ -298,7 +298,7 @@ library mathcomp.analysis.lebesgue_measure, line 63, characters 6-14
 forall {R : realType} (r : R), LebesgueMeasure.hlength `[r, r] = 0%R
 
 LebesgueMeasure.hlength_singleton is not universe polymorphic
-Arguments LebesgueMeasure.hlength_singleton {R} r%ring_scope
+Arguments LebesgueMeasure.hlength_singleton {R} r%_ring_scope
 LebesgueMeasure.hlength_singleton is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.LebesgueMeasure.hlength_singleton
@@ -410,7 +410,7 @@ forall {R : realType} (b : bool) (r : R),
 LebesgueMeasure.hlength [set` Interval -oo%O (BSide b r)] = +oo%E
 
 LebesgueMeasure.hlength_infty_bnd is not universe polymorphic
-Arguments LebesgueMeasure.hlength_infty_bnd {R} b%bool_scope r
+Arguments LebesgueMeasure.hlength_infty_bnd {R} b%_bool_scope r
 LebesgueMeasure.hlength_infty_bnd is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.LebesgueMeasure.hlength_infty_bnd
@@ -428,7 +428,7 @@ forall {R : realType} (b : bool) (r : R),
 LebesgueMeasure.hlength [set` Interval (BSide b r) +oo%O] = +oo%E
 
 LebesgueMeasure.hlength_bnd_infty is not universe polymorphic
-Arguments LebesgueMeasure.hlength_bnd_infty {R} b%bool_scope r
+Arguments LebesgueMeasure.hlength_bnd_infty {R} b%_bool_scope r
 LebesgueMeasure.hlength_bnd_infty is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.LebesgueMeasure.hlength_bnd_infty
@@ -494,7 +494,7 @@ forall {R : realType} (A : set R),
 LebesgueMeasure.hlength [set` Rhull (R:=R) A] = LebesgueMeasure.hlength A
 
 LebesgueMeasure.hlength_Rhull is not universe polymorphic
-Arguments LebesgueMeasure.hlength_Rhull {R} A%classical_set_scope
+Arguments LebesgueMeasure.hlength_Rhull {R} A%_classical_set_scope
 LebesgueMeasure.hlength_Rhull is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.LebesgueMeasure.hlength_Rhull
@@ -571,7 +571,7 @@ forall {R : realType} (I : set (ocitv_type R)),
 (0%R <= LebesgueMeasure.hlength I)%E
 
 LebesgueMeasure.hlength_ge0 is not universe polymorphic
-Arguments LebesgueMeasure.hlength_ge0 {R} I%classical_set_scope
+Arguments LebesgueMeasure.hlength_ge0 {R} I%_classical_set_scope
 LebesgueMeasure.hlength_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.LebesgueMeasure.hlength_ge0
@@ -952,7 +952,7 @@ forall {R : realType},
 set (g_sigma_algebraType (R.-ocitv).-measurable) -> \bar R
 
 LebesgueMeasure.lebesgue_measure is not universe polymorphic
-Arguments LebesgueMeasure.lebesgue_measure {R} _%classical_set_scope
+Arguments LebesgueMeasure.lebesgue_measure {R} _%_classical_set_scope
 LebesgueMeasure.lebesgue_measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.LebesgueMeasure.lebesgue_measure
@@ -1102,7 +1102,7 @@ library mathcomp.analysis.lebesgue_measure, line 332, characters 0-105
 <span class="vernacular">Definition</span><span class="id"> </span><span id="lebesgue_measure" class="id"><a name="lebesgue_measure" class="" title="lebesgue_measure : forall {R : realType}, set (measurableTypeR R) -> \bar R
 
 lebesgue_measure is not universe polymorphic
-Arguments lebesgue_measure {R} _%classical_set_scope
+Arguments lebesgue_measure {R} _%_classical_set_scope
 lebesgue_measure is transparent
 Expands to: Constant mathcomp.analysis.lebesgue_measure.lebesgue_measure
 Declared in
@@ -1328,7 +1328,7 @@ set
 \bar R
 
 completed_lebesgue_measure is not universe polymorphic
-Arguments completed_lebesgue_measure {R} _%classical_set_scope
+Arguments completed_lebesgue_measure {R} _%_classical_set_scope
 completed_lebesgue_measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.completed_lebesgue_measure
@@ -1838,7 +1838,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="elebesgue_measure" class="id"><a name="elebesgue_measure" class="" title="elebesgue_measure : forall [R : realType], set \bar R -> \bar R
 
 elebesgue_measure is not universe polymorphic
-Arguments elebesgue_measure [R] _%classical_set_scope
+Arguments elebesgue_measure [R] _%_classical_set_scope
 elebesgue_measure is transparent
 Expands to: Constant mathcomp.analysis.lebesgue_measure.elebesgue_measure
 Declared in
@@ -1864,7 +1864,7 @@ library mathcomp.analysis.lebesgue_measure, line 536, characters 6-24
 forall [R : realType] (X : set \bar R), (0%R <= elebesgue_measure (R:=R) X)%E
 
 elebesgue_measure_ge0 is not universe polymorphic
-Arguments elebesgue_measure_ge0 [R] X%classical_set_scope
+Arguments elebesgue_measure_ge0 [R] X%_classical_set_scope
 elebesgue_measure_ge0 is opaque
 Expands to: Constant mathcomp.analysis.lebesgue_measure.elebesgue_measure_ge0
 Declared in
@@ -2105,7 +2105,7 @@ Qed.</div></details>
 forall [R : realType] (a : R), lebesgue_measure [set a] = 0%R
 
 lebesgue_measure_set1 is not universe polymorphic
-Arguments lebesgue_measure_set1 [R] a%ring_scope
+Arguments lebesgue_measure_set1 [R] a%_ring_scope
 lebesgue_measure_set1 is opaque
 Expands to: Constant mathcomp.analysis.lebesgue_measure.lebesgue_measure_set1
 Declared in
@@ -2131,7 +2131,7 @@ forall [R : realType] [A : set R],
 countable (T:=R) A -> lebesgue_measure A = 0%R
 
 countable_lebesgue_measure0 is not universe polymorphic
-Arguments countable_lebesgue_measure0 [R] [A]%classical_set_scope _
+Arguments countable_lebesgue_measure0 [R] [A]%_classical_set_scope _
 countable_lebesgue_measure0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.countable_lebesgue_measure0
@@ -2296,7 +2296,7 @@ forall [R : realType] (x : R) [r : R],
 (0 <= r)%R -> lebesgue_measure (ball x r) = (r *+ 2)%:E
 
 lebesgue_measure_ball is not universe polymorphic
-Arguments lebesgue_measure_ball [R] x%ring_scope [r]%ring_scope _
+Arguments lebesgue_measure_ball [R] x%_ring_scope [r]%_ring_scope _
 lebesgue_measure_ball is opaque
 Expands to: Constant mathcomp.analysis.lebesgue_measure.lebesgue_measure_ball
 Declared in
@@ -2323,7 +2323,7 @@ lebesgue_measure
 (r *+ 2)%:E
 
 lebesgue_measure_closed_ball is not universe polymorphic
-Arguments lebesgue_measure_closed_ball [R] x%ring_scope [r]%ring_scope _
+Arguments lebesgue_measure_closed_ball [R] x%_ring_scope [r]%_ring_scope _
 lebesgue_measure_closed_ball is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.lebesgue_measure_closed_ball
@@ -2352,7 +2352,7 @@ forall [rT : realType] [A : set (measurableTypeR rT)],
 compact A -> (lebesgue_measure A < +oo)%E
 
 compact_finite_measure is not universe polymorphic
-Arguments compact_finite_measure [rT] [A]%classical_set_scope _
+Arguments compact_finite_measure [rT] [A]%_classical_set_scope _
 compact_finite_measure is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.compact_finite_measure
@@ -2414,7 +2414,7 @@ exists
     & (lebesgue_measure U <= ((wlength idfun)^*%mu A + e%:E)%R)%E]
 
 outer_measure_open_le is not universe polymorphic
-Arguments outer_measure_open_le {R} A%classical_set_scope [e]%ring_scope _
+Arguments outer_measure_open_le {R} A%_classical_set_scope [e]%_ring_scope _
 outer_measure_open_le is opaque
 Expands to: Constant mathcomp.analysis.lebesgue_measure.outer_measure_open_le
 Declared in
@@ -2452,7 +2452,7 @@ ereal.ereal_inf (R:=R)
      | U in [set U | topology_structure.open U /\ (A `<=` U)%classic]]
 
 outer_measure_open is not universe polymorphic
-Arguments outer_measure_open {R} A%classical_set_scope
+Arguments outer_measure_open {R} A%_classical_set_scope
 outer_measure_open is opaque
 Expands to: Constant mathcomp.analysis.lebesgue_measure.outer_measure_open
 Declared in
@@ -2477,7 +2477,7 @@ exists G : (set R) ^nat,
     & lebesgue_measure (\bigcap_i G i) = (wlength idfun)^*%mu A]
 
 outer_measure_Gdelta is not universe polymorphic
-Arguments outer_measure_Gdelta {R} A%classical_set_scope
+Arguments outer_measure_Gdelta {R} A%_classical_set_scope
 outer_measure_Gdelta is opaque
 Expands to: Constant mathcomp.analysis.lebesgue_measure.outer_measure_Gdelta
 Declared in
@@ -2513,7 +2513,7 @@ forall {R : realType} (N : set R),
 lebesgue_measure.-negligible N <-> (wlength idfun)^*%mu N = 0%R
 
 negligible_outer_measure is not universe polymorphic
-Arguments negligible_outer_measure {R} N%classical_set_scope
+Arguments negligible_outer_measure {R} N%_classical_set_scope
 negligible_outer_measure is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.negligible_outer_measure
@@ -2547,8 +2547,8 @@ exists U : set R,
     & (lebesgue_measure (U `\` D)%classic < eps%:E)%E]
 
 lebesgue_regularity_outer is not universe polymorphic
-Arguments lebesgue_regularity_outer {R} [D]%classical_set_scope
-  [eps]%ring_scope _ _ _
+Arguments lebesgue_regularity_outer {R} [D]%_classical_set_scope
+  [eps]%_ring_scope _ _ _
 lebesgue_regularity_outer is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.lebesgue_regularity_outer
@@ -2627,8 +2627,8 @@ exists ab : R * R,
   (lebesgue_measure (D `\` `[ab.1, ab.2])%classic < eps%:E)%E
 
 lebesgue_nearly_bounded is not universe polymorphic
-Arguments lebesgue_nearly_bounded {R} [D]%classical_set_scope
-  [eps]%ring_scope _ _ _
+Arguments lebesgue_nearly_bounded {R} [D]%_classical_set_scope
+  [eps]%_ring_scope _ _ _
 lebesgue_nearly_bounded is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.lebesgue_nearly_bounded
@@ -2676,8 +2676,8 @@ exists V : set R,
     & (lebesgue_measure (D `\` V)%classic < eps%:E)%E]
 
 lebesgue_regularity_inner is not universe polymorphic
-Arguments lebesgue_regularity_inner {R} [D]%classical_set_scope
-  [eps]%ring_scope _ _ _
+Arguments lebesgue_regularity_inner {R} [D]%_classical_set_scope
+  [eps]%_ring_scope _ _ _
 lebesgue_regularity_inner is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.lebesgue_regularity_inner
@@ -2756,7 +2756,7 @@ ereal.ereal_sup (R:=R)
   [set lebesgue_measure K | K in [set K | compact K /\ (K `<=` D)%classic]]
 
 lebesgue_regularity_inner_sup is not universe polymorphic
-Arguments lebesgue_regularity_inner_sup {R} [D]%classical_set_scope _
+Arguments lebesgue_regularity_inner_sup {R} [D]%_classical_set_scope _
 lebesgue_regularity_inner_sup is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_measure.lebesgue_regularity_inner_sup
@@ -2800,8 +2800,8 @@ forall {R : numFieldType},
 set R -> forall [I : Type], (I -> set R) -> set I -> Prop
 
 vitali_cover is not universe polymorphic
-Arguments vitali_cover {R} E%classical_set_scope [I]%type_scope
-  B%function_scope D%classical_set_scope
+Arguments vitali_cover {R} E%_classical_set_scope 
+  [I]%_type_scope B%_function_scope D%_classical_set_scope
 vitali_cover is transparent
 Expands to: Constant mathcomp.analysis.lebesgue_measure.vitali_cover
 Declared in
@@ -2835,8 +2835,8 @@ exists D : set nat,
       0%R]
 
 vitali_theorem is not universe polymorphic
-Arguments vitali_theorem {R} [A]%classical_set_scope 
-  [B]%function_scope B0%function_scope [V]%classical_set_scope 
+Arguments vitali_theorem {R} [A]%_classical_set_scope 
+  [B]%_function_scope B0%_function_scope [V]%_classical_set_scope 
   _
 vitali_theorem is opaque
 Expands to: Constant mathcomp.analysis.lebesgue_measure.vitali_theorem
@@ -3107,9 +3107,9 @@ topology_structure.open O ->
 vitali_cover A B F -> vitali_cover A B (F `&` [set k | (B k `<=` O)%classic])
 
 vitali_coverS is not universe polymorphic
-Arguments vitali_coverS {R} [A]%classical_set_scope 
-  [B]%function_scope [F O]%classical_set_scope _ _ 
-  _
+Arguments vitali_coverS {R} [A]%_classical_set_scope 
+  [B]%_function_scope [F O]%_classical_set_scope _ 
+  _ _
 vitali_coverS is opaque
 Expands to: Constant mathcomp.analysis.lebesgue_measure.vitali_coverS
 Declared in
@@ -3208,8 +3208,8 @@ exists G' : {fset nat},
        e%:E)%E]
 
 vitali_theorem_corollary is not universe polymorphic
-Arguments vitali_theorem_corollary {R} [A]%classical_set_scope
-  [B]%function_scope B0%function_scope [F]%classical_set_scope 
+Arguments vitali_theorem_corollary {R} [A]%_classical_set_scope
+  [B]%_function_scope B0%_function_scope [F]%_classical_set_scope 
   _ _ [e] _
 vitali_theorem_corollary is opaque
 Expands to: Constant

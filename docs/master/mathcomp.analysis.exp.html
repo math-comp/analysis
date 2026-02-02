@@ -261,7 +261,7 @@ temporary: it should be subsumed by a proper theory of power series.
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="normr_nneg" class="id"><a name="normr_nneg" class="" title="normr_nneg : forall [R : numDomainType] (x : R), `|x|%R \is Num.nneg
 
 normr_nneg is not universe polymorphic
-Arguments normr_nneg [R] x%ring_scope
+Arguments normr_nneg [R] x%_ring_scope
 normr_nneg is opaque
 Expands to: Constant
             mathcomp.algebra.num_theory.numdomain.Num.Theory.normr_nneg
@@ -285,7 +285,7 @@ forall [R : realType],
 R -> (join_GRing_PzRing_between_GRing_PzSemiRing_and_Algebra_Zmodule R) ^nat
 
 pseries is not universe polymorphic
-Arguments pseries [R] f%function_scope x%ring_scope _
+Arguments pseries [R] f%_function_scope x%_ring_scope _
 pseries is transparent
 Expands to: Constant mathcomp.analysis.exp.pseries
 Declared in library mathcomp.analysis.exp, line 60, characters 11-18
@@ -332,8 +332,8 @@ exists2 i : nat,
   ((fun N : nat => [set n | N <= n]) i
    `<=` pseries (R:=R) (fun i0 : nat => `|f i0|%R) z @^-1` t)%classic
 
-Arguments is_cvg_pseries_inside_norm [R] [f]%function_scope 
-  [x z]%ring_scope _ _ [t] _
+Arguments is_cvg_pseries_inside_norm [R] [f]%_function_scope
+  [x z]%_ring_scope _ _ [t] _
 is_cvg_pseries_inside_norm is opaque
 Expands to: Constant mathcomp.analysis.exp.is_cvg_pseries_inside_norm
 Declared in library mathcomp.analysis.exp, line 62, characters 5-31
@@ -396,8 +396,8 @@ exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` pseries (R:=R) f z @^-1` t)%classic
 
-Arguments is_cvg_pseries_inside [R] [f]%function_scope 
-  [x z]%ring_scope _ _ [t] _
+Arguments is_cvg_pseries_inside [R] [f]%_function_scope 
+  [x z]%_ring_scope _ _ [t] _
 is_cvg_pseries_inside is opaque
 Expands to: Constant mathcomp.analysis.exp.is_cvg_pseries_inside
 Declared in library mathcomp.analysis.exp, line 82, characters 5-26
@@ -416,7 +416,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="pseries_diffs" class="id"><a name="pseries_diffs" class="" title="pseries_diffs : forall [R : realType], (nat -> R) -> nat -> R
 
 pseries_diffs is not universe polymorphic
-Arguments pseries_diffs [R] f%function_scope i%nat_scope
+Arguments pseries_diffs [R] f%_function_scope i%_nat_scope
 pseries_diffs is transparent
 Expands to: Constant mathcomp.analysis.exp.pseries_diffs
 Declared in library mathcomp.analysis.exp, line 92, characters 11-24
@@ -427,7 +427,7 @@ forall [R : realType] (f : nat -> R),
 pseries_diffs (R:=R) (- f)%R = (- pseries_diffs (R:=R) f)%R
 
 pseries_diffsN is not universe polymorphic
-Arguments pseries_diffsN [R] f%function_scope
+Arguments pseries_diffsN [R] f%_function_scope
 pseries_diffsN is opaque
 Expands to: Constant mathcomp.analysis.exp.pseries_diffsN
 Declared in library mathcomp.analysis.exp, line 94, characters 6-20
@@ -461,7 +461,7 @@ forall [R : realType] (n : nat) (f : nat -> R) (x : R),
 (\sum_(0 <= i < n) i%:R * f i * x ^+ i.-1 + n%:R * f n * x ^+ n.-1)%R
 
 pseries_diffs_sumE is not universe polymorphic
-Arguments pseries_diffs_sumE [R] n%nat_scope f%function_scope x%ring_scope
+Arguments pseries_diffs_sumE [R] n%_nat_scope f%_function_scope x%_ring_scope
 pseries_diffs_sumE is opaque
 Expands to: Constant mathcomp.analysis.exp.pseries_diffs_sumE
 Declared in library mathcomp.analysis.exp, line 103, characters 6-24
@@ -518,7 +518,7 @@ exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` series s @^-1` t)%classic
 
-Arguments pseries_diffs_equiv [R] [f]%function_scope [x]%ring_scope _ [t] _
+Arguments pseries_diffs_equiv [R] [f]%_function_scope [x]%_ring_scope _ [t] _
 pseries_diffs_equiv is opaque
 Expands to: Constant mathcomp.analysis.exp.pseries_diffs_equiv
 Declared in library mathcomp.analysis.exp, line 112, characters 6-25
@@ -580,8 +580,8 @@ exists2 i : nat,
   ((fun N : nat => [set n | N <= n]) i
    `<=` [series i0%:R * f i0 * x ^+ i0.-1]_i0%R @^-1` t)%classic
 
-Arguments is_cvg_pseries_diffs_equiv [R] [f]%function_scope 
-  [x]%ring_scope _ [t] _
+Arguments is_cvg_pseries_diffs_equiv [R] [f]%_function_scope 
+  [x]%_ring_scope _ [t] _
 is_cvg_pseries_diffs_equiv is opaque
 Expands to: Constant mathcomp.analysis.exp.is_cvg_pseries_diffs_equiv
 Declared in library mathcomp.analysis.exp, line 125, characters 6-32
@@ -695,7 +695,7 @@ is_derive x (1%R : R)
         (filter.nbhs filter.eventually)))
 
 pseries_snd_diffs is not universe polymorphic
-Arguments pseries_snd_diffs [R c] [K]%ring_scope [x] _ _ _ _
+Arguments pseries_snd_diffs [R c] [K]%_ring_scope [x] _ _ _ _
 pseries_snd_diffs is opaque
 Expands to: Constant mathcomp.analysis.exp.pseries_snd_diffs
 Declared in library mathcomp.analysis.exp, line 188, characters 6-23
@@ -846,7 +846,7 @@ forall [R : realType] [x : R] (n : nat),
 (0 <= x)%R -> (1 + x ^+ n.+1 / (n.+1)`!%:R <= expR x)%R
 
 expR_ge1Dxn is not universe polymorphic
-Arguments expR_ge1Dxn [R] [x]%ring_scope n%nat_scope _
+Arguments expR_ge1Dxn [R] [x]%_ring_scope n%_nat_scope _
 expR_ge1Dxn is opaque
 Expands to: Constant mathcomp.analysis.exp.expR_ge1Dxn
 Declared in library mathcomp.analysis.exp, line 319, characters 6-17
@@ -884,7 +884,7 @@ exp_coeff (R:=R) x =
 (fun n : nat => ((fun n0 : nat => n0`!%:R^-1) n * x ^+ n)%R)
 
 exp_coeffE is not universe polymorphic
-Arguments exp_coeffE [R] x%ring_scope
+Arguments exp_coeffE [R] x%_ring_scope
 exp_coeffE is opaque
 Expands to: Constant mathcomp.analysis.exp.exp_coeffE
 Declared in library mathcomp.analysis.exp, line 345, characters 6-16
@@ -967,7 +967,7 @@ exists2 i : R,
          ((fun h : R => (h^-1 *: ((expR \o shift x) h%:A - expR x))%R) @^-1`
           t) t0))%classic
 
-Arguments derivable_expR [R] [x]%ring_scope [t] _
+Arguments derivable_expR [R] [x]%_ring_scope [t] _
 derivable_expR is opaque
 Expands to: Constant mathcomp.analysis.exp.derivable_expR
 Declared in library mathcomp.analysis.exp, line 371, characters 6-20
@@ -1027,7 +1027,7 @@ Qed.</div></details>
 forall [R : realType] (x y : R), (expR (x + y) * expR (- x))%R = expR y
 
 expRxDyMexpx is not universe polymorphic
-Arguments expRxDyMexpx [R] (x y)%ring_scope
+Arguments expRxDyMexpx [R] (x y)%_ring_scope
 expRxDyMexpx is opaque
 Expands to: Constant mathcomp.analysis.exp.expRxDyMexpx
 Declared in library mathcomp.analysis.exp, line 382, characters 6-18
@@ -1045,7 +1045,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expRxMexpNx_1" class="id"><a name="expRxMexpNx_1" class="" title="expRxMexpNx_1 : forall [R : realType] (x : R), (expR x * expR (- x))%R = 1%R
 
 expRxMexpNx_1 is not universe polymorphic
-Arguments expRxMexpNx_1 [R] x%ring_scope
+Arguments expRxMexpNx_1 [R] x%_ring_scope
 expRxMexpNx_1 is opaque
 Expands to: Constant mathcomp.analysis.exp.expRxMexpNx_1
 Declared in library mathcomp.analysis.exp, line 391, characters 6-19
@@ -1058,7 +1058,7 @@ Declared in library mathcomp.analysis.exp, line 391, characters 6-19
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pexpR_gt1" class="id"><a name="pexpR_gt1" class="" title="pexpR_gt1 : forall [R : realType] [x : R], (0 < x)%R -> (1 < expR x)%R
 
 pexpR_gt1 is not universe polymorphic
-Arguments pexpR_gt1 [R] [x]%ring_scope _
+Arguments pexpR_gt1 [R] [x]%_ring_scope _
 pexpR_gt1 is opaque
 Expands to: Constant mathcomp.analysis.exp.pexpR_gt1
 Declared in library mathcomp.analysis.exp, line 394, characters 6-15
@@ -1073,7 +1073,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expR_gt0" class="id"><a name="expR_gt0" class="" title="expR_gt0 : forall [R : realType] (x : R), (0 < expR x)%R
 
 expR_gt0 is not universe polymorphic
-Arguments expR_gt0 [R] x%ring_scope
+Arguments expR_gt0 [R] x%_ring_scope
 expR_gt0 is opaque
 Expands to: Constant mathcomp.analysis.exp.expR_gt0
 Declared in library mathcomp.analysis.exp, line 400, characters 6-14
@@ -1090,7 +1090,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expR_ge0" class="id"><a name="expR_ge0" class="" title="expR_ge0 : forall [R : realType] (x : R), (0 <= expR x)%R
 
 expR_ge0 is not universe polymorphic
-Arguments expR_ge0 [R] x%ring_scope
+Arguments expR_ge0 [R] x%_ring_scope
 expR_ge0 is opaque
 Expands to: Constant mathcomp.analysis.exp.expR_ge0
 Declared in library mathcomp.analysis.exp, line 408, characters 6-14
@@ -1116,7 +1116,7 @@ Declared in library mathcomp.analysis.exp, line 410, characters 6-15
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expR_eq0" class="id"><a name="expR_eq0" class="" title="expR_eq0 : forall [R : realType] (x : R), (expR x == 0%R) = false
 
 expR_eq0 is not universe polymorphic
-Arguments expR_eq0 [R] x%ring_scope
+Arguments expR_eq0 [R] x%_ring_scope
 expR_eq0 is opaque
 Expands to: Constant mathcomp.analysis.exp.expR_eq0
 Declared in library mathcomp.analysis.exp, line 413, characters 6-14
@@ -1129,7 +1129,7 @@ Declared in library mathcomp.analysis.exp, line 413, characters 6-14
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expRN" class="id"><a name="expRN" class="" title="expRN : forall [R : realType] (x : R), expR (- x) = (expR x)^-1%R
 
 expRN is not universe polymorphic
-Arguments expRN [R] x%ring_scope
+Arguments expRN [R] x%_ring_scope
 expRN is opaque
 Expands to: Constant mathcomp.analysis.exp.expRN
 Declared in library mathcomp.analysis.exp, line 416, characters 6-11
@@ -1144,7 +1144,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expRD" class="id"><a name="expRD" class="" title="expRD : forall [R : realType] (x y : R), expR (x + y) = (expR x * expR y)%R
 
 expRD is not universe polymorphic
-Arguments expRD [R] (x y)%ring_scope
+Arguments expRD [R] (x y)%_ring_scope
 expRD is opaque
 Expands to: Constant mathcomp.analysis.exp.expRD
 Declared in library mathcomp.analysis.exp, line 422, characters 6-11
@@ -1162,7 +1162,7 @@ forall [R : realType] [T : Type] (s : seq T) (P : pred T) (f : T -> R),
 expR (\sum_(i <- s | P i) f i) = (\prod_(i <- s | P i) expR (f i))%R
 
 expR_sum is not universe polymorphic
-Arguments expR_sum [R] [T]%type_scope s%seq_scope P f%function_scope
+Arguments expR_sum [R] [T]%_type_scope s%_seq_scope P f%_function_scope
 expR_sum is opaque
 Expands to: Constant mathcomp.analysis.exp.expR_sum
 Declared in library mathcomp.analysis.exp, line 429, characters 6-14
@@ -1177,7 +1177,7 @@ Declared in library mathcomp.analysis.exp, line 429, characters 6-14
 forall [R : realType] (n : nat) (x : R), expR (n%:R * x) = (expR x ^+ n)%R
 
 expRM_natl is not universe polymorphic
-Arguments expRM_natl [R] n%nat_scope x%ring_scope
+Arguments expRM_natl [R] n%_nat_scope x%_ring_scope
 expRM_natl is opaque
 Expands to: Constant mathcomp.analysis.exp.expRM_natl
 Declared in library mathcomp.analysis.exp, line 433, characters 6-16
@@ -1193,7 +1193,7 @@ Qed.</div></details>
 forall [R : realType] (n : nat) (x : R), expR (x * n%:R) = (expR x ^+ n)%R
 
 expRM_natr is not universe polymorphic
-Arguments expRM_natr [R] n%nat_scope x%ring_scope
+Arguments expRM_natr [R] n%_nat_scope x%_ring_scope
 expRM_natr is opaque
 Expands to: Constant mathcomp.analysis.exp.expRM_natr
 Declared in library mathcomp.analysis.exp, line 439, characters 6-16
@@ -1206,7 +1206,7 @@ Declared in library mathcomp.analysis.exp, line 439, characters 6-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expR_gt1" class="id"><a name="expR_gt1" class="" title="expR_gt1 : forall [R : realType] (x : R), (1 < expR x)%R = (0 < x)%R
 
 expR_gt1 is not universe polymorphic
-Arguments expR_gt1 [R] x%ring_scope
+Arguments expR_gt1 [R] x%_ring_scope
 expR_gt1 is opaque
 Expands to: Constant mathcomp.analysis.exp.expR_gt1
 Declared in library mathcomp.analysis.exp, line 442, characters 6-14
@@ -1224,7 +1224,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expR_lt1" class="id"><a name="expR_lt1" class="" title="expR_lt1 : forall [R : realType] (x : R), (expR x < 1)%R = (x < 0)%R
 
 expR_lt1 is not universe polymorphic
-Arguments expR_lt1 [R] x%ring_scope
+Arguments expR_lt1 [R] x%_ring_scope
 expR_lt1 is opaque
 Expands to: Constant mathcomp.analysis.exp.expR_lt1
 Declared in library mathcomp.analysis.exp, line 451, characters 6-14
@@ -1240,7 +1240,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expR_le1" class="id"><a name="expR_le1" class="" title="expR_le1 : forall [R : realType] (x : R), (expR x <= 1)%R = (x <= 0)%R
 
 expR_le1 is not universe polymorphic
-Arguments expR_le1 [R] x%ring_scope
+Arguments expR_le1 [R] x%_ring_scope
 expR_le1 is opaque
 Expands to: Constant mathcomp.analysis.exp.expR_le1
 Declared in library mathcomp.analysis.exp, line 458, characters 6-14
@@ -1256,7 +1256,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expRB" class="id"><a name="expRB" class="" title="expRB : forall [R : realType] (x y : R), expR (x - y) = (expR x / expR y)%R
 
 expRB is not universe polymorphic
-Arguments expRB [R] (x y)%ring_scope
+Arguments expRB [R] (x y)%_ring_scope
 expRB is opaque
 Expands to: Constant mathcomp.analysis.exp.expRB
 Declared in library mathcomp.analysis.exp, line 465, characters 6-11
@@ -1301,7 +1301,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expR_gt1Dx" class="id"><a name="expR_gt1Dx" class="" title="expR_gt1Dx : forall [R : realType] [x : R], x != 0%R -> (1 + x < expR x)%R
 
 expR_gt1Dx is not universe polymorphic
-Arguments expR_gt1Dx [R] [x]%ring_scope _
+Arguments expR_gt1Dx [R] [x]%_ring_scope _
 expR_gt1Dx is opaque
 Expands to: Constant mathcomp.analysis.exp.expR_gt1Dx
 Declared in library mathcomp.analysis.exp, line 482, characters 6-16
@@ -1327,7 +1327,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expR_ge1Dx" class="id"><a name="expR_ge1Dx" class="" title="expR_ge1Dx : forall [R : realType] (x : R), (1 + x <= expR x)%R
 
 expR_ge1Dx is not universe polymorphic
-Arguments expR_ge1Dx [R] x%ring_scope
+Arguments expR_ge1Dx [R] x%_ring_scope
 expR_ge1Dx is opaque
 Expands to: Constant mathcomp.analysis.exp.expR_ge1Dx
 Declared in library mathcomp.analysis.exp, line 499, characters 6-16
@@ -1425,7 +1425,7 @@ exists
   [/\ (0 <= y)%R, (1 + y <= x)%R & expR y = x]
 
 expR_total_gt1 is not universe polymorphic
-Arguments expR_total_gt1 [R] [x]%ring_scope _
+Arguments expR_total_gt1 [R] [x]%_ring_scope _
 expR_total_gt1 is opaque
 Expands to: Constant mathcomp.analysis.exp.expR_total_gt1
 Declared in library mathcomp.analysis.exp, line 525, characters 6-20
@@ -1452,7 +1452,7 @@ Qed.</div></details>
 forall [R : realType] [x : R], (0 < x)%R -> exists y : R, expR y = x
 
 expR_total is not universe polymorphic
-Arguments expR_total [R] [x]%ring_scope _
+Arguments expR_total [R] [x]%_ring_scope _
 expR_total is opaque
 Expands to: Constant mathcomp.analysis.exp.expR_total
 Declared in library mathcomp.analysis.exp, line 542, characters 6-16
@@ -1588,7 +1588,7 @@ Declared in library mathcomp.analysis.exp, line 603, characters 10-19
 <span class="vernacular">Definition</span><span class="id"> </span><span id="expeR" class="id"><a name="expeR" class="" title="expeR : forall {R : realType}, \bar R -> \bar R
 
 expeR is not universe polymorphic
-Arguments expeR {R} x%ereal_scope
+Arguments expeR {R} x%_ereal_scope
 expeR is transparent
 Expands to: Constant mathcomp.analysis.exp.expeR
 Declared in library mathcomp.analysis.exp, line 614, characters 11-16
@@ -1611,7 +1611,7 @@ Declared in library mathcomp.analysis.exp, line 617, characters 6-12
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expeR_ge0" class="id"><a name="expeR_ge0" class="" title="expeR_ge0 : forall {R : realType} (x : \bar R), (0%R <= expeR x)%E
 
 expeR_ge0 is not universe polymorphic
-Arguments expeR_ge0 {R} x%ereal_scope
+Arguments expeR_ge0 {R} x%_ereal_scope
 expeR_ge0 is opaque
 Expands to: Constant mathcomp.analysis.exp.expeR_ge0
 Declared in library mathcomp.analysis.exp, line 619, characters 6-15
@@ -1625,7 +1625,7 @@ Declared in library mathcomp.analysis.exp, line 619, characters 6-15
 forall {R : realType} [x : \bar R], (-oo < x)%E -> (0%R < expeR x)%E
 
 expeR_gt0 is not universe polymorphic
-Arguments expeR_gt0 {R} [x]%ereal_scope _
+Arguments expeR_gt0 {R} [x]%_ereal_scope _
 expeR_gt0 is opaque
 Expands to: Constant mathcomp.analysis.exp.expeR_gt0
 Declared in library mathcomp.analysis.exp, line 622, characters 6-15
@@ -1639,7 +1639,7 @@ Declared in library mathcomp.analysis.exp, line 622, characters 6-15
 forall {R : realType} (x : \bar R), (expeR x == 0%R) = (x == -oo%E)
 
 expeR_eq0 is not universe polymorphic
-Arguments expeR_eq0 {R} x%ereal_scope
+Arguments expeR_eq0 {R} x%_ereal_scope
 expeR_eq0 is opaque
 Expands to: Constant mathcomp.analysis.exp.expeR_eq0
 Declared in library mathcomp.analysis.exp, line 625, characters 6-15
@@ -1653,7 +1653,7 @@ Declared in library mathcomp.analysis.exp, line 625, characters 6-15
 forall {R : realType} (x : \bar R), (expeR x == +oo%E) = (x == +oo%E)
 
 expeR_eqy is not universe polymorphic
-Arguments expeR_eqy {R} x%ereal_scope
+Arguments expeR_eqy {R} x%_ereal_scope
 expeR_eqy is opaque
 Expands to: Constant mathcomp.analysis.exp.expeR_eqy
 Declared in library mathcomp.analysis.exp, line 628, characters 6-15
@@ -1667,7 +1667,7 @@ Declared in library mathcomp.analysis.exp, line 628, characters 6-15
 forall {R : realType} (x y : \bar R), expeR (x + y)%R = (expeR x * expeR y)%E
 
 expeRD is not universe polymorphic
-Arguments expeRD {R} (x y)%ereal_scope
+Arguments expeRD {R} (x y)%_ereal_scope
 expeRD is opaque
 Expands to: Constant mathcomp.analysis.exp.expeRD
 Declared in library mathcomp.analysis.exp, line 631, characters 6-12
@@ -1687,7 +1687,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expeR_ge1Dx" class="id"><a name="expeR_ge1Dx" class="" title="expeR_ge1Dx : forall {R : realType} (x : \bar R), ((1%E + x)%R <= expeR x)%E
 
 expeR_ge1Dx is not universe polymorphic
-Arguments expeR_ge1Dx {R} x%ereal_scope
+Arguments expeR_ge1Dx {R} x%_ereal_scope
 expeR_ge1Dx is opaque
 Expands to: Constant mathcomp.analysis.exp.expeR_ge1Dx
 Declared in library mathcomp.analysis.exp, line 642, characters 6-17
@@ -1759,7 +1759,7 @@ forall {R : realType} [x : \bar R],
 (0%R <= x)%E -> exists y : \bar R, expeR y = x
 
 expeR_total is not universe polymorphic
-Arguments expeR_total {R} [x]%ereal_scope _
+Arguments expeR_total {R} [x]%_ereal_scope _
 expeR_total is opaque
 Expands to: Constant mathcomp.analysis.exp.expeR_total
 Declared in library mathcomp.analysis.exp, line 672, characters 6-17
@@ -1787,7 +1787,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="ln" class="id"><a name="ln" class="" title="ln : forall [R : realType], R -> R
 
 ln is not universe polymorphic
-Arguments ln [R] x%ring_scope
+Arguments ln [R] x%_ring_scope
 ln is transparent
 Expands to: Constant mathcomp.analysis.exp.ln
 Declared in library mathcomp.analysis.exp, line 691, characters 11-13
@@ -1796,7 +1796,7 @@ Declared in library mathcomp.analysis.exp, line 691, characters 11-13
 <span class="vernacular">Fact</span><span class="id"> </span><span id="ln0" class="id"><a name="ln0" class="" title="ln0 : forall [R : realType] [x : R], (x <= 0)%R -> ln (R:=R) x = 0%R
 
 ln0 is not universe polymorphic
-Arguments ln0 [R] [x]%ring_scope _
+Arguments ln0 [R] [x]%_ring_scope _
 ln0 is opaque
 Expands to: Constant mathcomp.analysis.exp.ln0
 Declared in library mathcomp.analysis.exp, line 693, characters 5-8
@@ -1844,7 +1844,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lnK_eq" class="id"><a name="lnK_eq" class="" title="lnK_eq : forall [R : realType] (x : R), (expR (ln (R:=R) x) == x) = (0 < x)%R
 
 lnK_eq is not universe polymorphic
-Arguments lnK_eq [R] x%ring_scope
+Arguments lnK_eq [R] x%_ring_scope
 lnK_eq is opaque
 Expands to: Constant mathcomp.analysis.exp.lnK_eq
 Declared in library mathcomp.analysis.exp, line 711, characters 6-12
@@ -2006,7 +2006,7 @@ forall [R : realType] (n : nat) [x : R],
 (0 < x)%R -> ln (R:=R) (x ^+ n) = (ln (R:=R) x *+ n)%R
 
 lnXn is not universe polymorphic
-Arguments lnXn [R] n%nat_scope [x]%ring_scope _
+Arguments lnXn [R] n%_nat_scope [x]%_ring_scope _
 lnXn is opaque
 Expands to: Constant mathcomp.analysis.exp.lnXn
 Declared in library mathcomp.analysis.exp, line 746, characters 6-10
@@ -2022,7 +2022,7 @@ Qed.</div></details>
 forall [R : realType] [x : R], (-1 < x)%R -> (ln (R:=R) (1 + x) <= x)%R
 
 le_ln1Dx is not universe polymorphic
-Arguments le_ln1Dx [R] [x]%ring_scope _
+Arguments le_ln1Dx [R] [x]%_ring_scope _
 le_ln1Dx is opaque
 Expands to: Constant mathcomp.analysis.exp.le_ln1Dx
 Declared in library mathcomp.analysis.exp, line 752, characters 6-14
@@ -2038,7 +2038,7 @@ Qed.</div></details>
 forall [R : realType] [x : R], (0 < x)%R -> (ln (R:=R) x < x)%R
 
 ln_sublinear is not universe polymorphic
-Arguments ln_sublinear [R] [x]%ring_scope _
+Arguments ln_sublinear [R] [x]%_ring_scope _
 ln_sublinear is opaque
 Expands to: Constant mathcomp.analysis.exp.ln_sublinear
 Declared in library mathcomp.analysis.exp, line 758, characters 6-18
@@ -2054,7 +2054,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ln_ge0" class="id"><a name="ln_ge0" class="" title="ln_ge0 : forall [R : realType] [x : R], (1 <= x)%R -> (0 <= ln (R:=R) x)%R
 
 ln_ge0 is not universe polymorphic
-Arguments ln_ge0 [R] [x]%ring_scope _
+Arguments ln_ge0 [R] [x]%_ring_scope _
 ln_ge0 is opaque
 Expands to: Constant mathcomp.analysis.exp.ln_ge0
 Declared in library mathcomp.analysis.exp, line 765, characters 6-12
@@ -2068,7 +2068,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ln_lt0" class="id"><a name="ln_lt0" class="" title="ln_lt0 : forall [R : realType] [x : R], (0 < x < 1)%R -> (ln (R:=R) x < 0)%R
 
 ln_lt0 is not universe polymorphic
-Arguments ln_lt0 [R] [x]%ring_scope _
+Arguments ln_lt0 [R] [x]%_ring_scope _
 ln_lt0 is opaque
 Expands to: Constant mathcomp.analysis.exp.ln_lt0
 Declared in library mathcomp.analysis.exp, line 770, characters 6-12
@@ -2081,7 +2081,7 @@ Declared in library mathcomp.analysis.exp, line 770, characters 6-12
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ln_gt0" class="id"><a name="ln_gt0" class="" title="ln_gt0 : forall [R : realType] [x : R], (1 < x)%R -> (0 < ln (R:=R) x)%R
 
 ln_gt0 is not universe polymorphic
-Arguments ln_gt0 [R] [x]%ring_scope _
+Arguments ln_gt0 [R] [x]%_ring_scope _
 ln_gt0 is opaque
 Expands to: Constant mathcomp.analysis.exp.ln_gt0
 Declared in library mathcomp.analysis.exp, line 773, characters 6-12
@@ -2095,7 +2095,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ln_le0" class="id"><a name="ln_le0" class="" title="ln_le0 : forall [R : realType] [x : R], (x <= 1)%R -> (ln (R:=R) x <= 0)%R
 
 ln_le0 is not universe polymorphic
-Arguments ln_le0 [R] [x]%ring_scope _
+Arguments ln_le0 [R] [x]%_ring_scope _
 ln_le0 is opaque
 Expands to: Constant mathcomp.analysis.exp.ln_le0
 Declared in library mathcomp.analysis.exp, line 778, characters 6-12
@@ -2111,7 +2111,7 @@ Qed.</div></details>
 forall [R : realType] [x : R], (0 < x)%R -> (ln (R:=R) x == 0%R) = (x == 1%R)
 
 ln_eq0 is not universe polymorphic
-Arguments ln_eq0 [R] [x]%ring_scope _
+Arguments ln_eq0 [R] [x]%_ring_scope _
 ln_eq0 is opaque
 Expands to: Constant mathcomp.analysis.exp.ln_eq0
 Declared in library mathcomp.analysis.exp, line 784, characters 6-12
@@ -2150,7 +2150,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` ln (R:=R) @^-1` t)%classic
 
-Arguments continuous_ln [R] [x]%ring_scope _ [t] _
+Arguments continuous_ln [R] [x]%_ring_scope _ [t] _
 continuous_ln is opaque
 Expands to: Constant mathcomp.analysis.exp.continuous_ln
 Declared in library mathcomp.analysis.exp, line 791, characters 6-19
@@ -2233,7 +2233,7 @@ Declared in library mathcomp.analysis.exp, line 815, characters 6-10
 <span class="vernacular">Definition</span><span class="id"> </span><span id="powR" class="id"><a name="powR" class="" title="powR : forall [R : realType], R -> R -> R
 
 powR is not universe polymorphic
-Arguments powR [R] (a x)%ring_scope
+Arguments powR [R] (a x)%_ring_scope
 powR is transparent
 Expands to: Constant mathcomp.analysis.exp.powR
 Declared in library mathcomp.analysis.exp, line 827, characters 11-15
@@ -2244,7 +2244,7 @@ Declared in library mathcomp.analysis.exp, line 827, characters 11-15
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expRM" class="id"><a name="expRM" class="" title="expRM : forall [R : realType] (x y : R), expR (x * y) = (expR x `^ y)%R
 
 expRM is not universe polymorphic
-Arguments expRM [R] (x y)%ring_scope
+Arguments expRM [R] (x y)%_ring_scope
 expRM is opaque
 Expands to: Constant mathcomp.analysis.exp.expRM
 Declared in library mathcomp.analysis.exp, line 831, characters 6-11
@@ -2257,7 +2257,7 @@ Declared in library mathcomp.analysis.exp, line 831, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="powR_ge0" class="id"><a name="powR_ge0" class="" title="powR_ge0 : forall [R : realType] (a x : R), (0 <= a `^ x)%R
 
 powR_ge0 is not universe polymorphic
-Arguments powR_ge0 [R] (a x)%ring_scope
+Arguments powR_ge0 [R] (a x)%_ring_scope
 powR_ge0 is opaque
 Expands to: Constant mathcomp.analysis.exp.powR_ge0
 Declared in library mathcomp.analysis.exp, line 834, characters 6-14
@@ -2270,7 +2270,7 @@ Declared in library mathcomp.analysis.exp, line 834, characters 6-14
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="powR_gt0" class="id"><a name="powR_gt0" class="" title="powR_gt0 : forall [R : realType] [a : R] (x : R), (0 < a)%R -> (0 < a `^ x)%R
 
 powR_gt0 is not universe polymorphic
-Arguments powR_gt0 [R] [a]%ring_scope x%ring_scope _
+Arguments powR_gt0 [R] [a]%_ring_scope x%_ring_scope _
 powR_gt0 is opaque
 Expands to: Constant mathcomp.analysis.exp.powR_gt0
 Declared in library mathcomp.analysis.exp, line 837, characters 6-14
@@ -2285,7 +2285,7 @@ forall [R : realType] [a x : R],
 (0 < x)%R -> (0 <= a)%R -> (0 < a `^ x)%R -> (0 < a)%R
 
 gt0_powR is not universe polymorphic
-Arguments gt0_powR [R] [a x]%ring_scope _ _ _
+Arguments gt0_powR [R] [a x]%_ring_scope _ _ _
 gt0_powR is opaque
 Expands to: Constant mathcomp.analysis.exp.gt0_powR
 Declared in library mathcomp.analysis.exp, line 840, characters 6-14
@@ -2301,7 +2301,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="powR0" class="id"><a name="powR0" class="" title="powR0 : forall [R : realType] [x : R], x != 0%R -> (0 `^ x)%R = 0%R
 
 powR0 is not universe polymorphic
-Arguments powR0 [R] [x]%ring_scope _
+Arguments powR0 [R] [x]%_ring_scope _
 powR0 is opaque
 Expands to: Constant mathcomp.analysis.exp.powR0
 Declared in library mathcomp.analysis.exp, line 847, characters 6-11
@@ -2314,7 +2314,7 @@ Declared in library mathcomp.analysis.exp, line 847, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="powRr1" class="id"><a name="powRr1" class="" title="powRr1 : forall [R : realType] [a : R], (0 <= a)%R -> (a `^ 1)%R = a
 
 powRr1 is not universe polymorphic
-Arguments powRr1 [R] [a]%ring_scope _
+Arguments powRr1 [R] [a]%_ring_scope _
 powRr1 is opaque
 Expands to: Constant mathcomp.analysis.exp.powRr1
 Declared in library mathcomp.analysis.exp, line 850, characters 6-12
@@ -2329,7 +2329,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="powRr0" class="id"><a name="powRr0" class="" title="powRr0 : forall [R : realType] (a : R), (a `^ 0)%R = 1%R
 
 powRr0 is not universe polymorphic
-Arguments powRr0 [R] a%ring_scope
+Arguments powRr0 [R] a%_ring_scope
 powRr0 is opaque
 Expands to: Constant mathcomp.analysis.exp.powRr0
 Declared in library mathcomp.analysis.exp, line 856, characters 6-12
@@ -2357,7 +2357,7 @@ forall [R : realType] (x p : R),
 ((x `^ p)%R == 0%R) = (x == 0%R) && (p != 0%R)
 
 powR_eq0 is not universe polymorphic
-Arguments powR_eq0 [R] (x p)%ring_scope
+Arguments powR_eq0 [R] (x p)%_ring_scope
 powR_eq0 is opaque
 Expands to: Constant mathcomp.analysis.exp.powR_eq0
 Declared in library mathcomp.analysis.exp, line 862, characters 6-14
@@ -2373,7 +2373,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="powR_eq0_eq0" class="id"><a name="powR_eq0_eq0" class="" title="powR_eq0_eq0 : forall [R : realType] [x p : R], (x `^ p)%R = 0%R -> x = 0%R
 
 powR_eq0_eq0 is not universe polymorphic
-Arguments powR_eq0_eq0 [R] [x p]%ring_scope _
+Arguments powR_eq0_eq0 [R] [x p]%_ring_scope _
 powR_eq0_eq0 is opaque
 Expands to: Constant mathcomp.analysis.exp.powR_eq0_eq0
 Declared in library mathcomp.analysis.exp, line 869, characters 6-18
@@ -2395,7 +2395,7 @@ forall [R : realType] [a : R],
 forall [x y : R],
 (fun y0 x0 : R => is_true (y0 <= x0)%R) x y -> (a `^ y <= a `^ x)%R = true
 
-Arguments ger_powR [R] [a]%ring_scope _ [x y] _
+Arguments ger_powR [R] [a]%_ring_scope _ [x y] _
 ger_powR is opaque
 Expands to: Constant mathcomp.analysis.exp.ger_powR
 Declared in library mathcomp.analysis.exp, line 872, characters 6-14
@@ -2419,7 +2419,7 @@ forall [R : realType] [a : R],
 forall [x y : R],
 (fun x0 y0 : R => is_true (x0 <= y0)%R) x y -> (a `^ x <= a `^ y)%R = true
 
-Arguments ler_powR [R] [a]%ring_scope _ [x y] _
+Arguments ler_powR [R] [a]%_ring_scope _ [x y] _
 ler_powR is opaque
 Expands to: Constant mathcomp.analysis.exp.ler_powR
 Declared in library mathcomp.analysis.exp, line 878, characters 6-14
@@ -2444,7 +2444,7 @@ forall [x y : R],
 x \is Num.nneg ->
 y \is Num.nneg -> ((powR (R:=R))^~ r) x = ((powR (R:=R))^~ r) y -> x = y
 
-Arguments powR_injective [R] [r]%ring_scope _ [x y] _ _ _
+Arguments powR_injective [R] [r]%_ring_scope _ [x y] _ _ _
 powR_injective is opaque
 Expands to: Constant mathcomp.analysis.exp.powR_injective
 Declared in library mathcomp.analysis.exp, line 884, characters 6-20
@@ -2463,7 +2463,7 @@ Qed.</div></details>
 forall [R : realType] [a r : R], (1 <= a)%R -> (r <= 1)%R -> (a `^ r <= a)%R
 
 ler1_powR is not universe polymorphic
-Arguments ler1_powR [R] [a r]%ring_scope _ _
+Arguments ler1_powR [R] [a r]%_ring_scope _ _
 ler1_powR is opaque
 Expands to: Constant mathcomp.analysis.exp.ler1_powR
 Declared in library mathcomp.analysis.exp, line 893, characters 6-15
@@ -2478,7 +2478,7 @@ Qed.</div></details>
 forall [R : realType] [a r : R], (1 <= a)%R -> (1 <= r)%R -> (a <= a `^ r)%R
 
 le1r_powR is not universe polymorphic
-Arguments le1r_powR [R] [a r]%ring_scope _ _
+Arguments le1r_powR [R] [a r]%_ring_scope _ _
 le1r_powR is opaque
 Expands to: Constant mathcomp.analysis.exp.le1r_powR
 Declared in library mathcomp.analysis.exp, line 898, characters 6-15
@@ -2494,7 +2494,7 @@ forall [R : realType] [a r : R],
 (0 < a <= 1)%R -> (r <= 1)%R -> (a <= a `^ r)%R
 
 ger1_powR is not universe polymorphic
-Arguments ger1_powR [R] [a r]%ring_scope _ _
+Arguments ger1_powR [R] [a r]%_ring_scope _ _
 ger1_powR is opaque
 Expands to: Constant mathcomp.analysis.exp.ger1_powR
 Declared in library mathcomp.analysis.exp, line 903, characters 6-15
@@ -2511,7 +2511,7 @@ forall [R : realType] [a r : R],
 (0 < a <= 1)%R -> (1 <= r)%R -> (a `^ r <= a)%R
 
 ge1r_powR is not universe polymorphic
-Arguments ge1r_powR [R] [a r]%ring_scope _ _
+Arguments ge1r_powR [R] [a r]%_ring_scope _ _
 ge1r_powR is opaque
 Expands to: Constant mathcomp.analysis.exp.ge1r_powR
 Declared in library mathcomp.analysis.exp, line 909, characters 6-15
@@ -2539,7 +2539,7 @@ y \is Num.nneg ->
 (fun x0 y0 : R => is_true (x0 <= y0)%R) x y ->
 (((powR (R:=R))^~ r) x <= ((powR (R:=R))^~ r) y)%R = true
 
-Arguments ge0_ler_powR [R] [r]%ring_scope _ [x y] _ _ _
+Arguments ge0_ler_powR [R] [r]%_ring_scope _ [x y] _ _ _
 ge0_ler_powR is opaque
 Expands to: Constant mathcomp.analysis.exp.ge0_ler_powR
 Declared in library mathcomp.analysis.exp, line 915, characters 6-18
@@ -2573,7 +2573,7 @@ y \is Num.nneg ->
 (fun x0 y0 : R => is_true (x0 < y0)%R) x y ->
 (((powR (R:=R))^~ r) x < ((powR (R:=R))^~ r) y)%R = true
 
-Arguments gt0_ltr_powR [R] [r]%ring_scope _ [x y] _ _ _
+Arguments gt0_ltr_powR [R] [r]%_ring_scope _ [x y] _ _ _
 gt0_ltr_powR is opaque
 Expands to: Constant mathcomp.analysis.exp.gt0_ltr_powR
 Declared in library mathcomp.analysis.exp, line 927, characters 6-18
@@ -2592,7 +2592,7 @@ forall [R : realType] [x y : R] (r : R),
 (0 <= x)%R -> (0 <= y)%R -> ((x * y) `^ r)%R = (x `^ r * y `^ r)%R
 
 powRM is not universe polymorphic
-Arguments powRM [R] [x y]%ring_scope r%ring_scope _ _
+Arguments powRM [R] [x y]%_ring_scope r%_ring_scope _ _
 powRM is opaque
 Expands to: Constant mathcomp.analysis.exp.powRM
 Declared in library mathcomp.analysis.exp, line 935, characters 6-11
@@ -2611,7 +2611,7 @@ forall [R : realType] [x y r : R],
 (0 < x <= 1)%R -> (0 <= y)%R -> (1 <= r)%R -> ((x * y) `^ r <= x * y `^ r)%R
 
 ge1r_powRZ is not universe polymorphic
-Arguments ge1r_powRZ [R] [x y r]%ring_scope _ _ _
+Arguments ge1r_powRZ [R] [x y r]%_ring_scope _ _ _
 ge1r_powRZ is opaque
 Expands to: Constant mathcomp.analysis.exp.ge1r_powRZ
 Declared in library mathcomp.analysis.exp, line 943, characters 6-16
@@ -2629,7 +2629,7 @@ forall [R : realType] [x y r : R],
 (1 <= x)%R -> (0 <= y)%R -> (1 <= r)%R -> (x * y `^ r <= (x * y) `^ r)%R
 
 le1r_powRZ is not universe polymorphic
-Arguments le1r_powRZ [R] [x y r]%ring_scope _ _ _
+Arguments le1r_powRZ [R] [x y r]%_ring_scope _ _ _
 le1r_powRZ is opaque
 Expands to: Constant mathcomp.analysis.exp.le1r_powRZ
 Declared in library mathcomp.analysis.exp, line 950, characters 6-16
@@ -2646,7 +2646,7 @@ Qed.</div></details>
 forall [R : realType] (x y z : R), (x `^ (y * z))%R = ((x `^ y) `^ z)%R
 
 powRrM is not universe polymorphic
-Arguments powRrM [R] (x y z)%ring_scope
+Arguments powRrM [R] (x y z)%_ring_scope
 powRrM is opaque
 Expands to: Constant mathcomp.analysis.exp.powRrM
 Declared in library mathcomp.analysis.exp, line 957, characters 6-12
@@ -2663,7 +2663,7 @@ Qed.</div></details>
 forall [R : realType] (x y z : R), ((x `^ y) `^ z)%R = ((x `^ z) `^ y)%R
 
 powRAC is not universe polymorphic
-Arguments powRAC [R] (x y z)%ring_scope
+Arguments powRAC [R] (x y z)%_ring_scope
 powRAC is opaque
 Expands to: Constant mathcomp.analysis.exp.powRAC
 Declared in library mathcomp.analysis.exp, line 964, characters 6-12
@@ -2678,7 +2678,7 @@ forall [R : realType] [x r s : R],
 ((r + s)%R == 0%R) ==> (x != 0%R) -> (x `^ (r + s))%R = (x `^ r * x `^ s)%R
 
 powRD is not universe polymorphic
-Arguments powRD [R] [x r s]%ring_scope _
+Arguments powRD [R] [x r s]%_ring_scope _
 powRD is opaque
 Expands to: Constant mathcomp.analysis.exp.powRD
 Declared in library mathcomp.analysis.exp, line 967, characters 6-11
@@ -2699,7 +2699,7 @@ forall [R : realType] [x : R]
 (0 <= x)%R -> (0 < p)%R -> (x * x `^ (p - 1))%R = (x `^ p)%R
 
 mulr_powRB1 is not universe polymorphic
-Arguments mulr_powRB1 [R] [x]%ring_scope [p] _ _
+Arguments mulr_powRB1 [R] [x]%_ring_scope [p] _ _
 mulr_powRB1 is opaque
 Expands to: Constant mathcomp.analysis.exp.mulr_powRB1
 Declared in library mathcomp.analysis.exp, line 975, characters 6-17
@@ -2714,7 +2714,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="powRN" class="id"><a name="powRN" class="" title="powRN : forall [R : realType] (x r : R), (x `^ (- r))%R = (x `^ r)^-1%R
 
 powRN is not universe polymorphic
-Arguments powRN [R] (x r)%ring_scope
+Arguments powRN [R] (x r)%_ring_scope
 powRN is opaque
 Expands to: Constant mathcomp.analysis.exp.powRN
 Declared in library mathcomp.analysis.exp, line 981, characters 6-11
@@ -2733,7 +2733,7 @@ forall [R : realType] [x r s : R],
 (r == s) ==> (x != 0%R) -> (x `^ (r - s))%R = (x `^ r / x `^ s)%R
 
 powRB is not universe polymorphic
-Arguments powRB [R] [x r]%ring_scope [s] _
+Arguments powRB [R] [x r]%_ring_scope [s] _
 powRB is opaque
 Expands to: Constant mathcomp.analysis.exp.powRB
 Declared in library mathcomp.analysis.exp, line 989, characters 6-11
@@ -2748,7 +2748,7 @@ forall [R : realType] [a : R] (n : nat),
 (0 <= a)%R -> (a `^ n%:R)%R = (a ^+ n)%R
 
 powR_mulrn is not universe polymorphic
-Arguments powR_mulrn [R] [a]%ring_scope n%nat_scope _
+Arguments powR_mulrn [R] [a]%_ring_scope n%_nat_scope _
 powR_mulrn is opaque
 Expands to: Constant mathcomp.analysis.exp.powR_mulrn
 Declared in library mathcomp.analysis.exp, line 992, characters 6-16
@@ -2764,7 +2764,7 @@ Qed.</div></details>
 forall [R : realType] [a : R], (0 <= a)%R -> (a `^ (-1))%R = a^-1%R
 
 powR_inv1 is not universe polymorphic
-Arguments powR_inv1 [R] [a]%ring_scope _
+Arguments powR_inv1 [R] [a]%_ring_scope _
 powR_inv1 is opaque
 Expands to: Constant mathcomp.analysis.exp.powR_inv1
 Declared in library mathcomp.analysis.exp, line 998, characters 6-15
@@ -2779,7 +2779,7 @@ forall [R : realType] [a : R] (n : nat),
 (0 <= a)%R -> (a `^ (1 *- n))%R = (a ^- n)%R
 
 powR_invn is not universe polymorphic
-Arguments powR_invn [R] [a]%ring_scope n%nat_scope _
+Arguments powR_invn [R] [a]%_ring_scope n%_nat_scope _
 powR_invn is opaque
 Expands to: Constant mathcomp.analysis.exp.powR_invn
 Declared in library mathcomp.analysis.exp, line 1001, characters 6-15
@@ -2794,7 +2794,7 @@ forall [R : realType] [a : R] (z : int),
 (0 <= a)%R -> (a `^ z%:~R)%R = (a ^ z)%R
 
 powR_intmul is not universe polymorphic
-Arguments powR_intmul [R] [a]%ring_scope z%ring_scope _
+Arguments powR_intmul [R] [a]%_ring_scope z%_ring_scope _
 powR_intmul is opaque
 Expands to: Constant mathcomp.analysis.exp.powR_intmul
 Declared in library mathcomp.analysis.exp, line 1004, characters 6-17
@@ -2808,7 +2808,7 @@ Declared in library mathcomp.analysis.exp, line 1004, characters 6-17
 forall [R : realType] (a x : R), ln (R:=R) (a `^ x) = (x * ln (R:=R) a)%R
 
 ln_powR is not universe polymorphic
-Arguments ln_powR [R] (a x)%ring_scope
+Arguments ln_powR [R] (a x)%_ring_scope
 ln_powR is opaque
 Expands to: Constant mathcomp.analysis.exp.ln_powR
 Declared in library mathcomp.analysis.exp, line 1007, characters 6-13
@@ -2826,7 +2826,7 @@ forall [R : realType] [a : R],
 (0 <= a)%R -> (a `^ 2^-1)%R = Num.ExtraDef.sqrtr a
 
 powR12_sqrt is not universe polymorphic
-Arguments powR12_sqrt [R] [a]%ring_scope _
+Arguments powR12_sqrt [R] [a]%_ring_scope _
 powR12_sqrt is opaque
 Expands to: Constant mathcomp.analysis.exp.powR12_sqrt
 Declared in library mathcomp.analysis.exp, line 1014, characters 6-17
@@ -2849,7 +2849,7 @@ forall [R : realType] [a : R] (x : R),
 (0 <= a)%R -> `|a `^ x|%R = (`|a| `^ x)%R
 
 norm_powR is not universe polymorphic
-Arguments norm_powR [R] [a]%ring_scope x%ring_scope _
+Arguments norm_powR [R] [a]%_ring_scope x%_ring_scope _
 norm_powR is opaque
 Expands to: Constant mathcomp.analysis.exp.norm_powR
 Declared in library mathcomp.analysis.exp, line 1026, characters 6-15
@@ -2867,7 +2867,7 @@ Qed.</div></details>
 forall [R : realType] [a : R] (x : R), (a < 0)%R -> `|a `^ x|%R = 1%R
 
 lt0_norm_powR is not universe polymorphic
-Arguments lt0_norm_powR [R] [a]%ring_scope x%ring_scope _
+Arguments lt0_norm_powR [R] [a]%_ring_scope x%_ring_scope _
 lt0_norm_powR is opaque
 Expands to: Constant mathcomp.analysis.exp.lt0_norm_powR
 Declared in library mathcomp.analysis.exp, line 1034, characters 6-19
@@ -2890,7 +2890,7 @@ forall [R : realType] [a : R]
 (0 < q)%R -> (p^-1 + q^-1)%R = 1%R -> (a * b <= a `^ p / p + b `^ q / q)%R
 
 conjugate_powR is not universe polymorphic
-Arguments conjugate_powR [R] [a]%ring_scope [b p q] _ _ _ _ _
+Arguments conjugate_powR [R] [a]%_ring_scope [b p q] _ _ _ _ _
 conjugate_powR is opaque
 Expands to: Constant mathcomp.analysis.exp.conjugate_powR
 Declared in library mathcomp.analysis.exp, line 1040, characters 6-20
@@ -2935,7 +2935,7 @@ forall [R : realType] [i : Itv.t] (x : Itv.def (Itv.num_sem (R:=R)) i)
 let r := powR_itv i in Itv.spec (Itv.num_sem (R:=R)) r (x%:num `^ p)%R
 
 num_spec_powR is not universe polymorphic
-Arguments num_spec_powR [R i] x p%ring_scope
+Arguments num_spec_powR [R i] x p%_ring_scope
 num_spec_powR is opaque
 Expands to: Constant mathcomp.analysis.exp.num_spec_powR
 Declared in library mathcomp.analysis.exp, line 1066, characters 6-19
@@ -2960,7 +2960,7 @@ Itv.def (Itv.num_sem (R:=R)) i ->
 R -> Itv.def (Itv.num_sem (R:=R)) (powR_itv i)
 
 powR_inum is not universe polymorphic
-Arguments powR_inum [R i] x p%ring_scope
+Arguments powR_inum [R i] x p%_ring_scope
 powR_inum is transparent
 Expands to: Constant mathcomp.analysis.exp.powR_inum
 Declared in library mathcomp.analysis.exp, line 1079, characters 10-19
@@ -2988,7 +2988,7 @@ exists2 i : R,
          (fun u : R => is_true (0 < u)%R) t0 ->
          ((powR (R:=R))^~ x @^-1` t) t0))%classic
 
-Arguments powR_cvg0 [R] [x]%ring_scope _ [t] _
+Arguments powR_cvg0 [R] [x]%_ring_scope _ [t] _
 powR_cvg0 is opaque
 Expands to: Constant mathcomp.analysis.exp.powR_cvg0
 Declared in library mathcomp.analysis.exp, line 1082, characters 6-15
@@ -3056,7 +3056,7 @@ exists2 i : R,
              ((powR (R:=R))^~ x) x0))%R) @^-1`
           t) t0))%classic
 
-Arguments derivable_powR [R v] [x]%ring_scope _ [x] _ [t] _
+Arguments derivable_powR [R v] [x]%_ring_scope _ [x] _ [t] _
 derivable_powR is opaque
 Expands to: Constant mathcomp.analysis.exp.derivable_powR
 Declared in library mathcomp.analysis.exp, line 1091, characters 6-20
@@ -3087,7 +3087,7 @@ forall [R : realType] (a : R)
 x \in `]0, +oo[%R ->
 ((powR (R:=R))^~ a)^`()%classic x = (fun x0 : R => (a * x0 `^ (a - 1))%R) x
 
-Arguments powR_derive1 [R] a%ring_scope [x] _
+Arguments powR_derive1 [R] a%_ring_scope [x] _
 powR_derive1 is opaque
 Expands to: Constant mathcomp.analysis.exp.powR_derive1
 Declared in library mathcomp.analysis.exp, line 1102, characters 6-18
@@ -3125,7 +3125,7 @@ Qed.</div></details>
 forall [R : realType] [x : R] (p : R), (x < 0)%R -> (x `^ p)%R = 1%R
 
 lt0_powR1 is not universe polymorphic
-Arguments lt0_powR1 [R] [x]%ring_scope p%ring_scope _
+Arguments lt0_powR1 [R] [x]%_ring_scope p%_ring_scope _
 lt0_powR1 is opaque
 Expands to: Constant mathcomp.analysis.exp.lt0_powR1
 Declared in library mathcomp.analysis.exp, line 1128, characters 6-15
@@ -3141,7 +3141,7 @@ forall [R : realType] (x p : R),
 ((x `^ p)%R == 1%R) = [|| x == 1%R, (x < 0)%R | p == 0%R]
 
 powR_eq1 is not universe polymorphic
-Arguments powR_eq1 [R] (x p)%ring_scope
+Arguments powR_eq1 [R] (x p)%_ring_scope
 powR_eq1 is opaque
 Expands to: Constant mathcomp.analysis.exp.powR_eq1
 Declared in library mathcomp.analysis.exp, line 1133, characters 6-14
@@ -3169,7 +3169,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="lne" class="id"><a name="lne" class="" title="lne : forall [R : realType], \bar R -> \bar R
 
 lne is not universe polymorphic
-Arguments lne [R] x%ereal_scope
+Arguments lne [R] x%_ereal_scope
 lne is transparent
 Expands to: Constant mathcomp.analysis.exp.lne
 Declared in library mathcomp.analysis.exp, line 1152, characters 11-14
@@ -3184,7 +3184,7 @@ Declared in library mathcomp.analysis.exp, line 1152, characters 11-14
 forall [R : realType] [x : \bar R], (x <= 0%R)%E -> lne (R:=R) x = -oo%E
 
 le0_lneNy is not universe polymorphic
-Arguments le0_lneNy [R] [x]%ereal_scope _
+Arguments le0_lneNy [R] [x]%_ereal_scope _
 le0_lneNy is opaque
 Expands to: Constant mathcomp.analysis.exp.le0_lneNy
 Declared in library mathcomp.analysis.exp, line 1159, characters 6-15
@@ -3200,7 +3200,7 @@ forall [R : realType] [r : R],
 (0 < r)%R -> lne (R:=R) r%:E = (ln (R:=R) r)%:E
 
 lne_EFin is not universe polymorphic
-Arguments lne_EFin [R] [r]%ring_scope _
+Arguments lne_EFin [R] [r]%_ring_scope _
 lne_EFin is opaque
 Expands to: Constant mathcomp.analysis.exp.lne_EFin
 Declared in library mathcomp.analysis.exp, line 1164, characters 6-14
@@ -3249,7 +3249,7 @@ forall [R : realType] (x : \bar R),
 (expeR (lne (R:=R) x) == x) = (0%R <= x)%E
 
 lneK_eq is not universe polymorphic
-Arguments lneK_eq [R] x%ereal_scope
+Arguments lneK_eq [R] x%_ereal_scope
 lneK_eq is opaque
 Expands to: Constant mathcomp.analysis.exp.lneK_eq
 Declared in library mathcomp.analysis.exp, line 1176, characters 6-13
@@ -3326,7 +3326,7 @@ forall [R : realType] [r : R],
 (0 < r)%R -> lne (R:=R) (r^-1)%:E = (- lne (R:=R) r%:E)%E
 
 lneV is not universe polymorphic
-Arguments lneV [R] [r]%ring_scope _
+Arguments lneV [R] [r]%_ring_scope _
 lneV is opaque
 Expands to: Constant mathcomp.analysis.exp.lneV
 Declared in library mathcomp.analysis.exp, line 1194, characters 6-10
@@ -3419,7 +3419,7 @@ forall [R : realType] (n : nat) [x : \bar R],
 (0%R < x)%E -> lne (R:=R) (x ^+ n) = (lne (R:=R) x *+ n)%E
 
 lneXn is not universe polymorphic
-Arguments lneXn [R] n%nat_scope [x]%ereal_scope _
+Arguments lneXn [R] n%_nat_scope [x]%_ereal_scope _
 lneXn is opaque
 Expands to: Constant mathcomp.analysis.exp.lneXn
 Declared in library mathcomp.analysis.exp, line 1213, characters 6-11
@@ -3436,7 +3436,7 @@ forall [R : realType] [x : \bar R],
 (-1 <= x)%E -> (lne (R:=R) (1%E + x)%R <= x)%E
 
 le_lne1Dx is not universe polymorphic
-Arguments le_lne1Dx [R] [x]%ereal_scope _
+Arguments le_lne1Dx [R] [x]%_ereal_scope _
 le_lne1Dx is opaque
 Expands to: Constant mathcomp.analysis.exp.le_lne1Dx
 Declared in library mathcomp.analysis.exp, line 1219, characters 6-15
@@ -3452,7 +3452,7 @@ Qed.</div></details>
 forall [R : realType] [x : \bar R], x \is a fin_num -> (lne (R:=R) x < x)%E
 
 lne_sublinear is not universe polymorphic
-Arguments lne_sublinear [R] [x]%ereal_scope _
+Arguments lne_sublinear [R] [x]%_ereal_scope _
 lne_sublinear is opaque
 Expands to: Constant mathcomp.analysis.exp.lne_sublinear
 Declared in library mathcomp.analysis.exp, line 1225, characters 6-19
@@ -3470,7 +3470,7 @@ Qed.</div></details>
 forall [R : realType] (x : \bar R), (0%R <= lne (R:=R) x)%E = (1 <= x)%E
 
 lne_ge0 is not universe polymorphic
-Arguments lne_ge0 [R] x%ereal_scope
+Arguments lne_ge0 [R] x%_ereal_scope
 lne_ge0 is opaque
 Expands to: Constant mathcomp.analysis.exp.lne_ge0
 Declared in library mathcomp.analysis.exp, line 1233, characters 6-13
@@ -3490,7 +3490,7 @@ Qed.</div></details>
 forall [R : realType] (x : \bar R), (lne (R:=R) x < 0%R)%E = (x < 1)%E
 
 lne_lt0 is not universe polymorphic
-Arguments lne_lt0 [R] x%ereal_scope
+Arguments lne_lt0 [R] x%_ereal_scope
 lne_lt0 is opaque
 Expands to: Constant mathcomp.analysis.exp.lne_lt0
 Declared in library mathcomp.analysis.exp, line 1243, characters 6-13
@@ -3504,7 +3504,7 @@ Declared in library mathcomp.analysis.exp, line 1243, characters 6-13
 forall [R : realType] (x : \bar R), (lne (R:=R) x == 0%R) = (x == 1%E)
 
 lne_eq0 is not universe polymorphic
-Arguments lne_eq0 [R] x%ereal_scope
+Arguments lne_eq0 [R] x%_ereal_scope
 lne_eq0 is opaque
 Expands to: Constant mathcomp.analysis.exp.lne_eq0
 Declared in library mathcomp.analysis.exp, line 1246, characters 6-13
@@ -3521,7 +3521,7 @@ Qed.</div></details>
 forall [R : realType] (x : \bar R), (0%R < lne (R:=R) x)%E = (1 < x)%E
 
 lne_gt0 is not universe polymorphic
-Arguments lne_gt0 [R] x%ereal_scope
+Arguments lne_gt0 [R] x%_ereal_scope
 lne_gt0 is opaque
 Expands to: Constant mathcomp.analysis.exp.lne_gt0
 Declared in library mathcomp.analysis.exp, line 1253, characters 6-13
@@ -3535,7 +3535,7 @@ Declared in library mathcomp.analysis.exp, line 1253, characters 6-13
 forall [R : realType] (x : \bar R), (lne (R:=R) x <= 0%R)%E = (x <= 1)%E
 
 lne_le0 is not universe polymorphic
-Arguments lne_le0 [R] x%ereal_scope
+Arguments lne_le0 [R] x%_ereal_scope
 lne_le0 is opaque
 Expands to: Constant mathcomp.analysis.exp.lne_le0
 Declared in library mathcomp.analysis.exp, line 1256, characters 6-13
@@ -3555,7 +3555,7 @@ Declared in library mathcomp.analysis.exp, line 1256, characters 6-13
 <span class="vernacular">Definition</span><span class="id"> </span><span id="poweR" class="id"><a name="poweR" class="" title="poweR : forall {R : realType}, \bar R -> R -> \bar R
 
 poweR is not universe polymorphic
-Arguments poweR {R} x%ereal_scope r%ring_scope
+Arguments poweR {R} x%_ereal_scope r%_ring_scope
 poweR is transparent
 Expands to: Constant mathcomp.analysis.exp.poweR
 Declared in library mathcomp.analysis.exp, line 1266, characters 11-16
@@ -3571,7 +3571,7 @@ Declared in library mathcomp.analysis.exp, line 1266, characters 11-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="poweR_EFin" class="id"><a name="poweR_EFin" class="" title="poweR_EFin : forall {R : realType} (s r : R), (s%:E `^ r)%E = (s `^ r)%:E
 
 poweR_EFin is not universe polymorphic
-Arguments poweR_EFin {R} (s r)%ring_scope
+Arguments poweR_EFin {R} (s r)%_ring_scope
 poweR_EFin is opaque
 Expands to: Constant mathcomp.analysis.exp.poweR_EFin
 Declared in library mathcomp.analysis.exp, line 1275, characters 6-16
@@ -3584,7 +3584,7 @@ Declared in library mathcomp.analysis.exp, line 1275, characters 6-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="poweRyr" class="id"><a name="poweRyr" class="" title="poweRyr : forall {R : realType} [r : R], r != 0%R -> (+oo `^ r)%E = +oo%E
 
 poweRyr is not universe polymorphic
-Arguments poweRyr {R} [r]%ring_scope _
+Arguments poweRyr {R} [r]%_ring_scope _
 poweRyr is opaque
 Expands to: Constant mathcomp.analysis.exp.poweRyr
 Declared in library mathcomp.analysis.exp, line 1278, characters 6-13
@@ -3597,7 +3597,7 @@ Declared in library mathcomp.analysis.exp, line 1278, characters 6-13
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="poweRe0" class="id"><a name="poweRe0" class="" title="poweRe0 : forall {R : realType} (x : \bar R), (x `^ 0)%E = 1%E
 
 poweRe0 is not universe polymorphic
-Arguments poweRe0 {R} x%ereal_scope
+Arguments poweRe0 {R} x%_ereal_scope
 poweRe0 is opaque
 Expands to: Constant mathcomp.analysis.exp.poweRe0
 Declared in library mathcomp.analysis.exp, line 1281, characters 6-13
@@ -3610,7 +3610,7 @@ Declared in library mathcomp.analysis.exp, line 1281, characters 6-13
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="poweRe1" class="id"><a name="poweRe1" class="" title="poweRe1 : forall {R : realType} [x : \bar R], (0%R <= x)%E -> (x `^ 1)%E = x
 
 poweRe1 is not universe polymorphic
-Arguments poweRe1 {R} [x]%ereal_scope _
+Arguments poweRe1 {R} [x]%_ereal_scope _
 poweRe1 is opaque
 Expands to: Constant mathcomp.analysis.exp.poweRe1
 Declared in library mathcomp.analysis.exp, line 1284, characters 6-13
@@ -3626,7 +3626,7 @@ forall {R : realType} [x : \bar R] (r : R),
 x \is a fin_num -> (x `^ (- r))%E = ((fine x `^ r)^-1)%:E
 
 poweRN is not universe polymorphic
-Arguments poweRN {R} [x]%ereal_scope r%ring_scope _
+Arguments poweRN {R} [x]%_ereal_scope r%_ring_scope _
 poweRN is opaque
 Expands to: Constant mathcomp.analysis.exp.poweRN
 Declared in library mathcomp.analysis.exp, line 1289, characters 6-12
@@ -3639,7 +3639,7 @@ Declared in library mathcomp.analysis.exp, line 1289, characters 6-12
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="poweRNyr" class="id"><a name="poweRNyr" class="" title="poweRNyr : forall {R : realType} [r : R], r != 0%R -> (-oo `^ r)%E = 0%R
 
 poweRNyr is not universe polymorphic
-Arguments poweRNyr {R} [r]%ring_scope _
+Arguments poweRNyr {R} [r]%_ring_scope _
 poweRNyr is opaque
 Expands to: Constant mathcomp.analysis.exp.poweRNyr
 Declared in library mathcomp.analysis.exp, line 1292, characters 6-14
@@ -3658,7 +3658,7 @@ forall {R : realType} (x : \bar R) (r : R),
   if x == +oo%E then +oo%E else if x == -oo%E then 0%R else (fine x `^ r)%:E)
 
 poweRE is not universe polymorphic
-Arguments poweRE {R} x%ereal_scope r%ring_scope
+Arguments poweRE {R} x%_ereal_scope r%_ring_scope
 poweRE is opaque
 Expands to: Constant mathcomp.analysis.exp.poweRE
 Declared in library mathcomp.analysis.exp, line 1295, characters 6-12
@@ -3683,7 +3683,7 @@ Qed.</div></details>
 forall {R : realType} [x : \bar R] [r : R], (x `^ r)%E = +oo%E -> x = +oo%E
 
 poweR_eqy is not universe polymorphic
-Arguments poweR_eqy {R} [x]%ereal_scope [r]%ring_scope _
+Arguments poweR_eqy {R} [x]%_ereal_scope [r]%_ring_scope _
 poweR_eqy is opaque
 Expands to: Constant mathcomp.analysis.exp.poweR_eqy
 Declared in library mathcomp.analysis.exp, line 1310, characters 6-15
@@ -3698,7 +3698,7 @@ forall {R : realType} [x : \bar R] [r : R],
 (0 < r)%R -> x = +oo%E -> (x `^ r)%E = +oo%E
 
 eqy_poweR is not universe polymorphic
-Arguments eqy_poweR {R} [x]%ereal_scope [r]%ring_scope _ _
+Arguments eqy_poweR {R} [x]%_ereal_scope [r]%_ring_scope _ _
 eqy_poweR is opaque
 Expands to: Constant mathcomp.analysis.exp.eqy_poweR
 Declared in library mathcomp.analysis.exp, line 1313, characters 6-15
@@ -3712,7 +3712,7 @@ Declared in library mathcomp.analysis.exp, line 1313, characters 6-15
 forall {R : realType} [x : \bar R] (r : R), (x < +oo)%E -> (x `^ r < +oo)%E
 
 poweR_lty is not universe polymorphic
-Arguments poweR_lty {R} [x]%ereal_scope r%ring_scope _
+Arguments poweR_lty {R} [x]%_ereal_scope r%_ring_scope _
 poweR_lty is opaque
 Expands to: Constant mathcomp.analysis.exp.poweR_lty
 Declared in library mathcomp.analysis.exp, line 1316, characters 6-15
@@ -3728,7 +3728,7 @@ forall {R : realType} [x : \bar R] [r : R],
 r != 0%R -> (x `^ r < +oo)%E -> (x < +oo)%E
 
 lty_poweRy is not universe polymorphic
-Arguments lty_poweRy {R} [x]%ereal_scope [r]%ring_scope _ _
+Arguments lty_poweRy {R} [x]%_ereal_scope [r]%_ring_scope _ _
 lty_poweRy is opaque
 Expands to: Constant mathcomp.analysis.exp.lty_poweRy
 Declared in library mathcomp.analysis.exp, line 1321, characters 6-16
@@ -3742,7 +3742,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="poweR0r" class="id"><a name="poweR0r" class="" title="poweR0r : forall {R : realType} [r : R], r != 0%R -> (0%R `^ r)%E = 0%R
 
 poweR0r is not universe polymorphic
-Arguments poweR0r {R} [r]%ring_scope _
+Arguments poweR0r {R} [r]%_ring_scope _
 poweR0r is opaque
 Expands to: Constant mathcomp.analysis.exp.poweR0r
 Declared in library mathcomp.analysis.exp, line 1326, characters 6-13
@@ -3755,7 +3755,7 @@ Declared in library mathcomp.analysis.exp, line 1326, characters 6-13
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="poweR1r" class="id"><a name="poweR1r" class="" title="poweR1r : forall {R : realType} (r : R), (1 `^ r)%E = 1%E
 
 poweR1r is not universe polymorphic
-Arguments poweR1r {R} r%ring_scope
+Arguments poweR1r {R} r%_ring_scope
 poweR1r is opaque
 Expands to: Constant mathcomp.analysis.exp.poweR1r
 Declared in library mathcomp.analysis.exp, line 1329, characters 6-13
@@ -3769,7 +3769,7 @@ Declared in library mathcomp.analysis.exp, line 1329, characters 6-13
 forall {R : realType} (x : \bar R) (r : R), fine (x `^ r) = (fine x `^ r)%R
 
 fine_poweR is not universe polymorphic
-Arguments fine_poweR {R} x%ereal_scope r%ring_scope
+Arguments fine_poweR {R} x%_ereal_scope r%_ring_scope
 fine_poweR is opaque
 Expands to: Constant mathcomp.analysis.exp.fine_poweR
 Declared in library mathcomp.analysis.exp, line 1331, characters 6-16
@@ -3783,7 +3783,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="poweR_ge0" class="id"><a name="poweR_ge0" class="" title="poweR_ge0 : forall {R : realType} (x : \bar R) (r : R), (0%R <= x `^ r)%E
 
 poweR_ge0 is not universe polymorphic
-Arguments poweR_ge0 {R} x%ereal_scope r%ring_scope
+Arguments poweR_ge0 {R} x%_ereal_scope r%_ring_scope
 poweR_ge0 is opaque
 Expands to: Constant mathcomp.analysis.exp.poweR_ge0
 Declared in library mathcomp.analysis.exp, line 1336, characters 6-15
@@ -3797,7 +3797,7 @@ Declared in library mathcomp.analysis.exp, line 1336, characters 6-15
 forall {R : realType} [x : \bar R] (r : R), (0%R < x)%E -> (0%R < x `^ r)%E
 
 poweR_gt0 is not universe polymorphic
-Arguments poweR_gt0 {R} [x]%ereal_scope r%ring_scope _
+Arguments poweR_gt0 {R} [x]%_ereal_scope r%_ring_scope _
 poweR_gt0 is opaque
 Expands to: Constant mathcomp.analysis.exp.poweR_gt0
 Declared in library mathcomp.analysis.exp, line 1339, characters 6-15
@@ -3813,7 +3813,7 @@ forall {R : realType} [x : \bar R] [r : R],
 (0 < r)%R -> (0%R <= x)%E -> (0%R < x `^ r)%E -> (0%R < x)%E
 
 gt0_poweR is not universe polymorphic
-Arguments gt0_poweR {R} [x]%ereal_scope [r]%ring_scope _ _ _
+Arguments gt0_poweR {R} [x]%_ereal_scope [r]%_ring_scope _ _ _
 gt0_poweR is opaque
 Expands to: Constant mathcomp.analysis.exp.gt0_poweR
 Declared in library mathcomp.analysis.exp, line 1344, characters 6-15
@@ -3830,7 +3830,7 @@ forall {R : realType} [x : \bar R] (r : R),
 (0%R <= x)%E -> ((x `^ r)%E == 0%R) = (x == 0%R) && (r != 0%R)
 
 poweR_eq0 is not universe polymorphic
-Arguments poweR_eq0 {R} [x]%ereal_scope r%ring_scope _
+Arguments poweR_eq0 {R} [x]%_ereal_scope r%_ring_scope _
 poweR_eq0 is opaque
 Expands to: Constant mathcomp.analysis.exp.poweR_eq0
 Declared in library mathcomp.analysis.exp, line 1350, characters 6-15
@@ -3847,7 +3847,7 @@ forall {R : realType} [x : \bar R] [r : R],
 (0%R <= x)%E -> (x `^ r)%E = 0%R -> x = 0%R
 
 poweR_eq0_eq0 is not universe polymorphic
-Arguments poweR_eq0_eq0 {R} [x]%ereal_scope [r]%ring_scope _ _
+Arguments poweR_eq0_eq0 {R} [x]%_ereal_scope [r]%_ring_scope _ _
 poweR_eq0_eq0 is opaque
 Expands to: Constant mathcomp.analysis.exp.poweR_eq0_eq0
 Declared in library mathcomp.analysis.exp, line 1356, characters 6-19
@@ -3873,7 +3873,7 @@ y \in `[0, +oo%E]%R ->
 (fun x0 y0 : \bar R => is_true (x0 <= y0)%E) x y ->
 ((poweR^~ r) x <= (poweR^~ r) y)%E = true
 
-Arguments gt0_ler_poweR {R} [r]%ring_scope _ [x y] _ _ _
+Arguments gt0_ler_poweR {R} [r]%_ring_scope _ [x y] _ _ _
 gt0_ler_poweR is opaque
 Expands to: Constant mathcomp.analysis.exp.gt0_ler_poweR
 Declared in library mathcomp.analysis.exp, line 1359, characters 6-19
@@ -3894,7 +3894,7 @@ forall {R : realType} [x : \bar R] (r : R),
 x \is a fin_num -> (x `^ r)%E \is a fin_num
 
 fin_num_poweR is not universe polymorphic
-Arguments fin_num_poweR {R} [x]%ereal_scope r%ring_scope _
+Arguments fin_num_poweR {R} [x]%_ereal_scope r%_ring_scope _
 fin_num_poweR is opaque
 Expands to: Constant mathcomp.analysis.exp.fin_num_poweR
 Declared in library mathcomp.analysis.exp, line 1369, characters 6-19
@@ -3910,7 +3910,7 @@ forall {R : realType} [x y : \bar R] (r : R),
 (0%R <= x)%E -> (0%R <= y)%E -> ((x * y) `^ r)%E = (x `^ r * y `^ r)%E
 
 poweRM is not universe polymorphic
-Arguments poweRM {R} [x y]%ereal_scope r%ring_scope _ _
+Arguments poweRM {R} [x y]%_ereal_scope r%_ring_scope _ _
 poweRM is opaque
 Expands to: Constant mathcomp.analysis.exp.poweRM
 Declared in library mathcomp.analysis.exp, line 1374, characters 6-12
@@ -3934,7 +3934,7 @@ forall {R : realType} (x : \bar R) (r s : R),
 (x `^ (r * s))%E = ((x `^ r) `^ s)%E
 
 poweRrM is not universe polymorphic
-Arguments poweRrM {R} x%ereal_scope (r s)%ring_scope
+Arguments poweRrM {R} x%_ereal_scope (r s)%_ring_scope
 poweRrM is opaque
 Expands to: Constant mathcomp.analysis.exp.poweRrM
 Declared in library mathcomp.analysis.exp, line 1387, characters 6-13
@@ -3954,7 +3954,7 @@ forall {R : realType} (x : \bar R) (r s : R),
 ((x `^ r) `^ s)%E = ((x `^ s) `^ r)%E
 
 poweRAC is not universe polymorphic
-Arguments poweRAC {R} x%ereal_scope (r s)%ring_scope
+Arguments poweRAC {R} x%_ereal_scope (r s)%_ring_scope
 poweRAC is opaque
 Expands to: Constant mathcomp.analysis.exp.poweRAC
 Declared in library mathcomp.analysis.exp, line 1396, characters 6-13
@@ -3967,7 +3967,7 @@ Declared in library mathcomp.analysis.exp, line 1396, characters 6-13
 <span class="vernacular">Definition</span><span class="id"> </span><span id="poweRD_def" class="id"><a name="poweRD_def" class="" title="poweRD_def : forall {R : realType}, \bar R -> R -> R -> bool
 
 poweRD_def is not universe polymorphic
-Arguments poweRD_def {R} x%ereal_scope (r s)%ring_scope
+Arguments poweRD_def {R} x%_ereal_scope (r s)%_ring_scope
 poweRD_def is transparent
 Expands to: Constant mathcomp.analysis.exp.poweRD_def
 Declared in library mathcomp.analysis.exp, line 1399, characters 11-21
@@ -3982,7 +3982,7 @@ poweRD_def x r s =
 (x != 0%R) && ((x \isn't a fin_num) ==> (r == 0%R) && (s == 0%R))
 
 poweRD_defE is not universe polymorphic
-Arguments poweRD_defE {R} x%ereal_scope (r s)%ring_scope
+Arguments poweRD_defE {R} x%_ereal_scope (r s)%_ring_scope
 poweRD_defE is opaque
 Expands to: Constant mathcomp.analysis.exp.poweRD_defE
 Declared in library mathcomp.analysis.exp, line 1403, characters 6-17
@@ -4001,7 +4001,7 @@ poweRD_def x r (- s) =
 (x != 0%R) && ((x \isn't a fin_num) ==> (r == 0%R) && (s == 0%R))
 
 poweRB_defE is not universe polymorphic
-Arguments poweRB_defE {R} x%ereal_scope (r s)%ring_scope
+Arguments poweRB_defE {R} x%_ereal_scope (r s)%_ring_scope
 poweRB_defE is opaque
 Expands to: Constant mathcomp.analysis.exp.poweRB_defE
 Declared in library mathcomp.analysis.exp, line 1408, characters 6-17
@@ -4018,7 +4018,7 @@ forall {R : realType} (x : \bar R) [r s : R],
 (r + s)%R != 0%R -> poweRD_def x r s
 
 add_neq0_poweRD_def is not universe polymorphic
-Arguments add_neq0_poweRD_def {R} x%ereal_scope [r s]%ring_scope _
+Arguments add_neq0_poweRD_def {R} x%_ereal_scope [r s]%_ring_scope _
 add_neq0_poweRD_def is opaque
 Expands to: Constant mathcomp.analysis.exp.add_neq0_poweRD_def
 Declared in library mathcomp.analysis.exp, line 1413, characters 6-25
@@ -4032,7 +4032,7 @@ Declared in library mathcomp.analysis.exp, line 1413, characters 6-25
 forall {R : realType} (x : \bar R) [r s : R], r != s -> poweRD_def x r (- s)
 
 add_neq0_poweRB_def is not universe polymorphic
-Arguments add_neq0_poweRB_def {R} x%ereal_scope [r s]%ring_scope _
+Arguments add_neq0_poweRB_def {R} x%_ereal_scope [r s]%_ring_scope _
 add_neq0_poweRB_def is opaque
 Expands to: Constant mathcomp.analysis.exp.add_neq0_poweRB_def
 Declared in library mathcomp.analysis.exp, line 1416, characters 6-25
@@ -4047,7 +4047,7 @@ forall {R : realType} [x : \bar R] [r s : R],
 x != 0%R -> (0 <= r)%R -> (0 <= s)%R -> poweRD_def x r s
 
 nneg_neq0_poweRD_def is not universe polymorphic
-Arguments nneg_neq0_poweRD_def {R} [x]%ereal_scope [r s]%ring_scope _ _ _
+Arguments nneg_neq0_poweRD_def {R} [x]%_ereal_scope [r s]%_ring_scope _ _ _
 nneg_neq0_poweRD_def is opaque
 Expands to: Constant mathcomp.analysis.exp.nneg_neq0_poweRD_def
 Declared in library mathcomp.analysis.exp, line 1419, characters 6-26
@@ -4066,7 +4066,7 @@ forall {R : realType} [x : \bar R] [r s : R],
 x != 0%R -> (0 <= r)%R -> (s <= 0)%R -> poweRD_def x r (- s)
 
 nneg_neq0_poweRB_def is not universe polymorphic
-Arguments nneg_neq0_poweRB_def {R} [x]%ereal_scope [r s]%ring_scope _ _ _
+Arguments nneg_neq0_poweRB_def {R} [x]%_ereal_scope [r s]%_ring_scope _ _ _
 nneg_neq0_poweRB_def is opaque
 Expands to: Constant mathcomp.analysis.exp.nneg_neq0_poweRB_def
 Declared in library mathcomp.analysis.exp, line 1427, characters 6-26
@@ -4082,7 +4082,7 @@ forall {R : realType} [x : \bar R] [r s : R],
 poweRD_def x r s -> (x `^ (r + s))%E = (x `^ r * x `^ s)%E
 
 poweRD is not universe polymorphic
-Arguments poweRD {R} [x]%ereal_scope [r s]%ring_scope _
+Arguments poweRD {R} [x]%_ereal_scope [r s]%_ring_scope _
 poweRD is opaque
 Expands to: Constant mathcomp.analysis.exp.poweRD
 Declared in library mathcomp.analysis.exp, line 1431, characters 6-12
@@ -4105,7 +4105,7 @@ forall {R : realType} [x : \bar R] [r s : R],
 poweRD_def x r (- s) -> (x `^ (r - s))%E = (x `^ r * x `^ (- s))%E
 
 poweRB is not universe polymorphic
-Arguments poweRB {R} [x]%ereal_scope [r s]%ring_scope _
+Arguments poweRB {R} [x]%_ereal_scope [r s]%_ring_scope _
 poweRB is opaque
 Expands to: Constant mathcomp.analysis.exp.poweRB
 Declared in library mathcomp.analysis.exp, line 1443, characters 6-12
@@ -4120,7 +4120,7 @@ forall {R : realType} [x : \bar R],
 (0%R <= x)%E -> (x `^ 2^-1)%E = sqrte (R:=R) x
 
 poweR12_sqrt is not universe polymorphic
-Arguments poweR12_sqrt {R} [x]%ereal_scope _
+Arguments poweR12_sqrt {R} [x]%_ereal_scope _
 poweR12_sqrt is opaque
 Expands to: Constant mathcomp.analysis.exp.poweR12_sqrt
 Declared in library mathcomp.analysis.exp, line 1446, characters 6-18
@@ -4143,7 +4143,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="riemannR" class="id"><a name="riemannR" class="" title="riemannR : forall [R : realType], R -> R ^nat
 
 riemannR is not universe polymorphic
-Arguments riemannR [R] a%ring_scope _
+Arguments riemannR [R] a%_ring_scope _
 riemannR is transparent
 Expands to: Constant mathcomp.analysis.exp.riemannR
 Declared in library mathcomp.analysis.exp, line 1460, characters 11-19
@@ -4155,7 +4155,7 @@ forall [R : realType] [a : R] (i : nat),
 (0 <= a)%R -> (0 < riemannR (R:=R) a i)%R
 
 riemannR_gt0 is not universe polymorphic
-Arguments riemannR_gt0 [R] [a]%ring_scope i%nat_scope _
+Arguments riemannR_gt0 [R] [a]%_ring_scope i%_nat_scope _
 riemannR_gt0 is opaque
 Expands to: Constant mathcomp.analysis.exp.riemannR_gt0
 Declared in library mathcomp.analysis.exp, line 1463, characters 6-18
@@ -4179,7 +4179,7 @@ filter.cvg_to
            (filter.nbhs filter.eventually))))
 
 dvg_riemannR is not universe polymorphic
-Arguments dvg_riemannR [R] [a]%ring_scope _ _
+Arguments dvg_riemannR [R] [a]%_ring_scope _ _
 dvg_riemannR is opaque
 Expands to: Constant mathcomp.analysis.exp.dvg_riemannR
 Declared in library mathcomp.analysis.exp, line 1466, characters 6-18

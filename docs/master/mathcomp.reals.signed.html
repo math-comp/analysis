@@ -414,7 +414,7 @@ nat_snum below for an example on how to add your favorite type.
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="inferP" class="id"><a name="inferP" class="" title="inferP : forall [P : Prop], P -> infer P
 
 inferP is not universe polymorphic
-Arguments inferP [P]%type_scope _
+Arguments inferP [P]%_type_scope _
 inferP is opaque
 Expands to: Constant mathcomp.reals.signed.inferP
 Declared in library mathcomp.reals.signed, line 203, characters 6-12
@@ -429,7 +429,7 @@ Declared in library mathcomp.reals.signed, line 203, characters 6-12
 <span class="vernacular">Coercion</span><span class="id"> </span><span id="KnownSign.nullity_bool" class="id"><a name="KnownSign.nullity_bool" class="" title="KnownSign.nullity_bool : KnownSign.nullity -> bool
 
 KnownSign.nullity_bool is not universe polymorphic
-Arguments KnownSign.nullity_bool nz%snum_nullity_scope
+Arguments KnownSign.nullity_bool nz%_snum_nullity_scope
 KnownSign.nullity_bool is transparent
 Expands to: Constant mathcomp.reals.signed.KnownSign.nullity_bool
 Declared in library mathcomp.reals.signed, line 207, characters 9-21
@@ -437,7 +437,7 @@ Declared in library mathcomp.reals.signed, line 207, characters 9-21
 <span class="vernacular">Definition</span><span class="id"> </span><span id="KnownSign.nz_of_bool" class="id"><a name="KnownSign.nz_of_bool" class="" title="KnownSign.nz_of_bool : bool -> KnownSign.nullity
 
 KnownSign.nz_of_bool is not universe polymorphic
-Arguments KnownSign.nz_of_bool b%bool_scope
+Arguments KnownSign.nz_of_bool b%_bool_scope
 KnownSign.nz_of_bool is transparent
 Expands to: Constant mathcomp.reals.signed.KnownSign.nz_of_bool
 Declared in library mathcomp.reals.signed, line 208, characters 11-21
@@ -450,7 +450,7 @@ Declared in library mathcomp.reals.signed, line 208, characters 11-21
 <span class="vernacular">Definition</span><span class="id"> </span><span id="KnownSign.wider_nullity" class="id"><a name="KnownSign.wider_nullity" class="" title="KnownSign.wider_nullity : KnownSign.nullity -> KnownSign.nullity -> bool
 
 KnownSign.wider_nullity is not universe polymorphic
-Arguments KnownSign.wider_nullity (xnz ynz)%snum_nullity_scope
+Arguments KnownSign.wider_nullity (xnz ynz)%_snum_nullity_scope
 KnownSign.wider_nullity is transparent
 Expands to: Constant mathcomp.reals.signed.KnownSign.wider_nullity
 Declared in library mathcomp.reals.signed, line 214, characters 11-24
@@ -463,7 +463,7 @@ Declared in library mathcomp.reals.signed, line 214, characters 11-24
 <span class="vernacular">Definition</span><span class="id"> </span><span id="KnownSign.wider_sign" class="id"><a name="KnownSign.wider_sign" class="" title="KnownSign.wider_sign : KnownSign.sign -> KnownSign.sign -> bool
 
 KnownSign.wider_sign is not universe polymorphic
-Arguments KnownSign.wider_sign (xs ys)%snum_sign_scope
+Arguments KnownSign.wider_sign (xs ys)%_snum_sign_scope
 KnownSign.wider_sign is transparent
 Expands to: Constant mathcomp.reals.signed.KnownSign.wider_sign
 Declared in library mathcomp.reals.signed, line 220, characters 11-21
@@ -491,7 +491,7 @@ Declared in library mathcomp.reals.signed, line 228, characters 11-21
 <span class="vernacular">Definition</span><span class="id"> </span><span id="KnownSign.wider_reality" class="id"><a name="KnownSign.wider_reality" class="" title="KnownSign.wider_reality : KnownSign.reality -> KnownSign.reality -> bool
 
 KnownSign.wider_reality is not universe polymorphic
-Arguments KnownSign.wider_reality (xr yr)%snum_sign_scope
+Arguments KnownSign.wider_reality (xr yr)%_snum_sign_scope
 KnownSign.wider_reality is transparent
 Expands to: Constant mathcomp.reals.signed.KnownSign.wider_reality
 Declared in library mathcomp.reals.signed, line 234, characters 11-24
@@ -514,7 +514,7 @@ forall [disp : Order.disp_t] [T : porderType disp],
 T -> KnownSign.reality -> T -> bool
 
 Signed.reality_cond is not universe polymorphic
-Arguments Signed.reality_cond [disp T] x0 n%snum_sign_scope x
+Arguments Signed.reality_cond [disp T] x0 n%_snum_sign_scope x
 Signed.reality_cond is transparent
 Expands to: Constant mathcomp.reals.signed.Signed.reality_cond
 Declared in library mathcomp.reals.signed, line 247, characters 11-23
@@ -554,8 +554,8 @@ forall {d : Order.disp_t} {T : porderType d} [x0 : T]
 Signed.spec x0 nz cond r -> {compare x0 & nz & cond}
 
 Signed.mk is not universe polymorphic
-Arguments Signed.mk {d T} [x0] [nz]%snum_nullity_scope 
-  [cond]%snum_sign_scope [r] P
+Arguments Signed.mk {d T} [x0] [nz]%_snum_nullity_scope
+  [cond]%_snum_sign_scope [r] P
 Signed.mk is transparent
 Expands to: Constant mathcomp.reals.signed.Signed.mk
 Declared in library mathcomp.reals.signed, line 276, characters 11-13
@@ -569,8 +569,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 phantom T x%:num%R -> {compare x0 & nz & cond}
 
 Signed.from is not universe polymorphic
-Arguments Signed.from {d T x0} {nz}%snum_nullity_scope 
-  {cond}%snum_sign_scope {x} phx
+Arguments Signed.from {d T x0} {nz}%_snum_nullity_scope
+  {cond}%_snum_sign_scope {x} phx
 Signed.from is transparent
 Expands to: Constant mathcomp.reals.signed.Signed.from
 Declared in library mathcomp.reals.signed, line 279, characters 11-15
@@ -584,8 +584,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 phantom T x%:num%R -> Signed.spec x0 nz cond x%:num%R
 
 Signed.fromP is not universe polymorphic
-Arguments Signed.fromP {d T x0} {nz}%snum_nullity_scope
-  {cond}%snum_sign_scope {x} phx
+Arguments Signed.fromP {d T x0} {nz}%_snum_nullity_scope
+  {cond}%_snum_sign_scope {x} phx
 Signed.fromP is transparent
 Expands to: Constant mathcomp.reals.signed.Signed.fromP
 Declared in library mathcomp.reals.signed, line 282, characters 11-16
@@ -666,7 +666,7 @@ subType (T:=T) (fun x : T => Signed.spec x0 nz cond x)
 
 Signed_def__canonical__eqtype_SubType is not universe polymorphic
 Arguments Signed_def__canonical__eqtype_SubType [d T] 
-  x0 nz%snum_nullity_scope cond%snum_sign_scope
+  x0 nz%_snum_nullity_scope cond%_snum_sign_scope
 Signed_def__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__eqtype_SubType
@@ -678,7 +678,7 @@ subType (T:=T) (fun x : T => Signed.spec x0 nz cond x)
 
 Signed_def__canonical__eqtype_SubType is not universe polymorphic
 Arguments Signed_def__canonical__eqtype_SubType [d T] 
-  x0 nz%snum_nullity_scope cond%snum_sign_scope
+  x0 nz%_snum_nullity_scope cond%_snum_sign_scope
 Signed_def__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__eqtype_SubType
@@ -690,7 +690,7 @@ subType (T:=T) (fun x : T => Signed.spec x0 nz cond x)
 
 Signed_def__canonical__eqtype_SubType is not universe polymorphic
 Arguments Signed_def__canonical__eqtype_SubType [d T] 
-  x0 nz%snum_nullity_scope cond%snum_sign_scope
+  x0 nz%_snum_nullity_scope cond%_snum_sign_scope
 Signed_def__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__eqtype_SubType
@@ -702,7 +702,7 @@ subType (T:=T) (fun x : T => Signed.spec x0 nz cond x)
 
 Signed_def__canonical__eqtype_SubType is not universe polymorphic
 Arguments Signed_def__canonical__eqtype_SubType [d T] 
-  x0 nz%snum_nullity_scope cond%snum_sign_scope
+  x0 nz%_snum_nullity_scope cond%_snum_sign_scope
 Signed_def__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__eqtype_SubType
@@ -714,7 +714,7 @@ subType (T:=T) (fun x : T => Signed.spec x0 nz cond x)
 
 Signed_def__canonical__eqtype_SubType is not universe polymorphic
 Arguments Signed_def__canonical__eqtype_SubType [d T] 
-  x0 nz%snum_nullity_scope cond%snum_sign_scope
+  x0 nz%_snum_nullity_scope cond%_snum_sign_scope
 Signed_def__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__eqtype_SubType
@@ -726,7 +726,7 @@ T -> KnownSign.nullity -> KnownSign.reality -> porderType d
 
 Signed_def__canonical__Order_POrder is not universe polymorphic
 Arguments Signed_def__canonical__Order_POrder [d T] 
-  x0 nz%snum_nullity_scope cond%snum_sign_scope
+  x0 nz%_snum_nullity_scope cond%_snum_sign_scope
 Signed_def__canonical__Order_POrder is transparent
 Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__Order_POrder
@@ -737,7 +737,7 @@ T -> KnownSign.nullity -> KnownSign.reality -> porderType d
 
 Signed_def__canonical__Order_POrder is not universe polymorphic
 Arguments Signed_def__canonical__Order_POrder [d T] 
-  x0 nz%snum_nullity_scope cond%snum_sign_scope
+  x0 nz%_snum_nullity_scope cond%_snum_sign_scope
 Signed_def__canonical__Order_POrder is transparent
 Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__Order_POrder
@@ -748,7 +748,7 @@ T -> KnownSign.nullity -> KnownSign.reality -> porderType d
 
 Signed_def__canonical__Order_POrder is not universe polymorphic
 Arguments Signed_def__canonical__Order_POrder [d T] 
-  x0 nz%snum_nullity_scope cond%snum_sign_scope
+  x0 nz%_snum_nullity_scope cond%_snum_sign_scope
 Signed_def__canonical__Order_POrder is transparent
 Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__Order_POrder
@@ -759,7 +759,7 @@ T -> KnownSign.nullity -> KnownSign.reality -> porderType d
 
 Signed_def__canonical__Order_POrder is not universe polymorphic
 Arguments Signed_def__canonical__Order_POrder [d T] 
-  x0 nz%snum_nullity_scope cond%snum_sign_scope
+  x0 nz%_snum_nullity_scope cond%_snum_sign_scope
 Signed_def__canonical__Order_POrder is transparent
 Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__Order_POrder
@@ -770,7 +770,7 @@ T -> KnownSign.nullity -> KnownSign.reality -> porderType d
 
 Signed_def__canonical__Order_POrder is not universe polymorphic
 Arguments Signed_def__canonical__Order_POrder [d T] 
-  x0 nz%snum_nullity_scope cond%snum_sign_scope
+  x0 nz%_snum_nullity_scope cond%_snum_sign_scope
 Signed_def__canonical__Order_POrder is transparent
 Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__Order_POrder
@@ -814,7 +814,7 @@ Signed.reality_cond
   0%R >=<0 x
 
 real_domain_typ_subproof is not universe polymorphic
-Arguments real_domain_typ_subproof [R] x%ring_scope
+Arguments real_domain_typ_subproof [R] x%_ring_scope
 real_domain_typ_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.real_domain_typ_subproof
 Declared in library mathcomp.reals.signed, line 349, characters 6-30
@@ -844,7 +844,7 @@ Signed.reality_cond
   0%R >=<0 x
 
 real_field_typ_subproof is not universe polymorphic
-Arguments real_field_typ_subproof [R] x%ring_scope
+Arguments real_field_typ_subproof [R] x%_ring_scope
 real_field_typ_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.real_field_typ_subproof
 Declared in library mathcomp.reals.signed, line 356, characters 6-29
@@ -868,7 +868,7 @@ Declared in library mathcomp.reals.signed, line 360, characters 10-24
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nat_typ_subproof" class="id"><a name="nat_typ_subproof" class="" title="nat_typ_subproof : forall x : nat, Signed.spec 0%N ?=0 >=0 x
 
 nat_typ_subproof is not universe polymorphic
-Arguments nat_typ_subproof x%nat_scope
+Arguments nat_typ_subproof x%_nat_scope
 nat_typ_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.nat_typ_subproof
 Declared in library mathcomp.reals.signed, line 363, characters 6-22
@@ -893,8 +893,8 @@ forall [d : Order.disp_t] [nz : KnownSign.nullity]
 Signed.spec (Signed.sort_x0 xt) nz cond x
 
 typ_snum_subproof is not universe polymorphic
-Arguments typ_snum_subproof [d] [nz]%snum_nullity_scope
-  [cond]%snum_sign_scope [xt] x
+Arguments typ_snum_subproof [d] [nz]%_snum_nullity_scope
+  [cond]%_snum_sign_scope [xt] x
 typ_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.typ_snum_subproof
 Declared in library mathcomp.reals.signed, line 368, characters 6-23
@@ -917,7 +917,8 @@ forall [d : Order.disp_t] [nz : KnownSign.nullity]
 Signed.sort xt -> {compare Signed.sort_x0 xt & nz & cond}
 
 typ_snum is not universe polymorphic
-Arguments typ_snum [d] [nz]%snum_nullity_scope [cond]%snum_sign_scope [xt] x
+Arguments typ_snum [d] [nz]%_snum_nullity_scope [cond]%_snum_sign_scope 
+  [xt] x
 typ_snum is transparent
 Expands to: Constant mathcomp.reals.signed.typ_snum
 Declared in library mathcomp.reals.signed, line 378, characters 10-18
@@ -965,8 +966,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 x%:num%R = x%:num%R
 
 signed_intro is not universe polymorphic
-Arguments signed_intro {d T x0} {nz}%snum_nullity_scope
-  {cond}%snum_sign_scope {x}
+Arguments signed_intro {d T x0} {nz}%_snum_nullity_scope
+  {cond}%_snum_sign_scope {x}
 signed_intro is opaque
 Expands to: Constant mathcomp.reals.signed.signed_intro
 Declared in library mathcomp.reals.signed, line 418, characters 6-18
@@ -982,8 +983,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 {compare x0 & nz & cond} -> unify_nz !=0 nz -> unify_r =0 cond -> False
 
 bottom is not universe polymorphic
-Arguments bottom {d T x0} {nz}%snum_nullity_scope 
-  {cond}%snum_sign_scope x {_ _}
+Arguments bottom {d T x0} {nz}%_snum_nullity_scope 
+  {cond}%_snum_sign_scope x {_ _}
 bottom is opaque
 Expands to: Constant mathcomp.reals.signed.bottom
 Declared in library mathcomp.reals.signed, line 420, characters 6-12
@@ -1001,7 +1002,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 unify_nz !=0 nz -> unify_r >=0 cond -> ((x0 : T) < (x%:num%R : T))%O
 
 gt0 is not universe polymorphic
-Arguments gt0 {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope x {_ _}
+Arguments gt0 {d T x0} {nz}%_snum_nullity_scope {cond}%_snum_sign_scope 
+  x {_ _}
 gt0 is opaque
 Expands to: Constant mathcomp.reals.signed.gt0
 Declared in library mathcomp.reals.signed, line 425, characters 6-9
@@ -1020,7 +1022,7 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 unify_nz !=0 nz -> unify_r >=0 cond -> ((x%:num%R : T) <= (x0 : T))%O = false
 
 le0F is not universe polymorphic
-Arguments le0F {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope 
+Arguments le0F {d T x0} {nz}%_snum_nullity_scope {cond}%_snum_sign_scope 
   x {_ _}
 le0F is opaque
 Expands to: Constant mathcomp.reals.signed.le0F
@@ -1038,7 +1040,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 unify_nz !=0 nz -> unify_r <=0 cond -> ((x%:num%R : T) < (x0 : T))%O
 
 lt0 is not universe polymorphic
-Arguments lt0 {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope x {_ _}
+Arguments lt0 {d T x0} {nz}%_snum_nullity_scope {cond}%_snum_sign_scope 
+  x {_ _}
 lt0 is opaque
 Expands to: Constant mathcomp.reals.signed.lt0
 Declared in library mathcomp.reals.signed, line 434, characters 6-9
@@ -1058,7 +1061,7 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 unify_nz !=0 nz -> unify_r <=0 cond -> ((x0 : T) <= (x%:num%R : T))%O = false
 
 ge0F is not universe polymorphic
-Arguments ge0F {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope 
+Arguments ge0F {d T x0} {nz}%_snum_nullity_scope {cond}%_snum_sign_scope 
   x {_ _}
 ge0F is opaque
 Expands to: Constant mathcomp.reals.signed.ge0F
@@ -1076,7 +1079,7 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 unify_r >=0 cond -> ((x0 : T) <= (x%:num%R : T))%O
 
 ge0 is not universe polymorphic
-Arguments ge0 {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope x {_}
+Arguments ge0 {d T x0} {nz}%_snum_nullity_scope {cond}%_snum_sign_scope x {_}
 ge0 is opaque
 Expands to: Constant mathcomp.reals.signed.ge0
 Declared in library mathcomp.reals.signed, line 444, characters 6-9
@@ -1094,7 +1097,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 unify_r >=0 cond -> ((x%:num%R : T) < (x0 : T))%O = false
 
 lt0F is not universe polymorphic
-Arguments lt0F {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope x {_}
+Arguments lt0F {d T x0} {nz}%_snum_nullity_scope {cond}%_snum_sign_scope 
+  x {_}
 lt0F is opaque
 Expands to: Constant mathcomp.reals.signed.lt0F
 Declared in library mathcomp.reals.signed, line 449, characters 6-10
@@ -1111,7 +1115,7 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 unify_r <=0 cond -> ((x%:num%R : T) <= (x0 : T))%O
 
 le0 is not universe polymorphic
-Arguments le0 {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope x {_}
+Arguments le0 {d T x0} {nz}%_snum_nullity_scope {cond}%_snum_sign_scope x {_}
 le0 is opaque
 Expands to: Constant mathcomp.reals.signed.le0
 Declared in library mathcomp.reals.signed, line 452, characters 6-9
@@ -1129,7 +1133,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 unify_r <=0 cond -> ((x0 : T) < (x%:num%R : T))%O = false
 
 gt0F is not universe polymorphic
-Arguments gt0F {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope x {_}
+Arguments gt0F {d T x0} {nz}%_snum_nullity_scope {cond}%_snum_sign_scope 
+  x {_}
 gt0F is opaque
 Expands to: Constant mathcomp.reals.signed.gt0F
 Declared in library mathcomp.reals.signed, line 457, characters 6-10
@@ -1146,7 +1151,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 unify_r >=<0 cond -> (x0 >=< x%:num%R)%O
 
 cmp0 is not universe polymorphic
-Arguments cmp0 {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope x {_}
+Arguments cmp0 {d T x0} {nz}%_snum_nullity_scope {cond}%_snum_sign_scope 
+  x {_}
 cmp0 is opaque
 Expands to: Constant mathcomp.reals.signed.cmp0
 Declared in library mathcomp.reals.signed, line 460, characters 6-10
@@ -1167,7 +1173,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 unify_nz !=0 nz -> x%:num%R != x0 :> T
 
 neq0 is not universe polymorphic
-Arguments neq0 {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope x {_}
+Arguments neq0 {d T x0} {nz}%_snum_nullity_scope {cond}%_snum_sign_scope 
+  x {_}
 neq0 is opaque
 Expands to: Constant mathcomp.reals.signed.neq0
 Declared in library mathcomp.reals.signed, line 468, characters 6-10
@@ -1184,7 +1191,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 unify_nz !=0 nz -> (x%:num%R == x0 :> T) = false
 
 eq0F is not universe polymorphic
-Arguments eq0F {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope x {_}
+Arguments eq0F {d T x0} {nz}%_snum_nullity_scope {cond}%_snum_sign_scope 
+  x {_}
 eq0F is opaque
 Expands to: Constant mathcomp.reals.signed.eq0F
 Declared in library mathcomp.reals.signed, line 471, characters 6-10
@@ -1201,7 +1209,7 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 unify_r =0 cond -> x%:num%R = x0
 
 eq0 is not universe polymorphic
-Arguments eq0 {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope x {_}
+Arguments eq0 {d T x0} {nz}%_snum_nullity_scope {cond}%_snum_sign_scope x {_}
 eq0 is opaque
 Expands to: Constant mathcomp.reals.signed.eq0
 Declared in library mathcomp.reals.signed, line 474, characters 6-9
@@ -1220,9 +1228,9 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 unify_nz nz' nz -> unify_r cond' cond -> Signed.spec x0 nz' cond' x%:num%R
 
 widen_signed_subproof is not universe polymorphic
-Arguments widen_signed_subproof {d T x0} {nz}%snum_nullity_scope
-  {cond}%snum_sign_scope x [nz']%snum_nullity_scope 
-  [cond']%snum_sign_scope _ _
+Arguments widen_signed_subproof {d T x0} {nz}%_snum_nullity_scope
+  {cond}%_snum_sign_scope x [nz']%_snum_nullity_scope
+  [cond']%_snum_sign_scope _ _
 widen_signed_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.widen_signed_subproof
 Declared in library mathcomp.reals.signed, line 479, characters 6-27
@@ -1245,9 +1253,9 @@ forall {nz' : KnownSign.nullity} {cond' : KnownSign.reality},
 unify_nz nz' nz -> unify_r cond' cond -> {compare x0 & nz' & cond'}
 
 widen_signed is not universe polymorphic
-Arguments widen_signed {d T x0} {nz}%snum_nullity_scope
-  {cond}%snum_sign_scope x {nz'}%snum_nullity_scope 
-  {cond'}%snum_sign_scope {unz ucond}
+Arguments widen_signed {d T x0} {nz}%_snum_nullity_scope
+  {cond}%_snum_sign_scope x {nz'}%_snum_nullity_scope
+  {cond'}%_snum_sign_scope {unz ucond}
 widen_signed is transparent
 Expands to: Constant mathcomp.reals.signed.widen_signed
 Declared in library mathcomp.reals.signed, line 488, characters 11-23
@@ -1263,8 +1271,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 widen_signed x = x
 
 widen_signedE is not universe polymorphic
-Arguments widen_signedE {d T x0} {nz}%snum_nullity_scope
-  {cond}%snum_sign_scope x {unz ucond}
+Arguments widen_signedE {d T x0} {nz}%_snum_nullity_scope
+  {cond}%_snum_sign_scope x {unz ucond}
 widen_signedE is opaque
 Expands to: Constant mathcomp.reals.signed.widen_signedE
 Declared in library mathcomp.reals.signed, line 492, characters 6-19
@@ -1283,7 +1291,7 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 ((x%:num)%:pos)%:num%R = x%:num%R
 
 posE is not universe polymorphic
-Arguments posE {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope 
+Arguments posE {d T x0} {nz}%_snum_nullity_scope {cond}%_snum_sign_scope 
   x {unz ucond}
 posE is opaque
 Expands to: Constant mathcomp.reals.signed.posE
@@ -1303,7 +1311,7 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 ((x%:num)%:nng)%:num%R = x%:num%R
 
 nngE is not universe polymorphic
-Arguments nngE {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope 
+Arguments nngE {d T x0} {nz}%_snum_nullity_scope {cond}%_snum_sign_scope 
   x {unz ucond}
 nngE is opaque
 Expands to: Constant mathcomp.reals.signed.nngE
@@ -1372,7 +1380,7 @@ forall [R : numDomainType] [nz : KnownSign.nullity] [r : KnownSign.real],
 total (T:={num R & nz & r}%R) (<=%R : rel {num R & nz & r}%R)
 
 signed_le_total is not universe polymorphic
-Arguments signed_le_total [R] [nz]%snum_nullity_scope [r] x y
+Arguments signed_le_total [R] [nz]%_snum_nullity_scope [r] x y
 signed_le_total is opaque
 Expands to: Constant mathcomp.reals.signed.signed_le_total
 Declared in library mathcomp.reals.signed, line 556, characters 6-21
@@ -1387,7 +1395,7 @@ numDomainType ->
 KnownSign.nullity -> KnownSign.real -> orderType ring_display
 
 Signed_def__canonical__Order_Total is not universe polymorphic
-Arguments Signed_def__canonical__Order_Total R nz%snum_nullity_scope r
+Arguments Signed_def__canonical__Order_Total R nz%_snum_nullity_scope r
 Signed_def__canonical__Order_Total is transparent
 Expands to: Constant mathcomp.reals.signed.Signed_def__canonical__Order_Total
 Declared in library mathcomp.reals.signed, line 559, characters 0-89
@@ -1396,7 +1404,7 @@ numDomainType ->
 KnownSign.nullity -> KnownSign.real -> orderType ring_display
 
 Signed_def__canonical__Order_Total is not universe polymorphic
-Arguments Signed_def__canonical__Order_Total R nz%snum_nullity_scope r
+Arguments Signed_def__canonical__Order_Total R nz%_snum_nullity_scope r
 Signed_def__canonical__Order_Total is transparent
 Expands to: Constant mathcomp.reals.signed.Signed_def__canonical__Order_Total
 Declared in library mathcomp.reals.signed, line 559, characters 0-89
@@ -1405,7 +1413,7 @@ numDomainType ->
 KnownSign.nullity -> KnownSign.real -> orderType ring_display
 
 Signed_def__canonical__Order_Total is not universe polymorphic
-Arguments Signed_def__canonical__Order_Total R nz%snum_nullity_scope r
+Arguments Signed_def__canonical__Order_Total R nz%_snum_nullity_scope r
 Signed_def__canonical__Order_Total is transparent
 Expands to: Constant mathcomp.reals.signed.Signed_def__canonical__Order_Total
 Declared in library mathcomp.reals.signed, line 559, characters 0-89
@@ -1414,7 +1422,7 @@ numDomainType ->
 KnownSign.nullity -> KnownSign.real -> orderType ring_display
 
 Signed_def__canonical__Order_Total is not universe polymorphic
-Arguments Signed_def__canonical__Order_Total R nz%snum_nullity_scope r
+Arguments Signed_def__canonical__Order_Total R nz%_snum_nullity_scope r
 Signed_def__canonical__Order_Total is transparent
 Expands to: Constant mathcomp.reals.signed.Signed_def__canonical__Order_Total
 Declared in library mathcomp.reals.signed, line 559, characters 0-89
@@ -1423,7 +1431,7 @@ numDomainType ->
 KnownSign.nullity -> KnownSign.real -> orderType ring_display
 
 Signed_def__canonical__Order_Total is not universe polymorphic
-Arguments Signed_def__canonical__Order_Total R nz%snum_nullity_scope r
+Arguments Signed_def__canonical__Order_Total R nz%_snum_nullity_scope r
 Signed_def__canonical__Order_Total is transparent
 Expands to: Constant mathcomp.reals.signed.Signed_def__canonical__Order_Total
 Declared in library mathcomp.reals.signed, line 559, characters 0-89
@@ -1441,8 +1449,8 @@ KnownSign.nullity ->
 KnownSign.reality -> KnownSign.reality -> KnownSign.nullity
 
 min_nonzero_subdef is not universe polymorphic
-Arguments min_nonzero_subdef (xnz ynz)%snum_nullity_scope
-  (xr yr)%snum_sign_scope
+Arguments min_nonzero_subdef (xnz ynz)%_snum_nullity_scope
+  (xr yr)%_snum_sign_scope
 min_nonzero_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.min_nonzero_subdef
 Declared in library mathcomp.reals.signed, line 567, characters 11-29
@@ -1459,8 +1467,8 @@ KnownSign.nullity ->
 KnownSign.reality -> KnownSign.reality -> KnownSign.reality
 
 min_reality_subdef is not universe polymorphic
-Arguments min_reality_subdef (xnz ynz)%snum_nullity_scope
-  (xr yr)%snum_sign_scope
+Arguments min_reality_subdef (xnz ynz)%_snum_nullity_scope
+  (xr yr)%_snum_sign_scope
 min_reality_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.min_reality_subdef
 Declared in library mathcomp.reals.signed, line 574, characters 11-29
@@ -1486,8 +1494,8 @@ let rrl := min_reality_subdef xnz ynz xr yr in
 Signed.spec x0 rnz rrl (Order.Def.min x%:num%R y%:num%R)
 
 min_snum_subproof is not universe polymorphic
-Arguments min_snum_subproof {disp T x0} [xnz ynz]%snum_nullity_scope
-  [xr yr]%snum_sign_scope x y
+Arguments min_snum_subproof {disp T x0} [xnz ynz]%_snum_nullity_scope
+  [xr yr]%_snum_sign_scope x y
 min_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.min_snum_subproof
 Declared in library mathcomp.reals.signed, line 587, characters 6-23
@@ -1534,8 +1542,8 @@ forall {disp : Order.disp_t} {T : porderType disp}
                                                  xr yr}
 
 min_snum is not universe polymorphic
-Arguments min_snum {disp T x0} [xnz ynz]%snum_nullity_scope
-  [xr yr]%snum_sign_scope x y
+Arguments min_snum {disp T x0} [xnz ynz]%_snum_nullity_scope
+  [xr yr]%_snum_sign_scope x y
 min_snum is transparent
 Expands to: Constant mathcomp.reals.signed.min_snum
 Declared in library mathcomp.reals.signed, line 619, characters 10-18
@@ -1549,8 +1557,8 @@ KnownSign.nullity ->
 KnownSign.reality -> KnownSign.reality -> KnownSign.nullity
 
 max_nonzero_subdef is not universe polymorphic
-Arguments max_nonzero_subdef (xnz ynz)%snum_nullity_scope
-  (xr yr)%snum_sign_scope
+Arguments max_nonzero_subdef (xnz ynz)%_snum_nullity_scope
+  (xr yr)%_snum_sign_scope
 max_nonzero_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.max_nonzero_subdef
 Declared in library mathcomp.reals.signed, line 623, characters 11-29
@@ -1567,8 +1575,8 @@ KnownSign.nullity ->
 KnownSign.reality -> KnownSign.reality -> KnownSign.reality
 
 max_reality_subdef is not universe polymorphic
-Arguments max_reality_subdef (xnz ynz)%snum_nullity_scope
-  (xr yr)%snum_sign_scope
+Arguments max_reality_subdef (xnz ynz)%_snum_nullity_scope
+  (xr yr)%_snum_sign_scope
 max_reality_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.max_reality_subdef
 Declared in library mathcomp.reals.signed, line 630, characters 11-29
@@ -1594,8 +1602,8 @@ let rrl := max_reality_subdef xnz ynz xr yr in
 Signed.spec x0 rnz rrl (Order.Def.max x%:num%R y%:num%R)
 
 max_snum_subproof is not universe polymorphic
-Arguments max_snum_subproof {disp T x0} [xnz ynz]%snum_nullity_scope
-  [xr yr]%snum_sign_scope x y
+Arguments max_snum_subproof {disp T x0} [xnz ynz]%_snum_nullity_scope
+  [xr yr]%_snum_sign_scope x y
 max_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.max_snum_subproof
 Declared in library mathcomp.reals.signed, line 643, characters 6-23
@@ -1642,8 +1650,8 @@ forall {disp : Order.disp_t} {T : porderType disp}
                                                  xr yr}
 
 max_snum is not universe polymorphic
-Arguments max_snum {disp T x0} [xnz ynz]%snum_nullity_scope
-  [xr yr]%snum_sign_scope x y
+Arguments max_snum {disp T x0} [xnz ynz]%_snum_nullity_scope
+  [xr yr]%_snum_sign_scope x y
 max_snum is transparent
 Expands to: Constant mathcomp.reals.signed.max_snum
 Declared in library mathcomp.reals.signed, line 675, characters 10-18
@@ -1716,7 +1724,7 @@ Declared in library mathcomp.reals.signed, line 692, characters 10-18
 KnownSign.nullity -> KnownSign.reality -> KnownSign.reality
 
 opp_reality_subdef is not universe polymorphic
-Arguments opp_reality_subdef xnz%snum_nullity_scope xr%snum_sign_scope
+Arguments opp_reality_subdef xnz%_snum_nullity_scope xr%_snum_sign_scope
 opp_reality_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.opp_reality_subdef
 Declared in library mathcomp.reals.signed, line 694, characters 11-29
@@ -1740,8 +1748,8 @@ Signed.reality_cond
   0%R r (- x%:num)%R
 
 opp_snum_subproof is not universe polymorphic
-Arguments opp_snum_subproof {R} [xnz]%snum_nullity_scope 
-  [xr]%snum_sign_scope x
+Arguments opp_snum_subproof {R} [xnz]%_snum_nullity_scope
+  [xr]%_snum_sign_scope x
 opp_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.opp_snum_subproof
 Declared in library mathcomp.reals.signed, line 703, characters 6-23
@@ -1760,7 +1768,7 @@ forall {R : numDomainType} [xnz : KnownSign.nullity] [xr : KnownSign.reality],
 {num R & xnz & xr}%R -> {compare 0%R & xnz & opp_reality_subdef xnz xr}
 
 opp_snum is not universe polymorphic
-Arguments opp_snum {R} [xnz]%snum_nullity_scope [xr]%snum_sign_scope x
+Arguments opp_snum {R} [xnz]%_snum_nullity_scope [xr]%_snum_sign_scope x
 opp_snum is transparent
 Expands to: Constant mathcomp.reals.signed.opp_snum
 Declared in library mathcomp.reals.signed, line 711, characters 10-18
@@ -1772,8 +1780,8 @@ KnownSign.nullity ->
 KnownSign.nullity -> KnownSign.reality -> KnownSign.reality -> bool
 
 add_samesign_subdef is not universe polymorphic
-Arguments add_samesign_subdef (xnz ynz)%snum_nullity_scope
-  (xr yr)%snum_sign_scope
+Arguments add_samesign_subdef (xnz ynz)%_snum_nullity_scope
+  (xr yr)%_snum_sign_scope
 add_samesign_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.add_samesign_subdef
 Declared in library mathcomp.reals.signed, line 714, characters 11-30
@@ -1795,8 +1803,8 @@ KnownSign.nullity ->
 KnownSign.reality -> KnownSign.reality -> KnownSign.nullity
 
 add_nonzero_subdef is not universe polymorphic
-Arguments add_nonzero_subdef (xnz ynz)%snum_nullity_scope
-  (xr yr)%snum_sign_scope
+Arguments add_nonzero_subdef (xnz ynz)%_snum_nullity_scope
+  (xr yr)%_snum_sign_scope
 add_nonzero_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.add_nonzero_subdef
 Declared in library mathcomp.reals.signed, line 726, characters 11-29
@@ -1810,8 +1818,8 @@ KnownSign.nullity ->
 KnownSign.reality -> KnownSign.reality -> KnownSign.reality
 
 add_reality_subdef is not universe polymorphic
-Arguments add_reality_subdef (xnz ynz)%snum_nullity_scope
-  (xr yr)%snum_sign_scope
+Arguments add_reality_subdef (xnz ynz)%_snum_nullity_scope
+  (xr yr)%_snum_sign_scope
 add_reality_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.add_reality_subdef
 Declared in library mathcomp.reals.signed, line 730, characters 11-29
@@ -1842,8 +1850,8 @@ Signed.reality_cond
   0%R rrl (x%:num + y%:num)%R
 
 add_snum_subproof is not universe polymorphic
-Arguments add_snum_subproof {R} [xnz ynz]%snum_nullity_scope
-  [xr yr]%snum_sign_scope x y
+Arguments add_snum_subproof {R} [xnz ynz]%_snum_nullity_scope
+  [xr yr]%_snum_sign_scope x y
 add_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.add_snum_subproof
 Declared in library mathcomp.reals.signed, line 744, characters 6-23
@@ -1874,8 +1882,8 @@ forall {R : numDomainType} [xnz ynz : KnownSign.nullity]
 add_reality_subdef xnz ynz xr yr}
 
 add_snum is not universe polymorphic
-Arguments add_snum {R} [xnz ynz]%snum_nullity_scope 
-  [xr yr]%snum_sign_scope x y
+Arguments add_snum {R} [xnz ynz]%_snum_nullity_scope 
+  [xr yr]%_snum_sign_scope x y
 add_snum is transparent
 Expands to: Constant mathcomp.reals.signed.add_snum
 Declared in library mathcomp.reals.signed, line 760, characters 10-18
@@ -1889,8 +1897,8 @@ KnownSign.nullity ->
 KnownSign.reality -> KnownSign.reality -> KnownSign.nullity
 
 mul_nonzero_subdef is not universe polymorphic
-Arguments mul_nonzero_subdef (xnz ynz)%snum_nullity_scope
-  (xr yr)%snum_sign_scope
+Arguments mul_nonzero_subdef (xnz ynz)%_snum_nullity_scope
+  (xr yr)%_snum_sign_scope
 mul_nonzero_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.mul_nonzero_subdef
 Declared in library mathcomp.reals.signed, line 764, characters 11-29
@@ -1904,8 +1912,8 @@ KnownSign.nullity ->
 KnownSign.reality -> KnownSign.reality -> KnownSign.reality
 
 mul_reality_subdef is not universe polymorphic
-Arguments mul_reality_subdef (xnz ynz)%snum_nullity_scope
-  (xr yr)%snum_sign_scope
+Arguments mul_reality_subdef (xnz ynz)%_snum_nullity_scope
+  (xr yr)%_snum_sign_scope
 mul_reality_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.mul_reality_subdef
 Declared in library mathcomp.reals.signed, line 768, characters 11-29
@@ -1934,8 +1942,8 @@ Signed.reality_cond
   0%R rrl (x%:num * y%:num)%R
 
 mul_snum_subproof is not universe polymorphic
-Arguments mul_snum_subproof {R} [xnz ynz]%snum_nullity_scope
-  [xr yr]%snum_sign_scope x y
+Arguments mul_snum_subproof {R} [xnz ynz]%_snum_nullity_scope
+  [xr yr]%_snum_sign_scope x y
 mul_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.mul_snum_subproof
 Declared in library mathcomp.reals.signed, line 780, characters 6-23
@@ -1965,8 +1973,8 @@ forall {R : numDomainType} [xnz ynz : KnownSign.nullity]
 mul_reality_subdef xnz ynz xr yr}
 
 mul_snum is not universe polymorphic
-Arguments mul_snum {R} [xnz ynz]%snum_nullity_scope 
-  [xr yr]%snum_sign_scope x y
+Arguments mul_snum {R} [xnz ynz]%_snum_nullity_scope 
+  [xr yr]%_snum_sign_scope x y
 mul_snum is transparent
 Expands to: Constant mathcomp.reals.signed.mul_snum
 Declared in library mathcomp.reals.signed, line 795, characters 10-18
@@ -1987,8 +1995,8 @@ Signed.reality_cond
   0%R rrl (x%:num *+ n%:num)%R
 
 natmul_snum_subproof is not universe polymorphic
-Arguments natmul_snum_subproof {R} [xnz nnz]%snum_nullity_scope
-  [xr nr]%snum_sign_scope x n
+Arguments natmul_snum_subproof {R} [xnz nnz]%_snum_nullity_scope
+  [xr nr]%_snum_sign_scope x n
 natmul_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.natmul_snum_subproof
 Declared in library mathcomp.reals.signed, line 799, characters 6-26
@@ -2018,8 +2026,8 @@ forall {R : numDomainType} [xnz nnz : KnownSign.nullity]
 mul_reality_subdef xnz nnz xr nr}
 
 natmul_snum is not universe polymorphic
-Arguments natmul_snum {R} [xnz nnz]%snum_nullity_scope
-  [xr nr]%snum_sign_scope x n
+Arguments natmul_snum {R} [xnz nnz]%_snum_nullity_scope
+  [xr nr]%_snum_sign_scope x n
 natmul_snum is transparent
 Expands to: Constant mathcomp.reals.signed.natmul_snum
 Declared in library mathcomp.reals.signed, line 814, characters 10-21
@@ -2040,8 +2048,8 @@ Signed.reality_cond
   0%R rrl (x%:num *~ n%:num)%R
 
 intmul_snum_subproof is not universe polymorphic
-Arguments intmul_snum_subproof {R} [xnz nnz]%snum_nullity_scope
-  [xr nr]%snum_sign_scope x n
+Arguments intmul_snum_subproof {R} [xnz nnz]%_snum_nullity_scope
+  [xr nr]%_snum_sign_scope x n
 intmul_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.intmul_snum_subproof
 Declared in library mathcomp.reals.signed, line 818, characters 6-26
@@ -2072,8 +2080,8 @@ forall {R : numDomainType} [xnz nnz : KnownSign.nullity]
 mul_reality_subdef xnz nnz xr nr}
 
 intmul_snum is not universe polymorphic
-Arguments intmul_snum {R} [xnz nnz]%snum_nullity_scope
-  [xr nr]%snum_sign_scope x n
+Arguments intmul_snum {R} [xnz nnz]%_snum_nullity_scope
+  [xr nr]%_snum_sign_scope x n
 intmul_snum is transparent
 Expands to: Constant mathcomp.reals.signed.intmul_snum
 Declared in library mathcomp.reals.signed, line 834, characters 10-21
@@ -2091,8 +2099,8 @@ Signed.reality_cond
   0%R xr (x%:num^-1%R : R)
 
 inv_snum_subproof is not universe polymorphic
-Arguments inv_snum_subproof {R} [xnz]%snum_nullity_scope 
-  [xr]%snum_sign_scope x
+Arguments inv_snum_subproof {R} [xnz]%_snum_nullity_scope
+  [xr]%_snum_sign_scope x
 inv_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.inv_snum_subproof
 Declared in library mathcomp.reals.signed, line 838, characters 6-23
@@ -2111,7 +2119,7 @@ forall {R : numDomainType} [xnz : KnownSign.nullity] [xr : KnownSign.reality],
 {num R & xnz & xr}%R -> {compare 0%R & xnz & xr}
 
 inv_snum is not universe polymorphic
-Arguments inv_snum {R} [xnz]%snum_nullity_scope [xr]%snum_sign_scope x
+Arguments inv_snum {R} [xnz]%_snum_nullity_scope [xr]%_snum_sign_scope x
 inv_snum is transparent
 Expands to: Constant mathcomp.reals.signed.inv_snum
 Declared in library mathcomp.reals.signed, line 846, characters 10-18
@@ -2124,8 +2132,8 @@ KnownSign.nullity ->
 KnownSign.reality -> KnownSign.reality -> KnownSign.nullity
 
 exprn_nonzero_subdef is not universe polymorphic
-Arguments exprn_nonzero_subdef (xnz nnz)%snum_nullity_scope
-  (xr nr)%snum_sign_scope
+Arguments exprn_nonzero_subdef (xnz nnz)%_snum_nullity_scope
+  (xr nr)%_snum_sign_scope
 exprn_nonzero_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.exprn_nonzero_subdef
 Declared in library mathcomp.reals.signed, line 849, characters 11-31
@@ -2140,8 +2148,8 @@ KnownSign.nullity ->
 KnownSign.reality -> KnownSign.reality -> KnownSign.reality
 
 exprn_reality_subdef is not universe polymorphic
-Arguments exprn_reality_subdef (xnz nnz)%snum_nullity_scope
-  (xr nr)%snum_sign_scope
+Arguments exprn_reality_subdef (xnz nnz)%_snum_nullity_scope
+  (xr nr)%_snum_sign_scope
 exprn_reality_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.exprn_reality_subdef
 Declared in library mathcomp.reals.signed, line 854, characters 11-31
@@ -2169,8 +2177,8 @@ Signed.reality_cond
   0%R rrl (x%:num ^+ n%:num)%R
 
 exprn_snum_subproof is not universe polymorphic
-Arguments exprn_snum_subproof {R} [xnz nnz]%snum_nullity_scope
-  [xr nr]%snum_sign_scope x n
+Arguments exprn_snum_subproof {R} [xnz nnz]%_snum_nullity_scope
+  [xr nr]%_snum_sign_scope x n
 exprn_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.exprn_snum_subproof
 Declared in library mathcomp.reals.signed, line 865, characters 6-25
@@ -2200,8 +2208,8 @@ forall {R : numDomainType} [xnz nnz : KnownSign.nullity]
 exprn_reality_subdef xnz nnz xr nr}
 
 exprn_snum is not universe polymorphic
-Arguments exprn_snum {R} [xnz nnz]%snum_nullity_scope 
-  [xr nr]%snum_sign_scope x n
+Arguments exprn_snum {R} [xnz nnz]%_snum_nullity_scope
+  [xr nr]%_snum_sign_scope x n
 exprn_snum is transparent
 Expands to: Constant mathcomp.reals.signed.exprn_snum
 Declared in library mathcomp.reals.signed, line 880, characters 10-20
@@ -2214,7 +2222,7 @@ forall {R : numDomainType} {V : normedZmodType R} (x : V),
 Signed.spec 0%R ?=0 >=0 `|x|%R
 
 norm_snum_subproof is not universe polymorphic
-Arguments norm_snum_subproof {R V} x%ring_scope
+Arguments norm_snum_subproof {R V} x%_ring_scope
 norm_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.norm_snum_subproof
 Declared in library mathcomp.reals.signed, line 884, characters 6-24
@@ -2230,7 +2238,7 @@ forall {R : numDomainType} {V : normedZmodType R},
 V -> {compare 0%R & ?=0 & >=0}
 
 norm_snum is not universe polymorphic
-Arguments norm_snum {R V} x%ring_scope
+Arguments norm_snum {R V} x%_ring_scope
 norm_snum is transparent
 Expands to: Constant mathcomp.reals.signed.norm_snum
 Declared in library mathcomp.reals.signed, line 888, characters 10-19
@@ -2246,7 +2254,7 @@ Declared in library mathcomp.reals.signed, line 888, characters 10-19
 KnownSign.nullity -> KnownSign.reality -> KnownSign.nullity
 
 sqrt_nonzero_subdef is not universe polymorphic
-Arguments sqrt_nonzero_subdef xnz%snum_nullity_scope xr%snum_sign_scope
+Arguments sqrt_nonzero_subdef xnz%_snum_nullity_scope xr%_snum_sign_scope
 sqrt_nonzero_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.sqrt_nonzero_subdef
 Declared in library mathcomp.reals.signed, line 896, characters 11-30
@@ -2261,8 +2269,8 @@ let nz := sqrt_nonzero_subdef xnz xr in
 Signed.spec 0%R nz >=0 (Num.ExtraDef.sqrtr x%:num)
 
 sqrt_snum_subproof is not universe polymorphic
-Arguments sqrt_snum_subproof {R} [xnz]%snum_nullity_scope
-  [xr]%snum_sign_scope x
+Arguments sqrt_snum_subproof {R} [xnz]%_snum_nullity_scope
+  [xr]%_snum_sign_scope x
 sqrt_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.sqrt_snum_subproof
 Declared in library mathcomp.reals.signed, line 900, characters 6-24
@@ -2281,7 +2289,7 @@ forall {R : rcfType} [xnz : KnownSign.nullity] [xr : KnownSign.reality],
 {num R & xnz & xr}%R -> {compare 0%R & sqrt_nonzero_subdef xnz xr & >=0}
 
 sqrt_snum is not universe polymorphic
-Arguments sqrt_snum {R} [xnz]%snum_nullity_scope [xr]%snum_sign_scope x
+Arguments sqrt_snum {R} [xnz]%_snum_nullity_scope [xr]%_snum_sign_scope x
 sqrt_snum is transparent
 Expands to: Constant mathcomp.reals.signed.sqrt_snum
 Declared in library mathcomp.reals.signed, line 908, characters 10-19
@@ -2297,7 +2305,7 @@ Declared in library mathcomp.reals.signed, line 908, characters 10-19
 KnownSign.nullity -> KnownSign.reality -> KnownSign.reality
 
 sqrtC_reality_subdef is not universe polymorphic
-Arguments sqrtC_reality_subdef xnz%snum_nullity_scope xr%snum_sign_scope
+Arguments sqrtC_reality_subdef xnz%_snum_nullity_scope xr%_snum_sign_scope
 sqrtC_reality_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.sqrtC_reality_subdef
 Declared in library mathcomp.reals.signed, line 916, characters 11-31
@@ -2320,8 +2328,8 @@ Signed.reality_cond
   0%R r (sqrtC x%:num)
 
 sqrtC_snum_subproof is not universe polymorphic
-Arguments sqrtC_snum_subproof {R} [xnz]%snum_nullity_scope
-  [xr]%snum_sign_scope x
+Arguments sqrtC_snum_subproof {R} [xnz]%_snum_nullity_scope
+  [xr]%_snum_sign_scope x
 sqrtC_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.sqrtC_snum_subproof
 Declared in library mathcomp.reals.signed, line 924, characters 6-25
@@ -2342,7 +2350,7 @@ forall {R : numClosedFieldType} [xnz : KnownSign.nullity]
 {num R & xnz & xr}%R -> {compare 0%R & xnz & sqrtC_reality_subdef xnz xr}
 
 sqrtC_snum is not universe polymorphic
-Arguments sqrtC_snum {R} [xnz]%snum_nullity_scope [xr]%snum_sign_scope x
+Arguments sqrtC_snum {R} [xnz]%_snum_nullity_scope [xr]%_snum_sign_scope x
 sqrtC_snum is transparent
 Expands to: Constant mathcomp.reals.signed.sqrtC_snum
 Declared in library mathcomp.reals.signed, line 933, characters 10-20
@@ -2378,7 +2386,7 @@ Declared in library mathcomp.reals.signed, line 945, characters 10-20
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="succn_snum_subproof" class="id"><a name="succn_snum_subproof" class="" title="succn_snum_subproof : forall n : nat, Signed.spec 0%N !=0 >=0 n.+1
 
 succn_snum_subproof is not universe polymorphic
-Arguments succn_snum_subproof n%nat_scope
+Arguments succn_snum_subproof n%_nat_scope
 succn_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.succn_snum_subproof
 Declared in library mathcomp.reals.signed, line 947, characters 6-25
@@ -2391,7 +2399,7 @@ Declared in library mathcomp.reals.signed, line 947, characters 6-25
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="succn_snum" class="id"><a name="succn_snum" class="" title="succn_snum : nat -> {compare 0%N & !=0 & >=0}
 
 succn_snum is not universe polymorphic
-Arguments succn_snum n%nat_scope
+Arguments succn_snum n%_nat_scope
 succn_snum is transparent
 Expands to: Constant mathcomp.reals.signed.succn_snum
 Declared in library mathcomp.reals.signed, line 950, characters 10-20
@@ -2403,7 +2411,8 @@ forall [nz : KnownSign.nullity] [r : KnownSign.reality]
 Signed.spec 0%N nz r x%:num%R.*2
 
 double_snum_subproof is not universe polymorphic
-Arguments double_snum_subproof [nz]%snum_nullity_scope [r]%snum_sign_scope x
+Arguments double_snum_subproof [nz]%_snum_nullity_scope 
+  [r]%_snum_sign_scope x
 double_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.double_snum_subproof
 Declared in library mathcomp.reals.signed, line 952, characters 6-26
@@ -2419,7 +2428,7 @@ forall [nz : KnownSign.nullity] [r : KnownSign.reality],
 {compare 0%N & nz & r} -> {compare 0%N & nz & r}
 
 double_snum is not universe polymorphic
-Arguments double_snum [nz]%snum_nullity_scope [r]%snum_sign_scope x
+Arguments double_snum [nz]%_snum_nullity_scope [r]%_snum_sign_scope x
 double_snum is transparent
 Expands to: Constant mathcomp.reals.signed.double_snum
 Declared in library mathcomp.reals.signed, line 956, characters 10-21
@@ -2434,8 +2443,8 @@ let rrl := add_reality_subdef xnz ynz xr yr in
 Signed.spec 0%N rnz rrl (x%:num%R + y%:num%R)%N
 
 addn_snum_subproof is not universe polymorphic
-Arguments addn_snum_subproof [xnz ynz]%snum_nullity_scope
-  [xr yr]%snum_sign_scope x y
+Arguments addn_snum_subproof [xnz ynz]%_snum_nullity_scope
+  [xr yr]%_snum_sign_scope x y
 addn_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.addn_snum_subproof
 Declared in library mathcomp.reals.signed, line 959, characters 6-24
@@ -2459,7 +2468,8 @@ forall [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality],
 add_reality_subdef xnz ynz xr yr}
 
 addn_snum is not universe polymorphic
-Arguments addn_snum [xnz ynz]%snum_nullity_scope [xr yr]%snum_sign_scope x y
+Arguments addn_snum [xnz ynz]%_snum_nullity_scope 
+  [xr yr]%_snum_sign_scope x y
 addn_snum is transparent
 Expands to: Constant mathcomp.reals.signed.addn_snum
 Declared in library mathcomp.reals.signed, line 969, characters 10-19
@@ -2475,8 +2485,8 @@ let rrl := mul_reality_subdef xnz ynz xr yr in
 Signed.spec 0%N rnz rrl (x%:num%R * y%:num%R)%N
 
 muln_snum_subproof is not universe polymorphic
-Arguments muln_snum_subproof [xnz ynz]%snum_nullity_scope
-  [xr yr]%snum_sign_scope x y
+Arguments muln_snum_subproof [xnz ynz]%_snum_nullity_scope
+  [xr yr]%_snum_sign_scope x y
 muln_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.muln_snum_subproof
 Declared in library mathcomp.reals.signed, line 973, characters 6-24
@@ -2501,7 +2511,8 @@ forall [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality],
 mul_reality_subdef xnz ynz xr yr}
 
 muln_snum is not universe polymorphic
-Arguments muln_snum [xnz ynz]%snum_nullity_scope [xr yr]%snum_sign_scope x y
+Arguments muln_snum [xnz ynz]%_snum_nullity_scope 
+  [xr yr]%_snum_sign_scope x y
 muln_snum is transparent
 Expands to: Constant mathcomp.reals.signed.muln_snum
 Declared in library mathcomp.reals.signed, line 984, characters 10-19
@@ -2517,8 +2528,8 @@ let rrl := exprn_reality_subdef xnz nnz xr nr in
 Signed.spec 0%N rnz rrl (x%:num%R ^ n%:num%R)%N
 
 expn_snum_subproof is not universe polymorphic
-Arguments expn_snum_subproof [xnz nnz]%snum_nullity_scope
-  [xr nr]%snum_sign_scope x n
+Arguments expn_snum_subproof [xnz nnz]%_snum_nullity_scope
+  [xr nr]%_snum_sign_scope x n
 expn_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.expn_snum_subproof
 Declared in library mathcomp.reals.signed, line 988, characters 6-24
@@ -2546,7 +2557,8 @@ forall [xnz nnz : KnownSign.nullity] [xr nr : KnownSign.reality],
 exprn_reality_subdef xnz nnz xr nr}
 
 expn_snum is not universe polymorphic
-Arguments expn_snum [xnz nnz]%snum_nullity_scope [xr nr]%snum_sign_scope x n
+Arguments expn_snum [xnz nnz]%_snum_nullity_scope 
+  [xr nr]%_snum_sign_scope x n
 expn_snum is transparent
 Expands to: Constant mathcomp.reals.signed.expn_snum
 Declared in library mathcomp.reals.signed, line 1002, characters 10-19
@@ -2562,8 +2574,8 @@ let rrl := min_reality_subdef xnz ynz xr yr in
 Signed.spec 0%N rnz rrl (Init.Nat.min x%:num%R y%:num%R)
 
 minn_snum_subproof is not universe polymorphic
-Arguments minn_snum_subproof [xnz ynz]%snum_nullity_scope
-  [xr yr]%snum_sign_scope x y
+Arguments minn_snum_subproof [xnz ynz]%_snum_nullity_scope
+  [xr yr]%_snum_sign_scope x y
 minn_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.minn_snum_subproof
 Declared in library mathcomp.reals.signed, line 1006, characters 6-24
@@ -2587,7 +2599,8 @@ forall [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality],
 min_reality_subdef xnz ynz xr yr}
 
 minn_snum is not universe polymorphic
-Arguments minn_snum [xnz ynz]%snum_nullity_scope [xr yr]%snum_sign_scope x y
+Arguments minn_snum [xnz ynz]%_snum_nullity_scope 
+  [xr yr]%_snum_sign_scope x y
 minn_snum is transparent
 Expands to: Constant mathcomp.reals.signed.minn_snum
 Declared in library mathcomp.reals.signed, line 1016, characters 10-19
@@ -2603,8 +2616,8 @@ let rrl := max_reality_subdef xnz ynz xr yr in
 Signed.spec 0%N rnz rrl (maxn x%:num%R y%:num%R)
 
 maxn_snum_subproof is not universe polymorphic
-Arguments maxn_snum_subproof [xnz ynz]%snum_nullity_scope
-  [xr yr]%snum_sign_scope x y
+Arguments maxn_snum_subproof [xnz ynz]%_snum_nullity_scope
+  [xr yr]%_snum_sign_scope x y
 maxn_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.maxn_snum_subproof
 Declared in library mathcomp.reals.signed, line 1020, characters 6-24
@@ -2629,7 +2642,8 @@ forall [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality],
 max_reality_subdef xnz ynz xr yr}
 
 maxn_snum is not universe polymorphic
-Arguments maxn_snum [xnz ynz]%snum_nullity_scope [xr yr]%snum_sign_scope x y
+Arguments maxn_snum [xnz ynz]%_snum_nullity_scope 
+  [xr yr]%_snum_sign_scope x y
 maxn_snum is transparent
 Expands to: Constant mathcomp.reals.signed.maxn_snum
 Declared in library mathcomp.reals.signed, line 1031, characters 10-19
@@ -2647,7 +2661,8 @@ forall [xnz : KnownSign.nullity] [xr : KnownSign.reality]
 Signed.spec 0%Z xnz xr x%:num%R
 
 Posz_snum_subproof is not universe polymorphic
-Arguments Posz_snum_subproof [xnz]%snum_nullity_scope [xr]%snum_sign_scope x
+Arguments Posz_snum_subproof [xnz]%_snum_nullity_scope 
+  [xr]%_snum_sign_scope x
 Posz_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.Posz_snum_subproof
 Declared in library mathcomp.reals.signed, line 1039, characters 6-24
@@ -2665,7 +2680,7 @@ forall [xnz : KnownSign.nullity] [xr : KnownSign.reality],
 {compare 0%N & xnz & xr} -> {compare 0%Z & xnz & xr}
 
 Posz_snum is not universe polymorphic
-Arguments Posz_snum [xnz]%snum_nullity_scope [xr]%snum_sign_scope x
+Arguments Posz_snum [xnz]%_snum_nullity_scope [xr]%_snum_sign_scope x
 Posz_snum is transparent
 Expands to: Constant mathcomp.reals.signed.Posz_snum
 Declared in library mathcomp.reals.signed, line 1046, characters 10-19
@@ -2676,7 +2691,7 @@ Declared in library mathcomp.reals.signed, line 1046, characters 10-19
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Negz_snum_subproof" class="id"><a name="Negz_snum_subproof" class="" title="Negz_snum_subproof : forall n : nat, Signed.spec 0%Z !=0 <=0 (Negz n)
 
 Negz_snum_subproof is not universe polymorphic
-Arguments Negz_snum_subproof n%nat_scope
+Arguments Negz_snum_subproof n%_nat_scope
 Negz_snum_subproof is opaque
 Expands to: Constant mathcomp.reals.signed.Negz_snum_subproof
 Declared in library mathcomp.reals.signed, line 1050, characters 6-24
@@ -2689,7 +2704,7 @@ Declared in library mathcomp.reals.signed, line 1050, characters 6-24
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Negz_snum" class="id"><a name="Negz_snum" class="" title="Negz_snum : nat -> {compare 0%Z & !=0 & <=0}
 
 Negz_snum is not universe polymorphic
-Arguments Negz_snum n%nat_scope
+Arguments Negz_snum n%_nat_scope
 Negz_snum is transparent
 Expands to: Constant mathcomp.reals.signed.Negz_snum
 Declared in library mathcomp.reals.signed, line 1053, characters 10-19
@@ -2709,7 +2724,7 @@ forall {R : numDomainType} {cond : KnownSign.reality}
 (x%:num%R == 0%R) = (x == (widen_signed 0%:sgn%R : {num R & ?=0 & cond}%R))
 
 num_eq0 is not universe polymorphic
-Arguments num_eq0 {R} {cond}%snum_sign_scope x
+Arguments num_eq0 {R} {cond}%_snum_sign_scope x
 num_eq0 is opaque
 Expands to: Constant mathcomp.reals.signed.num_eq0
 Declared in library mathcomp.reals.signed, line 1063, characters 6-13
@@ -2734,7 +2749,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 {mono num : x y / x == y >-> x == y}
 
 num_eq is not universe polymorphic
-Arguments num_eq {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope x y
+Arguments num_eq {d T x0} {nz}%_snum_nullity_scope 
+  {cond}%_snum_sign_scope x y
 num_eq is opaque
 Expands to: Constant mathcomp.reals.signed.num_eq
 Declared in library mathcomp.reals.signed, line 1075, characters 6-12
@@ -2749,7 +2765,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 {mono num : x y / (x <= y)%O >-> (x <= y)%O}
 
 num_le is not universe polymorphic
-Arguments num_le {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope x y
+Arguments num_le {d T x0} {nz}%_snum_nullity_scope 
+  {cond}%_snum_sign_scope x y
 num_le is opaque
 Expands to: Constant mathcomp.reals.signed.num_le
 Declared in library mathcomp.reals.signed, line 1076, characters 6-12
@@ -2764,7 +2781,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 {mono num : x y / (x < y)%O >-> (x < y)%O}
 
 num_lt is not universe polymorphic
-Arguments num_lt {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope x y
+Arguments num_lt {d T x0} {nz}%_snum_nullity_scope 
+  {cond}%_snum_sign_scope x y
 num_lt is opaque
 Expands to: Constant mathcomp.reals.signed.num_lt
 Declared in library mathcomp.reals.signed, line 1077, characters 6-12
@@ -2779,7 +2797,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 {morph num : x y / Order.Def.min x y >-> Order.Def.min x y}
 
 num_min is not universe polymorphic
-Arguments num_min {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope x y
+Arguments num_min {d T x0} {nz}%_snum_nullity_scope 
+  {cond}%_snum_sign_scope x y
 num_min is opaque
 Expands to: Constant mathcomp.reals.signed.num_min
 Declared in library mathcomp.reals.signed, line 1078, characters 6-13
@@ -2794,7 +2813,8 @@ forall {d : Order.disp_t} {T : porderType d} {x0 : T}
 {morph num : x y / Order.Def.max x y >-> Order.Def.max x y}
 
 num_max is not universe polymorphic
-Arguments num_max {d T x0} {nz}%snum_nullity_scope {cond}%snum_sign_scope x y
+Arguments num_max {d T x0} {nz}%_snum_nullity_scope 
+  {cond}%_snum_sign_scope x y
 num_max is opaque
 Expands to: Constant mathcomp.reals.signed.num_max
 Declared in library mathcomp.reals.signed, line 1080, characters 6-13
@@ -2817,7 +2837,7 @@ forall {R : numDomainType} (a : R),
 (`|a|%:nng%R == 0%:nng%R :> {nonneg R}%R) = (a == 0%R)
 
 num_abs_eq0 is not universe polymorphic
-Arguments num_abs_eq0 {R} a%ring_scope
+Arguments num_abs_eq0 {R} a%_ring_scope
 num_abs_eq0 is opaque
 Expands to: Constant mathcomp.reals.signed.num_abs_eq0
 Declared in library mathcomp.reals.signed, line 1091, characters 6-17
@@ -2841,7 +2861,7 @@ forall {R : numDomainType} {nz : KnownSign.nullity}
 (a <= Num.max x%:num y%:num)%R = (a <= x%:num)%R || (a <= y%:num)%R
 
 num_le_max is not universe polymorphic
-Arguments num_le_max {R} {nz}%snum_nullity_scope {r} a x y
+Arguments num_le_max {R} {nz}%_snum_nullity_scope {r} a x y
 num_le_max is opaque
 Expands to: Constant mathcomp.reals.signed.num_le_max
 Declared in library mathcomp.reals.signed, line 1102, characters 6-16
@@ -2858,7 +2878,7 @@ forall {R : numDomainType} {nz : KnownSign.nullity}
 (Num.max x%:num y%:num <= a)%R = (x%:num <= a)%R && (y%:num <= a)%R
 
 num_ge_max is not universe polymorphic
-Arguments num_ge_max {R} {nz}%snum_nullity_scope {r} a x y
+Arguments num_ge_max {R} {nz}%_snum_nullity_scope {r} a x y
 num_ge_max is opaque
 Expands to: Constant mathcomp.reals.signed.num_ge_max
 Declared in library mathcomp.reals.signed, line 1106, characters 6-16
@@ -2875,7 +2895,7 @@ forall {R : numDomainType} {nz : KnownSign.nullity}
 (a <= Num.min x%:num y%:num)%R = (a <= x%:num)%R && (a <= y%:num)%R
 
 num_le_min is not universe polymorphic
-Arguments num_le_min {R} {nz}%snum_nullity_scope {r} a x y
+Arguments num_le_min {R} {nz}%_snum_nullity_scope {r} a x y
 num_le_min is opaque
 Expands to: Constant mathcomp.reals.signed.num_le_min
 Declared in library mathcomp.reals.signed, line 1110, characters 6-16
@@ -2892,7 +2912,7 @@ forall {R : numDomainType} {nz : KnownSign.nullity}
 (Num.min x%:num y%:num <= a)%R = (x%:num <= a)%R || (y%:num <= a)%R
 
 num_ge_min is not universe polymorphic
-Arguments num_ge_min {R} {nz}%snum_nullity_scope {r} a x y
+Arguments num_ge_min {R} {nz}%_snum_nullity_scope {r} a x y
 num_ge_min is opaque
 Expands to: Constant mathcomp.reals.signed.num_ge_min
 Declared in library mathcomp.reals.signed, line 1114, characters 6-16
@@ -2909,7 +2929,7 @@ forall {R : numDomainType} {nz : KnownSign.nullity}
 (a < Num.max x%:num y%:num)%R = (a < x%:num)%R || (a < y%:num)%R
 
 num_lt_max is not universe polymorphic
-Arguments num_lt_max {R} {nz}%snum_nullity_scope {r} a x y
+Arguments num_lt_max {R} {nz}%_snum_nullity_scope {r} a x y
 num_lt_max is opaque
 Expands to: Constant mathcomp.reals.signed.num_lt_max
 Declared in library mathcomp.reals.signed, line 1118, characters 6-16
@@ -2926,7 +2946,7 @@ forall {R : numDomainType} {nz : KnownSign.nullity}
 (Num.max x%:num y%:num < a)%R = (x%:num < a)%R && (y%:num < a)%R
 
 num_gt_max is not universe polymorphic
-Arguments num_gt_max {R} {nz}%snum_nullity_scope {r} a x y
+Arguments num_gt_max {R} {nz}%_snum_nullity_scope {r} a x y
 num_gt_max is opaque
 Expands to: Constant mathcomp.reals.signed.num_gt_max
 Declared in library mathcomp.reals.signed, line 1122, characters 6-16
@@ -2943,7 +2963,7 @@ forall {R : numDomainType} {nz : KnownSign.nullity}
 (a < Num.min x%:num y%:num)%R = (a < x%:num)%R && (a < y%:num)%R
 
 num_lt_min is not universe polymorphic
-Arguments num_lt_min {R} {nz}%snum_nullity_scope {r} a x y
+Arguments num_lt_min {R} {nz}%_snum_nullity_scope {r} a x y
 num_lt_min is opaque
 Expands to: Constant mathcomp.reals.signed.num_lt_min
 Declared in library mathcomp.reals.signed, line 1126, characters 6-16
@@ -2960,7 +2980,7 @@ forall {R : numDomainType} {nz : KnownSign.nullity}
 (Num.min x%:num y%:num < a)%R = (x%:num < a)%R || (y%:num < a)%R
 
 num_gt_min is not universe polymorphic
-Arguments num_gt_min {R} {nz}%snum_nullity_scope {r} a x y
+Arguments num_gt_min {R} {nz}%_snum_nullity_scope {r} a x y
 num_gt_min is opaque
 Expands to: Constant mathcomp.reals.signed.num_gt_min
 Declared in library mathcomp.reals.signed, line 1130, characters 6-16
@@ -3022,7 +3042,7 @@ Declared in library mathcomp.reals.signed, line 1145, characters 6-16
 forall [R : numDomainType] [x : R], (0 < x)%R -> (x != 0%R) && (0 <= x)%R
 
 posnum_subdef is not universe polymorphic
-Arguments posnum_subdef [R] [x]%ring_scope x_gt0
+Arguments posnum_subdef [R] [x]%_ring_scope x_gt0
 posnum_subdef is opaque
 Expands to: Constant mathcomp.reals.signed.posnum_subdef
 Declared in library mathcomp.reals.signed, line 1151, characters 6-19
@@ -3034,7 +3054,7 @@ Declared in library mathcomp.reals.signed, line 1151, characters 6-19
 <span class="vernacular">Definition</span><span class="id"> </span><span id="PosNum" class="id"><a name="PosNum" class="" title="PosNum : forall [R : numDomainType] [x : R], (0 < x)%R -> {posnum R}%R
 
 PosNum is not universe polymorphic
-Arguments PosNum [R] [x]%ring_scope x_gt0
+Arguments PosNum [R] [x]%_ring_scope x_gt0
 PosNum is transparent
 Expands to: Constant mathcomp.reals.signed.PosNum
 Declared in library mathcomp.reals.signed, line 1152, characters 11-17
@@ -3043,7 +3063,7 @@ Declared in library mathcomp.reals.signed, line 1152, characters 11-17
 <span class="vernacular">Definition</span><span class="id"> </span><span id="NngNum" class="id"><a name="NngNum" class="" title="NngNum : forall [R : numDomainType] [x : R], (0 <= x)%R -> {nonneg R}%R
 
 NngNum is not universe polymorphic
-Arguments NngNum [R] [x]%ring_scope x_ge0
+Arguments NngNum [R] [x]%_ring_scope x_ge0
 NngNum is transparent
 Expands to: Constant mathcomp.reals.signed.NngNum
 Declared in library mathcomp.reals.signed, line 1154, characters 11-17
@@ -3059,7 +3079,7 @@ forall [R : numDomainType] [x : R],
 (0 < x)%R -> posnum_spec (R:=R) x x (x == 0%R) (0 <= x)%R (0 < x)%R
 
 posnumP is not universe polymorphic
-Arguments posnumP [R] [x]%ring_scope _
+Arguments posnumP [R] [x]%_ring_scope _
 posnumP is opaque
 Expands to: Constant mathcomp.reals.signed.posnumP
 Declared in library mathcomp.reals.signed, line 1161, characters 6-13
@@ -3080,7 +3100,7 @@ forall [R : numDomainType] [x : R],
 (0 <= x)%R -> nonneg_spec (R:=R) x x (0 <= x)%R
 
 nonnegP is not universe polymorphic
-Arguments nonnegP [R] [x]%ring_scope _
+Arguments nonnegP [R] [x]%_ring_scope _
 nonnegP is opaque
 Expands to: Constant mathcomp.reals.signed.nonnegP
 Declared in library mathcomp.reals.signed, line 1171, characters 6-13
@@ -3112,7 +3132,7 @@ unstable.onem r =
 (PosNum (R:=R) (x:=unstable.onem r) (unstable.onem_gt0 (R:=R) (r:=r) r1))%:num%R
 
 onem_PosNum is not universe polymorphic
-Arguments onem_PosNum [R] [r]%ring_scope r1
+Arguments onem_PosNum [R] [r]%_ring_scope r1
 onem_PosNum is opaque
 Expands to: Constant mathcomp.reals.signed.onem_PosNum
 Declared in library mathcomp.reals.signed, line 1208, characters 6-17
@@ -3130,7 +3150,7 @@ unstable.onem (r ^+ n) =
    (unstable.onemX_ge0 (R:=R) (r:=r) n r0 r1))%:num%R
 
 onemX_NngNum is not universe polymorphic
-Arguments onemX_NngNum [R] [r]%ring_scope r1 r0 n%nat_scope
+Arguments onemX_NngNum [R] [r]%_ring_scope r1 r0 n%_nat_scope
 onemX_NngNum is opaque
 Expands to: Constant mathcomp.reals.signed.onemX_NngNum
 Declared in library mathcomp.reals.signed, line 1211, characters 6-18

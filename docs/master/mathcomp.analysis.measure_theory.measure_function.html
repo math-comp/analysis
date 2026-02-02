@@ -349,7 +349,7 @@ forall [d : measure_display] [R : numFieldType] [T : semiRingOfSetsType d],
 (set T -> \bar R) -> Prop
 
 semi_additive2 is not universe polymorphic
-Arguments semi_additive2 [d]%measure_display_scope [R T] mu%function_scope
+Arguments semi_additive2 [d]%_measure_display_scope [R T] mu%_function_scope
 semi_additive2 is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.semi_additive2
@@ -364,7 +364,7 @@ forall [U V : GRing.BaseAddUMagma.Exports.baseAddUMagmaType],
 (U -> V) -> Prop
 
 semi_additive is not universe polymorphic
-Arguments semi_additive [U V] f%function_scope
+Arguments semi_additive [U V] f%_function_scope
 semi_additive is transparent
 Expands to: Constant mathcomp.algebra.ssralg.GRing.Theory.semi_additive
 Declared in library mathcomp.algebra.ssralg, line 6909, characters 11-24
@@ -378,8 +378,8 @@ forall [d : measure_display] [R : numFieldType] [T : semiRingOfSetsType d],
 (set T -> \bar R) -> Prop
 
 semi_sigma_additive is not universe polymorphic
-Arguments semi_sigma_additive [d]%measure_display_scope 
-  [R T] mu%function_scope
+Arguments semi_sigma_additive [d]%_measure_display_scope 
+  [R T] mu%_function_scope
 semi_sigma_additive is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.semi_sigma_additive
@@ -395,7 +395,7 @@ forall [d : measure_display] [R : numFieldType] [T : semiRingOfSetsType d],
 (set T -> \bar R) -> Prop
 
 additive2 is not universe polymorphic
-Arguments additive2 [d]%measure_display_scope [R T] mu%function_scope
+Arguments additive2 [d]%_measure_display_scope [R T] mu%_function_scope
 additive2 is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.additive2
@@ -407,7 +407,7 @@ library mathcomp.analysis.measure_theory.measure_function, line 158, characters 
 <span class="vernacular">Definition</span><span class="id"> </span><span id="additive" class="id"><a name="additive" class="" title="additive : forall [U V : GRing.Zmodule.Exports.zmodType], (U -> V) -> Prop
 
 additive is not universe polymorphic
-Arguments additive [U V] f%function_scope
+Arguments additive [U V] f%_function_scope
 additive is transparent
 Expands to: Constant mathcomp.algebra.ssralg.GRing.Theory.additive
 Declared in library mathcomp.algebra.ssralg, line 6913, characters 11-19
@@ -420,7 +420,7 @@ forall [d : measure_display] [R : numFieldType] [T : semiRingOfSetsType d],
 (set T -> \bar R) -> Prop
 
 sigma_additive is not universe polymorphic
-Arguments sigma_additive [d]%measure_display_scope [R T] mu%function_scope
+Arguments sigma_additive [d]%_measure_display_scope [R T] mu%_function_scope
 sigma_additive is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.sigma_additive
@@ -435,7 +435,7 @@ forall [d : measure_display] [R : numFieldType] [T : semiRingOfSetsType d],
 (set T -> \bar R) -> Prop
 
 subadditive is not universe polymorphic
-Arguments subadditive [d]%measure_display_scope [R T] mu%function_scope
+Arguments subadditive [d]%_measure_display_scope [R T] mu%_function_scope
 subadditive is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.subadditive
@@ -451,8 +451,8 @@ forall [d : measure_display] [R : numFieldType] [T : semiRingOfSetsType d],
 (set T -> \bar R) -> Prop
 
 measurable_subset_sigma_subadditive is not universe polymorphic
-Arguments measurable_subset_sigma_subadditive [d]%measure_display_scope 
-  [R T] mu%function_scope
+Arguments measurable_subset_sigma_subadditive [d]%_measure_display_scope
+  [R T] mu%_function_scope
 measurable_subset_sigma_subadditive is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measurable_subset_sigma_subadditive
@@ -483,8 +483,8 @@ d.-measurable%classic B ->
 d.-measurable%classic (A `|` B) ->
 (A `&` B)%classic = set0 -> mu (A `|` B)%classic = (mu A + mu B)%R
 
-Arguments semi_additiveW [d]%measure_display_scope 
-  [R T] [mu]%function_scope _ _ [A B] _ _ _ _
+Arguments semi_additiveW [d]%_measure_display_scope 
+  [R T] [mu]%_function_scope _ _ [A B] _ _ _ _
 semi_additiveW is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.semi_additiveW
@@ -513,7 +513,7 @@ measure_function.semi_additive (R:=R) (T:=T) mu =
 measure_function.additive (R:=R) (T:=T) mu
 
 semi_additiveE is not universe polymorphic
-Arguments semi_additiveE [d]%measure_display_scope [R T] mu%function_scope
+Arguments semi_additiveE [d]%_measure_display_scope [R T] mu%_function_scope
 semi_additiveE is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.semi_additiveE
@@ -533,7 +533,7 @@ forall [d : measure_display] [R : numFieldType] [T : ringOfSetsType d]
 semi_additive2 (R:=R) (T:=T) mu = additive2 (R:=R) (T:=T) mu
 
 semi_additive2E is not universe polymorphic
-Arguments semi_additive2E [d]%measure_display_scope [R T] mu%function_scope
+Arguments semi_additive2E [d]%_measure_display_scope [R T] mu%_function_scope
 semi_additive2E is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.semi_additive2E
@@ -555,7 +555,7 @@ measure_function.semi_additive (R:=R) (T:=T) mu <->
 additive2 (R:=R) (T:=T) mu
 
 additive2P is not universe polymorphic
-Arguments additive2P [d]%measure_display_scope [R T] [mu]%function_scope _
+Arguments additive2P [d]%_measure_display_scope [R T] [mu]%_function_scope _
 additive2P is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.additive2P
@@ -595,8 +595,8 @@ trivIset (T:=T) [set: nat] F ->
 d.-measurable%classic (\big[setU/set0]_(k < n) F k) ->
 mu (\big[setU/set0]_(i < n) F i) = (\sum_(i < n) mu (F i))%R
 
-Arguments semi_sigma_additive_is_additive [d]%measure_display_scope 
-  [T R] [mu]%function_scope _ _ [F n] _ _ _
+Arguments semi_sigma_additive_is_additive [d]%_measure_display_scope 
+  [T R] [mu]%_function_scope _ _ [F n] _ _ _
 semi_sigma_additive_is_additive is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.semi_sigma_additive_is_additive
@@ -631,8 +631,8 @@ forall [R : numFieldType] [d : measure_display] [T : sigmaRingType d]
 semi_sigma_additive (R:=R) (T:=T) mu = sigma_additive (R:=R) (T:=T) mu
 
 semi_sigma_additiveE is not universe polymorphic
-Arguments semi_sigma_additiveE [R] [d]%measure_display_scope 
-  [T] mu%function_scope
+Arguments semi_sigma_additiveE [R] [d]%_measure_display_scope 
+  [T] mu%_function_scope
 semi_sigma_additiveE is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.semi_sigma_additiveE
@@ -666,8 +666,8 @@ forall [F : nat -> set T],
 trivIset (T:=T) [set: nat] F ->
 forall n : nat, mu (\big[setU/set0]_(i < n) F i) = (\sum_(i < n) mu (F i))%R
 
-Arguments sigma_additive_is_additive [R] [d]%measure_display_scope 
-  [T] [mu]%function_scope _ _ [F] _ _ n
+Arguments sigma_additive_is_additive [R] [d]%_measure_display_scope 
+  [T] [mu]%_function_scope _ _ [F] _ _ n
 sigma_additive_is_additive is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.sigma_additive_is_additive
@@ -708,8 +708,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d]
 Itv.spec ext_num_sem (Itv.Real `[0%Z, +oo[%R) (mu S)
 
 content_inum_subproof is not universe polymorphic
-Arguments content_inum_subproof [d]%measure_display_scope 
-  [T R] mu S%classical_set_scope
+Arguments content_inum_subproof [d]%_measure_display_scope 
+  [T R] mu S%_classical_set_scope
 content_inum_subproof is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.content_inum_subproof
@@ -732,8 +732,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d] [R : numFieldType],
 set T -> Itv.def ext_num_sem (Itv.Real `[0%Z, +oo[%R)
 
 content_inum is not universe polymorphic
-Arguments content_inum [d]%measure_display_scope [T R] 
-  mu S%classical_set_scope
+Arguments content_inum [d]%_measure_display_scope 
+  [T R] mu S%_classical_set_scope
 content_inum is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.content_inum
@@ -753,7 +753,7 @@ forall {d : measure_display} {T : semiRingOfSetsType d}
 mu set0 = 0%R
 
 measure0 is not universe polymorphic
-Arguments measure0 {d}%measure_display_scope {T R} mu
+Arguments measure0 {d}%_measure_display_scope {T R} mu
 measure0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure0
@@ -774,8 +774,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d]
 (0%R < mu x)%E = (mu x != 0%R)
 
 measure_gt0 is not universe polymorphic
-Arguments measure_gt0 [d]%measure_display_scope [T R] 
-  mu x%classical_set_scope
+Arguments measure_gt0 [d]%_measure_display_scope [T R] 
+  mu x%_classical_set_scope
 measure_gt0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_gt0
@@ -803,8 +803,8 @@ d.-measurable%classic (\big[setU/set0]_(k < n) F k) ->
 mu (\big[setU/set0]_(i < n) F i) = (\sum_(i < n) mu (F i))%R
 
 measure_semi_additive_ord is not universe polymorphic
-Arguments measure_semi_additive_ord [d]%measure_display_scope 
-  [T R] mu [n]%nat_scope [F]%function_scope _%function_scope 
+Arguments measure_semi_additive_ord [d]%_measure_display_scope 
+  [T R] mu [n]%_nat_scope [F]%_function_scope _%_function_scope 
   _ _
 measure_semi_additive_ord is opaque
 Expands to: Constant
@@ -841,8 +841,8 @@ d.-measurable%classic (\big[setU/set0]_(k < n) F k) ->
 mu (\big[setU/set0]_(i < n) F i) = (\sum_(i < n) mu (F i))%R
 
 measure_semi_additive_ord_I is not universe polymorphic
-Arguments measure_semi_additive_ord_I [d]%measure_display_scope 
-  [T R] mu [F]%function_scope [n]%nat_scope _%function_scope 
+Arguments measure_semi_additive_ord_I [d]%_measure_display_scope 
+  [T R] mu [F]%_function_scope [n]%_nat_scope _%_function_scope 
   _ _
 measure_semi_additive_ord_I is opaque
 Expands to: Constant
@@ -873,9 +873,9 @@ d.-measurable%classic (\bigcup_(i in D) F i) ->
 mu (\bigcup_(i in D) F i)%classic = (\sum_(i \in D) mu (F i))%R
 
 content_fin_bigcup is not universe polymorphic
-Arguments content_fin_bigcup [d]%measure_display_scope 
-  [T R] mu [I] [D]%classical_set_scope [F]%function_scope 
-  _ _ _%function_scope _
+Arguments content_fin_bigcup [d]%_measure_display_scope 
+  [T R] mu [I] [D]%_classical_set_scope [F]%_function_scope 
+  _ _ _%_function_scope _
 content_fin_bigcup is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.content_fin_bigcup
@@ -915,7 +915,7 @@ d.-measurable%classic B ->
 d.-measurable%classic (A `|` B) ->
 (A `&` B)%classic = set0 -> mu (A `|` B)%classic = (mu A + mu B)%R
 
-Arguments measure_semi_additive2 [d]%measure_display_scope 
+Arguments measure_semi_additive2 [d]%_measure_display_scope 
   [T R] mu [A B] _ _ _ _
 measure_semi_additive2 is opaque
 Expands to: Constant
@@ -965,7 +965,7 @@ d.-measurable%classic A ->
 d.-measurable%classic B ->
 (A `&` B)%classic = set0 -> mu (A `|` B)%classic = (mu A + mu B)%R
 
-Arguments measureU [d]%measure_display_scope [R T] mu [A B] _ _ _
+Arguments measureU [d]%_measure_display_scope [R T] mu [A B] _ _ _
 measureU is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measureU
@@ -991,7 +991,7 @@ forall [d : measure_display] [R : realFieldType] [T : ringOfSetsType d]
 trivIset (T:=T) [set: nat] F ->
 forall n : nat, mu (\big[setU/set0]_(i < n) F i) = (\sum_(i < n) mu (F i))%R
 
-Arguments measure_bigsetU [d]%measure_display_scope [R T] mu [F] _ _ n
+Arguments measure_bigsetU [d]%_measure_display_scope [R T] mu [F] _ _ n
 measure_bigsetU is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_bigsetU
@@ -1013,9 +1013,9 @@ trivIset (T:=T) D F ->
 mu (\bigcup_(i in D) F i)%classic = (\sum_(i \in D) mu (F i))%R
 
 measure_fin_bigcup is not universe polymorphic
-Arguments measure_fin_bigcup [d]%measure_display_scope 
-  [R T] mu [I] [D]%classical_set_scope [F]%function_scope 
-  _ _ _%function_scope
+Arguments measure_fin_bigcup [d]%_measure_display_scope 
+  [R T] mu [I] [D]%_classical_set_scope [F]%_function_scope 
+  _ _ _%_function_scope
 measure_fin_bigcup is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_fin_bigcup
@@ -1042,9 +1042,9 @@ trivIset (T:=T) (fun x : 'I_n => P x) F ->
 mu (\big[setU/set0]_(i < n | P i) F i) = (\sum_(i < n | P i) mu (F i))%R
 
 measure_bigsetU_ord_cond is not universe polymorphic
-Arguments measure_bigsetU_ord_cond [d]%measure_display_scope 
-  [R T] mu [n]%nat_scope [P] [F]%function_scope _%function_scope 
-  _
+Arguments measure_bigsetU_ord_cond [d]%_measure_display_scope 
+  [R T] mu [n]%_nat_scope [P] [F]%_function_scope 
+  _%_function_scope _
 measure_bigsetU_ord_cond is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_bigsetU_ord_cond
@@ -1072,8 +1072,8 @@ trivIset (T:=T) [set: 'I_n] F ->
 mu (\big[setU/set0]_(i < n | P i) F i) = (\sum_(i < n | P i) mu (F i))%R
 
 measure_bigsetU_ord is not universe polymorphic
-Arguments measure_bigsetU_ord [d]%measure_display_scope 
-  [R T] mu [n]%nat_scope P [F]%function_scope _%function_scope 
+Arguments measure_bigsetU_ord [d]%_measure_display_scope 
+  [R T] mu [n]%_nat_scope P [F]%_function_scope _%_function_scope 
   _
 measure_bigsetU_ord is opaque
 Expands to: Constant
@@ -1098,8 +1098,8 @@ trivIset (T:=T) [set` A] F ->
 mu (\big[setU/set0]_(i <- A) F i) = (\sum_(i <- A) mu (F i))%R
 
 measure_fbigsetU is not universe polymorphic
-Arguments measure_fbigsetU [d]%measure_display_scope 
-  [R T] mu [I A] [F]%function_scope _%function_scope 
+Arguments measure_fbigsetU [d]%_measure_display_scope 
+  [R T] mu [I A] [F]%_function_scope _%_function_scope 
   _
 measure_fbigsetU is opaque
 Expands to: Constant
@@ -1143,8 +1143,8 @@ forall [d : measure_display] [R : numFieldType] [T : semiRingOfSetsType d]
 Itv.spec ext_num_sem (Itv.Real `[0%Z, +oo[%R) (mu S)
 
 measure_inum_subproof is not universe polymorphic
-Arguments measure_inum_subproof [d]%measure_display_scope 
-  [R T] mu S%classical_set_scope
+Arguments measure_inum_subproof [d]%_measure_display_scope 
+  [R T] mu S%_classical_set_scope
 measure_inum_subproof is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_inum_subproof
@@ -1166,8 +1166,8 @@ forall [d : measure_display] [R : numFieldType] [T : semiRingOfSetsType d],
 measure T R -> set T -> Itv.def ext_num_sem (Itv.Real `[0%Z, +oo[%R)
 
 measure_inum is not universe polymorphic
-Arguments measure_inum [d]%measure_display_scope [R T] 
-  mu S%classical_set_scope
+Arguments measure_inum [d]%_measure_display_scope 
+  [R T] mu S%_classical_set_scope
 measure_inum is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_inum
@@ -1202,7 +1202,7 @@ isMeasure.phant_axioms (T:=T) (R:=R) mu -> {content set T -> \bar R}%R
 
 Builders_1.Builders_1_mu__canonical__measure_function_Content is not universe polymorphic
 Arguments Builders_1.Builders_1_mu__canonical__measure_function_Content
-  [d]%measure_display_scope [T R] [mu]%function_scope 
+  [d]%_measure_display_scope [T R] [mu]%_function_scope 
   fresh_name_2
 Builders_1.Builders_1_mu__canonical__measure_function_Content is transparent
 Expands to: Constant
@@ -1216,7 +1216,7 @@ isMeasure.phant_axioms (T:=T) (R:=R) mu -> {content set T -> \bar R}%R
 
 Builders_1.Builders_1_mu__canonical__measure_function_Content is not universe polymorphic
 Arguments Builders_1.Builders_1_mu__canonical__measure_function_Content
-  [d]%measure_display_scope [T R] [mu]%function_scope 
+  [d]%_measure_display_scope [T R] [mu]%_function_scope 
   fresh_name_2
 Builders_1.Builders_1_mu__canonical__measure_function_Content is transparent
 Expands to: Constant
@@ -1230,7 +1230,7 @@ isMeasure.phant_axioms (T:=T) (R:=R) mu -> {content set T -> \bar R}%R
 
 Builders_1.Builders_1_mu__canonical__measure_function_Content is not universe polymorphic
 Arguments Builders_1.Builders_1_mu__canonical__measure_function_Content
-  [d]%measure_display_scope [T R] [mu]%function_scope 
+  [d]%_measure_display_scope [T R] [mu]%_function_scope 
   fresh_name_2
 Builders_1.Builders_1_mu__canonical__measure_function_Content is transparent
 Expands to: Constant
@@ -1244,7 +1244,7 @@ isMeasure.phant_axioms (T:=T) (R:=R) mu -> {content set T -> \bar R}%R
 
 Builders_1.Builders_1_mu__canonical__measure_function_Content is not universe polymorphic
 Arguments Builders_1.Builders_1_mu__canonical__measure_function_Content
-  [d]%measure_display_scope [T R] [mu]%function_scope 
+  [d]%_measure_display_scope [T R] [mu]%_function_scope 
   fresh_name_2
 Builders_1.Builders_1_mu__canonical__measure_function_Content is transparent
 Expands to: Constant
@@ -1258,7 +1258,7 @@ isMeasure.phant_axioms (T:=T) (R:=R) mu -> {content set T -> \bar R}%R
 
 Builders_1.Builders_1_mu__canonical__measure_function_Content is not universe polymorphic
 Arguments Builders_1.Builders_1_mu__canonical__measure_function_Content
-  [d]%measure_display_scope [T R] [mu]%function_scope 
+  [d]%_measure_display_scope [T R] [mu]%_function_scope 
   fresh_name_2
 Builders_1.Builders_1_mu__canonical__measure_function_Content is transparent
 Expands to: Constant
@@ -1274,7 +1274,7 @@ isMeasure.phant_axioms (T:=T) (R:=R) mu -> measure T R
 
 Builders_1.Builders_1_mu__canonical__measure_function_Measure is not universe polymorphic
 Arguments Builders_1.Builders_1_mu__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] [mu]%function_scope 
+  [d]%_measure_display_scope [T R] [mu]%_function_scope 
   fresh_name_2
 Builders_1.Builders_1_mu__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -1288,7 +1288,7 @@ isMeasure.phant_axioms (T:=T) (R:=R) mu -> measure T R
 
 Builders_1.Builders_1_mu__canonical__measure_function_Measure is not universe polymorphic
 Arguments Builders_1.Builders_1_mu__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] [mu]%function_scope 
+  [d]%_measure_display_scope [T R] [mu]%_function_scope 
   fresh_name_2
 Builders_1.Builders_1_mu__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -1302,7 +1302,7 @@ isMeasure.phant_axioms (T:=T) (R:=R) mu -> measure T R
 
 Builders_1.Builders_1_mu__canonical__measure_function_Measure is not universe polymorphic
 Arguments Builders_1.Builders_1_mu__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] [mu]%function_scope 
+  [d]%_measure_display_scope [T R] [mu]%_function_scope 
   fresh_name_2
 Builders_1.Builders_1_mu__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -1316,7 +1316,7 @@ isMeasure.phant_axioms (T:=T) (R:=R) mu -> measure T R
 
 Builders_1.Builders_1_mu__canonical__measure_function_Measure is not universe polymorphic
 Arguments Builders_1.Builders_1_mu__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] [mu]%function_scope 
+  [d]%_measure_display_scope [T R] [mu]%_function_scope 
   fresh_name_2
 Builders_1.Builders_1_mu__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -1330,7 +1330,7 @@ isMeasure.phant_axioms (T:=T) (R:=R) mu -> measure T R
 
 Builders_1.Builders_1_mu__canonical__measure_function_Measure is not universe polymorphic
 Arguments Builders_1.Builders_1_mu__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] [mu]%function_scope 
+  [d]%_measure_display_scope [T R] [mu]%_function_scope 
   fresh_name_2
 Builders_1.Builders_1_mu__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -1347,7 +1347,7 @@ forall [d : measure_display] [T : measurableType d]
 m1 = m2 -> m1 = m2
 
 eq_measure is not universe polymorphic
-Arguments eq_measure [d]%measure_display_scope [T R m1 m2] _
+Arguments eq_measure [d]%_measure_display_scope [T R m1 m2] _
 eq_measure is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.eq_measure
@@ -1377,8 +1377,9 @@ d.-measurable%classic (\bigcup_n A n) ->
 mu (\bigcup_n A n)%classic = \big[+%R/0%R]_(0 <= i <oo) mu (A i)
 
 measure_semi_bigcup is not universe polymorphic
-Arguments measure_semi_bigcup [d]%measure_display_scope 
-  [R T] mu [A]%function_scope _%function_scope _ _
+Arguments measure_semi_bigcup [d]%_measure_display_scope 
+  [R T] mu [A]%_function_scope _%_function_scope _ 
+  _
 measure_semi_bigcup is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_semi_bigcup
@@ -1421,7 +1422,7 @@ exists2 i : nat,
   ((fun N : nat => [set n | N <= n]) i
    `<=` (fun n : nat => (\sum_(0 <= i0 < n) mu (F i0))%R) @^-1` t)%classic
 
-Arguments measure_sigma_additive [d]%measure_display_scope 
+Arguments measure_sigma_additive [d]%_measure_display_scope 
   [R T mu F] _ _ [t] _
 measure_sigma_additive is opaque
 Expands to: Constant
@@ -1444,8 +1445,8 @@ mu (\bigcup_(n in D) F n)%classic =
 \big[+%R/0%R]_(0 <= i <oo | i \in D) mu (F i)
 
 measure_bigcup is not universe polymorphic
-Arguments measure_bigcup {d}%measure_display_scope 
-  {R T} mu D%classical_set_scope (F _)%function_scope 
+Arguments measure_bigcup {d}%_measure_display_scope 
+  {R T} mu D%_classical_set_scope (F _)%_function_scope 
   _
 measure_bigcup is opaque
 Expands to: Constant
@@ -1480,8 +1481,8 @@ forall {d : measure_display} {T : sigmaRingType d} {R : realType},
 (measure T R) ^nat -> nat -> set T -> \bar R
 
 msum is not universe polymorphic
-Arguments msum {d}%measure_display_scope {T R} m n%nat_scope
-  A%classical_set_scope
+Arguments msum {d}%_measure_display_scope {T R} m 
+  n%_nat_scope A%_classical_set_scope
 msum is transparent
 Expands to: Constant mathcomp.analysis.measure_theory.measure_function.msum
 Declared in
@@ -1517,7 +1518,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realType],
 
 measure_function_msum__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_msum__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] m n%nat_scope
+  [d]%_measure_display_scope [T R] m n%_nat_scope
 measure_function_msum__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_msum__canonical__measure_function_Measure
@@ -1529,7 +1530,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realType],
 
 measure_function_msum__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_msum__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] m n%nat_scope
+  [d]%_measure_display_scope [T R] m n%_nat_scope
 measure_function_msum__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_msum__canonical__measure_function_Measure
@@ -1541,7 +1542,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realType],
 
 measure_function_msum__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_msum__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] m n%nat_scope
+  [d]%_measure_display_scope [T R] m n%_nat_scope
 measure_function_msum__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_msum__canonical__measure_function_Measure
@@ -1553,7 +1554,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realType],
 
 measure_function_msum__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_msum__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] m n%nat_scope
+  [d]%_measure_display_scope [T R] m n%_nat_scope
 measure_function_msum__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_msum__canonical__measure_function_Measure
@@ -1565,7 +1566,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realType],
 
 measure_function_msum__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_msum__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] m n%nat_scope
+  [d]%_measure_display_scope [T R] m n%_nat_scope
 measure_function_msum__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_msum__canonical__measure_function_Measure
@@ -1586,7 +1587,7 @@ forall {d : measure_display} {T : sigmaRingType d} {R : realFieldType},
 set T -> \bar R
 
 mzero is not universe polymorphic
-Arguments mzero {d}%measure_display_scope {T R} A%classical_set_scope
+Arguments mzero {d}%_measure_display_scope {T R} A%_classical_set_scope
 mzero is transparent
 Expands to: Constant mathcomp.analysis.measure_theory.measure_function.mzero
 Declared in
@@ -1619,7 +1620,7 @@ measure T R
 
 measure_function_mzero__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mzero__canonical__measure_function_Measure
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_Measure
@@ -1631,7 +1632,7 @@ measure T R
 
 measure_function_mzero__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mzero__canonical__measure_function_Measure
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_Measure
@@ -1643,7 +1644,7 @@ measure T R
 
 measure_function_mzero__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mzero__canonical__measure_function_Measure
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_Measure
@@ -1655,7 +1656,7 @@ measure T R
 
 measure_function_mzero__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mzero__canonical__measure_function_Measure
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_Measure
@@ -1667,7 +1668,7 @@ measure T R
 
 measure_function_mzero__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mzero__canonical__measure_function_Measure
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_Measure
@@ -1685,7 +1686,7 @@ forall [d : measure_display] [T : sigmaRingType d]
 msum m_ 0 = mzero
 
 msum_mzero is not universe polymorphic
-Arguments msum_mzero [d]%measure_display_scope [T R] m_
+Arguments msum_mzero [d]%_measure_display_scope [T R] m_
 msum_mzero is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.msum_mzero
@@ -1709,8 +1710,8 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realType],
 measure T R -> measure T R -> set T -> \bar R
 
 measure_add is not universe polymorphic
-Arguments measure_add [d]%measure_display_scope [T R] 
-  m1 m2 A%classical_set_scope
+Arguments measure_add [d]%_measure_display_scope [T R] 
+  m1 m2 A%_classical_set_scope
 measure_add is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_add
@@ -1724,8 +1725,8 @@ forall [d : measure_display] [T : sigmaRingType d]
 measure_add (T:=T) (R:=R) m1 m2 A = (m1 A + m2 A)%R
 
 measure_addE is not universe polymorphic
-Arguments measure_addE [d]%measure_display_scope [T R] 
-  m1 m2 A%classical_set_scope
+Arguments measure_addE [d]%_measure_display_scope 
+  [T R] m1 m2 A%_classical_set_scope
 measure_addE is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_addE
@@ -1749,7 +1750,7 @@ forall {d : measure_display} {T : sigmaRingType d} {R : realFieldType},
 {nonneg R}%R -> measure T R -> set T -> \bar R
 
 mscale is not universe polymorphic
-Arguments mscale {d}%measure_display_scope {T R} r m A%classical_set_scope
+Arguments mscale {d}%_measure_display_scope {T R} r m A%_classical_set_scope
 mscale is transparent
 Expands to: Constant mathcomp.analysis.measure_theory.measure_function.mscale
 Declared in
@@ -1787,7 +1788,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realFieldType],
 
 measure_function_mscale__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mscale__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] r m
+  [d]%_measure_display_scope [T R] r m
 measure_function_mscale__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mscale__canonical__measure_function_Measure
@@ -1799,7 +1800,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realFieldType],
 
 measure_function_mscale__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mscale__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] r m
+  [d]%_measure_display_scope [T R] r m
 measure_function_mscale__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mscale__canonical__measure_function_Measure
@@ -1811,7 +1812,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realFieldType],
 
 measure_function_mscale__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mscale__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] r m
+  [d]%_measure_display_scope [T R] r m
 measure_function_mscale__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mscale__canonical__measure_function_Measure
@@ -1823,7 +1824,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realFieldType],
 
 measure_function_mscale__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mscale__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] r m
+  [d]%_measure_display_scope [T R] r m
 measure_function_mscale__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mscale__canonical__measure_function_Measure
@@ -1835,7 +1836,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realFieldType],
 
 measure_function_mscale__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mscale__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] r m
+  [d]%_measure_display_scope [T R] r m
 measure_function_mscale__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mscale__canonical__measure_function_Measure
@@ -1857,8 +1858,8 @@ forall {d : measure_display} {T : sigmaRingType d} {R : realType},
 (measure T R) ^nat -> nat -> set T -> \bar R
 
 mseries is not universe polymorphic
-Arguments mseries {d}%measure_display_scope {T R} 
-  m n%nat_scope A%classical_set_scope
+Arguments mseries {d}%_measure_display_scope {T R} 
+  m n%_nat_scope A%_classical_set_scope
 mseries is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.mseries
@@ -1903,7 +1904,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realType],
 
 measure_function_mseries__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mseries__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] m n%nat_scope
+  [d]%_measure_display_scope [T R] m n%_nat_scope
 measure_function_mseries__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mseries__canonical__measure_function_Measure
@@ -1915,7 +1916,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realType],
 
 measure_function_mseries__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mseries__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] m n%nat_scope
+  [d]%_measure_display_scope [T R] m n%_nat_scope
 measure_function_mseries__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mseries__canonical__measure_function_Measure
@@ -1927,7 +1928,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realType],
 
 measure_function_mseries__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mseries__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] m n%nat_scope
+  [d]%_measure_display_scope [T R] m n%_nat_scope
 measure_function_mseries__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mseries__canonical__measure_function_Measure
@@ -1939,7 +1940,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realType],
 
 measure_function_mseries__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mseries__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] m n%nat_scope
+  [d]%_measure_display_scope [T R] m n%_nat_scope
 measure_function_mseries__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mseries__canonical__measure_function_Measure
@@ -1951,7 +1952,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realType],
 
 measure_function_mseries__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mseries__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] m n%nat_scope
+  [d]%_measure_display_scope [T R] m n%_nat_scope
 measure_function_mseries__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mseries__canonical__measure_function_Measure
@@ -1969,8 +1970,8 @@ forall {d1 d2 : measure_display} {T1 : sigmaRingType d1}
 (set T1 -> \bar R) -> (T1 -> T2) -> set T2 -> \bar R
 
 pushforward is not universe polymorphic
-Arguments pushforward {d1 d2}%measure_display_scope 
-  {T1 T2 R} (m f)%function_scope A%classical_set_scope
+Arguments pushforward {d1 d2}%_measure_display_scope 
+  {T1 T2 R} (m f)%_function_scope A%_classical_set_scope
 pushforward is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.pushforward
@@ -2021,7 +2022,7 @@ measurable_fun (T:=T1) (U:=T2) [set: T1] f -> measure T2 R
 
 measure_function_pushforward__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_pushforward__canonical__measure_function_Measure
-  [d d']%measure_display_scope [T1 T2 R] m [f]%function_scope 
+  [d d']%_measure_display_scope [T1 T2 R] m [f]%_function_scope 
   mf
 measure_function_pushforward__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -2037,7 +2038,7 @@ measurable_fun (T:=T1) (U:=T2) [set: T1] f -> measure T2 R
 
 measure_function_pushforward__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_pushforward__canonical__measure_function_Measure
-  [d d']%measure_display_scope [T1 T2 R] m [f]%function_scope 
+  [d d']%_measure_display_scope [T1 T2 R] m [f]%_function_scope 
   mf
 measure_function_pushforward__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -2053,7 +2054,7 @@ measurable_fun (T:=T1) (U:=T2) [set: T1] f -> measure T2 R
 
 measure_function_pushforward__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_pushforward__canonical__measure_function_Measure
-  [d d']%measure_display_scope [T1 T2 R] m [f]%function_scope 
+  [d d']%_measure_display_scope [T1 T2 R] m [f]%_function_scope 
   mf
 measure_function_pushforward__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -2069,7 +2070,7 @@ measurable_fun (T:=T1) (U:=T2) [set: T1] f -> measure T2 R
 
 measure_function_pushforward__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_pushforward__canonical__measure_function_Measure
-  [d d']%measure_display_scope [T1 T2 R] m [f]%function_scope 
+  [d d']%_measure_display_scope [T1 T2 R] m [f]%_function_scope 
   mf
 measure_function_pushforward__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -2085,7 +2086,7 @@ measurable_fun (T:=T1) (U:=T2) [set: T1] f -> measure T2 R
 
 measure_function_pushforward__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_pushforward__canonical__measure_function_Measure
-  [d d']%measure_display_scope [T1 T2 R] m [f]%function_scope 
+  [d d']%_measure_display_scope [T1 T2 R] m [f]%_function_scope 
   mf
 measure_function_pushforward__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -2101,7 +2102,7 @@ library mathcomp.analysis.measure_theory.measure_function, line 682, characters 
 <span class="vernacular">Definition</span><span class="id"> </span><span id="SetRing.type" class="id"><a name="SetRing.type" class="" title="SetRing.type : Type -> Type
 
 SetRing.type is not universe polymorphic
-Arguments SetRing.type T%type_scope
+Arguments SetRing.type T%_type_scope
 SetRing.type is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.type
@@ -2111,7 +2112,7 @@ library mathcomp.analysis.measure_theory.measure_function, line 688, characters 
 <span class="vernacular">Definition</span><span class="id"> </span><span id="SetRing.display" class="id"><a name="SetRing.display" class="" title="SetRing.display : measure_display -> measure_display
 
 SetRing.display is not universe polymorphic
-Arguments SetRing.display _%measure_display_scope
+Arguments SetRing.display _%_measure_display_scope
 SetRing.display is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.display
@@ -2133,7 +2134,7 @@ forall [d : measure_display], semiRingOfSetsType d -> pointedType
 
 SetRing.SetRing_type__canonical__classical_sets_Pointed is not universe polymorphic
 Arguments SetRing.SetRing_type__canonical__classical_sets_Pointed
-  [d]%measure_display_scope {T}
+  [d]%_measure_display_scope {T}
 SetRing.SetRing_type__canonical__classical_sets_Pointed is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_type__canonical__classical_sets_Pointed
@@ -2145,7 +2146,7 @@ forall [d : measure_display], semiRingOfSetsType d -> pointedType
 
 SetRing.SetRing_type__canonical__classical_sets_Pointed is not universe polymorphic
 Arguments SetRing.SetRing_type__canonical__classical_sets_Pointed
-  [d]%measure_display_scope {T}
+  [d]%_measure_display_scope {T}
 SetRing.SetRing_type__canonical__classical_sets_Pointed is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_type__canonical__classical_sets_Pointed
@@ -2156,7 +2157,7 @@ forall [d : measure_display], semiRingOfSetsType d -> pointedType
 
 SetRing.SetRing_type__canonical__classical_sets_Pointed is not universe polymorphic
 Arguments SetRing.SetRing_type__canonical__classical_sets_Pointed
-  [d]%measure_display_scope {T}
+  [d]%_measure_display_scope {T}
 SetRing.SetRing_type__canonical__classical_sets_Pointed is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_type__canonical__classical_sets_Pointed
@@ -2167,7 +2168,7 @@ forall [d : measure_display], semiRingOfSetsType d -> pointedType
 
 SetRing.SetRing_type__canonical__classical_sets_Pointed is not universe polymorphic
 Arguments SetRing.SetRing_type__canonical__classical_sets_Pointed
-  [d]%measure_display_scope {T}
+  [d]%_measure_display_scope {T}
 SetRing.SetRing_type__canonical__classical_sets_Pointed is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_type__canonical__classical_sets_Pointed
@@ -2178,7 +2179,7 @@ forall [d : measure_display], semiRingOfSetsType d -> pointedType
 
 SetRing.SetRing_type__canonical__classical_sets_Pointed is not universe polymorphic
 Arguments SetRing.SetRing_type__canonical__classical_sets_Pointed
-  [d]%measure_display_scope {T}
+  [d]%_measure_display_scope {T}
 SetRing.SetRing_type__canonical__classical_sets_Pointed is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_type__canonical__classical_sets_Pointed
@@ -2189,7 +2190,7 @@ forall [d : measure_display], semiRingOfSetsType d -> pointedType
 
 SetRing.SetRing_type__canonical__classical_sets_Pointed is not universe polymorphic
 Arguments SetRing.SetRing_type__canonical__classical_sets_Pointed
-  [d]%measure_display_scope {T}
+  [d]%_measure_display_scope {T}
 SetRing.SetRing_type__canonical__classical_sets_Pointed is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_type__canonical__classical_sets_Pointed
@@ -2201,7 +2202,7 @@ forall [d : measure_display], semiRingOfSetsType d -> ringOfSetsType d.-ring
 
 SetRing.SetRing_type__canonical__measurable_structure_RingOfSets is not universe polymorphic
 Arguments SetRing.SetRing_type__canonical__measurable_structure_RingOfSets
-  [d]%measure_display_scope {T}
+  [d]%_measure_display_scope {T}
 SetRing.SetRing_type__canonical__measurable_structure_RingOfSets is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_type__canonical__measurable_structure_RingOfSets
@@ -2213,7 +2214,7 @@ forall [d : measure_display], semiRingOfSetsType d -> ringOfSetsType d.-ring
 
 SetRing.SetRing_type__canonical__measurable_structure_RingOfSets is not universe polymorphic
 Arguments SetRing.SetRing_type__canonical__measurable_structure_RingOfSets
-  [d]%measure_display_scope {T}
+  [d]%_measure_display_scope {T}
 SetRing.SetRing_type__canonical__measurable_structure_RingOfSets is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_type__canonical__measurable_structure_RingOfSets
@@ -2224,7 +2225,7 @@ forall [d : measure_display], semiRingOfSetsType d -> ringOfSetsType d.-ring
 
 SetRing.SetRing_type__canonical__measurable_structure_RingOfSets is not universe polymorphic
 Arguments SetRing.SetRing_type__canonical__measurable_structure_RingOfSets
-  [d]%measure_display_scope {T}
+  [d]%_measure_display_scope {T}
 SetRing.SetRing_type__canonical__measurable_structure_RingOfSets is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_type__canonical__measurable_structure_RingOfSets
@@ -2235,7 +2236,7 @@ forall [d : measure_display], semiRingOfSetsType d -> ringOfSetsType d.-ring
 
 SetRing.SetRing_type__canonical__measurable_structure_RingOfSets is not universe polymorphic
 Arguments SetRing.SetRing_type__canonical__measurable_structure_RingOfSets
-  [d]%measure_display_scope {T}
+  [d]%_measure_display_scope {T}
 SetRing.SetRing_type__canonical__measurable_structure_RingOfSets is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_type__canonical__measurable_structure_RingOfSets
@@ -2246,7 +2247,7 @@ forall [d : measure_display], semiRingOfSetsType d -> ringOfSetsType d.-ring
 
 SetRing.SetRing_type__canonical__measurable_structure_RingOfSets is not universe polymorphic
 Arguments SetRing.SetRing_type__canonical__measurable_structure_RingOfSets
-  [d]%measure_display_scope {T}
+  [d]%_measure_display_scope {T}
 SetRing.SetRing_type__canonical__measurable_structure_RingOfSets is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_type__canonical__measurable_structure_RingOfSets
@@ -2257,7 +2258,7 @@ forall [d : measure_display], semiRingOfSetsType d -> ringOfSetsType d.-ring
 
 SetRing.SetRing_type__canonical__measurable_structure_RingOfSets is not universe polymorphic
 Arguments SetRing.SetRing_type__canonical__measurable_structure_RingOfSets
-  [d]%measure_display_scope {T}
+  [d]%_measure_display_scope {T}
 SetRing.SetRing_type__canonical__measurable_structure_RingOfSets is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_type__canonical__measurable_structure_RingOfSets
@@ -2282,7 +2283,7 @@ d.-ring.-measurable%classic =
 measure_function.SetRing.measurable_fin_trivIset (d:=d)
 
 SetRing.ring_measurableE is not universe polymorphic
-Arguments SetRing.ring_measurableE [d]%measure_display_scope {T}
+Arguments SetRing.ring_measurableE [d]%_measure_display_scope {T}
 SetRing.ring_measurableE is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.ring_measurableE
@@ -2355,7 +2356,7 @@ forall [d : measure_display] {T : semiRingOfSetsType d} [t : set T],
 forall [i : set (set T)],
 [set M | setring M /\ d.-measurable `<=` M]%classic i -> i t
 
-Arguments SetRing.measurable_subring [d]%measure_display_scope 
+Arguments SetRing.measurable_subring [d]%_measure_display_scope 
   {T} [t] _ [i] _
 SetRing.measurable_subring is opaque
 Expands to: Constant
@@ -2379,8 +2380,8 @@ exists B : set (set T),
     & A = (\bigcup_(X in B) X)%classic]
 
 SetRing.ring_finite_set is not universe polymorphic
-Arguments SetRing.ring_finite_set [d]%measure_display_scope 
-  {T} [A]%classical_set_scope _
+Arguments SetRing.ring_finite_set [d]%_measure_display_scope 
+  {T} [A]%_classical_set_scope _
 SetRing.ring_finite_set is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.ring_finite_set
@@ -2410,8 +2411,8 @@ forall [d : measure_display] {T : semiRingOfSetsType d},
 set (SetRing.type T) -> set (set T)
 
 SetRing.decomp is not universe polymorphic
-Arguments SetRing.decomp [d]%measure_display_scope 
-  {T} A%classical_set_scope _
+Arguments SetRing.decomp [d]%_measure_display_scope 
+  {T} A%_classical_set_scope _
 SetRing.decomp is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.decomp
@@ -2428,8 +2429,8 @@ forall [d : measure_display] {T : semiRingOfSetsType d}
 finite_set (SetRing.decomp A)
 
 SetRing.decomp_finite_set is not universe polymorphic
-Arguments SetRing.decomp_finite_set [d]%measure_display_scope 
-  {T} A%classical_set_scope
+Arguments SetRing.decomp_finite_set [d]%_measure_display_scope 
+  {T} A%_classical_set_scope
 SetRing.decomp_finite_set is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.decomp_finite_set
@@ -2456,8 +2457,8 @@ forall [d : measure_display] {T : semiRingOfSetsType d}
 SetRing.decomp A i ->
 SetRing.decomp A j -> (id i `&` id j !=set0)%classic -> i = j
 
-Arguments SetRing.decomp_triv [d]%measure_display_scope 
-  {T} [A]%classical_set_scope [i j] _ _ _
+Arguments SetRing.decomp_triv [d]%_measure_display_scope 
+  {T} [A]%_classical_set_scope [i j] _ _ _
 SetRing.decomp_triv is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.decomp_triv
@@ -2480,8 +2481,8 @@ forall [d : measure_display] {T : semiRingOfSetsType d}
 forall [X : set T], SetRing.decomp A X -> (X !=set0)%classic
 
 SetRing.all_decomp_neq0 is not universe polymorphic
-Arguments SetRing.all_decomp_neq0 [d]%measure_display_scope 
-  {T} [A]%classical_set_scope _ [X]%classical_set_scope 
+Arguments SetRing.all_decomp_neq0 [d]%_measure_display_scope 
+  {T} [A]%_classical_set_scope _ [X]%_classical_set_scope 
   _
 SetRing.all_decomp_neq0 is opaque
 Expands to: Constant
@@ -2504,8 +2505,8 @@ forall [d : measure_display] {T : semiRingOfSetsType d}
 (A !=set0)%classic -> X \in SetRing.decomp A -> (X !=set0)%classic
 
 SetRing.decomp_neq0 is not universe polymorphic
-Arguments SetRing.decomp_neq0 [d]%measure_display_scope 
-  {T} [A X]%classical_set_scope _ _
+Arguments SetRing.decomp_neq0 [d]%_measure_display_scope 
+  {T} [A X]%_classical_set_scope _ _
 SetRing.decomp_neq0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.decomp_neq0
@@ -2524,8 +2525,8 @@ forall [d : measure_display] {T : semiRingOfSetsType d}
 X \in SetRing.decomp A -> d.-measurable%classic X
 
 SetRing.decomp_measurable is not universe polymorphic
-Arguments SetRing.decomp_measurable [d]%measure_display_scope 
-  {T} [A X]%classical_set_scope _ _
+Arguments SetRing.decomp_measurable [d]%_measure_display_scope 
+  {T} [A X]%_classical_set_scope _ _
 SetRing.decomp_measurable is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.decomp_measurable
@@ -2546,8 +2547,8 @@ forall [d : measure_display] {T : semiRingOfSetsType d}
 (\bigcup_(X in SetRing.decomp A) X)%classic = A
 
 SetRing.cover_decomp is not universe polymorphic
-Arguments SetRing.cover_decomp [d]%measure_display_scope 
-  {T} A%classical_set_scope
+Arguments SetRing.cover_decomp [d]%_measure_display_scope 
+  {T} A%_classical_set_scope
 SetRing.cover_decomp is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.cover_decomp
@@ -2574,8 +2575,8 @@ forall [d : measure_display] {T : semiRingOfSetsType d}
   [A : set (SetRing.type T)] [X : set T],
 X \in SetRing.decomp A -> forall [t : T], X t -> A t
 
-Arguments SetRing.decomp_sub [d]%measure_display_scope 
-  {T} [A X]%classical_set_scope _ [t] _
+Arguments SetRing.decomp_sub [d]%_measure_display_scope 
+  {T} [A X]%_classical_set_scope _ [t] _
 SetRing.decomp_sub is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.decomp_sub
@@ -2595,7 +2596,7 @@ forall [d : measure_display] {T : semiRingOfSetsType d},
 SetRing.decomp set0 = [set set0]%classic
 
 SetRing.decomp_set0 is not universe polymorphic
-Arguments SetRing.decomp_set0 [d]%measure_display_scope {T}
+Arguments SetRing.decomp_set0 [d]%_measure_display_scope {T}
 SetRing.decomp_set0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.decomp_set0
@@ -2613,8 +2614,8 @@ forall [d : measure_display] {T : semiRingOfSetsType d}
 SetRing.decomp A != set0
 
 SetRing.decompN0 is not universe polymorphic
-Arguments SetRing.decompN0 [d]%measure_display_scope 
-  {T} A%classical_set_scope
+Arguments SetRing.decompN0 [d]%_measure_display_scope 
+  {T} A%_classical_set_scope
 SetRing.decompN0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.decompN0
@@ -2635,8 +2636,8 @@ forall [d : measure_display] {T : semiRingOfSetsType d} [R : numDomainType],
 (set T -> \bar R) -> set (SetRing.type T) -> \bar R
 
 SetRing.measure is not universe polymorphic
-Arguments SetRing.measure [d]%measure_display_scope 
-  {T} [R] mu%function_scope A%classical_set_scope
+Arguments SetRing.measure [d]%_measure_display_scope 
+  {T} [R] mu%_function_scope A%_classical_set_scope
 SetRing.measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.measure
@@ -2661,9 +2662,9 @@ SetRing.measure (R:=R) mu (\bigcup_(i in D) F i) =
 (\sum_(i \in D) mu (F i))%R
 
 SetRing.Rmu_fin_bigcup is not universe polymorphic
-Arguments SetRing.Rmu_fin_bigcup [d]%measure_display_scope 
-  {T R} mu [I] [D]%classical_set_scope [F]%function_scope 
-  _ _ _%function_scope
+Arguments SetRing.Rmu_fin_bigcup [d]%_measure_display_scope 
+  {T R} mu [I] [D]%_classical_set_scope [F]%_function_scope 
+  _ _ _%_function_scope
 SetRing.Rmu_fin_bigcup is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.Rmu_fin_bigcup
@@ -2704,8 +2705,8 @@ forall [d : measure_display] {T : semiRingOfSetsType d}
 d.-measurable%classic A -> SetRing.measure (R:=R) mu A = mu A
 
 SetRing.RmuE is not universe polymorphic
-Arguments SetRing.RmuE [d]%measure_display_scope {T R} 
-  mu [A]%classical_set_scope _
+Arguments SetRing.RmuE [d]%_measure_display_scope 
+  {T R} mu [A]%_classical_set_scope _
 SetRing.RmuE is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.RmuE
@@ -2734,8 +2735,8 @@ forall [d : measure_display] {T : semiRingOfSetsType d}
 (0%R <= SetRing.measure (R:=R) mu A)%E
 
 SetRing.Rmu_ge0 is not universe polymorphic
-Arguments SetRing.Rmu_ge0 [d]%measure_display_scope 
-  {T R} mu A%classical_set_scope
+Arguments SetRing.Rmu_ge0 [d]%_measure_display_scope 
+  {T R} mu A%_classical_set_scope
 SetRing.Rmu_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.Rmu_ge0
@@ -2774,7 +2775,8 @@ trivIset
 SetRing.measure (R:=R) mu (\big[setU/set0]_(i < n) F i) =
 (\sum_(i < n) SetRing.measure (R:=R) mu (F i))%R
 
-Arguments SetRing.Rmu_additive [d]%measure_display_scope {T R} mu [F n] _ _ _
+Arguments SetRing.Rmu_additive [d]%_measure_display_scope 
+  {T R} mu [F n] _ _ _
 SetRing.Rmu_additive is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.Rmu_additive
@@ -2806,7 +2808,7 @@ forall [d : measure_display] {T : semiRingOfSetsType d} {R : realFieldType},
 
 SetRing.SetRing_measure__canonical__measure_function_Content is not universe polymorphic
 Arguments SetRing.SetRing_measure__canonical__measure_function_Content
-  [d]%measure_display_scope {T R} mu
+  [d]%_measure_display_scope {T R} mu
 SetRing.SetRing_measure__canonical__measure_function_Content is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_measure__canonical__measure_function_Content
@@ -2821,7 +2823,7 @@ forall [d : measure_display] {T : semiRingOfSetsType d} {R : realFieldType},
 
 SetRing.SetRing_measure__canonical__measure_function_Content is not universe polymorphic
 Arguments SetRing.SetRing_measure__canonical__measure_function_Content
-  [d]%measure_display_scope {T R} mu
+  [d]%_measure_display_scope {T R} mu
 SetRing.SetRing_measure__canonical__measure_function_Content is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_measure__canonical__measure_function_Content
@@ -2835,7 +2837,7 @@ forall [d : measure_display] {T : semiRingOfSetsType d} {R : realFieldType},
 
 SetRing.SetRing_measure__canonical__measure_function_Content is not universe polymorphic
 Arguments SetRing.SetRing_measure__canonical__measure_function_Content
-  [d]%measure_display_scope {T R} mu
+  [d]%_measure_display_scope {T R} mu
 SetRing.SetRing_measure__canonical__measure_function_Content is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_measure__canonical__measure_function_Content
@@ -2849,7 +2851,7 @@ forall [d : measure_display] {T : semiRingOfSetsType d} {R : realFieldType},
 
 SetRing.SetRing_measure__canonical__measure_function_Content is not universe polymorphic
 Arguments SetRing.SetRing_measure__canonical__measure_function_Content
-  [d]%measure_display_scope {T R} mu
+  [d]%_measure_display_scope {T R} mu
 SetRing.SetRing_measure__canonical__measure_function_Content is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_measure__canonical__measure_function_Content
@@ -2863,7 +2865,7 @@ forall [d : measure_display] {T : semiRingOfSetsType d} {R : realFieldType},
 
 SetRing.SetRing_measure__canonical__measure_function_Content is not universe polymorphic
 Arguments SetRing.SetRing_measure__canonical__measure_function_Content
-  [d]%measure_display_scope {T R} mu
+  [d]%_measure_display_scope {T R} mu
 SetRing.SetRing_measure__canonical__measure_function_Content is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_measure__canonical__measure_function_Content
@@ -2877,7 +2879,7 @@ forall [d : measure_display] {T : semiRingOfSetsType d} {R : realFieldType},
 
 SetRing.SetRing_measure__canonical__measure_function_Content is not universe polymorphic
 Arguments SetRing.SetRing_measure__canonical__measure_function_Content
-  [d]%measure_display_scope {T R} mu
+  [d]%_measure_display_scope {T R} mu
 SetRing.SetRing_measure__canonical__measure_function_Content is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.SetRing_measure__canonical__measure_function_Content
@@ -2913,7 +2915,7 @@ x \in d.-measurable%classic ->
 y \in d.-measurable%classic ->
 (fun A : set T => [eta subset A]) x y -> (mu x <= mu y)%E = true
 
-Arguments le_measure [d]%measure_display_scope [R T] mu [x y] _ _ _
+Arguments le_measure [d]%_measure_display_scope [R T] mu [x y] _ _ _
 le_measure is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.le_measure
@@ -2940,8 +2942,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d]
 (mu A <= 0%R)%E = (mu A == 0%R)
 
 measure_le0 is not universe polymorphic
-Arguments measure_le0 [d]%measure_display_scope [T R] 
-  mu A%classical_set_scope
+Arguments measure_le0 [d]%_measure_display_scope [T R] 
+  mu A%_classical_set_scope
 measure_le0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_le0
@@ -2975,7 +2977,7 @@ d.-measurable%classic A ->
 (A `<=` \big[setU/set0]_(k < n) F k)%classic ->
 (mu A <= (\sum_(k < n) mu (F k))%R)%E = true
 
-Arguments content_subadditive [d]%measure_display_scope 
+Arguments content_subadditive [d]%_measure_display_scope 
   [R T] mu [A F n] _ _ _
 content_subadditive is opaque
 Expands to: Constant
@@ -3020,9 +3022,9 @@ d.-measurable%classic A ->
 (mu A <= (\sum_(i \in D) mu (A_ i))%R)%E
 
 content_sub_fsum is not universe polymorphic
-Arguments content_sub_fsum [d]%measure_display_scope 
-  [R T] mu [I] [D A]%classical_set_scope [A_]%function_scope 
-  _ _%function_scope _ _
+Arguments content_sub_fsum [d]%_measure_display_scope 
+  [R T] mu [I] [D A]%_classical_set_scope [A_]%_function_scope 
+  _ _%_function_scope _ _
 content_sub_fsum is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.content_sub_fsum
@@ -3064,8 +3066,9 @@ trivIset (T:=T) [set: nat] A ->
 (\big[+%R/0%R]_(0 <= i <oo) mu (A i) <= mu (\bigcup_i A i)%classic)%E
 
 content_ring_sup_sigma_additive is not universe polymorphic
-Arguments content_ring_sup_sigma_additive [d]%measure_display_scope 
-  [R T] mu [A]%function_scope _%function_scope _ _
+Arguments content_ring_sup_sigma_additive [d]%_measure_display_scope 
+  [R T] mu [A]%_function_scope _%_function_scope _ 
+  _
 content_ring_sup_sigma_additive is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.content_ring_sup_sigma_additive
@@ -3107,7 +3110,7 @@ exists2 i : nat,
   ((fun N : nat => [set n | N <= n]) i
    `<=` (fun n : nat => (\sum_(0 <= i0 < n) mu (F i0))%R) @^-1` t)%classic
 
-Arguments content_ring_sigma_additive [d]%measure_display_scope 
+Arguments content_ring_sigma_additive [d]%_measure_display_scope 
   [R T mu] _ [F] _ _ _ [t] _
 content_ring_sigma_additive is opaque
 Expands to: Constant
@@ -3159,7 +3162,7 @@ forall
 (measure (R:=R) mu A <= \big[+%R/0%R]_(0 <= n <oo) measure (R:=R) mu (F n))%E =
 true
 
-Arguments ring_sigma_subadditive [d]%measure_display_scope 
+Arguments ring_sigma_subadditive [d]%_measure_display_scope 
   [R T mu] _ [A F] _ _ _
 ring_sigma_subadditive is opaque
 Expands to: Constant
@@ -3253,7 +3256,7 @@ exists2 i : nat,
    `<=` (fun n : nat => (\sum_(0 <= i0 < n) measure (R:=R) mu (F i0))%R) @^-1`
         t)%classic
 
-Arguments ring_semi_sigma_additive [d]%measure_display_scope 
+Arguments ring_semi_sigma_additive [d]%_measure_display_scope 
   [R T mu] _ [F] _ _ _ [t] _
 ring_semi_sigma_additive is opaque
 Expands to: Constant
@@ -3292,7 +3295,7 @@ exists2 i : nat,
   ((fun N : nat => [set n | N <= n]) i
    `<=` (fun n : nat => (\sum_(0 <= i0 < n) mu (F i0))%R) @^-1` t)%classic
 
-Arguments semiring_sigma_additive [d]%measure_display_scope 
+Arguments semiring_sigma_additive [d]%_measure_display_scope 
   [R T mu] _ [F] _ _ _ [t] _
 semiring_sigma_additive is opaque
 Expands to: Constant
@@ -3339,7 +3342,7 @@ Measure.Exports.measure T R
 
 Builders_55.Builders_55_mu__canonical__measure_function_Measure is not universe polymorphic
 Arguments Builders_55.Builders_55_mu__canonical__measure_function_Measure
-  [d]%measure_display_scope [R T] [mu]%function_scope
+  [d]%_measure_display_scope [R T] [mu]%_function_scope
   [local_mixin_measure_function_isContent] fresh_name_56
 Builders_55.Builders_55_mu__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -3364,7 +3367,7 @@ Measure.Exports.measure T R
 
 Builders_55.Builders_55_mu__canonical__measure_function_Measure is not universe polymorphic
 Arguments Builders_55.Builders_55_mu__canonical__measure_function_Measure
-  [d]%measure_display_scope [R T] [mu]%function_scope
+  [d]%_measure_display_scope [R T] [mu]%_function_scope
   [local_mixin_measure_function_isContent] fresh_name_56
 Builders_55.Builders_55_mu__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -3389,7 +3392,7 @@ Measure.Exports.measure T R
 
 Builders_55.Builders_55_mu__canonical__measure_function_Measure is not universe polymorphic
 Arguments Builders_55.Builders_55_mu__canonical__measure_function_Measure
-  [d]%measure_display_scope [R T] [mu]%function_scope
+  [d]%_measure_display_scope [R T] [mu]%_function_scope
   [local_mixin_measure_function_isContent] fresh_name_56
 Builders_55.Builders_55_mu__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -3414,7 +3417,7 @@ Measure.Exports.measure T R
 
 Builders_55.Builders_55_mu__canonical__measure_function_Measure is not universe polymorphic
 Arguments Builders_55.Builders_55_mu__canonical__measure_function_Measure
-  [d]%measure_display_scope [R T] [mu]%function_scope
+  [d]%_measure_display_scope [R T] [mu]%_function_scope
   [local_mixin_measure_function_isContent] fresh_name_56
 Builders_55.Builders_55_mu__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -3439,7 +3442,7 @@ Measure.Exports.measure T R
 
 Builders_55.Builders_55_mu__canonical__measure_function_Measure is not universe polymorphic
 Arguments Builders_55.Builders_55_mu__canonical__measure_function_Measure
-  [d]%measure_display_scope [R T] [mu]%function_scope
+  [d]%_measure_display_scope [R T] [mu]%_function_scope
   [local_mixin_measure_function_isContent] fresh_name_56
 Builders_55.Builders_55_mu__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -3472,7 +3475,7 @@ d.-measurable%classic A ->
 (A `<=` \bigcup_n F n)%classic ->
 (mu A <= \big[+%R/0%R]_(0 <= n <oo) mu (F n))%E = true
 
-Arguments measure_sigma_subadditive [d]%measure_display_scope 
+Arguments measure_sigma_subadditive [d]%_measure_display_scope 
   [R T] mu [A F] _ _ _
 measure_sigma_subadditive is opaque
 Expands to: Constant
@@ -3573,9 +3576,9 @@ d.-measurable%classic A ->
 (mu A <= \big[+%R/0%R]_(N <= n <oo) mu (F n))%E
 
 measure_sigma_subadditive_tail is not universe polymorphic
-Arguments measure_sigma_subadditive_tail [d]%measure_display_scope 
-  [R T] mu [A]%classical_set_scope [F]%function_scope 
-  [N]%nat_scope _%function_scope _ _
+Arguments measure_sigma_subadditive_tail [d]%_measure_display_scope 
+  [R T] mu [A]%_classical_set_scope [F]%_function_scope 
+  [N]%_nat_scope _%_function_scope _ _
 measure_sigma_subadditive_tail is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_sigma_subadditive_tail
@@ -3618,7 +3621,7 @@ Measure.Exports.measure
 
 SetRing_measure__canonical__measure_function_Measure is not universe polymorphic
 Arguments SetRing_measure__canonical__measure_function_Measure
-  [d]%measure_display_scope [R T] mu
+  [d]%_measure_display_scope [R T] mu
 SetRing_measure__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing_measure__canonical__measure_function_Measure
@@ -3632,7 +3635,7 @@ Measure.Exports.measure
 
 SetRing_measure__canonical__measure_function_Measure is not universe polymorphic
 Arguments SetRing_measure__canonical__measure_function_Measure
-  [d]%measure_display_scope [R T] mu
+  [d]%_measure_display_scope [R T] mu
 SetRing_measure__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing_measure__canonical__measure_function_Measure
@@ -3646,7 +3649,7 @@ Measure.Exports.measure
 
 SetRing_measure__canonical__measure_function_Measure is not universe polymorphic
 Arguments SetRing_measure__canonical__measure_function_Measure
-  [d]%measure_display_scope [R T] mu
+  [d]%_measure_display_scope [R T] mu
 SetRing_measure__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing_measure__canonical__measure_function_Measure
@@ -3660,7 +3663,7 @@ Measure.Exports.measure
 
 SetRing_measure__canonical__measure_function_Measure is not universe polymorphic
 Arguments SetRing_measure__canonical__measure_function_Measure
-  [d]%measure_display_scope [R T] mu
+  [d]%_measure_display_scope [R T] mu
 SetRing_measure__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing_measure__canonical__measure_function_Measure
@@ -3674,7 +3677,7 @@ Measure.Exports.measure
 
 SetRing_measure__canonical__measure_function_Measure is not universe polymorphic
 Arguments SetRing_measure__canonical__measure_function_Measure
-  [d]%measure_display_scope [R T] mu
+  [d]%_measure_display_scope [R T] mu
 SetRing_measure__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing_measure__canonical__measure_function_Measure
@@ -3690,7 +3693,7 @@ forall [d : measure_display] [T : semiRingOfSetsType d] [R : numDomainType],
 (set T -> \bar R) -> Prop
 
 fin_num_fun is not universe polymorphic
-Arguments fin_num_fun [d]%measure_display_scope [T R] mu%function_scope
+Arguments fin_num_fun [d]%_measure_display_scope [T R] mu%_function_scope
 fin_num_fun is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.fin_num_fun
@@ -3705,8 +3708,8 @@ forall [d : measure_display] [T : algebraOfSetsType d]
 fin_num_fun (T:=T) (R:=R) mu -> (mu [set: T]%classic < +oo)%E
 
 fin_num_fun_lty is not universe polymorphic
-Arguments fin_num_fun_lty [d]%measure_display_scope 
-  [T R] [mu]%function_scope _
+Arguments fin_num_fun_lty [d]%_measure_display_scope 
+  [T R] [mu]%_function_scope _
 fin_num_fun_lty is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.fin_num_fun_lty
@@ -3732,7 +3735,7 @@ forall [d : measure_display] [T : algebraOfSetsType d]
 (mu [set: T]%classic < +oo)%E ->
 forall [U : set T], d.-measurable%classic U -> (mu U \is a fin_num) = true
 
-Arguments lty_fin_num_fun [d]%measure_display_scope [T R mu] _ [U] _
+Arguments lty_fin_num_fun [d]%_measure_display_scope [T R mu] _ [U] _
 lty_fin_num_fun is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.lty_fin_num_fun
@@ -3753,7 +3756,7 @@ forall [d : measure_display] [T : sigmaRingType d] [R : realType],
 (set T -> \bar R) -> Prop
 
 sfinite_measure is not universe polymorphic
-Arguments sfinite_measure [d]%measure_display_scope [T R] mu%function_scope
+Arguments sfinite_measure [d]%_measure_display_scope [T R] mu%_function_scope
 sfinite_measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.sfinite_measure
@@ -3770,8 +3773,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d] [R : numDomainType],
 set T -> (set T -> \bar R) -> Prop
 
 sigma_finite is not universe polymorphic
-Arguments sigma_finite [d]%measure_display_scope [T R] 
-  A%classical_set_scope mu%function_scope
+Arguments sigma_finite [d]%_measure_display_scope 
+  [T R] A%_classical_set_scope mu%_function_scope
 sigma_finite is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.sigma_finite
@@ -3789,8 +3792,8 @@ forall [d : measure_display] [T : algebraOfSetsType d]
 fin_num_fun (T:=T) (R:=R) mu -> sigma_finite (T:=T) (R:=R) [set: T] mu
 
 fin_num_fun_sigma_finite is not universe polymorphic
-Arguments fin_num_fun_sigma_finite [d]%measure_display_scope 
-  [T R] [mu]%function_scope _ _
+Arguments fin_num_fun_sigma_finite [d]%_measure_display_scope 
+  [T R] [mu]%_function_scope _ _
 fin_num_fun_sigma_finite is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.fin_num_fun_sigma_finite
@@ -3813,8 +3816,8 @@ forall [d : measure_display] [T : sigmaRingType d]
 (set T -> \bar R) -> d.-measurable%classic D -> set T -> \bar R
 
 mrestr is not universe polymorphic
-Arguments mrestr [d]%measure_display_scope [T R] [D]%classical_set_scope
-  f%function_scope mD X%classical_set_scope
+Arguments mrestr [d]%_measure_display_scope [T R] 
+  [D]%_classical_set_scope f%_function_scope mD X%_classical_set_scope
 mrestr is transparent
 Expands to: Constant mathcomp.analysis.measure_theory.measure_function.mrestr
 Declared in
@@ -3860,7 +3863,7 @@ forall [D : set T], d.-measurable%classic D -> Measure.Exports.measure T R
 
 measure_function_mrestr__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mrestr__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R] mu [D]%_classical_set_scope 
   mD
 measure_function_mrestr__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -3874,7 +3877,7 @@ forall [D : set T], d.-measurable%classic D -> Measure.Exports.measure T R
 
 measure_function_mrestr__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mrestr__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R] mu [D]%_classical_set_scope 
   mD
 measure_function_mrestr__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -3888,7 +3891,7 @@ forall [D : set T], d.-measurable%classic D -> Measure.Exports.measure T R
 
 measure_function_mrestr__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mrestr__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R] mu [D]%_classical_set_scope 
   mD
 measure_function_mrestr__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -3902,7 +3905,7 @@ forall [D : set T], d.-measurable%classic D -> Measure.Exports.measure T R
 
 measure_function_mrestr__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mrestr__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R] mu [D]%_classical_set_scope 
   mD
 measure_function_mrestr__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -3916,7 +3919,7 @@ forall [D : set T], d.-measurable%classic D -> Measure.Exports.measure T R
 
 measure_function_mrestr__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mrestr__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R] mu [D]%_classical_set_scope 
   mD
 measure_function_mrestr__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -3934,7 +3937,7 @@ forall [d : measure_display] [T : measurableType d]
 sigma_finite (T:=T) (R:=R) [set: T] mu -> sfinite_measure (T:=T) (R:=R) mu
 
 sfinite_measure_sigma_finite is not universe polymorphic
-Arguments sfinite_measure_sigma_finite [d]%measure_display_scope [T R mu] _
+Arguments sfinite_measure_sigma_finite [d]%_measure_display_scope [T R mu] _
 sfinite_measure_sigma_finite is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.sfinite_measure_sigma_finite
@@ -4025,8 +4028,8 @@ Measure_isSigmaFinite.phant_axioms (T:=T) (R:=R)
 sfinite_measure (T:=T) (R:=R) mu
 
 Builders_69.sfinite is not universe polymorphic
-Arguments Builders_69.sfinite [d]%measure_display_scope 
-  [T R] [mu]%function_scope
+Arguments Builders_69.sfinite [d]%_measure_display_scope 
+  [T R] [mu]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_70
@@ -4065,7 +4068,7 @@ Measure_isSigmaFinite.phant_axioms (T:=T) (R:=R)
 Builders_69.Builders_69_mu__canonical__measure_function_SFiniteMeasure is not universe polymorphic
 Arguments
   Builders_69.Builders_69_mu__canonical__measure_function_SFiniteMeasure
-  [d]%measure_display_scope [T R] [mu]%function_scope
+  [d]%_measure_display_scope [T R] [mu]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_70
@@ -4098,7 +4101,7 @@ Measure_isSigmaFinite.phant_axioms (T:=T) (R:=R)
 Builders_69.Builders_69_mu__canonical__measure_function_SFiniteMeasure is not universe polymorphic
 Arguments
   Builders_69.Builders_69_mu__canonical__measure_function_SFiniteMeasure
-  [d]%measure_display_scope [T R] [mu]%function_scope
+  [d]%_measure_display_scope [T R] [mu]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_70
@@ -4131,7 +4134,7 @@ Measure_isSigmaFinite.phant_axioms (T:=T) (R:=R)
 Builders_69.Builders_69_mu__canonical__measure_function_SFiniteMeasure is not universe polymorphic
 Arguments
   Builders_69.Builders_69_mu__canonical__measure_function_SFiniteMeasure
-  [d]%measure_display_scope [T R] [mu]%function_scope
+  [d]%_measure_display_scope [T R] [mu]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_70
@@ -4164,7 +4167,7 @@ Measure_isSigmaFinite.phant_axioms (T:=T) (R:=R)
 Builders_69.Builders_69_mu__canonical__measure_function_SFiniteMeasure is not universe polymorphic
 Arguments
   Builders_69.Builders_69_mu__canonical__measure_function_SFiniteMeasure
-  [d]%measure_display_scope [T R] [mu]%function_scope
+  [d]%_measure_display_scope [T R] [mu]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_70
@@ -4197,7 +4200,7 @@ Measure_isSigmaFinite.phant_axioms (T:=T) (R:=R)
 Builders_69.Builders_69_mu__canonical__measure_function_SFiniteMeasure is not universe polymorphic
 Arguments
   Builders_69.Builders_69_mu__canonical__measure_function_SFiniteMeasure
-  [d]%measure_display_scope [T R] [mu]%function_scope
+  [d]%_measure_display_scope [T R] [mu]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_70
@@ -4232,7 +4235,7 @@ Measure_isSigmaFinite.phant_axioms (T:=T) (R:=R)
 Builders_69.Builders_69_mu__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   Builders_69.Builders_69_mu__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope [T R] [mu]%function_scope
+  [d]%_measure_display_scope [T R] [mu]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_70
@@ -4265,7 +4268,7 @@ Measure_isSigmaFinite.phant_axioms (T:=T) (R:=R)
 Builders_69.Builders_69_mu__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   Builders_69.Builders_69_mu__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope [T R] [mu]%function_scope
+  [d]%_measure_display_scope [T R] [mu]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_70
@@ -4298,7 +4301,7 @@ Measure_isSigmaFinite.phant_axioms (T:=T) (R:=R)
 Builders_69.Builders_69_mu__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   Builders_69.Builders_69_mu__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope [T R] [mu]%function_scope
+  [d]%_measure_display_scope [T R] [mu]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_70
@@ -4331,7 +4334,7 @@ Measure_isSigmaFinite.phant_axioms (T:=T) (R:=R)
 Builders_69.Builders_69_mu__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   Builders_69.Builders_69_mu__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope [T R] [mu]%function_scope
+  [d]%_measure_display_scope [T R] [mu]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_70
@@ -4364,7 +4367,7 @@ Measure_isSigmaFinite.phant_axioms (T:=T) (R:=R)
 Builders_69.Builders_69_mu__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   Builders_69.Builders_69_mu__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope [T R] [mu]%function_scope
+  [d]%_measure_display_scope [T R] [mu]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_70
@@ -4382,7 +4385,7 @@ forall [d : measure_display] (T : measurableType d) (R : realFieldType),
 sigma_finite (T:=T) (R:=R) [set: T] mzero
 
 sigma_finite_mzero is not universe polymorphic
-Arguments sigma_finite_mzero [d]%measure_display_scope T R
+Arguments sigma_finite_mzero [d]%_measure_display_scope T R
 sigma_finite_mzero is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.sigma_finite_mzero
@@ -4402,7 +4405,7 @@ forall [d : measure_display] (T : measurableType d) (R : realFieldType),
 measure_function_mzero__canonical__measure_function_SigmaFiniteContent is not universe polymorphic
 Arguments
   measure_function_mzero__canonical__measure_function_SigmaFiniteContent
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_SigmaFiniteContent is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_SigmaFiniteContent
@@ -4415,7 +4418,7 @@ forall [d : measure_display] (T : measurableType d) (R : realFieldType),
 measure_function_mzero__canonical__measure_function_SigmaFiniteContent is not universe polymorphic
 Arguments
   measure_function_mzero__canonical__measure_function_SigmaFiniteContent
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_SigmaFiniteContent is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_SigmaFiniteContent
@@ -4428,7 +4431,7 @@ forall [d : measure_display] (T : measurableType d) (R : realFieldType),
 measure_function_mzero__canonical__measure_function_SigmaFiniteContent is not universe polymorphic
 Arguments
   measure_function_mzero__canonical__measure_function_SigmaFiniteContent
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_SigmaFiniteContent is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_SigmaFiniteContent
@@ -4441,7 +4444,7 @@ forall [d : measure_display] (T : measurableType d) (R : realFieldType),
 measure_function_mzero__canonical__measure_function_SigmaFiniteContent is not universe polymorphic
 Arguments
   measure_function_mzero__canonical__measure_function_SigmaFiniteContent
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_SigmaFiniteContent is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_SigmaFiniteContent
@@ -4454,7 +4457,7 @@ forall [d : measure_display] (T : measurableType d) (R : realFieldType),
 measure_function_mzero__canonical__measure_function_SigmaFiniteContent is not universe polymorphic
 Arguments
   measure_function_mzero__canonical__measure_function_SigmaFiniteContent
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_SigmaFiniteContent is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_SigmaFiniteContent
@@ -4467,7 +4470,7 @@ forall [d : measure_display] (T : measurableType d) (R : realFieldType),
 measure_function_mzero__canonical__measure_function_SigmaFiniteContent is not universe polymorphic
 Arguments
   measure_function_mzero__canonical__measure_function_SigmaFiniteContent
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_SigmaFiniteContent is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_SigmaFiniteContent
@@ -4480,7 +4483,7 @@ forall [d : measure_display] (T : measurableType d) (R : realFieldType),
 measure_function_mzero__canonical__measure_function_SigmaFiniteContent is not universe polymorphic
 Arguments
   measure_function_mzero__canonical__measure_function_SigmaFiniteContent
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_SigmaFiniteContent is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_SigmaFiniteContent
@@ -4494,7 +4497,7 @@ forall [d : measure_display] (T : measurableType d) (R : realType),
 sfinite_measure (T:=T) (R:=R) mzero
 
 sfinite_mzero is not universe polymorphic
-Arguments sfinite_mzero [d]%measure_display_scope T R
+Arguments sfinite_mzero [d]%_measure_display_scope T R
 sfinite_mzero is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.sfinite_mzero
@@ -4514,7 +4517,7 @@ forall [d : measure_display] (T : measurableType d) (R : realType),
 measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure
@@ -4527,7 +4530,7 @@ forall [d : measure_display] (T : measurableType d) (R : realType),
 measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure
@@ -4540,7 +4543,7 @@ forall [d : measure_display] (T : measurableType d) (R : realType),
 measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure
@@ -4553,7 +4556,7 @@ forall [d : measure_display] (T : measurableType d) (R : realType),
 measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure
@@ -4566,7 +4569,7 @@ forall [d : measure_display] (T : measurableType d) (R : realType),
 measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure
@@ -4579,7 +4582,7 @@ forall [d : measure_display] (T : measurableType d) (R : realType),
 measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure
@@ -4592,7 +4595,7 @@ forall [d : measure_display] (T : measurableType d) (R : realType),
 measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mzero__canonical__measure_function_SigmaFiniteMeasure
@@ -4653,7 +4656,7 @@ Measure_isFinite.phant_axioms (T:=T) (R:=R)
 Builders_82.Builders_82_k__canonical__measure_function_SFiniteMeasure is not universe polymorphic
 Arguments
   Builders_82.Builders_82_k__canonical__measure_function_SFiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_83
@@ -4686,7 +4689,7 @@ Measure_isFinite.phant_axioms (T:=T) (R:=R)
 Builders_82.Builders_82_k__canonical__measure_function_SFiniteMeasure is not universe polymorphic
 Arguments
   Builders_82.Builders_82_k__canonical__measure_function_SFiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_83
@@ -4719,7 +4722,7 @@ Measure_isFinite.phant_axioms (T:=T) (R:=R)
 Builders_82.Builders_82_k__canonical__measure_function_SFiniteMeasure is not universe polymorphic
 Arguments
   Builders_82.Builders_82_k__canonical__measure_function_SFiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_83
@@ -4752,7 +4755,7 @@ Measure_isFinite.phant_axioms (T:=T) (R:=R)
 Builders_82.Builders_82_k__canonical__measure_function_SFiniteMeasure is not universe polymorphic
 Arguments
   Builders_82.Builders_82_k__canonical__measure_function_SFiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_83
@@ -4785,7 +4788,7 @@ Measure_isFinite.phant_axioms (T:=T) (R:=R)
 Builders_82.Builders_82_k__canonical__measure_function_SFiniteMeasure is not universe polymorphic
 Arguments
   Builders_82.Builders_82_k__canonical__measure_function_SFiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_83
@@ -4827,7 +4830,7 @@ Measure_isFinite.phant_axioms (T:=T) (R:=R)
 Builders_82.Builders_82_k__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   Builders_82.Builders_82_k__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_83
@@ -4860,7 +4863,7 @@ Measure_isFinite.phant_axioms (T:=T) (R:=R)
 Builders_82.Builders_82_k__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   Builders_82.Builders_82_k__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_83
@@ -4893,7 +4896,7 @@ Measure_isFinite.phant_axioms (T:=T) (R:=R)
 Builders_82.Builders_82_k__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   Builders_82.Builders_82_k__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_83
@@ -4926,7 +4929,7 @@ Measure_isFinite.phant_axioms (T:=T) (R:=R)
 Builders_82.Builders_82_k__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   Builders_82.Builders_82_k__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_83
@@ -4959,7 +4962,7 @@ Measure_isFinite.phant_axioms (T:=T) (R:=R)
 Builders_82.Builders_82_k__canonical__measure_function_SigmaFiniteMeasure is not universe polymorphic
 Arguments
   Builders_82.Builders_82_k__canonical__measure_function_SigmaFiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_83
@@ -5000,7 +5003,7 @@ Measure_isFinite.phant_axioms (T:=T) (R:=R)
 Builders_82.Builders_82_k__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments
   Builders_82.Builders_82_k__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_83
@@ -5033,7 +5036,7 @@ Measure_isFinite.phant_axioms (T:=T) (R:=R)
 Builders_82.Builders_82_k__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments
   Builders_82.Builders_82_k__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_83
@@ -5066,7 +5069,7 @@ Measure_isFinite.phant_axioms (T:=T) (R:=R)
 Builders_82.Builders_82_k__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments
   Builders_82.Builders_82_k__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_83
@@ -5099,7 +5102,7 @@ Measure_isFinite.phant_axioms (T:=T) (R:=R)
 Builders_82.Builders_82_k__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments
   Builders_82.Builders_82_k__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_83
@@ -5132,7 +5135,7 @@ Measure_isFinite.phant_axioms (T:=T) (R:=R)
 Builders_82.Builders_82_k__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments
   Builders_82.Builders_82_k__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_83
@@ -5169,7 +5172,7 @@ d.-measurable%classic D -> {finite_measure set T -> \bar R}%R
 
 measure_function_mrestr__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_mrestr__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R] mu [D]%_classical_set_scope 
   mD
 measure_function_mrestr__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
@@ -5184,7 +5187,7 @@ d.-measurable%classic D -> {finite_measure set T -> \bar R}%R
 
 measure_function_mrestr__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_mrestr__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R] mu [D]%_classical_set_scope 
   mD
 measure_function_mrestr__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
@@ -5199,7 +5202,7 @@ d.-measurable%classic D -> {finite_measure set T -> \bar R}%R
 
 measure_function_mrestr__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_mrestr__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R] mu [D]%_classical_set_scope 
   mD
 measure_function_mrestr__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
@@ -5214,7 +5217,7 @@ d.-measurable%classic D -> {finite_measure set T -> \bar R}%R
 
 measure_function_mrestr__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_mrestr__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R] mu [D]%_classical_set_scope 
   mD
 measure_function_mrestr__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
@@ -5229,7 +5232,7 @@ d.-measurable%classic D -> {finite_measure set T -> \bar R}%R
 
 measure_function_mrestr__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_mrestr__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R] mu [D]%_classical_set_scope 
   mD
 measure_function_mrestr__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
@@ -5260,7 +5263,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 
 measure_function_mscale__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_mscale__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu r
+  [d]%_measure_display_scope [T R] mu r
 measure_function_mscale__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mscale__canonical__measure_function_FiniteMeasure
@@ -5273,7 +5276,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 
 measure_function_mscale__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_mscale__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu r
+  [d]%_measure_display_scope [T R] mu r
 measure_function_mscale__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mscale__canonical__measure_function_FiniteMeasure
@@ -5286,7 +5289,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 
 measure_function_mscale__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_mscale__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu r
+  [d]%_measure_display_scope [T R] mu r
 measure_function_mscale__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mscale__canonical__measure_function_FiniteMeasure
@@ -5299,7 +5302,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 
 measure_function_mscale__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_mscale__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu r
+  [d]%_measure_display_scope [T R] mu r
 measure_function_mscale__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mscale__canonical__measure_function_FiniteMeasure
@@ -5312,7 +5315,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 
 measure_function_mscale__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_mscale__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu r
+  [d]%_measure_display_scope [T R] mu r
 measure_function_mscale__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_mscale__canonical__measure_function_FiniteMeasure
@@ -5362,7 +5365,7 @@ Measure_isSFinite.phant_axioms (T:=T) (R:=R)
 Builders_108.Builders_108_k__canonical__measure_function_SFiniteMeasure is not universe polymorphic
 Arguments
   Builders_108.Builders_108_k__canonical__measure_function_SFiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_109
@@ -5395,7 +5398,7 @@ Measure_isSFinite.phant_axioms (T:=T) (R:=R)
 Builders_108.Builders_108_k__canonical__measure_function_SFiniteMeasure is not universe polymorphic
 Arguments
   Builders_108.Builders_108_k__canonical__measure_function_SFiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_109
@@ -5428,7 +5431,7 @@ Measure_isSFinite.phant_axioms (T:=T) (R:=R)
 Builders_108.Builders_108_k__canonical__measure_function_SFiniteMeasure is not universe polymorphic
 Arguments
   Builders_108.Builders_108_k__canonical__measure_function_SFiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_109
@@ -5461,7 +5464,7 @@ Measure_isSFinite.phant_axioms (T:=T) (R:=R)
 Builders_108.Builders_108_k__canonical__measure_function_SFiniteMeasure is not universe polymorphic
 Arguments
   Builders_108.Builders_108_k__canonical__measure_function_SFiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_109
@@ -5494,7 +5497,7 @@ Measure_isSFinite.phant_axioms (T:=T) (R:=R)
 Builders_108.Builders_108_k__canonical__measure_function_SFiniteMeasure is not universe polymorphic
 Arguments
   Builders_108.Builders_108_k__canonical__measure_function_SFiniteMeasure
-  [d]%measure_display_scope [T R] [k]%function_scope
+  [d]%_measure_display_scope [T R] [k]%_function_scope
   [local_mixin_measure_function_isContent
    local_mixin_measure_function_Content_isMeasure]
   fresh_name_109
@@ -5539,7 +5542,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 
 measure_function_s__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_s__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu n%nat_scope
+  [d]%_measure_display_scope [T R] mu n%_nat_scope
 measure_function_s__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_s__canonical__measure_function_Measure
@@ -5551,7 +5554,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 
 measure_function_s__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_s__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu n%nat_scope
+  [d]%_measure_display_scope [T R] mu n%_nat_scope
 measure_function_s__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_s__canonical__measure_function_Measure
@@ -5563,7 +5566,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 
 measure_function_s__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_s__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu n%nat_scope
+  [d]%_measure_display_scope [T R] mu n%_nat_scope
 measure_function_s__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_s__canonical__measure_function_Measure
@@ -5575,7 +5578,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 
 measure_function_s__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_s__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu n%nat_scope
+  [d]%_measure_display_scope [T R] mu n%_nat_scope
 measure_function_s__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_s__canonical__measure_function_Measure
@@ -5587,7 +5590,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 
 measure_function_s__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_s__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu n%nat_scope
+  [d]%_measure_display_scope [T R] mu n%_nat_scope
 measure_function_s__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_s__canonical__measure_function_Measure
@@ -5599,7 +5602,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 
 measure_function_s__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_s__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu n%nat_scope
+  [d]%_measure_display_scope [T R] mu n%_nat_scope
 measure_function_s__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_s__canonical__measure_function_Measure
@@ -5621,7 +5624,7 @@ nat -> {finite_measure set T -> \bar R}%R
 
 measure_function_s__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_s__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu n%nat_scope
+  [d]%_measure_display_scope [T R] mu n%_nat_scope
 measure_function_s__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_s__canonical__measure_function_FiniteMeasure
@@ -5634,7 +5637,7 @@ nat -> {finite_measure set T -> \bar R}%R
 
 measure_function_s__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_s__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu n%nat_scope
+  [d]%_measure_display_scope [T R] mu n%_nat_scope
 measure_function_s__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_s__canonical__measure_function_FiniteMeasure
@@ -5647,7 +5650,7 @@ nat -> {finite_measure set T -> \bar R}%R
 
 measure_function_s__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_s__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu n%nat_scope
+  [d]%_measure_display_scope [T R] mu n%_nat_scope
 measure_function_s__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_s__canonical__measure_function_FiniteMeasure
@@ -5660,7 +5663,7 @@ nat -> {finite_measure set T -> \bar R}%R
 
 measure_function_s__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_s__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu n%nat_scope
+  [d]%_measure_display_scope [T R] mu n%_nat_scope
 measure_function_s__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_s__canonical__measure_function_FiniteMeasure
@@ -5673,7 +5676,7 @@ nat -> {finite_measure set T -> \bar R}%R
 
 measure_function_s__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_s__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu n%nat_scope
+  [d]%_measure_display_scope [T R] mu n%_nat_scope
 measure_function_s__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_s__canonical__measure_function_FiniteMeasure
@@ -5686,7 +5689,7 @@ nat -> {finite_measure set T -> \bar R}%R
 
 measure_function_s__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_s__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R] mu n%nat_scope
+  [d]%_measure_display_scope [T R] mu n%_nat_scope
 measure_function_s__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measure_function_s__canonical__measure_function_FiniteMeasure
@@ -5700,7 +5703,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 ({finite_measure set T -> \bar R}%R) ^nat
 
 sfinite_measure_seq is not universe polymorphic
-Arguments sfinite_measure_seq [d]%measure_display_scope [T R] mu _
+Arguments sfinite_measure_seq [d]%_measure_display_scope [T R] mu _
 sfinite_measure_seq is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.sfinite_measure_seq
@@ -5716,8 +5719,8 @@ d.-measurable%classic U ->
 mu U = mseries (fun x : nat => sfinite_measure_seq (T:=T) mu x) 0 U
 
 sfinite_measure_seqP is not universe polymorphic
-Arguments sfinite_measure_seqP [d]%measure_display_scope 
-  [T R] mu [U]%classical_set_scope _
+Arguments sfinite_measure_seqP [d]%_measure_display_scope 
+  [T R] mu [U]%_classical_set_scope _
 sfinite_measure_seqP is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.sfinite_measure_seqP
@@ -5739,9 +5742,9 @@ forall [d : measure_display] [T : measurableType d]
 d.-measurable%classic D -> (f D < +oo)%E -> set T -> \bar R
 
 mfrestr is not universe polymorphic
-Arguments mfrestr [d]%measure_display_scope [T R] 
-  [D]%classical_set_scope [f]%function_scope mD _ 
-  X%classical_set_scope
+Arguments mfrestr [d]%_measure_display_scope [T R] 
+  [D]%_classical_set_scope [f]%_function_scope mD 
+  _ X%_classical_set_scope
 mfrestr is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.mfrestr
@@ -5767,7 +5770,7 @@ d.-measurable%classic D -> (mu D < +oo)%E -> Measure.Exports.measure T R
 
 measure_function_mfrestr__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mfrestr__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R mu] [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R mu] [D]%_classical_set_scope 
   mD moo
 measure_function_mfrestr__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -5782,7 +5785,7 @@ d.-measurable%classic D -> (mu D < +oo)%E -> Measure.Exports.measure T R
 
 measure_function_mfrestr__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mfrestr__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R mu] [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R mu] [D]%_classical_set_scope 
   mD moo
 measure_function_mfrestr__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -5797,7 +5800,7 @@ d.-measurable%classic D -> (mu D < +oo)%E -> Measure.Exports.measure T R
 
 measure_function_mfrestr__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mfrestr__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R mu] [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R mu] [D]%_classical_set_scope 
   mD moo
 measure_function_mfrestr__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -5812,7 +5815,7 @@ d.-measurable%classic D -> (mu D < +oo)%E -> Measure.Exports.measure T R
 
 measure_function_mfrestr__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mfrestr__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R mu] [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R mu] [D]%_classical_set_scope 
   mD moo
 measure_function_mfrestr__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -5827,7 +5830,7 @@ d.-measurable%classic D -> (mu D < +oo)%E -> Measure.Exports.measure T R
 
 measure_function_mfrestr__canonical__measure_function_Measure is not universe polymorphic
 Arguments measure_function_mfrestr__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R mu] [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R mu] [D]%_classical_set_scope 
   mD moo
 measure_function_mfrestr__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -5853,7 +5856,7 @@ d.-measurable%classic D ->
 
 measure_function_mfrestr__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_mfrestr__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R mu] [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R mu] [D]%_classical_set_scope 
   mD moo
 measure_function_mfrestr__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
@@ -5869,7 +5872,7 @@ d.-measurable%classic D ->
 
 measure_function_mfrestr__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_mfrestr__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R mu] [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R mu] [D]%_classical_set_scope 
   mD moo
 measure_function_mfrestr__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
@@ -5885,7 +5888,7 @@ d.-measurable%classic D ->
 
 measure_function_mfrestr__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_mfrestr__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R mu] [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R mu] [D]%_classical_set_scope 
   mD moo
 measure_function_mfrestr__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
@@ -5901,7 +5904,7 @@ d.-measurable%classic D ->
 
 measure_function_mfrestr__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_mfrestr__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R mu] [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R mu] [D]%_classical_set_scope 
   mD moo
 measure_function_mfrestr__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
@@ -5917,7 +5920,7 @@ d.-measurable%classic D ->
 
 measure_function_mfrestr__canonical__measure_function_FiniteMeasure is not universe polymorphic
 Arguments measure_function_mfrestr__canonical__measure_function_FiniteMeasure
-  [d]%measure_display_scope [T R mu] [D]%classical_set_scope 
+  [d]%_measure_display_scope [T R mu] [D]%_classical_set_scope 
   mD moo
 measure_function_mfrestr__canonical__measure_function_FiniteMeasure is transparent
 Expands to: Constant
@@ -5942,8 +5945,8 @@ d.-measurable%classic A ->
 d.-measurable%classic B -> (mu (A `&` B)%classic <= mu A)%E
 
 measureIl is not universe polymorphic
-Arguments measureIl [d]%measure_display_scope [T R] 
-  mu [A B]%classical_set_scope mA mB
+Arguments measureIl [d]%_measure_display_scope [T R] 
+  mu [A B]%_classical_set_scope mA mB
 measureIl is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measureIl
@@ -5963,8 +5966,8 @@ d.-measurable%classic A ->
 d.-measurable%classic B -> (mu (A `&` B)%classic <= mu B)%E
 
 measureIr is not universe polymorphic
-Arguments measureIr [d]%measure_display_scope [T R] 
-  mu [A B]%classical_set_scope mA mB
+Arguments measureIr [d]%_measure_display_scope [T R] 
+  mu [A B]%_classical_set_scope mA mB
 measureIr is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measureIr
@@ -5984,8 +5987,8 @@ d.-measurable%classic A ->
 d.-measurable%classic B -> (A `<=` B)%classic -> mu B = 0%R -> mu A = 0%R
 
 subset_measure0 is not universe polymorphic
-Arguments subset_measure0 [d]%measure_display_scope 
-  [T R mu] [A B]%classical_set_scope mA mB _ _
+Arguments subset_measure0 [d]%_measure_display_scope 
+  [T R mu] [A B]%_classical_set_scope mA mB _ _
 subset_measure0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.subset_measure0
@@ -6014,8 +6017,8 @@ d.-measurable%classic B ->
 mu A = (mu (A `\` B)%classic + mu (A `&` B)%classic)%R
 
 measureDI is not universe polymorphic
-Arguments measureDI [d]%measure_display_scope [T R] 
-  mu [A B]%classical_set_scope _ _
+Arguments measureDI [d]%_measure_display_scope [T R] 
+  mu [A B]%_classical_set_scope _ _
 measureDI is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measureDI
@@ -6043,8 +6046,8 @@ d.-measurable%classic B ->
 (mu A < +oo)%E -> mu (A `\` B)%classic = (mu A - mu (A `&` B)%classic)%E
 
 measureD is not universe polymorphic
-Arguments measureD [d]%measure_display_scope [T R mu]
-  [A B]%classical_set_scope _ _ _
+Arguments measureD [d]%_measure_display_scope [T R mu]
+  [A B]%_classical_set_scope _ _ _
 measureD is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measureD
@@ -6069,8 +6072,8 @@ d.-measurable%classic A ->
 d.-measurable%classic B -> (mu (A `|` B)%classic <= (mu A + mu B)%R)%E
 
 measureU2 is not universe polymorphic
-Arguments measureU2 [d]%measure_display_scope [T R] 
-  mu [A B]%classical_set_scope _ _
+Arguments measureU2 [d]%_measure_display_scope [T R] 
+  mu [A B]%_classical_set_scope _ _
 measureU2 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measureU2
@@ -6105,8 +6108,8 @@ d.-measurable%classic B ->
 mu (A `|` B)%classic = ((mu A + mu B)%R - mu (A `&` B)%classic)%E
 
 measureUfinr is not universe polymorphic
-Arguments measureUfinr [d]%measure_display_scope [T R mu]
-  [A B]%classical_set_scope _ _ _
+Arguments measureUfinr [d]%_measure_display_scope 
+  [T R mu] [A B]%_classical_set_scope _ _ _
 measureUfinr is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measureUfinr
@@ -6134,8 +6137,8 @@ d.-measurable%classic B ->
 mu (A `|` B)%classic = ((mu A + mu B)%R - mu (A `&` B)%classic)%E
 
 measureUfinl is not universe polymorphic
-Arguments measureUfinl [d]%measure_display_scope [T R mu]
-  [A B]%classical_set_scope _ _ _
+Arguments measureUfinl [d]%_measure_display_scope 
+  [T R mu] [A B]%_classical_set_scope _ _ _
 measureUfinl is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measureUfinl
@@ -6157,8 +6160,8 @@ d.-measurable%classic B ->
 mu A = 0%R -> mu B = 0%R -> mu (A `|` B)%classic = 0%R
 
 null_set_setU is not universe polymorphic
-Arguments null_set_setU [d]%measure_display_scope 
-  [T R mu] [A B]%classical_set_scope _ _ _ _
+Arguments null_set_setU [d]%_measure_display_scope 
+  [T R mu] [A B]%_classical_set_scope _ _ _ _
 null_set_setU is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.null_set_setU
@@ -6181,8 +6184,8 @@ d.-measurable%classic A ->
 d.-measurable%classic B -> mu B = 0%R -> mu (A `|` B)%classic = mu A
 
 measureU0 is not universe polymorphic
-Arguments measureU0 [d]%measure_display_scope [T R mu]
-  [A B]%classical_set_scope _ _ _
+Arguments measureU0 [d]%_measure_display_scope [T R mu]
+  [A B]%_classical_set_scope _ _ _
 measureU0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.measureU0
@@ -6210,8 +6213,8 @@ mu (A `&` B)%classic = mu' (A `&` B)%classic ->
 mu (A `|` B)%classic = mu' (A `|` B)%classic
 
 eq_measureU is not universe polymorphic
-Arguments eq_measureU [d]%measure_display_scope [T R]
-  [A B]%classical_set_scope [mu mu'] _ _ _ _ _
+Arguments eq_measureU [d]%_measure_display_scope [T R]
+  [A B]%_classical_set_scope [mu mu'] _ _ _ _ _
 eq_measureU is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.eq_measureU
@@ -6261,8 +6264,8 @@ exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` (mu \o F) @^-1` t)%classic
 
-Arguments nondecreasing_cvg_mu [d]%measure_display_scope 
-  [T R mu F] _%function_scope _ _ [t] _
+Arguments nondecreasing_cvg_mu [d]%_measure_display_scope 
+  [T R mu F] _%_function_scope _ _ [t] _
 nondecreasing_cvg_mu is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.nondecreasing_cvg_mu
@@ -6321,8 +6324,8 @@ exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` (mu \o F) @^-1` t)%classic
 
-Arguments nonincreasing_cvg_mu [d]%measure_display_scope 
-  [T R mu F] _ _%function_scope _ _ [t] _
+Arguments nonincreasing_cvg_mu [d]%_measure_display_scope 
+  [T R mu F] _ _%_function_scope _ _ [t] _
 nonincreasing_cvg_mu is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.nonincreasing_cvg_mu
@@ -6384,10 +6387,10 @@ forall X : set T,
 <<s D, [set X0 | G X0 /\ X0 `<=` D] >>%classic X -> m1 X = m2 X
 
 g_sigma_algebra_measure_unique_trace is not universe polymorphic
-Arguments g_sigma_algebra_measure_unique_trace {d}%measure_display_scope
-  {R T} (G D)%classical_set_scope mD Hm setIH m1 m2 
-  m1m2D m1m2%function_scope m1oo _%function_scope 
-  X%classical_set_scope _
+Arguments g_sigma_algebra_measure_unique_trace {d}%_measure_display_scope
+  {R T} (G D)%_classical_set_scope mD Hm setIH m1 
+  m2 m1m2D m1m2%_function_scope m1oo _%_function_scope 
+  X%_classical_set_scope _
 g_sigma_algebra_measure_unique_trace is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.g_sigma_algebra_measure_unique_trace
@@ -6431,7 +6434,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="lim_sup_set" class="id"><a name="lim_sup_set" class="" title="lim_sup_set : forall [T : Type], (set T) ^nat -> set T
 
 lim_sup_set is not universe polymorphic
-Arguments lim_sup_set [T]%type_scope F _
+Arguments lim_sup_set [T]%_type_scope F _
 lim_sup_set is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.lim_sup_set
@@ -6453,8 +6456,8 @@ forall {d : measure_display} {T : measurableType d}
 (mu (lim_sup_set F) <= mu (\bigcup_(k in [set k | (n <= k)%N]) F k)%classic)%E
 
 lim_sup_set_ub is not universe polymorphic
-Arguments lim_sup_set_ub {d}%measure_display_scope 
-  {T R} mu [F] n%nat_scope _%function_scope
+Arguments lim_sup_set_ub {d}%_measure_display_scope 
+  {T R} mu [F] n%_nat_scope _%_function_scope
 lim_sup_set_ub is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.lim_sup_set_ub
@@ -6485,8 +6488,8 @@ filter.cvg_to
   (filter.nbhs (mu (lim_sup_set F)))
 
 lim_sup_set_cvg is not universe polymorphic
-Arguments lim_sup_set_cvg {d}%measure_display_scope 
-  {T R} mu F _%function_scope _ t _
+Arguments lim_sup_set_cvg {d}%_measure_display_scope 
+  {T R} mu F _%_function_scope _ t _
 lim_sup_set_cvg is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.lim_sup_set_cvg
@@ -6522,8 +6525,8 @@ forall [d : measure_display] [T : measurableType d]
 (\big[+%R/0%R]_(0 <= n <oo) mu (F n) < +oo)%E -> mu (lim_sup_set F) = 0%R
 
 lim_sup_set_cvg0 is not universe polymorphic
-Arguments lim_sup_set_cvg0 [d]%measure_display_scope 
-  [T] {R} [mu F] _%function_scope _
+Arguments lim_sup_set_cvg0 [d]%_measure_display_scope 
+  [T] {R} [mu F] _%_function_scope _
 lim_sup_set_cvg0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.lim_sup_set_cvg0
@@ -6557,8 +6560,8 @@ forall [d : measure_display] [R : realFieldType] [T : ringOfSetsType d]
 (mu (\big[setU/set0]_(i < n) A i) <= (\sum_(i < n) mu (A i))%R)%E
 
 Boole_inequality is not universe polymorphic
-Arguments Boole_inequality [d]%measure_display_scope 
-  [R T] mu [A] [n]%nat_scope _%function_scope
+Arguments Boole_inequality [d]%_measure_display_scope 
+  [R T] mu [A] [n]%_nat_scope _%_function_scope
 Boole_inequality is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.Boole_inequality
@@ -6590,8 +6593,8 @@ sigma_finite (T:=T) (R:=R) A mu <->
      & forall i : nat, d.-measurable%classic (F i) /\ (mu (F i) < +oo)%E])
 
 sigma_finiteP is not universe polymorphic
-Arguments sigma_finiteP [d]%measure_display_scope 
-  [T R] A%classical_set_scope mu
+Arguments sigma_finiteP [d]%_measure_display_scope 
+  [T R] A%_classical_set_scope mu
 sigma_finiteP is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.sigma_finiteP
@@ -6630,8 +6633,8 @@ d.-measurable%classic (\bigcup_n A n) ->
 (mu (\bigcup_n A n)%classic <= \big[+%R/0%R]_(0 <= i <oo) mu (A i))%E
 
 generalized_Boole_inequality is not universe polymorphic
-Arguments generalized_Boole_inequality [d]%measure_display_scope 
-  [T R] mu [A] _%function_scope _
+Arguments generalized_Boole_inequality [d]%_measure_display_scope 
+  [T R] mu [A] _%_function_scope _
 generalized_Boole_inequality is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.generalized_Boole_inequality
@@ -6670,9 +6673,9 @@ forall [m1 m2 : Measure.Exports.measure T R],
 forall [A : set T], <<s G >>%classic A -> m1 A = m2 A
 
 g_sigma_algebra_measure_unique_cover is not universe polymorphic
-Arguments g_sigma_algebra_measure_unique_cover [d]%measure_display_scope
-  [R T] [G]%classical_set_scope Gm [g] Gg%function_scope 
-  g_cover [m1 m2] _%function_scope [A]%classical_set_scope 
+Arguments g_sigma_algebra_measure_unique_cover [d]%_measure_display_scope
+  [R T] [G]%_classical_set_scope Gm [g] Gg%_function_scope 
+  g_cover [m1 m2] _%_function_scope [A]%_classical_set_scope 
   _
 g_sigma_algebra_measure_unique_cover is opaque
 Expands to: Constant
@@ -6738,10 +6741,10 @@ setI_closed G ->
 forall E : set T, <<s G >>%classic E -> m1 E = m2 E
 
 g_sigma_algebra_measure_unique is not universe polymorphic
-Arguments g_sigma_algebra_measure_unique {d}%measure_display_scope 
-  {R T} G%classical_set_scope Gm g Gg%function_scope 
-  g_cover m1 m2 setIG (m1m2 m1goo)%function_scope 
-  E%classical_set_scope _
+Arguments g_sigma_algebra_measure_unique {d}%_measure_display_scope 
+  {R T} G%_classical_set_scope Gm g Gg%_function_scope 
+  g_cover m1 m2 setIG (m1m2 m1goo)%_function_scope 
+  E%_classical_set_scope _
 g_sigma_algebra_measure_unique is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.g_sigma_algebra_measure_unique
@@ -6803,9 +6806,9 @@ forall m1 m2 : Measure.Exports.measure T R,
 forall A : set T, d.-measurable%classic A -> m1 A = m2 A
 
 measure_unique is not universe polymorphic
-Arguments measure_unique {d}%measure_display_scope 
-  {R T} G%classical_set_scope g mG setIG Gg%function_scope 
-  g_cover m1 m2 (m1m2 m1goo)%function_scope A%classical_set_scope 
+Arguments measure_unique {d}%_measure_display_scope 
+  {R T} G%_classical_set_scope g mG setIG Gg%_function_scope 
+  g_cover m1 m2 (m1m2 m1goo)%_function_scope A%_classical_set_scope 
   _
 measure_unique is opaque
 Expands to: Constant

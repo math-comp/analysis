@@ -318,7 +318,7 @@ forall [d d' : measure_display] [T : measurableType d],
 measurableType d' -> forall [R : realType], probability T R -> Type
 
 random_variable is not universe polymorphic
-Arguments random_variable [d d']%measure_display_scope [T] T' [R] P
+Arguments random_variable [d d']%_measure_display_scope [T] T' [R] P
 random_variable is transparent
 Expands to: Constant mathcomp.analysis.probability.random_variable
 Declared in library mathcomp.analysis.probability, line 104, characters 11-26
@@ -334,8 +334,9 @@ forall [R : realType] (P : measure T R) [X : T -> R] [r : R],
 r \notin range X -> P (X @^-1` [set r])%classic = 0%R
 
 notin_range_measure is not universe polymorphic
-Arguments notin_range_measure [d d']%measure_display_scope 
-  [T] T' [R] P [X]%function_scope [r]%ring_scope _
+Arguments notin_range_measure [d d']%_measure_display_scope 
+  [T] T' [R] P [X]%_function_scope [r]%_ring_scope 
+  _
 notin_range_measure is opaque
 Expands to: Constant mathcomp.analysis.probability.notin_range_measure
 Declared in library mathcomp.analysis.probability, line 109, characters 6-25
@@ -354,7 +355,7 @@ forall [R : realType] [P : probability T R] (X : {RV P >-> R}),
 P (X @^-1` range X)%classic = 1%E
 
 probability_range is not universe polymorphic
-Arguments probability_range [d d']%measure_display_scope [T] T' [R P] X
+Arguments probability_range [d d']%_measure_display_scope [T] T' [R P] X
 probability_range is opaque
 Expands to: Constant mathcomp.analysis.probability.probability_range
 Declared in library mathcomp.analysis.probability, line 114, characters 6-23
@@ -372,8 +373,8 @@ forall [d d' : measure_display] [T : measurableType d]
 probability T R -> {mfun T >-> T'} -> set T' -> \bar R
 
 distribution is not universe polymorphic
-Arguments distribution [d d']%measure_display_scope 
-  [T T' R] P X A%classical_set_scope
+Arguments distribution [d d']%_measure_display_scope 
+  [T T' R] P X A%_classical_set_scope
 distribution is transparent
 Expands to: Constant mathcomp.analysis.probability.distribution
 Declared in library mathcomp.analysis.probability, line 119, characters 11-23
@@ -411,7 +412,7 @@ probability T R -> {mfun T >-> T'} -> measure T' R
 
 probability_distribution__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_distribution__canonical__measure_function_Measure
-  [d d']%measure_display_scope {T T' R P} X
+  [d d']%_measure_display_scope {T T' R P} X
 probability_distribution__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_distribution__canonical__measure_function_Measure
@@ -423,7 +424,7 @@ probability T R -> {mfun T >-> T'} -> measure T' R
 
 probability_distribution__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_distribution__canonical__measure_function_Measure
-  [d d']%measure_display_scope {T T' R P} X
+  [d d']%_measure_display_scope {T T' R P} X
 probability_distribution__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_distribution__canonical__measure_function_Measure
@@ -435,7 +436,7 @@ probability T R -> {mfun T >-> T'} -> measure T' R
 
 probability_distribution__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_distribution__canonical__measure_function_Measure
-  [d d']%measure_display_scope {T T' R P} X
+  [d d']%_measure_display_scope {T T' R P} X
 probability_distribution__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_distribution__canonical__measure_function_Measure
@@ -447,7 +448,7 @@ probability T R -> {mfun T >-> T'} -> measure T' R
 
 probability_distribution__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_distribution__canonical__measure_function_Measure
-  [d d']%measure_display_scope {T T' R P} X
+  [d d']%_measure_display_scope {T T' R P} X
 probability_distribution__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_distribution__canonical__measure_function_Measure
@@ -459,7 +460,7 @@ probability T R -> {mfun T >-> T'} -> measure T' R
 
 probability_distribution__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_distribution__canonical__measure_function_Measure
-  [d d']%measure_display_scope {T T' R P} X
+  [d d']%_measure_display_scope {T T' R P} X
 probability_distribution__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_distribution__canonical__measure_function_Measure
@@ -482,7 +483,7 @@ probability T R -> {mfun T >-> T'} -> probability T' R
 probability_distribution__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_distribution__canonical__probability_measure_Probability
-  [d d']%measure_display_scope {T T' R P} X
+  [d d']%_measure_display_scope {T T' R P} X
 probability_distribution__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_distribution__canonical__probability_measure_Probability
@@ -495,7 +496,7 @@ probability T R -> {mfun T >-> T'} -> probability T' R
 probability_distribution__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_distribution__canonical__probability_measure_Probability
-  [d d']%measure_display_scope {T T' R P} X
+  [d d']%_measure_display_scope {T T' R P} X
 probability_distribution__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_distribution__canonical__probability_measure_Probability
@@ -508,7 +509,7 @@ probability T R -> {mfun T >-> T'} -> probability T' R
 probability_distribution__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_distribution__canonical__probability_measure_Probability
-  [d d']%measure_display_scope {T T' R P} X
+  [d d']%_measure_display_scope {T T' R P} X
 probability_distribution__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_distribution__canonical__probability_measure_Probability
@@ -521,7 +522,7 @@ probability T R -> {mfun T >-> T'} -> probability T' R
 probability_distribution__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_distribution__canonical__probability_measure_Probability
-  [d d']%measure_display_scope {T T' R P} X
+  [d d']%_measure_display_scope {T T' R P} X
 probability_distribution__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_distribution__canonical__probability_measure_Probability
@@ -534,7 +535,7 @@ probability T R -> {mfun T >-> T'} -> probability T' R
 probability_distribution__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_distribution__canonical__probability_measure_Probability
-  [d d']%measure_display_scope {T T' R P} X
+  [d d']%_measure_display_scope {T T' R P} X
 probability_distribution__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_distribution__canonical__probability_measure_Probability
@@ -556,7 +557,7 @@ forall [d d' : measure_display] {T : measurableType d}
 P [set x | X x = r]%classic = distribution (T':=T') P X [set r]
 
 probability_distribution is not universe polymorphic
-Arguments probability_distribution [d d']%measure_display_scope 
+Arguments probability_distribution [d d']%_measure_display_scope 
   {T T' R} [P] X r
 probability_distribution is opaque
 Expands to: Constant mathcomp.analysis.probability.probability_distribution
@@ -580,8 +581,8 @@ measurable_fun (T:=T')
 (\int[distribution (T':=T') P X]_y f y)%E = (\int[P]_x (f \o X) x)%E
 
 ge0_integral_distribution is not universe polymorphic
-Arguments ge0_integral_distribution [d d']%measure_display_scope 
-  {T T' R} [P] X [f]%function_scope _ _%function_scope
+Arguments ge0_integral_distribution [d d']%_measure_display_scope 
+  {T T' R} [P] X [f]%_function_scope _ _%_function_scope
 ge0_integral_distribution is opaque
 Expands to: Constant mathcomp.analysis.probability.ge0_integral_distribution
 Declared in library mathcomp.analysis.probability, line 159, characters 6-31
@@ -605,8 +606,8 @@ P.-integrable [set: T] (f \o X) ->
 (\int[distribution (T':=T') P X]_y f y)%E = (\int[P]_x (f \o X) x)%E
 
 integral_distribution is not universe polymorphic
-Arguments integral_distribution [d d']%measure_display_scope 
-  {T T' R} [P X] [f]%function_scope _ _
+Arguments integral_distribution [d d']%_measure_display_scope 
+  {T T' R} [P X] [f]%_function_scope _ _
 integral_distribution is opaque
 Expands to: Constant mathcomp.analysis.probability.integral_distribution
 Declared in library mathcomp.analysis.probability, line 164, characters 6-27
@@ -626,7 +627,7 @@ forall [d : measure_display] [T : measurableType d]
 {RV P >-> R} -> R -> \bar R
 
 cdf is not universe polymorphic
-Arguments cdf [d]%measure_display_scope [T R P] X r%ring_scope
+Arguments cdf [d]%_measure_display_scope [T R P] X r%_ring_scope
 cdf is transparent
 Expands to: Constant mathcomp.analysis.probability.cdf
 Declared in library mathcomp.analysis.probability, line 171, characters 11-14
@@ -645,7 +646,7 @@ forall [d : measure_display] {T : measurableType d}
 (0%R <= cdf (P:=P) X r)%E
 
 cdf_ge0 is not universe polymorphic
-Arguments cdf_ge0 [d]%measure_display_scope {T R} [P] X r%ring_scope
+Arguments cdf_ge0 [d]%_measure_display_scope {T R} [P] X r%_ring_scope
 cdf_ge0 is opaque
 Expands to: Constant mathcomp.analysis.probability.cdf_ge0
 Declared in library mathcomp.analysis.probability, line 179, characters 6-13
@@ -662,7 +663,7 @@ forall [d : measure_display] {T : measurableType d}
 (cdf (P:=P) X r <= 1)%E
 
 cdf_le1 is not universe polymorphic
-Arguments cdf_le1 [d]%measure_display_scope {T R} [P] X r%ring_scope
+Arguments cdf_le1 [d]%_measure_display_scope {T R} [P] X r%_ring_scope
 cdf_le1 is opaque
 Expands to: Constant mathcomp.analysis.probability.cdf_le1
 Declared in library mathcomp.analysis.probability, line 181, characters 6-13
@@ -686,7 +687,7 @@ forall [d : measure_display] {T : measurableType d}
 (fun n m : R => is_true (n <= m)%R) x y ->
 (cdf (P:=P) X x <= cdf (P:=P) X y)%E = true
 
-Arguments cdf_nondecreasing [d]%measure_display_scope {T R} [P] X [x y] _
+Arguments cdf_nondecreasing [d]%_measure_display_scope {T R} [P] X [x y] _
 cdf_nondecreasing is opaque
 Expands to: Constant mathcomp.analysis.probability.cdf_nondecreasing
 Declared in library mathcomp.analysis.probability, line 183, characters 6-23
@@ -713,7 +714,7 @@ exists M : R,
   M \is Num.real /\
   (forall x : R, (M < x)%R -> (cdf (P:=P) X @^-1` t)%classic x)
 
-Arguments cvg_cdfy1 [d]%measure_display_scope {T R} [P] X [t] _
+Arguments cvg_cdfy1 [d]%_measure_display_scope {T R} [P] X [t] _
 cvg_cdfy1 is opaque
 Expands to: Constant mathcomp.analysis.probability.cvg_cdfy1
 Declared in library mathcomp.analysis.probability, line 186, characters 6-15
@@ -755,7 +756,7 @@ exists M : R,
   M \is Num.real /\
   (forall x : R, (x < M)%R -> (cdf (P:=P) X @^-1` t)%classic x)
 
-Arguments cvg_cdfNy0 [d]%measure_display_scope {T R} [P] X [t] _
+Arguments cvg_cdfNy0 [d]%_measure_display_scope {T R} [P] X [t] _
 cvg_cdfNy0 is opaque
 Expands to: Constant mathcomp.analysis.probability.cvg_cdfNy0
 Declared in library mathcomp.analysis.probability, line 205, characters 6-16
@@ -805,8 +806,8 @@ exists2 i : R,
    `<=` (fun t0 : R =>
          (fun u : R => is_true (x < u)%R) t0 -> (cdf (P:=P) X @^-1` t) t0))%classic
 
-Arguments cdf_right_continuous [d]%measure_display_scope 
-  {T R} [P X] [x]%ring_scope [t] _
+Arguments cdf_right_continuous [d]%_measure_display_scope 
+  {T R} [P X] [x]%_ring_scope [t] _
 cdf_right_continuous is opaque
 Expands to: Constant mathcomp.analysis.probability.cdf_right_continuous
 Declared in library mathcomp.analysis.probability, line 231, characters 6-26
@@ -851,7 +852,7 @@ cumulative R
 
 probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative is not universe polymorphic
 Arguments probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative
-  [d]%measure_display_scope {T R} [P] X
+  [d]%_measure_display_scope {T R} [P] X
 probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative
@@ -865,7 +866,7 @@ cumulative R
 
 probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative is not universe polymorphic
 Arguments probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative
-  [d]%measure_display_scope {T R} [P] X
+  [d]%_measure_display_scope {T R} [P] X
 probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative
@@ -879,7 +880,7 @@ cumulative R
 
 probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative is not universe polymorphic
 Arguments probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative
-  [d]%measure_display_scope {T R} [P] X
+  [d]%_measure_display_scope {T R} [P] X
 probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative
@@ -893,7 +894,7 @@ cumulative R
 
 probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative is not universe polymorphic
 Arguments probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative
-  [d]%measure_display_scope {T R} [P] X
+  [d]%_measure_display_scope {T R} [P] X
 probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative
@@ -907,7 +908,7 @@ cumulative R
 
 probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative is not universe polymorphic
 Arguments probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative
-  [d]%measure_display_scope {T R} [P] X
+  [d]%_measure_display_scope {T R} [P] X
 probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_cdf__canonical__lebesgue_stieltjes_measure_Cumulative
@@ -1020,7 +1021,7 @@ cdf (P:=lebesgue_stieltjes_measure f)
 (f r)%:E
 
 cdf_lebesgue_stieltjes_id is not universe polymorphic
-Arguments cdf_lebesgue_stieltjes_id {R} f r%ring_scope
+Arguments cdf_lebesgue_stieltjes_id {R} f r%_ring_scope
 cdf_lebesgue_stieltjes_id is opaque
 Expands to: Constant mathcomp.analysis.probability.cdf_lebesgue_stieltjes_id
 Declared in library mathcomp.analysis.probability, line 277, characters 6-31
@@ -1316,7 +1317,7 @@ lebesgue_stieltjes_measure
 P A
 
 lebesgue_stieltjes_cdf_id is not universe polymorphic
-Arguments lebesgue_stieltjes_cdf_id {R} P [A]%classical_set_scope mA
+Arguments lebesgue_stieltjes_cdf_id {R} P [A]%_classical_set_scope mA
 lebesgue_stieltjes_cdf_id is opaque
 Expands to: Constant mathcomp.analysis.probability.lebesgue_stieltjes_cdf_id
 Declared in library mathcomp.analysis.probability, line 333, characters 6-31
@@ -1345,7 +1346,7 @@ forall [d : measure_display] [T : measurableType d]
 {RV P >-> R} -> R -> \bar R
 
 ccdf is not universe polymorphic
-Arguments ccdf [d]%measure_display_scope [T R P] X r%ring_scope
+Arguments ccdf [d]%_measure_display_scope [T R P] X r%_ring_scope
 ccdf is transparent
 Expands to: Constant mathcomp.analysis.probability.ccdf
 Declared in library mathcomp.analysis.probability, line 350, characters 11-15
@@ -1364,7 +1365,7 @@ forall [d : measure_display] {T : measurableType d}
 (cdf (P:=P) X r + ccdf (P:=P) X r)%R = 1%E
 
 cdf_ccdf_1 is not universe polymorphic
-Arguments cdf_ccdf_1 [d]%measure_display_scope {T R} [P] X r%ring_scope
+Arguments cdf_ccdf_1 [d]%_measure_display_scope {T R} [P] X r%_ring_scope
 cdf_ccdf_1 is opaque
 Expands to: Constant mathcomp.analysis.probability.cdf_ccdf_1
 Declared in library mathcomp.analysis.probability, line 358, characters 6-16
@@ -1383,7 +1384,7 @@ forall [d : measure_display] {T : measurableType d}
 (ccdf (P:=P) X r + cdf (P:=P) X r)%R = 1%E
 
 ccdf_cdf_1 is not universe polymorphic
-Arguments ccdf_cdf_1 [d]%measure_display_scope {T R} [P] X r%ring_scope
+Arguments ccdf_cdf_1 [d]%_measure_display_scope {T R} [P] X r%_ring_scope
 ccdf_cdf_1 is opaque
 Expands to: Constant mathcomp.analysis.probability.ccdf_cdf_1
 Declared in library mathcomp.analysis.probability, line 364, characters 10-20
@@ -1400,7 +1401,7 @@ forall [d : measure_display] {T : measurableType d}
 ccdf (P:=P) X r = (1 - cdf (P:=P) X r)%E
 
 ccdf_1_cdf is not universe polymorphic
-Arguments ccdf_1_cdf [d]%measure_display_scope {T R} [P] X r%ring_scope
+Arguments ccdf_1_cdf [d]%_measure_display_scope {T R} [P] X r%_ring_scope
 ccdf_1_cdf is opaque
 Expands to: Constant mathcomp.analysis.probability.ccdf_1_cdf
 Declared in library mathcomp.analysis.probability, line 367, characters 10-20
@@ -1417,7 +1418,7 @@ forall [d : measure_display] {T : measurableType d}
 cdf (P:=P) X r = (1 - ccdf (P:=P) X r)%E
 
 cdf_1_ccdf is not universe polymorphic
-Arguments cdf_1_ccdf [d]%measure_display_scope {T R} [P] X r%ring_scope
+Arguments cdf_1_ccdf [d]%_measure_display_scope {T R} [P] X r%_ring_scope
 cdf_1_ccdf is opaque
 Expands to: Constant mathcomp.analysis.probability.cdf_1_ccdf
 Declared in library mathcomp.analysis.probability, line 370, characters 10-20
@@ -1441,7 +1442,7 @@ forall [d : measure_display] {T : measurableType d}
 (fun n m : R => is_true (n <= m)%R) x y ->
 (ccdf (P:=P) X y <= ccdf (P:=P) X x)%E = true
 
-Arguments ccdf_nonincreasing [d]%measure_display_scope {T R} [P] X [x y] _
+Arguments ccdf_nonincreasing [d]%_measure_display_scope {T R} [P] X [x y] _
 ccdf_nonincreasing is opaque
 Expands to: Constant mathcomp.analysis.probability.ccdf_nonincreasing
 Declared in library mathcomp.analysis.probability, line 373, characters 6-24
@@ -1468,7 +1469,7 @@ exists M : R,
   M \is Num.real /\
   (forall x : R, (M < x)%R -> (ccdf (P:=P) X @^-1` t)%classic x)
 
-Arguments cvg_ccdfy0 [d]%measure_display_scope {T R} [P] X [t] _
+Arguments cvg_ccdfy0 [d]%_measure_display_scope {T R} [P] X [t] _
 cvg_ccdfy0 is opaque
 Expands to: Constant mathcomp.analysis.probability.cvg_ccdfy0
 Declared in library mathcomp.analysis.probability, line 376, characters 6-16
@@ -1498,7 +1499,7 @@ exists M : R,
   M \is Num.real /\
   (forall x : R, (x < M)%R -> (ccdf (P:=P) X @^-1` t)%classic x)
 
-Arguments cvg_ccdfNy1 [d]%measure_display_scope {T R} [P] X [t] _
+Arguments cvg_ccdfNy1 [d]%_measure_display_scope {T R} [P] X [t] _
 cvg_ccdfNy1 is opaque
 Expands to: Constant mathcomp.analysis.probability.cvg_ccdfNy1
 Declared in library mathcomp.analysis.probability, line 383, characters 6-17
@@ -1529,8 +1530,8 @@ exists2 i : R,
    `<=` (fun t0 : R =>
          (fun u : R => is_true (x < u)%R) t0 -> (ccdf (P:=P) X @^-1` t) t0))%classic
 
-Arguments ccdf_right_continuous [d]%measure_display_scope 
-  {T R} [P X] [x]%ring_scope [t] _
+Arguments ccdf_right_continuous [d]%_measure_display_scope 
+  {T R} [P X] [x]%_ring_scope [t] _
 ccdf_right_continuous is opaque
 Expands to: Constant mathcomp.analysis.probability.ccdf_right_continuous
 Declared in library mathcomp.analysis.probability, line 390, characters 6-27
@@ -1612,7 +1613,7 @@ forall [d : measure_display] [T : measurableType d]
 ('E_P[X])%E = (\int[P]_w (X w)%:E)%E
 
 expectation_def is not universe polymorphic
-Arguments expectation_def [d]%measure_display_scope [T R P] X
+Arguments expectation_def [d]%_measure_display_scope [T R P] X
 expectation_def is opaque
 Expands to: Constant mathcomp.analysis.probability.expectation_def
 Declared in library mathcomp.analysis.probability, line 410, characters 6-21
@@ -1628,8 +1629,8 @@ forall [d : measure_display] [T : measurableType d]
 X \in Lfun (T:=T) (R:=R) P 1 -> ('E_P[X])%E \is a fin_num
 
 expectation_fin_num is not universe polymorphic
-Arguments expectation_fin_num [d]%measure_display_scope 
-  [T R P] [X]%function_scope _
+Arguments expectation_fin_num [d]%_measure_display_scope 
+  [T R P] [X]%_function_scope _
 expectation_fin_num is opaque
 Expands to: Constant mathcomp.analysis.probability.expectation_fin_num
 Declared in library mathcomp.analysis.probability, line 413, characters 6-25
@@ -1647,7 +1648,7 @@ forall [d : measure_display] [T : measurableType d]
 ('E_P[(cst r)])%E = r%:E
 
 expectation_cst is not universe polymorphic
-Arguments expectation_cst [d]%measure_display_scope [T R] P r%ring_scope
+Arguments expectation_cst [d]%_measure_display_scope [T R] P r%_ring_scope
 expectation_cst is opaque
 Expands to: Constant mathcomp.analysis.probability.expectation_cst
 Declared in library mathcomp.analysis.probability, line 419, characters 6-21
@@ -1663,8 +1664,8 @@ forall [d : measure_display] [T : measurableType d]
 d.-measurable%classic A -> ('E_P[(\1_A)])%E = P A
 
 expectation_indic is not universe polymorphic
-Arguments expectation_indic [d]%measure_display_scope 
-  [T R] P [A]%classical_set_scope mA
+Arguments expectation_indic [d]%_measure_display_scope 
+  [T R] P [A]%_classical_set_scope mA
 expectation_indic is opaque
 Expands to: Constant mathcomp.analysis.probability.expectation_indic
 Declared in library mathcomp.analysis.probability, line 422, characters 6-23
@@ -1680,7 +1681,7 @@ forall [d : measure_display] [T : measurableType d]
 P.-integrable [set: T] (EFin \o X) -> (`|'E_P[X]| < +oo)%E
 
 integrable_expectation is not universe polymorphic
-Arguments integrable_expectation [d]%measure_display_scope [T R P X] iX
+Arguments integrable_expectation [d]%_measure_display_scope [T R P X] iX
 integrable_expectation is opaque
 Expands to: Constant mathcomp.analysis.probability.integrable_expectation
 Declared in library mathcomp.analysis.probability, line 425, characters 6-28
@@ -1700,8 +1701,8 @@ forall [d : measure_display] [T : measurableType d]
 X \in Lfun (T:=T) (R:=R) P 1 -> ('E_P[(k \o* X)])%E = (k%:E * 'E_P[X])%E
 
 expectationZl is not universe polymorphic
-Arguments expectationZl [d]%measure_display_scope 
-  [T R P] [X]%function_scope k%ring_scope _
+Arguments expectationZl [d]%_measure_display_scope 
+  [T R P] [X]%_function_scope k%_ring_scope _
 expectationZl is opaque
 Expands to: Constant mathcomp.analysis.probability.expectationZl
 Declared in library mathcomp.analysis.probability, line 432, characters 6-19
@@ -1719,8 +1720,8 @@ forall [d : measure_display] [T : measurableType d]
 (forall x : T, (0 <= X x)%R) -> (0%R <= 'E_P[X])%E
 
 expectation_ge0 is not universe polymorphic
-Arguments expectation_ge0 [d]%measure_display_scope 
-  [T R] P [X]%function_scope _%function_scope
+Arguments expectation_ge0 [d]%_measure_display_scope 
+  [T R] P [X]%_function_scope _%_function_scope
 expectation_ge0 is opaque
 Expands to: Constant mathcomp.analysis.probability.expectation_ge0
 Declared in library mathcomp.analysis.probability, line 438, characters 6-21
@@ -1744,8 +1745,8 @@ measurable_fun (T:=T)
 (\forall x \ae P, (X x <= Y x)%R) -> ('E_P[X] <= 'E_P[Y])%E
 
 expectation_le is not universe polymorphic
-Arguments expectation_le [d]%measure_display_scope 
-  [T R P] [X Y]%function_scope _ _ (_ _)%function_scope 
+Arguments expectation_le [d]%_measure_display_scope 
+  [T R P] [X Y]%_function_scope _ _ (_ _)%_function_scope 
   _
 expectation_le is opaque
 Expands to: Constant mathcomp.analysis.probability.expectation_le
@@ -1774,8 +1775,8 @@ Y \in Lfun (T:=T) (R:=R) P 1 ->
 ('E_P[(X \+ Y)])%E = (('E_P[X])%E + ('E_P[Y])%E)%R
 
 expectationD is not universe polymorphic
-Arguments expectationD [d]%measure_display_scope [T R P] 
-  [X Y]%function_scope _ _
+Arguments expectationD [d]%_measure_display_scope 
+  [T R P] [X Y]%_function_scope _ _
 expectationD is opaque
 Expands to: Constant mathcomp.analysis.probability.expectationD
 Declared in library mathcomp.analysis.probability, line 458, characters 6-18
@@ -1794,8 +1795,8 @@ X \in Lfun (T:=T) (R:=R) P 1 ->
 Y \in Lfun (T:=T) (R:=R) P 1 -> ('E_P[(X \- Y)])%E = ('E_P[X] - 'E_P[Y])%E
 
 expectationB is not universe polymorphic
-Arguments expectationB [d]%measure_display_scope [T R P] 
-  [X Y]%function_scope _ _
+Arguments expectationB [d]%_measure_display_scope 
+  [T R P] [X Y]%_function_scope _ _
 expectationB is opaque
 Expands to: Constant mathcomp.analysis.probability.expectationB
 Declared in library mathcomp.analysis.probability, line 464, characters 6-18
@@ -1815,8 +1816,8 @@ forall [d : measure_display] [T : measurableType d]
 ('E_P[(\sum_(Xi <- X) Xi)])%E = (\sum_(Xi <- X) ('E_P[Xi])%E)%R
 
 expectation_sum is not universe polymorphic
-Arguments expectation_sum [d]%measure_display_scope 
-  [T R P] [X]%seq_scope _%function_scope
+Arguments expectation_sum [d]%_measure_display_scope 
+  [T R P] [X]%_seq_scope _%_function_scope
 expectation_sum is opaque
 Expands to: Constant mathcomp.analysis.probability.expectation_sum
 Declared in library mathcomp.analysis.probability, line 470, characters 6-21
@@ -1850,8 +1851,8 @@ forall [d : measure_display] [T : measurableType d]
 ('E_P[X])%E = (\int[lebesgue_measure]_(r in `[0%R, +oo[) ccdf (P:=P) X r)%E
 
 ge0_expectation_ccdf is not universe polymorphic
-Arguments ge0_expectation_ccdf [d]%measure_display_scope 
-  [T R P X] _%function_scope
+Arguments ge0_expectation_ccdf [d]%_measure_display_scope 
+  [T R P X] _%_function_scope
 ge0_expectation_ccdf is opaque
 Expands to: Constant mathcomp.analysis.probability.ge0_expectation_ccdf
 Declared in library mathcomp.analysis.probability, line 491, characters 6-26
@@ -1994,8 +1995,8 @@ Y \in Lfun (T:=T) (R:=R) P 1 ->
 covariance P X Y = ('E_P[(X * Y)] - 'E_P[X] * 'E_P[Y])%E
 
 covarianceE is not universe polymorphic
-Arguments covarianceE [d]%measure_display_scope [T R P] 
-  [X Y]%function_scope _ _ _
+Arguments covarianceE [d]%_measure_display_scope [T R P]
+  [X Y]%_function_scope _ _ _
 covarianceE is opaque
 Expands to: Constant mathcomp.analysis.probability.covarianceE
 Declared in library mathcomp.analysis.probability, line 569, characters 6-17
@@ -2025,7 +2026,8 @@ forall [d : measure_display] [T : measurableType d]
 covariance P X Y = covariance P Y X
 
 covarianceC is not universe polymorphic
-Arguments covarianceC [d]%measure_display_scope [T R] P (X Y)%function_scope
+Arguments covarianceC [d]%_measure_display_scope [T R] 
+  P (X Y)%_function_scope
 covarianceC is opaque
 Expands to: Constant mathcomp.analysis.probability.covarianceC
 Declared in library mathcomp.analysis.probability, line 587, characters 6-17
@@ -2044,8 +2046,8 @@ Y \in Lfun (T:=T) (R:=R) P 1 ->
 (X * Y)%R \in Lfun (T:=T) (R:=R) P 1 -> covariance P X Y \is a fin_num
 
 covariance_fin_num is not universe polymorphic
-Arguments covariance_fin_num [d]%measure_display_scope 
-  [T R P] [X Y]%function_scope _ _ _
+Arguments covariance_fin_num [d]%_measure_display_scope 
+  [T R P] [X Y]%_function_scope _ _ _
 covariance_fin_num is opaque
 Expands to: Constant mathcomp.analysis.probability.covariance_fin_num
 Declared in library mathcomp.analysis.probability, line 592, characters 6-24
@@ -2065,8 +2067,8 @@ forall [d : measure_display] [T : measurableType d]
 covariance P (cst c) X = 0%R
 
 covariance_cst_l is not universe polymorphic
-Arguments covariance_cst_l [d]%measure_display_scope 
-  [T R] P c%ring_scope X%function_scope
+Arguments covariance_cst_l [d]%_measure_display_scope 
+  [T R] P c%_ring_scope X%_function_scope
 covariance_cst_l is opaque
 Expands to: Constant mathcomp.analysis.probability.covariance_cst_l
 Declared in library mathcomp.analysis.probability, line 600, characters 6-22
@@ -2086,8 +2088,8 @@ forall [d : measure_display] [T : measurableType d]
 covariance P X (cst c) = 0%R
 
 covariance_cst_r is not universe polymorphic
-Arguments covariance_cst_r [d]%measure_display_scope 
-  [T R] P X%function_scope c%ring_scope
+Arguments covariance_cst_r [d]%_measure_display_scope 
+  [T R] P X%_function_scope c%_ring_scope
 covariance_cst_r is opaque
 Expands to: Constant mathcomp.analysis.probability.covariance_cst_r
 Declared in library mathcomp.analysis.probability, line 607, characters 6-22
@@ -2106,8 +2108,9 @@ Y \in Lfun (T:=T) (R:=R) P 1 ->
 covariance P (a \o* X) Y = (a%:E * covariance P X Y)%E
 
 covarianceZl is not universe polymorphic
-Arguments covarianceZl [d]%measure_display_scope [T R P] 
-  a%ring_scope [X Y]%function_scope _ _ _
+Arguments covarianceZl [d]%_measure_display_scope 
+  [T R P] a%_ring_scope [X Y]%_function_scope _ _ 
+  _
 covarianceZl is opaque
 Expands to: Constant mathcomp.analysis.probability.covarianceZl
 Declared in library mathcomp.analysis.probability, line 610, characters 6-18
@@ -2136,8 +2139,9 @@ Y \in Lfun (T:=T) (R:=R) P 1 ->
 covariance P X (a \o* Y) = (a%:E * covariance P X Y)%E
 
 covarianceZr is not universe polymorphic
-Arguments covarianceZr [d]%measure_display_scope [T R P] 
-  a%ring_scope [X Y]%function_scope _ _ _
+Arguments covarianceZr [d]%_measure_display_scope 
+  [T R P] a%_ring_scope [X Y]%_function_scope _ _ 
+  _
 covarianceZr is opaque
 Expands to: Constant mathcomp.analysis.probability.covarianceZr
 Declared in library mathcomp.analysis.probability, line 624, characters 6-18
@@ -2160,8 +2164,8 @@ Y \in Lfun (T:=T) (R:=R) P 1 ->
 covariance P (\- X) Y = (- covariance P X Y)%E
 
 covarianceNl is not universe polymorphic
-Arguments covarianceNl [d]%measure_display_scope [T R P] 
-  [X Y]%function_scope _ _ _
+Arguments covarianceNl [d]%_measure_display_scope 
+  [T R P] [X Y]%_function_scope _ _ _
 covarianceNl is opaque
 Expands to: Constant mathcomp.analysis.probability.covarianceNl
 Declared in library mathcomp.analysis.probability, line 632, characters 6-18
@@ -2185,8 +2189,8 @@ Y \in Lfun (T:=T) (R:=R) P 1 ->
 covariance P X (\- Y) = (- covariance P X Y)%E
 
 covarianceNr is not universe polymorphic
-Arguments covarianceNr [d]%measure_display_scope [T R P] 
-  [X Y]%function_scope _ _ _
+Arguments covarianceNr [d]%_measure_display_scope 
+  [T R P] [X Y]%_function_scope _ _ _
 covarianceNr is opaque
 Expands to: Constant mathcomp.analysis.probability.covarianceNr
 Declared in library mathcomp.analysis.probability, line 641, characters 6-18
@@ -2207,8 +2211,8 @@ Y \in Lfun (T:=T) (R:=R) P 1 ->
 covariance P (\- X) (\- Y) = covariance P X Y
 
 covarianceNN is not universe polymorphic
-Arguments covarianceNN [d]%measure_display_scope [T R P] 
-  [X Y]%function_scope _ _ _
+Arguments covarianceNN [d]%_measure_display_scope 
+  [T R P] [X Y]%_function_scope _ _ _
 covarianceNN is opaque
 Expands to: Constant mathcomp.analysis.probability.covarianceNN
 Declared in library mathcomp.analysis.probability, line 646, characters 6-18
@@ -2230,8 +2234,8 @@ Z \in Lfun (T:=T) (R:=R) P 2 ->
 covariance P (X \+ Y) Z = (covariance P X Z + covariance P Y Z)%R
 
 covarianceDl is not universe polymorphic
-Arguments covarianceDl [d]%measure_display_scope [T R P]
-  [X Y Z]%function_scope _ _ _
+Arguments covarianceDl [d]%_measure_display_scope 
+  [T R P] [X Y Z]%_function_scope _ _ _
 covarianceDl is opaque
 Expands to: Constant mathcomp.analysis.probability.covarianceDl
 Declared in library mathcomp.analysis.probability, line 653, characters 6-18
@@ -2264,8 +2268,8 @@ Z \in Lfun (T:=T) (R:=R) P 2 ->
 covariance P X (Y \+ Z) = (covariance P X Y + covariance P X Z)%R
 
 covarianceDr is not universe polymorphic
-Arguments covarianceDr [d]%measure_display_scope [T R P]
-  [X Y Z]%function_scope _ _ _
+Arguments covarianceDr [d]%_measure_display_scope 
+  [T R P] [X Y Z]%_function_scope _ _ _
 covarianceDr is opaque
 Expands to: Constant mathcomp.analysis.probability.covarianceDr
 Declared in library mathcomp.analysis.probability, line 671, characters 6-18
@@ -2287,8 +2291,8 @@ Z \in Lfun (T:=T) (R:=R) P 2 ->
 covariance P (X \- Y) Z = (covariance P X Z - covariance P Y Z)%E
 
 covarianceBl is not universe polymorphic
-Arguments covarianceBl [d]%measure_display_scope [T R P]
-  [X Y Z]%function_scope _ _ _
+Arguments covarianceBl [d]%_measure_display_scope 
+  [T R P] [X Y Z]%_function_scope _ _ _
 covarianceBl is opaque
 Expands to: Constant mathcomp.analysis.probability.covarianceBl
 Declared in library mathcomp.analysis.probability, line 678, characters 6-18
@@ -2315,8 +2319,8 @@ Z \in Lfun (T:=T) (R:=R) P 2 ->
 covariance P X (Y \- Z) = (covariance P X Y - covariance P X Z)%E
 
 covarianceBr is not universe polymorphic
-Arguments covarianceBr [d]%measure_display_scope [T R P]
-  [X Y Z]%function_scope _ _ _
+Arguments covarianceBr [d]%_measure_display_scope 
+  [T R P] [X Y Z]%_function_scope _ _ _
 covarianceBr is opaque
 Expands to: Constant mathcomp.analysis.probability.covarianceBr
 Declared in library mathcomp.analysis.probability, line 690, characters 6-18
@@ -2348,7 +2352,7 @@ GRing.BaseAddMagma.sort
   constructive_ereal_extended__canonical__Algebra_BaseAddMagma
 
 variance is not universe polymorphic
-Arguments variance [d]%measure_display_scope [T R] P X%function_scope
+Arguments variance [d]%_measure_display_scope [T R] P X%_function_scope
 variance is transparent
 Expands to: Constant mathcomp.analysis.probability.variance
 Declared in library mathcomp.analysis.probability, line 708, characters 11-19
@@ -2361,7 +2365,7 @@ forall [d : measure_display] [T : measurableType d]
 X \in Lfun (T:=T) (R:=R) P 2 -> 'V_P[X] = ('E_P[(X ^+ 2)] - 'E_P[X] ^+ 2)%E
 
 varianceE is not universe polymorphic
-Arguments varianceE [d]%measure_display_scope [T R P] [X]%function_scope _
+Arguments varianceE [d]%_measure_display_scope [T R P] [X]%_function_scope _
 varianceE is opaque
 Expands to: Constant mathcomp.analysis.probability.varianceE
 Declared in library mathcomp.analysis.probability, line 711, characters 6-15
@@ -2380,8 +2384,8 @@ forall [d : measure_display] [T : measurableType d]
 X \in Lfun (T:=T) (R:=R) P 2 -> 'V_P[X] \is a fin_num
 
 variance_fin_num is not universe polymorphic
-Arguments variance_fin_num [d]%measure_display_scope 
-  [T R P] [X]%function_scope _
+Arguments variance_fin_num [d]%_measure_display_scope 
+  [T R P] [X]%_function_scope _
 variance_fin_num is opaque
 Expands to: Constant mathcomp.analysis.probability.variance_fin_num
 Declared in library mathcomp.analysis.probability, line 718, characters 6-22
@@ -2400,7 +2404,7 @@ forall [d : measure_display] [T : measurableType d]
 (0%R <= 'V_P[X])%E
 
 variance_ge0 is not universe polymorphic
-Arguments variance_ge0 [d]%measure_display_scope [T R] P X%function_scope
+Arguments variance_ge0 [d]%_measure_display_scope [T R] P X%_function_scope
 variance_ge0 is opaque
 Expands to: Constant mathcomp.analysis.probability.variance_ge0
 Declared in library mathcomp.analysis.probability, line 725, characters 6-18
@@ -2417,7 +2421,7 @@ forall [d : measure_display] [T : measurableType d]
 'V_P[(cst r)] = 0%R
 
 variance_cst is not universe polymorphic
-Arguments variance_cst [d]%measure_display_scope [T R] P r%ring_scope
+Arguments variance_cst [d]%_measure_display_scope [T R] P r%_ring_scope
 variance_cst is opaque
 Expands to: Constant mathcomp.analysis.probability.variance_cst
 Declared in library mathcomp.analysis.probability, line 730, characters 6-18
@@ -2436,8 +2440,8 @@ forall [d : measure_display] [T : measurableType d]
 X \in Lfun (T:=T) (R:=R) P 2 -> 'V_P[(a \o* X)%R] = ((a ^+ 2)%:E * 'V_P[X])%E
 
 varianceZ is not universe polymorphic
-Arguments varianceZ [d]%measure_display_scope [T R P] 
-  a%ring_scope [X]%function_scope _
+Arguments varianceZ [d]%_measure_display_scope [T R P] 
+  a%_ring_scope [X]%_function_scope _
 varianceZ is opaque
 Expands to: Constant mathcomp.analysis.probability.varianceZ
 Declared in library mathcomp.analysis.probability, line 737, characters 6-15
@@ -2461,7 +2465,7 @@ forall [d : measure_display] [T : measurableType d]
 X \in Lfun (T:=T) (R:=R) P 2 -> 'V_P[(\- X)%R] = 'V_P[X]
 
 varianceN is not universe polymorphic
-Arguments varianceN [d]%measure_display_scope [T R P] [X]%function_scope _
+Arguments varianceN [d]%_measure_display_scope [T R P] [X]%_function_scope _
 varianceN is opaque
 Expands to: Constant mathcomp.analysis.probability.varianceN
 Declared in library mathcomp.analysis.probability, line 749, characters 6-15
@@ -2481,8 +2485,8 @@ Y \in Lfun (T:=T) (R:=R) P 2 ->
 'V_P[(X \+ Y)%R] = ('V_P[X] + 'V_P[Y] + (2 * covariance P X Y)%E)%R
 
 varianceD is not universe polymorphic
-Arguments varianceD [d]%measure_display_scope [T R P] 
-  [X Y]%function_scope _ _
+Arguments varianceD [d]%_measure_display_scope [T R P] 
+  [X Y]%_function_scope _ _
 varianceD is opaque
 Expands to: Constant mathcomp.analysis.probability.varianceD
 Declared in library mathcomp.analysis.probability, line 755, characters 6-15
@@ -2510,8 +2514,8 @@ Y \in Lfun (T:=T) (R:=R) P 2 ->
 'V_P[(X \- Y)%R] = (('V_P[X] + 'V_P[Y])%R - 2 * covariance P X Y)%E
 
 varianceB is not universe polymorphic
-Arguments varianceB [d]%measure_display_scope [T R P] 
-  [X Y]%function_scope _ _
+Arguments varianceB [d]%_measure_display_scope [T R P] 
+  [X Y]%_function_scope _ _
 varianceB is opaque
 Expands to: Constant mathcomp.analysis.probability.varianceB
 Declared in library mathcomp.analysis.probability, line 769, characters 6-15
@@ -2535,8 +2539,8 @@ forall [d : measure_display] [T : measurableType d]
 X \in Lfun (T:=T) (R:=R) P 2 -> 'V_P[(cst c \+ X)%R] = 'V_P[X]
 
 varianceD_cst_l is not universe polymorphic
-Arguments varianceD_cst_l [d]%measure_display_scope 
-  [T R P] c%ring_scope [X]%function_scope _
+Arguments varianceD_cst_l [d]%_measure_display_scope 
+  [T R P] c%_ring_scope [X]%_function_scope _
 varianceD_cst_l is opaque
 Expands to: Constant mathcomp.analysis.probability.varianceD_cst_l
 Declared in library mathcomp.analysis.probability, line 781, characters 6-21
@@ -2556,8 +2560,8 @@ forall [d : measure_display] [T : measurableType d]
 X \in Lfun (T:=T) (R:=R) P 2 -> 'V_P[(X \+ cst c)%R] = 'V_P[X]
 
 varianceD_cst_r is not universe polymorphic
-Arguments varianceD_cst_r [d]%measure_display_scope 
-  [T R P] [X]%function_scope c%ring_scope _
+Arguments varianceD_cst_r [d]%_measure_display_scope 
+  [T R P] [X]%_function_scope c%_ring_scope _
 varianceD_cst_r is opaque
 Expands to: Constant mathcomp.analysis.probability.varianceD_cst_r
 Declared in library mathcomp.analysis.probability, line 788, characters 6-21
@@ -2577,8 +2581,8 @@ forall [d : measure_display] [T : measurableType d]
 X \in Lfun (T:=T) (R:=R) P 2 -> 'V_P[(cst c \- X)%R] = 'V_P[X]
 
 varianceB_cst_l is not universe polymorphic
-Arguments varianceB_cst_l [d]%measure_display_scope 
-  [T R P] c%ring_scope [X]%function_scope _
+Arguments varianceB_cst_l [d]%_measure_display_scope 
+  [T R P] c%_ring_scope [X]%_function_scope _
 varianceB_cst_l is opaque
 Expands to: Constant mathcomp.analysis.probability.varianceB_cst_l
 Declared in library mathcomp.analysis.probability, line 796, characters 6-21
@@ -2598,8 +2602,8 @@ forall [d : measure_display] [T : measurableType d]
 X \in Lfun (T:=T) (R:=R) P 2 -> 'V_P[(X \- cst c)%R] = 'V_P[X]
 
 varianceB_cst_r is not universe polymorphic
-Arguments varianceB_cst_r [d]%measure_display_scope 
-  [T R P] [X]%function_scope c%ring_scope _
+Arguments varianceB_cst_r [d]%_measure_display_scope 
+  [T R P] [X]%_function_scope c%_ring_scope _
 varianceB_cst_r is opaque
 Expands to: Constant mathcomp.analysis.probability.varianceB_cst_r
 Declared in library mathcomp.analysis.probability, line 803, characters 6-21
@@ -2619,8 +2623,8 @@ Y \in Lfun (T:=T) (R:=R) P 2 ->
 (covariance P X Y <= sqrte (R:=R) 'V_P[X] * sqrte (R:=R) 'V_P[Y])%E
 
 covariance_le is not universe polymorphic
-Arguments covariance_le [d]%measure_display_scope 
-  [T R P] [X Y]%function_scope _ _
+Arguments covariance_le [d]%_measure_display_scope 
+  [T R P] [X Y]%_function_scope _ _
 covariance_le is opaque
 Expands to: Constant mathcomp.analysis.probability.covariance_le
 Declared in library mathcomp.analysis.probability, line 809, characters 6-19
@@ -2669,8 +2673,8 @@ GRing.BaseAddMagma.sort
   constructive_ereal_extended__canonical__Algebra_BaseAddMagma
 
 mmt_gen_fun is not universe polymorphic
-Arguments mmt_gen_fun [d]%measure_display_scope [T R] 
-  P X%function_scope t%ring_scope
+Arguments mmt_gen_fun [d]%_measure_display_scope [T R] 
+  P X%_function_scope t%_ring_scope
 mmt_gen_fun is transparent
 Expands to: Constant mathcomp.analysis.probability.mmt_gen_fun
 Declared in library mathcomp.analysis.probability, line 843, characters 11-22
@@ -2698,8 +2702,8 @@ measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
  'E_P[((f \o [eta normr]) \o X)])%E
 
 markov is not universe polymorphic
-Arguments markov [d]%measure_display_scope [T R P] 
-  X [f]%function_scope [eps]%ring_scope _ _ _%function_scope 
+Arguments markov [d]%_measure_display_scope [T R P] 
+  X [f]%_function_scope [eps]%_ring_scope _ _ _%_function_scope 
   _
 markov is opaque
 Expands to: Constant mathcomp.analysis.probability.markov
@@ -2731,8 +2735,8 @@ forall [d : measure_display] [T : measurableType d]
 (P [set x | (a <= X x)%R]%classic <= 'M_P X r * (expR (- (r * a)))%:E)%E
 
 chernoff is not universe polymorphic
-Arguments chernoff [d]%measure_display_scope [T R P] 
-  X [r]%ring_scope a%ring_scope _
+Arguments chernoff [d]%_measure_display_scope [T R P] 
+  X [r]%_ring_scope a%_ring_scope _
 chernoff is opaque
 Expands to: Constant mathcomp.analysis.probability.chernoff
 Declared in library mathcomp.analysis.probability, line 868, characters 6-14
@@ -2761,7 +2765,7 @@ forall [d : measure_display] [T : measurableType d]
  (eps ^- 2)%:E * 'V_P[X])%E
 
 chebyshev is not universe polymorphic
-Arguments chebyshev [d]%measure_display_scope [T R P] X [eps]%ring_scope _
+Arguments chebyshev [d]%_measure_display_scope [T R P] X [eps]%_ring_scope _
 chebyshev is opaque
 Expands to: Constant mathcomp.analysis.probability.chebyshev
 Declared in library mathcomp.analysis.probability, line 882, characters 6-15
@@ -2801,8 +2805,8 @@ forall [d : measure_display] [T : measurableType d]
  (fine 'V_P[X] / (fine 'V_P[X] + lambda ^ 2))%:E)%E
 
 cantelli is not universe polymorphic
-Arguments cantelli [d]%measure_display_scope [T R P X] 
-  [lambda]%ring_scope _ _
+Arguments cantelli [d]%_measure_display_scope [T R P X] 
+  [lambda]%_ring_scope _ _
 cantelli is opaque
 Expands to: Constant mathcomp.analysis.probability.cantelli
 Declared in library mathcomp.analysis.probability, line 906, characters 6-14
@@ -2894,7 +2898,7 @@ forall [d d' : measure_display] [T : measurableType d],
 measurableType d' -> forall [R : realType], probability T R -> Type
 
 discrete_random_variable is not universe polymorphic
-Arguments discrete_random_variable [d d']%measure_display_scope [T] T' [R] P
+Arguments discrete_random_variable [d d']%_measure_display_scope [T] T' [R] P
 discrete_random_variable is transparent
 Expands to: Constant mathcomp.analysis.probability.discrete_random_variable
 Declared in library mathcomp.analysis.probability, line 987, characters 11-35
@@ -2916,7 +2920,7 @@ forall {d d' : measure_display} {T : measurableType d}
 {B : set nat & {splitbij B >-> range X}}
 
 dRV_dom_enum is not universe polymorphic
-Arguments dRV_dom_enum {d d'}%measure_display_scope {T T' R} [P] X
+Arguments dRV_dom_enum {d d'}%_measure_display_scope {T T' R} [P] X
 dRV_dom_enum is opaque
 Expands to: Constant mathcomp.analysis.probability.dRV_dom_enum
 Declared in library mathcomp.analysis.probability, line 998, characters 6-18
@@ -2936,7 +2940,7 @@ forall {d d' : measure_display} {T : measurableType d}
 {dRV P >-> T'} -> set nat
 
 dRV_dom is not universe polymorphic
-Arguments dRV_dom {d d'}%measure_display_scope {T T' R} [P] X _
+Arguments dRV_dom {d d'}%_measure_display_scope {T T' R} [P] X _
 dRV_dom is transparent
 Expands to: Constant mathcomp.analysis.probability.dRV_dom
 Declared in
@@ -2950,7 +2954,7 @@ forall {d d' : measure_display} {T : measurableType d}
 {splitbij dRV_dom (P:=P) X >-> range X}
 
 dRV_enum is not universe polymorphic
-Arguments dRV_enum {d d'}%measure_display_scope {T T' R} [P] X
+Arguments dRV_enum {d d'}%_measure_display_scope {T T' R} [P] X
 dRV_enum is transparent
 Expands to: Constant mathcomp.analysis.probability.dRV_enum
 Declared in
@@ -2965,7 +2969,7 @@ forall {d d' : measure_display} {T : measurableType d}
 nat -> ereal.constructive_ereal_extended__canonical__classical_sets_Pointed R
 
 enum_prob is not universe polymorphic
-Arguments enum_prob {d d'}%measure_display_scope {T T' R} [P] X u%nat_scope
+Arguments enum_prob {d d'}%_measure_display_scope {T T' R} [P] X u%_nat_scope
 enum_prob is transparent
 Expands to: Constant mathcomp.analysis.probability.enum_prob
 Declared in
@@ -2989,8 +2993,8 @@ n \in dRV_dom (P:=P) X ->
 distribution (T':=T') P X [set dRV_enum (P:=P) X n] = enum_prob (P:=P) X n
 
 distribution_dRV_enum is not universe polymorphic
-Arguments distribution_dRV_enum [d d']%measure_display_scope 
-  [T T' R P X] [n]%nat_scope _
+Arguments distribution_dRV_enum [d d']%_measure_display_scope 
+  [T T' R P X] [n]%_nat_scope _
 distribution_dRV_enum is opaque
 Expands to: Constant mathcomp.analysis.probability.distribution_dRV_enum
 Declared in library mathcomp.analysis.probability, line 1022, characters 6-27
@@ -3016,8 +3020,8 @@ distribution (T':=T') P X A =
    (enum_prob (P:=P) X k * (\d_(dRV_enum (P:=P) X k))%R A)%E
 
 distribution_dRV is not universe polymorphic
-Arguments distribution_dRV [d d']%measure_display_scope 
-  [T T' R P] X measurable_set1T'%function_scope [A]%classical_set_scope 
+Arguments distribution_dRV [d d']%_measure_display_scope 
+  [T T' R P] X measurable_set1T'%_function_scope [A]%_classical_set_scope 
   _
 distribution_dRV is opaque
 Expands to: Constant mathcomp.analysis.probability.distribution_dRV
@@ -3068,8 +3072,8 @@ forall [d d' : measure_display] [T : measurableType d]
 \big[+%R/0%R]_(0 <= n <oo) enum_prob (P:=P) X n = 1%E
 
 sum_enum_prob is not universe polymorphic
-Arguments sum_enum_prob [d d']%measure_display_scope 
-  [T T' R P] X measurable_set1T'%function_scope
+Arguments sum_enum_prob [d d']%_measure_display_scope 
+  [T T' R P] X measurable_set1T'%_function_scope
 sum_enum_prob is opaque
 Expands to: Constant mathcomp.analysis.probability.sum_enum_prob
 Declared in library mathcomp.analysis.probability, line 1066, characters 6-19
@@ -3097,7 +3101,7 @@ P.-integrable [set: T] (EFin \o X) ->
    (enum_prob (P:=P) X n * (dRV_enum (P:=P) X n)%:E)%E
 
 dRV_expectation is not universe polymorphic
-Arguments dRV_expectation [d]%measure_display_scope [T R P X] _
+Arguments dRV_expectation [d]%_measure_display_scope [T R P X] _
 dRV_expectation is opaque
 Expands to: Constant mathcomp.analysis.probability.dRV_expectation
 Declared in library mathcomp.analysis.probability, line 1079, characters 6-21
@@ -3155,7 +3159,7 @@ forall [d : measure_display] [T : measurableType d]
 {RV P >-> R} -> R -> R
 
 pmf is not universe polymorphic
-Arguments pmf [d]%measure_display_scope [T R P] X r%ring_scope
+Arguments pmf [d]%_measure_display_scope [T R P] X r%_ring_scope
 pmf is transparent
 Expands to: Constant mathcomp.analysis.probability.pmf
 Declared in
@@ -3171,7 +3175,7 @@ P.-integrable [set: T] (EFin \o X) ->
 ((pmf (P:=P) X (dRV_enum (P:=P) X n))%:E * (dRV_enum (P:=P) X n)%:E)%E
 
 expectation_pmf is not universe polymorphic
-Arguments expectation_pmf [d]%measure_display_scope [T R P X] _
+Arguments expectation_pmf [d]%_measure_display_scope [T R P X] _
 expectation_pmf is opaque
 Expands to: Constant mathcomp.analysis.probability.expectation_pmf
 Declared in library mathcomp.analysis.probability, line 1127, characters 6-21
@@ -3196,7 +3200,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="bernoulli_pmf" class="id"><a name="bernoulli_pmf" class="" title="bernoulli_pmf : forall {R : realType}, R -> bool -> R
 
 bernoulli_pmf is not universe polymorphic
-Arguments bernoulli_pmf {R} p%ring_scope b%bool_scope
+Arguments bernoulli_pmf {R} p%_ring_scope b%_bool_scope
 bernoulli_pmf is transparent
 Expands to: Constant mathcomp.analysis.probability.bernoulli_pmf
 Declared in
@@ -3208,7 +3212,7 @@ forall {R : realType} [p : R],
 (0 <= p <= 1)%R -> forall b : bool, (0 <= bernoulli_pmf p b)%R
 
 bernoulli_pmf_ge0 is not universe polymorphic
-Arguments bernoulli_pmf_ge0 {R} [p]%ring_scope p01 b%bool_scope
+Arguments bernoulli_pmf_ge0 {R} [p]%_ring_scope p01 b%_bool_scope
 bernoulli_pmf_ge0 is opaque
 Expands to: Constant mathcomp.analysis.probability.bernoulli_pmf_ge0
 Declared in library mathcomp.analysis.probability, line 1145, characters 6-23
@@ -3225,7 +3229,7 @@ forall {R : realType} [p : R],
 (0 <= p <= 1)%R -> (\sum_(i \in [set: bool]) (bernoulli_pmf p i)%:E)%R = 1%E
 
 bernoulli_pmf1 is not universe polymorphic
-Arguments bernoulli_pmf1 {R} [p]%ring_scope p01
+Arguments bernoulli_pmf1 {R} [p]%_ring_scope p01
 bernoulli_pmf1 is opaque
 Expands to: Constant mathcomp.analysis.probability.bernoulli_pmf1
 Declared in library mathcomp.analysis.probability, line 1151, characters 6-20
@@ -3270,8 +3274,8 @@ forall
   i ->
 i (D `&` bernoulli_pmf^~ n @^-1` Y)%classic
 
-Arguments measurable_bernoulli_pmf {R} [D]%classical_set_scope 
-  n%bool_scope _ [Y] _ [i] _
+Arguments measurable_bernoulli_pmf {R} [D]%_classical_set_scope 
+  n%_bool_scope _ [Y] _ [i] _
 measurable_bernoulli_pmf is opaque
 Expands to: Constant mathcomp.analysis.probability.measurable_bernoulli_pmf
 Declared in library mathcomp.analysis.probability, line 1160, characters 6-30
@@ -3286,7 +3290,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="bernoulli_prob" class="id"><a name="bernoulli_prob" class="" title="bernoulli_prob : forall {R : realType}, R -> set bool -> \bar R
 
 bernoulli_prob is not universe polymorphic
-Arguments bernoulli_prob {R} p%ring_scope _%classical_set_scope
+Arguments bernoulli_prob {R} p%_ring_scope _%_classical_set_scope
 bernoulli_prob is transparent
 Expands to: Constant mathcomp.analysis.probability.bernoulli_prob
 Declared in
@@ -3343,7 +3347,7 @@ R -> measure Datatypes_bool__canonical__measurable_structure_SemiRingOfSets R
 
 probability_bernoulli_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_bernoulli_prob__canonical__measure_function_Measure 
-  {R} p%ring_scope
+  {R} p%_ring_scope
 probability_bernoulli_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_bernoulli_prob__canonical__measure_function_Measure
@@ -3355,7 +3359,7 @@ R -> measure Datatypes_bool__canonical__measurable_structure_SemiRingOfSets R
 
 probability_bernoulli_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_bernoulli_prob__canonical__measure_function_Measure 
-  {R} p%ring_scope
+  {R} p%_ring_scope
 probability_bernoulli_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_bernoulli_prob__canonical__measure_function_Measure
@@ -3367,7 +3371,7 @@ R -> measure Datatypes_bool__canonical__measurable_structure_SemiRingOfSets R
 
 probability_bernoulli_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_bernoulli_prob__canonical__measure_function_Measure 
-  {R} p%ring_scope
+  {R} p%_ring_scope
 probability_bernoulli_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_bernoulli_prob__canonical__measure_function_Measure
@@ -3379,7 +3383,7 @@ R -> measure Datatypes_bool__canonical__measurable_structure_SemiRingOfSets R
 
 probability_bernoulli_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_bernoulli_prob__canonical__measure_function_Measure 
-  {R} p%ring_scope
+  {R} p%_ring_scope
 probability_bernoulli_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_bernoulli_prob__canonical__measure_function_Measure
@@ -3391,7 +3395,7 @@ R -> measure Datatypes_bool__canonical__measurable_structure_SemiRingOfSets R
 
 probability_bernoulli_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_bernoulli_prob__canonical__measure_function_Measure 
-  {R} p%ring_scope
+  {R} p%_ring_scope
 probability_bernoulli_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_bernoulli_prob__canonical__measure_function_Measure
@@ -3415,7 +3419,7 @@ R -> probability Datatypes_bool__canonical__measurable_structure_Measurable R
 probability_bernoulli_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_bernoulli_prob__canonical__probability_measure_Probability 
-  {R} p%ring_scope
+  {R} p%_ring_scope
 probability_bernoulli_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_bernoulli_prob__canonical__probability_measure_Probability
@@ -3427,7 +3431,7 @@ R -> probability Datatypes_bool__canonical__measurable_structure_Measurable R
 probability_bernoulli_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_bernoulli_prob__canonical__probability_measure_Probability 
-  {R} p%ring_scope
+  {R} p%_ring_scope
 probability_bernoulli_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_bernoulli_prob__canonical__probability_measure_Probability
@@ -3439,7 +3443,7 @@ R -> probability Datatypes_bool__canonical__measurable_structure_Measurable R
 probability_bernoulli_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_bernoulli_prob__canonical__probability_measure_Probability 
-  {R} p%ring_scope
+  {R} p%_ring_scope
 probability_bernoulli_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_bernoulli_prob__canonical__probability_measure_Probability
@@ -3451,7 +3455,7 @@ R -> probability Datatypes_bool__canonical__measurable_structure_Measurable R
 probability_bernoulli_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_bernoulli_prob__canonical__probability_measure_Probability 
-  {R} p%ring_scope
+  {R} p%_ring_scope
 probability_bernoulli_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_bernoulli_prob__canonical__probability_measure_Probability
@@ -3464,7 +3468,7 @@ R -> probability Datatypes_bool__canonical__measurable_structure_Measurable R
 probability_bernoulli_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_bernoulli_prob__canonical__probability_measure_Probability 
-  {R} p%ring_scope
+  {R} p%_ring_scope
 probability_bernoulli_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_bernoulli_prob__canonical__probability_measure_Probability
@@ -3476,7 +3480,7 @@ forall {R : realType} [p : R] [P : probability bool R],
 P [set true]%classic = p%:E -> P =1 bernoulli_prob p
 
 eq_bernoulli is not universe polymorphic
-Arguments eq_bernoulli {R} [p]%ring_scope [P] _ x
+Arguments eq_bernoulli {R} [p]%_ring_scope [P] _ x
 eq_bernoulli is opaque
 Expands to: Constant mathcomp.analysis.probability.eq_bernoulli
 Declared in library mathcomp.analysis.probability, line 1218, characters 6-18
@@ -3516,7 +3520,7 @@ measure_add (T:=Datatypes_bool__canonical__measurable_structure_SigmaRing)
      (\d_false)%R)
 
 bernoulli_dirac is not universe polymorphic
-Arguments bernoulli_dirac {R} [p]%ring_scope [p0] p1
+Arguments bernoulli_dirac {R} [p]%_ring_scope [p0] p1
 bernoulli_dirac is opaque
 Expands to: Constant mathcomp.analysis.probability.bernoulli_dirac
 Declared in library mathcomp.analysis.probability, line 1241, characters 6-21
@@ -3579,7 +3583,7 @@ forall A : set bool,
 bernoulli_prob p A = ((p%:E * \d_true A)%E + ((p.~)%:E * \d_false A)%E)%R
 
 bernoulli_probE is not universe polymorphic
-Arguments bernoulli_probE {R} [p]%ring_scope p01 A%classical_set_scope
+Arguments bernoulli_probE {R} [p]%_ring_scope p01 A%_classical_set_scope
 bernoulli_probE is opaque
 Expands to: Constant mathcomp.analysis.probability.bernoulli_probE
 Declared in library mathcomp.analysis.probability, line 1280, characters 6-21
@@ -3599,8 +3603,8 @@ forall [f : bool -> \bar R],
 ((p%:E * f true)%E + ((p.~)%:E * f false)%E)%R
 
 integral_bernoulli_prob is not universe polymorphic
-Arguments integral_bernoulli_prob {R} [p]%ring_scope 
-  p01 [f]%function_scope _%function_scope
+Arguments integral_bernoulli_prob {R} [p]%_ring_scope 
+  p01 [f]%_function_scope _%_function_scope
 integral_bernoulli_prob is opaque
 Expands to: Constant mathcomp.analysis.probability.integral_bernoulli_prob
 Declared in library mathcomp.analysis.probability, line 1284, characters 6-29
@@ -3688,7 +3692,7 @@ i
   ([set: Real_sort__canonical__measurable_structure_SigmaRing R]
    `&` (bernoulli_prob^~ U : R -> \bar R) @^-1` Y)%classic
 
-Arguments measurable_bernoulli_prob2 [R] [U]%classical_set_scope 
+Arguments measurable_bernoulli_prob2 [R] [U]%_classical_set_scope 
   _ _ [Y] _ [i] _
 measurable_bernoulli_prob2 is opaque
 Expands to: Constant mathcomp.analysis.probability.measurable_bernoulli_prob2
@@ -3712,7 +3716,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="binomial_pmf" class="id"><a name="binomial_pmf" class="" title="binomial_pmf : forall {R : realType}, nat -> R -> nat -> R
 
 binomial_pmf is not universe polymorphic
-Arguments binomial_pmf {R} n%nat_scope p%ring_scope k%nat_scope
+Arguments binomial_pmf {R} n%_nat_scope p%_ring_scope k%_nat_scope
 binomial_pmf is transparent
 Expands to: Constant mathcomp.analysis.probability.binomial_pmf
 Declared in
@@ -3724,7 +3728,7 @@ forall {R : realType} (n : nat) [p : R] (k : nat),
 (0 <= p <= 1)%R -> (0 <= binomial_pmf n p k)%R
 
 binomial_pmf_ge0 is not universe polymorphic
-Arguments binomial_pmf_ge0 {R} n%nat_scope [p]%ring_scope k%nat_scope p01
+Arguments binomial_pmf_ge0 {R} n%_nat_scope [p]%_ring_scope k%_nat_scope p01
 binomial_pmf_ge0 is opaque
 Expands to: Constant mathcomp.analysis.probability.binomial_pmf_ge0
 Declared in library mathcomp.analysis.probability, line 1330, characters 6-22
@@ -3768,8 +3772,8 @@ forall
   i ->
 i (D `&` (binomial_pmf n)^~ k @^-1` Y)%classic
 
-Arguments measurable_binomial_pmf {R} [D]%classical_set_scope 
-  (n k)%nat_scope _ [Y] _ [i] _
+Arguments measurable_binomial_pmf {R} [D]%_classical_set_scope
+  (n k)%_nat_scope _ [Y] _ [i] _
 measurable_binomial_pmf is opaque
 Expands to: Constant mathcomp.analysis.probability.measurable_binomial_pmf
 Declared in library mathcomp.analysis.probability, line 1338, characters 6-29
@@ -3786,7 +3790,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="binomial_prob" class="id"><a name="binomial_prob" class="" title="binomial_prob : forall {R : realType}, nat -> R -> set nat -> \bar R
 
 binomial_prob is not universe polymorphic
-Arguments binomial_prob {R} n%nat_scope p%ring_scope _%classical_set_scope
+Arguments binomial_prob {R} n%_nat_scope p%_ring_scope _%_classical_set_scope
 binomial_prob is transparent
 Expands to: Constant mathcomp.analysis.probability.binomial_prob
 Declared in
@@ -3835,7 +3839,7 @@ R -> measure Datatypes_nat__canonical__measurable_structure_SemiRingOfSets R
 
 probability_binomial_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_binomial_prob__canonical__measure_function_Measure 
-  {R} n%nat_scope p%ring_scope
+  {R} n%_nat_scope p%_ring_scope
 probability_binomial_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_binomial_prob__canonical__measure_function_Measure
@@ -3848,7 +3852,7 @@ R -> measure Datatypes_nat__canonical__measurable_structure_SemiRingOfSets R
 
 probability_binomial_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_binomial_prob__canonical__measure_function_Measure 
-  {R} n%nat_scope p%ring_scope
+  {R} n%_nat_scope p%_ring_scope
 probability_binomial_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_binomial_prob__canonical__measure_function_Measure
@@ -3861,7 +3865,7 @@ R -> measure Datatypes_nat__canonical__measurable_structure_SemiRingOfSets R
 
 probability_binomial_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_binomial_prob__canonical__measure_function_Measure 
-  {R} n%nat_scope p%ring_scope
+  {R} n%_nat_scope p%_ring_scope
 probability_binomial_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_binomial_prob__canonical__measure_function_Measure
@@ -3874,7 +3878,7 @@ R -> measure Datatypes_nat__canonical__measurable_structure_SemiRingOfSets R
 
 probability_binomial_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_binomial_prob__canonical__measure_function_Measure 
-  {R} n%nat_scope p%ring_scope
+  {R} n%_nat_scope p%_ring_scope
 probability_binomial_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_binomial_prob__canonical__measure_function_Measure
@@ -3887,7 +3891,7 @@ R -> measure Datatypes_nat__canonical__measurable_structure_SemiRingOfSets R
 
 probability_binomial_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_binomial_prob__canonical__measure_function_Measure 
-  {R} n%nat_scope p%ring_scope
+  {R} n%_nat_scope p%_ring_scope
 probability_binomial_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_binomial_prob__canonical__measure_function_Measure
@@ -3921,7 +3925,7 @@ R -> probability Datatypes_nat__canonical__measurable_structure_Measurable R
 probability_binomial_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_binomial_prob__canonical__probability_measure_Probability 
-  {R} n%nat_scope p%ring_scope
+  {R} n%_nat_scope p%_ring_scope
 probability_binomial_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_binomial_prob__canonical__probability_measure_Probability
@@ -3934,7 +3938,7 @@ R -> probability Datatypes_nat__canonical__measurable_structure_Measurable R
 probability_binomial_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_binomial_prob__canonical__probability_measure_Probability 
-  {R} n%nat_scope p%ring_scope
+  {R} n%_nat_scope p%_ring_scope
 probability_binomial_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_binomial_prob__canonical__probability_measure_Probability
@@ -3947,7 +3951,7 @@ R -> probability Datatypes_nat__canonical__measurable_structure_Measurable R
 probability_binomial_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_binomial_prob__canonical__probability_measure_Probability 
-  {R} n%nat_scope p%ring_scope
+  {R} n%_nat_scope p%_ring_scope
 probability_binomial_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_binomial_prob__canonical__probability_measure_Probability
@@ -3960,7 +3964,7 @@ R -> probability Datatypes_nat__canonical__measurable_structure_Measurable R
 probability_binomial_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_binomial_prob__canonical__probability_measure_Probability 
-  {R} n%nat_scope p%ring_scope
+  {R} n%_nat_scope p%_ring_scope
 probability_binomial_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_binomial_prob__canonical__probability_measure_Probability
@@ -3974,7 +3978,7 @@ R -> probability Datatypes_nat__canonical__measurable_structure_Measurable R
 probability_binomial_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_binomial_prob__canonical__probability_measure_Probability 
-  {R} n%nat_scope p%ring_scope
+  {R} n%_nat_scope p%_ring_scope
 probability_binomial_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_binomial_prob__canonical__probability_measure_Probability
@@ -3995,7 +3999,7 @@ forall [p : R] [p0 : (0 <= p)%R],
 ((NngNum (R:=R) (x:=p) p0)%:num <= 1)%R -> nat -> {nonneg R}%R
 
 bin_prob is not universe polymorphic
-Arguments bin_prob {R} n%nat_scope [p]%ring_scope [p0] p1 k%nat_scope
+Arguments bin_prob {R} n%_nat_scope [p]%_ring_scope [p0] p1 k%_nat_scope
 bin_prob is transparent
 Expands to: Constant mathcomp.analysis.probability.bin_prob
 Declared in
@@ -4015,7 +4019,7 @@ bin_prob n (p:=p) (p0:=p0) p1 0 =
  {nonneg R}%R)
 
 bin_prob0 is not universe polymorphic
-Arguments bin_prob0 {R} n%nat_scope [p]%ring_scope [p0] p1
+Arguments bin_prob0 {R} n%_nat_scope [p]%_ring_scope [p0] p1
 bin_prob0 is opaque
 Expands to: Constant mathcomp.analysis.probability.bin_prob0
 Declared in library mathcomp.analysis.probability, line 1407, characters 6-15
@@ -4040,7 +4044,7 @@ bin_prob n (p:=p) (p0:=p0) p1 1 =
  {nonneg R}%R)
 
 bin_prob1 is not universe polymorphic
-Arguments bin_prob1 {R} n%nat_scope [p]%ring_scope [p0] p1
+Arguments bin_prob1 {R} n%_nat_scope [p]%_ring_scope [p0] p1
 bin_prob1 is opaque
 Expands to: Constant mathcomp.analysis.probability.bin_prob1
 Declared in library mathcomp.analysis.probability, line 1413, characters 6-15
@@ -4059,7 +4063,7 @@ binomial_prob n p =
 msum (fun k : nat => mscale (bin_prob n (p:=p) (p0:=p0) p1 k) (\d_k)%R) n.+1
 
 binomial_msum is not universe polymorphic
-Arguments binomial_msum {R} n%nat_scope [p]%ring_scope [p0] p1
+Arguments binomial_msum {R} n%_nat_scope [p]%_ring_scope [p0] p1
 binomial_msum is opaque
 Expands to: Constant mathcomp.analysis.probability.binomial_msum
 Declared in library mathcomp.analysis.probability, line 1419, characters 6-19
@@ -4087,8 +4091,8 @@ binomial_prob n p U =
 (\sum_(k < n.+1) (((bin_prob n (p:=p) (p0:=p0) p1 k)%:num)%:E * \d_k U)%E)%R
 
 binomial_probE is not universe polymorphic
-Arguments binomial_probE {R} n%nat_scope [p]%ring_scope 
-  [p0] p1 U%classical_set_scope
+Arguments binomial_probE {R} n%_nat_scope [p]%_ring_scope 
+  [p0] p1 U%_classical_set_scope
 binomial_probE is opaque
 Expands to: Constant mathcomp.analysis.probability.binomial_probE
 Declared in library mathcomp.analysis.probability, line 1434, characters 6-20
@@ -4107,8 +4111,8 @@ forall {R : realType} (n : nat) [p : R] [p0 : (0 <= p)%R]
 (\sum_(k < n.+1) (((bin_prob n (p:=p) (p0:=p0) p1 k)%:num)%:E * f k)%E)%R
 
 integral_binomial is not universe polymorphic
-Arguments integral_binomial {R} n%nat_scope [p]%ring_scope 
-  [p0] p1 [f]%function_scope _%function_scope
+Arguments integral_binomial {R} n%_nat_scope [p]%_ring_scope 
+  [p0] p1 [f]%_function_scope _%_function_scope
 integral_binomial is opaque
 Expands to: Constant mathcomp.analysis.probability.integral_binomial
 Declared in library mathcomp.analysis.probability, line 1438, characters 6-23
@@ -4135,7 +4139,8 @@ forall [R : realType] (n : nat)
 bernoulli_prob (1 - p.~ ^+ n) U
 
 integral_binomial_prob is not universe polymorphic
-Arguments integral_binomial_prob [R] n%nat_scope [p] U%classical_set_scope _
+Arguments integral_binomial_prob [R] n%_nat_scope 
+  [p] U%_classical_set_scope _
 integral_binomial_prob is opaque
 Expands to: Constant mathcomp.analysis.probability.integral_binomial_prob
 Declared in library mathcomp.analysis.probability, line 1449, characters 6-28
@@ -4210,7 +4215,7 @@ i
           Datatypes_nat__canonical__measurable_structure_Measurable R) @^-1`
        Y)%classic
 
-Arguments measurable_binomial_prob [R] n%nat_scope _ [Y] _ [i] _
+Arguments measurable_binomial_prob [R] n%_nat_scope _ [Y] _ [i] _
 measurable_binomial_prob is opaque
 Expands to: Constant mathcomp.analysis.probability.measurable_binomial_prob
 Declared in library mathcomp.analysis.probability, line 1475, characters 6-30
@@ -4240,7 +4245,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="uniform_pdf" class="id"><a name="uniform_pdf" class="" title="uniform_pdf : forall [R : realType], R -> R -> R -> R
 
 uniform_pdf is not universe polymorphic
-Arguments uniform_pdf [R] (a b)%ring_scope x
+Arguments uniform_pdf [R] (a b)%_ring_scope x
 uniform_pdf is transparent
 Expands to: Constant mathcomp.analysis.probability.uniform_pdf
 Declared in
@@ -4252,7 +4257,7 @@ forall [R : realType] [a b : R] (x : R),
 (a < b)%R -> (0 <= uniform_pdf (R:=R) a b x)%R
 
 uniform_pdf_ge0 is not universe polymorphic
-Arguments uniform_pdf_ge0 [R] [a b]%ring_scope x _
+Arguments uniform_pdf_ge0 [R] [a b]%_ring_scope x _
 uniform_pdf_ge0 is opaque
 Expands to: Constant mathcomp.analysis.probability.uniform_pdf_ge0
 Declared in library mathcomp.analysis.probability, line 1498, characters 6-21
@@ -4294,7 +4299,7 @@ i
   ([set: Real_sort__canonical__measurable_structure_SigmaRing R]
    `&` uniform_pdf (R:=R) a b @^-1` Y)%classic
 
-Arguments measurable_uniform_pdf [R] (a b)%ring_scope _ [Y] _ [i] _
+Arguments measurable_uniform_pdf [R] (a b)%_ring_scope _ [Y] _ [i] _
 measurable_uniform_pdf is opaque
 Expands to: Constant mathcomp.analysis.probability.measurable_uniform_pdf
 Declared in library mathcomp.analysis.probability, line 1504, characters 6-28
@@ -4319,7 +4324,7 @@ forall [R : realType] (a b : R)
 (\int[lebesgue_measure]_(x in U `&` `[a, b]) (uniform_pdf (R:=R) a b x)%:E)%E
 
 integral_uniform_pdf is not universe polymorphic
-Arguments integral_uniform_pdf [R] (a b)%ring_scope U%classical_set_scope
+Arguments integral_uniform_pdf [R] (a b)%_ring_scope U%_classical_set_scope
 integral_uniform_pdf is opaque
 Expands to: Constant mathcomp.analysis.probability.integral_uniform_pdf
 Declared in library mathcomp.analysis.probability, line 1512, characters 6-26
@@ -4342,8 +4347,8 @@ forall [R : realType] [a b : R] [A : set R],
 (\int[lebesgue_measure]_(x in A) (uniform_pdf (R:=R) a b x)%:E)%E = 1%E
 
 integral_uniform_pdf1 is not universe polymorphic
-Arguments integral_uniform_pdf1 [R] [a b]%ring_scope 
-  [A]%classical_set_scope ab _
+Arguments integral_uniform_pdf1 [R] [a b]%_ring_scope
+  [A]%_classical_set_scope ab _
 integral_uniform_pdf1 is opaque
 Expands to: Constant mathcomp.analysis.probability.integral_uniform_pdf1
 Declared in library mathcomp.analysis.probability, line 1522, characters 6-27
@@ -4370,7 +4375,7 @@ set
 \bar R
 
 uniform_prob is not universe polymorphic
-Arguments uniform_prob [R] [a b]%ring_scope ab _%classical_set_scope
+Arguments uniform_prob [R] [a b]%_ring_scope ab _%_classical_set_scope
 uniform_prob is transparent
 Expands to: Constant mathcomp.analysis.probability.uniform_prob
 Declared in
@@ -4409,7 +4414,7 @@ lebesgue_measure.-integrable
    (uniform_pdf (R:=R) a b x)%:E)
 
 integrable_uniform_pdf is not universe polymorphic
-Arguments integrable_uniform_pdf [R] [a b]%ring_scope ab
+Arguments integrable_uniform_pdf [R] [a b]%_ring_scope ab
 integrable_uniform_pdf is opaque
 Expands to: Constant mathcomp.analysis.probability.integrable_uniform_pdf
 Declared in library mathcomp.analysis.probability, line 1545, characters 6-28
@@ -4452,7 +4457,7 @@ measure
 
 probability_uniform_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_uniform_prob__canonical__measure_function_Measure 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 probability_uniform_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_uniform_prob__canonical__measure_function_Measure
@@ -4470,7 +4475,7 @@ measure
 
 probability_uniform_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_uniform_prob__canonical__measure_function_Measure 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 probability_uniform_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_uniform_prob__canonical__measure_function_Measure
@@ -4488,7 +4493,7 @@ measure
 
 probability_uniform_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_uniform_prob__canonical__measure_function_Measure 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 probability_uniform_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_uniform_prob__canonical__measure_function_Measure
@@ -4506,7 +4511,7 @@ measure
 
 probability_uniform_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_uniform_prob__canonical__measure_function_Measure 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 probability_uniform_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_uniform_prob__canonical__measure_function_Measure
@@ -4524,7 +4529,7 @@ measure
 
 probability_uniform_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_uniform_prob__canonical__measure_function_Measure 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 probability_uniform_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_uniform_prob__canonical__measure_function_Measure
@@ -4552,7 +4557,7 @@ probability
 probability_uniform_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_uniform_prob__canonical__probability_measure_Probability 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 probability_uniform_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_uniform_prob__canonical__probability_measure_Probability
@@ -4570,7 +4575,7 @@ probability
 probability_uniform_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_uniform_prob__canonical__probability_measure_Probability 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 probability_uniform_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_uniform_prob__canonical__probability_measure_Probability
@@ -4588,7 +4593,7 @@ probability
 probability_uniform_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_uniform_prob__canonical__probability_measure_Probability 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 probability_uniform_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_uniform_prob__canonical__probability_measure_Probability
@@ -4606,7 +4611,7 @@ probability
 probability_uniform_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_uniform_prob__canonical__probability_measure_Probability 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 probability_uniform_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_uniform_prob__canonical__probability_measure_Probability
@@ -4624,7 +4629,7 @@ probability
 probability_uniform_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_uniform_prob__canonical__probability_measure_Probability 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 probability_uniform_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_uniform_prob__canonical__probability_measure_Probability
@@ -4655,7 +4660,7 @@ forall
 (((R.-ocitv).-measurable).-sigma).-measurable%classic A ->
 (A `<=` t)%classic -> uniform_prob (R:=R) (a:=a) (b:=b) ab A = 0%R
 
-Arguments dominates_uniform_prob [R] [a b]%ring_scope ab [t] _ [A] _ _
+Arguments dominates_uniform_prob [R] [a b]%_ring_scope ab [t] _ [A] _ _
 dominates_uniform_prob is opaque
 Expands to: Constant mathcomp.analysis.probability.dominates_uniform_prob
 Declared in library mathcomp.analysis.probability, line 1577, characters 6-28
@@ -4759,8 +4764,8 @@ measurable_fun
 (((b - a)^-1)%:E * \int[lebesgue_measure]_(x in `[a, b]) f x)%E
 
 integral_uniform is not universe polymorphic
-Arguments integral_uniform [R] [a b]%ring_scope ab 
-  [f]%function_scope _ _%function_scope
+Arguments integral_uniform [R] [a b]%_ring_scope ab 
+  [f]%_function_scope _ _%_function_scope
 integral_uniform is opaque
 Expands to: Constant mathcomp.analysis.probability.integral_uniform
 Declared in library mathcomp.analysis.probability, line 1642, characters 6-22
@@ -4807,7 +4812,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="normal_fun" class="id"><a name="normal_fun" class="" title="normal_fun : forall {R : realType}, R -> R -> R -> R
 
 normal_fun is not universe polymorphic
-Arguments normal_fun {R} (m s x)%ring_scope
+Arguments normal_fun {R} (m s x)%_ring_scope
 normal_fun is transparent
 Expands to: Constant mathcomp.analysis.probability.normal_fun
 Declared in
@@ -4840,7 +4845,7 @@ forall
   i ->
 i ([set: R] `&` normal_fun m s @^-1` Y)%classic
 
-Arguments measurable_normal_fun {R} (m s)%ring_scope _ [Y] _ [i] _
+Arguments measurable_normal_fun {R} (m s)%_ring_scope _ [Y] _ [i] _
 measurable_normal_fun is opaque
 Expands to: Constant mathcomp.analysis.probability.measurable_normal_fun
 Declared in library mathcomp.analysis.probability, line 1682, characters 6-27
@@ -4856,7 +4861,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="normal_fun_ge0" class="id"><a name="normal_fun_ge0" class="" title="normal_fun_ge0 : forall {R : realType} (m s x : R), (0 <= normal_fun m s x)%R
 
 normal_fun_ge0 is not universe polymorphic
-Arguments normal_fun_ge0 {R} (m s x)%ring_scope
+Arguments normal_fun_ge0 {R} (m s x)%_ring_scope
 normal_fun_ge0 is opaque
 Expands to: Constant mathcomp.analysis.probability.normal_fun_ge0
 Declared in library mathcomp.analysis.probability, line 1689, characters 6-20
@@ -4870,7 +4875,7 @@ Declared in library mathcomp.analysis.probability, line 1689, characters 6-20
 forall {R : realType} (m s : R), normal_fun m s = normal_fun 0 s \o center m
 
 normal_fun_center is not universe polymorphic
-Arguments normal_fun_center {R} (m s)%ring_scope
+Arguments normal_fun_center {R} (m s)%_ring_scope
 normal_fun_center is opaque
 Expands to: Constant mathcomp.analysis.probability.normal_fun_center
 Declared in library mathcomp.analysis.probability, line 1692, characters 6-23
@@ -4885,7 +4890,7 @@ forall {R : realType},
 R -> join_Num_NumDomain_between_Order_Preorder_and_GRing_UnitRing R
 
 normal_peak is not universe polymorphic
-Arguments normal_peak {R} s%ring_scope
+Arguments normal_peak {R} s%_ring_scope
 normal_peak is transparent
 Expands to: Constant mathcomp.analysis.probability.normal_peak
 Declared in
@@ -4895,7 +4900,7 @@ library mathcomp.analysis.probability, line 1695, characters 11-22
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="normal_peak_ge0" class="id"><a name="normal_peak_ge0" class="" title="normal_peak_ge0 : forall {R : realType} (s : R), (0 <= normal_peak s)%R
 
 normal_peak_ge0 is not universe polymorphic
-Arguments normal_peak_ge0 {R} s%ring_scope
+Arguments normal_peak_ge0 {R} s%_ring_scope
 normal_peak_ge0 is opaque
 Expands to: Constant mathcomp.analysis.probability.normal_peak_ge0
 Declared in library mathcomp.analysis.probability, line 1697, characters 6-21
@@ -4909,7 +4914,7 @@ Declared in library mathcomp.analysis.probability, line 1697, characters 6-21
 forall {R : realType} [s : R], s != 0%R -> (0 < normal_peak s)%R
 
 normal_peak_gt0 is not universe polymorphic
-Arguments normal_peak_gt0 {R} [s]%ring_scope _
+Arguments normal_peak_gt0 {R} [s]%_ring_scope _
 normal_peak_gt0 is opaque
 Expands to: Constant mathcomp.analysis.probability.normal_peak_gt0
 Declared in library mathcomp.analysis.probability, line 1699, characters 6-21
@@ -4926,7 +4931,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="normal_pdf" class="id"><a name="normal_pdf" class="" title="normal_pdf : forall {R : realType}, R -> R -> R -> R
 
 normal_pdf is not universe polymorphic
-Arguments normal_pdf {R} (m s x)%ring_scope
+Arguments normal_pdf {R} (m s x)%_ring_scope
 normal_pdf is transparent
 Expands to: Constant mathcomp.analysis.probability.normal_pdf
 Declared in
@@ -4941,7 +4946,7 @@ normal_pdf m s =
 (fun m0 s0 x : R => (normal_peak s0 * normal_fun m0 s0 x)%R) m s
 
 normal_pdfE is not universe polymorphic
-Arguments normal_pdfE {R} m%ring_scope [s]%ring_scope _
+Arguments normal_pdfE {R} m%_ring_scope [s]%_ring_scope _
 normal_pdfE is opaque
 Expands to: Constant mathcomp.analysis.probability.normal_pdfE
 Declared in library mathcomp.analysis.probability, line 1710, characters 6-17
@@ -5005,7 +5010,7 @@ i
   ([set: Real_sort__canonical__measurable_structure_SigmaRing R]
    `&` normal_pdf m s @^-1` Y)%classic
 
-Arguments measurable_normal_pdf {R} (m s)%ring_scope _ [Y] _ [i] _
+Arguments measurable_normal_pdf {R} (m s)%_ring_scope _ [Y] _ [i] _
 measurable_normal_pdf is opaque
 Expands to: Constant mathcomp.analysis.probability.measurable_normal_pdf
 Declared in library mathcomp.analysis.probability, line 1725, characters 6-27
@@ -5041,7 +5046,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="normal_pdf_ge0" class="id"><a name="normal_pdf_ge0" class="" title="normal_pdf_ge0 : forall {R : realType} (m s x : R), (0 <= normal_pdf m s x)%R
 
 normal_pdf_ge0 is not universe polymorphic
-Arguments normal_pdf_ge0 {R} (m s x)%ring_scope
+Arguments normal_pdf_ge0 {R} (m s x)%_ring_scope
 normal_pdf_ge0 is opaque
 Expands to: Constant mathcomp.analysis.probability.normal_pdf_ge0
 Declared in library mathcomp.analysis.probability, line 1748, characters 6-20
@@ -5078,7 +5083,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` normal_pdf m s @^-1` t)%classic
 
-Arguments continuous_normal_pdf {R} [m s]%ring_scope _ [x t] _
+Arguments continuous_normal_pdf {R} [m s]%_ring_scope _ [x t] _
 continuous_normal_pdf is opaque
 Expands to: Constant mathcomp.analysis.probability.continuous_normal_pdf
 Declared in library mathcomp.analysis.probability, line 1751, characters 6-27
@@ -5093,7 +5098,7 @@ forall {R : realType} (m : R) [s : R] (x : R),
 s != 0%R -> (normal_pdf m s x <= normal_peak s)%R
 
 normal_pdf_ub is not universe polymorphic
-Arguments normal_pdf_ub {R} m%ring_scope [s]%ring_scope x%ring_scope _
+Arguments normal_pdf_ub {R} m%_ring_scope [s]%_ring_scope x%_ring_scope _
 normal_pdf_ub is opaque
 Expands to: Constant mathcomp.analysis.probability.normal_pdf_ub
 Declared in library mathcomp.analysis.probability, line 1754, characters 6-19
@@ -5117,7 +5122,7 @@ set
 \bar R
 
 normal_prob is not universe polymorphic
-Arguments normal_prob {R} (m s)%ring_scope _%classical_set_scope
+Arguments normal_prob {R} (m s)%_ring_scope _%_classical_set_scope
 normal_prob is transparent
 Expands to: Constant mathcomp.analysis.probability.normal_prob
 Declared in
@@ -5207,7 +5212,7 @@ forall [R : realType] (m sigma : R),
 (\int[lebesgue_measure]_x (normal_pdf m sigma x)%:E)%E = 1%E
 
 integral_normal_pdf is not universe polymorphic
-Arguments integral_normal_pdf [R] (m sigma)%ring_scope
+Arguments integral_normal_pdf [R] (m sigma)%_ring_scope
 integral_normal_pdf is opaque
 Expands to: Constant mathcomp.analysis.probability.integral_normal_pdf
 Declared in library mathcomp.analysis.probability, line 1829, characters 6-25
@@ -5233,7 +5238,7 @@ lebesgue_measure.-integrable [set: R]
    (normal_pdf m sigma x)%:E)
 
 integrable_normal_pdf is not universe polymorphic
-Arguments integrable_normal_pdf [R] (m sigma)%ring_scope
+Arguments integrable_normal_pdf [R] (m sigma)%_ring_scope
 integrable_normal_pdf is opaque
 Expands to: Constant mathcomp.analysis.probability.integrable_normal_pdf
 Declared in library mathcomp.analysis.probability, line 1838, characters 6-27
@@ -5289,7 +5294,7 @@ measure
 
 probability_normal_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_normal_prob__canonical__measure_function_Measure 
-  [R] (m sigma)%ring_scope
+  [R] (m sigma)%_ring_scope
 probability_normal_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_normal_prob__canonical__measure_function_Measure
@@ -5308,7 +5313,7 @@ measure
 
 probability_normal_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_normal_prob__canonical__measure_function_Measure 
-  [R] (m sigma)%ring_scope
+  [R] (m sigma)%_ring_scope
 probability_normal_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_normal_prob__canonical__measure_function_Measure
@@ -5327,7 +5332,7 @@ measure
 
 probability_normal_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_normal_prob__canonical__measure_function_Measure 
-  [R] (m sigma)%ring_scope
+  [R] (m sigma)%_ring_scope
 probability_normal_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_normal_prob__canonical__measure_function_Measure
@@ -5346,7 +5351,7 @@ measure
 
 probability_normal_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_normal_prob__canonical__measure_function_Measure 
-  [R] (m sigma)%ring_scope
+  [R] (m sigma)%_ring_scope
 probability_normal_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_normal_prob__canonical__measure_function_Measure
@@ -5365,7 +5370,7 @@ measure
 
 probability_normal_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_normal_prob__canonical__measure_function_Measure 
-  [R] (m sigma)%ring_scope
+  [R] (m sigma)%_ring_scope
 probability_normal_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_normal_prob__canonical__measure_function_Measure
@@ -5393,7 +5398,7 @@ probability
 
 probability_normal_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments probability_normal_prob__canonical__probability_measure_Probability
-  [R] (m sigma)%ring_scope
+  [R] (m sigma)%_ring_scope
 probability_normal_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_normal_prob__canonical__probability_measure_Probability
@@ -5411,7 +5416,7 @@ probability
 
 probability_normal_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments probability_normal_prob__canonical__probability_measure_Probability
-  [R] (m sigma)%ring_scope
+  [R] (m sigma)%_ring_scope
 probability_normal_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_normal_prob__canonical__probability_measure_Probability
@@ -5429,7 +5434,7 @@ probability
 
 probability_normal_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments probability_normal_prob__canonical__probability_measure_Probability
-  [R] (m sigma)%ring_scope
+  [R] (m sigma)%_ring_scope
 probability_normal_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_normal_prob__canonical__probability_measure_Probability
@@ -5447,7 +5452,7 @@ probability
 
 probability_normal_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments probability_normal_prob__canonical__probability_measure_Probability
-  [R] (m sigma)%ring_scope
+  [R] (m sigma)%_ring_scope
 probability_normal_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_normal_prob__canonical__probability_measure_Probability
@@ -5466,7 +5471,7 @@ probability
 
 probability_normal_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments probability_normal_prob__canonical__probability_measure_Probability
-  [R] (m sigma)%ring_scope
+  [R] (m sigma)%_ring_scope
 probability_normal_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_normal_prob__canonical__probability_measure_Probability
@@ -5495,7 +5500,7 @@ forall
 (((R.-ocitv).-measurable).-sigma).-measurable%classic A ->
 (A `<=` t)%classic -> normal_prob m sigma A = 0%R
 
-Arguments normal_prob_dominates [R] (m sigma)%ring_scope [t] _ [A] _ _
+Arguments normal_prob_dominates [R] (m sigma)%_ring_scope [t] _ [A] _ _
 normal_prob_dominates is opaque
 Expands to: Constant mathcomp.analysis.probability.normal_prob_dominates
 Declared in library mathcomp.analysis.probability, line 1877, characters 6-27
@@ -5535,7 +5540,7 @@ join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_POrder R ->
 numFieldTopology.Real_sort__canonical__classical_sets_Pointed R
 
 exponential_pdf is not universe polymorphic
-Arguments exponential_pdf {R} rate%ring_scope u
+Arguments exponential_pdf {R} rate%_ring_scope u
 exponential_pdf is transparent
 Expands to: Constant mathcomp.analysis.probability.exponential_pdf
 Declared in
@@ -5551,7 +5556,7 @@ forall
 (0 <= exponential_pdf rate x)%R
 
 exponential_pdf_ge0 is not universe polymorphic
-Arguments exponential_pdf_ge0 {R} [rate]%ring_scope rate_ge0 x
+Arguments exponential_pdf_ge0 {R} [rate]%_ring_scope rate_ge0 x
 exponential_pdf_ge0 is opaque
 Expands to: Constant mathcomp.analysis.probability.exponential_pdf_ge0
 Declared in library mathcomp.analysis.probability, line 1906, characters 6-25
@@ -5569,7 +5574,7 @@ forall {R : realType} (rate : R)
 (x < 0)%R -> exponential_pdf rate x = 0%R
 
 lt0_exponential_pdf is not universe polymorphic
-Arguments lt0_exponential_pdf {R} rate%ring_scope [x] _
+Arguments lt0_exponential_pdf {R} rate%_ring_scope [x] _
 lt0_exponential_pdf is opaque
 Expands to: Constant mathcomp.analysis.probability.lt0_exponential_pdf
 Declared in library mathcomp.analysis.probability, line 1911, characters 6-25
@@ -5618,7 +5623,7 @@ forall
   i ->
 i ([set: R] `&` exponential_pdf rate @^-1` Y)%classic
 
-Arguments measurable_exponential_pdf {R} rate%ring_scope _ [Y] _ [i] _
+Arguments measurable_exponential_pdf {R} rate%_ring_scope _ [Y] _ [i] _
 measurable_exponential_pdf is opaque
 Expands to: Constant mathcomp.analysis.probability.measurable_exponential_pdf
 Declared in library mathcomp.analysis.probability, line 1926, characters 6-32
@@ -5641,7 +5646,7 @@ exponential_pdf rate x =
  (rate * expR (- rate * x0))%R) x
 
 exponential_pdfE is not universe polymorphic
-Arguments exponential_pdfE {R} rate%ring_scope [x] _
+Arguments exponential_pdfE {R} rate%_ring_scope [x] _
 exponential_pdfE is opaque
 Expands to: Constant mathcomp.analysis.probability.exponential_pdfE
 Declared in library mathcomp.analysis.probability, line 1932, characters 6-22
@@ -5681,7 +5686,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` exponential_pdf rate @^-1` t)%classic
 
-Arguments in_continuous_exponential_pdf {R} [rate]%ring_scope [x] _ [t] _
+Arguments in_continuous_exponential_pdf {R} [rate]%_ring_scope [x] _ [t] _
 in_continuous_exponential_pdf is opaque
 Expands to: Constant
             mathcomp.analysis.probability.in_continuous_exponential_pdf
@@ -5720,7 +5725,7 @@ filter.nbhs (from_subspace `[0%R, +oo[ (exponential_pdf rate) x) t ->
  else filter.globally [set x])
   (from_subspace `[0%R, +oo[ (exponential_pdf rate) @^-1` t)%classic
 
-Arguments within_continuous_exponential_pdf {R} [rate]%ring_scope [x t] _
+Arguments within_continuous_exponential_pdf {R} [rate]%_ring_scope [x t] _
 within_continuous_exponential_pdf is opaque
 Expands to: Constant
             mathcomp.analysis.probability.within_continuous_exponential_pdf
@@ -5752,7 +5757,7 @@ GRing.BaseAddMagma.sort
   constructive_ereal_extended__canonical__Algebra_BaseAddMagma
 
 exponential_prob is not universe polymorphic
-Arguments exponential_prob {R} rate%ring_scope V%classical_set_scope
+Arguments exponential_prob {R} rate%_ring_scope V%_classical_set_scope
 exponential_prob is transparent
 Expands to: Constant mathcomp.analysis.probability.exponential_prob
 Declared in
@@ -5782,7 +5787,7 @@ x \in `]0, +oo[%R ->
 (fun x0 : R => (- (expR : R^o -> R^o) (- rate * x0))%R)^`()%classic x =
 exponential_pdf rate x
 
-Arguments derive1_exponential_pdf {R} rate%ring_scope [x] _
+Arguments derive1_exponential_pdf {R} rate%_ring_scope [x] _
 derive1_exponential_pdf is opaque
 Expands to: Constant mathcomp.analysis.probability.derive1_exponential_pdf
 Declared in library mathcomp.analysis.probability, line 1969, characters 6-29
@@ -5811,7 +5816,7 @@ forall {R : realType} (rate : R) [x : R],
 (0 < x)%R -> exponential_prob rate `[0%R, x] = (1 - (expR (- rate * x))%:E)%E
 
 exponential_prob_itv0c is not universe polymorphic
-Arguments exponential_prob_itv0c {R} rate%ring_scope [x]%ring_scope _
+Arguments exponential_prob_itv0c {R} rate%_ring_scope [x]%_ring_scope _
 exponential_prob_itv0c is opaque
 Expands to: Constant mathcomp.analysis.probability.exponential_prob_itv0c
 Declared in library mathcomp.analysis.probability, line 1985, characters 6-28
@@ -5842,7 +5847,7 @@ forall {R : realType} [rate : R],
 (\int[lebesgue_measure]_x (exponential_pdf rate x)%:E)%E = 1%E
 
 integral_exponential_pdf is not universe polymorphic
-Arguments integral_exponential_pdf {R} [rate]%ring_scope rate_gt0
+Arguments integral_exponential_pdf {R} [rate]%_ring_scope rate_gt0
 integral_exponential_pdf is opaque
 Expands to: Constant mathcomp.analysis.probability.integral_exponential_pdf
 Declared in library mathcomp.analysis.probability, line 2004, characters 6-30
@@ -5886,7 +5891,7 @@ lebesgue_measure.-integrable
   (EFin \o exponential_pdf rate)
 
 integrable_exponential_pdf is not universe polymorphic
-Arguments integrable_exponential_pdf {R} [rate]%ring_scope rate_gt0
+Arguments integrable_exponential_pdf {R} [rate]%_ring_scope rate_gt0
 integrable_exponential_pdf is opaque
 Expands to: Constant mathcomp.analysis.probability.integrable_exponential_pdf
 Declared in library mathcomp.analysis.probability, line 2031, characters 6-32
@@ -5946,7 +5951,7 @@ measure
 
 probability_exponential_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_exponential_prob__canonical__measure_function_Measure
-  {R} [rate]%ring_scope rate_gt0
+  {R} [rate]%_ring_scope rate_gt0
 probability_exponential_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_exponential_prob__canonical__measure_function_Measure
@@ -5964,7 +5969,7 @@ measure
 
 probability_exponential_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_exponential_prob__canonical__measure_function_Measure
-  {R} [rate]%ring_scope rate_gt0
+  {R} [rate]%_ring_scope rate_gt0
 probability_exponential_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_exponential_prob__canonical__measure_function_Measure
@@ -5982,7 +5987,7 @@ measure
 
 probability_exponential_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_exponential_prob__canonical__measure_function_Measure
-  {R} [rate]%ring_scope rate_gt0
+  {R} [rate]%_ring_scope rate_gt0
 probability_exponential_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_exponential_prob__canonical__measure_function_Measure
@@ -6000,7 +6005,7 @@ measure
 
 probability_exponential_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_exponential_prob__canonical__measure_function_Measure
-  {R} [rate]%ring_scope rate_gt0
+  {R} [rate]%_ring_scope rate_gt0
 probability_exponential_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_exponential_prob__canonical__measure_function_Measure
@@ -6018,7 +6023,7 @@ measure
 
 probability_exponential_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_exponential_prob__canonical__measure_function_Measure
-  {R} [rate]%ring_scope rate_gt0
+  {R} [rate]%_ring_scope rate_gt0
 probability_exponential_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_exponential_prob__canonical__measure_function_Measure
@@ -6046,7 +6051,7 @@ probability
 probability_exponential_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_exponential_prob__canonical__probability_measure_Probability
-  {R} [rate]%ring_scope rate_gt0
+  {R} [rate]%_ring_scope rate_gt0
 probability_exponential_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_exponential_prob__canonical__probability_measure_Probability
@@ -6064,7 +6069,7 @@ probability
 probability_exponential_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_exponential_prob__canonical__probability_measure_Probability
-  {R} [rate]%ring_scope rate_gt0
+  {R} [rate]%_ring_scope rate_gt0
 probability_exponential_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_exponential_prob__canonical__probability_measure_Probability
@@ -6082,7 +6087,7 @@ probability
 probability_exponential_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_exponential_prob__canonical__probability_measure_Probability
-  {R} [rate]%ring_scope rate_gt0
+  {R} [rate]%_ring_scope rate_gt0
 probability_exponential_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_exponential_prob__canonical__probability_measure_Probability
@@ -6100,7 +6105,7 @@ probability
 probability_exponential_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_exponential_prob__canonical__probability_measure_Probability
-  {R} [rate]%ring_scope rate_gt0
+  {R} [rate]%_ring_scope rate_gt0
 probability_exponential_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_exponential_prob__canonical__probability_measure_Probability
@@ -6119,7 +6124,7 @@ probability
 probability_exponential_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_exponential_prob__canonical__probability_measure_Probability
-  {R} [rate]%ring_scope rate_gt0
+  {R} [rate]%_ring_scope rate_gt0
 probability_exponential_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_exponential_prob__canonical__probability_measure_Probability
@@ -6136,7 +6141,7 @@ Declared in library mathcomp.analysis.probability, line 2072, characters 0-94
 <span class="vernacular">Definition</span><span class="id"> </span><span id="poisson_pmf" class="id"><a name="poisson_pmf" class="" title="poisson_pmf : forall {R : realType}, R -> nat -> R
 
 poisson_pmf is not universe polymorphic
-Arguments poisson_pmf {R} rate%ring_scope k%nat_scope
+Arguments poisson_pmf {R} rate%_ring_scope k%_nat_scope
 poisson_pmf is transparent
 Expands to: Constant mathcomp.analysis.probability.poisson_pmf
 Declared in
@@ -6148,7 +6153,7 @@ library mathcomp.analysis.probability, line 2082, characters 11-22
 forall {R : realType} (rate : R) (k : nat), (0 <= poisson_pmf rate k)%R
 
 poisson_pmf_ge0 is not universe polymorphic
-Arguments poisson_pmf_ge0 {R} rate%ring_scope k%nat_scope
+Arguments poisson_pmf_ge0 {R} rate%_ring_scope k%_nat_scope
 poisson_pmf_ge0 is opaque
 Expands to: Constant mathcomp.analysis.probability.poisson_pmf_ge0
 Declared in library mathcomp.analysis.probability, line 2085, characters 6-21
@@ -6194,8 +6199,8 @@ forall
   i ->
 i (D `&` poisson_pmf^~ k @^-1` Y)%classic
 
-Arguments measurable_poisson_pmf {R} [D]%classical_set_scope 
-  k%nat_scope _ _ [Y] _ [i] _
+Arguments measurable_poisson_pmf {R} [D]%_classical_set_scope 
+  k%_nat_scope _ _ [Y] _ [i] _
 measurable_poisson_pmf is opaque
 Expands to: Constant mathcomp.analysis.probability.measurable_poisson_pmf
 Declared in library mathcomp.analysis.probability, line 2093, characters 6-28
@@ -6213,7 +6218,8 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="poisson_prob" class="id"><a name="poisson_prob" class="" title="poisson_prob : forall {R : realType}, R -> nat -> set nat -> \bar R
 
 poisson_prob is not universe polymorphic
-Arguments poisson_prob {R} rate%ring_scope k%nat_scope _%classical_set_scope
+Arguments poisson_prob {R} rate%_ring_scope k%_nat_scope
+  _%_classical_set_scope
 poisson_prob is transparent
 Expands to: Constant mathcomp.analysis.probability.poisson_prob
 Declared in
@@ -6264,7 +6270,7 @@ measure Datatypes_nat__canonical__measurable_structure_SemiRingOfSets R
 
 probability_poisson_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_poisson_prob__canonical__measure_function_Measure 
-  {R} rate%ring_scope k%nat_scope
+  {R} rate%_ring_scope k%_nat_scope
 probability_poisson_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_poisson_prob__canonical__measure_function_Measure
@@ -6278,7 +6284,7 @@ measure Datatypes_nat__canonical__measurable_structure_SemiRingOfSets R
 
 probability_poisson_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_poisson_prob__canonical__measure_function_Measure 
-  {R} rate%ring_scope k%nat_scope
+  {R} rate%_ring_scope k%_nat_scope
 probability_poisson_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_poisson_prob__canonical__measure_function_Measure
@@ -6292,7 +6298,7 @@ measure Datatypes_nat__canonical__measurable_structure_SemiRingOfSets R
 
 probability_poisson_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_poisson_prob__canonical__measure_function_Measure 
-  {R} rate%ring_scope k%nat_scope
+  {R} rate%_ring_scope k%_nat_scope
 probability_poisson_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_poisson_prob__canonical__measure_function_Measure
@@ -6306,7 +6312,7 @@ measure Datatypes_nat__canonical__measurable_structure_SemiRingOfSets R
 
 probability_poisson_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_poisson_prob__canonical__measure_function_Measure 
-  {R} rate%ring_scope k%nat_scope
+  {R} rate%_ring_scope k%_nat_scope
 probability_poisson_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_poisson_prob__canonical__measure_function_Measure
@@ -6320,7 +6326,7 @@ measure Datatypes_nat__canonical__measurable_structure_SemiRingOfSets R
 
 probability_poisson_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_poisson_prob__canonical__measure_function_Measure 
-  {R} rate%ring_scope k%nat_scope
+  {R} rate%_ring_scope k%_nat_scope
 probability_poisson_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_poisson_prob__canonical__measure_function_Measure
@@ -6357,7 +6363,7 @@ probability Datatypes_nat__canonical__measurable_structure_Measurable R
 probability_poisson_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_poisson_prob__canonical__probability_measure_Probability 
-  {R} rate%ring_scope k%nat_scope
+  {R} rate%_ring_scope k%_nat_scope
 probability_poisson_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_poisson_prob__canonical__probability_measure_Probability
@@ -6371,7 +6377,7 @@ probability Datatypes_nat__canonical__measurable_structure_Measurable R
 probability_poisson_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_poisson_prob__canonical__probability_measure_Probability 
-  {R} rate%ring_scope k%nat_scope
+  {R} rate%_ring_scope k%_nat_scope
 probability_poisson_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_poisson_prob__canonical__probability_measure_Probability
@@ -6385,7 +6391,7 @@ probability Datatypes_nat__canonical__measurable_structure_Measurable R
 probability_poisson_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_poisson_prob__canonical__probability_measure_Probability 
-  {R} rate%ring_scope k%nat_scope
+  {R} rate%_ring_scope k%_nat_scope
 probability_poisson_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_poisson_prob__canonical__probability_measure_Probability
@@ -6399,7 +6405,7 @@ probability Datatypes_nat__canonical__measurable_structure_Measurable R
 probability_poisson_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_poisson_prob__canonical__probability_measure_Probability 
-  {R} rate%ring_scope k%nat_scope
+  {R} rate%_ring_scope k%_nat_scope
 probability_poisson_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_poisson_prob__canonical__probability_measure_Probability
@@ -6414,7 +6420,7 @@ probability Datatypes_nat__canonical__measurable_structure_Measurable R
 probability_poisson_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   probability_poisson_prob__canonical__probability_measure_Probability 
-  {R} rate%ring_scope k%nat_scope
+  {R} rate%_ring_scope k%_nat_scope
 probability_poisson_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_poisson_prob__canonical__probability_measure_Probability
@@ -6466,7 +6472,7 @@ i
           Datatypes_nat__canonical__measurable_structure_Measurable R) @^-1`
        Y)%classic
 
-Arguments measurable_poisson_prob {R} n%nat_scope _ [Y] _ [i] _
+Arguments measurable_poisson_prob {R} n%_nat_scope _ [Y] _ [i] _
 measurable_poisson_prob is opaque
 Expands to: Constant mathcomp.analysis.probability.measurable_poisson_prob
 Declared in library mathcomp.analysis.probability, line 2158, characters 6-29
@@ -6518,7 +6524,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` (fun y : R => (y.~ ^+ n)%R) @^-1` t)%classic
 
-Arguments continuous_onemXn {R} [n]%nat_scope [x]%ring_scope [t] _
+Arguments continuous_onemXn {R} [n]%_nat_scope [x]%_ring_scope [t] _
 continuous_onemXn is opaque
 Expands to: Constant mathcomp.analysis.probability.continuous_onemXn
 Declared in library mathcomp.analysis.probability, line 2181, characters 6-23
@@ -6569,7 +6575,7 @@ exists2 i : R,
              (fun y : R => y.~ ^+ n) x))%R) @^-1`
           t) t0))%classic
 
-Arguments onemXn_derivable {R} [n]%nat_scope [x]%ring_scope [t] _
+Arguments onemXn_derivable {R} [n]%_nat_scope [x]%_ring_scope [t] _
 onemXn_derivable is opaque
 Expands to: Constant mathcomp.analysis.probability.onemXn_derivable
 Declared in library mathcomp.analysis.probability, line 2188, characters 6-22
@@ -6586,7 +6592,7 @@ forall {R : realType} (n : nat) (x : R),
 derivable_oo_LRcontinuous (fun y : R => (y.~ ^+ n * x)%R) 0 1
 
 derivable_oo_LRcontinuous_onemXnMr is not universe polymorphic
-Arguments derivable_oo_LRcontinuous_onemXnMr {R} n%nat_scope x%ring_scope
+Arguments derivable_oo_LRcontinuous_onemXnMr {R} n%_nat_scope x%_ring_scope
 derivable_oo_LRcontinuous_onemXnMr is opaque
 Expands to: Constant
             mathcomp.analysis.probability.derivable_oo_LRcontinuous_onemXnMr
@@ -6615,7 +6621,7 @@ forall {R : realType} (n : nat) (x : R),
 (fun y : R => (y.~ ^+ n)%R)^`()%classic x = (1 *- n * x.~ ^+ n.-1)%R
 
 derive_onemXn is not universe polymorphic
-Arguments derive_onemXn {R} n%nat_scope x%ring_scope
+Arguments derive_onemXn {R} n%_nat_scope x%_ring_scope
 derive_onemXn is opaque
 Expands to: Constant mathcomp.analysis.probability.derive_onemXn
 Declared in library mathcomp.analysis.probability, line 2211, characters 6-19
@@ -6635,7 +6641,7 @@ forall {R : realType} (n : nat),
 (\int[lebesgue_measure]_(x in `[0, 1]) x.~ ^+ n)%R = n.+1%:R^-1%R
 
 Rintegral_onemXn is not universe polymorphic
-Arguments Rintegral_onemXn {R} n%nat_scope
+Arguments Rintegral_onemXn {R} n%_nat_scope
 Rintegral_onemXn is opaque
 Expands to: Constant mathcomp.analysis.probability.Rintegral_onemXn
 Declared in library mathcomp.analysis.probability, line 2220, characters 6-22
@@ -6666,7 +6672,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="XMonemX" class="id"><a name="XMonemX" class="" title="XMonemX : forall {R : numDomainType}, nat -> nat -> R -> R
 
 XMonemX is not universe polymorphic
-Arguments XMonemX {R} (a b)%nat_scope x%ring_scope
+Arguments XMonemX {R} (a b)%_nat_scope x%_ring_scope
 XMonemX is transparent
 Expands to: Constant mathcomp.analysis.probability.XMonemX
 Declared in
@@ -6678,7 +6684,7 @@ forall {R : numDomainType} (a b : nat) [x : R],
 x \in `[0, 1]%R -> (0 <= XMonemX a b x)%R
 
 XMonemX_ge0 is not universe polymorphic
-Arguments XMonemX_ge0 {R} (a b)%nat_scope [x]%ring_scope _
+Arguments XMonemX_ge0 {R} (a b)%_nat_scope [x]%_ring_scope _
 XMonemX_ge0 is opaque
 Expands to: Constant mathcomp.analysis.probability.XMonemX_ge0
 Declared in library mathcomp.analysis.probability, line 2244, characters 6-17
@@ -6694,7 +6700,7 @@ forall {R : numDomainType} (a b : nat) [x : R],
 x \in `[0, 1]%R -> (XMonemX a b x <= 1)%R
 
 XMonemX_le1 is not universe polymorphic
-Arguments XMonemX_le1 {R} (a b)%nat_scope [x]%ring_scope _
+Arguments XMonemX_le1 {R} (a b)%_nat_scope [x]%_ring_scope _
 XMonemX_le1 is opaque
 Expands to: Constant mathcomp.analysis.probability.XMonemX_le1
 Declared in library mathcomp.analysis.probability, line 2249, characters 6-17
@@ -6710,7 +6716,7 @@ Qed.</div></details>
 forall {R : numDomainType} (n : nat) (x : R), XMonemX 0 n x = (x.~ ^+ n)%R
 
 XMonemX0n is not universe polymorphic
-Arguments XMonemX0n {R} n%nat_scope x%ring_scope
+Arguments XMonemX0n {R} n%_nat_scope x%_ring_scope
 XMonemX0n is opaque
 Expands to: Constant mathcomp.analysis.probability.XMonemX0n
 Declared in library mathcomp.analysis.probability, line 2255, characters 6-15
@@ -6724,7 +6730,7 @@ Declared in library mathcomp.analysis.probability, line 2255, characters 6-15
 forall {R : numDomainType} (n : nat) (x : R), XMonemX n 0 x = (x ^+ n)%R
 
 XMonemXn0 is not universe polymorphic
-Arguments XMonemXn0 {R} n%nat_scope x%ring_scope
+Arguments XMonemXn0 {R} n%_nat_scope x%_ring_scope
 XMonemXn0 is opaque
 Expands to: Constant mathcomp.analysis.probability.XMonemXn0
 Declared in library mathcomp.analysis.probability, line 2258, characters 6-15
@@ -6737,7 +6743,7 @@ Declared in library mathcomp.analysis.probability, line 2258, characters 6-15
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="XMonemX00" class="id"><a name="XMonemX00" class="" title="XMonemX00 : forall {R : numDomainType} (x : R), XMonemX 0 0 x = 1%R
 
 XMonemX00 is not universe polymorphic
-Arguments XMonemX00 {R} x%ring_scope
+Arguments XMonemX00 {R} x%_ring_scope
 XMonemX00 is opaque
 Expands to: Constant mathcomp.analysis.probability.XMonemX00
 Declared in library mathcomp.analysis.probability, line 2261, characters 6-15
@@ -6752,7 +6758,7 @@ forall {R : numDomainType} (a b : nat) (x : R),
 XMonemX a b (1 - x) = XMonemX b a x
 
 XMonemXC is not universe polymorphic
-Arguments XMonemXC {R} (a b)%nat_scope x%ring_scope
+Arguments XMonemXC {R} (a b)%_nat_scope x%_ring_scope
 XMonemXC is opaque
 Expands to: Constant mathcomp.analysis.probability.XMonemXC
 Declared in library mathcomp.analysis.probability, line 2264, characters 6-14
@@ -6767,7 +6773,7 @@ forall {R : numDomainType} (a b a' b' : nat) (x : R),
 (XMonemX a' b' x * XMonemX a b x)%R = XMonemX (a + a') (b + b') x
 
 XMonemXM is not universe polymorphic
-Arguments XMonemXM {R} (a b a' b')%nat_scope x%ring_scope
+Arguments XMonemXM {R} (a b a' b')%_nat_scope x%_ring_scope
 XMonemXM is opaque
 Expands to: Constant mathcomp.analysis.probability.XMonemXM
 Declared in library mathcomp.analysis.probability, line 2267, characters 6-14
@@ -6807,7 +6813,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` XMonemX a b @^-1` t)%classic
 
-Arguments continuous_XMonemX {R} [a b]%nat_scope [x t] _
+Arguments continuous_XMonemX {R} [a b]%_nat_scope [x t] _
 continuous_XMonemX is opaque
 Expands to: Constant mathcomp.analysis.probability.continuous_XMonemX
 Declared in library mathcomp.analysis.probability, line 2277, characters 6-24
@@ -6837,8 +6843,8 @@ filter.nbhs (from_subspace A (XMonemX a b) x) t ->
  else filter.globally [set x])
   (from_subspace A (XMonemX a b) @^-1` t)%classic
 
-Arguments within_continuous_XMonemX {R} [A]%classical_set_scope
-  [a b]%nat_scope [x t] _
+Arguments within_continuous_XMonemX {R} [A]%_classical_set_scope
+  [a b]%_nat_scope [x t] _
 within_continuous_XMonemX is opaque
 Expands to: Constant mathcomp.analysis.probability.within_continuous_XMonemX
 Declared in library mathcomp.analysis.probability, line 2282, characters 6-31
@@ -6878,8 +6884,8 @@ forall
   i ->
 i (A `&` XMonemX a b @^-1` Y)%classic
 
-Arguments measurable_XMonemX {R} [A]%classical_set_scope 
-  (a b)%nat_scope _ [Y] _ [i] _
+Arguments measurable_XMonemX {R} [A]%_classical_set_scope 
+  (a b)%_nat_scope _ [Y] _ [i] _
 measurable_XMonemX is opaque
 Expands to: Constant mathcomp.analysis.probability.measurable_XMonemX
 Declared in library mathcomp.analysis.probability, line 2285, characters 6-24
@@ -6895,7 +6901,7 @@ Qed.</div></details>
 forall {R : realType} (a b : nat), [bounded XMonemX a b x | x in `[0%R, 1%R]]
 
 bounded_XMonemX is not universe polymorphic
-Arguments bounded_XMonemX {R} (a b)%nat_scope
+Arguments bounded_XMonemX {R} (a b)%_nat_scope
 bounded_XMonemX is opaque
 Expands to: Constant mathcomp.analysis.probability.bounded_XMonemX
 Declared in library mathcomp.analysis.probability, line 2291, characters 6-21
@@ -6919,7 +6925,7 @@ forall {R : realType} (a b : nat),
 lebesgue_measure.-integrable `[0%R, 1%R] (EFin \o XMonemX a b)
 
 integrable_XMonemX is not universe polymorphic
-Arguments integrable_XMonemX {R} (a b)%nat_scope
+Arguments integrable_XMonemX {R} (a b)%_nat_scope
 integrable_XMonemX is opaque
 Expands to: Constant mathcomp.analysis.probability.integrable_XMonemX
 Declared in library mathcomp.analysis.probability, line 2304, characters 6-24
@@ -6937,7 +6943,7 @@ lebesgue_measure.-integrable [set: R]
   (EFin \o (XMonemX a.-1 b.-1) \_ `[0%R, 1%R])
 
 integrable_XMonemX_restrict is not universe polymorphic
-Arguments integrable_XMonemX_restrict {R} (a b)%nat_scope
+Arguments integrable_XMonemX_restrict {R} (a b)%_nat_scope
 integrable_XMonemX_restrict is opaque
 Expands to: Constant
             mathcomp.analysis.probability.integrable_XMonemX_restrict
@@ -6965,7 +6971,8 @@ forall {R : realType}
 (\int[lebesgue_measure]_(x in U `&` `[0%R, 1%R]) (XMonemX a b x)%:E)%E
 
 integral_XMonemX_restrict is not universe polymorphic
-Arguments integral_XMonemX_restrict {R} U%classical_set_scope (a b)%nat_scope
+Arguments integral_XMonemX_restrict {R} U%_classical_set_scope
+  (a b)%_nat_scope
 integral_XMonemX_restrict is opaque
 Expands to: Constant mathcomp.analysis.probability.integral_XMonemX_restrict
 Declared in library mathcomp.analysis.probability, line 2319, characters 6-31
@@ -6990,7 +6997,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="beta_fun" class="id"><a name="beta_fun" class="" title="beta_fun : forall {R : realType}, nat -> nat -> R
 
 beta_fun is not universe polymorphic
-Arguments beta_fun {R} (a b)%nat_scope
+Arguments beta_fun {R} (a b)%_nat_scope
 beta_fun is transparent
 Expands to: Constant mathcomp.analysis.probability.beta_fun
 Declared in
@@ -7005,7 +7012,7 @@ forall {R : realType} (a b : nat),
 (\int[lebesgue_measure]_x (((XMonemX a.-1 b.-1) \_ `[0, 1]) x)%:E)%E
 
 EFin_beta_fun is not universe polymorphic
-Arguments EFin_beta_fun {R} (a b)%nat_scope
+Arguments EFin_beta_fun {R} (a b)%_nat_scope
 EFin_beta_fun is opaque
 Expands to: Constant mathcomp.analysis.probability.EFin_beta_fun
 Declared in library mathcomp.analysis.probability, line 2339, characters 6-19
@@ -7027,7 +7034,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="beta_fun_sym" class="id"><a name="beta_fun_sym" class="" title="beta_fun_sym : forall {R : realType} (a b : nat), beta_fun a b = beta_fun b a
 
 beta_fun_sym is not universe polymorphic
-Arguments beta_fun_sym {R} (a b)%nat_scope
+Arguments beta_fun_sym {R} (a b)%_nat_scope
 beta_fun_sym is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_fun_sym
 Declared in library mathcomp.analysis.probability, line 2352, characters 6-18
@@ -7046,7 +7053,7 @@ Qed.</div></details>
 forall {R : realType} [b : nat], 0 < b -> beta_fun 0 b = b%:R^-1%R
 
 beta_fun0n is not universe polymorphic
-Arguments beta_fun0n {R} [b]%nat_scope _
+Arguments beta_fun0n {R} [b]%_nat_scope _
 beta_fun0n is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_fun0n
 Declared in library mathcomp.analysis.probability, line 2361, characters 6-16
@@ -7079,7 +7086,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="beta_fun1Sn" class="id"><a name="beta_fun1Sn" class="" title="beta_fun1Sn : forall {R : realType} (b : nat), beta_fun 1 b.+1 = b.+1%:R^-1%R
 
 beta_fun1Sn is not universe polymorphic
-Arguments beta_fun1Sn {R} b%nat_scope
+Arguments beta_fun1Sn {R} b%_nat_scope
 beta_fun1Sn is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_fun1Sn
 Declared in library mathcomp.analysis.probability, line 2376, characters 6-17
@@ -7110,7 +7117,7 @@ forall {R : realType} (a b : nat),
 beta_fun a.+2 b.+1 = (a.+1%:R / b.+1%:R * beta_fun a.+1 b.+2)%R
 
 beta_funSSnSm is not universe polymorphic
-Arguments beta_funSSnSm {R} (a b)%nat_scope
+Arguments beta_funSSnSm {R} (a b)%_nat_scope
 beta_funSSnSm is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_funSSnSm
 Declared in library mathcomp.analysis.probability, line 2386, characters 6-19
@@ -7152,7 +7159,7 @@ beta_fun a.+1 b.+1 =
 (a`!%:R / (\prod_(b.+1 <= i < (a + b).+1) i)%:R * beta_fun 1 (a + b).+1)%R
 
 beta_funSnSm is not universe polymorphic
-Arguments beta_funSnSm {R} (a b)%nat_scope
+Arguments beta_funSnSm {R} (a b)%_nat_scope
 beta_funSnSm is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_funSnSm
 Declared in library mathcomp.analysis.probability, line 2416, characters 6-18
@@ -7175,7 +7182,7 @@ forall {R : realType} (a b : nat),
 beta_fun a.+1 b.+1 = ((a`! * b`!)%:R / ((a + b).+1)`!%:R)%R
 
 beta_fun_fact is not universe polymorphic
-Arguments beta_fun_fact {R} (a b)%nat_scope
+Arguments beta_fun_fact {R} (a b)%_nat_scope
 beta_fun_fact is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_fun_fact
 Declared in library mathcomp.analysis.probability, line 2428, characters 6-19
@@ -7207,7 +7214,7 @@ beta_fun a b =
   else ((a.-1)`!%:R * (b.-1)`!%:R / ((a + b).-1)`!%:R)%R)
 
 beta_funE is not universe polymorphic
-Arguments beta_funE {R} (a b)%nat_scope
+Arguments beta_funE {R} (a b)%_nat_scope
 beta_funE is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_funE
 Declared in library mathcomp.analysis.probability, line 2443, characters 6-15
@@ -7234,7 +7241,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="beta_fun_gt0" class="id"><a name="beta_fun_gt0" class="" title="beta_fun_gt0 : forall {R : realType} (a b : nat), (0 < beta_fun a b)%R
 
 beta_fun_gt0 is not universe polymorphic
-Arguments beta_fun_gt0 {R} (a b)%nat_scope
+Arguments beta_fun_gt0 {R} (a b)%_nat_scope
 beta_fun_gt0 is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_fun_gt0
 Declared in library mathcomp.analysis.probability, line 2461, characters 6-18
@@ -7257,7 +7264,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="beta_fun_ge0" class="id"><a name="beta_fun_ge0" class="" title="beta_fun_ge0 : forall {R : realType} (a b : nat), (0 <= beta_fun a b)%R
 
 beta_fun_ge0 is not universe polymorphic
-Arguments beta_fun_ge0 {R} (a b)%nat_scope
+Arguments beta_fun_ge0 {R} (a b)%_nat_scope
 beta_fun_ge0 is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_fun_ge0
 Declared in library mathcomp.analysis.probability, line 2475, characters 6-18
@@ -7284,7 +7291,7 @@ join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_POrder R ->
 R
 
 beta_pdf is not universe polymorphic
-Arguments beta_pdf {R} (a b)%nat_scope t
+Arguments beta_pdf {R} (a b)%_nat_scope t
 beta_pdf is transparent
 Expands to: Constant mathcomp.analysis.probability.beta_pdf
 Declared in
@@ -7317,7 +7324,7 @@ forall
   i ->
 i ([set: R] `&` beta_pdf a b @^-1` Y)%classic
 
-Arguments measurable_beta_pdf {R} (a b)%nat_scope _ [Y] _ [i] _
+Arguments measurable_beta_pdf {R} (a b)%_nat_scope _ [Y] _ [i] _
 measurable_beta_pdf is opaque
 Expands to: Constant mathcomp.analysis.probability.measurable_beta_pdf
 Declared in library mathcomp.analysis.probability, line 2489, characters 6-25
@@ -7336,7 +7343,7 @@ forall {R : realType} (a b : nat)
 (0 <= beta_pdf a b t)%R
 
 beta_pdf_ge0 is not universe polymorphic
-Arguments beta_pdf_ge0 {R} (a b)%nat_scope t
+Arguments beta_pdf_ge0 {R} (a b)%_nat_scope t
 beta_pdf_ge0 is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_pdf_ge0
 Declared in library mathcomp.analysis.probability, line 2495, characters 6-18
@@ -7356,7 +7363,7 @@ forall {R : realType} (a b : nat)
 (beta_pdf a b x <= (beta_fun a b)^-1)%R
 
 beta_pdf_le_beta_funV is not universe polymorphic
-Arguments beta_pdf_le_beta_funV {R} (a b)%nat_scope x
+Arguments beta_pdf_le_beta_funV {R} (a b)%_nat_scope x
 beta_pdf_le_beta_funV is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_pdf_le_beta_funV
 Declared in library mathcomp.analysis.probability, line 2502, characters 6-27
@@ -7393,7 +7400,7 @@ lebesgue_measure.-integrable
   (EFin \o beta_pdf a b)
 
 integrable_beta_pdf is not universe polymorphic
-Arguments integrable_beta_pdf {R} (a b)%nat_scope
+Arguments integrable_beta_pdf {R} (a b)%_nat_scope
 integrable_beta_pdf is opaque
 Expands to: Constant mathcomp.analysis.probability.integrable_beta_pdf
 Declared in library mathcomp.analysis.probability, line 2521, characters 6-25
@@ -7420,7 +7427,7 @@ forall {R : realType} (a b : nat),
 [bounded beta_pdf a b x | x in `[0%R, 1%R]]
 
 bounded_beta_pdf_01 is not universe polymorphic
-Arguments bounded_beta_pdf_01 {R} (a b)%nat_scope
+Arguments bounded_beta_pdf_01 {R} (a b)%_nat_scope
 bounded_beta_pdf_01 is opaque
 Expands to: Constant mathcomp.analysis.probability.bounded_beta_pdf_01
 Declared in library mathcomp.analysis.probability, line 2537, characters 6-25
@@ -7520,7 +7527,7 @@ measure
 
 probability_beta_num__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_beta_num__canonical__measure_function_Measure 
-  {R} (a b)%nat_scope
+  {R} (a b)%_nat_scope
 probability_beta_num__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_beta_num__canonical__measure_function_Measure
@@ -7539,7 +7546,7 @@ measure
 
 probability_beta_num__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_beta_num__canonical__measure_function_Measure 
-  {R} (a b)%nat_scope
+  {R} (a b)%_nat_scope
 probability_beta_num__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_beta_num__canonical__measure_function_Measure
@@ -7558,7 +7565,7 @@ measure
 
 probability_beta_num__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_beta_num__canonical__measure_function_Measure 
-  {R} (a b)%nat_scope
+  {R} (a b)%_nat_scope
 probability_beta_num__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_beta_num__canonical__measure_function_Measure
@@ -7577,7 +7584,7 @@ measure
 
 probability_beta_num__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_beta_num__canonical__measure_function_Measure 
-  {R} (a b)%nat_scope
+  {R} (a b)%_nat_scope
 probability_beta_num__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_beta_num__canonical__measure_function_Measure
@@ -7596,7 +7603,7 @@ measure
 
 probability_beta_num__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_beta_num__canonical__measure_function_Measure 
-  {R} (a b)%nat_scope
+  {R} (a b)%_nat_scope
 probability_beta_num__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_beta_num__canonical__measure_function_Measure
@@ -7617,7 +7624,7 @@ set
 \bar R
 
 beta_prob is not universe polymorphic
-Arguments beta_prob {R} (a b)%nat_scope A%classical_set_scope
+Arguments beta_prob {R} (a b)%_nat_scope A%_classical_set_scope
 beta_prob is transparent
 Expands to: Constant mathcomp.analysis.probability.beta_prob
 Declared in
@@ -7638,7 +7645,7 @@ measure
 
 probability_beta_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_beta_prob__canonical__measure_function_Measure 
-  {R} (a b)%nat_scope
+  {R} (a b)%_nat_scope
 probability_beta_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_beta_prob__canonical__measure_function_Measure
@@ -7656,7 +7663,7 @@ measure
 
 probability_beta_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_beta_prob__canonical__measure_function_Measure 
-  {R} (a b)%nat_scope
+  {R} (a b)%_nat_scope
 probability_beta_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_beta_prob__canonical__measure_function_Measure
@@ -7674,7 +7681,7 @@ measure
 
 probability_beta_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_beta_prob__canonical__measure_function_Measure 
-  {R} (a b)%nat_scope
+  {R} (a b)%_nat_scope
 probability_beta_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_beta_prob__canonical__measure_function_Measure
@@ -7692,7 +7699,7 @@ measure
 
 probability_beta_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_beta_prob__canonical__measure_function_Measure 
-  {R} (a b)%nat_scope
+  {R} (a b)%_nat_scope
 probability_beta_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_beta_prob__canonical__measure_function_Measure
@@ -7710,7 +7717,7 @@ measure
 
 probability_beta_prob__canonical__measure_function_Measure is not universe polymorphic
 Arguments probability_beta_prob__canonical__measure_function_Measure 
-  {R} (a b)%nat_scope
+  {R} (a b)%_nat_scope
 probability_beta_prob__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_beta_prob__canonical__measure_function_Measure
@@ -7738,7 +7745,7 @@ probability
 
 probability_beta_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments probability_beta_prob__canonical__probability_measure_Probability
-  {R} (a b)%nat_scope
+  {R} (a b)%_nat_scope
 probability_beta_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_beta_prob__canonical__probability_measure_Probability
@@ -7756,7 +7763,7 @@ probability
 
 probability_beta_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments probability_beta_prob__canonical__probability_measure_Probability
-  {R} (a b)%nat_scope
+  {R} (a b)%_nat_scope
 probability_beta_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_beta_prob__canonical__probability_measure_Probability
@@ -7774,7 +7781,7 @@ probability
 
 probability_beta_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments probability_beta_prob__canonical__probability_measure_Probability
-  {R} (a b)%nat_scope
+  {R} (a b)%_nat_scope
 probability_beta_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_beta_prob__canonical__probability_measure_Probability
@@ -7792,7 +7799,7 @@ probability
 
 probability_beta_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments probability_beta_prob__canonical__probability_measure_Probability
-  {R} (a b)%nat_scope
+  {R} (a b)%_nat_scope
 probability_beta_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_beta_prob__canonical__probability_measure_Probability
@@ -7811,7 +7818,7 @@ probability
 
 probability_beta_prob__canonical__probability_measure_Probability is not universe polymorphic
 Arguments probability_beta_prob__canonical__probability_measure_Probability
-  {R} (a b)%nat_scope
+  {R} (a b)%_nat_scope
 probability_beta_prob__canonical__probability_measure_Probability is transparent
 Expands to: Constant
             mathcomp.analysis.probability.probability_beta_prob__canonical__probability_measure_Probability
@@ -7829,7 +7836,7 @@ forall {R : realType} (a b : nat)
 (\int[lebesgue_measure]_(x in U) (beta_pdf a b x)%:E)%E = beta_prob a b U
 
 integral_beta_pdf is not universe polymorphic
-Arguments integral_beta_pdf {R} (a b)%nat_scope [U]%classical_set_scope _
+Arguments integral_beta_pdf {R} (a b)%_nat_scope [U]%_classical_set_scope _
 integral_beta_pdf is opaque
 Expands to: Constant mathcomp.analysis.probability.integral_beta_pdf
 Declared in library mathcomp.analysis.probability, line 2623, characters 6-23
@@ -7854,7 +7861,7 @@ Qed.</div></details>
 forall {R : realType} (a b : nat), beta_prob a b `[0%R, 1%R] = 1%E
 
 beta_prob01 is not universe polymorphic
-Arguments beta_prob01 {R} (a b)%nat_scope
+Arguments beta_prob01 {R} (a b)%_nat_scope
 beta_prob01 is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_prob01
 Declared in library mathcomp.analysis.probability, line 2638, characters 6-17
@@ -7878,7 +7885,7 @@ forall {R : realType} (a b : nat)
 beta_prob a b U \is a fin_num
 
 beta_prob_fin_num is not universe polymorphic
-Arguments beta_prob_fin_num {R} (a b)%nat_scope [U]%classical_set_scope _
+Arguments beta_prob_fin_num {R} (a b)%_nat_scope [U]%_classical_set_scope _
 beta_prob_fin_num is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_prob_fin_num
 Declared in library mathcomp.analysis.probability, line 2645, characters 6-23
@@ -7914,7 +7921,7 @@ forall
 (((R.-ocitv).-measurable).-sigma).-measurable%classic A ->
 (A `<=` t)%classic -> beta_prob a b A = 0%R
 
-Arguments beta_prob_dom {R} (a b)%nat_scope [t] _ [A] _ _
+Arguments beta_prob_dom {R} (a b)%_nat_scope [t] _ [A] _ _
 beta_prob_dom is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_prob_dom
 Declared in library mathcomp.analysis.probability, line 2653, characters 6-19
@@ -7978,8 +7985,8 @@ measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
 
 integral_beta_prob_bernoulli_prob_lty is not universe polymorphic
 Arguments integral_beta_prob_bernoulli_prob_lty {R} 
-  (a b)%nat_scope [f]%function_scope U%classical_set_scope 
-  _ _%function_scope
+  (a b)%_nat_scope [f]%_function_scope U%_classical_set_scope 
+  _ _%_function_scope
 integral_beta_prob_bernoulli_prob_lty is opaque
 Expands to: Constant
             mathcomp.analysis.probability.integral_beta_prob_bernoulli_prob_lty
@@ -8009,7 +8016,7 @@ forall {R : realType} (n a b : nat) (U : set bool),
 
 integral_beta_prob_bernoulli_prob_onemX_lty is not universe polymorphic
 Arguments integral_beta_prob_bernoulli_prob_onemX_lty 
-  {R} (n a b)%nat_scope U%classical_set_scope
+  {R} (n a b)%_nat_scope U%_classical_set_scope
 integral_beta_prob_bernoulli_prob_onemX_lty is opaque
 Expands to: Constant
             mathcomp.analysis.probability.integral_beta_prob_bernoulli_prob_onemX_lty
@@ -8033,7 +8040,7 @@ forall {R : realType} (n a b : nat) (U : set bool),
 
 integral_beta_prob_bernoulli_prob_onem_lty is not universe polymorphic
 Arguments integral_beta_prob_bernoulli_prob_onem_lty 
-  {R} (n a b)%nat_scope U%classical_set_scope
+  {R} (n a b)%_nat_scope U%_classical_set_scope
 integral_beta_prob_bernoulli_prob_onem_lty is opaque
 Expands to: Constant
             mathcomp.analysis.probability.integral_beta_prob_bernoulli_prob_onem_lty
@@ -8058,7 +8065,7 @@ forall {R : realType} (a b a' b' : nat),
   (fun x : measurableTypeR R => (XMonemX a' b' x)%:E)
 
 beta_prob_integrable is not universe polymorphic
-Arguments beta_prob_integrable {R} (a b a' b')%nat_scope
+Arguments beta_prob_integrable {R} (a b a' b')%_nat_scope
 beta_prob_integrable is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_prob_integrable
 Declared in library mathcomp.analysis.probability, line 2725, characters 6-26
@@ -8088,7 +8095,7 @@ forall {R : realType} (a b a' b' : nat),
   (fun x : measurableTypeR R => ((XMonemX a' b' x).~)%:E)
 
 beta_prob_integrable_onem is not universe polymorphic
-Arguments beta_prob_integrable_onem {R} (a b a' b')%nat_scope
+Arguments beta_prob_integrable_onem {R} (a b a' b')%_nat_scope
 beta_prob_integrable_onem is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_prob_integrable_onem
 Declared in library mathcomp.analysis.probability, line 2743, characters 6-31
@@ -8128,8 +8135,8 @@ forall {R : realType} (a b a' b' : nat) (c : bool)
   (fun x : measurableTypeR R => ((XMonemX a' b' x)%:E * (\d_c)%R U)%E)
 
 beta_prob_integrable_dirac is not universe polymorphic
-Arguments beta_prob_integrable_dirac {R} (a b a' b')%nat_scope 
-  c%bool_scope U%classical_set_scope
+Arguments beta_prob_integrable_dirac {R} (a b a' b')%_nat_scope 
+  c%_bool_scope U%_classical_set_scope
 beta_prob_integrable_dirac is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_prob_integrable_dirac
 Declared in library mathcomp.analysis.probability, line 2770, characters 6-32
@@ -8152,8 +8159,8 @@ forall {R : realType} (a b a' b' : nat) (c : bool)
   (fun x : measurableTypeR R => (((XMonemX a' b' x).~)%:E * (\d_c)%R U)%E)
 
 beta_prob_integrable_onem_dirac is not universe polymorphic
-Arguments beta_prob_integrable_onem_dirac {R} (a b a' b')%nat_scope
-  c%bool_scope U%classical_set_scope
+Arguments beta_prob_integrable_onem_dirac {R} (a b a' b')%_nat_scope
+  c%_bool_scope U%_classical_set_scope
 beta_prob_integrable_onem_dirac is opaque
 Expands to: Constant
             mathcomp.analysis.probability.beta_prob_integrable_onem_dirac
@@ -8201,8 +8208,9 @@ measurable_fun
 (\int[lebesgue_measure]_(x in U) (f x * (beta_pdf a b x)%:E))%E
 
 integral_beta_prob is not universe polymorphic
-Arguments integral_beta_prob {R} [a b]%nat_scope [f]%function_scope
-  [U]%classical_set_scope _ _ _
+Arguments integral_beta_prob {R} [a b]%_nat_scope 
+  [f]%_function_scope [U]%_classical_set_scope _ _ 
+  _
 integral_beta_prob is opaque
 Expands to: Constant mathcomp.analysis.probability.integral_beta_prob
 Declared in library mathcomp.analysis.probability, line 2794, characters 6-24
@@ -8244,7 +8252,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="div_beta_fun" class="id"><a name="div_beta_fun" class="" title="div_beta_fun : forall {R : realType}, nat -> nat -> nat -> nat -> R
 
 div_beta_fun is not universe polymorphic
-Arguments div_beta_fun {R} (a b c d)%nat_scope
+Arguments div_beta_fun {R} (a b c d)%_nat_scope
 div_beta_fun is transparent
 Expands to: Constant mathcomp.analysis.probability.div_beta_fun
 Declared in
@@ -8255,7 +8263,7 @@ library mathcomp.analysis.probability, line 2827, characters 11-23
 forall {R : realType} (a b c d : nat), (0 <= div_beta_fun a b c d)%R
 
 div_beta_fun_ge0 is not universe polymorphic
-Arguments div_beta_fun_ge0 {R} (a b c d)%nat_scope
+Arguments div_beta_fun_ge0 {R} (a b c d)%_nat_scope
 div_beta_fun_ge0 is opaque
 Expands to: Constant mathcomp.analysis.probability.div_beta_fun_ge0
 Declared in library mathcomp.analysis.probability, line 2829, characters 6-22
@@ -8270,7 +8278,7 @@ forall {R : realType} [a b : nat] (c d : nat),
 0 < a -> 0 < b -> (div_beta_fun a b c d <= 1)%R
 
 div_beta_fun_le1 is not universe polymorphic
-Arguments div_beta_fun_le1 {R} [a b]%nat_scope (c d)%nat_scope _ _
+Arguments div_beta_fun_le1 {R} [a b]%_nat_scope (c d)%_nat_scope _ _
 div_beta_fun_le1 is opaque
 Expands to: Constant mathcomp.analysis.probability.div_beta_fun_le1
 Declared in library mathcomp.analysis.probability, line 2832, characters 6-22
@@ -8308,8 +8316,8 @@ Qed.</div></details>
 forall {R : realType}, nat -> nat -> nat -> nat -> set bool -> \bar R
 
 beta_prob_bernoulli_prob is not universe polymorphic
-Arguments beta_prob_bernoulli_prob {R} (a b c d)%nat_scope
-  U%classical_set_scope
+Arguments beta_prob_bernoulli_prob {R} (a b c d)%_nat_scope
+  U%_classical_set_scope
 beta_prob_bernoulli_prob is transparent
 Expands to: Constant mathcomp.analysis.probability.beta_prob_bernoulli_prob
 Declared in
@@ -8325,8 +8333,8 @@ forall {R : realType} [a b : nat] (c d : nat) (U : set bool),
 beta_prob_bernoulli_prob a b c d U = bernoulli_prob (div_beta_fun a b c d) U
 
 beta_prob_bernoulli_probE is not universe polymorphic
-Arguments beta_prob_bernoulli_probE {R} [a b]%nat_scope 
-  (c d)%nat_scope U%classical_set_scope _ _
+Arguments beta_prob_bernoulli_probE {R} [a b]%_nat_scope 
+  (c d)%_nat_scope U%_classical_set_scope _ _
 beta_prob_bernoulli_probE is opaque
 Expands to: Constant mathcomp.analysis.probability.beta_prob_bernoulli_probE
 Declared in library mathcomp.analysis.probability, line 2864, characters 6-31

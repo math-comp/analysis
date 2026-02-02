@@ -279,7 +279,7 @@ forall {R : numDomainType} (a b : R) (f : R -> R),
 {in `[a, b]%R &, {homo (\- f)%R : n m / (n <= m)%R >-> (m <= n)%R}}
 
 nondecreasing_funN is not universe polymorphic
-Arguments nondecreasing_funN {R} a b f%function_scope
+Arguments nondecreasing_funN {R} a b f%_function_scope
 nondecreasing_funN is opaque
 Expands to: Constant mathcomp.analysis.numfun.nondecreasing_funN
 Declared in library mathcomp.analysis.numfun, line 64, characters 6-24
@@ -299,7 +299,7 @@ forall {R : numDomainType} (a b : R) (f : R -> R),
 {in `[a, b]%R &, {homo (\- f)%R : n m / (n <= m)%R >-> (n <= m)%R}}
 
 nonincreasing_funN is not universe polymorphic
-Arguments nonincreasing_funN {R} a b f%function_scope
+Arguments nonincreasing_funN {R} a b f%_function_scope
 nonincreasing_funN is opaque
 Expands to: Constant mathcomp.analysis.numfun.nonincreasing_funN
 Declared in library mathcomp.analysis.numfun, line 72, characters 6-24
@@ -323,7 +323,7 @@ Qed.</div></details>
 forall {d : disp_t} {T : porderType d}, T -> T -> seq T -> Prop
 
 itv_partition is not universe polymorphic
-Arguments itv_partition {d T} a b s%seq_scope
+Arguments itv_partition {d T} a b s%_seq_scope
 itv_partition is transparent
 Expands to: Constant mathcomp.analysis.numfun.itv_partition
 Declared in library mathcomp.analysis.numfun, line 86, characters 11-24
@@ -349,7 +349,7 @@ forall {d : disp_t} {T : porderType d} [a b x : T] [s : seq T],
 itv_partition a b (x :: s) -> itv_partition x b s
 
 itv_partition_cons is not universe polymorphic
-Arguments itv_partition_cons {d T} [a b x] [s]%seq_scope _
+Arguments itv_partition_cons {d T} [a b x] [s]%_seq_scope _
 itv_partition_cons is opaque
 Expands to: Constant mathcomp.analysis.numfun.itv_partition_cons
 Declared in library mathcomp.analysis.numfun, line 91, characters 6-24
@@ -380,7 +380,7 @@ forall {d : disp_t} {T : porderType d} [a b : T] [s : seq T],
 0 < size s -> itv_partition a b s -> (a < b)%O
 
 itv_partition_size_neq0 is not universe polymorphic
-Arguments itv_partition_size_neq0 {d T} [a b] [s]%seq_scope _ _
+Arguments itv_partition_size_neq0 {d T} [a b] [s]%_seq_scope _ _
 itv_partition_size_neq0 is opaque
 Expands to: Constant mathcomp.analysis.numfun.itv_partition_size_neq0
 Declared in library mathcomp.analysis.numfun, line 98, characters 6-29
@@ -400,7 +400,7 @@ forall {d : disp_t} {T : porderType d} [a : T] [s : seq T],
 itv_partition a a s -> s = [::]
 
 itv_partitionxx is not universe polymorphic
-Arguments itv_partitionxx {d T} [a] [s]%seq_scope _
+Arguments itv_partitionxx {d T} [a] [s]%_seq_scope _
 itv_partitionxx is opaque
 Expands to: Constant mathcomp.analysis.numfun.itv_partitionxx
 Declared in library mathcomp.analysis.numfun, line 107, characters 6-21
@@ -419,7 +419,7 @@ forall {d : disp_t} {T : porderType d} [a b : T] [s : seq T],
 itv_partition a b s -> (a <= b)%O
 
 itv_partition_le is not universe polymorphic
-Arguments itv_partition_le {d T} [a b] [s]%seq_scope _
+Arguments itv_partition_le {d T} [a b] [s]%_seq_scope _
 itv_partition_le is opaque
 Expands to: Constant mathcomp.analysis.numfun.itv_partition_le
 Declared in library mathcomp.analysis.numfun, line 115, characters 6-22
@@ -436,7 +436,7 @@ forall {d : disp_t} {T : porderType d} [a b c : T] [s t : seq T],
 itv_partition a b s -> itv_partition b c t -> itv_partition a c (s ++ t)
 
 itv_partition_cat is not universe polymorphic
-Arguments itv_partition_cat {d T} [a b c] [s t]%seq_scope _ _
+Arguments itv_partition_cat {d T} [a b c] [s t]%_seq_scope _ _
 itv_partition_cat is opaque
 Expands to: Constant mathcomp.analysis.numfun.itv_partition_cat
 Declared in library mathcomp.analysis.numfun, line 121, characters 6-23
@@ -454,7 +454,7 @@ forall {d : disp_t} {T : porderType d} (def : T) [a b : T] [s : seq T],
 itv_partition a b s -> nth def (a :: s) (size s) = b
 
 itv_partition_nth_size is not universe polymorphic
-Arguments itv_partition_nth_size {d T} def [a b] [s]%seq_scope _
+Arguments itv_partition_nth_size {d T} def [a b] [s]%_seq_scope _
 itv_partition_nth_size is opaque
 Expands to: Constant mathcomp.analysis.numfun.itv_partition_nth_size
 Declared in library mathcomp.analysis.numfun, line 128, characters 6-28
@@ -471,7 +471,7 @@ forall {d : disp_t} {T : porderType d} [a b : T] [s : seq T] [m : nat],
 m < (size s).+1 -> itv_partition a b s -> (a <= nth b (a :: s) m)%O
 
 itv_partition_nth_ge is not universe polymorphic
-Arguments itv_partition_nth_ge {d T} [a b] [s]%seq_scope [m]%nat_scope _ _
+Arguments itv_partition_nth_ge {d T} [a b] [s]%_seq_scope [m]%_nat_scope _ _
 itv_partition_nth_ge is opaque
 Expands to: Constant mathcomp.analysis.numfun.itv_partition_nth_ge
 Declared in library mathcomp.analysis.numfun, line 134, characters 6-26
@@ -490,7 +490,7 @@ forall {d : disp_t} {T : porderType d} [a b : T] [s : seq T] [m : nat],
 m < (size s).+1 -> itv_partition a b s -> (nth b (a :: s) m <= b)%O
 
 itv_partition_nth_le is not universe polymorphic
-Arguments itv_partition_nth_le {d T} [a b] [s]%seq_scope [m]%nat_scope _ _
+Arguments itv_partition_nth_le {d T} [a b] [s]%_seq_scope [m]%_nat_scope _ _
 itv_partition_nth_le is opaque
 Expands to: Constant mathcomp.analysis.numfun.itv_partition_nth_le
 Declared in library mathcomp.analysis.numfun, line 142, characters 6-26
@@ -512,7 +512,7 @@ forall [k : nat], k < size s -> (F k <= F k.+1)%O
 
 nondecreasing_fun_itv_partition is not universe polymorphic
 Arguments nondecreasing_fun_itv_partition {d T} [a b] 
-  [f]%function_scope [s]%seq_scope _ _ [k]%nat_scope 
+  [f]%_function_scope [s]%_seq_scope _ _ [k]%_nat_scope 
   _
 nondecreasing_fun_itv_partition is opaque
 Expands to: Constant mathcomp.analysis.numfun.nondecreasing_fun_itv_partition
@@ -545,7 +545,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partitionL" class="id"><a name="itv_partitionL" class="" title="itv_partitionL : forall {d : disp_t} {T : porderType d}, seq T -> T -> seq T
 
 itv_partitionL is not universe polymorphic
-Arguments itv_partitionL {d T} s%seq_scope c
+Arguments itv_partitionL {d T} s%_seq_scope c
 itv_partitionL is transparent
 Expands to: Constant mathcomp.analysis.numfun.itv_partitionL
 Declared in library mathcomp.analysis.numfun, line 172, characters 11-25
@@ -555,7 +555,7 @@ Declared in library mathcomp.analysis.numfun, line 172, characters 11-25
 <span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partitionR" class="id"><a name="itv_partitionR" class="" title="itv_partitionR : forall {d : disp_t} {T : porderType d}, seq T -> T -> seq T
 
 itv_partitionR is not universe polymorphic
-Arguments itv_partitionR {d T} s%seq_scope c
+Arguments itv_partitionR {d T} s%_seq_scope c
 itv_partitionR is transparent
 Expands to: Constant mathcomp.analysis.numfun.itv_partitionR
 Declared in library mathcomp.analysis.numfun, line 175, characters 11-25
@@ -573,7 +573,7 @@ forall {d : disp_t} {T : orderType d} [a b c : T] [s : seq T],
 (c < b)%O -> itv_partition a b s -> itv_partition a c (itv_partitionL s c)
 
 itv_partitionLP is not universe polymorphic
-Arguments itv_partitionLP {d T} [a b c] [s]%seq_scope _ _ _
+Arguments itv_partitionLP {d T} [a b c] [s]%_seq_scope _ _ _
 itv_partitionLP is opaque
 Expands to: Constant mathcomp.analysis.numfun.itv_partitionLP
 Declared in library mathcomp.analysis.numfun, line 183, characters 6-21
@@ -595,7 +595,7 @@ forall {d : disp_t} {T : orderType d} [a b c : T] [s : seq T],
 (c < b)%O -> itv_partition a b s -> itv_partition c b (itv_partitionR s c)
 
 itv_partitionRP is not universe polymorphic
-Arguments itv_partitionRP {d T} [a b c] [s]%seq_scope _ _ _
+Arguments itv_partitionRP {d T} [a b c] [s]%_seq_scope _ _ _
 itv_partitionRP is opaque
 Expands to: Constant mathcomp.analysis.numfun.itv_partitionRP
 Declared in library mathcomp.analysis.numfun, line 193, characters 6-21
@@ -616,7 +616,7 @@ forall {d : disp_t} {T : orderType d} [c : T] [s : seq T],
 sorted <%O s -> c \in s -> s = itv_partitionL s c ++ itv_partitionR s c
 
 in_itv_partition is not universe polymorphic
-Arguments in_itv_partition {d T} [c] [s]%seq_scope _ _
+Arguments in_itv_partition {d T} [c] [s]%_seq_scope _ _
 in_itv_partition is opaque
 Expands to: Constant mathcomp.analysis.numfun.in_itv_partition
 Declared in library mathcomp.analysis.numfun, line 203, characters 6-22
@@ -643,7 +643,7 @@ sorted <%O s ->
 c \notin s -> s = [seq x <- s | (x < c)%O] ++ itv_partitionR s c
 
 notin_itv_partition is not universe polymorphic
-Arguments notin_itv_partition {d T} [c] [s]%seq_scope _ _
+Arguments notin_itv_partition {d T} [c] [s]%_seq_scope _ _
 notin_itv_partition is opaque
 Expands to: Constant mathcomp.analysis.numfun.notin_itv_partition
 Declared in library mathcomp.analysis.numfun, line 218, characters 6-25
@@ -674,8 +674,8 @@ let F := f \o nth b (a :: s) in
 forall [k : nat], k < size s -> (F k.+1 <= F k)%R
 
 nonincreasing_fun_itv_partition is not universe polymorphic
-Arguments nonincreasing_fun_itv_partition {R} [a b]%ring_scope
-  [f]%function_scope [s]%seq_scope _ _ [k]%nat_scope 
+Arguments nonincreasing_fun_itv_partition {R} [a b]%_ring_scope
+  [f]%_function_scope [s]%_seq_scope _ _ [k]%_nat_scope 
   _
 nonincreasing_fun_itv_partition is opaque
 Expands to: Constant mathcomp.analysis.numfun.nonincreasing_fun_itv_partition
@@ -697,7 +697,7 @@ itv_partition a b s ->
 itv_partition (- b)%R (- a)%R (rev (belast (- a)%R [seq (- i)%R | i <- s]))
 
 itv_partition_rev is not universe polymorphic
-Arguments itv_partition_rev {R} [a b]%ring_scope [s]%seq_scope _
+Arguments itv_partition_rev {R} [a b]%_ring_scope [s]%_seq_scope _
 itv_partition_rev is opaque
 Expands to: Constant mathcomp.analysis.numfun.itv_partition_rev
 Declared in library mathcomp.analysis.numfun, line 244, characters 6-23
@@ -751,7 +751,7 @@ seq R ->
 |}
 
 variation is not universe polymorphic
-Arguments variation {R} (a b)%ring_scope f%function_scope s%seq_scope
+Arguments variation {R} (a b)%_ring_scope f%_function_scope s%_seq_scope
 variation is transparent
 Expands to: Constant mathcomp.analysis.numfun.variation
 Declared in library mathcomp.analysis.numfun, line 261, characters 11-20
@@ -764,7 +764,8 @@ itv_partition a b s ->
 variation a b f s = (\sum_(x <- zip s (a :: s)) `|f x.1 - f x.2|)%R
 
 variation_zip is not universe polymorphic
-Arguments variation_zip {R} [a b]%ring_scope f%function_scope [s]%seq_scope _
+Arguments variation_zip {R} [a b]%_ring_scope f%_function_scope
+  [s]%_seq_scope _
 variation_zip is opaque
 Expands to: Constant mathcomp.analysis.numfun.variation_zip
 Declared in library mathcomp.analysis.numfun, line 264, characters 6-19
@@ -787,8 +788,8 @@ itv_partition a b s ->
 variation a b f s = (\sum_(x <- s) `|f x - f (prev (locked (a :: s)) x)|)%R
 
 variation_prev is not universe polymorphic
-Arguments variation_prev {R} [a b]%ring_scope f%function_scope 
-  [s]%seq_scope _
+Arguments variation_prev {R} [a b]%_ring_scope f%_function_scope
+  [s]%_seq_scope _
 variation_prev is opaque
 Expands to: Constant mathcomp.analysis.numfun.variation_prev
 Declared in library mathcomp.analysis.numfun, line 276, characters 6-20
@@ -815,8 +816,8 @@ variation a b f s =
 (\sum_(x <- belast a s) `|f (next (locked (a :: s)) x) - f x|)%R
 
 variation_next is not universe polymorphic
-Arguments variation_next {R} [a b]%ring_scope f%function_scope 
-  [s]%seq_scope _
+Arguments variation_next {R} [a b]%_ring_scope f%_function_scope
+  [s]%_seq_scope _
 variation_next is opaque
 Expands to: Constant mathcomp.analysis.numfun.variation_next
 Declared in library mathcomp.analysis.numfun, line 290, characters 6-20
@@ -843,7 +844,7 @@ Qed.</div></details>
 forall {R : numDomainType} (a b : R) (f : R -> R), variation a b f [::] = 0%R
 
 variation_nil is not universe polymorphic
-Arguments variation_nil {R} (a b)%ring_scope f%function_scope
+Arguments variation_nil {R} (a b)%_ring_scope f%_function_scope
 variation_nil is opaque
 Expands to: Constant mathcomp.analysis.numfun.variation_nil
 Declared in library mathcomp.analysis.numfun, line 307, characters 6-19
@@ -858,7 +859,7 @@ forall {R : numDomainType} (a b : R) (f : R -> R) (s : seq R),
 (0 <= variation a b f s)%R
 
 variation_ge0 is not universe polymorphic
-Arguments variation_ge0 {R} (a b)%ring_scope f%function_scope s%seq_scope
+Arguments variation_ge0 {R} (a b)%_ring_scope f%_function_scope s%_seq_scope
 variation_ge0 is opaque
 Expands to: Constant mathcomp.analysis.numfun.variation_ge0
 Declared in library mathcomp.analysis.numfun, line 310, characters 6-19
@@ -873,7 +874,7 @@ forall {R : numDomainType} (a b : R) (f : R -> R) (s : seq R),
 variation a b (\- f)%R s = variation a b f s
 
 variationN is not universe polymorphic
-Arguments variationN {R} (a b)%ring_scope f%function_scope s%seq_scope
+Arguments variationN {R} (a b)%_ring_scope f%_function_scope s%_seq_scope
 variationN is opaque
 Expands to: Constant mathcomp.analysis.numfun.variationN
 Declared in library mathcomp.analysis.numfun, line 313, characters 6-16
@@ -889,7 +890,8 @@ forall {R : numDomainType} (a b : R) (f g : R -> R) (s : seq R),
 (variation a b (f \+ g) s <= variation a b f s + variation a b g s)%R
 
 variation_le is not universe polymorphic
-Arguments variation_le {R} (a b)%ring_scope (f g)%function_scope s%seq_scope
+Arguments variation_le {R} (a b)%_ring_scope (f g)%_function_scope
+  s%_seq_scope
 variation_le is opaque
 Expands to: Constant mathcomp.analysis.numfun.variation_le
 Declared in library mathcomp.analysis.numfun, line 318, characters 6-18
@@ -909,8 +911,8 @@ forall {R : numDomainType} [a b : R] [f : R -> R] [s : seq R],
 itv_partition a b s -> variation a b f s = (f b - f a)%R
 
 nondecreasing_variation is not universe polymorphic
-Arguments nondecreasing_variation {R} [a b]%ring_scope 
-  [f]%function_scope [s]%seq_scope _ _
+Arguments nondecreasing_variation {R} [a b]%_ring_scope 
+  [f]%_function_scope [s]%_seq_scope _ _
 nondecreasing_variation is opaque
 Expands to: Constant mathcomp.analysis.numfun.nondecreasing_variation
 Declared in library mathcomp.analysis.numfun, line 326, characters 6-29
@@ -932,8 +934,8 @@ forall {R : numDomainType} [a b : R] [f : R -> R] [s : seq R],
 itv_partition a b s -> variation a b f s = (f a - f b)%R
 
 nonincreasing_variation is not universe polymorphic
-Arguments nonincreasing_variation {R} [a b]%ring_scope 
-  [f]%function_scope [s]%seq_scope _ _
+Arguments nonincreasing_variation {R} [a b]%_ring_scope 
+  [f]%_function_scope [s]%_seq_scope _ _
 nonincreasing_variation is opaque
 Expands to: Constant mathcomp.analysis.numfun.nonincreasing_variation
 Declared in library mathcomp.analysis.numfun, line 336, characters 6-29
@@ -955,8 +957,8 @@ itv_partition c b t ->
 variation a b f (s ++ t) = (variation a c f s + variation c b f t)%R
 
 variation_cat is not universe polymorphic
-Arguments variation_cat {R} [c] [a b]%ring_scope f%function_scope
-  [s t]%seq_scope _ _ _ _
+Arguments variation_cat {R} [c] [a b]%_ring_scope 
+  f%_function_scope [s t]%_seq_scope _ _ _ _
 variation_cat is opaque
 Expands to: Constant mathcomp.analysis.numfun.variation_cat
 Declared in library mathcomp.analysis.numfun, line 343, characters 6-19
@@ -993,8 +995,8 @@ forall {R : numDomainType} (a b : R) (f : R -> R) (s : seq R) (x : R),
 (variation a b f s <= variation a b f (x :: s))%R
 
 le_variation is not universe polymorphic
-Arguments le_variation {R} (a b)%ring_scope f%function_scope 
-  s%seq_scope x%ring_scope
+Arguments le_variation {R} (a b)%_ring_scope f%_function_scope 
+  s%_seq_scope x%_ring_scope
 le_variation is opaque
 Expands to: Constant mathcomp.analysis.numfun.le_variation
 Declared in library mathcomp.analysis.numfun, line 369, characters 6-18
@@ -1016,8 +1018,8 @@ variation (- b) (- a) (f \o -%R%R)
   (rev (belast (- a)%R [seq (- i)%R | i <- s]))
 
 variation_opp_rev is not universe polymorphic
-Arguments variation_opp_rev {R} [a b]%ring_scope f%function_scope
-  [s]%seq_scope _
+Arguments variation_opp_rev {R} [a b]%_ring_scope 
+  f%_function_scope [s]%_seq_scope _
 variation_opp_rev is opaque
 Expands to: Constant mathcomp.analysis.numfun.variation_opp_rev
 Declared in library mathcomp.analysis.numfun, line 377, characters 6-23
@@ -1068,8 +1070,8 @@ variation a b f (rev (belast b [seq (- i)%R | i <- s])) =
 variation (- b) (- a) (f \o -%R%R) s
 
 variation_rev_opp is not universe polymorphic
-Arguments variation_rev_opp {R} [a b]%ring_scope f%function_scope
-  [s]%seq_scope _
+Arguments variation_rev_opp {R} [a b]%_ring_scope 
+  f%_function_scope [s]%_seq_scope _
 variation_rev_opp is opaque
 Expands to: Constant mathcomp.analysis.numfun.variation_rev_opp
 Declared in library mathcomp.analysis.numfun, line 412, characters 6-23
@@ -1101,8 +1103,8 @@ itv_partition a b s ->
  variation a b f (itv_partitionL s c ++ itv_partitionR s c))%R
 
 variation_itv_partitionLR is not universe polymorphic
-Arguments variation_itv_partitionLR {R} [a b]%ring_scope 
-  [c] f%function_scope [s]%seq_scope _ _ _
+Arguments variation_itv_partitionLR {R} [a b]%_ring_scope 
+  [c] f%_function_scope [s]%_seq_scope _ _ _
 variation_itv_partitionLR is opaque
 Expands to: Constant mathcomp.analysis.numfun.variation_itv_partitionLR
 Declared in library mathcomp.analysis.numfun, line 430, characters 6-31
@@ -1156,8 +1158,8 @@ itv_partition a b t ->
 subseq s t -> (variation a b f s <= variation a b f t)%R
 
 variation_subseq is not universe polymorphic
-Arguments variation_subseq {R} [a b]%ring_scope f%function_scope
-  [s t]%seq_scope _ _ _
+Arguments variation_subseq {R} [a b]%_ring_scope f%_function_scope
+  [s t]%_seq_scope _ _ _
 variation_subseq is opaque
 Expands to: Constant mathcomp.analysis.numfun.variation_subseq
 Declared in library mathcomp.analysis.numfun, line 471, characters 6-22
@@ -1228,7 +1230,7 @@ set
   |}
 
 variations is not universe polymorphic
-Arguments variations {R} (a b)%ring_scope f%function_scope _
+Arguments variations {R} (a b)%_ring_scope f%_function_scope _
 variations is transparent
 Expands to: Constant mathcomp.analysis.numfun.variations
 Declared in library mathcomp.analysis.numfun, line 505, characters 11-21
@@ -1239,8 +1241,8 @@ forall {R : numDomainType} [a b : R] (f : R -> R) [s : seq R],
 itv_partition a b s -> variations a b f (variation a b f s)
 
 variations_variation is not universe polymorphic
-Arguments variations_variation {R} [a b]%ring_scope 
-  f%function_scope [s]%seq_scope _
+Arguments variations_variation {R} [a b]%_ring_scope 
+  f%_function_scope [s]%_seq_scope _
 variations_variation is opaque
 Expands to: Constant mathcomp.analysis.numfun.variations_variation
 Declared in library mathcomp.analysis.numfun, line 507, characters 6-26
@@ -1256,7 +1258,7 @@ forall {R : numDomainType} [a b : R] (f : R -> R),
 (a < b)%R -> (variations a b f !=set0)%classic
 
 variations_neq0 is not universe polymorphic
-Arguments variations_neq0 {R} [a b]%ring_scope f%function_scope _
+Arguments variations_neq0 {R} [a b]%_ring_scope f%_function_scope _
 variations_neq0 is opaque
 Expands to: Constant mathcomp.analysis.numfun.variations_neq0
 Declared in library mathcomp.analysis.numfun, line 511, characters 6-21
@@ -1273,7 +1275,7 @@ forall {R : numDomainType} (a b : R) (f : R -> R),
 variations a b (\- f)%R = variations a b f
 
 variationsN is not universe polymorphic
-Arguments variationsN {R} (a b)%ring_scope f%function_scope
+Arguments variationsN {R} (a b)%_ring_scope f%_function_scope
 variationsN is opaque
 Expands to: Constant mathcomp.analysis.numfun.variationsN
 Declared in library mathcomp.analysis.numfun, line 517, characters 6-17
@@ -1291,7 +1293,7 @@ forall {R : numDomainType} (a : R) (f : R -> R),
 variations a a f = [set 0%R]%classic
 
 variationsxx is not universe polymorphic
-Arguments variationsxx {R} a%ring_scope f%function_scope
+Arguments variationsxx {R} a%_ring_scope f%_function_scope
 variationsxx is opaque
 Expands to: Constant mathcomp.analysis.numfun.variationsxx
 Declared in library mathcomp.analysis.numfun, line 524, characters 6-18
@@ -1307,7 +1309,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="bounded_variation" class="id"><a name="bounded_variation" class="" title="bounded_variation : forall {R : numDomainType}, R -> R -> (R -> R) -> Prop
 
 bounded_variation is not universe polymorphic
-Arguments bounded_variation {R} (a b)%ring_scope f%function_scope
+Arguments bounded_variation {R} (a b)%_ring_scope f%_function_scope
 bounded_variation is transparent
 Expands to: Constant mathcomp.analysis.numfun.bounded_variation
 Declared in library mathcomp.analysis.numfun, line 531, characters 11-28
@@ -1319,7 +1321,7 @@ Declared in library mathcomp.analysis.numfun, line 531, characters 11-28
 forall {R : numDomainType} (a : R) (f : R -> R), bounded_variation a a f
 
 bounded_variationxx is not universe polymorphic
-Arguments bounded_variationxx {R} a%ring_scope f%function_scope
+Arguments bounded_variationxx {R} a%_ring_scope f%_function_scope
 bounded_variationxx is opaque
 Expands to: Constant mathcomp.analysis.numfun.bounded_variationxx
 Declared in library mathcomp.analysis.numfun, line 535, characters 6-25
@@ -1336,7 +1338,8 @@ bounded_variation a b f ->
 bounded_variation a b g -> bounded_variation a b (f \+ g)%R
 
 bounded_variationD is not universe polymorphic
-Arguments bounded_variationD {R} [a b]%ring_scope [f g]%function_scope _ _ _
+Arguments bounded_variationD {R} [a b]%_ring_scope 
+  [f g]%_function_scope _ _ _
 bounded_variationD is opaque
 Expands to: Constant mathcomp.analysis.numfun.bounded_variationD
 Declared in library mathcomp.analysis.numfun, line 538, characters 6-24
@@ -1357,7 +1360,7 @@ forall {R : numDomainType} [a b : R] [f : R -> R],
 bounded_variation a b f -> bounded_variation a b (\- f)%R
 
 bounded_variationN is not universe polymorphic
-Arguments bounded_variationN {R} [a b]%ring_scope [f]%function_scope _
+Arguments bounded_variationN {R} [a b]%_ring_scope [f]%_function_scope _
 bounded_variationN is opaque
 Expands to: Constant mathcomp.analysis.numfun.bounded_variationN
 Declared in library mathcomp.analysis.numfun, line 548, characters 6-24
@@ -1373,8 +1376,8 @@ forall {R : numDomainType} [a c b : R] [f : R -> R],
 (c <= b)%R -> bounded_variation a b f -> bounded_variation a c f
 
 bounded_variationl is not universe polymorphic
-Arguments bounded_variationl {R} [a]%ring_scope [c] 
-  [b]%ring_scope [f]%function_scope _ _ _
+Arguments bounded_variationl {R} [a]%_ring_scope [c] 
+  [b]%_ring_scope [f]%_function_scope _ _ _
 bounded_variationl is opaque
 Expands to: Constant mathcomp.analysis.numfun.bounded_variationl
 Declared in library mathcomp.analysis.numfun, line 551, characters 6-24
@@ -1400,8 +1403,8 @@ forall {R : numDomainType} [a c b : R] [f : R -> R],
 (c <= b)%R -> bounded_variation a b f -> bounded_variation c b f
 
 bounded_variationr is not universe polymorphic
-Arguments bounded_variationr {R} [a]%ring_scope [c] 
-  [b]%ring_scope [f]%function_scope _ _ _
+Arguments bounded_variationr {R} [a]%_ring_scope [c] 
+  [b]%_ring_scope [f]%_function_scope _ _ _
 bounded_variationr is opaque
 Expands to: Constant mathcomp.analysis.numfun.bounded_variationr
 Declared in library mathcomp.analysis.numfun, line 565, characters 6-24
@@ -1423,7 +1426,7 @@ forall {R : numDomainType} (a b : R) (f : R -> R),
 variations (- b) (- a) (f \o -%R%R) = variations a b f
 
 variations_opp is not universe polymorphic
-Arguments variations_opp {R} (a b)%ring_scope f%function_scope
+Arguments variations_opp {R} (a b)%_ring_scope f%_function_scope
 variations_opp is opaque
 Expands to: Constant mathcomp.analysis.numfun.variations_opp
 Declared in library mathcomp.analysis.numfun, line 576, characters 6-20
@@ -1444,8 +1447,8 @@ forall {R : numDomainType} [a b : R] [f : R -> R],
 {in `[a, b]%R &, {homo f : x y / (x <= y)%R}} -> bounded_variation a b f
 
 nondecreasing_bounded_variation is not universe polymorphic
-Arguments nondecreasing_bounded_variation {R} [a b]%ring_scope
-  [f]%function_scope _
+Arguments nondecreasing_bounded_variation {R} [a b]%_ring_scope
+  [f]%_function_scope _
 nondecreasing_bounded_variation is opaque
 Expands to: Constant mathcomp.analysis.numfun.nondecreasing_bounded_variation
 Declared in library mathcomp.analysis.numfun, line 586, characters 6-37
@@ -1477,7 +1480,7 @@ forall [T : Type] [R : numDomainType] (f g : {fimfun T >-> R}),
 FiniteImage.phant_axioms (f \max g)
 
 max_fimfun_subproof is not universe polymorphic
-Arguments max_fimfun_subproof [T]%type_scope [R] f g
+Arguments max_fimfun_subproof [T]%_type_scope [R] f g
 max_fimfun_subproof is opaque
 Expands to: Constant mathcomp.analysis.numfun.max_fimfun_subproof
 Declared in library mathcomp.analysis.numfun, line 607, characters 6-25
@@ -1491,7 +1494,8 @@ forall [T : Type] [R : numDomainType],
 {fimfun T >-> R} -> {fimfun T >-> R} -> {fimfun T >-> R}
 
 Order_max_fun__canonical__cardinality_FImFun is not universe polymorphic
-Arguments Order_max_fun__canonical__cardinality_FImFun [T]%type_scope [R] f g
+Arguments Order_max_fun__canonical__cardinality_FImFun 
+  [T]%_type_scope [R] f g
 Order_max_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.Order_max_fun__canonical__cardinality_FImFun
@@ -1501,7 +1505,8 @@ forall [T : Type] [R : numDomainType],
 {fimfun T >-> R} -> {fimfun T >-> R} -> {fimfun T >-> R}
 
 Order_max_fun__canonical__cardinality_FImFun is not universe polymorphic
-Arguments Order_max_fun__canonical__cardinality_FImFun [T]%type_scope [R] f g
+Arguments Order_max_fun__canonical__cardinality_FImFun 
+  [T]%_type_scope [R] f g
 Order_max_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.Order_max_fun__canonical__cardinality_FImFun
@@ -1511,7 +1516,8 @@ forall [T : Type] [R : numDomainType],
 {fimfun T >-> R} -> {fimfun T >-> R} -> {fimfun T >-> R}
 
 Order_max_fun__canonical__cardinality_FImFun is not universe polymorphic
-Arguments Order_max_fun__canonical__cardinality_FImFun [T]%type_scope [R] f g
+Arguments Order_max_fun__canonical__cardinality_FImFun 
+  [T]%_type_scope [R] f g
 Order_max_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.Order_max_fun__canonical__cardinality_FImFun
@@ -1521,7 +1527,8 @@ forall [T : Type] [R : numDomainType],
 {fimfun T >-> R} -> {fimfun T >-> R} -> {fimfun T >-> R}
 
 Order_max_fun__canonical__cardinality_FImFun is not universe polymorphic
-Arguments Order_max_fun__canonical__cardinality_FImFun [T]%type_scope [R] f g
+Arguments Order_max_fun__canonical__cardinality_FImFun 
+  [T]%_type_scope [R] f g
 Order_max_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.Order_max_fun__canonical__cardinality_FImFun
@@ -1531,7 +1538,8 @@ forall [T : Type] [R : numDomainType],
 {fimfun T >-> R} -> {fimfun T >-> R} -> {fimfun T >-> R}
 
 Order_max_fun__canonical__cardinality_FImFun is not universe polymorphic
-Arguments Order_max_fun__canonical__cardinality_FImFun [T]%type_scope [R] f g
+Arguments Order_max_fun__canonical__cardinality_FImFun 
+  [T]%_type_scope [R] f g
 Order_max_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.Order_max_fun__canonical__cardinality_FImFun
@@ -1551,7 +1559,7 @@ Declared in library mathcomp.analysis.numfun, line 609, characters 0-48
 forall {aT : Type} {rT : numFieldType} (f : aT -> rT), f \_ set0 = cst 0%R
 
 restrict_set0 is not universe polymorphic
-Arguments restrict_set0 {aT}%type_scope {rT} f%function_scope
+Arguments restrict_set0 {aT}%_type_scope {rT} f%_function_scope
 restrict_set0 is opaque
 Expands to: Constant mathcomp.analysis.numfun.restrict_set0
 Declared in library mathcomp.analysis.numfun, line 620, characters 6-19
@@ -1566,8 +1574,8 @@ forall {aT : Type} {rT : numFieldType} [D : set aT] [f : aT -> rT],
 (forall x : aT, D x -> (0 <= f x)%R) -> forall x : aT, (0 <= (f \_ D) x)%R
 
 restrict_ge0 is not universe polymorphic
-Arguments restrict_ge0 {aT}%type_scope {rT} [D]%classical_set_scope
-  [f]%function_scope _%function_scope x
+Arguments restrict_ge0 {aT}%_type_scope {rT} [D]%_classical_set_scope
+  [f]%_function_scope _%_function_scope x
 restrict_ge0 is opaque
 Expands to: Constant mathcomp.analysis.numfun.restrict_ge0
 Declared in library mathcomp.analysis.numfun, line 623, characters 6-18
@@ -1584,8 +1592,8 @@ forall {aT : Type} {rT : numFieldType} [D : set aT] [f g : aT -> rT],
 forall x : aT, ((f \_ D) x <= (g \_ D) x)%R
 
 ler_restrict is not universe polymorphic
-Arguments ler_restrict {aT}%type_scope {rT} [D]%classical_set_scope
-  [f g]%function_scope _%function_scope x
+Arguments ler_restrict {aT}%_type_scope {rT} [D]%_classical_set_scope
+  [f g]%_function_scope _%_function_scope x
 ler_restrict is opaque
 Expands to: Constant mathcomp.analysis.numfun.ler_restrict
 Declared in library mathcomp.analysis.numfun, line 627, characters 6-18
@@ -1601,8 +1609,8 @@ forall {aT : Type} {rT : numFieldType} (D : set aT) (f : aT -> rT),
 (normr \o f) \_ D = normr \o f \_ D
 
 restrict_normr is not universe polymorphic
-Arguments restrict_normr {aT}%type_scope {rT} D%classical_set_scope
-  f%function_scope
+Arguments restrict_normr {aT}%_type_scope {rT} D%_classical_set_scope
+  f%_function_scope
 restrict_normr is opaque
 Expands to: Constant mathcomp.analysis.numfun.restrict_normr
 Declared in library mathcomp.analysis.numfun, line 631, characters 6-20
@@ -1621,8 +1629,8 @@ forall {aT : Type} {rT : numFieldType} [D : set aT] [f : aT -> \bar rT],
 forall x : aT, (0%R <= (f \_ D) x)%E
 
 erestrict_ge0 is not universe polymorphic
-Arguments erestrict_ge0 {aT}%type_scope {rT} [D]%classical_set_scope
-  [f]%function_scope _%function_scope x
+Arguments erestrict_ge0 {aT}%_type_scope {rT} [D]%_classical_set_scope
+  [f]%_function_scope _%_function_scope x
 erestrict_ge0 is opaque
 Expands to: Constant mathcomp.analysis.numfun.erestrict_ge0
 Declared in library mathcomp.analysis.numfun, line 638, characters 6-19
@@ -1639,8 +1647,8 @@ forall {aT : Type} {rT : numFieldType} [D : set aT] [f g : aT -> \bar rT],
 forall x : aT, ((f \_ D) x <= (g \_ D) x)%E
 
 lee_restrict is not universe polymorphic
-Arguments lee_restrict {aT}%type_scope {rT} [D]%classical_set_scope
-  [f g]%function_scope _%function_scope x
+Arguments lee_restrict {aT}%_type_scope {rT} [D]%_classical_set_scope
+  [f g]%_function_scope _%_function_scope x
 lee_restrict is opaque
 Expands to: Constant mathcomp.analysis.numfun.lee_restrict
 Declared in library mathcomp.analysis.numfun, line 642, characters 6-18
@@ -1657,8 +1665,8 @@ forall {aT : Type} {rT : numFieldType} [D E : set aT] [f : aT -> \bar rT],
 (D `<=` E)%classic -> forall x : aT, ((f \_ D) x <= (f \_ E) x)%E
 
 restrict_lee is not universe polymorphic
-Arguments restrict_lee {aT}%type_scope {rT} [D E]%classical_set_scope
-  [f]%function_scope _%function_scope _ x
+Arguments restrict_lee {aT}%_type_scope {rT} [D E]%_classical_set_scope
+  [f]%_function_scope _%_function_scope _ x
 restrict_lee is opaque
 Expands to: Constant mathcomp.analysis.numfun.restrict_lee
 Declared in library mathcomp.analysis.numfun, line 646, characters 6-18
@@ -1682,7 +1690,7 @@ Qed.</div></details>
 forall [T : Type] [R : realDomainType] (f : T -> \bar R), f \_ set0 = cst 0%R
 
 erestrict_set0 is not universe polymorphic
-Arguments erestrict_set0 [T]%type_scope [R] f%function_scope
+Arguments erestrict_set0 [T]%_type_scope [R] f%_function_scope
 erestrict_set0 is opaque
 Expands to: Constant mathcomp.analysis.numfun.erestrict_set0
 Declared in library mathcomp.analysis.numfun, line 660, characters 6-20
@@ -1697,7 +1705,7 @@ forall [T : Type] (R : realDomainType) (D : set T),
 (cst 0%R : T -> \bar R) \_ D = cst 0%R
 
 erestrict0 is not universe polymorphic
-Arguments erestrict0 [T]%type_scope R D%classical_set_scope
+Arguments erestrict0 [T]%_type_scope R D%_classical_set_scope
 erestrict0 is opaque
 Expands to: Constant mathcomp.analysis.numfun.erestrict0
 Declared in library mathcomp.analysis.numfun, line 663, characters 6-16
@@ -1712,8 +1720,8 @@ forall [T : Type] [R : realDomainType] (D : set T) (f g : T -> \bar R),
 (f \+ g)%E \_ D = (f \_ D \+ g \_ D)%E
 
 erestrictD is not universe polymorphic
-Arguments erestrictD [T]%type_scope [R] D%classical_set_scope
-  (f g)%function_scope
+Arguments erestrictD [T]%_type_scope [R] D%_classical_set_scope
+  (f g)%_function_scope
 erestrictD is opaque
 Expands to: Constant mathcomp.analysis.numfun.erestrictD
 Declared in library mathcomp.analysis.numfun, line 666, characters 6-16
@@ -1728,8 +1736,8 @@ forall [T : Type] [R : realDomainType] (D : set T) (f : T -> \bar R),
 (\- f)%E \_ D = (\- f \_ D)%E
 
 erestrictN is not universe polymorphic
-Arguments erestrictN [T]%type_scope [R] D%classical_set_scope
-  f%function_scope
+Arguments erestrictN [T]%_type_scope [R] D%_classical_set_scope
+  f%_function_scope
 erestrictN is opaque
 Expands to: Constant mathcomp.analysis.numfun.erestrictN
 Declared in library mathcomp.analysis.numfun, line 669, characters 6-16
@@ -1744,8 +1752,8 @@ forall [T : Type] [R : realDomainType] (D : set T) (f g : T -> \bar R),
 (f \- g)%E \_ D = (f \_ D \- g \_ D)%E
 
 erestrictB is not universe polymorphic
-Arguments erestrictB [T]%type_scope [R] D%classical_set_scope
-  (f g)%function_scope
+Arguments erestrictB [T]%_type_scope [R] D%_classical_set_scope
+  (f g)%_function_scope
 erestrictB is opaque
 Expands to: Constant mathcomp.analysis.numfun.erestrictB
 Declared in library mathcomp.analysis.numfun, line 672, characters 6-16
@@ -1760,8 +1768,8 @@ forall [T : Type] [R : realDomainType] (D : set T) (f g : T -> \bar R),
 (f \* g)%E \_ D = (f \_ D \* g \_ D)%E
 
 erestrictM is not universe polymorphic
-Arguments erestrictM [T]%type_scope [R] D%classical_set_scope
-  (f g)%function_scope
+Arguments erestrictM [T]%_type_scope [R] D%_classical_set_scope
+  (f g)%_function_scope
 erestrictM is opaque
 Expands to: Constant mathcomp.analysis.numfun.erestrictM
 Declared in library mathcomp.analysis.numfun, line 675, characters 6-16
@@ -1776,8 +1784,8 @@ forall [T : Type] [R : realDomainType] (D : set T) (k : R) (f : T -> \bar R),
 (fun x : T => (k%:E * f x)%E) \_ D = (fun x : T => (k%:E * (f \_ D) x)%E)
 
 erestrict_scale is not universe polymorphic
-Arguments erestrict_scale [T]%type_scope [R] D%classical_set_scope
-  k%ring_scope f%function_scope
+Arguments erestrict_scale [T]%_type_scope [R] D%_classical_set_scope
+  k%_ring_scope f%_function_scope
 erestrict_scale is opaque
 Expands to: Constant mathcomp.analysis.numfun.erestrict_scale
 Declared in library mathcomp.analysis.numfun, line 678, characters 6-21
@@ -1882,7 +1890,7 @@ forall [T : Type] [R : realDomainType] (f : T -> \bar R) (x : T),
 f^\+%E x = Def.max (f x) 0%R
 
 funeposE is not universe polymorphic
-Arguments funeposE [T]%type_scope [R] f%function_scope x
+Arguments funeposE [T]%_type_scope [R] f%_function_scope x
 funeposE is opaque
 Expands to: Constant mathcomp.analysis.numfun.funeposE
 Declared in library mathcomp.analysis.numfun, line 699, characters 6-14
@@ -1897,7 +1905,7 @@ forall [T : Type] [R : realDomainType] (f : T -> \bar R) (x : T),
 f^\-%E x = Def.max (- f x)%E 0%R
 
 funenegE is not universe polymorphic
-Arguments funenegE [T]%type_scope [R] f%function_scope x
+Arguments funenegE [T]%_type_scope [R] f%_function_scope x
 funenegE is opaque
 Expands to: Constant mathcomp.analysis.numfun.funenegE
 Declared in library mathcomp.analysis.numfun, line 702, characters 6-14
@@ -1912,7 +1920,7 @@ forall [T : Type] [R : realDomainType] (f : T -> \bar R) (x : T),
 (0%R <= f^\+ x)%E
 
 funepos_ge0 is not universe polymorphic
-Arguments funepos_ge0 [T]%type_scope [R] f%function_scope x
+Arguments funepos_ge0 [T]%_type_scope [R] f%_function_scope x
 funepos_ge0 is opaque
 Expands to: Constant mathcomp.analysis.numfun.funepos_ge0
 Declared in library mathcomp.analysis.numfun, line 705, characters 6-17
@@ -1927,7 +1935,7 @@ forall [T : Type] [R : realDomainType] (f : T -> \bar R) (x : T),
 (0%R <= f^\- x)%E
 
 funeneg_ge0 is not universe polymorphic
-Arguments funeneg_ge0 [T]%type_scope [R] f%function_scope x
+Arguments funeneg_ge0 [T]%_type_scope [R] f%_function_scope x
 funeneg_ge0 is opaque
 Expands to: Constant mathcomp.analysis.numfun.funeneg_ge0
 Declared in library mathcomp.analysis.numfun, line 708, characters 6-17
@@ -1942,7 +1950,7 @@ forall [T : Type] [R : realDomainType] (f : T -> \bar R),
 (\- f)^\+%E = f^\-%E
 
 funeposN is not universe polymorphic
-Arguments funeposN [T]%type_scope [R] f%function_scope
+Arguments funeposN [T]%_type_scope [R] f%_function_scope
 funeposN is opaque
 Expands to: Constant mathcomp.analysis.numfun.funeposN
 Declared in library mathcomp.analysis.numfun, line 711, characters 6-14
@@ -1957,7 +1965,7 @@ forall [T : Type] [R : realDomainType] (f : T -> \bar R),
 (\- f)^\-%E = f^\+%E
 
 funenegN is not universe polymorphic
-Arguments funenegN [T]%type_scope [R] f%function_scope
+Arguments funenegN [T]%_type_scope [R] f%_function_scope
 funenegN is opaque
 Expands to: Constant mathcomp.analysis.numfun.funenegN
 Declared in library mathcomp.analysis.numfun, line 714, characters 6-14
@@ -1972,7 +1980,7 @@ forall [T U : Type] [R : realDomainType] (f : T -> \bar R) (h : U -> T),
 (f \o h)^\+%E = f^\+%E \o h
 
 funepos_comp is not universe polymorphic
-Arguments funepos_comp [T U]%type_scope [R] (f h)%function_scope
+Arguments funepos_comp [T U]%_type_scope [R] (f h)%_function_scope
 funepos_comp is opaque
 Expands to: Constant mathcomp.analysis.numfun.funepos_comp
 Declared in library mathcomp.analysis.numfun, line 717, characters 6-18
@@ -1987,7 +1995,7 @@ forall [T U : Type] [R : realDomainType] (f : T -> \bar R) (h : U -> T),
 (f \o h)^\-%E = f^\-%E \o h
 
 funeneg_comp is not universe polymorphic
-Arguments funeneg_comp [T U]%type_scope [R] (f h)%function_scope
+Arguments funeneg_comp [T U]%_type_scope [R] (f h)%_function_scope
 funeneg_comp is opaque
 Expands to: Constant mathcomp.analysis.numfun.funeneg_comp
 Declared in library mathcomp.analysis.numfun, line 720, characters 6-18
@@ -2002,8 +2010,8 @@ forall [T : Type] [R : realDomainType] (D : set T) (f : T -> \bar R),
 (f \_ D)^\+%E = f^\+%E \_ D
 
 funepos_restrict is not universe polymorphic
-Arguments funepos_restrict [T]%type_scope [R] D%classical_set_scope
-  f%function_scope
+Arguments funepos_restrict [T]%_type_scope [R] D%_classical_set_scope
+  f%_function_scope
 funepos_restrict is opaque
 Expands to: Constant mathcomp.analysis.numfun.funepos_restrict
 Declared in library mathcomp.analysis.numfun, line 723, characters 6-22
@@ -2019,8 +2027,8 @@ forall [T : Type] [R : realDomainType] (D : set T) (f : T -> \bar R),
 (f \_ D)^\-%E = f^\-%E \_ D
 
 funeneg_restrict is not universe polymorphic
-Arguments funeneg_restrict [T]%type_scope [R] D%classical_set_scope
-  f%function_scope
+Arguments funeneg_restrict [T]%_type_scope [R] D%_classical_set_scope
+  f%_function_scope
 funeneg_restrict is opaque
 Expands to: Constant mathcomp.analysis.numfun.funeneg_restrict
 Declared in library mathcomp.analysis.numfun, line 728, characters 6-22
@@ -2043,8 +2051,8 @@ forall [T : Type] [R : realDomainType] [D : set T] [f : T -> \bar R],
 (forall x : T, D x -> (0%R <= f x)%E) ->
 forall [x : T], x \in D -> f^\+%E x = f x
 
-Arguments ge0_funeposE [T]%type_scope [R] [D]%classical_set_scope
-  [f]%function_scope _%function_scope [x] _
+Arguments ge0_funeposE [T]%_type_scope [R] [D]%_classical_set_scope
+  [f]%_function_scope _%_function_scope [x] _
 ge0_funeposE is opaque
 Expands to: Constant mathcomp.analysis.numfun.ge0_funeposE
 Declared in library mathcomp.analysis.numfun, line 734, characters 6-18
@@ -2065,8 +2073,8 @@ forall [T : Type] [R : realDomainType] [D : set T] [f : T -> \bar R],
 (forall x : T, D x -> (0%R <= f x)%E) ->
 forall [x : T], x \in D -> f^\-%E x = cst 0%R x
 
-Arguments ge0_funenegE [T]%type_scope [R] [D]%classical_set_scope
-  [f]%function_scope _%function_scope [x] _
+Arguments ge0_funenegE [T]%_type_scope [R] [D]%_classical_set_scope
+  [f]%_function_scope _%_function_scope [x] _
 ge0_funenegE is opaque
 Expands to: Constant mathcomp.analysis.numfun.ge0_funenegE
 Declared in library mathcomp.analysis.numfun, line 737, characters 6-18
@@ -2089,8 +2097,8 @@ forall [T : Type] [R : realDomainType] [D : set T] [f : T -> \bar R],
 (forall x : T, D x -> (f x <= 0%R)%E) ->
 forall [x : T], x \in D -> f^\+%E x = cst 0%R x
 
-Arguments le0_funeposE [T]%type_scope [R] [D]%classical_set_scope
-  [f]%function_scope _%function_scope [x] _
+Arguments le0_funeposE [T]%_type_scope [R] [D]%_classical_set_scope
+  [f]%_function_scope _%_function_scope [x] _
 le0_funeposE is opaque
 Expands to: Constant mathcomp.analysis.numfun.le0_funeposE
 Declared in library mathcomp.analysis.numfun, line 743, characters 6-18
@@ -2111,8 +2119,8 @@ forall [T : Type] [R : realDomainType] [D : set T] [f : T -> \bar R],
 (forall x : T, D x -> (f x <= 0%R)%E) ->
 forall [x : T], x \in D -> f^\-%E x = (\- f)%E x
 
-Arguments le0_funenegE [T]%type_scope [R] [D]%classical_set_scope
-  [f]%function_scope _%function_scope [x] _
+Arguments le0_funenegE [T]%_type_scope [R] [D]%_classical_set_scope
+  [f]%_function_scope _%_function_scope [x] _
 le0_funenegE is opaque
 Expands to: Constant mathcomp.analysis.numfun.le0_funenegE
 Declared in library mathcomp.analysis.numfun, line 746, characters 6-18
@@ -2130,7 +2138,8 @@ forall [T : Type] [R : realDomainType] [r : R] (f : T -> \bar R),
 (fun x : T => r%:E * f x)^\+%E = (fun x : T => (r%:E * f^\+ x)%E)
 
 ge0_funeposM is not universe polymorphic
-Arguments ge0_funeposM [T]%type_scope [R] [r]%ring_scope f%function_scope _
+Arguments ge0_funeposM [T]%_type_scope [R] [r]%_ring_scope 
+  f%_function_scope _
 ge0_funeposM is opaque
 Expands to: Constant mathcomp.analysis.numfun.ge0_funeposM
 Declared in library mathcomp.analysis.numfun, line 752, characters 6-18
@@ -2149,7 +2158,8 @@ forall [T : Type] [R : realDomainType] [r : R] (f : T -> \bar R),
 (fun x : T => r%:E * f x)^\-%E = (fun x : T => (r%:E * f^\- x)%E)
 
 ge0_funenegM is not universe polymorphic
-Arguments ge0_funenegM [T]%type_scope [R] [r]%ring_scope f%function_scope _
+Arguments ge0_funenegM [T]%_type_scope [R] [r]%_ring_scope 
+  f%_function_scope _
 ge0_funenegM is opaque
 Expands to: Constant mathcomp.analysis.numfun.ge0_funenegM
 Declared in library mathcomp.analysis.numfun, line 759, characters 6-18
@@ -2167,7 +2177,8 @@ forall [T : Type] [R : realDomainType] [r : R] (f : T -> \bar R),
 (fun x : T => r%:E * f x)^\+%E = (fun x : T => (- r%:E * f^\- x)%E)
 
 le0_funeposM is not universe polymorphic
-Arguments le0_funeposM [T]%type_scope [R] [r]%ring_scope f%function_scope _
+Arguments le0_funeposM [T]%_type_scope [R] [r]%_ring_scope 
+  f%_function_scope _
 le0_funeposM is opaque
 Expands to: Constant mathcomp.analysis.numfun.le0_funeposM
 Declared in library mathcomp.analysis.numfun, line 765, characters 6-18
@@ -2186,7 +2197,8 @@ forall [T : Type] [R : realDomainType] [r : R] (f : T -> \bar R),
 (fun x : T => r%:E * f x)^\-%E = (fun x : T => (- r%:E * f^\+ x)%E)
 
 le0_funenegM is not universe polymorphic
-Arguments le0_funenegM [T]%type_scope [R] [r]%ring_scope f%function_scope _
+Arguments le0_funenegM [T]%_type_scope [R] [r]%_ring_scope 
+  f%_function_scope _
 le0_funenegM is opaque
 Expands to: Constant mathcomp.analysis.numfun.le0_funenegM
 Declared in library mathcomp.analysis.numfun, line 772, characters 6-18
@@ -2204,7 +2216,7 @@ forall [T : Type] [R : realDomainType] (f : T -> \bar R),
 abse \o f = (f^\+ \+ f^\-)%E
 
 fune_abse is not universe polymorphic
-Arguments fune_abse [T]%type_scope [R] f%function_scope
+Arguments fune_abse [T]%_type_scope [R] f%_function_scope
 fune_abse is opaque
 Expands to: Constant mathcomp.analysis.numfun.fune_abse
 Declared in library mathcomp.analysis.numfun, line 779, characters 6-15
@@ -2225,7 +2237,7 @@ forall [T : Type] [R : realDomainType] (f : T -> \bar R),
 f = (f^\+ \- f^\-)%E
 
 funeposneg is not universe polymorphic
-Arguments funeposneg [T]%type_scope [R] f%function_scope
+Arguments funeposneg [T]%_type_scope [R] f%_function_scope
 funeposneg is opaque
 Expands to: Constant mathcomp.analysis.numfun.funeposneg
 Declared in library mathcomp.analysis.numfun, line 789, characters 6-16
@@ -2243,7 +2255,7 @@ forall [T : Type] [R : realDomainType] (f : T -> \bar R) (x : T),
 (f^\+ x +? - f^\- x)%E
 
 add_def_funeposneg is not universe polymorphic
-Arguments add_def_funeposneg [T]%type_scope [R] f%function_scope x
+Arguments add_def_funeposneg [T]%_type_scope [R] f%_function_scope x
 add_def_funeposneg is opaque
 Expands to: Constant mathcomp.analysis.numfun.add_def_funeposneg
 Declared in library mathcomp.analysis.numfun, line 796, characters 6-24
@@ -2260,7 +2272,7 @@ forall [T : Type] [R : realDomainType] (f g : T -> \bar R),
 (f \+ g)%E = ((f \+ g)^\+ \- (f \+ g)^\-)%E
 
 funeD_Dpos is not universe polymorphic
-Arguments funeD_Dpos [T]%type_scope [R] (f g)%function_scope
+Arguments funeD_Dpos [T]%_type_scope [R] (f g)%_function_scope
 funeD_Dpos is opaque
 Expands to: Constant mathcomp.analysis.numfun.funeD_Dpos
 Declared in library mathcomp.analysis.numfun, line 802, characters 6-16
@@ -2278,7 +2290,7 @@ forall [T : Type] [R : realDomainType] (f g : T -> \bar R),
 (f \+ g)%E = (f^\+ \+ g^\+ \- (f^\- \+ g^\-))%E
 
 funeD_posD is not universe polymorphic
-Arguments funeD_posD [T]%type_scope [R] (f g)%function_scope
+Arguments funeD_posD [T]%_type_scope [R] (f g)%_function_scope
 funeD_posD is opaque
 Expands to: Constant mathcomp.analysis.numfun.funeD_posD
 Declared in library mathcomp.analysis.numfun, line 809, characters 6-16
@@ -2312,8 +2324,8 @@ forall [T : Type] [R : realDomainType] [D : set T] [f g : T -> \bar R],
 {in D, forall x : T, (f x <= g x)%E} ->
 forall [x : T], x \in D -> (f^\+ x <= g^\+ x)%E = true
 
-Arguments funepos_le [T]%type_scope [R] [D]%classical_set_scope
-  [f g]%function_scope _ [x] _
+Arguments funepos_le [T]%_type_scope [R] [D]%_classical_set_scope
+  [f g]%_function_scope _ [x] _
 funepos_le is opaque
 Expands to: Constant mathcomp.analysis.numfun.funepos_le
 Declared in library mathcomp.analysis.numfun, line 825, characters 6-16
@@ -2340,8 +2352,8 @@ forall [T : Type] [R : realDomainType] [D : set T] [f g : T -> \bar R],
 {in D, forall x : T, (f x <= g x)%E} ->
 forall [x : T], x \in D -> (g^\- x <= f^\- x)%E = true
 
-Arguments funeneg_le [T]%type_scope [R] [D]%classical_set_scope
-  [f g]%function_scope _ [x] _
+Arguments funeneg_le [T]%_type_scope [R] [D]%_classical_set_scope
+  [f g]%_function_scope _ [x] _
 funeneg_le is opaque
 Expands to: Constant mathcomp.analysis.numfun.funeneg_le
 Declared in library mathcomp.analysis.numfun, line 834, characters 6-16
@@ -2365,7 +2377,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="indic" class="id"><a name="indic" class="" title="indic : forall {T : Type} {R : pzRingType}, set T -> T -> R
 
 indic is not universe polymorphic
-Arguments indic {T}%type_scope {R} A%classical_set_scope x
+Arguments indic {T}%_type_scope {R} A%_classical_set_scope x
 indic is transparent
 Expands to: Constant mathcomp.analysis.numfun.indic
 Declared in library mathcomp.analysis.numfun, line 849, characters 11-16
@@ -2378,7 +2390,7 @@ forall {T : Type} {R : numDomainType} (A : set T) (x : T),
 Itv.spec (Itv.num_sem (R:=R)) (Itv.Real `[0%Z, 1%Z]%R) ((\1_A)%R x)
 
 num_spec_indic is not universe polymorphic
-Arguments num_spec_indic {T}%type_scope {R} A%classical_set_scope x
+Arguments num_spec_indic {T}%_type_scope {R} A%_classical_set_scope x
 num_spec_indic is opaque
 Expands to: Constant mathcomp.analysis.numfun.num_spec_indic
 Declared in library mathcomp.analysis.numfun, line 853, characters 6-20
@@ -2394,7 +2406,7 @@ Qed.</div></details>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="indic_inum" class="id"><a name="indic_inum" class="" title="indic_inum : forall {T : Type} {R : numDomainType}, set T -> T -> {i01 R}
 
 indic_inum is not universe polymorphic
-Arguments indic_inum {T}%type_scope {R} A%classical_set_scope x
+Arguments indic_inum {T}%_type_scope {R} A%_classical_set_scope x
 indic_inum is transparent
 Expands to: Constant mathcomp.analysis.numfun.indic_inum
 Declared in library mathcomp.analysis.numfun, line 860, characters 10-20
@@ -2410,7 +2422,7 @@ forall [T : Type] (R : pzRingType) (A : set T) (x : T),
 (\1_A)%R x = (x \in A)%:R%R
 
 indicE is not universe polymorphic
-Arguments indicE [T]%type_scope R A%classical_set_scope x
+Arguments indicE [T]%_type_scope R A%_classical_set_scope x
 indicE is opaque
 Expands to: Constant mathcomp.analysis.numfun.indicE
 Declared in library mathcomp.analysis.numfun, line 867, characters 6-12
@@ -2423,7 +2435,7 @@ Declared in library mathcomp.analysis.numfun, line 867, characters 6-12
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="indicT" class="id"><a name="indicT" class="" title="indicT : forall (T : Type) (R : pzRingType), (\1_[set: T])%R = cst (1%R : R)
 
 indicT is not universe polymorphic
-Arguments indicT T%type_scope R
+Arguments indicT T%_type_scope R
 indicT is opaque
 Expands to: Constant mathcomp.analysis.numfun.indicT
 Declared in library mathcomp.analysis.numfun, line 869, characters 6-12
@@ -2436,7 +2448,7 @@ Declared in library mathcomp.analysis.numfun, line 869, characters 6-12
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="indic0" class="id"><a name="indic0" class="" title="indic0 : forall (T : Type) (R : pzRingType), (\1_set0)%R = cst (0%R : R)
 
 indic0 is not universe polymorphic
-Arguments indic0 T%type_scope R
+Arguments indic0 T%_type_scope R
 indic0 is opaque
 Expands to: Constant mathcomp.analysis.numfun.indic0
 Declared in library mathcomp.analysis.numfun, line 872, characters 6-12
@@ -2451,7 +2463,7 @@ forall [T : Type] (R : pzRingType) (A B : set T),
 (\1_(A `&` B))%R = (\1_A \* \1_B)%R
 
 indicI is not universe polymorphic
-Arguments indicI [T]%type_scope R (A B)%classical_set_scope
+Arguments indicI [T]%_type_scope R (A B)%_classical_set_scope
 indicI is opaque
 Expands to: Constant mathcomp.analysis.numfun.indicI
 Declared in library mathcomp.analysis.numfun, line 875, characters 6-12
@@ -2466,7 +2478,7 @@ forall [T : Type] (R : pzRingType) (A : set T),
 (\1_(~` A))%R = (fun x : T => (x \notin A)%:R%R)
 
 indicC is not universe polymorphic
-Arguments indicC [T]%type_scope R A%classical_set_scope
+Arguments indicC [T]%_type_scope R A%_classical_set_scope
 indicC is opaque
 Expands to: Constant mathcomp.analysis.numfun.indicC
 Declared in library mathcomp.analysis.numfun, line 878, characters 6-12
@@ -2483,7 +2495,7 @@ forall [T : Type] (R : pzRingType) (D A : set T),
  `|` (if A `&` D != set0 then [set 1%R  : R] else set0))%classic
 
 image_indic is not universe polymorphic
-Arguments image_indic [T]%type_scope R (D A)%classical_set_scope
+Arguments image_indic [T]%_type_scope R (D A)%_classical_set_scope
 image_indic is opaque
 Expands to: Constant mathcomp.analysis.numfun.image_indic
 Declared in library mathcomp.analysis.numfun, line 881, characters 6-17
@@ -2508,7 +2520,7 @@ forall [T : Type] [R : pzRingType] (D : set T) (B : set R),
  else if 0%R \in B then (~` D)%classic else set0)
 
 preimage_indic is not universe polymorphic
-Arguments preimage_indic [T]%type_scope [R] (D B)%classical_set_scope
+Arguments preimage_indic [T]%_type_scope [R] (D B)%_classical_set_scope
 preimage_indic is opaque
 Expands to: Constant mathcomp.analysis.numfun.preimage_indic
 Declared in library mathcomp.analysis.numfun, line 892, characters 6-20
@@ -2544,7 +2556,8 @@ forall [T : Type] [R : pzRingType] [D A : set T] [t : R],
 [set (\1_D)%R x | x in A]%classic t ->
 [set 0%R]%classic t \/ [set 1%R]%classic t
 
-Arguments image_indic_sub [T]%type_scope [R] [D A]%classical_set_scope [t] _
+Arguments image_indic_sub [T]%_type_scope [R] [D A]%_classical_set_scope 
+  [t] _
 image_indic_sub is opaque
 Expands to: Constant mathcomp.analysis.numfun.image_indic_sub
 Declared in library mathcomp.analysis.numfun, line 911, characters 6-21
@@ -2560,7 +2573,7 @@ forall [T : Type] [R : pzRingType] (f : {fimfun T >-> R}) (x : T),
 f x = (\sum_(y \in range f) y * \1_(f @^-1` [set y]) x)%R
 
 fimfunE is not universe polymorphic
-Arguments fimfunE [T]%type_scope [R] f x
+Arguments fimfunE [T]%_type_scope [R] f x
 fimfunE is opaque
 Expands to: Constant mathcomp.analysis.numfun.fimfunE
 Declared in library mathcomp.analysis.numfun, line 916, characters 6-13
@@ -2579,7 +2592,7 @@ let s := fset_set (T:=R) (range f) in
 forall x : T, f x = (\sum_(i < #|` s|) s`_i * \1_(f @^-1` [set s`_i]) x)%R
 
 fimfunEord is not universe polymorphic
-Arguments fimfunEord [T]%type_scope [R] f x
+Arguments fimfunEord [T]%_type_scope [R] f x
 fimfunEord is opaque
 Expands to: Constant mathcomp.analysis.numfun.fimfunEord
 Declared in library mathcomp.analysis.numfun, line 923, characters 6-16
@@ -2601,7 +2614,7 @@ trivIset (T:=T) [set: nat] A ->
 (\1_(\bigcup_n A n) t)%:E = \big[+%R/0%R]_(0 <= n <oo) (\1_(A n) t)%:E
 
 indic_bigcup is not universe polymorphic
-Arguments indic_bigcup [T]%type_scope {R} [A] t _
+Arguments indic_bigcup [T]%_type_scope {R} [A] t _
 indic_bigcup is opaque
 Expands to: Constant mathcomp.analysis.numfun.indic_bigcup
 Declared in library mathcomp.analysis.numfun, line 933, characters 6-18
@@ -2631,8 +2644,8 @@ forall [T : Type] {R : numFieldType} (f : T -> R) (D : set T),
 f \_ D = (f \* \1_D)%R
 
 patch_indic is not universe polymorphic
-Arguments patch_indic [T]%type_scope {R} f%function_scope
-  D%classical_set_scope
+Arguments patch_indic [T]%_type_scope {R} f%_function_scope
+  D%_classical_set_scope
 patch_indic is opaque
 Expands to: Constant mathcomp.analysis.numfun.patch_indic
 Declared in library mathcomp.analysis.numfun, line 952, characters 6-17
@@ -2650,8 +2663,8 @@ forall [T : Type] [R : numDomainType] (f : T -> \bar R) (D : set T),
 f \_ D = (f \* (EFin \o (\1_D)%R))%E
 
 epatch_indic is not universe polymorphic
-Arguments epatch_indic [T]%type_scope [R] f%function_scope
-  D%classical_set_scope
+Arguments epatch_indic [T]%_type_scope [R] f%_function_scope
+  D%_classical_set_scope
 epatch_indic is opaque
 Expands to: Constant mathcomp.analysis.numfun.epatch_indic
 Declared in library mathcomp.analysis.numfun, line 959, characters 6-18
@@ -2669,7 +2682,7 @@ forall (R : nzRingType) [T1 T2 : Type] (A : set (T1 * T2)) (x : T1),
 xsection A x = ((fun y : T2 => (\1_A)%R (x, y) : R) @^-1` [set 1%R])%classic
 
 xsection_indic is not universe polymorphic
-Arguments xsection_indic R [T1 T2]%type_scope A%classical_set_scope x
+Arguments xsection_indic R [T1 T2]%_type_scope A%_classical_set_scope x
 xsection_indic is opaque
 Expands to: Constant mathcomp.analysis.numfun.xsection_indic
 Declared in library mathcomp.analysis.numfun, line 966, characters 6-20
@@ -2688,7 +2701,7 @@ forall (R : nzRingType) [T1 T2 : Type] (A : set (T1 * T2)) (y : T2),
 ysection A y = ((fun x : T1 => (\1_A)%R (x, y) : R) @^-1` [set 1%R])%classic
 
 ysection_indic is not universe polymorphic
-Arguments ysection_indic R [T1 T2]%type_scope A%classical_set_scope y
+Arguments ysection_indic R [T1 T2]%_type_scope A%_classical_set_scope y
 ysection_indic is opaque
 Expands to: Constant mathcomp.analysis.numfun.ysection_indic
 Declared in library mathcomp.analysis.numfun, line 974, characters 6-20
@@ -2707,7 +2720,7 @@ forall [T : Type] {R : numFieldType} (A : set T),
 [bounded (\1_A)%R x : R^o | x in A]
 
 bounded_indic is not universe polymorphic
-Arguments bounded_indic [T]%type_scope {R} A%classical_set_scope
+Arguments bounded_indic [T]%_type_scope {R} A%_classical_set_scope
 bounded_indic is opaque
 Expands to: Constant mathcomp.analysis.numfun.bounded_indic
 Declared in library mathcomp.analysis.numfun, line 982, characters 6-19
@@ -2724,7 +2737,7 @@ forall {T : pointedType} {R : numFieldType} (A : set T),
 (\1_A)%R = (1%R : T -> R) \_ A
 
 indic_restrict is not universe polymorphic
-Arguments indic_restrict {T R} A%classical_set_scope
+Arguments indic_restrict {T R} A%_classical_set_scope
 indic_restrict is opaque
 Expands to: Constant mathcomp.analysis.numfun.indic_restrict
 Declared in library mathcomp.analysis.numfun, line 988, characters 6-20
@@ -2740,7 +2753,7 @@ forall [T : Type] (R : numFieldType) (E A : set T),
 ((\1_E)%R : T -> R) \_ A = (\1_(E `&` A))%R
 
 restrict_indic is not universe polymorphic
-Arguments restrict_indic [T]%type_scope R (E A)%classical_set_scope
+Arguments restrict_indic [T]%_type_scope R (E A)%_classical_set_scope
 restrict_indic is opaque
 Expands to: Constant mathcomp.analysis.numfun.restrict_indic
 Declared in library mathcomp.analysis.numfun, line 992, characters 6-20
@@ -2775,7 +2788,7 @@ exists2 i : R,
   (pseudometric_structure.ball_ [eta normr] x i
    `<=` [eta (\1_(pseudometric_structure.ball 0 k : set R^o))%R] @^-1` t)%classic
 
-Arguments cvg_indic {R} [x] [k]%ring_scope _ [t] _
+Arguments cvg_indic {R} [x] [k]%_ring_scope _ [t] _
 cvg_indic is opaque
 Expands to: Constant mathcomp.analysis.numfun.cvg_indic
 Declared in library mathcomp.analysis.numfun, line 1000, characters 6-15
@@ -2964,7 +2977,8 @@ forall [aT : pointedType] [rT : nzRingType] [I : Type]
 (\sum_(i <- r | P i) f i)%R x = (\sum_(i <- r | P i) f i x)%R
 
 fimfun_prod is not universe polymorphic
-Arguments fimfun_prod [aT rT] [I]%type_scope r%seq_scope P f%function_scope x
+Arguments fimfun_prod [aT rT] [I]%_type_scope r%_seq_scope 
+  P f%_function_scope x
 fimfun_prod is opaque
 Expands to: Constant mathcomp.analysis.numfun.fimfun_prod
 Declared in library mathcomp.analysis.numfun, line 1035, characters 6-17
@@ -2981,7 +2995,7 @@ forall [aT : pointedType] [rT : nzRingType] (f : {fimfun aT >-> rT})
 (f ^+ n)%R = (fun x : aT => (f x ^+ n)%R)
 
 fimfunX is not universe polymorphic
-Arguments fimfunX [aT rT] f n%nat_scope
+Arguments fimfunX [aT rT] f n%_nat_scope
 fimfunX is opaque
 Expands to: Constant mathcomp.analysis.numfun.fimfunX
 Declared in library mathcomp.analysis.numfun, line 1039, characters 6-13
@@ -2997,7 +3011,7 @@ forall [aT : pointedType] (rT : nzRingType) (X : set aT),
 FiniteImage.phant_axioms (\1_X)%R
 
 indic_fimfun_subproof is not universe polymorphic
-Arguments indic_fimfun_subproof [aT] rT X%classical_set_scope
+Arguments indic_fimfun_subproof [aT] rT X%_classical_set_scope
 indic_fimfun_subproof is opaque
 Expands to: Constant mathcomp.analysis.numfun.indic_fimfun_subproof
 Declared in library mathcomp.analysis.numfun, line 1044, characters 6-27
@@ -3014,7 +3028,7 @@ forall [aT : pointedType] (rT : nzRingType), set aT -> {fimfun aT >-> rT}
 
 numfun_indic__canonical__cardinality_FImFun is not universe polymorphic
 Arguments numfun_indic__canonical__cardinality_FImFun 
-  [aT] rT X%classical_set_scope
+  [aT] rT X%_classical_set_scope
 numfun_indic__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.numfun_indic__canonical__cardinality_FImFun
@@ -3024,7 +3038,7 @@ forall [aT : pointedType] (rT : nzRingType), set aT -> {fimfun aT >-> rT}
 
 numfun_indic__canonical__cardinality_FImFun is not universe polymorphic
 Arguments numfun_indic__canonical__cardinality_FImFun 
-  [aT] rT X%classical_set_scope
+  [aT] rT X%_classical_set_scope
 numfun_indic__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.numfun_indic__canonical__cardinality_FImFun
@@ -3034,7 +3048,7 @@ forall [aT : pointedType] (rT : nzRingType), set aT -> {fimfun aT >-> rT}
 
 numfun_indic__canonical__cardinality_FImFun is not universe polymorphic
 Arguments numfun_indic__canonical__cardinality_FImFun 
-  [aT] rT X%classical_set_scope
+  [aT] rT X%_classical_set_scope
 numfun_indic__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.numfun_indic__canonical__cardinality_FImFun
@@ -3044,7 +3058,7 @@ forall [aT : pointedType] (rT : nzRingType), set aT -> {fimfun aT >-> rT}
 
 numfun_indic__canonical__cardinality_FImFun is not universe polymorphic
 Arguments numfun_indic__canonical__cardinality_FImFun 
-  [aT] rT X%classical_set_scope
+  [aT] rT X%_classical_set_scope
 numfun_indic__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.numfun_indic__canonical__cardinality_FImFun
@@ -3054,7 +3068,7 @@ forall [aT : pointedType] (rT : nzRingType), set aT -> {fimfun aT >-> rT}
 
 numfun_indic__canonical__cardinality_FImFun is not universe polymorphic
 Arguments numfun_indic__canonical__cardinality_FImFun 
-  [aT] rT X%classical_set_scope
+  [aT] rT X%_classical_set_scope
 numfun_indic__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.numfun_indic__canonical__cardinality_FImFun
@@ -3064,7 +3078,7 @@ forall [aT : pointedType] (rT : nzRingType), set aT -> {fimfun aT >-> rT}
 
 numfun_indic__canonical__cardinality_FImFun is not universe polymorphic
 Arguments numfun_indic__canonical__cardinality_FImFun 
-  [aT] rT X%classical_set_scope
+  [aT] rT X%_classical_set_scope
 numfun_indic__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.numfun_indic__canonical__cardinality_FImFun
@@ -3075,7 +3089,7 @@ Declared in library mathcomp.analysis.numfun, line 1050, characters 0-54
 forall {aT : pointedType} {rT : nzRingType}, set aT -> {fimfun aT >-> rT}
 
 indic_fimfun is not universe polymorphic
-Arguments indic_fimfun {aT rT} X%classical_set_scope
+Arguments indic_fimfun {aT rT} X%_classical_set_scope
 indic_fimfun is transparent
 Expands to: Constant mathcomp.analysis.numfun.indic_fimfun
 Declared in library mathcomp.analysis.numfun, line 1052, characters 11-23
@@ -3087,7 +3101,7 @@ rT -> {fimfun aT >-> rT} -> {fimfun aT >-> rT}
 
 GRing_mulr_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments GRing_mulr_fun__canonical__cardinality_FImFun 
-  [aT rT] k%ring_scope f
+  [aT rT] k%_ring_scope f
 GRing_mulr_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.GRing_mulr_fun__canonical__cardinality_FImFun
@@ -3098,7 +3112,7 @@ rT -> {fimfun aT >-> rT} -> {fimfun aT >-> rT}
 
 GRing_mulr_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments GRing_mulr_fun__canonical__cardinality_FImFun 
-  [aT rT] k%ring_scope f
+  [aT rT] k%_ring_scope f
 GRing_mulr_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.GRing_mulr_fun__canonical__cardinality_FImFun
@@ -3109,7 +3123,7 @@ rT -> {fimfun aT >-> rT} -> {fimfun aT >-> rT}
 
 GRing_mulr_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments GRing_mulr_fun__canonical__cardinality_FImFun 
-  [aT rT] k%ring_scope f
+  [aT rT] k%_ring_scope f
 GRing_mulr_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.GRing_mulr_fun__canonical__cardinality_FImFun
@@ -3120,7 +3134,7 @@ rT -> {fimfun aT >-> rT} -> {fimfun aT >-> rT}
 
 GRing_mulr_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments GRing_mulr_fun__canonical__cardinality_FImFun 
-  [aT rT] k%ring_scope f
+  [aT rT] k%_ring_scope f
 GRing_mulr_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.GRing_mulr_fun__canonical__cardinality_FImFun
@@ -3131,7 +3145,7 @@ rT -> {fimfun aT >-> rT} -> {fimfun aT >-> rT}
 
 GRing_mulr_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments GRing_mulr_fun__canonical__cardinality_FImFun 
-  [aT rT] k%ring_scope f
+  [aT rT] k%_ring_scope f
 GRing_mulr_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.GRing_mulr_fun__canonical__cardinality_FImFun
@@ -3142,7 +3156,7 @@ rT -> {fimfun aT >-> rT} -> {fimfun aT >-> rT}
 
 GRing_mulr_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments GRing_mulr_fun__canonical__cardinality_FImFun 
-  [aT rT] k%ring_scope f
+  [aT rT] k%_ring_scope f
 GRing_mulr_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.GRing_mulr_fun__canonical__cardinality_FImFun
@@ -3153,7 +3167,7 @@ rT -> {fimfun aT >-> rT} -> {fimfun aT >-> rT}
 
 GRing_mulr_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments GRing_mulr_fun__canonical__cardinality_FImFun 
-  [aT rT] k%ring_scope f
+  [aT rT] k%_ring_scope f
 GRing_mulr_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.GRing_mulr_fun__canonical__cardinality_FImFun
@@ -3165,7 +3179,7 @@ forall [aT : pointedType] [rT : nzRingType],
 rT -> {fimfun aT >-> rT} -> {fimfun aT >-> rT}
 
 scale_fimfun is not universe polymorphic
-Arguments scale_fimfun [aT rT] k%ring_scope f
+Arguments scale_fimfun [aT rT] k%_ring_scope f
 scale_fimfun is transparent
 Expands to: Constant mathcomp.analysis.numfun.scale_fimfun
 Declared in library mathcomp.analysis.numfun, line 1056, characters 11-23
@@ -3306,7 +3320,7 @@ forall [T : pointedType] [R : nzRingType] [f : T -> R],
 FiniteDecomp.phant_axioms (T:=T) (R:=R) f -> FiniteImage.phant_axioms f
 
 Builders_30.finite_subproof is not universe polymorphic
-Arguments Builders_30.finite_subproof [T R] [f]%function_scope fresh_name_31
+Arguments Builders_30.finite_subproof [T R] [f]%_function_scope fresh_name_31
 Builders_30.finite_subproof is opaque
 Expands to: Constant mathcomp.analysis.numfun.Builders_30.finite_subproof
 Declared in library mathcomp.analysis.numfun, line 1074, characters 8-23
@@ -3324,7 +3338,7 @@ FiniteDecomp.phant_axioms (T:=T) (R:=R) f -> {fimfun T >-> R}
 
 Builders_30.Builders_30_f__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Builders_30.Builders_30_f__canonical__cardinality_FImFun 
-  [T R] [f]%function_scope fresh_name_31
+  [T R] [f]%_function_scope fresh_name_31
 Builders_30.Builders_30_f__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.Builders_30.Builders_30_f__canonical__cardinality_FImFun
@@ -3335,7 +3349,7 @@ FiniteDecomp.phant_axioms (T:=T) (R:=R) f -> {fimfun T >-> R}
 
 Builders_30.Builders_30_f__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Builders_30.Builders_30_f__canonical__cardinality_FImFun 
-  [T R] [f]%function_scope fresh_name_31
+  [T R] [f]%_function_scope fresh_name_31
 Builders_30.Builders_30_f__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.Builders_30.Builders_30_f__canonical__cardinality_FImFun
@@ -3346,7 +3360,7 @@ FiniteDecomp.phant_axioms (T:=T) (R:=R) f -> {fimfun T >-> R}
 
 Builders_30.Builders_30_f__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Builders_30.Builders_30_f__canonical__cardinality_FImFun 
-  [T R] [f]%function_scope fresh_name_31
+  [T R] [f]%_function_scope fresh_name_31
 Builders_30.Builders_30_f__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.Builders_30.Builders_30_f__canonical__cardinality_FImFun
@@ -3357,7 +3371,7 @@ FiniteDecomp.phant_axioms (T:=T) (R:=R) f -> {fimfun T >-> R}
 
 Builders_30.Builders_30_f__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Builders_30.Builders_30_f__canonical__cardinality_FImFun 
-  [T R] [f]%function_scope fresh_name_31
+  [T R] [f]%_function_scope fresh_name_31
 Builders_30.Builders_30_f__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.Builders_30.Builders_30_f__canonical__cardinality_FImFun
@@ -3368,7 +3382,7 @@ FiniteDecomp.phant_axioms (T:=T) (R:=R) f -> {fimfun T >-> R}
 
 Builders_30.Builders_30_f__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Builders_30.Builders_30_f__canonical__cardinality_FImFun 
-  [T R] [f]%function_scope fresh_name_31
+  [T R] [f]%_function_scope fresh_name_31
 Builders_30.Builders_30_f__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.analysis.numfun.Builders_30.Builders_30_f__canonical__cardinality_FImFun
@@ -3404,7 +3418,7 @@ exists f : topology_structure.Topological.sort X -> R,
     & (range f `<=` `[x, y])%classic]
 
 urysohn_ext_itv is not universe polymorphic
-Arguments urysohn_ext_itv {X R} normalX [A B]%classical_set_scope 
+Arguments urysohn_ext_itv {X R} normalX [A B]%_classical_set_scope 
   [x y] _ _ _ _
 urysohn_ext_itv is opaque
 Expands to: Constant mathcomp.analysis.numfun.urysohn_ext_itv
@@ -3556,8 +3570,8 @@ exists g : topology_structure.Topological.sort X -> R^o,
 
 continuous_bounded_extension is not universe polymorphic
 Arguments continuous_bounded_extension {X R} normalX 
-  [A]%classical_set_scope clA [f]%function_scope [M] 
-  _ (_ _)%function_scope
+  [A]%_classical_set_scope clA [f]%_function_scope 
+  [M] _ (_ _)%_function_scope
 continuous_bounded_extension is opaque
 Expands to: Constant mathcomp.analysis.numfun.continuous_bounded_extension
 Declared in library mathcomp.analysis.numfun, line 1166, characters 6-34

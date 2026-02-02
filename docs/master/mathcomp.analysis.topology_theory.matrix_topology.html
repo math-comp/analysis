@@ -247,7 +247,7 @@ forall (m n : nat) (T : topology_structure.Topological.type) (M : 'M_(m, n)),
 filter.ProperFilter (filter.nbhs M)
 
 mx_nbhs_filter is not universe polymorphic
-Arguments mx_nbhs_filter (m n)%nat_scope T M%ring_scope
+Arguments mx_nbhs_filter (m n)%_nat_scope T M%_ring_scope
 mx_nbhs_filter is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.mx_nbhs_filter
@@ -271,8 +271,8 @@ forall (m n : nat) (T : topology_structure.Topological.type)
 filter.nbhs M A -> A M
 
 mx_nbhs_singleton is not universe polymorphic
-Arguments mx_nbhs_singleton (m n)%nat_scope T M%ring_scope
-  A%classical_set_scope _
+Arguments mx_nbhs_singleton (m n)%_nat_scope T M%_ring_scope
+  A%_classical_set_scope _
 mx_nbhs_singleton is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.mx_nbhs_singleton
@@ -290,7 +290,8 @@ forall (m n : nat) (T : topology_structure.Topological.type)
 filter.nbhs M A -> filter.nbhs M (filter.nbhs^~ A)
 
 mx_nbhs_nbhs is not universe polymorphic
-Arguments mx_nbhs_nbhs (m n)%nat_scope T M%ring_scope A%classical_set_scope _
+Arguments mx_nbhs_nbhs (m n)%_nat_scope T M%_ring_scope
+  A%_classical_set_scope _
 mx_nbhs_nbhs is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.mx_nbhs_nbhs
@@ -312,7 +313,7 @@ topology_structure.Topological.type -> topology_structure.Topological.type
 
 matrix_matrix__canonical__topology_structure_Topological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_Topological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__topology_structure_Topological
@@ -325,7 +326,7 @@ topology_structure.Topological.type -> topology_structure.Topological.type
 
 matrix_matrix__canonical__topology_structure_Topological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_Topological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__topology_structure_Topological
@@ -338,7 +339,7 @@ topology_structure.Topological.type -> topology_structure.Topological.type
 
 matrix_matrix__canonical__topology_structure_Topological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_Topological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__topology_structure_Topological
@@ -351,7 +352,7 @@ topology_structure.Topological.type -> topology_structure.Topological.type
 
 matrix_matrix__canonical__topology_structure_Topological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_Topological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__topology_structure_Topological
@@ -364,7 +365,7 @@ topology_structure.Topological.type -> topology_structure.Topological.type
 
 matrix_matrix__canonical__topology_structure_Topological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_Topological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__topology_structure_Topological
@@ -386,7 +387,7 @@ forall (m n : nat) (T : uniformType),
 filter.set_system ('M_(m, n) * 'M_(m, n))
 
 mx_ent is not universe polymorphic
-Arguments mx_ent (m n)%nat_scope T _
+Arguments mx_ent (m n)%_nat_scope T _
 mx_ent is transparent
 Expands to: Constant mathcomp.analysis.topology_theory.matrix_topology.mx_ent
 Declared in
@@ -400,7 +401,7 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 64, characters 1
 forall (m n : nat) (T : uniformType), filter.Filter (mx_ent m n T)
 
 mx_ent_filter is not universe polymorphic
-Arguments mx_ent_filter (m n)%nat_scope T
+Arguments mx_ent_filter (m n)%_nat_scope T
 mx_ent_filter is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.mx_ent_filter
@@ -421,7 +422,7 @@ forall (m n : nat) (T : uniformType) (A : set ('M_(m, n) * 'M_(m, n))),
 mx_ent m n T A -> (diagonal `<=` A)%classic
 
 mx_ent_refl is not universe polymorphic
-Arguments mx_ent_refl (m n)%nat_scope T A%classical_set_scope _ t _
+Arguments mx_ent_refl (m n)%_nat_scope T A%_classical_set_scope _ t _
 mx_ent_refl is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.mx_ent_refl
@@ -440,7 +441,7 @@ forall (m n : nat) (T : uniformType) (A : set ('M_(m, n) * 'M_(m, n))),
 mx_ent m n T A -> mx_ent m n T A^-1%relation
 
 mx_ent_inv is not universe polymorphic
-Arguments mx_ent_inv (m n)%nat_scope T A%classical_set_scope _
+Arguments mx_ent_inv (m n)%_nat_scope T A%_classical_set_scope _
 mx_ent_inv is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.mx_ent_inv
@@ -462,7 +463,7 @@ exists2 B : set ('M_(m, n) * 'M_(m, n)),
   mx_ent m n T B & ((B \; B)%relation `<=` A)%classic
 
 mx_ent_split is not universe polymorphic
-Arguments mx_ent_split (m n)%nat_scope T A%classical_set_scope _
+Arguments mx_ent_split (m n)%_nat_scope T A%_classical_set_scope _
 mx_ent_split is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.mx_ent_split
@@ -488,7 +489,7 @@ Qed.</div></details>
 forall (m n : nat) (T : uniformType), filter.nbhs = nbhs_ (mx_ent m n T)
 
 mx_ent_nbhsE is not universe polymorphic
-Arguments mx_ent_nbhsE (m n)%nat_scope T
+Arguments mx_ent_nbhsE (m n)%_nat_scope T
 mx_ent_nbhsE is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.mx_ent_nbhsE
@@ -516,8 +517,8 @@ Qed.</div></details>
 nat -> nat -> uniformType -> uniformType
 
 matrix_matrix__canonical__uniform_structure_Uniform is not universe polymorphic
-Arguments matrix_matrix__canonical__uniform_structure_Uniform 
-  (m n)%nat_scope T
+Arguments matrix_matrix__canonical__uniform_structure_Uniform
+  (m n)%_nat_scope T
 matrix_matrix__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_Uniform
@@ -527,8 +528,8 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 120, characters 
 nat -> nat -> uniformType -> uniformType
 
 matrix_matrix__canonical__uniform_structure_Uniform is not universe polymorphic
-Arguments matrix_matrix__canonical__uniform_structure_Uniform 
-  (m n)%nat_scope T
+Arguments matrix_matrix__canonical__uniform_structure_Uniform
+  (m n)%_nat_scope T
 matrix_matrix__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_Uniform
@@ -538,8 +539,8 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 120, characters 
 nat -> nat -> uniformType -> uniformType
 
 matrix_matrix__canonical__uniform_structure_Uniform is not universe polymorphic
-Arguments matrix_matrix__canonical__uniform_structure_Uniform 
-  (m n)%nat_scope T
+Arguments matrix_matrix__canonical__uniform_structure_Uniform
+  (m n)%_nat_scope T
 matrix_matrix__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_Uniform
@@ -549,8 +550,8 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 120, characters 
 nat -> nat -> uniformType -> uniformType
 
 matrix_matrix__canonical__uniform_structure_Uniform is not universe polymorphic
-Arguments matrix_matrix__canonical__uniform_structure_Uniform 
-  (m n)%nat_scope T
+Arguments matrix_matrix__canonical__uniform_structure_Uniform
+  (m n)%_nat_scope T
 matrix_matrix__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_Uniform
@@ -560,8 +561,8 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 120, characters 
 nat -> nat -> uniformType -> uniformType
 
 matrix_matrix__canonical__uniform_structure_Uniform is not universe polymorphic
-Arguments matrix_matrix__canonical__uniform_structure_Uniform 
-  (m n)%nat_scope T
+Arguments matrix_matrix__canonical__uniform_structure_Uniform
+  (m n)%_nat_scope T
 matrix_matrix__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_Uniform
@@ -587,7 +588,7 @@ filter.cvg_to (filter.nbhs F) (filter.nbhs M) <->
        (M i j, (N : 'M_(m, n)) i j) \in A)))
 
 cvg_mx_entourageP is not universe polymorphic
-Arguments cvg_mx_entourageP T (m n)%nat_scope F FF M%ring_scope
+Arguments cvg_mx_entourageP T (m n)%_nat_scope F FF M%_ring_scope
 cvg_mx_entourageP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.cvg_mx_entourageP
@@ -625,7 +626,7 @@ topology_structure.PointedTopological.type
 
 matrix_matrix__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_PointedTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__topology_structure_PointedTopological
@@ -639,7 +640,7 @@ topology_structure.PointedTopological.type
 
 matrix_matrix__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_PointedTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__topology_structure_PointedTopological
@@ -653,7 +654,7 @@ topology_structure.PointedTopological.type
 
 matrix_matrix__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_PointedTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__topology_structure_PointedTopological
@@ -667,7 +668,7 @@ topology_structure.PointedTopological.type
 
 matrix_matrix__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_PointedTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__topology_structure_PointedTopological
@@ -681,7 +682,7 @@ topology_structure.PointedTopological.type
 
 matrix_matrix__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_PointedTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__topology_structure_PointedTopological
@@ -695,7 +696,7 @@ topology_structure.PointedTopological.type
 
 matrix_matrix__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_PointedTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__topology_structure_PointedTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__topology_structure_PointedTopological
@@ -768,7 +769,7 @@ forall (m n : nat) (T : topology_structure.PointedTopological.type),
 filter.isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
 
 filter_PointedFiltered__to__filter_isFiltered is not universe polymorphic
-Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%nat_scope T
+Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%_nat_scope T
 filter_PointedFiltered__to__filter_isFiltered is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.filter_PointedFiltered__to__filter_isFiltered
@@ -779,7 +780,7 @@ forall (m n : nat) (T : topology_structure.PointedTopological.type),
 filter.isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
 
 filter_PointedFiltered__to__filter_isFiltered is not universe polymorphic
-Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%nat_scope T
+Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%_nat_scope T
 filter_PointedFiltered__to__filter_isFiltered is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.filter_PointedFiltered__to__filter_isFiltered
@@ -790,7 +791,7 @@ forall (m n : nat) (T : topology_structure.PointedTopological.type),
 filter.isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
 
 filter_PointedFiltered__to__filter_isFiltered is not universe polymorphic
-Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%nat_scope T
+Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%_nat_scope T
 filter_PointedFiltered__to__filter_isFiltered is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.filter_PointedFiltered__to__filter_isFiltered
@@ -801,7 +802,7 @@ forall (m n : nat) (T : topology_structure.PointedTopological.type),
 filter.isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
 
 filter_PointedFiltered__to__filter_isFiltered is not universe polymorphic
-Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%nat_scope T
+Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%_nat_scope T
 filter_PointedFiltered__to__filter_isFiltered is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.filter_PointedFiltered__to__filter_isFiltered
@@ -812,7 +813,7 @@ forall (m n : nat) (T : topology_structure.PointedTopological.type),
 filter.isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
 
 filter_PointedFiltered__to__filter_isFiltered is not universe polymorphic
-Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%nat_scope T
+Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%_nat_scope T
 filter_PointedFiltered__to__filter_isFiltered is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.filter_PointedFiltered__to__filter_isFiltered
@@ -823,7 +824,7 @@ forall (m n : nat) (T : topology_structure.PointedTopological.type),
 filter.isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
 
 filter_PointedFiltered__to__filter_isFiltered is not universe polymorphic
-Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%nat_scope T
+Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%_nat_scope T
 filter_PointedFiltered__to__filter_isFiltered is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.filter_PointedFiltered__to__filter_isFiltered
@@ -856,7 +857,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological
@@ -887,7 +888,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological
@@ -918,7 +919,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological
@@ -949,7 +950,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological
@@ -980,7 +981,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological
@@ -1011,7 +1012,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological
@@ -1040,7 +1041,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological
@@ -1067,7 +1068,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological
@@ -1094,7 +1095,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological
@@ -1121,7 +1122,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological
@@ -1148,7 +1149,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological
@@ -1175,7 +1176,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological
@@ -1187,7 +1188,7 @@ nat -> nat -> puniformType -> puniformType
 
 matrix_matrix__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments matrix_matrix__canonical__uniform_structure_PointedUniform
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_PointedUniform
@@ -1198,7 +1199,7 @@ nat -> nat -> puniformType -> puniformType
 
 matrix_matrix__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments matrix_matrix__canonical__uniform_structure_PointedUniform
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_PointedUniform
@@ -1209,7 +1210,7 @@ nat -> nat -> puniformType -> puniformType
 
 matrix_matrix__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments matrix_matrix__canonical__uniform_structure_PointedUniform
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_PointedUniform
@@ -1220,7 +1221,7 @@ nat -> nat -> puniformType -> puniformType
 
 matrix_matrix__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments matrix_matrix__canonical__uniform_structure_PointedUniform
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_PointedUniform
@@ -1231,7 +1232,7 @@ nat -> nat -> puniformType -> puniformType
 
 matrix_matrix__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments matrix_matrix__canonical__uniform_structure_PointedUniform
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_PointedUniform
@@ -1242,7 +1243,7 @@ nat -> nat -> puniformType -> puniformType
 
 matrix_matrix__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments matrix_matrix__canonical__uniform_structure_PointedUniform
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 matrix_matrix__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_PointedUniform
@@ -1270,7 +1271,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological
@@ -1297,7 +1298,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological
@@ -1324,7 +1325,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological
@@ -1351,7 +1352,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological
@@ -1378,7 +1379,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological
@@ -1405,7 +1406,7 @@ topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
   uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological
-  (m n)%nat_scope T
+  (m n)%_nat_scope T
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological
@@ -1423,7 +1424,7 @@ filter.ProperFilter F ->
 cauchy F -> filter.cvg_to (filter.nbhs F) (filter.nbhs (filter.lim F))
 
 mx_complete is not universe polymorphic
-Arguments mx_complete T (m n)%nat_scope F _ _ t _
+Arguments mx_complete T (m n)%_nat_scope F _ _ t _
 mx_complete is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.mx_complete
@@ -1454,7 +1455,7 @@ completeType -> nat -> nat -> completeType
 
 matrix_matrix__canonical__uniform_structure_Complete is not universe polymorphic
 Arguments matrix_matrix__canonical__uniform_structure_Complete 
-  T (m n)%nat_scope
+  T (m n)%_nat_scope
 matrix_matrix__canonical__uniform_structure_Complete is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_Complete
@@ -1465,7 +1466,7 @@ completeType -> nat -> nat -> completeType
 
 matrix_matrix__canonical__uniform_structure_Complete is not universe polymorphic
 Arguments matrix_matrix__canonical__uniform_structure_Complete 
-  T (m n)%nat_scope
+  T (m n)%_nat_scope
 matrix_matrix__canonical__uniform_structure_Complete is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_Complete
@@ -1476,7 +1477,7 @@ completeType -> nat -> nat -> completeType
 
 matrix_matrix__canonical__uniform_structure_Complete is not universe polymorphic
 Arguments matrix_matrix__canonical__uniform_structure_Complete 
-  T (m n)%nat_scope
+  T (m n)%_nat_scope
 matrix_matrix__canonical__uniform_structure_Complete is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_Complete
@@ -1487,7 +1488,7 @@ completeType -> nat -> nat -> completeType
 
 matrix_matrix__canonical__uniform_structure_Complete is not universe polymorphic
 Arguments matrix_matrix__canonical__uniform_structure_Complete 
-  T (m n)%nat_scope
+  T (m n)%_nat_scope
 matrix_matrix__canonical__uniform_structure_Complete is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_Complete
@@ -1498,7 +1499,7 @@ completeType -> nat -> nat -> completeType
 
 matrix_matrix__canonical__uniform_structure_Complete is not universe polymorphic
 Arguments matrix_matrix__canonical__uniform_structure_Complete 
-  T (m n)%nat_scope
+  T (m n)%_nat_scope
 matrix_matrix__canonical__uniform_structure_Complete is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__uniform_structure_Complete
@@ -1518,7 +1519,7 @@ forall (m n : nat) (R : numDomainType) (T : pseudoMetricType R),
 'M_(m, n) -> R -> 'M_(m, n) -> Prop
 
 mx_ball is not universe polymorphic
-Arguments mx_ball (m n)%nat_scope R T (x e y)%ring_scope
+Arguments mx_ball (m n)%_nat_scope R T (x e y)%_ring_scope
 mx_ball is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.mx_ball
@@ -1577,7 +1578,7 @@ nat -> forall R : numDomainType, pseudoMetricType R -> pseudoMetricType R
 
 matrix_matrix__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments matrix_matrix__canonical__pseudometric_structure_PseudoMetric
-  (m n)%nat_scope R T
+  (m n)%_nat_scope R T
 matrix_matrix__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__pseudometric_structure_PseudoMetric
@@ -1589,7 +1590,7 @@ nat -> forall R : numDomainType, pseudoMetricType R -> pseudoMetricType R
 
 matrix_matrix__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments matrix_matrix__canonical__pseudometric_structure_PseudoMetric
-  (m n)%nat_scope R T
+  (m n)%_nat_scope R T
 matrix_matrix__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__pseudometric_structure_PseudoMetric
@@ -1601,7 +1602,7 @@ nat -> forall R : numDomainType, pseudoMetricType R -> pseudoMetricType R
 
 matrix_matrix__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments matrix_matrix__canonical__pseudometric_structure_PseudoMetric
-  (m n)%nat_scope R T
+  (m n)%_nat_scope R T
 matrix_matrix__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__pseudometric_structure_PseudoMetric
@@ -1613,7 +1614,7 @@ nat -> forall R : numDomainType, pseudoMetricType R -> pseudoMetricType R
 
 matrix_matrix__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments matrix_matrix__canonical__pseudometric_structure_PseudoMetric
-  (m n)%nat_scope R T
+  (m n)%_nat_scope R T
 matrix_matrix__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__pseudometric_structure_PseudoMetric
@@ -1625,7 +1626,7 @@ nat -> forall R : numDomainType, pseudoMetricType R -> pseudoMetricType R
 
 matrix_matrix__canonical__pseudometric_structure_PseudoMetric is not universe polymorphic
 Arguments matrix_matrix__canonical__pseudometric_structure_PseudoMetric
-  (m n)%nat_scope R T
+  (m n)%_nat_scope R T
 matrix_matrix__canonical__pseudometric_structure_PseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__pseudometric_structure_PseudoMetric
@@ -1642,7 +1643,7 @@ completePseudoMetricType R -> nat -> nat -> completePseudoMetricType R
 matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric is not universe polymorphic
 Arguments
   matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric 
-  R T (m n)%nat_scope
+  R T (m n)%_nat_scope
 matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric
@@ -1655,7 +1656,7 @@ completePseudoMetricType R -> nat -> nat -> completePseudoMetricType R
 matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric is not universe polymorphic
 Arguments
   matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric 
-  R T (m n)%nat_scope
+  R T (m n)%_nat_scope
 matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric
@@ -1668,7 +1669,7 @@ completePseudoMetricType R -> nat -> nat -> completePseudoMetricType R
 matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric is not universe polymorphic
 Arguments
   matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric 
-  R T (m n)%nat_scope
+  R T (m n)%_nat_scope
 matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric
@@ -1681,7 +1682,7 @@ completePseudoMetricType R -> nat -> nat -> completePseudoMetricType R
 matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric is not universe polymorphic
 Arguments
   matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric 
-  R T (m n)%nat_scope
+  R T (m n)%_nat_scope
 matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric
@@ -1694,7 +1695,7 @@ completePseudoMetricType R -> nat -> nat -> completePseudoMetricType R
 matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric is not universe polymorphic
 Arguments
   matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric 
-  R T (m n)%nat_scope
+  R T (m n)%_nat_scope
 matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric
@@ -1707,7 +1708,7 @@ completePseudoMetricType R -> nat -> nat -> completePseudoMetricType R
 matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric is not universe polymorphic
 Arguments
   matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric 
-  R T (m n)%nat_scope
+  R T (m n)%_nat_scope
 matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.matrix_topology.matrix_matrix__canonical__pseudometric_structure_CompletePseudoMetric

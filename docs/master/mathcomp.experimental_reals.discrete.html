@@ -236,7 +236,7 @@ forall {T : choiceType} (P : T -> Prop),
 {x : T | P x} + (forall x : T, ~ P x)
 
 existsTP is not universe polymorphic
-Arguments existsTP {T} P%function_scope
+Arguments existsTP {T} P%_function_scope
 existsTP is opaque
 Expands to: Constant mathcomp.experimental_reals.discrete.existsTP
 Declared in
@@ -264,7 +264,7 @@ Qed.</div></details>
 forall [T : Type] (E : pred T), subType (T:=T) (in_mem^~ (mem E))
 
 discrete_pred_sub__canonical__eqtype_SubType is not universe polymorphic
-Arguments discrete_pred_sub__canonical__eqtype_SubType [T]%type_scope E
+Arguments discrete_pred_sub__canonical__eqtype_SubType [T]%_type_scope E
 discrete_pred_sub__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubType
@@ -274,7 +274,7 @@ library mathcomp.experimental_reals.discrete, line 45, characters 0-46
 forall [T : Type] (E : pred T), subType (T:=T) (in_mem^~ (mem E))
 
 discrete_pred_sub__canonical__eqtype_SubType is not universe polymorphic
-Arguments discrete_pred_sub__canonical__eqtype_SubType [T]%type_scope E
+Arguments discrete_pred_sub__canonical__eqtype_SubType [T]%_type_scope E
 discrete_pred_sub__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubType
@@ -284,7 +284,7 @@ library mathcomp.experimental_reals.discrete, line 45, characters 0-46
 forall [T : Type] (E : pred T), subType (T:=T) (in_mem^~ (mem E))
 
 discrete_pred_sub__canonical__eqtype_SubType is not universe polymorphic
-Arguments discrete_pred_sub__canonical__eqtype_SubType [T]%type_scope E
+Arguments discrete_pred_sub__canonical__eqtype_SubType [T]%_type_scope E
 discrete_pred_sub__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubType
@@ -294,7 +294,7 @@ library mathcomp.experimental_reals.discrete, line 45, characters 0-46
 forall [T : Type] (E : pred T), subType (T:=T) (in_mem^~ (mem E))
 
 discrete_pred_sub__canonical__eqtype_SubType is not universe polymorphic
-Arguments discrete_pred_sub__canonical__eqtype_SubType [T]%type_scope E
+Arguments discrete_pred_sub__canonical__eqtype_SubType [T]%_type_scope E
 discrete_pred_sub__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubType
@@ -304,7 +304,7 @@ library mathcomp.experimental_reals.discrete, line 45, characters 0-46
 forall [T : Type] (E : pred T), subType (T:=T) (in_mem^~ (mem E))
 
 discrete_pred_sub__canonical__eqtype_SubType is not universe polymorphic
-Arguments discrete_pred_sub__canonical__eqtype_SubType [T]%type_scope E
+Arguments discrete_pred_sub__canonical__eqtype_SubType [T]%_type_scope E
 discrete_pred_sub__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubType
@@ -513,7 +513,7 @@ library mathcomp.experimental_reals.discrete, line 54, characters 0-91
 forall [T : Type] [E F : pred T], {subset E <= F} -> [psub E] -> [psub F]
 
 pincl is not universe polymorphic
-Arguments pincl [T]%type_scope [E F] le x
+Arguments pincl [T]%_type_scope [E F] le x
 pincl is transparent
 Expands to: Constant mathcomp.experimental_reals.discrete.pincl
 Declared in
@@ -535,7 +535,7 @@ library mathcomp.experimental_reals.discrete, line 65, characters 11-16
 forall [T : Type] [E : pred T], countable (T:=T) E -> [psub E] -> nat
 
 rpickle is not universe polymorphic
-Arguments rpickle [T]%type_scope [E] c _
+Arguments rpickle [T]%_type_scope [E] c _
 rpickle is transparent
 Expands to: Constant mathcomp.experimental_reals.discrete.rpickle
 Declared in
@@ -547,7 +547,7 @@ library mathcomp.experimental_reals.discrete, line 79, characters 11-18
 forall [T : Type] [E : pred T], countable (T:=T) E -> nat -> option [psub E]
 
 runpickle is not universe polymorphic
-Arguments runpickle [T]%type_scope [E] c _%nat_scope
+Arguments runpickle [T]%_type_scope [E] c _%_nat_scope
 runpickle is transparent
 Expands to: Constant mathcomp.experimental_reals.discrete.runpickle
 Declared in
@@ -560,7 +560,7 @@ forall [T : Type] [E : pred T] (c : countable (T:=T) E),
 pcancel (rpickle c) (runpickle c)
 
 rpickleK is not universe polymorphic
-Arguments rpickleK [T]%type_scope [E] c x
+Arguments rpickleK [T]%_type_scope [E] c x
 rpickleK is opaque
 Expands to: Constant mathcomp.experimental_reals.discrete.rpickleK
 Declared in
@@ -597,7 +597,7 @@ forall [T : Type] [U : countType] [E : pred T] [f : [psub E] -> U]
 cancel f g -> countable (T:=T) E
 
 can_countable is not universe polymorphic
-Arguments can_countable [T]%type_scope [U E] [f g]%function_scope _
+Arguments can_countable [T]%_type_scope [U E] [f g]%_function_scope _
 can_countable is opaque
 Expands to: Constant mathcomp.experimental_reals.discrete.can_countable
 Declared in
@@ -680,7 +680,7 @@ forall {T : choiceType} [E : pred T],
 forall n : nat, exists s : seq T, [/\ size s = n, uniq s & {subset s <= E}]
 
 finiteNP is not universe polymorphic
-Arguments finiteNP {T} [E] _%function_scope n%nat_scope
+Arguments finiteNP {T} [E] _%_function_scope n%_nat_scope
 finiteNP is opaque
 Expands to: Constant mathcomp.experimental_reals.discrete.finiteNP
 Declared in
@@ -760,7 +760,7 @@ forall [T : eqType] [E : nat -> pred T],
 countable (T:=T) [pred x | `[< exists i : nat, x \in E i >]]
 
 cunion_countable is not universe polymorphic
-Arguments cunion_countable [T] [E]%function_scope cE%function_scope
+Arguments cunion_countable [T] [E]%_function_scope cE%_function_scope
 cunion_countable is opaque
 Expands to: Constant mathcomp.experimental_reals.discrete.cunion_countable
 Declared in

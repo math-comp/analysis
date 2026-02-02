@@ -431,9 +431,9 @@ exists2 i : nat,
   ((fun N : nat => [set n | N <= n]) i
    `<=` (fun n : nat => (\int[mu]_(x in D) f_ n x)%E) @^-1` t)%classic
 
-Arguments dominated_cvg [d]%measure_display_scope 
-  [T R mu] [D]%classical_set_scope mD [f_] [f g]%function_scope
-  (mf_ f_f fing)%function_scope ig absfg%function_scope 
+Arguments dominated_cvg [d]%_measure_display_scope 
+  [T R mu] [D]%_classical_set_scope mD [f_] [f g]%_function_scope
+  (mf_ f_f fing)%_function_scope ig absfg%_function_scope 
   [t] _
 dominated_cvg is opaque
 Expands to: Constant
@@ -513,9 +513,9 @@ mu.-integrable D g ->
       (filter.nbhs (\int[mu]_(x in D) f x)%E)]
 
 dominated_convergence is not universe polymorphic
-Arguments dominated_convergence [d]%measure_display_scope 
-  [T R mu] [D]%classical_set_scope mD [f_] [f g]%function_scope
-  mf_%function_scope mf f_f ig f_g
+Arguments dominated_convergence [d]%_measure_display_scope 
+  [T R mu] [D]%_classical_set_scope mD [f_] [f g]%_function_scope
+  mf_%_function_scope mf f_f ig f_g
 dominated_convergence is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_dominated_convergence.dominated_convergence
@@ -652,8 +652,8 @@ exists g_ : {sfun T >-> R} ^nat,
         (filter.nbhs 0%R)]
 
 approximation_sfun_integrable is not universe polymorphic
-Arguments approximation_sfun_integrable [d]%measure_display_scope 
-  [T R mu] [E]%classical_set_scope mE [f]%function_scope 
+Arguments approximation_sfun_integrable [d]%_measure_display_scope 
+  [T R mu] [E]%_classical_set_scope mE [f]%_function_scope 
   _
 approximation_sfun_integrable is opaque
 Expands to: Constant

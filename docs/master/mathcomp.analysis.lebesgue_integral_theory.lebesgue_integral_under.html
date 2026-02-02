@@ -345,10 +345,10 @@ exists2 i : R,
          (\int[mu]_(x0 in B) f l x0)%R) @^-1`
         t)%classic
 
-Arguments continuity_under_integral {R} [d]%measure_display_scope 
-  {Y mu} [f]%function_scope [B]%classical_set_scope 
-  mB [u v]%ring_scope int_f%function_scope cf [g]%function_scope 
-  int_g g_ub%function_scope [x] _ [t] _
+Arguments continuity_under_integral {R} [d]%_measure_display_scope 
+  {Y mu} [f]%_function_scope [B]%_classical_set_scope 
+  mB [u v]%_ring_scope int_f%_function_scope cf [g]%_function_scope 
+  int_g g_ub%_function_scope [x] _ [t] _
 continuity_under_integral is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.continuity_under_integral
@@ -431,7 +431,7 @@ library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under, line
 <span class="vernacular">Definition</span><span class="id"> </span><span id="partial1of2" class="id"><a name="partial1of2" class="" title="partial1of2 : forall {R : realType} {T : Type}, (R -> T -> R) -> R -> T -> R
 
 partial1of2 is not universe polymorphic
-Arguments partial1of2 {R} {T}%type_scope f%function_scope _%ring_scope _
+Arguments partial1of2 {R} {T}%_type_scope f%_function_scope _%_ring_scope _
 partial1of2 is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.partial1of2
@@ -447,7 +447,7 @@ forall {R : realType} {T : Type} (f : R -> T -> R) (x : R) (y : T),
 partial1of2 f x y = 'D_1 (f^~ y) x
 
 partial1of2E is not universe polymorphic
-Arguments partial1of2E {R} {T}%type_scope f%function_scope x%ring_scope y
+Arguments partial1of2E {R} {T}%_type_scope f%_function_scope x%_ring_scope y
 partial1of2E is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.partial1of2E
@@ -541,10 +541,10 @@ exists2 i : R,
              (fun x' : R => \int[mu]_(y in B) f x' y) a))%R) @^-1`
           t) t0))%classic
 
-Arguments cvg_differentiation_under_integral {R} [d]%measure_display_scope
-  {Y mu} [f]%function_scope [B]%classical_set_scope 
-  mB [a u v]%ring_scope Ia (intf derf1)%function_scope 
-  [G]%function_scope G_ge0%function_scope intG G_ub%function_scope 
+Arguments cvg_differentiation_under_integral {R} [d]%_measure_display_scope
+  {Y mu} [f]%_function_scope [B]%_classical_set_scope 
+  mB [a u v]%_ring_scope Ia (intf derf1)%_function_scope 
+  [G]%_function_scope G_ge0%_function_scope intG G_ub%_function_scope 
   [t] _
 cvg_differentiation_under_integral is opaque
 Expands to: Constant
@@ -691,10 +691,10 @@ mu.-integrable B (EFin \o G) ->
 (\int[mu]_(y in B) ((partial1of2 f)^~ y) a)%R
 
 differentiation_under_integral is not universe polymorphic
-Arguments differentiation_under_integral {R} [d]%measure_display_scope 
-  {Y mu} [f]%function_scope [B]%classical_set_scope 
-  mB [a u v]%ring_scope Ia (intf derf1)%function_scope 
-  [G]%function_scope G_ge0%function_scope intG G_ub%function_scope
+Arguments differentiation_under_integral {R} [d]%_measure_display_scope
+  {Y mu} [f]%_function_scope [B]%_classical_set_scope 
+  mB [a u v]%_ring_scope Ia (intf derf1)%_function_scope 
+  [G]%_function_scope G_ge0%_function_scope intG G_ub%_function_scope
 differentiation_under_integral is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.differentiation_under_integral
@@ -772,10 +772,10 @@ exists2 i : R,
              (fun x' : R => \int[mu]_(y in B) f x' y) a))%R) @^-1`
           t) t0))%classic
 
-Arguments derivable_under_integral {R} [d]%measure_display_scope 
-  {Y mu} [f]%function_scope [B]%classical_set_scope 
-  mB [a u v]%ring_scope Ia (intf derf1)%function_scope 
-  [G]%function_scope G_ge0%function_scope intG G_ub%function_scope 
+Arguments derivable_under_integral {R} [d]%_measure_display_scope 
+  {Y mu} [f]%_function_scope [B]%_classical_set_scope 
+  mB [a u v]%_ring_scope Ia (intf derf1)%_function_scope 
+  [G]%_function_scope G_ge0%_function_scope intG G_ub%_function_scope 
   [t] _
 derivable_under_integral is opaque
 Expands to: Constant

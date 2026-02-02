@@ -259,7 +259,7 @@ forall
   i ->
 i (A `&` horner p @^-1` Y)%classic
 
-Arguments measurable_poly {R} p%ring_scope [A]%classical_set_scope 
+Arguments measurable_poly {R} p%_ring_scope [A]%_classical_set_scope 
   _ [Y] _ [i] _
 measurable_poly is opaque
 Expands to: Constant mathcomp.analysis.pi_irrational.measurable_poly
@@ -294,7 +294,7 @@ exists2 i : nat,
   ((fun N : nat => [set n | N <= n]) i
    `<=` (fun n : nat => (r ^+ n / n`!%:R)%R) @^-1` t)%classic
 
-Arguments pi_irrational.exp_fact [R] r%ring_scope [t] _
+Arguments pi_irrational.exp_fact [R] r%_ring_scope [t] _
 pi_irrational.exp_fact is opaque
 Expands to: Constant mathcomp.analysis.pi_irrational.pi_irrational.exp_fact
 Declared in library mathcomp.analysis.pi_irrational, line 35, characters 6-14
@@ -314,7 +314,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="pi_irrational.a" class="id"><a name="pi_irrational.a" class="" title="pi_irrational.a : forall {R : realType}, nat -> R
 
 pi_irrational.a is not universe polymorphic
-Arguments pi_irrational.a {R} na%nat_scope
+Arguments pi_irrational.a {R} na%_nat_scope
 pi_irrational.a is transparent
 Expands to: Constant mathcomp.analysis.pi_irrational.pi_irrational.a
 Declared in
@@ -324,7 +324,7 @@ library mathcomp.analysis.pi_irrational, line 46, characters 11-12
 <span class="vernacular">Definition</span><span class="id"> </span><span id="pi_irrational.b" class="id"><a name="pi_irrational.b" class="" title="pi_irrational.b : forall {R : realType}, nat -> R
 
 pi_irrational.b is not universe polymorphic
-Arguments pi_irrational.b {R} nb%nat_scope
+Arguments pi_irrational.b {R} nb%_nat_scope
 pi_irrational.b is transparent
 Expands to: Constant mathcomp.analysis.pi_irrational.pi_irrational.b
 Declared in
@@ -334,7 +334,7 @@ library mathcomp.analysis.pi_irrational, line 48, characters 11-12
 <span class="vernacular">Definition</span><span class="id"> </span><span id="pi_irrational.f" class="id"><a name="pi_irrational.f" class="" title="pi_irrational.f : forall {R : realType}, nat -> nat -> nat -> {poly R}
 
 pi_irrational.f is not universe polymorphic
-Arguments pi_irrational.f {R} (na nb n)%nat_scope
+Arguments pi_irrational.f {R} (na nb n)%_nat_scope
 pi_irrational.f is transparent
 Expands to: Constant mathcomp.analysis.pi_irrational.pi_irrational.f
 Declared in
@@ -344,7 +344,7 @@ library mathcomp.analysis.pi_irrational, line 50, characters 11-12
 <span class="vernacular">Definition</span><span class="id"> </span><span id="pi_irrational.F" class="id"><a name="pi_irrational.F" class="" title="pi_irrational.F : forall {R : realType}, nat -> nat -> nat -> {poly R}
 
 pi_irrational.F is not universe polymorphic
-Arguments pi_irrational.F {R} (na nb n)%nat_scope
+Arguments pi_irrational.F {R} (na nb n)%_nat_scope
 pi_irrational.F is transparent
 Expands to: Constant mathcomp.analysis.pi_irrational.pi_irrational.F
 Declared in
@@ -422,7 +422,7 @@ forall {R : realType} (na nb n : nat),
 (pi_irrational.F na nb n).[0]%R \is a Num.int
 
 pi_irrational.F0_int is not universe polymorphic
-Arguments pi_irrational.F0_int {R} (na nb n)%nat_scope
+Arguments pi_irrational.F0_int {R} (na nb n)%_nat_scope
 pi_irrational.F0_int is opaque
 Expands to: Constant mathcomp.analysis.pi_irrational.pi_irrational.F0_int
 Declared in
@@ -438,7 +438,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="pi_irrational.pirat" class="id"><a name="pi_irrational.pirat" class="" title="pi_irrational.pirat : forall {R : realType}, nat -> nat -> R
 
 pi_irrational.pirat is not universe polymorphic
-Arguments pi_irrational.pirat {R} (na nb)%nat_scope
+Arguments pi_irrational.pirat {R} (na nb)%_nat_scope
 pi_irrational.pirat is transparent
 Expands to: Constant mathcomp.analysis.pi_irrational.pi_irrational.pirat
 Declared in
@@ -487,8 +487,8 @@ nb != 0%N ->
 (pi_irrational.F na nb n).[pi_irrational.pirat na nb]%R \is a Num.int
 
 pi_irrational.Fpi_int is not universe polymorphic
-Arguments pi_irrational.Fpi_int {R} na%nat_scope [nb]%nat_scope 
-  n%nat_scope nb0
+Arguments pi_irrational.Fpi_int {R} na%_nat_scope 
+  [nb]%_nat_scope n%_nat_scope nb0
 pi_irrational.Fpi_int is opaque
 Expands to: Constant mathcomp.analysis.pi_irrational.pi_irrational.Fpi_int
 Declared in
@@ -508,7 +508,8 @@ nb != 0%N ->
 pi_irrational.f na nb n
 
 pi_irrational.D2FDF is not universe polymorphic
-Arguments pi_irrational.D2FDF {R} na%nat_scope [nb]%nat_scope n%nat_scope nb0
+Arguments pi_irrational.D2FDF {R} na%_nat_scope [nb]%_nat_scope 
+  n%_nat_scope nb0
 pi_irrational.D2FDF is opaque
 Expands to: Constant mathcomp.analysis.pi_irrational.pi_irrational.D2FDF
 Declared in
@@ -589,7 +590,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="pi_irrational.intfsin" class="id"><a name="pi_irrational.intfsin" class="" title="pi_irrational.intfsin : forall {R : realType}, nat -> nat -> nat -> R
 
 pi_irrational.intfsin is not universe polymorphic
-Arguments pi_irrational.intfsin {R} (na nb n)%nat_scope
+Arguments pi_irrational.intfsin {R} (na nb n)%_nat_scope
 pi_irrational.intfsin is transparent
 Expands to: Constant mathcomp.analysis.pi_irrational.pi_irrational.intfsin
 Declared in
@@ -638,8 +639,8 @@ pi_irrational.pirat na nb = pi ->
 forall n : nat, pi_irrational.intfsin na nb n \is a Num.int
 
 pi_irrational.intfsin_int is not universe polymorphic
-Arguments pi_irrational.intfsin_int {R} [na nb]%nat_scope 
-  nb0 piratE n%nat_scope
+Arguments pi_irrational.intfsin_int {R} [na nb]%_nat_scope 
+  nb0 piratE n%_nat_scope
 pi_irrational.intfsin_int is opaque
 Expands to: Constant
             mathcomp.analysis.pi_irrational.pi_irrational.intfsin_int
@@ -743,8 +744,8 @@ pi_irrational.pirat na nb = pi ->
 forall n : nat, (0 < pi_irrational.intfsin na nb n)%R
 
 pi_irrational.intfsin_gt0 is not universe polymorphic
-Arguments pi_irrational.intfsin_gt0 {R} [na nb]%nat_scope 
-  nb0 piratE n%nat_scope
+Arguments pi_irrational.intfsin_gt0 {R} [na nb]%_nat_scope 
+  nb0 piratE n%_nat_scope
 pi_irrational.intfsin_gt0 is opaque
 Expands to: Constant
             mathcomp.analysis.pi_irrational.pi_irrational.intfsin_gt0
@@ -802,8 +803,8 @@ filter.prop_near1 filter.eventually
   (inPhantom (forall n : nat, (0 < pi_irrational.intfsin na nb n < e)%R))
 
 pi_irrational.intfsin_small is not universe polymorphic
-Arguments pi_irrational.intfsin_small {R} [na nb]%nat_scope 
-  nb0 piratE [e]%ring_scope _
+Arguments pi_irrational.intfsin_small {R} [na nb]%_nat_scope 
+  nb0 piratE [e]%_ring_scope _
 pi_irrational.intfsin_small is opaque
 Expands to: Constant
             mathcomp.analysis.pi_irrational.pi_irrational.intfsin_small

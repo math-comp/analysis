@@ -382,7 +382,7 @@ forall [d : measure_display] {T : measurableType d}
 p != 0%R -> 'N[mu]_p[cst 0%R]%E = 0%R
 
 Lnorm0 is not universe polymorphic
-Arguments Lnorm0 [d]%measure_display_scope {T R} mu [p]%ereal_scope _
+Arguments Lnorm0 [d]%_measure_display_scope {T R} mu [p]%_ereal_scope _
 Lnorm0 is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lnorm0
 Declared in library mathcomp.analysis.hoelder, line 87, characters 6-12
@@ -406,7 +406,7 @@ forall [d : measure_display] {T : measurableType d}
 'N[mu]_1[f]%E = (\int[mu]_x `|f x|)%E
 
 Lnorm1 is not universe polymorphic
-Arguments Lnorm1 [d]%measure_display_scope {T R} mu f%function_scope
+Arguments Lnorm1 [d]%_measure_display_scope {T R} mu f%_function_scope
 Lnorm1 is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lnorm1
 Declared in library mathcomp.analysis.hoelder, line 99, characters 6-12
@@ -424,8 +424,8 @@ forall [d : measure_display] {T : measurableType d}
 f =1 g -> 'N[mu]_p[f]%E = 'N[mu]_p[g]%E
 
 eq_Lnorm is not universe polymorphic
-Arguments eq_Lnorm [d]%measure_display_scope {T R} 
-  mu p%ereal_scope [f g]%function_scope _
+Arguments eq_Lnorm [d]%_measure_display_scope {T R} 
+  mu p%_ereal_scope [f g]%_function_scope _
 eq_Lnorm is opaque
 Expands to: Constant mathcomp.analysis.hoelder.eq_Lnorm
 Declared in library mathcomp.analysis.hoelder, line 105, characters 6-14
@@ -442,8 +442,8 @@ forall [d : measure_display] {T : measurableType d}
 r != 0%R -> ('N[mu]_r%:E[f] `^ r)%E = (\int[mu]_x `|f x| `^ r)%E
 
 poweR_Lnorm is not universe polymorphic
-Arguments poweR_Lnorm [d]%measure_display_scope {T R} 
-  mu f%function_scope [r]%ring_scope _
+Arguments poweR_Lnorm [d]%_measure_display_scope {T R} 
+  mu f%_function_scope [r]%_ring_scope _
 poweR_Lnorm is opaque
 Expands to: Constant mathcomp.analysis.hoelder.poweR_Lnorm
 Declared in library mathcomp.analysis.hoelder, line 108, characters 6-17
@@ -463,8 +463,8 @@ forall [d : measure_display] {T : measurableType d}
 'N[mu]_p[\- f]%E = 'N[mu]_p[f]%E
 
 oppe_Lnorm is not universe polymorphic
-Arguments oppe_Lnorm [d]%measure_display_scope {T R} 
-  mu f%function_scope p%ereal_scope
+Arguments oppe_Lnorm [d]%_measure_display_scope {T R} 
+  mu f%_function_scope p%_ereal_scope
 oppe_Lnorm is opaque
 Expands to: Constant mathcomp.analysis.hoelder.oppe_Lnorm
 Declared in library mathcomp.analysis.hoelder, line 115, characters 6-16
@@ -483,7 +483,7 @@ forall [d : measure_display] {T : measurableType d}
 'N[mu]_r%:E[cst 1]%E = (mu [set: T]%classic `^ r^-1)%E
 
 Lnorm_cst1 is not universe polymorphic
-Arguments Lnorm_cst1 [d]%measure_display_scope {T R} mu r%ring_scope
+Arguments Lnorm_cst1 [d]%_measure_display_scope {T R} mu r%_ring_scope
 Lnorm_cst1 is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lnorm_cst1
 Declared in library mathcomp.analysis.hoelder, line 122, characters 6-16
@@ -501,8 +501,8 @@ forall [d : measure_display] {T : measurableType d}
 (0%R <= 'N[mu]_p[f])%E
 
 Lnorm_ge0 is not universe polymorphic
-Arguments Lnorm_ge0 [d]%measure_display_scope {T R} 
-  mu p%ereal_scope f%function_scope
+Arguments Lnorm_ge0 [d]%_measure_display_scope {T R} 
+  mu p%_ereal_scope f%_function_scope
 Lnorm_ge0 is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lnorm_ge0
 Declared in library mathcomp.analysis.hoelder, line 128, characters 6-15
@@ -526,9 +526,9 @@ measurable_fun (T:=T)
 (0%R < p)%E -> 'N[mu]_p[f]%E = 0%R -> f = \0%R %[ae mu]
 
 Lnorm_eq0_eq0 is not universe polymorphic
-Arguments Lnorm_eq0_eq0 [d]%measure_display_scope 
-  {T R} [mu] [f]%function_scope [p]%ereal_scope _ 
-  _ _
+Arguments Lnorm_eq0_eq0 [d]%_measure_display_scope 
+  {T R} [mu] [f]%_function_scope [p]%_ereal_scope 
+  _ _ _
 Lnorm_eq0_eq0 is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lnorm_eq0_eq0
 Declared in library mathcomp.analysis.hoelder, line 135, characters 6-19
@@ -565,8 +565,8 @@ forall [d : measure_display] {T : measurableType d}
 r != 0%R -> ('N[mu]_r%:E[f] `^ r)%E = (\int[mu]_x `|f x| `^ r)%E
 
 powR_Lnorm is not universe polymorphic
-Arguments powR_Lnorm [d]%measure_display_scope {T R} 
-  mu f%function_scope [r]%ring_scope _
+Arguments powR_Lnorm [d]%_measure_display_scope {T R} 
+  mu f%_function_scope [r]%_ring_scope _
 powR_Lnorm is opaque
 Expands to: Constant mathcomp.analysis.hoelder.powR_Lnorm
 Declared in library mathcomp.analysis.hoelder, line 159, characters 6-16
@@ -583,8 +583,8 @@ forall [d : measure_display] {T : measurableType d}
 'N[mu]_p[abse \o f]%E = 'N[mu]_p[f]%E
 
 Lnorm_abse is not universe polymorphic
-Arguments Lnorm_abse [d]%measure_display_scope {T R} 
-  mu f%function_scope p%ereal_scope
+Arguments Lnorm_abse [d]%_measure_display_scope {T R} 
+  mu f%_function_scope p%_ereal_scope
 Lnorm_abse is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lnorm_abse
 Declared in library mathcomp.analysis.hoelder, line 162, characters 6-16
@@ -641,7 +641,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="hoelder_conjugate" class="id"><a name="hoelder_conjugate" class="" title="hoelder_conjugate : forall {R : realType}, \bar R -> \bar R
 
 hoelder_conjugate is not universe polymorphic
-Arguments hoelder_conjugate {R} p%ereal_scope
+Arguments hoelder_conjugate {R} p%_ereal_scope
 hoelder_conjugate is transparent
 Expands to: Constant mathcomp.analysis.hoelder.hoelder_conjugate
 Declared in library mathcomp.analysis.hoelder, line 195, characters 11-28
@@ -724,7 +724,7 @@ Declared in library mathcomp.analysis.hoelder, line 218, characters 6-25
 forall {R : realType} [p : \bar R], hoelder_conjugate p = +oo%E -> p = 1%E
 
 hoelder_conjugate_eqy is not universe polymorphic
-Arguments hoelder_conjugate_eqy {R} [p]%ereal_scope _
+Arguments hoelder_conjugate_eqy {R} [p]%_ereal_scope _
 hoelder_conjugate_eqy is opaque
 Expands to: Constant mathcomp.analysis.hoelder.hoelder_conjugate_eqy
 Declared in library mathcomp.analysis.hoelder, line 221, characters 6-27
@@ -744,7 +744,7 @@ Qed.</div></details>
 forall {R : realType} [p : \bar R], hoelder_conjugate p = -oo%E -> p = 0%R
 
 hoelder_conjugate_eqNy is not universe polymorphic
-Arguments hoelder_conjugate_eqNy {R} [p]%ereal_scope _
+Arguments hoelder_conjugate_eqNy {R} [p]%_ereal_scope _
 hoelder_conjugate_eqNy is opaque
 Expands to: Constant mathcomp.analysis.hoelder.hoelder_conjugate_eqNy
 Declared in library mathcomp.analysis.hoelder, line 231, characters 6-28
@@ -765,7 +765,7 @@ forall {R : realType} [p : \bar R],
 (-oo < p)%E -> p != 0%R -> (p^-1%E + (hoelder_conjugate p)^-1%E)%R = 1%E
 
 hoelder_conjugate_eq1 is not universe polymorphic
-Arguments hoelder_conjugate_eq1 {R} [p]%ereal_scope _ _
+Arguments hoelder_conjugate_eq1 {R} [p]%_ereal_scope _ _
 hoelder_conjugate_eq1 is opaque
 Expands to: Constant mathcomp.analysis.hoelder.hoelder_conjugate_eq1
 Declared in library mathcomp.analysis.hoelder, line 241, characters 6-27
@@ -795,7 +795,7 @@ forall {R : realType} [p : \bar R],
 (1 <= p)%E -> (1 <= hoelder_conjugate p)%E
 
 hoelder_conj_ge1 is not universe polymorphic
-Arguments hoelder_conj_ge1 {R} [p]%ereal_scope _
+Arguments hoelder_conj_ge1 {R} [p]%_ereal_scope _
 hoelder_conj_ge1 is opaque
 Expands to: Constant mathcomp.analysis.hoelder.hoelder_conj_ge1
 Declared in library mathcomp.analysis.hoelder, line 260, characters 6-22
@@ -815,7 +815,7 @@ forall {R : realType} [p : \bar R] (q : \bar R),
 p != 0%R -> (p^-1%E + q^-1%E)%R = 1%E <-> q = hoelder_conjugate p
 
 hoelder_conjugateP is not universe polymorphic
-Arguments hoelder_conjugateP {R} [p]%ereal_scope q%ereal_scope _ _
+Arguments hoelder_conjugateP {R} [p]%_ereal_scope q%_ereal_scope _ _
 hoelder_conjugateP is opaque
 Expands to: Constant mathcomp.analysis.hoelder.hoelder_conjugateP
 Declared in library mathcomp.analysis.hoelder, line 268, characters 6-24
@@ -870,7 +870,7 @@ forall {R : realType} [p : \bar R],
 p != 0%R -> (p * hoelder_conjugate p)%E = (p + hoelder_conjugate p)%R
 
 hoelder_Mconjugate is not universe polymorphic
-Arguments hoelder_Mconjugate {R} [p]%ereal_scope _ _
+Arguments hoelder_Mconjugate {R} [p]%_ereal_scope _ _
 hoelder_Mconjugate is opaque
 Expands to: Constant mathcomp.analysis.hoelder.hoelder_Mconjugate
 Declared in library mathcomp.analysis.hoelder, line 302, characters 6-24
@@ -900,7 +900,7 @@ forall {R : realType} [p : \bar R],
 (-oo < p)%E -> p != 0%R -> (p / hoelder_conjugate p)%E = (p - 1)%E
 
 hoelder_div_conjugate is not universe polymorphic
-Arguments hoelder_div_conjugate {R} [p]%ereal_scope _ _
+Arguments hoelder_div_conjugate {R} [p]%_ereal_scope _ _
 hoelder_div_conjugate is opaque
 Expands to: Constant mathcomp.analysis.hoelder.hoelder_div_conjugate
 Declared in library mathcomp.analysis.hoelder, line 321, characters 6-27
@@ -927,7 +927,7 @@ forall {R : realType} [p : \bar R],
 p != 0%R -> (hoelder_conjugate p / p)%E = (hoelder_conjugate p - 1)%E
 
 hoelder_conjugate_div is not universe polymorphic
-Arguments hoelder_conjugate_div {R} [p]%ereal_scope _ _
+Arguments hoelder_conjugate_div {R} [p]%_ereal_scope _ _
 hoelder_conjugate_div is opaque
 Expands to: Constant mathcomp.analysis.hoelder.hoelder_conjugate_div
 Declared in library mathcomp.analysis.hoelder, line 336, characters 6-27
@@ -1055,9 +1055,9 @@ measurable_fun (T:=T)
  'N[mu]_p%:E[EFin \o f] * 'N[mu]_q%:E[EFin \o g])%E
 
 hoelder is not universe polymorphic
-Arguments hoelder [d]%measure_display_scope {T R} 
-  mu [f g]%function_scope [p q]%ring_scope _ _ _ _ 
-  _
+Arguments hoelder [d]%_measure_display_scope {T R} 
+  mu [f g]%_function_scope [p q]%_ring_scope _ _ _ 
+  _ _
 hoelder is opaque
 Expands to: Constant mathcomp.analysis.hoelder.hoelder
 Declared in library mathcomp.analysis.hoelder, line 428, characters 6-13
@@ -1147,7 +1147,7 @@ forall {R : realType} [a1 a2 b1 b2 p q : R],
  (a1 `^ p + a2 `^ p) `^ p^-1 * (b1 `^ q + b2 `^ q) `^ q^-1)%R
 
 hoelder2 is not universe polymorphic
-Arguments hoelder2 {R} [a1 a2 b1 b2 p q]%ring_scope _ _ _ _ _ _ _
+Arguments hoelder2 {R} [a1 a2 b1 b2 p q]%_ring_scope _ _ _ _ _ _ _
 hoelder2 is opaque
 Expands to: Constant mathcomp.analysis.hoelder.hoelder2
 Declared in library mathcomp.analysis.hoelder, line 499, characters 6-14
@@ -1346,9 +1346,9 @@ measurable_fun (T:=T)
  ('N[mu]_p%:E[EFin \o f] + 'N[mu]_p%:E[EFin \o g])%R)%E
 
 minkowski_EFin is not universe polymorphic
-Arguments minkowski_EFin [d]%measure_display_scope 
-  [T R] mu [f g]%function_scope [p]%ring_scope _ _ 
-  _
+Arguments minkowski_EFin [d]%_measure_display_scope 
+  [T R] mu [f g]%_function_scope [p]%_ring_scope _ 
+  _ _
 minkowski_EFin is opaque
 Expands to: Constant mathcomp.analysis.hoelder.minkowski_EFin
 Declared in library mathcomp.analysis.hoelder, line 648, characters 6-20
@@ -1462,8 +1462,8 @@ measurable_fun (T:=T)
  ('N[mu]_p%:E[EFin \o (f \+ g)%E] + 'N[mu]_p%:E[EFin \o g])%R)%E
 
 lerB_DLnorm is not universe polymorphic
-Arguments lerB_DLnorm [d]%measure_display_scope [T R] 
-  mu [f g]%function_scope [p]%ring_scope _ _ _
+Arguments lerB_DLnorm [d]%_measure_display_scope [T R] 
+  mu [f g]%_function_scope [p]%_ring_scope _ _ _
 lerB_DLnorm is opaque
 Expands to: Constant mathcomp.analysis.hoelder.lerB_DLnorm
 Declared in library mathcomp.analysis.hoelder, line 743, characters 6-17
@@ -1496,8 +1496,8 @@ measurable_fun (T:=T)
  'N[mu]_p%:E[EFin \o (f \+ g)])%E
 
 lerB_LnormD is not universe polymorphic
-Arguments lerB_LnormD [d]%measure_display_scope [T R] 
-  mu [f g]%function_scope [p]%ring_scope _ _ _
+Arguments lerB_LnormD [d]%_measure_display_scope [T R] 
+  mu [f g]%_function_scope [p]%_ring_scope _ _ _
 lerB_LnormD is opaque
 Expands to: Constant mathcomp.analysis.hoelder.lerB_LnormD
 Declared in library mathcomp.analysis.hoelder, line 757, characters 6-17
@@ -1527,8 +1527,8 @@ measurable_fun (T:=T)
  ('N[mu]_p[EFin \o f] + 'N[mu]_p[EFin \o g])%R)%E
 
 eminkowski is not universe polymorphic
-Arguments eminkowski [d]%measure_display_scope [T R] 
-  mu [f g]%function_scope [p]%ereal_scope _ _ _
+Arguments eminkowski [d]%_measure_display_scope [T R] 
+  mu [f g]%_function_scope [p]%_ereal_scope _ _ _
 eminkowski is opaque
 Expands to: Constant mathcomp.analysis.hoelder.eminkowski
 Declared in library mathcomp.analysis.hoelder, line 769, characters 6-16
@@ -1554,8 +1554,8 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 measure T R -> \bar R -> (T -> R) -> bool
 
 finite_norm is not universe polymorphic
-Arguments finite_norm [d]%measure_display_scope [T R] 
-  mu p%ereal_scope f%function_scope
+Arguments finite_norm [d]%_measure_display_scope [T R] 
+  mu p%_ereal_scope f%_function_scope
 finite_norm is transparent
 Expands to: Constant mathcomp.analysis.hoelder.finite_norm
 Declared in library mathcomp.analysis.hoelder, line 784, characters 11-22
@@ -1589,7 +1589,7 @@ measure T R -> forall [p : \bar R], (1 <= p)%E -> eqType
 
 Lfunction_type__canonical__eqtype_Equality is not universe polymorphic
 Arguments Lfunction_type__canonical__eqtype_Equality
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__eqtype_Equality is transparent
 Expands to: Constant
@@ -1601,7 +1601,7 @@ measure T R -> forall [p : \bar R], (1 <= p)%E -> eqType
 
 Lfunction_type__canonical__eqtype_Equality is not universe polymorphic
 Arguments Lfunction_type__canonical__eqtype_Equality
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__eqtype_Equality is transparent
 Expands to: Constant
@@ -1613,7 +1613,7 @@ measure T R -> forall [p : \bar R], (1 <= p)%E -> eqType
 
 Lfunction_type__canonical__eqtype_Equality is not universe polymorphic
 Arguments Lfunction_type__canonical__eqtype_Equality
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__eqtype_Equality is transparent
 Expands to: Constant
@@ -1625,7 +1625,7 @@ measure T R -> forall [p : \bar R], (1 <= p)%E -> eqType
 
 Lfunction_type__canonical__eqtype_Equality is not universe polymorphic
 Arguments Lfunction_type__canonical__eqtype_Equality
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__eqtype_Equality is transparent
 Expands to: Constant
@@ -1637,7 +1637,7 @@ measure T R -> forall [p : \bar R], (1 <= p)%E -> eqType
 
 Lfunction_type__canonical__eqtype_Equality is not universe polymorphic
 Arguments Lfunction_type__canonical__eqtype_Equality
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__eqtype_Equality is transparent
 Expands to: Constant
@@ -1650,7 +1650,7 @@ measure T R -> forall [p : \bar R], (1 <= p)%E -> choiceType
 
 Lfunction_type__canonical__choice_Choice is not universe polymorphic
 Arguments Lfunction_type__canonical__choice_Choice 
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__choice_Choice is transparent
 Expands to: Constant
@@ -1662,7 +1662,7 @@ measure T R -> forall [p : \bar R], (1 <= p)%E -> choiceType
 
 Lfunction_type__canonical__choice_Choice is not universe polymorphic
 Arguments Lfunction_type__canonical__choice_Choice 
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__choice_Choice is transparent
 Expands to: Constant
@@ -1674,7 +1674,7 @@ measure T R -> forall [p : \bar R], (1 <= p)%E -> choiceType
 
 Lfunction_type__canonical__choice_Choice is not universe polymorphic
 Arguments Lfunction_type__canonical__choice_Choice 
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__choice_Choice is transparent
 Expands to: Constant
@@ -1686,7 +1686,7 @@ measure T R -> forall [p : \bar R], (1 <= p)%E -> choiceType
 
 Lfunction_type__canonical__choice_Choice is not universe polymorphic
 Arguments Lfunction_type__canonical__choice_Choice 
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__choice_Choice is transparent
 Expands to: Constant
@@ -1698,7 +1698,7 @@ measure T R -> forall [p : \bar R], (1 <= p)%E -> choiceType
 
 Lfunction_type__canonical__choice_Choice is not universe polymorphic
 Arguments Lfunction_type__canonical__choice_Choice 
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__choice_Choice is transparent
 Expands to: Constant
@@ -1718,7 +1718,7 @@ forall [d1 d2 : measure_display] [R : realType] [T1 : measurableType d1]
 measure T1 R -> {mfun T1 >-> T2} -> {mfun T1 >-> T2} -> bool
 
 ae_eq_op is not universe polymorphic
-Arguments ae_eq_op [d1 d2]%measure_display_scope [R T1 T2] mu f g
+Arguments ae_eq_op [d1 d2]%_measure_display_scope [R T1 T2] mu f g
 ae_eq_op is transparent
 Expands to: Constant mathcomp.analysis.hoelder.ae_eq_op
 Declared in library mathcomp.analysis.hoelder, line 817, characters 11-19
@@ -1751,7 +1751,7 @@ forall [d1 d2 : measure_display] [R : realType] [T1 : measurableType d1]
 measure T1 R -> equiv_rel {mfun T1 >-> T2}
 
 ae_eq_op_canonical is not universe polymorphic
-Arguments ae_eq_op_canonical [d1 d2]%measure_display_scope [R T1] T2 mu
+Arguments ae_eq_op_canonical [d1 d2]%_measure_display_scope [R T1] T2 mu
 ae_eq_op_canonical is transparent
 Expands to: Constant mathcomp.analysis.hoelder.ae_eq_op_canonical
 Declared in library mathcomp.analysis.hoelder, line 834, characters 10-28
@@ -1765,7 +1765,7 @@ forall [d1 d2 : measure_display] [R : realType] [T1 : measurableType d1],
 measurableType d2 -> measure T1 R -> Type
 
 aeEqMfun is not universe polymorphic
-Arguments aeEqMfun [d1 d2]%measure_display_scope [R T1] T2 mu
+Arguments aeEqMfun [d1 d2]%_measure_display_scope [R T1] T2 mu
 aeEqMfun is transparent
 Expands to: Constant mathcomp.analysis.hoelder.aeEqMfun
 Declared in library mathcomp.analysis.hoelder, line 839, characters 11-19
@@ -1776,7 +1776,7 @@ measurableType d2 -> measure T1 R -> choiceType
 
 hoelder_aeEqMfun__canonical__choice_Choice is not universe polymorphic
 Arguments hoelder_aeEqMfun__canonical__choice_Choice
-  [d1 d2]%measure_display_scope [R T1] T2 mu
+  [d1 d2]%_measure_display_scope [R T1] T2 mu
 hoelder_aeEqMfun__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_aeEqMfun__canonical__choice_Choice
@@ -1787,7 +1787,7 @@ measurableType d2 -> measure T1 R -> choiceType
 
 hoelder_aeEqMfun__canonical__choice_Choice is not universe polymorphic
 Arguments hoelder_aeEqMfun__canonical__choice_Choice
-  [d1 d2]%measure_display_scope [R T1] T2 mu
+  [d1 d2]%_measure_display_scope [R T1] T2 mu
 hoelder_aeEqMfun__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_aeEqMfun__canonical__choice_Choice
@@ -1798,7 +1798,7 @@ measurableType d2 -> measure T1 R -> choiceType
 
 hoelder_aeEqMfun__canonical__choice_Choice is not universe polymorphic
 Arguments hoelder_aeEqMfun__canonical__choice_Choice
-  [d1 d2]%measure_display_scope [R T1] T2 mu
+  [d1 d2]%_measure_display_scope [R T1] T2 mu
 hoelder_aeEqMfun__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_aeEqMfun__canonical__choice_Choice
@@ -1809,7 +1809,7 @@ measurableType d2 -> measure T1 R -> choiceType
 
 hoelder_aeEqMfun__canonical__choice_Choice is not universe polymorphic
 Arguments hoelder_aeEqMfun__canonical__choice_Choice
-  [d1 d2]%measure_display_scope [R T1] T2 mu
+  [d1 d2]%_measure_display_scope [R T1] T2 mu
 hoelder_aeEqMfun__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_aeEqMfun__canonical__choice_Choice
@@ -1820,7 +1820,7 @@ measurableType d2 -> measure T1 R -> choiceType
 
 hoelder_aeEqMfun__canonical__choice_Choice is not universe polymorphic
 Arguments hoelder_aeEqMfun__canonical__choice_Choice
-  [d1 d2]%measure_display_scope [R T1] T2 mu
+  [d1 d2]%_measure_display_scope [R T1] T2 mu
 hoelder_aeEqMfun__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_aeEqMfun__canonical__choice_Choice
@@ -1833,7 +1833,7 @@ eqQuotType (T:={mfun T1 >-> T2}) (ae_eq_op_canonical (R:=R) (T1:=T1) T2 mu)
 
 hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient is not universe polymorphic
 Arguments hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient
-  [d1 d2]%measure_display_scope [R T1] T2 mu
+  [d1 d2]%_measure_display_scope [R T1] T2 mu
 hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient
@@ -1845,7 +1845,7 @@ eqQuotType (T:={mfun T1 >-> T2}) (ae_eq_op_canonical (R:=R) (T1:=T1) T2 mu)
 
 hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient is not universe polymorphic
 Arguments hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient
-  [d1 d2]%measure_display_scope [R T1] T2 mu
+  [d1 d2]%_measure_display_scope [R T1] T2 mu
 hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient
@@ -1857,7 +1857,7 @@ eqQuotType (T:={mfun T1 >-> T2}) (ae_eq_op_canonical (R:=R) (T1:=T1) T2 mu)
 
 hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient is not universe polymorphic
 Arguments hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient
-  [d1 d2]%measure_display_scope [R T1] T2 mu
+  [d1 d2]%_measure_display_scope [R T1] T2 mu
 hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient
@@ -1869,7 +1869,7 @@ eqQuotType (T:={mfun T1 >-> T2}) (ae_eq_op_canonical (R:=R) (T1:=T1) T2 mu)
 
 hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient is not universe polymorphic
 Arguments hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient
-  [d1 d2]%measure_display_scope [R T1] T2 mu
+  [d1 d2]%_measure_display_scope [R T1] T2 mu
 hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient
@@ -1881,7 +1881,7 @@ eqQuotType (T:={mfun T1 >-> T2}) (ae_eq_op_canonical (R:=R) (T1:=T1) T2 mu)
 
 hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient is not universe polymorphic
 Arguments hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient
-  [d1 d2]%measure_display_scope [R T1] T2 mu
+  [d1 d2]%_measure_display_scope [R T1] T2 mu
 hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient
@@ -1893,7 +1893,7 @@ forall [d1 d2 : measure_display] [R : realType] [T1 : measurableType d1]
 {mfun_ mu, T1 >-> T2} -> T1 -> T2
 
 aqEqMfun_to_fun is not universe polymorphic
-Arguments aqEqMfun_to_fun [d1 d2]%measure_display_scope [R T1 T2 mu] f _
+Arguments aqEqMfun_to_fun [d1 d2]%_measure_display_scope [R T1 T2 mu] f _
 aqEqMfun_to_fun is a coercion
 aqEqMfun_to_fun is transparent
 Expands to: Constant mathcomp.analysis.hoelder.aqEqMfun_to_fun
@@ -1907,7 +1907,7 @@ forall [d1 d2 : measure_display] [R : realType] [T1 : measurableType d1]
 reflect (f = g %[ae mu]) (f == g %[mod {mfun_ mu, T1 >-> T2}])%qT
 
 ae_eqP is not universe polymorphic
-Arguments ae_eqP [d1 d2]%measure_display_scope [R T1 T2 mu] f g
+Arguments ae_eqP [d1 d2]%_measure_display_scope [R T1 T2 mu] f g
 ae_eqP is opaque
 Expands to: Constant mathcomp.analysis.hoelder.ae_eqP
 Declared in library mathcomp.analysis.hoelder, line 845, characters 6-12
@@ -1948,7 +1948,7 @@ forall [d : measure_display] [T : measurableType d]
 (f : T -> R) \in mfun
 
 mfunP is not universe polymorphic
-Arguments mfunP [d]%measure_display_scope [T R] f
+Arguments mfunP [d]%_measure_display_scope [T R] f
 mfunP is opaque
 Expands to: Constant mathcomp.analysis.hoelder.mfunP
 Declared in library mathcomp.analysis.hoelder, line 873, characters 6-11
@@ -1976,7 +1976,7 @@ forall [d : measure_display] [T : measurableType d]
          (Real_sort__canonical__GRing_Lmodule R)],
 x \in mfun -> ((a *: x)%R \in mfun) = true
 
-Arguments mfun_scaler_closed [d]%measure_display_scope [T R] a [x] _
+Arguments mfun_scaler_closed [d]%_measure_display_scope [T R] a [x] _
 mfun_scaler_closed is opaque
 Expands to: Constant mathcomp.analysis.hoelder.mfun_scaler_closed
 Declared in library mathcomp.analysis.hoelder, line 878, characters 6-24
@@ -1994,7 +1994,7 @@ submodClosed
 
 measurable_function_mfun__canonical__GRing_SubmodClosed is not universe polymorphic
 Arguments measurable_function_mfun__canonical__GRing_SubmodClosed
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measurable_function_mfun__canonical__GRing_SubmodClosed is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.measurable_function_mfun__canonical__GRing_SubmodClosed
@@ -2007,7 +2007,7 @@ submodClosed
 
 measurable_function_mfun__canonical__GRing_SubmodClosed is not universe polymorphic
 Arguments measurable_function_mfun__canonical__GRing_SubmodClosed
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measurable_function_mfun__canonical__GRing_SubmodClosed is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.measurable_function_mfun__canonical__GRing_SubmodClosed
@@ -2020,7 +2020,7 @@ submodClosed
 
 measurable_function_mfun__canonical__GRing_SubmodClosed is not universe polymorphic
 Arguments measurable_function_mfun__canonical__GRing_SubmodClosed
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measurable_function_mfun__canonical__GRing_SubmodClosed is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.measurable_function_mfun__canonical__GRing_SubmodClosed
@@ -2033,7 +2033,7 @@ submodClosed
 
 measurable_function_mfun__canonical__GRing_SubmodClosed is not universe polymorphic
 Arguments measurable_function_mfun__canonical__GRing_SubmodClosed
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measurable_function_mfun__canonical__GRing_SubmodClosed is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.measurable_function_mfun__canonical__GRing_SubmodClosed
@@ -2046,7 +2046,7 @@ submodClosed
 
 measurable_function_mfun__canonical__GRing_SubmodClosed is not universe polymorphic
 Arguments measurable_function_mfun__canonical__GRing_SubmodClosed
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 measurable_function_mfun__canonical__GRing_SubmodClosed is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.measurable_function_mfun__canonical__GRing_SubmodClosed
@@ -2063,7 +2063,7 @@ subLmodType
 
 MeasurableFun_type__canonical__GRing_SubLmodule is not universe polymorphic
 Arguments MeasurableFun_type__canonical__GRing_SubLmodule
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 MeasurableFun_type__canonical__GRing_SubLmodule is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.MeasurableFun_type__canonical__GRing_SubLmodule
@@ -2077,7 +2077,7 @@ subLmodType
 
 MeasurableFun_type__canonical__GRing_SubLmodule is not universe polymorphic
 Arguments MeasurableFun_type__canonical__GRing_SubLmodule
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 MeasurableFun_type__canonical__GRing_SubLmodule is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.MeasurableFun_type__canonical__GRing_SubLmodule
@@ -2091,7 +2091,7 @@ subLmodType
 
 MeasurableFun_type__canonical__GRing_SubLmodule is not universe polymorphic
 Arguments MeasurableFun_type__canonical__GRing_SubLmodule
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 MeasurableFun_type__canonical__GRing_SubLmodule is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.MeasurableFun_type__canonical__GRing_SubLmodule
@@ -2105,7 +2105,7 @@ subLmodType
 
 MeasurableFun_type__canonical__GRing_SubLmodule is not universe polymorphic
 Arguments MeasurableFun_type__canonical__GRing_SubLmodule
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 MeasurableFun_type__canonical__GRing_SubLmodule is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.MeasurableFun_type__canonical__GRing_SubLmodule
@@ -2119,7 +2119,7 @@ subLmodType
 
 MeasurableFun_type__canonical__GRing_SubLmodule is not universe polymorphic
 Arguments MeasurableFun_type__canonical__GRing_SubLmodule
-  [d]%measure_display_scope T R
+  [d]%_measure_display_scope T R
 MeasurableFun_type__canonical__GRing_SubLmodule is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.MeasurableFun_type__canonical__GRing_SubLmodule
@@ -2137,7 +2137,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 measure T R -> \bar R -> {pred T -> R}
 
 finLfun is not universe polymorphic
-Arguments finLfun [d]%measure_display_scope [T R] mu p%ereal_scope _
+Arguments finLfun [d]%_measure_display_scope [T R] mu p%_ereal_scope _
 finLfun is transparent
 Expands to: Constant mathcomp.analysis.hoelder.finLfun
 Declared in library mathcomp.analysis.hoelder, line 892, characters 11-18
@@ -2147,7 +2147,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 measure T R -> \bar R -> {pred T -> R}
 
 Lfun is not universe polymorphic
-Arguments Lfun [d]%measure_display_scope [T R] mu p%ereal_scope _
+Arguments Lfun [d]%_measure_display_scope [T R] mu p%_ereal_scope _
 Lfun is transparent
 Expands to: Constant mathcomp.analysis.hoelder.Lfun
 Declared in library mathcomp.analysis.hoelder, line 893, characters 11-15
@@ -2158,7 +2158,7 @@ forall [d : measure_display] [T : measurableType d]
 pred_key (T:=T -> R) (Lfun (T:=T) (R:=R) mu p)
 
 Lfun_key is not universe polymorphic
-Arguments Lfun_key [d]%measure_display_scope [T R] mu p%ereal_scope
+Arguments Lfun_key [d]%_measure_display_scope [T R] mu p%_ereal_scope
 Lfun_key is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_key
 Declared in library mathcomp.analysis.hoelder, line 894, characters 11-19
@@ -2173,7 +2173,7 @@ forall [d : measure_display] [T : measurableType d]
 keyed_pred (Lfun_key (T:=T) (R:=R) mu p)
 
 Lfun_keyed is not universe polymorphic
-Arguments Lfun_keyed [d]%measure_display_scope [T R] mu p%ereal_scope
+Arguments Lfun_keyed [d]%_measure_display_scope [T R] mu p%_ereal_scope
 Lfun_keyed is transparent
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_keyed
 Declared in library mathcomp.analysis.hoelder, line 895, characters 10-20
@@ -2190,8 +2190,8 @@ forall [d : measure_display] [T : measurableType d]
   [R : realType] [mu : measure T R] [p : \bar R] [x : T -> R],
 x \in Lfun (T:=T) (R:=R) mu p -> (x \in mfun) = true
 
-Arguments sub_Lfun_mfun [d]%measure_display_scope 
-  [T R mu] [p]%ereal_scope [x] _
+Arguments sub_Lfun_mfun [d]%_measure_display_scope 
+  [T R mu] [p]%_ereal_scope [x] _
 sub_Lfun_mfun is opaque
 Expands to: Constant mathcomp.analysis.hoelder.sub_Lfun_mfun
 Declared in library mathcomp.analysis.hoelder, line 896, characters 6-19
@@ -2212,8 +2212,8 @@ forall [d : measure_display] [T : measurableType d]
   [R : realType] [mu : measure T R] [p : \bar R] [x : T -> R],
 x \in Lfun (T:=T) (R:=R) mu p -> (x \in finLfun (T:=T) (R:=R) mu p) = true
 
-Arguments sub_Lfun_finLfun [d]%measure_display_scope 
-  [T R mu] [p]%ereal_scope [x] _
+Arguments sub_Lfun_finLfun [d]%_measure_display_scope 
+  [T R mu] [p]%_ereal_scope [x] _
 sub_Lfun_finLfun is opaque
 Expands to: Constant mathcomp.analysis.hoelder.sub_Lfun_finLfun
 Declared in library mathcomp.analysis.hoelder, line 898, characters 6-22
@@ -2239,8 +2239,8 @@ f \in Lfun (T:=T) (R:=R) mu p ->
 isMeasurableFun.axioms_ d default_measure_display T R f
 
 Lfun_Sub1_subproof is not universe polymorphic
-Arguments Lfun_Sub1_subproof [d]%measure_display_scope 
-  [T R mu] [p]%ereal_scope [f]%function_scope fP
+Arguments Lfun_Sub1_subproof [d]%_measure_display_scope 
+  [T R mu] [p]%_ereal_scope [f]%_function_scope fP
 Lfun_Sub1_subproof is transparent
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_Sub1_subproof
 Declared in library mathcomp.analysis.hoelder, line 910, characters 11-29
@@ -2254,8 +2254,8 @@ f \in Lfun (T:=T) (R:=R) mu p ->
 
 hoelder_f__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments hoelder_f__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [T R mu] [p]%ereal_scope 
-  [f]%function_scope fP
+  [d]%_measure_display_scope [T R mu] [p]%_ereal_scope 
+  [f]%_function_scope fP
 hoelder_f__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_f__canonical__measurable_function_MeasurableFun
@@ -2268,8 +2268,8 @@ f \in Lfun (T:=T) (R:=R) mu p ->
 
 hoelder_f__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments hoelder_f__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [T R mu] [p]%ereal_scope 
-  [f]%function_scope fP
+  [d]%_measure_display_scope [T R mu] [p]%_ereal_scope 
+  [f]%_function_scope fP
 hoelder_f__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_f__canonical__measurable_function_MeasurableFun
@@ -2282,8 +2282,8 @@ f \in Lfun (T:=T) (R:=R) mu p ->
 
 hoelder_f__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments hoelder_f__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [T R mu] [p]%ereal_scope 
-  [f]%function_scope fP
+  [d]%_measure_display_scope [T R mu] [p]%_ereal_scope 
+  [f]%_function_scope fP
 hoelder_f__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_f__canonical__measurable_function_MeasurableFun
@@ -2296,8 +2296,8 @@ f \in Lfun (T:=T) (R:=R) mu p ->
 
 hoelder_f__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments hoelder_f__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [T R mu] [p]%ereal_scope 
-  [f]%function_scope fP
+  [d]%_measure_display_scope [T R mu] [p]%_ereal_scope 
+  [f]%_function_scope fP
 hoelder_f__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_f__canonical__measurable_function_MeasurableFun
@@ -2310,8 +2310,8 @@ f \in Lfun (T:=T) (R:=R) mu p ->
 
 hoelder_f__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments hoelder_f__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [T R mu] [p]%ereal_scope 
-  [f]%function_scope fP
+  [d]%_measure_display_scope [T R mu] [p]%_ereal_scope 
+  [f]%_function_scope fP
 hoelder_f__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_f__canonical__measurable_function_MeasurableFun
@@ -2324,8 +2324,8 @@ f \in Lfun (T:=T) (R:=R) mu p ->
 
 hoelder_f__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments hoelder_f__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [T R mu] [p]%ereal_scope 
-  [f]%function_scope fP
+  [d]%_measure_display_scope [T R mu] [p]%_ereal_scope 
+  [f]%_function_scope fP
 hoelder_f__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_f__canonical__measurable_function_MeasurableFun
@@ -2340,8 +2340,9 @@ isLfunction.axioms_ d T R mu p p1 f
   (hoelder.HB_unnamed_factory_23 (T:=T) (R:=R) (mu:=mu) (p:=p) (f:=f) fP)
 
 Lfun_Sub2_subproof is not universe polymorphic
-Arguments Lfun_Sub2_subproof [d]%measure_display_scope 
-  [T R mu] [p]%ereal_scope p1 [f]%function_scope fP
+Arguments Lfun_Sub2_subproof [d]%_measure_display_scope 
+  [T R mu] [p]%_ereal_scope p1 [f]%_function_scope 
+  fP
 Lfun_Sub2_subproof is transparent
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_Sub2_subproof
 Declared in library mathcomp.analysis.hoelder, line 914, characters 11-29
@@ -2355,8 +2356,8 @@ f \in Lfun (T:=T) (R:=R) mu p -> LfunType (T:=T) (R:=R) mu (p:=p) p1
 
 hoelder_f__canonical__hoelder_Lfunction is not universe polymorphic
 Arguments hoelder_f__canonical__hoelder_Lfunction 
-  [d]%measure_display_scope [T R mu] [p]%ereal_scope 
-  p1 [f]%function_scope fP
+  [d]%_measure_display_scope [T R mu] [p]%_ereal_scope 
+  p1 [f]%_function_scope fP
 hoelder_f__canonical__hoelder_Lfunction is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_f__canonical__hoelder_Lfunction
@@ -2369,8 +2370,8 @@ f \in Lfun (T:=T) (R:=R) mu p -> LfunType (T:=T) (R:=R) mu (p:=p) p1
 
 hoelder_f__canonical__hoelder_Lfunction is not universe polymorphic
 Arguments hoelder_f__canonical__hoelder_Lfunction 
-  [d]%measure_display_scope [T R mu] [p]%ereal_scope 
-  p1 [f]%function_scope fP
+  [d]%_measure_display_scope [T R mu] [p]%_ereal_scope 
+  p1 [f]%_function_scope fP
 hoelder_f__canonical__hoelder_Lfunction is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_f__canonical__hoelder_Lfunction
@@ -2383,8 +2384,8 @@ f \in Lfun (T:=T) (R:=R) mu p -> LfunType (T:=T) (R:=R) mu (p:=p) p1
 
 hoelder_f__canonical__hoelder_Lfunction is not universe polymorphic
 Arguments hoelder_f__canonical__hoelder_Lfunction 
-  [d]%measure_display_scope [T R mu] [p]%ereal_scope 
-  p1 [f]%function_scope fP
+  [d]%_measure_display_scope [T R mu] [p]%_ereal_scope 
+  p1 [f]%_function_scope fP
 hoelder_f__canonical__hoelder_Lfunction is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_f__canonical__hoelder_Lfunction
@@ -2397,8 +2398,8 @@ f \in Lfun (T:=T) (R:=R) mu p -> LfunType (T:=T) (R:=R) mu (p:=p) p1
 
 hoelder_f__canonical__hoelder_Lfunction is not universe polymorphic
 Arguments hoelder_f__canonical__hoelder_Lfunction 
-  [d]%measure_display_scope [T R mu] [p]%ereal_scope 
-  p1 [f]%function_scope fP
+  [d]%_measure_display_scope [T R mu] [p]%_ereal_scope 
+  p1 [f]%_function_scope fP
 hoelder_f__canonical__hoelder_Lfunction is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_f__canonical__hoelder_Lfunction
@@ -2411,8 +2412,8 @@ f \in Lfun (T:=T) (R:=R) mu p -> LfunType (T:=T) (R:=R) mu (p:=p) p1
 
 hoelder_f__canonical__hoelder_Lfunction is not universe polymorphic
 Arguments hoelder_f__canonical__hoelder_Lfunction 
-  [d]%measure_display_scope [T R mu] [p]%ereal_scope 
-  p1 [f]%function_scope fP
+  [d]%_measure_display_scope [T R mu] [p]%_ereal_scope 
+  p1 [f]%_function_scope fP
 hoelder_f__canonical__hoelder_Lfunction is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_f__canonical__hoelder_Lfunction
@@ -2425,8 +2426,8 @@ f \in Lfun (T:=T) (R:=R) mu p -> LfunType (T:=T) (R:=R) mu (p:=p) p1
 
 hoelder_f__canonical__hoelder_Lfunction is not universe polymorphic
 Arguments hoelder_f__canonical__hoelder_Lfunction 
-  [d]%measure_display_scope [T R mu] [p]%ereal_scope 
-  p1 [f]%function_scope fP
+  [d]%_measure_display_scope [T R mu] [p]%_ereal_scope 
+  p1 [f]%_function_scope fP
 hoelder_f__canonical__hoelder_Lfunction is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_f__canonical__hoelder_Lfunction
@@ -2439,8 +2440,8 @@ forall [d : measure_display] [T : measurableType d]
 f \in Lfun (T:=T) (R:=R) mu p -> LfunType (T:=T) (R:=R) mu (p:=p) p1
 
 Lfun_Sub is not universe polymorphic
-Arguments Lfun_Sub [d]%measure_display_scope [T R mu] 
-  [p]%ereal_scope p1 [f]%function_scope fP
+Arguments Lfun_Sub [d]%_measure_display_scope [T R mu] 
+  [p]%_ereal_scope p1 [f]%_function_scope fP
 Lfun_Sub is transparent
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_Sub
 Declared in library mathcomp.analysis.hoelder, line 917, characters 11-19
@@ -2456,8 +2457,8 @@ forall [d : measure_display] [T : measurableType d]
 forall u : LfunType (T:=T) (R:=R) mu (p:=p) p1, K u
 
 Lfun_rect is not universe polymorphic
-Arguments Lfun_rect [d]%measure_display_scope [T R mu] 
-  [p]%ereal_scope [p1] [K]%function_scope _%function_scope 
+Arguments Lfun_rect [d]%_measure_display_scope [T R mu] 
+  [p]%_ereal_scope [p1] [K]%_function_scope _%_function_scope 
   u
 Lfun_rect is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_rect
@@ -2481,8 +2482,8 @@ forall [d : measure_display] [T : measurableType d]
 Lfun_Sub (T:=T) (R:=R) (mu:=mu) (p:=p) p1 (f:=f) Pf = f
 
 Lfun_valP is not universe polymorphic
-Arguments Lfun_valP [d]%measure_display_scope [T R mu] 
-  [p]%ereal_scope p1 [f]%function_scope Pf
+Arguments Lfun_valP [d]%_measure_display_scope [T R mu] 
+  [p]%_ereal_scope p1 [f]%_function_scope Pf
 Lfun_valP is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_valP
 Declared in library mathcomp.analysis.hoelder, line 930, characters 6-15
@@ -2500,7 +2501,7 @@ subChoiceType (T:=T -> R) (in_mem^~ (mem (Lfun (T:=T) (R:=R) mu p)))
 
 Lfunction_type__canonical__choice_SubChoice is not universe polymorphic
 Arguments Lfunction_type__canonical__choice_SubChoice
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
@@ -2514,7 +2515,7 @@ subChoiceType (T:=T -> R) (in_mem^~ (mem (Lfun (T:=T) (R:=R) mu p)))
 
 Lfunction_type__canonical__choice_SubChoice is not universe polymorphic
 Arguments Lfunction_type__canonical__choice_SubChoice
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
@@ -2528,7 +2529,7 @@ subChoiceType (T:=T -> R) (in_mem^~ (mem (Lfun (T:=T) (R:=R) mu p)))
 
 Lfunction_type__canonical__choice_SubChoice is not universe polymorphic
 Arguments Lfunction_type__canonical__choice_SubChoice
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
@@ -2542,7 +2543,7 @@ subChoiceType (T:=T -> R) (in_mem^~ (mem (Lfun (T:=T) (R:=R) mu p)))
 
 Lfunction_type__canonical__choice_SubChoice is not universe polymorphic
 Arguments Lfunction_type__canonical__choice_SubChoice
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
@@ -2558,7 +2559,8 @@ forall [d : measure_display] [T : measurableType d]
 f = g <-> f =1 g
 
 LfuneqP is not universe polymorphic
-Arguments LfuneqP [d]%measure_display_scope [T R mu] [p]%ereal_scope [p1] f g
+Arguments LfuneqP [d]%_measure_display_scope [T R mu] 
+  [p]%_ereal_scope [p1] f g
 LfuneqP is opaque
 Expands to: Constant mathcomp.analysis.hoelder.LfuneqP
 Declared in library mathcomp.analysis.hoelder, line 936, characters 6-13
@@ -2574,8 +2576,8 @@ forall [d : measure_display] [T : measurableType d]
 hasDecEq.phant_axioms (LfunType (T:=T) (R:=R) mu (p:=p) p1)
 
 choice_Choice__to__eqtype_hasDecEq__33 is not universe polymorphic
-Arguments choice_Choice__to__eqtype_hasDecEq__33 [d]%measure_display_scope
-  [T R] mu [p]%ereal_scope p1
+Arguments choice_Choice__to__eqtype_hasDecEq__33 [d]%_measure_display_scope
+  [T R] mu [p]%_ereal_scope p1
 choice_Choice__to__eqtype_hasDecEq__33 is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.choice_Choice__to__eqtype_hasDecEq__33
@@ -2586,8 +2588,8 @@ forall [d : measure_display] [T : measurableType d]
 hasDecEq.phant_axioms (LfunType (T:=T) (R:=R) mu (p:=p) p1)
 
 choice_Choice__to__eqtype_hasDecEq__33 is not universe polymorphic
-Arguments choice_Choice__to__eqtype_hasDecEq__33 [d]%measure_display_scope
-  [T R] mu [p]%ereal_scope p1
+Arguments choice_Choice__to__eqtype_hasDecEq__33 [d]%_measure_display_scope
+  [T R] mu [p]%_ereal_scope p1
 choice_Choice__to__eqtype_hasDecEq__33 is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.choice_Choice__to__eqtype_hasDecEq__33
@@ -2598,8 +2600,8 @@ forall [d : measure_display] [T : measurableType d]
 hasDecEq.phant_axioms (LfunType (T:=T) (R:=R) mu (p:=p) p1)
 
 choice_Choice__to__eqtype_hasDecEq__33 is not universe polymorphic
-Arguments choice_Choice__to__eqtype_hasDecEq__33 [d]%measure_display_scope
-  [T R] mu [p]%ereal_scope p1
+Arguments choice_Choice__to__eqtype_hasDecEq__33 [d]%_measure_display_scope
+  [T R] mu [p]%_ereal_scope p1
 choice_Choice__to__eqtype_hasDecEq__33 is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.choice_Choice__to__eqtype_hasDecEq__33
@@ -2610,8 +2612,8 @@ forall [d : measure_display] [T : measurableType d]
 hasDecEq.phant_axioms (LfunType (T:=T) (R:=R) mu (p:=p) p1)
 
 choice_Choice__to__eqtype_hasDecEq__33 is not universe polymorphic
-Arguments choice_Choice__to__eqtype_hasDecEq__33 [d]%measure_display_scope
-  [T R] mu [p]%ereal_scope p1
+Arguments choice_Choice__to__eqtype_hasDecEq__33 [d]%_measure_display_scope
+  [T R] mu [p]%_ereal_scope p1
 choice_Choice__to__eqtype_hasDecEq__33 is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.choice_Choice__to__eqtype_hasDecEq__33
@@ -2622,8 +2624,8 @@ forall [d : measure_display] [T : measurableType d]
 hasDecEq.phant_axioms (LfunType (T:=T) (R:=R) mu (p:=p) p1)
 
 choice_Choice__to__eqtype_hasDecEq__33 is not universe polymorphic
-Arguments choice_Choice__to__eqtype_hasDecEq__33 [d]%measure_display_scope
-  [T R] mu [p]%ereal_scope p1
+Arguments choice_Choice__to__eqtype_hasDecEq__33 [d]%_measure_display_scope
+  [T R] mu [p]%_ereal_scope p1
 choice_Choice__to__eqtype_hasDecEq__33 is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.choice_Choice__to__eqtype_hasDecEq__33
@@ -2636,8 +2638,8 @@ forall [d : measure_display] [T : measurableType d]
 (1 <= p)%E -> finite_norm (T:=T) (R:=R) mu p (cst 0%R)
 
 finite_norm_cst0 is not universe polymorphic
-Arguments finite_norm_cst0 [d]%measure_display_scope 
-  [T R] mu [p]%ereal_scope p1
+Arguments finite_norm_cst0 [d]%_measure_display_scope 
+  [T R] mu [p]%_ereal_scope p1
 finite_norm_cst0 is opaque
 Expands to: Constant mathcomp.analysis.hoelder.finite_norm_cst0
 Declared in library mathcomp.analysis.hoelder, line 941, characters 6-22
@@ -2654,7 +2656,7 @@ LfunType (T:=T) (R:=R) mu (p:=p) p1
 
 functions_cst__canonical__hoelder_Lfunction is not universe polymorphic
 Arguments functions_cst__canonical__hoelder_Lfunction
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 functions_cst__canonical__hoelder_Lfunction is transparent
 Expands to: Constant
@@ -2667,7 +2669,7 @@ LfunType (T:=T) (R:=R) mu (p:=p) p1
 
 functions_cst__canonical__hoelder_Lfunction is not universe polymorphic
 Arguments functions_cst__canonical__hoelder_Lfunction
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 functions_cst__canonical__hoelder_Lfunction is transparent
 Expands to: Constant
@@ -2680,7 +2682,7 @@ LfunType (T:=T) (R:=R) mu (p:=p) p1
 
 functions_cst__canonical__hoelder_Lfunction is not universe polymorphic
 Arguments functions_cst__canonical__hoelder_Lfunction
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 functions_cst__canonical__hoelder_Lfunction is transparent
 Expands to: Constant
@@ -2693,7 +2695,7 @@ LfunType (T:=T) (R:=R) mu (p:=p) p1
 
 functions_cst__canonical__hoelder_Lfunction is not universe polymorphic
 Arguments functions_cst__canonical__hoelder_Lfunction
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 functions_cst__canonical__hoelder_Lfunction is transparent
 Expands to: Constant
@@ -2707,7 +2709,7 @@ LfunType (T:=T) (R:=R) mu (p:=p) p1
 
 functions_cst__canonical__hoelder_Lfunction is not universe polymorphic
 Arguments functions_cst__canonical__hoelder_Lfunction
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 functions_cst__canonical__hoelder_Lfunction is transparent
 Expands to: Constant
@@ -2722,7 +2724,7 @@ forall [d : measure_display] [T : measurableType d]
 (f : T -> R) \in Lfun (T:=T) (R:=R) mu p
 
 LfunP is not universe polymorphic
-Arguments LfunP [d]%measure_display_scope [T R mu] [p]%ereal_scope [p1] f
+Arguments LfunP [d]%_measure_display_scope [T R mu] [p]%_ereal_scope [p1] f
 LfunP is opaque
 Expands to: Constant mathcomp.analysis.hoelder.LfunP
 Declared in library mathcomp.analysis.hoelder, line 947, characters 6-11
@@ -2746,8 +2748,8 @@ forall [d : measure_display] [T : measurableType d]
   [x : prod__canonical__Algebra_Zmodule T R],
 x \in Lfun (T:=T) (R:=R) mu p -> ((- x)%R \in Lfun (T:=T) (R:=R) mu p) = true
 
-Arguments Lfun_oppr_closed [d]%measure_display_scope 
-  [T R mu] [p]%ereal_scope [x] _
+Arguments Lfun_oppr_closed [d]%_measure_display_scope 
+  [T R mu] [p]%_ereal_scope [x] _
 Lfun_oppr_closed is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_oppr_closed
 Declared in library mathcomp.analysis.hoelder, line 950, characters 6-22
@@ -2767,7 +2769,7 @@ measure T R -> \bar R -> opprClosed (prod__canonical__Algebra_Zmodule T R)
 
 hoelder_Lfun__canonical__Algebra_OppClosed is not universe polymorphic
 Arguments hoelder_Lfun__canonical__Algebra_OppClosed
-  [d]%measure_display_scope [T R] mu p%ereal_scope
+  [d]%_measure_display_scope [T R] mu p%_ereal_scope
 hoelder_Lfun__canonical__Algebra_OppClosed is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_Lfun__canonical__Algebra_OppClosed
@@ -2778,7 +2780,7 @@ measure T R -> \bar R -> opprClosed (prod__canonical__Algebra_Zmodule T R)
 
 hoelder_Lfun__canonical__Algebra_OppClosed is not universe polymorphic
 Arguments hoelder_Lfun__canonical__Algebra_OppClosed
-  [d]%measure_display_scope [T R] mu p%ereal_scope
+  [d]%_measure_display_scope [T R] mu p%_ereal_scope
 hoelder_Lfun__canonical__Algebra_OppClosed is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_Lfun__canonical__Algebra_OppClosed
@@ -2789,7 +2791,7 @@ measure T R -> \bar R -> opprClosed (prod__canonical__Algebra_Zmodule T R)
 
 hoelder_Lfun__canonical__Algebra_OppClosed is not universe polymorphic
 Arguments hoelder_Lfun__canonical__Algebra_OppClosed
-  [d]%measure_display_scope [T R] mu p%ereal_scope
+  [d]%_measure_display_scope [T R] mu p%_ereal_scope
 hoelder_Lfun__canonical__Algebra_OppClosed is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_Lfun__canonical__Algebra_OppClosed
@@ -2800,7 +2802,7 @@ measure T R -> \bar R -> opprClosed (prod__canonical__Algebra_Zmodule T R)
 
 hoelder_Lfun__canonical__Algebra_OppClosed is not universe polymorphic
 Arguments hoelder_Lfun__canonical__Algebra_OppClosed
-  [d]%measure_display_scope [T R] mu p%ereal_scope
+  [d]%_measure_display_scope [T R] mu p%_ereal_scope
 hoelder_Lfun__canonical__Algebra_OppClosed is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_Lfun__canonical__Algebra_OppClosed
@@ -2811,7 +2813,7 @@ measure T R -> \bar R -> opprClosed (prod__canonical__Algebra_Zmodule T R)
 
 hoelder_Lfun__canonical__Algebra_OppClosed is not universe polymorphic
 Arguments hoelder_Lfun__canonical__Algebra_OppClosed
-  [d]%measure_display_scope [T R] mu p%ereal_scope
+  [d]%_measure_display_scope [T R] mu p%_ereal_scope
 hoelder_Lfun__canonical__Algebra_OppClosed is transparent
 Expands to: Constant
             mathcomp.analysis.hoelder.hoelder_Lfun__canonical__Algebra_OppClosed
@@ -2827,8 +2829,8 @@ addr_closed (V:=prod__canonical__Algebra_BaseAddUMagma T R)
   (Lfun (T:=T) (R:=R) mu p)
 
 Lfun_addr_closed is not universe polymorphic
-Arguments Lfun_addr_closed [d]%measure_display_scope 
-  [T R] mu [p]%ereal_scope p1
+Arguments Lfun_addr_closed [d]%_measure_display_scope 
+  [T R] mu [p]%_ereal_scope p1
 Lfun_addr_closed is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_addr_closed
 Declared in library mathcomp.analysis.hoelder, line 962, characters 6-22
@@ -2855,8 +2857,8 @@ forall [d : measure_display] [T : measurableType d]
 'N[mu]_p[EFin \o (a \*: f)%R]%E = (`|a|%:E * 'N[mu]_p[EFin \o f])%E
 
 LnormZ is not universe polymorphic
-Arguments LnormZ [d]%measure_display_scope [T R mu] 
-  [p]%ereal_scope [p1] f a%ring_scope
+Arguments LnormZ [d]%_measure_display_scope [T R mu] 
+  [p]%_ereal_scope [p1] f a%_ring_scope
 LnormZ is opaque
 Expands to: Constant mathcomp.analysis.hoelder.LnormZ
 Declared in library mathcomp.analysis.hoelder, line 976, characters 6-12
@@ -2896,8 +2898,8 @@ submod_closed
   (Lfun (T:=T) (R:=R) mu p)
 
 Lfun_submod_closed is not universe polymorphic
-Arguments Lfun_submod_closed [d]%measure_display_scope 
-  [T R] mu [p]%ereal_scope p1
+Arguments Lfun_submod_closed [d]%_measure_display_scope 
+  [T R] mu [p]%_ereal_scope p1
 Lfun_submod_closed is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_submod_closed
 Declared in library mathcomp.analysis.hoelder, line 1000, characters 6-24
@@ -2929,7 +2931,7 @@ submodClosed
 
 hoelder_Lfun__canonical__GRing_SubmodClosed is not universe polymorphic
 Arguments hoelder_Lfun__canonical__GRing_SubmodClosed
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 hoelder_Lfun__canonical__GRing_SubmodClosed is transparent
 Expands to: Constant
@@ -2946,7 +2948,7 @@ submodClosed
 
 hoelder_Lfun__canonical__GRing_SubmodClosed is not universe polymorphic
 Arguments hoelder_Lfun__canonical__GRing_SubmodClosed
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 hoelder_Lfun__canonical__GRing_SubmodClosed is transparent
 Expands to: Constant
@@ -2963,7 +2965,7 @@ submodClosed
 
 hoelder_Lfun__canonical__GRing_SubmodClosed is not universe polymorphic
 Arguments hoelder_Lfun__canonical__GRing_SubmodClosed
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 hoelder_Lfun__canonical__GRing_SubmodClosed is transparent
 Expands to: Constant
@@ -2980,7 +2982,7 @@ submodClosed
 
 hoelder_Lfun__canonical__GRing_SubmodClosed is not universe polymorphic
 Arguments hoelder_Lfun__canonical__GRing_SubmodClosed
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 hoelder_Lfun__canonical__GRing_SubmodClosed is transparent
 Expands to: Constant
@@ -2997,7 +2999,7 @@ submodClosed
 
 hoelder_Lfun__canonical__GRing_SubmodClosed is not universe polymorphic
 Arguments hoelder_Lfun__canonical__GRing_SubmodClosed
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 hoelder_Lfun__canonical__GRing_SubmodClosed is transparent
 Expands to: Constant
@@ -3017,7 +3019,7 @@ subLmodType
 
 Lfunction_type__canonical__GRing_SubLmodule is not universe polymorphic
 Arguments Lfunction_type__canonical__GRing_SubLmodule
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__GRing_SubLmodule is transparent
 Expands to: Constant
@@ -3034,7 +3036,7 @@ subLmodType
 
 Lfunction_type__canonical__GRing_SubLmodule is not universe polymorphic
 Arguments Lfunction_type__canonical__GRing_SubLmodule
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__GRing_SubLmodule is transparent
 Expands to: Constant
@@ -3051,7 +3053,7 @@ subLmodType
 
 Lfunction_type__canonical__GRing_SubLmodule is not universe polymorphic
 Arguments Lfunction_type__canonical__GRing_SubLmodule
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__GRing_SubLmodule is transparent
 Expands to: Constant
@@ -3068,7 +3070,7 @@ subLmodType
 
 Lfunction_type__canonical__GRing_SubLmodule is not universe polymorphic
 Arguments Lfunction_type__canonical__GRing_SubLmodule
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__GRing_SubLmodule is transparent
 Expands to: Constant
@@ -3085,7 +3087,7 @@ subLmodType
 
 Lfunction_type__canonical__GRing_SubLmodule is not universe polymorphic
 Arguments Lfunction_type__canonical__GRing_SubLmodule
-  [d]%measure_display_scope [T R] mu [p]%ereal_scope 
+  [d]%_measure_display_scope [T R] mu [p]%_ereal_scope 
   p1
 Lfunction_type__canonical__GRing_SubLmodule is transparent
 Expands to: Constant
@@ -3111,8 +3113,8 @@ forall [d : measure_display] [T : measurableType d]
 ((fun f0 : T -> R => fine 'N[mu]_p[EFin \o f0]) f)%:E = 'N[mu]_p[EFin \o f]%E
 
 finite_norm_fine is not universe polymorphic
-Arguments finite_norm_fine [d]%measure_display_scope 
-  [T R mu] [p]%ereal_scope [p1] f
+Arguments finite_norm_fine [d]%_measure_display_scope 
+  [T R mu] [p]%_ereal_scope [p1] f
 finite_norm_fine is opaque
 Expands to: Constant mathcomp.analysis.hoelder.finite_norm_fine
 Declared in library mathcomp.analysis.hoelder, line 1032, characters 6-22
@@ -3133,8 +3135,8 @@ forall [d : measure_display] [T : measurableType d]
  (fun f0 : T -> R => fine 'N[mu]_p[EFin \o f0]) g)%R
 
 ler_LnormD is not universe polymorphic
-Arguments ler_LnormD [d]%measure_display_scope [T R mu] 
-  [p]%ereal_scope [p1] f g
+Arguments ler_LnormD [d]%_measure_display_scope [T R mu] 
+  [p]%_ereal_scope [p1] f g
 ler_LnormD is opaque
 Expands to: Constant mathcomp.analysis.hoelder.ler_LnormD
 Declared in library mathcomp.analysis.hoelder, line 1038, characters 6-16
@@ -3152,7 +3154,7 @@ forall [d : measure_display] [T : measurableType d]
 (fun f0 : T -> R => fine 'N[mu]_p[EFin \o f0]) f
 
 LnormrN is not universe polymorphic
-Arguments LnormrN [d]%measure_display_scope [T R mu] [p]%ereal_scope [p1] f
+Arguments LnormrN [d]%_measure_display_scope [T R mu] [p]%_ereal_scope [p1] f
 LnormrN is opaque
 Expands to: Constant mathcomp.analysis.hoelder.LnormrN
 Declared in library mathcomp.analysis.hoelder, line 1041, characters 6-13
@@ -3172,8 +3174,8 @@ forall [d : measure_display] [T : measurableType d]
 ((fun f0 : T -> R => fine 'N[mu]_p[EFin \o f0]) f *+ k)%R
 
 Lnormr_natmul is not universe polymorphic
-Arguments Lnormr_natmul [d]%measure_display_scope 
-  [T R mu] [p]%ereal_scope [p1] f k%nat_scope
+Arguments Lnormr_natmul [d]%_measure_display_scope 
+  [T R mu] [p]%_ereal_scope [p1] f k%_nat_scope
 Lnormr_natmul is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lnormr_natmul
 Declared in library mathcomp.analysis.hoelder, line 1047, characters 6-19
@@ -3194,8 +3196,8 @@ forall [d : measure_display] [T : measurableType d]
 (fun f0 : T -> R => fine 'N[mu]_p[EFin \o f0]) f = 0%R -> f = 0%R %[ae mu]
 
 fine_Lnormr_eq0 is not universe polymorphic
-Arguments fine_Lnormr_eq0 [d]%measure_display_scope 
-  [T R mu] [p]%ereal_scope [p1 f] _
+Arguments fine_Lnormr_eq0 [d]%_measure_display_scope 
+  [T R mu] [p]%_ereal_scope [p1 f] _
 fine_Lnormr_eq0 is opaque
 Expands to: Constant mathcomp.analysis.hoelder.fine_Lnormr_eq0
 Declared in library mathcomp.analysis.hoelder, line 1062, characters 6-21
@@ -3222,7 +3224,7 @@ forall [d : measure_display] [T : measurableType d]
 set (LspaceType (T:=T) (R:=R) mu (p:=p) p1)
 
 Lspace is not universe polymorphic
-Arguments Lspace [d]%measure_display_scope [T R mu] [p]%ereal_scope [p1] _
+Arguments Lspace [d]%_measure_display_scope [T R mu] [p]%_ereal_scope [p1] _
 Lspace is transparent
 Expands to: Constant mathcomp.analysis.hoelder.Lspace
 Declared in library mathcomp.analysis.hoelder, line 1077, characters 11-17
@@ -3234,7 +3236,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 measure T R -> Type
 
 LspaceType1 is not universe polymorphic
-Arguments LspaceType1 [d]%measure_display_scope [T R] mu
+Arguments LspaceType1 [d]%_measure_display_scope [T R] mu
 LspaceType1 is transparent
 Expands to: Constant mathcomp.analysis.hoelder.LspaceType1
 Declared in library mathcomp.analysis.hoelder, line 1080, characters 11-22
@@ -3245,7 +3247,7 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 measure T R -> Type
 
 LspaceType2 is not universe polymorphic
-Arguments LspaceType2 [d]%measure_display_scope [T R] mu
+Arguments LspaceType2 [d]%_measure_display_scope [T R] mu
 LspaceType2 is transparent
 Expands to: Constant mathcomp.analysis.hoelder.LspaceType2
 Declared in library mathcomp.analysis.hoelder, line 1082, characters 11-22
@@ -3257,7 +3259,7 @@ forall [d : measure_display] [T : measurableType d]
 f \in Lfun (T:=T) (R:=R) mu 1 -> normr \o f \in Lfun (T:=T) (R:=R) mu 1
 
 Lfun_norm is not universe polymorphic
-Arguments Lfun_norm [d]%measure_display_scope [T R mu] [f]%function_scope _
+Arguments Lfun_norm [d]%_measure_display_scope [T R mu] [f]%_function_scope _
 Lfun_norm is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_norm
 Declared in library mathcomp.analysis.hoelder, line 1084, characters 6-15
@@ -3280,8 +3282,8 @@ f \in Lfun (T:=T) (R:=R) mu r%:E ->
 mu.-integrable [set: T] (fun x : T => (`|f x| `^ r)%:E)
 
 Lfun_integrable is not universe polymorphic
-Arguments Lfun_integrable [d]%measure_display_scope 
-  [T R mu] [f]%function_scope [r] _ _
+Arguments Lfun_integrable [d]%_measure_display_scope 
+  [T R mu] [f]%_function_scope [r] _ _
 Lfun_integrable is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_integrable
 Declared in library mathcomp.analysis.hoelder, line 1093, characters 6-21
@@ -3308,8 +3310,8 @@ forall [d : measure_display] [T : measurableType d]
 f \in Lfun (T:=T) (R:=R) mu 1 <-> mu.-integrable [set: T] (EFin \o f)
 
 Lfun1_integrable is not universe polymorphic
-Arguments Lfun1_integrable [d]%measure_display_scope 
-  [T R] mu f%function_scope
+Arguments Lfun1_integrable [d]%_measure_display_scope 
+  [T R] mu f%_function_scope
 Lfun1_integrable is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lfun1_integrable
 Declared in library mathcomp.analysis.hoelder, line 1108, characters 6-22
@@ -3337,8 +3339,8 @@ f \in Lfun (T:=T) (R:=R) mu 2 ->
 mu.-integrable [set: T] (EFin \o (fun x : T => (f x ^+ 2)%R))
 
 Lfun2_integrable_sqr is not universe polymorphic
-Arguments Lfun2_integrable_sqr [d]%measure_display_scope 
-  [T R mu] [f]%function_scope _
+Arguments Lfun2_integrable_sqr [d]%_measure_display_scope 
+  [T R mu] [f]%_function_scope _
 Lfun2_integrable_sqr is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lfun2_integrable_sqr
 Declared in library mathcomp.analysis.hoelder, line 1123, characters 6-26
@@ -3373,8 +3375,8 @@ f \in Lfun (T:=T) (R:=R) mu 2 ->
 g \in Lfun (T:=T) (R:=R) mu 2 -> (f \* g)%R \in Lfun (T:=T) (R:=R) mu 1
 
 Lfun2_mul_Lfun1 is not universe polymorphic
-Arguments Lfun2_mul_Lfun1 [d]%measure_display_scope 
-  [T R mu] [f g]%function_scope _ _
+Arguments Lfun2_mul_Lfun1 [d]%_measure_display_scope 
+  [T R mu] [f g]%_function_scope _ _
 Lfun2_mul_Lfun1 is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lfun2_mul_Lfun1
 Declared in library mathcomp.analysis.hoelder, line 1145, characters 6-21
@@ -3404,8 +3406,8 @@ f \in Lfun (T:=T) (R:=R) mu r%:E ->
 (a \o* f)%R \in Lfun (T:=T) (R:=R) mu r%:E
 
 Lfun_scale is not universe polymorphic
-Arguments Lfun_scale [d]%measure_display_scope [T R mu] 
-  [f]%function_scope a%ring_scope [r] _ _
+Arguments Lfun_scale [d]%_measure_display_scope [T R mu] 
+  [f]%_function_scope a%_ring_scope [r] _ _
 Lfun_scale is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_scale
 Declared in library mathcomp.analysis.hoelder, line 1160, characters 6-16
@@ -3442,7 +3444,7 @@ forall [d : measure_display] [T : measurableType d]
 cst c \in Lfun (T:=T) (R:=R) mu r%:E
 
 Lfun_cst is not universe polymorphic
-Arguments Lfun_cst [d]%measure_display_scope [T R] mu c r%ring_scope
+Arguments Lfun_cst [d]%_measure_display_scope [T R] mu c r%_ring_scope
 Lfun_cst is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_cst
 Declared in library mathcomp.analysis.hoelder, line 1184, characters 6-14
@@ -3484,8 +3486,8 @@ mu [set: T]%classic \is a fin_num ->
 forall [x : T -> R],
 x \in Lfun (T:=T) (R:=R) mu q -> (x \in Lfun (T:=T) (R:=R) mu p) = true
 
-Arguments Lfun_subset [d]%measure_display_scope [T R mu] 
-  [p q]%ereal_scope p1 q1 _ _ [x] _
+Arguments Lfun_subset [d]%_measure_display_scope [T R mu] 
+  [p q]%_ereal_scope p1 q1 _ _ [x] _
 Lfun_subset is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_subset
 Declared in library mathcomp.analysis.hoelder, line 1200, characters 6-17
@@ -3577,7 +3579,7 @@ mu [set: T]%classic \is a fin_num ->
 forall [x : T -> R],
 x \in Lfun (T:=T) (R:=R) mu 2 -> (x \in Lfun (T:=T) (R:=R) mu 1) = true
 
-Arguments Lfun_subset12 [d]%measure_display_scope [T R mu] _ [x] _
+Arguments Lfun_subset12 [d]%_measure_display_scope [T R mu] _ [x] _
 Lfun_subset12 is opaque
 Expands to: Constant mathcomp.analysis.hoelder.Lfun_subset12
 Declared in library mathcomp.analysis.hoelder, line 1271, characters 6-19

@@ -270,7 +270,7 @@ convex spaces with the following aliases:
 forall [R : numDomainType] [T : Type], ({i01 R} -> T -> T -> T) -> Prop
 
 ConvexQuasiAssoc.law is not universe polymorphic
-Arguments ConvexQuasiAssoc.law [R] [T]%type_scope conv%function_scope
+Arguments ConvexQuasiAssoc.law [R] [T]%_type_scope conv%_function_scope
 ConvexQuasiAssoc.law is transparent
 Expands to: Constant mathcomp.analysis.convex.ConvexQuasiAssoc.law
 Declared in library mathcomp.analysis.convex, line 57, characters 11-14
@@ -289,7 +289,7 @@ p = (r * s)%R ->
 (1 - s)%R = ((1 - p) * (1 - q))%R -> ((1 - p) * q)%R = (s * (1 - r))%R
 
 ConvexQuasiAssoc.pq_sr is not universe polymorphic
-Arguments ConvexQuasiAssoc.pq_sr [R] [p q r s]%ring_scope _ _
+Arguments ConvexQuasiAssoc.pq_sr [R] [p q r s]%_ring_scope _ _
 ConvexQuasiAssoc.pq_sr is opaque
 Expands to: Constant mathcomp.analysis.convex.ConvexQuasiAssoc.pq_sr
 Declared in library mathcomp.analysis.convex, line 66, characters 6-11
@@ -309,7 +309,7 @@ forall [R : pzRingType] [p q s : R],
 (1 - s)%R = ((1 - p) * (1 - q))%R -> s = (1 - (1 - p) * (1 - q))%R
 
 ConvexQuasiAssoc.sE is not universe polymorphic
-Arguments ConvexQuasiAssoc.sE [R] [p q s]%ring_scope _
+Arguments ConvexQuasiAssoc.sE [R] [p q s]%_ring_scope _
 ConvexQuasiAssoc.sE is opaque
 Expands to: Constant mathcomp.analysis.convex.ConvexQuasiAssoc.sE
 Declared in library mathcomp.analysis.convex, line 75, characters 6-8
@@ -328,7 +328,7 @@ p = (r * s)%R ->
 (1 - s)%R = ((1 - p) * (1 - q))%R -> q = (s * (1 - r) / (1 - p))%R
 
 ConvexQuasiAssoc.qE is not universe polymorphic
-Arguments ConvexQuasiAssoc.qE [R] [p q r s]%ring_scope _ _ _
+Arguments ConvexQuasiAssoc.qE [R] [p q r s]%_ring_scope _ _ _
 ConvexQuasiAssoc.qE is opaque
 Expands to: Constant mathcomp.analysis.convex.ConvexQuasiAssoc.qE
 Declared in library mathcomp.analysis.convex, line 80, characters 6-8
@@ -348,7 +348,7 @@ forall [R : unitRingType] [p r s : R],
 s \is a GRing.unit -> p = (r * s)%R -> r = (p / s)%R
 
 ConvexQuasiAssoc.rE is not universe polymorphic
-Arguments ConvexQuasiAssoc.rE [R] [p r s]%ring_scope _ _
+Arguments ConvexQuasiAssoc.rE [R] [p r s]%_ring_scope _ _
 ConvexQuasiAssoc.rE is opaque
 Expands to: Constant mathcomp.analysis.convex.ConvexQuasiAssoc.rE
 Declared in library mathcomp.analysis.convex, line 89, characters 6-8
@@ -367,7 +367,7 @@ Declared in library mathcomp.analysis.convex, line 89, characters 6-8
 forall [R : numDomainType] [T : Type], ({i01 R} -> T -> T -> T) -> Prop
 
 convex_quasi_associative is not universe polymorphic
-Arguments convex_quasi_associative [R] [T]%type_scope conv%function_scope
+Arguments convex_quasi_associative [R] [T]%_type_scope conv%_function_scope
 convex_quasi_associative is transparent
 Expands to: Constant mathcomp.analysis.convex.convex_quasi_associative
 Declared in library mathcomp.analysis.convex, line 97, characters 11-35
@@ -749,7 +749,7 @@ Declared in library mathcomp.analysis.convex, line 220, characters 6-15
 <span class="vernacular">Definition</span><span class="id"> </span><span id="convex_function" class="id"><a name="convex_function" class="" title="convex_function : forall [R : realType], set R -> (R -> R^o) -> Prop
 
 convex_function is not universe polymorphic
-Arguments convex_function [R] D%classical_set_scope f%function_scope
+Arguments convex_function [R] D%_classical_set_scope f%_function_scope
 convex_function is transparent
 Expands to: Constant mathcomp.analysis.convex.convex_function
 Declared in library mathcomp.analysis.convex, line 225, characters 11-26
@@ -816,8 +816,8 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs (a^'+)%classic)))
 forall t : {i01 R}, (a <= b)%R -> (f (conv t a b) <= conv t (f a) (f b))%R
 
 second_derivative_convex is not universe polymorphic
-Arguments second_derivative_convex {R} [f]%function_scope 
-  [a b] DDf_ge0%function_scope cvg_left cvg_right 
+Arguments second_derivative_convex {R} [f]%_function_scope 
+  [a b] DDf_ge0%_function_scope cvg_left cvg_right 
   HDf HDDf t _
 second_derivative_convex is opaque
 Expands to: Constant mathcomp.analysis.convex.second_derivative_convex

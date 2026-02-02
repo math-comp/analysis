@@ -263,7 +263,7 @@ This file also provides the infinite version of Vitali's covering lemma.
 <span class="vernacular">Definition</span><span class="id"> </span><span id="cpoint" class="id"><a name="cpoint" class="" title="cpoint : forall {R : numDomainType} {M : pseudoPMetricType R}, set M -> M
 
 cpoint is not universe polymorphic
-Arguments cpoint {R M} A%classical_set_scope
+Arguments cpoint {R M} A%_classical_set_scope
 cpoint is transparent
 Expands to: Constant mathcomp.analysis.normedtype_theory.vitali_lemma.cpoint
 Declared in
@@ -274,7 +274,7 @@ library mathcomp.analysis.normedtype_theory.vitali_lemma, line 52, characters 11
 forall {R : numDomainType} {M : pseudoPMetricType R}, set M -> {nonneg R}%R
 
 radius is not universe polymorphic
-Arguments radius {R M} A%classical_set_scope
+Arguments radius {R M} A%_classical_set_scope
 radius is transparent
 Expands to: Constant mathcomp.analysis.normedtype_theory.vitali_lemma.radius
 Declared in
@@ -285,7 +285,7 @@ library mathcomp.analysis.normedtype_theory.vitali_lemma, line 54, characters 11
 <span class="vernacular">Definition</span><span class="id"> </span><span id="is_ball" class="id"><a name="is_ball" class="" title="is_ball : forall {R : numDomainType} {M : pseudoPMetricType R}, set M -> bool
 
 is_ball is not universe polymorphic
-Arguments is_ball {R M} A%classical_set_scope
+Arguments is_ball {R M} A%_classical_set_scope
 is_ball is transparent
 Expands to: Constant mathcomp.analysis.normedtype_theory.vitali_lemma.is_ball
 Declared in
@@ -301,7 +301,7 @@ join_pseudometric_structure_PseudoPointedMetric_between_classical_sets_Pointed_a
 Prop
 
 scale_ball is not universe polymorphic
-Arguments scale_ball {R M} k%ring_scope A%classical_set_scope _
+Arguments scale_ball {R M} k%_ring_scope A%_classical_set_scope _
 scale_ball is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.scale_ball
@@ -332,7 +332,7 @@ forall
  then ball (cpoint A) (l * (radius A)%:num)
  else set0) t
 
-Arguments sub_scale_ball {R M} [A]%classical_set_scope [k l] _ [t] _
+Arguments sub_scale_ball {R M} [A]%_classical_set_scope [k l] _ [t] _
 sub_scale_ball is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.sub_scale_ball
@@ -351,7 +351,7 @@ forall {R : numDomainType} {M : pseudoPMetricType R} [A : set M],
 is_ball A -> (1 *` A)%classic = A
 
 scale_ball1 is not universe polymorphic
-Arguments scale_ball1 {R M} [A]%classical_set_scope _
+Arguments scale_ball1 {R M} [A]%_classical_set_scope _
 scale_ball1 is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.scale_ball1
@@ -381,7 +381,7 @@ A t ->
  then ball (cpoint A) (l.+1%:R * (radius A)%:num)
  else set0) t
 
-Arguments sub1_scale_ball {R M} [A]%classical_set_scope l%nat_scope _ [t] _
+Arguments sub1_scale_ball {R M} [A]%_classical_set_scope l%_nat_scope _ [t] _
 sub1_scale_ball is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.sub1_scale_ball
@@ -403,7 +403,7 @@ forall {R : realFieldType} (A : set R)
 (r <= 0)%R -> (r *` A)%classic = set0
 
 scale_ball0 is not universe polymorphic
-Arguments scale_ball0 {R} A%classical_set_scope [r] _
+Arguments scale_ball0 {R} A%_classical_set_scope [r] _
 scale_ball0 is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.scale_ball0
@@ -479,7 +479,7 @@ forall {R : realFieldType} [x y r s : R],
 (0 < r)%R -> ball x r = ball y s -> x = y /\ r = s
 
 ball_inj is not universe polymorphic
-Arguments ball_inj {R} [x y r s]%ring_scope _ _
+Arguments ball_inj {R} [x y r s]%_ring_scope _ _
 ball_inj is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.ball_inj
@@ -533,7 +533,7 @@ forall {R : realFieldType} (x : R) [r : R],
 (0 < r)%R -> cpoint (ball x r) = x
 
 cpoint_ball is not universe polymorphic
-Arguments cpoint_ball {R} x%ring_scope [r]%ring_scope _
+Arguments cpoint_ball {R} x%_ring_scope [r]%_ring_scope _
 cpoint_ball is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.cpoint_ball
@@ -552,7 +552,7 @@ forall {R : realFieldType} (x : R) [r : R],
 (0 <= r)%R -> (radius (ball x r))%:num%R = r
 
 radius_ball_num is not universe polymorphic
-Arguments radius_ball_num {R} x%ring_scope [r]%ring_scope _
+Arguments radius_ball_num {R} x%_ring_scope [r]%_ring_scope _
 radius_ball_num is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.radius_ball_num
@@ -572,7 +572,7 @@ forall {R : realFieldType} (x : R) [r : R] (r0 : (0 <= r)%R),
 radius (ball x r) = NngNum (R:=R) (x:=r) r0
 
 radius_ball is not universe polymorphic
-Arguments radius_ball {R} x%ring_scope [r]%ring_scope r0
+Arguments radius_ball {R} x%_ring_scope [r]%_ring_scope r0
 radius_ball is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.radius_ball
@@ -589,7 +589,7 @@ forall {R : realFieldType} [A : set R] [x : R],
 is_ball A -> A x -> (`|cpoint A - x| < (radius A)%:num)%R
 
 is_ballP is not universe polymorphic
-Arguments is_ballP {R} [A]%classical_set_scope [x]%ring_scope _ _
+Arguments is_ballP {R} [A]%_classical_set_scope [x]%_ring_scope _ _
 is_ballP is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.is_ballP
@@ -605,7 +605,7 @@ library mathcomp.analysis.normedtype_theory.vitali_lemma, line 171, characters 6
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_ball_ball" class="id"><a name="is_ball_ball" class="" title="is_ball_ball : forall {R : realFieldType} (x r : R), is_ball (ball x r)
 
 is_ball_ball is not universe polymorphic
-Arguments is_ball_ball {R} (x r)%ring_scope
+Arguments is_ball_ball {R} (x r)%_ring_scope
 is_ball_ball is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.is_ball_ball
@@ -623,7 +623,7 @@ Qed.</div></details>
 forall {R : realFieldType} (k : R), (k *` set0)%classic = set0
 
 scale_ball_set0 is not universe polymorphic
-Arguments scale_ball_set0 {R} k%ring_scope
+Arguments scale_ball_set0 {R} k%_ring_scope
 scale_ball_set0 is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.scale_ball_set0
@@ -640,7 +640,7 @@ forall {R : realFieldType} [A : set R],
 is_ball A -> A = ball (cpoint A) (radius A)%:num
 
 ballE is not universe polymorphic
-Arguments ballE {R} [A]%classical_set_scope _
+Arguments ballE {R} [A]%_classical_set_scope _
 ballE is opaque
 Expands to: Constant mathcomp.analysis.normedtype_theory.vitali_lemma.ballE
 Declared in
@@ -659,7 +659,7 @@ is_ball A ->
 topology_structure.closure A x -> (`|cpoint A - x| <= (radius A)%:num)%R
 
 is_ball_closureP is not universe polymorphic
-Arguments is_ball_closureP {R} [A]%classical_set_scope [x]%ring_scope _ _
+Arguments is_ball_closureP {R} [A]%_classical_set_scope [x]%_ring_scope _ _
 is_ball_closureP is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.is_ball_closureP
@@ -687,7 +687,7 @@ closed_ball
   (cpoint A) (radius A)%:num
 
 is_ball_closure is not universe polymorphic
-Arguments is_ball_closure {R} [A]%classical_set_scope _
+Arguments is_ball_closure {R} [A]%_classical_set_scope _
 is_ball_closure is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.is_ball_closure
@@ -708,7 +708,7 @@ forall {R : realFieldType}
 (0 <= k)%R -> (k *` ball x r)%classic = ball x (k * r)
 
 scale_ballE is not universe polymorphic
-Arguments scale_ballE {R} [k] (x r)%ring_scope _
+Arguments scale_ballE {R} [k] (x r)%_ring_scope _
 scale_ballE is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.scale_ballE
@@ -737,7 +737,8 @@ forall {R : realFieldType}
 is_ball A -> (0 < (radius A)%:num)%R -> cpoint (k *` A) = cpoint A
 
 cpoint_scale_ball is not universe polymorphic
-Arguments cpoint_scale_ball {R} [A]%classical_set_scope [k]%ring_scope _ _ _
+Arguments cpoint_scale_ball {R} [A]%_classical_set_scope 
+  [k]%_ring_scope _ _ _
 cpoint_scale_ball is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.cpoint_scale_ball
@@ -758,7 +759,7 @@ forall {R : realFieldType} [A : set R] [k : R],
 (0 <= k)%R -> is_ball A -> (radius (k *` A))%:num%R = (k * (radius A)%:num)%R
 
 radius_scale_ball is not universe polymorphic
-Arguments radius_scale_ball {R} [A]%classical_set_scope [k]%ring_scope _ _
+Arguments radius_scale_ball {R} [A]%_classical_set_scope [k]%_ring_scope _ _
 radius_scale_ball is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.radius_scale_ball
@@ -777,7 +778,7 @@ Qed.</div></details>
 forall {R : realFieldType} [A : set R] (k : R), is_ball A -> is_ball (k *` A)
 
 is_scale_ball is not universe polymorphic
-Arguments is_scale_ball {R} [A]%classical_set_scope k%ring_scope _
+Arguments is_scale_ball {R} [A]%_classical_set_scope k%_ring_scope _
 is_scale_ball is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.is_scale_ball
@@ -818,8 +819,8 @@ forall s : seq I,
           & (B i `<=` 3 *` B j)%classic]]}
 
 vitali_lemma_finite is not universe polymorphic
-Arguments vitali_lemma_finite {R I} [B]%function_scope
-  (is_ballB B_set0)%function_scope s%seq_scope
+Arguments vitali_lemma_finite {R I} [B]%_function_scope
+  (is_ballB B_set0)%_function_scope s%_seq_scope
 vitali_lemma_finite is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.vitali_lemma_finite
@@ -901,8 +902,8 @@ forall s : seq I,
     & (cover [set` s] B `<=` cover [set` D] (scale_ball 3 \o B))%classic]}
 
 vitali_lemma_finite_cover is not universe polymorphic
-Arguments vitali_lemma_finite_cover {R I} [B]%function_scope
-  (is_ballB B_set0)%function_scope s%seq_scope
+Arguments vitali_lemma_finite_cover {R I} [B]%_function_scope
+  (is_ballB B_set0)%_function_scope s%_seq_scope
 vitali_lemma_finite_cover is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.vitali_lemma_finite_cover
@@ -933,8 +934,9 @@ forall {R : realType} {I : eqType},
 (I -> set R) -> set I -> R -> nat -> set I
 
 vitali_collection_partition is not universe polymorphic
-Arguments vitali_collection_partition {R I} B%function_scope
-  V%classical_set_scope r%ring_scope n%nat_scope _
+Arguments vitali_collection_partition {R I} B%_function_scope
+  V%_classical_set_scope r%_ring_scope n%_nat_scope 
+  _
 vitali_collection_partition is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.vitali_collection_partition
@@ -953,8 +955,8 @@ forall [i : I], V i -> (0 < r)%R
 
 vitali_collection_partition_ub_gt0 is not universe polymorphic
 Arguments vitali_collection_partition_ub_gt0 {R I} 
-  [B]%function_scope [V]%classical_set_scope [r]%ring_scope
-  (B_set0 VBr)%function_scope [i] _
+  [B]%_function_scope [V]%_classical_set_scope [r]%_ring_scope
+  (B_set0 VBr)%_function_scope [i] _
 vitali_collection_partition_ub_gt0 is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.vitali_collection_partition_ub_gt0
@@ -975,8 +977,8 @@ forall {R : realType} {I : eqType} [B : I -> set R] [V : set I] [r : R],
 forall [i : I], V i -> exists n : nat, vitali_collection_partition B V r n i
 
 ex_vitali_collection_partition is not universe polymorphic
-Arguments ex_vitali_collection_partition {R I} [B]%function_scope
-  [V]%classical_set_scope [r]%ring_scope (B_set0 VBr)%function_scope 
+Arguments ex_vitali_collection_partition {R I} [B]%_function_scope
+  [V]%_classical_set_scope [r]%_ring_scope (B_set0 VBr)%_function_scope 
   [i] _
 ex_vitali_collection_partition is opaque
 Expands to: Constant
@@ -1015,8 +1017,8 @@ V = (\bigcup_n vitali_collection_partition B V r n)%classic
 
 cover_vitali_collection_partition is not universe polymorphic
 Arguments cover_vitali_collection_partition {R I} 
-  [B]%function_scope [V]%classical_set_scope [r]%ring_scope
-  (B_set0 VBr)%function_scope
+  [B]%_function_scope [V]%_classical_set_scope [r]%_ring_scope
+  (B_set0 VBr)%_function_scope
 cover_vitali_collection_partition is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.cover_vitali_collection_partition
@@ -1042,8 +1044,8 @@ set0
 
 disjoint_vitali_collection_partition is not universe polymorphic
 Arguments disjoint_vitali_collection_partition {R I} 
-  [B]%function_scope [V]%classical_set_scope [r]%ring_scope
-  (B_set0 VBr)%function_scope [n m] _
+  [B]%_function_scope [V]%_classical_set_scope [r]%_ring_scope
+  (B_set0 VBr)%_function_scope [n m] _
 disjoint_vitali_collection_partition is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.disjoint_vitali_collection_partition
@@ -1085,8 +1087,8 @@ trivIset
 countable (T:=I) D
 
 separated_closed_ball_countable is not universe polymorphic
-Arguments separated_closed_ball_countable {R} [I]%type_scope
-  [B]%function_scope [D]%classical_set_scope _%function_scope 
+Arguments separated_closed_ball_countable {R} [I]%_type_scope
+  [B]%_function_scope [D]%_classical_set_scope _%_function_scope 
   _
 separated_closed_ball_countable is opaque
 Expands to: Constant
@@ -1152,8 +1154,9 @@ forall {R : realType} {I : eqType} [B : I -> set R] [V : set I] [r : R],
              `<=` topology_structure.closure (5 *` B j))%classic]]}
 
 vitali_lemma_infinite is not universe polymorphic
-Arguments vitali_lemma_infinite {R I} [B]%function_scope
-  [V]%classical_set_scope [r]%ring_scope (is_ballB Bset0 VBr)%function_scope
+Arguments vitali_lemma_infinite {R I} [B]%_function_scope
+  [V]%_classical_set_scope [r]%_ring_scope
+  (is_ballB Bset0 VBr)%_function_scope
 vitali_lemma_infinite is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.vitali_lemma_infinite
@@ -1309,8 +1312,9 @@ forall {R : realType} {I : eqType} [B : I -> set R] [V : set I] [r : R],
        `<=` cover D ((topology_structure.closure \o scale_ball 5) \o B))%classic]}
 
 vitali_lemma_infinite_cover is not universe polymorphic
-Arguments vitali_lemma_infinite_cover {R I} [B]%function_scope
-  [V]%classical_set_scope [r]%ring_scope (is_ballB Bset0 VBr)%function_scope
+Arguments vitali_lemma_infinite_cover {R I} [B]%_function_scope
+  [V]%_classical_set_scope [r]%_ring_scope
+  (is_ballB Bset0 VBr)%_function_scope
 vitali_lemma_infinite_cover is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.vitali_lemma.vitali_lemma_infinite_cover

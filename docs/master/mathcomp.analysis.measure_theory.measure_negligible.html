@@ -279,8 +279,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d] [R : realFieldType],
 (set T -> \bar R) -> set T -> Prop
 
 negligible is not universe polymorphic
-Arguments negligible [d]%measure_display_scope [T R] 
-  mu%function_scope N%classical_set_scope
+Arguments negligible [d]%_measure_display_scope [T R] 
+  mu%_function_scope N%_classical_set_scope
 negligible is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.negligible
@@ -300,8 +300,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d]
 d.-measurable%classic A -> mu.-negligible A <-> mu A = 0%R
 
 negligibleP is not universe polymorphic
-Arguments negligibleP [d]%measure_display_scope [T R] 
-  mu [A]%classical_set_scope _
+Arguments negligibleP [d]%_measure_display_scope [T R] 
+  mu [A]%_classical_set_scope _
 negligibleP is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.negligibleP
@@ -321,7 +321,7 @@ forall [d : measure_display] [T : semiRingOfSetsType d]
 mu.-negligible set0
 
 negligible_set0 is not universe polymorphic
-Arguments negligible_set0 [d]%measure_display_scope [T R] mu
+Arguments negligible_set0 [d]%_measure_display_scope [T R] mu
 negligible_set0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.negligible_set0
@@ -340,8 +340,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d]
 d.-measurable%classic A -> mu.-negligible A -> mu A = 0%R
 
 measure_negligible is not universe polymorphic
-Arguments measure_negligible [d]%measure_display_scope 
-  [T R mu] [A]%classical_set_scope _ _
+Arguments measure_negligible [d]%_measure_display_scope 
+  [T R mu] [A]%_classical_set_scope _ _
 measure_negligible is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.measure_negligible
@@ -361,8 +361,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d]
 (B `<=` A)%classic -> mu.-negligible A -> mu.-negligible B
 
 negligibleS is not universe polymorphic
-Arguments negligibleS [d]%measure_display_scope [T R mu]
-  [A B]%classical_set_scope _ _
+Arguments negligibleS [d]%_measure_display_scope [T R mu]
+  [A B]%_classical_set_scope _ _
 negligibleS is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.negligibleS
@@ -382,8 +382,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d]
 mu.-negligible A -> mu.-negligible B -> mu.-negligible (A `&` B)
 
 negligibleI is not universe polymorphic
-Arguments negligibleI [d]%measure_display_scope [T R mu]
-  [A B]%classical_set_scope _ _
+Arguments negligibleI [d]%_measure_display_scope [T R mu]
+  [A B]%_classical_set_scope _ _
 negligibleI is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.negligibleI
@@ -408,8 +408,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d] [R : realFieldType],
 (set T -> \bar R) -> Prop
 
 measure_is_complete is not universe polymorphic
-Arguments measure_is_complete [d]%measure_display_scope 
-  [T R] mu%function_scope
+Arguments measure_is_complete [d]%_measure_display_scope 
+  [T R] mu%_function_scope
 measure_is_complete is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.measure_is_complete
@@ -430,8 +430,8 @@ forall [d : measure_display] [T : ringOfSetsType d]
 mu.-negligible A -> mu.-negligible B -> mu.-negligible (A `|` B)
 
 negligibleU is not universe polymorphic
-Arguments negligibleU [d]%measure_display_scope [T R mu]
-  [A B]%classical_set_scope _ _
+Arguments negligibleU [d]%_measure_display_scope [T R mu]
+  [A B]%_classical_set_scope _ _
 negligibleU is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.negligibleU
@@ -462,8 +462,8 @@ forall [d : measure_display] [T : ringOfSetsType d]
 mu.-negligible (\big[setU/set0]_(k <- s | P k) F k)
 
 negligible_bigsetU is not universe polymorphic
-Arguments negligible_bigsetU [d]%measure_display_scope 
-  [T R mu F] s%seq_scope [P] _%function_scope
+Arguments negligible_bigsetU [d]%_measure_display_scope 
+  [T R mu F] s%_seq_scope [P] _%_function_scope
 negligible_bigsetU is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.negligible_bigsetU
@@ -487,8 +487,8 @@ forall [d : measure_display] [T : sigmaRingType d]
 (forall k : nat, mu.-negligible (F k)) -> mu.-negligible (\bigcup_k F k)
 
 negligible_bigcup is not universe polymorphic
-Arguments negligible_bigcup [d]%measure_display_scope 
-  [T R mu F] _%function_scope
+Arguments negligible_bigcup [d]%_measure_display_scope 
+  [T R mu F] _%_function_scope
 negligible_bigcup is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.negligible_bigcup
@@ -523,8 +523,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d] [R : realFieldType],
 (set T -> \bar R) -> filter.set_system T
 
 almost_everywhere is not universe polymorphic
-Arguments almost_everywhere [d]%measure_display_scope 
-  [T R] mu%function_scope _
+Arguments almost_everywhere [d]%_measure_display_scope 
+  [T R] mu%_function_scope _
 almost_everywhere is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.almost_everywhere
@@ -565,7 +565,7 @@ forall [d : measure_display] {T : ringOfSetsType d}
 filter.Filter (almost_everywhere (T:=T) (R:=R) mu)
 
 ae_filter_ringOfSetsType is not universe polymorphic
-Arguments ae_filter_ringOfSetsType [d]%measure_display_scope {T} [R] mu
+Arguments ae_filter_ringOfSetsType [d]%_measure_display_scope {T} [R] mu
 ae_filter_ringOfSetsType is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.ae_filter_ringOfSetsType
@@ -587,7 +587,7 @@ forall [d : measure_display] {T : algebraOfSetsType d}
 filter.ProperFilter (almost_everywhere (T:=T) (R:=R) mu)
 
 ae_properfilter_algebraOfSetsType is not universe polymorphic
-Arguments ae_properfilter_algebraOfSetsType [d]%measure_display_scope 
+Arguments ae_properfilter_algebraOfSetsType [d]%_measure_display_scope 
   {T} [R mu] _
 ae_properfilter_algebraOfSetsType is opaque
 Expands to: Constant
@@ -627,8 +627,8 @@ forall [V : T -> Type],
 (T -> Type) -> (forall x : T, V x) -> (forall x : T, V x) -> Prop
 
 ae_eq is not universe polymorphic
-Arguments ae_eq [d]%measure_display_scope [T R] mu 
-  [V]%function_scope (D f g)%function_scope
+Arguments ae_eq [d]%_measure_display_scope [T R] mu 
+  [V]%_function_scope (D f g)%_function_scope
 ae_eq is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.ae_eq
@@ -646,8 +646,8 @@ forall [d : measure_display] {T : algebraOfSetsType d}
 mu [set: T]%classic = 0%R -> \forall x \ae mu, P x
 
 measure0_ae is not universe polymorphic
-Arguments measure0_ae [d]%measure_display_scope {T R} 
-  [mu] P%classical_set_scope _
+Arguments measure0_ae [d]%_measure_display_scope {T R} 
+  [mu] P%_classical_set_scope _
 measure0_ae is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.measure0_ae
@@ -667,8 +667,8 @@ forall {d : measure_display} {T : semiRingOfSetsType d}
 (forall x : T, P x) -> \forall x \ae mu, P x
 
 aeW is not universe polymorphic
-Arguments aeW {d}%measure_display_scope {T R} mu [P]%function_scope
-  _%function_scope
+Arguments aeW {d}%_measure_display_scope {T R} mu 
+  [P]%_function_scope _%_function_scope
 aeW is opaque
 Expands to: Constant mathcomp.analysis.measure_theory.measure_negligible.aeW
 Declared in
@@ -708,8 +708,8 @@ forall [d : measure_display] [T : sigmaRingType d]
 d.-measurable%classic D -> mu D = 0%R -> f = g %[ae mu in D]
 
 ae_eq0 is not universe polymorphic
-Arguments ae_eq0 [d]%measure_display_scope [T R mu] 
-  [D]%classical_set_scope [U]%type_scope (f g)%function_scope 
+Arguments ae_eq0 [d]%_measure_display_scope [T R mu] 
+  [D]%_classical_set_scope [U]%_type_scope (f g)%_function_scope 
   _ _
 ae_eq0 is opaque
 Expands to: Constant
@@ -756,8 +756,8 @@ forall [d : measure_display] [T : sigmaRingType d]
 ae_eq (R:=R) mu (V:=fun=> U) D f f
 
 ae_eq_refl is not universe polymorphic
-Arguments ae_eq_refl [d]%measure_display_scope [T R] 
-  mu D%classical_set_scope [U]%type_scope f%function_scope
+Arguments ae_eq_refl [d]%_measure_display_scope [T R] 
+  mu D%_classical_set_scope [U]%_type_scope f%_function_scope
 ae_eq_refl is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.ae_eq_refl
@@ -778,9 +778,9 @@ ae_eq (R:=R) mu (V:=fun=> U) D f g ->
 ae_eq (R:=R) mu (V:=fun=> V) D (j \o f) (j \o g)
 
 ae_eq_comp is not universe polymorphic
-Arguments ae_eq_comp [d]%measure_display_scope [T R mu]
-  [D]%classical_set_scope [U V]%type_scope j%function_scope
-  [f g]%function_scope _
+Arguments ae_eq_comp [d]%_measure_display_scope [T R mu]
+  [D]%_classical_set_scope [U V]%_type_scope j%_function_scope
+  [f g]%_function_scope _
 ae_eq_comp is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.ae_eq_comp
@@ -801,9 +801,9 @@ ae_eq (R:=R) mu (V:=fun=> V) D (fun x : T => j x (f x))
   (fun x : T => j x (g x))
 
 ae_eq_comp2 is not universe polymorphic
-Arguments ae_eq_comp2 [d]%measure_display_scope [T R mu]
-  [D]%classical_set_scope [U V]%type_scope j%function_scope
-  [f g]%function_scope _
+Arguments ae_eq_comp2 [d]%_measure_display_scope [T R mu]
+  [D]%_classical_set_scope [U V]%_type_scope j%_function_scope
+  [f g]%_function_scope _
 ae_eq_comp2 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.ae_eq_comp2
@@ -829,8 +829,8 @@ ae_eq (R:=R) mu
   g^\-%E
 
 ae_eq_funeposneg is not universe polymorphic
-Arguments ae_eq_funeposneg [d]%measure_display_scope 
-  [T R] mu D%classical_set_scope (f g)%function_scope
+Arguments ae_eq_funeposneg [d]%_measure_display_scope 
+  [T R] mu D%_classical_set_scope (f g)%_function_scope
 ae_eq_funeposneg is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.ae_eq_funeposneg
@@ -854,8 +854,8 @@ forall [d : measure_display] [T : sigmaRingType d]
 ae_eq (R:=R) mu (V:=fun=> U) D f g -> ae_eq (R:=R) mu (V:=fun=> U) D g f
 
 ae_eq_sym is not universe polymorphic
-Arguments ae_eq_sym [d]%measure_display_scope [T R mu]
-  [D]%classical_set_scope [U]%type_scope [f g]%function_scope 
+Arguments ae_eq_sym [d]%_measure_display_scope [T R mu]
+  [D]%_classical_set_scope [U]%_type_scope [f g]%_function_scope 
   _
 ae_eq_sym is opaque
 Expands to: Constant
@@ -876,8 +876,8 @@ ae_eq (R:=R) mu (V:=fun=> U) D f g ->
 ae_eq (R:=R) mu (V:=fun=> U) D g h -> ae_eq (R:=R) mu (V:=fun=> U) D f h
 
 ae_eq_trans is not universe polymorphic
-Arguments ae_eq_trans [d]%measure_display_scope [T R mu]
-  [D]%classical_set_scope [U]%type_scope [f g h]%function_scope 
+Arguments ae_eq_trans [d]%_measure_display_scope [T R mu]
+  [D]%_classical_set_scope [U]%_type_scope [f g h]%_function_scope 
   _ _
 ae_eq_trans is opaque
 Expands to: Constant
@@ -899,8 +899,8 @@ ae_eq (R:=R) mu (V:=fun=> W) D h i ->
 ae_eq (R:=R) mu (V:=fun=> W) D (f \- h)%R (g \- i)%R
 
 ae_eq_sub is not universe polymorphic
-Arguments ae_eq_sub [d]%measure_display_scope [T R mu]
-  [D]%classical_set_scope [W] [f g h i]%function_scope 
+Arguments ae_eq_sub [d]%_measure_display_scope [T R mu]
+  [D]%_classical_set_scope [W] [f g h i]%_function_scope 
   _ _
 ae_eq_sub is opaque
 Expands to: Constant
@@ -921,9 +921,9 @@ ae_eq (R:=R) mu (V:=fun=> W) D f g ->
 ae_eq (R:=R) mu (V:=fun=> W) D (f \* h)%R (g \* h)%R
 
 ae_eq_mul2r is not universe polymorphic
-Arguments ae_eq_mul2r [d]%measure_display_scope [T R mu]
-  [D]%classical_set_scope [W] [f g]%function_scope 
-  h%function_scope _
+Arguments ae_eq_mul2r [d]%_measure_display_scope [T R mu]
+  [D]%_classical_set_scope [W] [f g]%_function_scope 
+  h%_function_scope _
 ae_eq_mul2r is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.ae_eq_mul2r
@@ -943,9 +943,9 @@ ae_eq (R:=R) mu (V:=fun=> W) D f g ->
 ae_eq (R:=R) mu (V:=fun=> W) D (h \* f)%R (h \* g)%R
 
 ae_eq_mul2l is not universe polymorphic
-Arguments ae_eq_mul2l [d]%measure_display_scope [T R mu]
-  [D]%classical_set_scope [W] [f g]%function_scope 
-  h%function_scope _
+Arguments ae_eq_mul2l [d]%_measure_display_scope [T R mu]
+  [D]%_classical_set_scope [W] [f g]%_function_scope 
+  h%_function_scope _
 ae_eq_mul2l is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.ae_eq_mul2l
@@ -965,9 +965,9 @@ ae_eq (R:=R) mu (V:=fun=> W) D f (cst 1%R) ->
 ae_eq (R:=R) mu (V:=fun=> W) D g (g \* f)%R
 
 ae_eq_mul1l is not universe polymorphic
-Arguments ae_eq_mul1l [d]%measure_display_scope [T R mu]
-  [D]%classical_set_scope [W] [f]%function_scope g%function_scope 
-  _
+Arguments ae_eq_mul1l [d]%_measure_display_scope [T R mu]
+  [D]%_classical_set_scope [W] [f]%_function_scope 
+  g%_function_scope _
 ae_eq_mul1l is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.ae_eq_mul1l
@@ -986,8 +986,8 @@ ae_eq (R:=R) mu (V:=fun=> \bar R) D f g ->
 ae_eq (R:=R) mu (V:=fun=> \bar R) D (abse \o f) (abse \o g)
 
 ae_eq_abse is not universe polymorphic
-Arguments ae_eq_abse [d]%measure_display_scope [T R mu]
-  [D]%classical_set_scope [f g]%function_scope _
+Arguments ae_eq_abse [d]%_measure_display_scope [T R mu]
+  [D]%_classical_set_scope [f g]%_function_scope _
 ae_eq_abse is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.ae_eq_abse
@@ -1006,8 +1006,8 @@ forall [d : measure_display] [T : sigmaRingType d]
 \forall x \ae mu, forall n : nat, P n x
 
 ae_foralln is not universe polymorphic
-Arguments ae_foralln [d]%measure_display_scope [T R mu] 
-  [P]%function_scope _%function_scope
+Arguments ae_foralln [d]%_measure_display_scope [T R mu] 
+  [P]%_function_scope _%_function_scope
 ae_foralln is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.ae_foralln
@@ -1041,9 +1041,9 @@ forall [d : measure_display] [T : sigmaRingType d]
 ae_eq (R:=R) mu (V:=fun=> U) A f g -> ae_eq (R:=R) mu (V:=fun=> U) B f g
 
 ae_eq_subset is not universe polymorphic
-Arguments ae_eq_subset [d]%measure_display_scope [T R] 
-  [U]%type_scope [mu] [A B]%classical_set_scope [f g]%function_scope 
-  _ _
+Arguments ae_eq_subset [d]%_measure_display_scope 
+  [T R] [U]%_type_scope [mu] [A B]%_classical_set_scope 
+  [f g]%_function_scope _ _
 ae_eq_subset is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.ae_eq_subset
@@ -1070,9 +1070,9 @@ ae_eq (R:=R) mu (V:=fun=> \bar R) D f g ->
 ae_eq (R:=R) mu (V:=fun=> \bar R) D (h \* f)%E (h \* g)%E
 
 ae_eqe_mul2l is not universe polymorphic
-Arguments ae_eqe_mul2l [d]%measure_display_scope [T R mu]
-  [D]%classical_set_scope [f g]%function_scope h%function_scope 
-  _
+Arguments ae_eqe_mul2l [d]%_measure_display_scope 
+  [T R mu] [D]%_classical_set_scope [f g]%_function_scope 
+  h%_function_scope _
 ae_eqe_mul2l is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.ae_eqe_mul2l
@@ -1095,7 +1095,7 @@ forall [d : measure_display] [T : semiRingOfSetsType d] [R : numDomainType],
 (set T -> \bar R) -> set (set T)
 
 null_set is not universe polymorphic
-Arguments null_set [d]%measure_display_scope [T R] m%function_scope _
+Arguments null_set [d]%_measure_display_scope [T R] m%_function_scope _
 null_set is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.null_set
@@ -1126,8 +1126,8 @@ m.-null_set B ->
 forall [A0 : set T],
 d.-measurable%classic A0 -> (A0 `<=` A)%classic -> m A0 = 0%R
 
-Arguments subset_null_set [d]%measure_display_scope 
-  [T R] [m]%function_scope [A B]%classical_set_scope 
+Arguments subset_null_set [d]%_measure_display_scope 
+  [T R] [m]%_function_scope [A B]%_classical_set_scope 
   _ _ [A] _ _
 subset_null_set is opaque
 Expands to: Constant
@@ -1162,8 +1162,8 @@ m.-negligible A ->
 forall [A0 : set T],
 d.-measurable%classic A0 -> (A0 `<=` A)%classic -> m A0 = 0%R
 
-Arguments negligible_null_set [d]%measure_display_scope 
-  [T R m] [A]%classical_set_scope _ [A] _ _
+Arguments negligible_null_set [d]%_measure_display_scope 
+  [T R m] [A]%_classical_set_scope _ [A] _ _
 negligible_null_set is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.negligible_null_set
@@ -1184,8 +1184,8 @@ forall [d : measure_display] [T : measurableType d]
 d.-measurable%classic A -> m.-null_set A <-> m A = 0%R
 
 measure0_null_setP is not universe polymorphic
-Arguments measure0_null_setP [d]%measure_display_scope 
-  [T R] m [A]%classical_set_scope _
+Arguments measure0_null_setP [d]%_measure_display_scope 
+  [T R] m [A]%_classical_set_scope _
 measure0_null_setP is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.measure0_null_setP
@@ -1208,8 +1208,8 @@ m.-null_set B <->
 (forall A : set T, d.-measurable%classic A -> m (A `|` B)%classic = m A)
 
 null_setU is not universe polymorphic
-Arguments null_setU [d]%measure_display_scope [T R] 
-  m [B]%classical_set_scope _
+Arguments null_setU [d]%_measure_display_scope [T R] 
+  m [B]%_classical_set_scope _
 null_setU is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.null_setU
@@ -1239,8 +1239,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d] [R : realType],
 (set T -> \bar R) -> (set T -> \bar R) -> Prop
 
 null_dominates is not universe polymorphic
-Arguments null_dominates [d]%measure_display_scope 
-  [T R] (m2 m1)%function_scope
+Arguments null_dominates [d]%_measure_display_scope 
+  [T R] (m2 m1)%_function_scope
 null_dominates is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.null_dominates
@@ -1272,8 +1272,8 @@ m3.-null_set t ->
 forall [A : set T],
 d.-measurable%classic A -> (A `<=` t)%classic -> m1 A = 0%R
 
-Arguments null_dominates_trans [d]%measure_display_scope 
-  [T R] [m1 m2 m3]%function_scope _ _ [t] _ [A] _ 
+Arguments null_dominates_trans [d]%_measure_display_scope 
+  [T R] [m1 m2 m3]%_function_scope _ _ [t] _ [A] _ 
   _
 null_dominates_trans is opaque
 Expands to: Constant
@@ -1293,8 +1293,8 @@ forall {d : measure_display} {T : measurableType d} {R : realType},
 {content set T -> \bar R}%R -> (set T -> \bar R) -> Prop
 
 content_dominates is not universe polymorphic
-Arguments content_dominates {d}%measure_display_scope 
-  {T R} mu nu%function_scope
+Arguments content_dominates {d}%_measure_display_scope 
+  {T R} mu nu%_function_scope
 content_dominates is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.content_dominates
@@ -1314,8 +1314,8 @@ forall [d : measure_display] [T : measurableType d]
 nu `<< mu <-> content_dominates mu nu
 
 null_content_dominatesP is not universe polymorphic
-Arguments null_content_dominatesP [d]%measure_display_scope 
-  [T R] nu%function_scope mu
+Arguments null_content_dominatesP [d]%_measure_display_scope 
+  [T R] nu%_function_scope mu
 null_content_dominatesP is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.null_content_dominatesP
@@ -1346,9 +1346,9 @@ nu `<< mu ->
 ae_eq (R:=R) mu (V:=fun=> U) E f g -> ae_eq (R:=R) nu (V:=fun=> U) E f g
 
 null_dominates_ae_eq is not universe polymorphic
-Arguments null_dominates_ae_eq [d]%measure_display_scope 
-  [T R] [U]%type_scope [nu mu] [f g]%function_scope 
-  [E]%classical_set_scope _ _ _
+Arguments null_dominates_ae_eq [d]%_measure_display_scope 
+  [T R] [U]%_type_scope [nu mu] [f g]%_function_scope
+  [E]%_classical_set_scope _ _ _
 null_dominates_ae_eq is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_negligible.null_dominates_ae_eq

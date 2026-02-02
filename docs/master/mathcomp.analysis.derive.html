@@ -288,7 +288,7 @@ Linear_type__canonical__classical_sets_Pointed V (V:=W)
   (GRing.GRing_scale__canonical__Scale_Law W)
 
 diff is not universe polymorphic
-Arguments diff {K V W} [F] _ f%function_scope
+Arguments diff {K V W} [F] _ f%_function_scope
 diff is transparent
 Expands to: Constant mathcomp.analysis.derive.diff
 Declared in library mathcomp.analysis.derive, line 71, characters 11-15
@@ -301,7 +301,7 @@ Declared in library mathcomp.analysis.derive, line 71, characters 11-15
 <span class="vernacular">Fact</span><span class="id"> </span><span id="diff_key" class="id"><a name="diff_key" class="" title="diff_key : forall [T : Type], T -> unit
 
 diff_key is not universe polymorphic
-Arguments diff_key [T]%type_scope _
+Arguments diff_key [T]%_type_scope _
 diff_key is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_key
 Declared in library mathcomp.analysis.derive, line 77, characters 5-13
@@ -347,7 +347,7 @@ differentiable f F <->
   'o_(filter.nbhs F) (+%R^~ (- filter.lim (filter.filter F)))  x)%R)
 
 diffP is not universe polymorphic
-Arguments diffP {K V W} F f%function_scope
+Arguments diffP {K V W} F f%_function_scope
 diffP is opaque
 Expands to: Constant mathcomp.analysis.derive.diffP
 Declared in library mathcomp.analysis.derive, line 93, characters 6-11
@@ -398,7 +398,7 @@ filter.nbhs ('d f x x0) t ->
       class) in
  nbhs) x0 ('d f x @^-1` t)%classic
 
-Arguments diff_continuous {K V W} [x] [f]%function_scope _ [x0 t] _
+Arguments diff_continuous {K V W} [x] [f]%_function_scope _ [x0 t] _
 diff_continuous is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_continuous
 Declared in library mathcomp.analysis.derive, line 99, characters 6-21
@@ -420,7 +420,7 @@ f x =
  'o_(filter.nbhs F) (+%R^~ (- filter.lim (filter.filter F)))  x)%R
 
 diffE is not universe polymorphic
-Arguments diffE {K V W} [F] [f]%function_scope _ x
+Arguments diffE {K V W} [F] [f]%_function_scope _ x
 diffE is opaque
 Expands to: Constant mathcomp.analysis.derive.diffE
 Declared in library mathcomp.analysis.derive, line 105, characters 6-11
@@ -438,7 +438,7 @@ forall {K : numDomainType} {V W : normedModType K}
 [o_x e of f] = [o_(0%R) e \o shift x of f \o shift x] \o center x
 
 littleo_center0 is not universe polymorphic
-Arguments littleo_center0 {K V W} x (f e)%function_scope
+Arguments littleo_center0 {K V W} x (f e)%_function_scope
 littleo_center0 is opaque
 Expands to: Constant mathcomp.analysis.derive.littleo_center0
 Declared in library mathcomp.analysis.derive, line 110, characters 6-21
@@ -482,7 +482,7 @@ differentiable f x <->
 (forall h : V, f (h + x)%R = (f x + 'd f x h + 'o_(filter.nbhs 0) id  h)%R)
 
 diff_locallyxP is not universe polymorphic
-Arguments diff_locallyxP {K V W} x f%function_scope
+Arguments diff_locallyxP {K V W} x f%_function_scope
 diff_locallyxP is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_locallyxP
 Declared in library mathcomp.analysis.derive, line 132, characters 6-20
@@ -508,7 +508,7 @@ differentiable f x ->
 forall h : V, f (h + x)%R = (f x + 'd f x h + 'o_(filter.nbhs 0) id  h)%R
 
 diff_locallyx is not universe polymorphic
-Arguments diff_locallyx {K V W} [x] [f]%function_scope _ h%ring_scope
+Arguments diff_locallyx {K V W} [x] [f]%_function_scope _ h%_ring_scope
 diff_locallyx is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_locallyx
 Declared in library mathcomp.analysis.derive, line 146, characters 6-19
@@ -525,7 +525,7 @@ differentiable f x ->
 forall h : V, f (x + h)%R = (f x + 'd f x h + 'o_(filter.nbhs 0) id  h)%R
 
 diff_locallyxC is not universe polymorphic
-Arguments diff_locallyxC {K V W} [x] [f]%function_scope _ h%ring_scope
+Arguments diff_locallyxC {K V W} [x] [f]%_function_scope _ h%_ring_scope
 diff_locallyxC is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_locallyxC
 Declared in library mathcomp.analysis.derive, line 150, characters 6-20
@@ -553,7 +553,7 @@ differentiable f x <->
 f \o shift x = (cst (f x) + 'd f x)%R +o_(0%R) id
 
 diff_locallyP is not universe polymorphic
-Arguments diff_locallyP {K V W} x f%function_scope
+Arguments diff_locallyP {K V W} x f%_function_scope
 diff_locallyP is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_locallyP
 Declared in library mathcomp.analysis.derive, line 154, characters 6-19
@@ -570,7 +570,7 @@ forall {K : numFieldType} {V W : normedModType K} [x : V] [f : V -> W],
 differentiable f x -> f \o shift x = (cst (f x) + 'd f x)%R +o_(0%R) id
 
 diff_locally is not universe polymorphic
-Arguments diff_locally {K V W} [x] [f]%function_scope _
+Arguments diff_locally {K V W} [x] [f]%_function_scope _
 diff_locally is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_locally
 Declared in library mathcomp.analysis.derive, line 159, characters 6-18
@@ -600,7 +600,7 @@ forall [R : numDomainType] [V W : normedModType R]
 differentiable f x -> is_diff x f 'd f x
 
 differentiableP is not universe polymorphic
-Arguments differentiableP [R V W] [f]%function_scope [x] _
+Arguments differentiableP [R V W] [f]%_function_scope [x] _
 differentiableP is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiableP
 Declared in library mathcomp.analysis.derive, line 173, characters 6-21
@@ -622,7 +622,7 @@ filter.Filtered.sort
 'M_(n, m)
 
 jacobian is not universe polymorphic
-Arguments jacobian [n m]%nat_scope [R] f%function_scope p
+Arguments jacobian [n m]%_nat_scope [R] f%_function_scope p
 jacobian is transparent
 Expands to: Constant mathcomp.analysis.derive.jacobian
 Declared in library mathcomp.analysis.derive, line 179, characters 11-19
@@ -657,7 +657,7 @@ filter.nbhs (f x) t ->
       class) in
  nbhs) x (f @^-1` t)%classic
 
-Arguments differentiable_continuous {R V W} [x] [f]%function_scope _ [t] _
+Arguments differentiable_continuous {R V W} [x] [f]%_function_scope _ [t] _
 differentiable_continuous is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiable_continuous
 Declared in library mathcomp.analysis.derive, line 194, characters 6-31
@@ -685,7 +685,7 @@ forall {R : numFieldType} [X Y : normedModType R]
 `|[o_x fun=> 1 : R of [eta f]] x|%R = 0%R
 
 normm_littleo is not universe polymorphic
-Arguments normm_littleo {R} [X Y] x f%function_scope
+Arguments normm_littleo {R} [X Y] x f%_function_scope
 normm_littleo is opaque
 Expands to: Constant mathcomp.analysis.derive.normm_littleo
 Declared in library mathcomp.analysis.derive, line 207, characters 6-19
@@ -705,7 +705,8 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs x))) (filter.nbhs 0%R) ->
 [o_(x \near x) (f x) of h x] = 0%R
 
 littleo_lim0 is not universe polymorphic
-Arguments littleo_lim0 {R} [X Y Z] [f]%function_scope h%function_scope [x] _
+Arguments littleo_lim0 {R} [X Y Z] [f]%_function_scope 
+  h%_function_scope [x] _
 littleo_lim0 is opaque
 Expands to: Constant mathcomp.analysis.derive.littleo_lim0
 Declared in library mathcomp.analysis.derive, line 214, characters 6-18
@@ -726,8 +727,8 @@ forall {R : numFieldType} [f : R -> R] [a b x : R],
 f \o shift x = (cst a + b *: idfun)%R +o_(0%R) id -> f x = a
 
 diff_locally_converse_part1 is not universe polymorphic
-Arguments diff_locally_converse_part1 {R} [f]%function_scope
-  [a b x]%ring_scope _
+Arguments diff_locally_converse_part1 {R} [f]%_function_scope
+  [a b x]%_ring_scope _
 diff_locally_converse_part1 is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_locally_converse_part1
 Declared in library mathcomp.analysis.derive, line 230, characters 6-33
@@ -753,7 +754,7 @@ filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointe
         W))
 
 derive is not universe polymorphic
-Arguments derive {R V W} f%function_scope (a v)%ring_scope
+Arguments derive {R V W} f%_function_scope (a v)%_ring_scope
 derive is transparent
 Expands to: Constant mathcomp.analysis.derive.derive
 Declared in library mathcomp.analysis.derive, line 239, characters 11-17
@@ -767,7 +768,7 @@ Declared in library mathcomp.analysis.derive, line 239, characters 11-17
 forall {R : numFieldType} {V W : normedModType R}, (V -> W) -> V -> V -> Prop
 
 derivable is not universe polymorphic
-Arguments derivable {R V W} f%function_scope (a v)%ring_scope
+Arguments derivable {R V W} f%_function_scope (a v)%_ring_scope
 derivable is transparent
 Expands to: Constant mathcomp.analysis.derive.derivable
 Declared in library mathcomp.analysis.derive, line 245, characters 11-20
@@ -786,7 +787,7 @@ derivable f a v ->
 (filter.nbhs 0%R) id
 
 derivable_nbhs is not universe polymorphic
-Arguments derivable_nbhs {R V W} [f]%function_scope [a v]%ring_scope _
+Arguments derivable_nbhs {R V W} [f]%_function_scope [a v]%_ring_scope _
 derivable_nbhs is opaque
 Expands to: Constant mathcomp.analysis.derive.derivable_nbhs
 Declared in library mathcomp.analysis.derive, line 253, characters 6-20
@@ -819,7 +820,7 @@ derivable f a v <->
 (filter.nbhs 0%R) id
 
 derivable_nbhsP is not universe polymorphic
-Arguments derivable_nbhsP {R V W} f%function_scope (a v)%ring_scope
+Arguments derivable_nbhsP {R V W} f%_function_scope (a v)%_ring_scope
 derivable_nbhsP is opaque
 Expands to: Constant mathcomp.analysis.derive.derivable_nbhsP
 Declared in library mathcomp.analysis.derive, line 273, characters 6-21
@@ -850,8 +851,8 @@ f (a + h *: v)%R =
 (f a + h *: 'D_v f a + 'o_(filter.nbhs (filter.nbhs 0)) id  h)%R
 
 derivable_nbhsx is not universe polymorphic
-Arguments derivable_nbhsx {R V W} [f]%function_scope 
-  [a v]%ring_scope _ h%ring_scope
+Arguments derivable_nbhsx {R V W} [f]%_function_scope 
+  [a v]%_ring_scope _ h%_ring_scope
 derivable_nbhsx is opaque
 Expands to: Constant mathcomp.analysis.derive.derivable_nbhsx
 Declared in library mathcomp.analysis.derive, line 290, characters 6-21
@@ -873,7 +874,7 @@ derivable f a v <->
  (f a + h *: 'D_v f a + 'o_(filter.nbhs (filter.nbhs 0)) id  h)%R)
 
 derivable_nbhsxP is not universe polymorphic
-Arguments derivable_nbhsxP {R V W} f%function_scope (a v)%ring_scope
+Arguments derivable_nbhsxP {R V W} f%_function_scope (a v)%_ring_scope
 derivable_nbhsxP is opaque
 Expands to: Constant mathcomp.analysis.derive.derivable_nbhsxP
 Declared in library mathcomp.analysis.derive, line 298, characters 6-22
@@ -903,7 +904,7 @@ forall {R : numFieldType} {V W : normedModType R}
 differentiable f a -> 'D_v f a = 'd f a v
 
 deriveE is not universe polymorphic
-Arguments deriveE {R V W} [f]%function_scope [a] v _
+Arguments deriveE {R V W} [f]%_function_scope [a] v _
 deriveE is opaque
 Expands to: Constant mathcomp.analysis.derive.deriveE
 Declared in library mathcomp.analysis.derive, line 316, characters 6-13
@@ -956,8 +957,8 @@ forall [R : numFieldType] [m n : nat] [f : 'rV_m -> 'rV_n]
 differentiable f a -> 'D_v f a = (v *m 'J f a)%R
 
 deriveEjacobian is not universe polymorphic
-Arguments deriveEjacobian [R] [m n]%nat_scope [f]%function_scope
-  [a]%ring_scope v%ring_scope _
+Arguments deriveEjacobian [R] [m n]%_nat_scope [f]%_function_scope
+  [a]%_ring_scope v%_ring_scope _
 deriveEjacobian is opaque
 Expands to: Constant mathcomp.analysis.derive.deriveEjacobian
 Declared in library mathcomp.analysis.derive, line 357, characters 6-21
@@ -978,7 +979,7 @@ filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointe
         V))
 
 derive1 is not universe polymorphic
-Arguments derive1 [R V] f%function_scope a%ring_scope
+Arguments derive1 [R V] f%_function_scope a%_ring_scope
 derive1 is transparent
 Expands to: Constant mathcomp.analysis.derive.derive1
 Declared in library mathcomp.analysis.derive, line 361, characters 11-18
@@ -992,7 +993,7 @@ forall [R : numFieldType] [V : normedModType R] (f : R -> V) (a : R),
 f^`()%classic a = 'D_1 f a
 
 derive1E is not universe polymorphic
-Arguments derive1E [R V] f%function_scope a%ring_scope
+Arguments derive1E [R V] f%_function_scope a%_ring_scope
 derive1E is opaque
 Expands to: Constant mathcomp.analysis.derive.derive1E
 Declared in library mathcomp.analysis.derive, line 366, characters 6-14
@@ -1013,7 +1014,7 @@ forall [R : numFieldType] [V : normedModType R] [f : R -> V]
 differentiable (f : R -> V) a -> f^`()%classic a = 'd f a 1%R
 
 derive1E' is not universe polymorphic
-Arguments derive1E' [R V] [f]%function_scope [a] _
+Arguments derive1E' [R V] [f]%_function_scope [a] _
 derive1E' is opaque
 Expands to: Constant mathcomp.analysis.derive.derive1E'
 Declared in library mathcomp.analysis.derive, line 373, characters 6-15
@@ -1028,7 +1029,7 @@ Declared in library mathcomp.analysis.derive, line 373, characters 6-15
 forall [R : numFieldType] [V : normedModType R], nat -> (R -> V) -> R -> V
 
 derive1n is not universe polymorphic
-Arguments derive1n [R V] n%nat_scope f%function_scope _%ring_scope
+Arguments derive1n [R V] n%_nat_scope f%_function_scope _%_ring_scope
 derive1n is transparent
 Expands to: Constant mathcomp.analysis.derive.derive1n
 Declared in library mathcomp.analysis.derive, line 377, characters 11-19
@@ -1041,7 +1042,7 @@ forall [R : numFieldType] [V : normedModType R] (f : R -> V),
 f^`(0)%classic = f
 
 derive1n0 is not universe polymorphic
-Arguments derive1n0 [R V] f%function_scope
+Arguments derive1n0 [R V] f%_function_scope
 derive1n0 is opaque
 Expands to: Constant mathcomp.analysis.derive.derive1n0
 Declared in library mathcomp.analysis.derive, line 381, characters 6-15
@@ -1056,7 +1057,7 @@ forall [R : numFieldType] [V : normedModType R] (f : R -> V),
 f^`(1)%classic = f^`()%classic
 
 derive1n1 is not universe polymorphic
-Arguments derive1n1 [R V] f%function_scope
+Arguments derive1n1 [R V] f%_function_scope
 derive1n1 is opaque
 Expands to: Constant mathcomp.analysis.derive.derive1n1
 Declared in library mathcomp.analysis.derive, line 384, characters 6-15
@@ -1071,7 +1072,7 @@ forall [R : numFieldType] [V : normedModType R] (f : R -> V) (n : nat),
 f^`(n.+1)%classic = (f^`(n))^`()%classic
 
 derive1nS is not universe polymorphic
-Arguments derive1nS [R V] f%function_scope n%nat_scope
+Arguments derive1nS [R V] f%_function_scope n%_nat_scope
 derive1nS is opaque
 Expands to: Constant mathcomp.analysis.derive.derive1nS
 Declared in library mathcomp.analysis.derive, line 387, characters 6-15
@@ -1086,7 +1087,7 @@ forall [R : numFieldType] [V : normedModType R] (f : R -> V) (n : nat),
 f^`(n.+1)%classic = (f^`())^`(n)%classic
 
 derive1Sn is not universe polymorphic
-Arguments derive1Sn [R V] f%function_scope n%nat_scope
+Arguments derive1Sn [R V] f%_function_scope n%_nat_scope
 derive1Sn is opaque
 Expands to: Constant mathcomp.analysis.derive.derive1Sn
 Declared in library mathcomp.analysis.derive, line 390, characters 6-15
@@ -1151,7 +1152,7 @@ differentiable g x ->
 (0%R) id
 
 dadd is not universe polymorphic
-Arguments dadd [R V W] [f g]%function_scope [x] _ _
+Arguments dadd [R V W] [f g]%_function_scope [x] _ _
 dadd is opaque
 Expands to: Constant mathcomp.analysis.derive.dadd
 Declared in library mathcomp.analysis.derive, line 412, characters 5-9
@@ -1180,7 +1181,7 @@ differentiable f x ->
 (0%R) id
 
 dopp is not universe polymorphic
-Arguments dopp [R V W] [f]%function_scope [x] _
+Arguments dopp [R V W] [f]%_function_scope [x] _
 dopp is opaque
 Expands to: Constant mathcomp.analysis.derive.dopp
 Declared in library mathcomp.analysis.derive, line 422, characters 5-9
@@ -1201,7 +1202,7 @@ forall [R : numFieldType] [V' W' : normedModType R]
 is_diff x f f' -> f' = g -> is_diff x f g
 
 is_diff_eq is not universe polymorphic
-Arguments is_diff_eq [R V' W'] [f f' g]%function_scope [x] _ _
+Arguments is_diff_eq [R V' W'] [f f' g]%_function_scope [x] _ _
 is_diff_eq is opaque
 Expands to: Constant mathcomp.analysis.derive.is_diff_eq
 Declared in library mathcomp.analysis.derive, line 431, characters 6-16
@@ -1234,7 +1235,7 @@ differentiable f x ->
 (0%R) id
 
 dscale is not universe polymorphic
-Arguments dscale [R V W] [f]%function_scope k%ring_scope [x] _
+Arguments dscale [R V W] [f]%_function_scope k%_ring_scope [x] _
 dscale is opaque
 Expands to: Constant mathcomp.analysis.derive.dscale
 Declared in library mathcomp.analysis.derive, line 435, characters 5-11
@@ -1265,7 +1266,7 @@ differentiable k x ->
 (0%R) id
 
 dscalel is not universe polymorphic
-Arguments dscalel [R V W] [k]%function_scope f [x] _
+Arguments dscalel [R V W] [k]%_function_scope f [x] _
 dscalel is opaque
 Expands to: Constant mathcomp.analysis.derive.dscalel
 Declared in library mathcomp.analysis.derive, line 445, characters 5-12
@@ -1301,7 +1302,7 @@ forall [R : numFieldType] [V' W' : normedModType R]
 f \o shift x = (cst (f x) + f)%R +o_(0%R) id
 
 dlin is not universe polymorphic
-Arguments dlin [R V' W' f] x%ring_scope _%function_scope
+Arguments dlin [R V' W' f] x%_ring_scope _%_function_scope
 dlin is opaque
 Expands to: Constant mathcomp.analysis.derive.dlin
 Declared in library mathcomp.analysis.derive, line 457, characters 5-9
@@ -1321,7 +1322,7 @@ forall [R : numFieldType] [U V' W' : normedModType R]
 [o_(0%R) id of g] \o [O_(0%R) id of f] =o_(0%R) id
 
 compoO_eqo is not universe polymorphic
-Arguments compoO_eqo [R U V' W'] (f g)%function_scope
+Arguments compoO_eqo [R U V' W'] (f g)%_function_scope
 compoO_eqo is opaque
 Expands to: Constant mathcomp.analysis.derive.compoO_eqo
 Declared in library mathcomp.analysis.derive, line 466, characters 6-16
@@ -1346,7 +1347,7 @@ forall [R : numFieldType] [U V' W' : normedModType R]
 [o_(0%R) id of g] [O_(x \near 0%R) x of f x] = 'o_(filter.nbhs 0%R) id  x
 
 compoO_eqox is not universe polymorphic
-Arguments compoO_eqox [R U V' W'] (f g)%function_scope x
+Arguments compoO_eqox [R U V' W'] (f g)%_function_scope x
 compoO_eqox is opaque
 Expands to: Constant mathcomp.analysis.derive.compoO_eqox
 Declared in library mathcomp.analysis.derive, line 479, characters 6-17
@@ -1364,7 +1365,7 @@ forall [R : numFieldType] [U V' W' : normedModType R]
 [O_(0%R) id of g] \o [o_(0%R) id of f] =o_(0%R) id
 
 compOo_eqo is not universe polymorphic
-Arguments compOo_eqo [R U V' W'] (f g)%function_scope
+Arguments compOo_eqo [R U V' W'] (f g)%_function_scope
 compOo_eqo is opaque
 Expands to: Constant mathcomp.analysis.derive.compOo_eqo
 Declared in library mathcomp.analysis.derive, line 485, characters 6-16
@@ -1435,8 +1436,8 @@ forall [R : numFieldType] [V W : normedModType R]
 f \o shift x = (cst (f x) + df)%R +o_(0%R) id -> 'd f x = df
 
 diff_unique is not universe polymorphic
-Arguments diff_unique [R V W] [f]%function_scope [df] 
-  [x]%ring_scope _%function_scope _
+Arguments diff_unique [R V W] [f]%_function_scope 
+  [df] [x]%_ring_scope _%_function_scope _
 diff_unique is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_unique
 Declared in library mathcomp.analysis.derive, line 522, characters 6-17
@@ -1523,7 +1524,7 @@ differentiable f x ->
 differentiable g x -> 'd ((f + g)%R) x = ('d f x \+ 'd g x)%R
 
 diffD is not universe polymorphic
-Arguments diffD [R V W] [f g]%function_scope [x] _ _
+Arguments diffD [R V W] [f g]%_function_scope [x] _ _
 diffD is opaque
 Expands to: Constant mathcomp.analysis.derive.diffD
 Declared in library mathcomp.analysis.derive, line 562, characters 6-11
@@ -1544,7 +1545,7 @@ forall [R : numFieldType] [V W : normedModType R]
 differentiable f x -> differentiable g x -> differentiable (f + g)%R x
 
 differentiableD is not universe polymorphic
-Arguments differentiableD [R V W] [f g]%function_scope [x] _ _
+Arguments differentiableD [R V W] [f g]%_function_scope [x] _ _
 differentiableD is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiableD
 Declared in library mathcomp.analysis.derive, line 567, characters 6-21
@@ -1572,8 +1573,8 @@ forall [R : numFieldType] [V W : normedModType R]
 differentiable (\sum_(i < n) f i)%R x
 
 differentiable_sum is not universe polymorphic
-Arguments differentiable_sum [R V W] [n]%nat_scope 
-  [f]%function_scope [x] _%function_scope
+Arguments differentiable_sum [R V W] [n]%_nat_scope 
+  [f]%_function_scope [x] _%_function_scope
 differentiable_sum is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiable_sum
 Declared in library mathcomp.analysis.derive, line 580, characters 6-24
@@ -1594,7 +1595,7 @@ forall [R : numFieldType] [V W : normedModType R]
 differentiable f x -> 'd ((- f)%R) x = (- ('d f x : V -> W))%R
 
 diffN is not universe polymorphic
-Arguments diffN [R V W] [f]%function_scope [x] _
+Arguments diffN [R V W] [f]%_function_scope [x] _
 diffN is opaque
 Expands to: Constant mathcomp.analysis.derive.diffN
 Declared in library mathcomp.analysis.derive, line 586, characters 6-11
@@ -1616,7 +1617,7 @@ forall [R : numFieldType] [V W : normedModType R]
 differentiable f x -> differentiable (- f)%R x
 
 differentiableN is not universe polymorphic
-Arguments differentiableN [R V W] [f]%function_scope [x] _
+Arguments differentiableN [R V W] [f]%_function_scope [x] _
 differentiableN is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiableN
 Declared in library mathcomp.analysis.derive, line 593, characters 6-21
@@ -1654,7 +1655,7 @@ differentiable f x ->
 differentiable g x -> 'd ((f - g)%R) x = ('d f x \- 'd g x)%R
 
 diffB is not universe polymorphic
-Arguments diffB [R V W] [f g]%function_scope [x] _ _
+Arguments diffB [R V W] [f g]%_function_scope [x] _ _
 diffB is opaque
 Expands to: Constant mathcomp.analysis.derive.diffB
 Declared in library mathcomp.analysis.derive, line 610, characters 6-11
@@ -1676,7 +1677,7 @@ forall [R : numFieldType] [V W : normedModType R]
 differentiable f x -> differentiable g x -> differentiable (f \- g)%R x
 
 differentiableB is not universe polymorphic
-Arguments differentiableB [R V W] [f g]%function_scope [x] _ _
+Arguments differentiableB [R V W] [f g]%_function_scope [x] _ _
 differentiableB is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiableB
 Declared in library mathcomp.analysis.derive, line 617, characters 6-21
@@ -1696,7 +1697,7 @@ forall [R : numFieldType] [V W : normedModType R]
 differentiable f x -> 'd ((k *: f)%R) x = (k \*: 'd f x)%R
 
 diffZ is not universe polymorphic
-Arguments diffZ [R V W] [f]%function_scope k%ring_scope [x] _
+Arguments diffZ [R V W] [f]%_function_scope k%_ring_scope [x] _
 diffZ is opaque
 Expands to: Constant mathcomp.analysis.derive.diffZ
 Declared in library mathcomp.analysis.derive, line 621, characters 6-11
@@ -1716,7 +1717,7 @@ forall [R : numFieldType] [V W : normedModType R]
 differentiable f x -> differentiable (k *: f)%R x
 
 differentiableZ is not universe polymorphic
-Arguments differentiableZ [R V W] [f]%function_scope k%ring_scope [x] _
+Arguments differentiableZ [R V W] [f]%_function_scope k%_ring_scope [x] _
 differentiableZ is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiableZ
 Declared in library mathcomp.analysis.derive, line 625, characters 6-21
@@ -1747,7 +1748,7 @@ differentiable k x ->
 'd (fun z : V => (k z *: f)%R) x = (fun z : V => ('d k x z *: f)%R)
 
 diffZl is not universe polymorphic
-Arguments diffZl [R V W] [k]%function_scope f [x] _
+Arguments diffZl [R V W] [k]%_function_scope f [x] _
 diffZl is opaque
 Expands to: Constant mathcomp.analysis.derive.diffZl
 Declared in library mathcomp.analysis.derive, line 638, characters 6-12
@@ -1772,7 +1773,7 @@ forall [R : numFieldType] [V W : normedModType R]
 differentiable k x -> differentiable (fun z : V => (k z *: f)%R) x
 
 differentiableZl is not universe polymorphic
-Arguments differentiableZl [R V W] [k]%function_scope f [x] _
+Arguments differentiableZl [R V W] [k]%_function_scope f [x] _
 differentiableZl is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiableZl
 Declared in library mathcomp.analysis.derive, line 648, characters 6-22
@@ -1804,7 +1805,7 @@ forall [R : numFieldType] [V' W' : normedModType R]
 'd f x = f
 
 diff_lin is not universe polymorphic
-Arguments diff_lin [R V' W' f] x _%function_scope
+Arguments diff_lin [R V' W' f] x _%_function_scope
 diff_lin is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_lin
 Declared in library mathcomp.analysis.derive, line 654, characters 6-14
@@ -1835,7 +1836,7 @@ forall [R : numFieldType] [V' W' : normedModType R]
 differentiable f x
 
 linear_differentiable is not universe polymorphic
-Arguments linear_differentiable [R V' W' f] x _%function_scope
+Arguments linear_differentiable [R V' W' f] x _%_function_scope
 linear_differentiable is opaque
 Expands to: Constant mathcomp.analysis.derive.linear_differentiable
 Declared in library mathcomp.analysis.derive, line 658, characters 6-27
@@ -1883,7 +1884,7 @@ forall [R : numFieldType] [m n : nat] (M : 'M_(m, n)) (i : 'I_m) (j : 'I_n),
 differentiable (fun N : 'M_(m, n) => N i j : R) M
 
 differentiable_coord is not universe polymorphic
-Arguments differentiable_coord [R] [m n]%nat_scope M%ring_scope i j
+Arguments differentiable_coord [R] [m n]%_nat_scope M%_ring_scope i j
 differentiable_coord is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiable_coord
 Declared in library mathcomp.analysis.derive, line 689, characters 6-26
@@ -1917,7 +1918,7 @@ exists2
   (0 < k)%R & forall x : V', (`|f x| <= k * `|x|)%R
 
 linear_lipschitz is not universe polymorphic
-Arguments linear_lipschitz [R V' W' f] _%function_scope
+Arguments linear_lipschitz [R V' W' f] _%_function_scope
 linear_lipschitz is opaque
 Expands to: Constant mathcomp.analysis.derive.linear_lipschitz
 Declared in library mathcomp.analysis.derive, line 698, characters 6-22
@@ -1958,7 +1959,7 @@ forall [R : numFieldType] [V' W' : normedModType R] [f : {linear V' -> W'}],
 (f : V' -> W') =O_(0%R) id
 
 linear_eqO is not universe polymorphic
-Arguments linear_eqO [R V' W' f] _%function_scope
+Arguments linear_eqO [R V' W' f] _%_function_scope
 linear_eqO is opaque
 Expands to: Constant mathcomp.analysis.derive.linear_eqO
 Declared in library mathcomp.analysis.derive, line 717, characters 6-16
@@ -1977,7 +1978,7 @@ forall [R : numFieldType] [V' W' : normedModType R]
 differentiable f x -> ('d f x : V' -> W') =O_(0%R) id
 
 diff_eqO is not universe polymorphic
-Arguments diff_eqO [R V' W' x] [f]%function_scope _
+Arguments diff_eqO [R V' W' x] [f]%_function_scope _
 diff_eqO is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_eqO
 Declared in library mathcomp.analysis.derive, line 724, characters 6-14
@@ -1994,7 +1995,7 @@ forall [R : numFieldType] [U V' W' : normedModType R]
 [O_(0%R) id of g] [o_(x \near 0%R) x of f x] = 'o_(filter.nbhs 0%R) id  x
 
 compOo_eqox is not universe polymorphic
-Arguments compOo_eqox [R U V' W'] (f g)%function_scope x
+Arguments compOo_eqox [R U V' W'] (f g)%_function_scope x
 compOo_eqox is opaque
 Expands to: Constant mathcomp.analysis.derive.compOo_eqox
 Declared in library mathcomp.analysis.derive, line 728, characters 6-17
@@ -2029,7 +2030,7 @@ differentiable g (f x) ->
  (g (f x) + ('d g (f x) \o 'd f x) y + 'o_(filter.nbhs 0) id  y)%R)
 
 dcomp is not universe polymorphic
-Arguments dcomp [R U V' W'] [f g]%function_scope [x] _ _
+Arguments dcomp [R U V' W'] [f g]%_function_scope [x] _ _
 dcomp is opaque
 Expands to: Constant mathcomp.analysis.derive.dcomp
 Declared in library mathcomp.analysis.derive, line 732, characters 5-10
@@ -2057,7 +2058,7 @@ differentiable f x ->
 differentiable g (f x) -> 'd (g \o f) x = 'd g (f x) \o 'd f x
 
 diff_comp is not universe polymorphic
-Arguments diff_comp [R U V' W'] [f g]%function_scope [x] _ _
+Arguments diff_comp [R U V' W'] [f g]%_function_scope [x] _ _
 diff_comp is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_comp
 Declared in library mathcomp.analysis.derive, line 744, characters 6-15
@@ -2078,7 +2079,7 @@ forall [R : numFieldType] [U V' W' : normedModType R]
 differentiable f x -> differentiable g (f x) -> differentiable (g \o f) x
 
 differentiable_comp is not universe polymorphic
-Arguments differentiable_comp [R U V' W'] [f g]%function_scope [x] _ _
+Arguments differentiable_comp [R U V' W'] [f g]%_function_scope [x] _ _
 differentiable_comp is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiable_comp
 Declared in library mathcomp.analysis.derive, line 749, characters 6-25
@@ -2111,7 +2112,7 @@ forall [R : numFieldType] [m : nat] {n1 n2 : nat}
 differentiable (rsubmx : 'M_(m, n1 + n2) -> 'M_(m, n2)) v
 
 differentiable_rsubmx is not universe polymorphic
-Arguments differentiable_rsubmx [R] [m]%nat_scope {n1 n2}%nat_scope v
+Arguments differentiable_rsubmx [R] [m]%_nat_scope {n1 n2}%_nat_scope v
 differentiable_rsubmx is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiable_rsubmx
 Declared in library mathcomp.analysis.derive, line 765, characters 6-27
@@ -2131,7 +2132,7 @@ forall [R : numFieldType] [m : nat] {n1 n2 : nat}
 differentiable (lsubmx : 'M_(m, n1 + n2) -> 'M_(m, n1)) v
 
 differentiable_lsubmx is not universe polymorphic
-Arguments differentiable_lsubmx [R] [m]%nat_scope {n1 n2}%nat_scope v
+Arguments differentiable_lsubmx [R] [m]%_nat_scope {n1 n2}%_nat_scope v
 differentiable_lsubmx is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiable_lsubmx
 Declared in library mathcomp.analysis.derive, line 769, characters 6-27
@@ -2167,7 +2168,7 @@ exists2
   (0 < k)%R & forall (u : U) (v : V'), (`|f u v| <= k * `|u| * `|v|)%R
 
 bilinear_schwarz is not universe polymorphic
-Arguments bilinear_schwarz [R U V' W' f] _%function_scope
+Arguments bilinear_schwarz [R U V' W' f] _%_function_scope
 bilinear_schwarz is opaque
 Expands to: Constant mathcomp.analysis.derive.bilinear_schwarz
 Declared in library mathcomp.analysis.derive, line 773, characters 6-22
@@ -2224,7 +2225,7 @@ forall [R : numFieldType] [U V' W' : normedModType R]
 (fun p : U * V' => f p.1 p.2) = 'o_(filter.nbhs (0%R : U * V')) id 
 
 bilinear_eqo is not universe polymorphic
-Arguments bilinear_eqo [R U V' W' f] _%function_scope
+Arguments bilinear_eqo [R U V' W' f] _%_function_scope
 bilinear_eqo is opaque
 Expands to: Constant mathcomp.analysis.derive.bilinear_eqo
 Declared in library mathcomp.analysis.derive, line 802, characters 6-18
@@ -2285,7 +2286,7 @@ forall [R : numFieldType] [U V' W' : normedModType R]
 (0%R : U * V') id
 
 dbilin is not universe polymorphic
-Arguments dbilin [R U V' W' f] p _%function_scope
+Arguments dbilin [R U V' W' f] p _%_function_scope
 dbilin is opaque
 Expands to: Constant mathcomp.analysis.derive.dbilin
 Declared in library mathcomp.analysis.derive, line 815, characters 5-11
@@ -2334,7 +2335,7 @@ forall [R : numFieldType] [U V' W' : normedModType R]
 (fun q : U * V' => (f p.1 q.2 + f q.1 p.2)%R)
 
 diff_bilin is not universe polymorphic
-Arguments diff_bilin [R U V' W' f] p _%function_scope
+Arguments diff_bilin [R U V' W' f] p _%_function_scope
 diff_bilin is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_bilin
 Declared in library mathcomp.analysis.derive, line 830, characters 6-16
@@ -2382,7 +2383,7 @@ differentiable
   p
 
 differentiable_bilin is not universe polymorphic
-Arguments differentiable_bilin [R U V' W' f] p _%function_scope
+Arguments differentiable_bilin [R U V' W' f] p _%_function_scope
 differentiable_bilin is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiable_bilin
 Declared in library mathcomp.analysis.derive, line 843, characters 6-26
@@ -2652,7 +2653,7 @@ forall [R : numFieldType] [U V' W' : normedModType R]
 (fun t : U => ([o_F id of f] t, [o_F id of g] t)) =o_F id
 
 eqo_pair is not universe polymorphic
-Arguments eqo_pair [R U V' W'] F (f g)%function_scope
+Arguments eqo_pair [R U V' W'] F (f g)%_function_scope
 eqo_pair is opaque
 Expands to: Constant mathcomp.analysis.derive.eqo_pair
 Declared in library mathcomp.analysis.derive, line 869, characters 6-14
@@ -2700,7 +2701,7 @@ differentiable g x ->
 (0%R) id
 
 dpair is not universe polymorphic
-Arguments dpair [R U V' W'] [f g]%function_scope [x] _ _
+Arguments dpair [R U V' W'] [f g]%_function_scope [x] _ _
 dpair is opaque
 Expands to: Constant mathcomp.analysis.derive.dpair
 Declared in library mathcomp.analysis.derive, line 877, characters 5-10
@@ -2734,7 +2735,7 @@ differentiable g x ->
 'd (fun y : U => (f y, g y)) x = (fun y : U => ('d f x y, 'd g x y))
 
 diff_pair is not universe polymorphic
-Arguments diff_pair [R U V' W'] [f g]%function_scope [x] _ _
+Arguments diff_pair [R U V' W'] [f g]%_function_scope [x] _ _
 diff_pair is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_pair
 Declared in library mathcomp.analysis.derive, line 894, characters 6-15
@@ -2763,7 +2764,7 @@ differentiable f x ->
 differentiable g x -> differentiable (fun y : U => (f y, g y)) x
 
 differentiable_pair is not universe polymorphic
-Arguments differentiable_pair [R U V' W'] [f g]%function_scope [x] _ _
+Arguments differentiable_pair [R U V' W'] [f g]%_function_scope [x] _ _
 differentiable_pair is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiable_pair
 Declared in library mathcomp.analysis.derive, line 907, characters 6-25
@@ -2806,7 +2807,7 @@ differentiable f x ->
 differentiable g x -> 'd ((f * g)%R) x = (f x \*: 'd g x + g x \*: 'd f x)%R
 
 diffM is not universe polymorphic
-Arguments diffM [R V] [f g]%function_scope [x] _ _
+Arguments diffM [R V] [f g]%_function_scope [x] _ _
 diffM is opaque
 Expands to: Constant mathcomp.analysis.derive.diffM
 Declared in library mathcomp.analysis.derive, line 931, characters 6-11
@@ -2827,7 +2828,7 @@ forall [R : numFieldType] [V : normedModType R] [f g : V -> R]
 differentiable f x -> differentiable g x -> differentiable (f * g)%R x
 
 differentiableM is not universe polymorphic
-Arguments differentiableM [R V] [f g]%function_scope [x] _ _
+Arguments differentiableM [R V] [f g]%_function_scope [x] _ _
 differentiableM is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiableM
 Declared in library mathcomp.analysis.derive, line 938, characters 6-21
@@ -2854,7 +2855,7 @@ x != 0%R ->
 (0%R) id
 
 dinv is not universe polymorphic
-Arguments dinv [R] [x]%ring_scope _
+Arguments dinv [R] [x]%_ring_scope _
 dinv is opaque
 Expands to: Constant mathcomp.analysis.derive.dinv
 Declared in library mathcomp.analysis.derive, line 943, characters 5-9
@@ -2902,7 +2903,7 @@ forall [R : numFieldType] [x : R],
 x != 0%R -> 'd GRing.inv x = [eta  *:%R (- x ^- 2)]
 
 diff_Rinv is not universe polymorphic
-Arguments diff_Rinv [R] [x]%ring_scope _
+Arguments diff_Rinv [R] [x]%_ring_scope _
 diff_Rinv is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_Rinv
 Declared in library mathcomp.analysis.derive, line 980, characters 6-15
@@ -2920,7 +2921,7 @@ forall [R : numFieldType] [x : R],
 x != 0%R -> differentiable (GRing.inv : R -> R) x
 
 differentiable_Rinv is not universe polymorphic
-Arguments differentiable_Rinv [R] [x]%ring_scope _
+Arguments differentiable_Rinv [R] [x]%_ring_scope _
 differentiable_Rinv is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiable_Rinv
 Declared in library mathcomp.analysis.derive, line 987, characters 6-25
@@ -2941,7 +2942,7 @@ differentiable f x ->
 f x != 0%R -> 'd (fun y : V => (f y)^-1%R) x = (- f x ^- 2 \*: 'd f x)%R
 
 diffV is not universe polymorphic
-Arguments diffV [R V] [f]%function_scope [x] _ _
+Arguments diffV [R V] [f]%_function_scope [x] _ _
 diffV is opaque
 Expands to: Constant mathcomp.analysis.derive.diffV
 Declared in library mathcomp.analysis.derive, line 993, characters 6-11
@@ -2963,7 +2964,7 @@ differentiable f x ->
 f x != 0%R -> differentiable (fun y : V => (f y)^-1%R) x
 
 differentiableV is not universe polymorphic
-Arguments differentiableV [R V] [f]%function_scope [x] _ _
+Arguments differentiableV [R V] [f]%_function_scope [x] _ _
 differentiableV is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiableV
 Declared in library mathcomp.analysis.derive, line 1000, characters 6-21
@@ -2995,7 +2996,7 @@ forall [R : numFieldType] [V : normedModType R] [f : V -> R]
 differentiable f x -> differentiable (f ^+ n.+1)%R x
 
 differentiableX is not universe polymorphic
-Arguments differentiableX [R V] [f]%function_scope n%nat_scope [x] _
+Arguments differentiableX [R V] [f]%_function_scope n%_nat_scope [x] _
 differentiableX is opaque
 Expands to: Constant mathcomp.analysis.derive.differentiableX
 Declared in library mathcomp.analysis.derive, line 1015, characters 6-21
@@ -3016,7 +3017,7 @@ differentiable f x ->
 'd ((f ^+ n.+1)%R) x = ((n.+1%:R * f x ^+ n) \*: 'd f x)%R
 
 diffX is not universe polymorphic
-Arguments diffX [R V] [f]%function_scope n%nat_scope [x] _
+Arguments diffX [R V] [f]%_function_scope n%_nat_scope [x] _
 diffX is opaque
 Expands to: Constant mathcomp.analysis.derive.diffX
 Declared in library mathcomp.analysis.derive, line 1019, characters 6-11
@@ -3052,7 +3053,7 @@ forall [R : numFieldType] [U : normedModType R] [f : R -> U]
 derivable f x 1 -> 'd f x =  *:%R^~ (f^`()%classic x)
 
 deriv1E is not universe polymorphic
-Arguments deriv1E [R U] [f]%function_scope [x]%ring_scope _
+Arguments deriv1E [R U] [f]%_function_scope [x]%_ring_scope _
 deriv1E is opaque
 Expands to: Constant mathcomp.analysis.derive.deriv1E
 Declared in library mathcomp.analysis.derive, line 1039, characters 6-13
@@ -3077,7 +3078,7 @@ forall [R : numFieldType] [U : normedModType R] [f : R -> U]
 differentiable f x -> 'd f x =  *:%R^~ (f^`()%classic x)
 
 diff1E is not universe polymorphic
-Arguments diff1E [R U] [f]%function_scope [x] _
+Arguments diff1E [R U] [f]%_function_scope [x] _
 diff1E is opaque
 Expands to: Constant mathcomp.analysis.derive.diff1E
 Declared in library mathcomp.analysis.derive, line 1049, characters 6-12
@@ -3103,7 +3104,7 @@ forall [R : numFieldType] [U : normedModType R] (f : R -> U)
 derivable f x 1 <-> differentiable f x
 
 derivable1_diffP is not universe polymorphic
-Arguments derivable1_diffP [R U] f%function_scope x%ring_scope
+Arguments derivable1_diffP [R U] f%_function_scope x%_ring_scope
 derivable1_diffP is opaque
 Expands to: Constant mathcomp.analysis.derive.derivable1_diffP
 Declared in library mathcomp.analysis.derive, line 1062, characters 6-22
@@ -3150,7 +3151,7 @@ filter.nbhs (from_subspace [set` i] f x) t ->
  then filter.within [set` i] (filter.nbhs x)
  else filter.globally [set x]) (from_subspace [set` i] f @^-1` t)%classic
 
-Arguments derivable_within_continuous [R U] [f]%function_scope [i] _ [x t] _
+Arguments derivable_within_continuous [R U] [f]%_function_scope [i] _ [x t] _
 derivable_within_continuous is opaque
 Expands to: Constant mathcomp.analysis.derive.derivable_within_continuous
 Declared in library mathcomp.analysis.derive, line 1073, characters 6-33
@@ -3175,7 +3176,7 @@ forall [R : numFieldType] [V W : normedModType R] (f : V -> W) (x v : V),
 derivable f x v <-> derivable (fun h : R => f (h *: v + x)%R) 0 1
 
 derivable1P is not universe polymorphic
-Arguments derivable1P [R V W] f%function_scope (x v)%ring_scope
+Arguments derivable1P [R V W] f%_function_scope (x v)%_ring_scope
 derivable1P is opaque
 Expands to: Constant mathcomp.analysis.derive.derivable1P
 Declared in library mathcomp.analysis.derive, line 1087, characters 6-17
@@ -3194,7 +3195,7 @@ forall [R : numFieldType] [V W : normedModType R] [f : V -> W] [x v : V],
 derivable f x v -> is_derive x v f ('D_v f x)
 
 derivableP is not universe polymorphic
-Arguments derivableP [R V W] [f]%function_scope [x v]%ring_scope _
+Arguments derivableP [R V W] [f]%_function_scope [x v]%_ring_scope _
 derivableP is opaque
 Expands to: Constant mathcomp.analysis.derive.derivableP
 Declared in library mathcomp.analysis.derive, line 1095, characters 6-16
@@ -3246,8 +3247,8 @@ exists2 i : R,
          ((fun h : R => (h^-1 *: ((f \o shift a) (h *: v) - f a))%R) @^-1` t)
            t0))%classic
 
-Arguments diff_derivable [R V W] [f]%function_scope 
-  [a] [v]%ring_scope _ [t] _
+Arguments diff_derivable [R V W] [f]%_function_scope 
+  [a] [v]%_ring_scope _ [t] _
 diff_derivable is opaque
 Expands to: Constant mathcomp.analysis.derive.diff_derivable
 Declared in library mathcomp.analysis.derive, line 1098, characters 6-20
@@ -3288,7 +3289,7 @@ forall [R : numFieldType] [V W : normedModType R]
 is_derive x v f f' -> f' = df -> is_derive x v f df
 
 is_derive_eq is not universe polymorphic
-Arguments is_derive_eq [R V W] [f]%function_scope [x v df f'] _ _
+Arguments is_derive_eq [R V W] [f]%_function_scope [x v df f'] _ _
 is_derive_eq is opaque
 Expands to: Constant mathcomp.analysis.derive.is_derive_eq
 Declared in library mathcomp.analysis.derive, line 1113, characters 6-18
@@ -3343,7 +3344,7 @@ exists2 i : R,
            (h^-1 *: (((f + g) \o shift x) (h *: v) - (f + g) x))%R) @^-1`
           t) t0))%classic
 
-Arguments der_add [R V W] [f g]%function_scope [x v] _ _ [t] _
+Arguments der_add [R V W] [f g]%_function_scope [x v] _ _ [t] _
 der_add is opaque
 Expands to: Constant mathcomp.analysis.derive.der_add
 Declared in library mathcomp.analysis.derive, line 1124, characters 5-12
@@ -3366,7 +3367,7 @@ derivable f x v ->
 derivable g x v -> 'D_v (f + g)%R x = ('D_v f x + 'D_v g x)%R
 
 deriveD is not universe polymorphic
-Arguments deriveD [R V W] [f g]%function_scope [x v] _ _
+Arguments deriveD [R V W] [f g]%_function_scope [x v] _ _
 deriveD is opaque
 Expands to: Constant mathcomp.analysis.derive.deriveD
 Declared in library mathcomp.analysis.derive, line 1135, characters 6-13
@@ -3412,7 +3413,7 @@ exists2 i : R,
            (h^-1 *: (((f + g) \o shift x) (h *: v) - (f + g) x))%R) @^-1`
           t) t0))%classic
 
-Arguments derivableD [R V W] [f g]%function_scope [x v] _ _ [t] _
+Arguments derivableD [R V W] [f g]%_function_scope [x v] _ _ [t] _
 derivableD is opaque
 Expands to: Constant mathcomp.analysis.derive.derivableD
 Declared in library mathcomp.analysis.derive, line 1139, characters 6-16
@@ -3483,8 +3484,8 @@ exists2 i : R,
              (\sum_(i0 < n) h i0) x))%R) @^-1`
           t) t0))%classic
 
-Arguments derivable_sum [R V W] [n]%nat_scope [h]%function_scope 
-  [x v] _%function_scope [t] _
+Arguments derivable_sum [R V W] [n]%_nat_scope [h]%_function_scope 
+  [x v] _%_function_scope [t] _
 derivable_sum is opaque
 Expands to: Constant mathcomp.analysis.derive.derivable_sum
 Declared in library mathcomp.analysis.derive, line 1160, characters 6-19
@@ -3504,8 +3505,8 @@ forall [R : numFieldType] [V W : normedModType R]
 'D_v (\sum_(i < n) h i)%R x = (\sum_(i < n) 'D_v (h i) x)%R
 
 derive_sum is not universe polymorphic
-Arguments derive_sum [R V W] [n]%nat_scope [h]%function_scope 
-  [x v] _%function_scope
+Arguments derive_sum [R V W] [n]%_nat_scope [h]%_function_scope 
+  [x v] _%_function_scope
 derive_sum is opaque
 Expands to: Constant mathcomp.analysis.derive.derive_sum
 Declared in library mathcomp.analysis.derive, line 1167, characters 6-16
@@ -3554,7 +3555,7 @@ exists2 i : R,
          ((fun h : R => (h^-1 *: ((- f \o shift x) (h *: v) - (- f) x))%R) @^-1`
           t) t0))%classic
 
-Arguments der_opp [R V W] [f]%function_scope [x v] _ [t] _
+Arguments der_opp [R V W] [f]%_function_scope [x v] _ [t] _
 der_opp is opaque
 Expands to: Constant mathcomp.analysis.derive.der_opp
 Declared in library mathcomp.analysis.derive, line 1176, characters 5-12
@@ -3574,7 +3575,7 @@ forall [R : numFieldType] [V W : normedModType R] [f : V -> W] [x v : V],
 derivable f x v -> 'D_v (- f)%R x = (- 'D_v f x)%R
 
 deriveN is not universe polymorphic
-Arguments deriveN [R V W] [f]%function_scope [x v] _
+Arguments deriveN [R V W] [f]%_function_scope [x v] _
 deriveN is opaque
 Expands to: Constant mathcomp.analysis.derive.deriveN
 Declared in library mathcomp.analysis.derive, line 1185, characters 6-13
@@ -3618,7 +3619,7 @@ exists2 i : R,
          ((fun h : R => (h^-1 *: ((- f \o shift x) (h *: v) - (- f) x))%R) @^-1`
           t) t0))%classic
 
-Arguments derivableN [R V W] [f]%function_scope [x v] _ [t] _
+Arguments derivableN [R V W] [f]%_function_scope [x v] _ [t] _
 derivableN is opaque
 Expands to: Constant mathcomp.analysis.derive.derivableN
 Declared in library mathcomp.analysis.derive, line 1189, characters 6-16
@@ -3651,7 +3652,7 @@ derivable f x v ->
 derivable g x v -> 'D_v (f - g)%R x = ('D_v f x - 'D_v g x)%R
 
 deriveB is not universe polymorphic
-Arguments deriveB [R V W] [f g]%function_scope [x v] _ _
+Arguments deriveB [R V W] [f g]%_function_scope [x v] _ _
 deriveB is opaque
 Expands to: Constant mathcomp.analysis.derive.deriveB
 Declared in library mathcomp.analysis.derive, line 1204, characters 6-13
@@ -3697,7 +3698,7 @@ exists2 i : R,
            (h^-1 *: (((f - g) \o shift x) (h *: v) - (f - g) x))%R) @^-1`
           t) t0))%classic
 
-Arguments derivableB [R V W] [f g]%function_scope [x v] _ _ [t] _
+Arguments derivableB [R V W] [f g]%_function_scope [x v] _ _ [t] _
 derivableB is opaque
 Expands to: Constant mathcomp.analysis.derive.derivableB
 Declared in library mathcomp.analysis.derive, line 1208, characters 6-16
@@ -3746,7 +3747,7 @@ exists2 i : R,
            (h^-1 *: ((k \*: f \o shift x) (h *: v) - (k \*: f) x))%R) @^-1`
           t) t0))%classic
 
-Arguments der_scal [R V W] [f]%function_scope [k]%ring_scope [x v] _ [t] _
+Arguments der_scal [R V W] [f]%_function_scope [k]%_ring_scope [x v] _ [t] _
 der_scal is opaque
 Expands to: Constant mathcomp.analysis.derive.der_scal
 Declared in library mathcomp.analysis.derive, line 1212, characters 5-13
@@ -3768,7 +3769,7 @@ forall [R : numFieldType] [V W : normedModType R]
 derivable f x v -> 'D_v (k \*: f)%R x = (k *: 'D_v f x)%R
 
 deriveZ is not universe polymorphic
-Arguments deriveZ [R V W] [f]%function_scope k%ring_scope [x v] _
+Arguments deriveZ [R V W] [f]%_function_scope k%_ring_scope [x v] _
 deriveZ is opaque
 Expands to: Constant mathcomp.analysis.derive.deriveZ
 Declared in library mathcomp.analysis.derive, line 1222, characters 6-13
@@ -3816,7 +3817,8 @@ exists2 i : R,
            (h^-1 *: ((k \*: f \o shift x) (h *: v) - (k \*: f) x))%R) @^-1`
           t) t0))%classic
 
-Arguments derivableZ [R V W] [f]%function_scope [k]%ring_scope [x v] _ [t] _
+Arguments derivableZ [R V W] [f]%_function_scope [k]%_ring_scope 
+  [x v] _ [t] _
 derivableZ is opaque
 Expands to: Constant mathcomp.analysis.derive.derivableZ
 Declared in library mathcomp.analysis.derive, line 1226, characters 6-16
@@ -3986,7 +3988,7 @@ exists2 i : R,
          ((fun h : R => (h^-1 *: ((f * g \o shift x) (h *: v) - (f * g) x))%R) @^-1`
           t) t0))%classic
 
-Arguments der_mult [R V] [f g]%function_scope [x v] _ _ [t] _
+Arguments der_mult [R V] [f g]%_function_scope [x v] _ _ [t] _
 der_mult is opaque
 Expands to: Constant mathcomp.analysis.derive.der_mult
 Declared in library mathcomp.analysis.derive, line 1275, characters 5-13
@@ -4018,7 +4020,7 @@ derivable f x v ->
 derivable g x v -> 'D_v (f * g)%R x = (f x *: 'D_v g x + g x *: 'D_v f x)%R
 
 deriveM is not universe polymorphic
-Arguments deriveM [R V] [f g]%function_scope [x v] _ _
+Arguments deriveM [R V] [f g]%_function_scope [x v] _ _
 deriveM is opaque
 Expands to: Constant mathcomp.analysis.derive.deriveM
 Declared in library mathcomp.analysis.derive, line 1295, characters 6-13
@@ -4066,7 +4068,7 @@ exists2 i : R,
          ((fun h : R => (h^-1 *: ((f * g \o shift x) (h *: v) - (f * g) x))%R) @^-1`
           t) t0))%classic
 
-Arguments derivableM [R V] [f g]%function_scope [x v] _ _ [t] _
+Arguments derivableM [R V] [f g]%_function_scope [x v] _ _ [t] _
 derivableM is opaque
 Expands to: Constant mathcomp.analysis.derive.derivableM
 Declared in library mathcomp.analysis.derive, line 1299, characters 6-16
@@ -4085,7 +4087,7 @@ forall [R : numFieldType] [V : normedModType R] [f : V -> R]
 derivable f x v -> 'D_v (r \o* f)%R x = (r * 'D_v f x)%R
 
 deriveMr is not universe polymorphic
-Arguments deriveMr [R V] [f]%function_scope r%ring_scope [x v] _
+Arguments deriveMr [R V] [f]%_function_scope r%_ring_scope [x v] _
 deriveMr is opaque
 Expands to: Constant mathcomp.analysis.derive.deriveMr
 Declared in library mathcomp.analysis.derive, line 1306, characters 6-14
@@ -4104,7 +4106,7 @@ forall [R : numFieldType] [V : normedModType R] [f : V -> R]
 derivable f x v -> 'D_v (r \*o f)%R x = (r * 'D_v f x)%R
 
 deriveMl is not universe polymorphic
-Arguments deriveMl [R V] [f]%function_scope r%ring_scope [x v] _
+Arguments deriveMl [R V] [f]%_function_scope r%_ring_scope [x v] _
 deriveMl is opaque
 Expands to: Constant mathcomp.analysis.derive.deriveMl
 Declared in library mathcomp.analysis.derive, line 1313, characters 6-14
@@ -4177,7 +4179,7 @@ exists2 i : R,
            (h^-1 *: ((f ^+ n \o shift x) (h *: v) - (f ^+ n) x))%R) @^-1`
           t) t0))%classic
 
-Arguments derivableX [R V] [f]%function_scope [n]%nat_scope [x v] _ [t] _
+Arguments derivableX [R V] [f]%_function_scope [n]%_nat_scope [x v] _ [t] _
 derivableX is opaque
 Expands to: Constant mathcomp.analysis.derive.derivableX
 Declared in library mathcomp.analysis.derive, line 1336, characters 6-16
@@ -4193,7 +4195,7 @@ forall [R : numFieldType] [V : normedModType R] [f : V -> R]
 derivable f x v -> 'D_v (f ^+ n)%R x = ((n%:R * f x ^+ n.-1) *: 'D_v f x)%R
 
 deriveX is not universe polymorphic
-Arguments deriveX [R V] [f]%function_scope n%nat_scope [x v] _
+Arguments deriveX [R V] [f]%_function_scope n%_nat_scope [x v] _
 deriveX is opaque
 Expands to: Constant mathcomp.analysis.derive.deriveX
 Declared in library mathcomp.analysis.derive, line 1339, characters 6-13
@@ -4244,7 +4246,7 @@ exists2 i : R,
             (((fun y : V => (f y)^-1) \o shift x) (h *: v) - (f x)^-1))%R) @^-1`
           t) t0))%classic
 
-Arguments der_inv [R V] [f]%function_scope [x v] _ _ [t] _
+Arguments der_inv [R V] [f]%_function_scope [x v] _ _ [t] _
 der_inv is opaque
 Expands to: Constant mathcomp.analysis.derive.der_inv
 Declared in library mathcomp.analysis.derive, line 1343, characters 5-12
@@ -4286,7 +4288,7 @@ derivable f x v ->
 'D_v (fun y : V => (f y)^-1%R) x = (- f x ^- 2 *: 'D_v f x)%R
 
 deriveV is not universe polymorphic
-Arguments deriveV [R V] [f]%function_scope [x v] _ _
+Arguments deriveV [R V] [f]%_function_scope [x v] _ _
 deriveV is opaque
 Expands to: Constant mathcomp.analysis.derive.deriveV
 Declared in library mathcomp.analysis.derive, line 1372, characters 6-13
@@ -4340,7 +4342,7 @@ exists2 i : R,
              (fun y : V => (f y)^-1) x))%R) @^-1`
           t) t0))%classic
 
-Arguments derivableV [R V] [f]%function_scope [x v] _ _ [t] _
+Arguments derivableV [R V] [f]%_function_scope [x v] _ _ [t] _
 derivableV is opaque
 Expands to: Constant mathcomp.analysis.derive.derivableV
 Declared in library mathcomp.analysis.derive, line 1376, characters 6-16
@@ -4359,7 +4361,7 @@ Qed.</div></details>
 forall {R : numFieldType} (v k : R), (derive (shift k : R -> R))^~ v = cst v
 
 derive_shift is not universe polymorphic
-Arguments derive_shift {R} (v k)%ring_scope
+Arguments derive_shift {R} (v k)%_ring_scope
 derive_shift is opaque
 Expands to: Constant mathcomp.analysis.derive.derive_shift
 Declared in library mathcomp.analysis.derive, line 1385, characters 6-18
@@ -4380,7 +4382,7 @@ forall {R : numFieldType}
 is_derive x v (shift k) v
 
 is_derive_shift is not universe polymorphic
-Arguments is_derive_shift {R} x v k%ring_scope
+Arguments is_derive_shift {R} x v k%_ring_scope
 is_derive_shift is opaque
 Expands to: Constant mathcomp.analysis.derive.is_derive_shift
 Declared in library mathcomp.analysis.derive, line 1391, characters 6-21
@@ -4396,7 +4398,7 @@ forall {R : numFieldType} [V : normedModType R] (k : V) (t : R),
 (cst k)^`()%classic t = 0%R
 
 derive1_cst is not universe polymorphic
-Arguments derive1_cst {R} [V] k t%ring_scope
+Arguments derive1_cst {R} [V] k t%_ring_scope
 derive1_cst is opaque
 Expands to: Constant mathcomp.analysis.derive.derive1_cst
 Declared in library mathcomp.analysis.derive, line 1395, characters 6-17
@@ -4413,7 +4415,7 @@ derivable f x 1 ->
 (fun x0 : R => (f x0 * r)%R)^`()%classic x = (f^`()%classic x * r)%R
 
 derive1Mr is not universe polymorphic
-Arguments derive1Mr {R} [f]%function_scope [x]%ring_scope r%ring_scope _
+Arguments derive1Mr {R} [f]%_function_scope [x]%_ring_scope r%_ring_scope _
 derive1Mr is opaque
 Expands to: Constant mathcomp.analysis.derive.derive1Mr
 Declared in library mathcomp.analysis.derive, line 1399, characters 6-15
@@ -4431,7 +4433,7 @@ derivable f x 1 ->
 (fun x0 : R => (r * f x0)%R)^`()%classic x = (r * f^`()%classic x)%R
 
 derive1Ml is not universe polymorphic
-Arguments derive1Ml {R} [f]%function_scope [x]%ring_scope r%ring_scope _
+Arguments derive1Ml {R} [f]%_function_scope [x]%_ring_scope r%_ring_scope _
 derive1Ml is opaque
 Expands to: Constant mathcomp.analysis.derive.derive1Ml
 Declared in library mathcomp.analysis.derive, line 1404, characters 6-15
@@ -4487,7 +4489,7 @@ exists2 i : R,
              ((GRing.exp (R:=R))^~ n) x))%R) @^-1`
           t) t0))%classic
 
-Arguments exprn_derivable {R} [n]%nat_scope [x v]%ring_scope [t] _
+Arguments exprn_derivable {R} [n]%_nat_scope [x v]%_ring_scope [t] _
 exprn_derivable is opaque
 Expands to: Constant mathcomp.analysis.derive.exprn_derivable
 Declared in library mathcomp.analysis.derive, line 1409, characters 6-21
@@ -4510,7 +4512,7 @@ forall {R : numFieldType} (n : nat)
 'D_v ((GRing.exp (R:=R))^~ n) x = ((n%:R *: x ^+ n.-1) *: v)%R
 
 exp_derive is not universe polymorphic
-Arguments exp_derive {R} n%nat_scope (x v)%ring_scope
+Arguments exp_derive {R} n%_nat_scope (x v)%_ring_scope
 exp_derive is opaque
 Expands to: Constant mathcomp.analysis.derive.exp_derive
 Declared in library mathcomp.analysis.derive, line 1418, characters 6-16
@@ -4528,7 +4530,7 @@ forall {R : numFieldType} (n : nat) (x : R),
 ((GRing.exp (R:=R))^~ n)^`()%classic x = (n%:R *: x ^+ n.-1)%R
 
 exp_derive1 is not universe polymorphic
-Arguments exp_derive1 {R} n%nat_scope x%ring_scope
+Arguments exp_derive1 {R} n%_nat_scope x%_ring_scope
 exp_derive1 is opaque
 Expands to: Constant mathcomp.analysis.derive.exp_derive1
 Declared in library mathcomp.analysis.derive, line 1425, characters 6-17
@@ -4547,7 +4549,8 @@ exists2 c : R,
   c \in `[a, b]%R & forall t : R, t \in `[a, b]%R -> (f t <= f c)%R
 
 EVT_max is not universe polymorphic
-Arguments EVT_max [R] [f]%function_scope [a b]%ring_scope _ _%function_scope
+Arguments EVT_max [R] [f]%_function_scope [a b]%_ring_scope 
+  _ _%_function_scope
 EVT_max is opaque
 Expands to: Constant mathcomp.analysis.derive.EVT_max
 Declared in library mathcomp.analysis.derive, line 1429, characters 6-13
@@ -4595,7 +4598,8 @@ exists2 c : R,
   c \in `[a, b]%R & forall t : R, t \in `[a, b]%R -> (f c <= f t)%R
 
 EVT_min is not universe polymorphic
-Arguments EVT_min [R] [f]%function_scope [a b]%ring_scope _ _%function_scope
+Arguments EVT_min [R] [f]%_function_scope [a b]%_ring_scope 
+  _ _%_function_scope
 EVT_min is opaque
 Expands to: Constant mathcomp.analysis.derive.EVT_min
 Declared in library mathcomp.analysis.derive, line 1463, characters 6-13
@@ -4624,7 +4628,7 @@ filter.lim (filter.fmap f (filter.nbhs (topology_structure.dnbhs x))) =
 filter.lim (filter.fmap f (filter.nbhs (x^'+)%classic))
 
 cvg_at_rightE is not universe polymorphic
-Arguments cvg_at_rightE {K V} f%function_scope x _
+Arguments cvg_at_rightE {K V} f%_function_scope x _
 cvg_at_rightE is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.normed_module.cvg_at_rightE
@@ -4654,7 +4658,7 @@ filter.lim (filter.fmap f (filter.nbhs (topology_structure.dnbhs x))) =
 filter.lim (filter.fmap f (filter.nbhs (x^'-)%classic))
 
 cvg_at_leftE is not universe polymorphic
-Arguments cvg_at_leftE {K V} f%function_scope x _
+Arguments cvg_at_leftE {K V} f%_function_scope x _
 cvg_at_leftE is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.normed_module.cvg_at_leftE
@@ -4680,8 +4684,8 @@ c \in `]a, b[%R ->
 (forall t : R, t \in `]a, b[%R -> (f t <= f c)%R) -> is_derive c 1%R f 0%R
 
 derive1_at_max is not universe polymorphic
-Arguments derive1_at_max [R] [f]%function_scope [a b c]%ring_scope 
-  _ _%function_scope _ _%function_scope
+Arguments derive1_at_max [R] [f]%_function_scope [a b c]%_ring_scope 
+  _ _%_function_scope _ _%_function_scope
 derive1_at_max is opaque
 Expands to: Constant mathcomp.analysis.derive.derive1_at_max
 Declared in library mathcomp.analysis.derive, line 1492, characters 6-20
@@ -4730,8 +4734,8 @@ c \in `]a, b[%R ->
 (forall t : R, t \in `]a, b[%R -> (f c <= f t)%R) -> is_derive c 1%R f 0%R
 
 derive1_at_min is not universe polymorphic
-Arguments derive1_at_min [R] [f]%function_scope [a b c]%ring_scope 
-  _ _%function_scope _ _%function_scope
+Arguments derive1_at_min [R] [f]%_function_scope [a b c]%_ring_scope 
+  _ _%_function_scope _ _%_function_scope
 derive1_at_min is opaque
 Expands to: Constant mathcomp.analysis.derive.derive1_at_min
 Declared in library mathcomp.analysis.derive, line 1527, characters 6-20
@@ -4757,8 +4761,8 @@ forall [R : realType] [f : R -> R] [a b : R],
 f a = f b -> exists2 c : R, c \in `]a, b[%R & is_derive c 1%R f 0%R
 
 Rolle is not universe polymorphic
-Arguments Rolle [R] [f]%function_scope [a b]%ring_scope 
-  _ (_ _)%function_scope _
+Arguments Rolle [R] [f]%_function_scope [a b]%_ring_scope 
+  _ (_ _)%_function_scope _
 Rolle is opaque
 Expands to: Constant mathcomp.analysis.derive.Rolle
 Declared in library mathcomp.analysis.derive, line 1539, characters 6-11
@@ -4802,8 +4806,8 @@ forall [R : realType] [f df : R -> R] [a b : R],
 exists2 c : R, c \in `]a, b[%R & (f b - f a)%R = (df c * (b - a))%R
 
 MVT is not universe polymorphic
-Arguments MVT [R] [f df]%function_scope [a b]%ring_scope 
-  _ (_ _)%function_scope
+Arguments MVT [R] [f df]%_function_scope [a b]%_ring_scope 
+  _ (_ _)%_function_scope
 MVT is opaque
 Expands to: Constant mathcomp.analysis.derive.MVT
 Declared in library mathcomp.analysis.derive, line 1569, characters 6-9
@@ -4841,8 +4845,8 @@ forall [R : realType] [f df : R -> R] [a b : R],
 exists2 c : R, c \in `[a, b]%R & (f b - f a)%R = (df c * (b - a))%R
 
 MVT_segment is not universe polymorphic
-Arguments MVT_segment [R] [f df]%function_scope [a b]%ring_scope 
-  _ (_ _)%function_scope
+Arguments MVT_segment [R] [f df]%_function_scope [a b]%_ring_scope 
+  _ (_ _)%_function_scope
 MVT_segment is opaque
 Expands to: Constant mathcomp.analysis.derive.MVT_segment
 Declared in library mathcomp.analysis.derive, line 1594, characters 6-17
@@ -4886,9 +4890,9 @@ x \in Interval (BSide sa a) (BSide sb b) ->
 y \in Interval (BSide sa a) (BSide sb b) ->
 (fun x0 y0 : R => is_true (x0 <= y0)%R) x y -> (f x <= f y)%R = true
 
-Arguments ger0_derive1_le {R} [f]%function_scope [a b]%ring_scope
-  (df dfge0)%function_scope [sa sb]%bool_scope _%function_scope 
-  [x y] _ _ _
+Arguments ger0_derive1_le {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dfge0)%_function_scope [sa sb]%_bool_scope
+  _%_function_scope [x y] _ _ _
 ger0_derive1_le is opaque
 Expands to: Constant mathcomp.analysis.derive.ger0_derive1_le
 Declared in library mathcomp.analysis.derive, line 1611, characters 6-21
@@ -4932,8 +4936,8 @@ x \in `[a, b]%R ->
 y \in `[a, b]%R ->
 (fun x0 y0 : R => is_true (x0 <= y0)%R) x y -> (f x <= f y)%R = true
 
-Arguments ger0_derive1_le_cc {R} [f]%function_scope 
-  [a b]%ring_scope (df dfge0 _)%function_scope [x y] 
+Arguments ger0_derive1_le_cc {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dfge0 _)%_function_scope [x y] 
   _ _ _
 ger0_derive1_le_cc is opaque
 Expands to: Constant mathcomp.analysis.derive.ger0_derive1_le_cc
@@ -4964,8 +4968,8 @@ x \in `[a, b[%R ->
 y \in `[a, b[%R ->
 (fun x0 y0 : R => is_true (x0 <= y0)%R) x y -> (f x <= f y)%R = true
 
-Arguments ger0_derive1_le_co {R} [f]%function_scope 
-  [a b]%ring_scope (df dfge0 _)%function_scope [x y] 
+Arguments ger0_derive1_le_co {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dfge0 _)%_function_scope [x y] 
   _ _ _
 ger0_derive1_le_co is opaque
 Expands to: Constant mathcomp.analysis.derive.ger0_derive1_le_co
@@ -4996,8 +5000,8 @@ x \in `]a, b]%R ->
 y \in `]a, b]%R ->
 (fun x0 y0 : R => is_true (x0 <= y0)%R) x y -> (f x <= f y)%R = true
 
-Arguments ger0_derive1_le_oc {R} [f]%function_scope 
-  [a b]%ring_scope (df dfge0 _)%function_scope [x y] 
+Arguments ger0_derive1_le_oc {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dfge0 _)%_function_scope [x y] 
   _ _ _
 ger0_derive1_le_oc is opaque
 Expands to: Constant mathcomp.analysis.derive.ger0_derive1_le_oc
@@ -5040,8 +5044,8 @@ x \in `]a, b[%R ->
 y \in `]a, b[%R ->
 (fun x0 y0 : R => is_true (x0 <= y0)%R) x y -> (f x <= f y)%R = true
 
-Arguments ger0_derive1_le_oo {R} [f]%function_scope 
-  [a b]%ring_scope (df dfge0)%function_scope _ [x y] 
+Arguments ger0_derive1_le_oo {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dfge0)%_function_scope _ [x y] 
   _ _ _
 ger0_derive1_le_oo is opaque
 Expands to: Constant mathcomp.analysis.derive.ger0_derive1_le_oo
@@ -5082,9 +5086,9 @@ x \in Interval (BSide sa a) (BSide sb b) ->
 y \in Interval (BSide sa a) (BSide sb b) ->
 (fun y0 x0 : R => is_true (x0 <= y0)%R) x y -> (f x <= f y)%R = true
 
-Arguments ler0_derive1_le {R} [f]%function_scope [a b]%ring_scope
-  (df dfle0)%function_scope [sa sb]%bool_scope _%function_scope 
-  [x y] _ _ _
+Arguments ler0_derive1_le {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dfle0)%_function_scope [sa sb]%_bool_scope
+  _%_function_scope [x y] _ _ _
 ler0_derive1_le is opaque
 Expands to: Constant mathcomp.analysis.derive.ler0_derive1_le
 Declared in library mathcomp.analysis.derive, line 1654, characters 6-21
@@ -5123,8 +5127,8 @@ x \in `[a, b]%R ->
 y \in `[a, b]%R ->
 (fun y0 x0 : R => is_true (x0 <= y0)%R) x y -> (f x <= f y)%R = true
 
-Arguments ler0_derive1_le_cc {R} [f]%function_scope 
-  [a b]%ring_scope (df dfle0 _)%function_scope [x y] 
+Arguments ler0_derive1_le_cc {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dfle0 _)%_function_scope [x y] 
   _ _ _
 ler0_derive1_le_cc is opaque
 Expands to: Constant mathcomp.analysis.derive.ler0_derive1_le_cc
@@ -5155,8 +5159,8 @@ x \in `[a, b[%R ->
 y \in `[a, b[%R ->
 (fun y0 x0 : R => is_true (x0 <= y0)%R) x y -> (f x <= f y)%R = true
 
-Arguments ler0_derive1_le_co {R} [f]%function_scope 
-  [a b]%ring_scope (df dfle0 _)%function_scope [x y] 
+Arguments ler0_derive1_le_co {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dfle0 _)%_function_scope [x y] 
   _ _ _
 ler0_derive1_le_co is opaque
 Expands to: Constant mathcomp.analysis.derive.ler0_derive1_le_co
@@ -5187,8 +5191,8 @@ x \in `]a, b]%R ->
 y \in `]a, b]%R ->
 (fun y0 x0 : R => is_true (x0 <= y0)%R) x y -> (f x <= f y)%R = true
 
-Arguments ler0_derive1_le_oc {R} [f]%function_scope 
-  [a b]%ring_scope (df dfle0 _)%function_scope [x y] 
+Arguments ler0_derive1_le_oc {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dfle0 _)%_function_scope [x y] 
   _ _ _
 ler0_derive1_le_oc is opaque
 Expands to: Constant mathcomp.analysis.derive.ler0_derive1_le_oc
@@ -5231,8 +5235,8 @@ x \in `]a, b[%R ->
 y \in `]a, b[%R ->
 (fun y0 x0 : R => is_true (x0 <= y0)%R) x y -> (f x <= f y)%R = true
 
-Arguments ler0_derive1_le_oo {R} [f]%function_scope 
-  [a b]%ring_scope (df dfle0)%function_scope _ [x y] 
+Arguments ler0_derive1_le_oo {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dfle0)%_function_scope _ [x y] 
   _ _ _
 ler0_derive1_le_oo is opaque
 Expands to: Constant mathcomp.analysis.derive.ler0_derive1_le_oo
@@ -5256,9 +5260,9 @@ forall [R : realType] [f : R -> R] [a b : R],
 forall [x y : R], (a <= x)%R -> (x <= y)%R -> (y <= b)%R -> (f y <= f x)%R
 
 ler0_derive1_nincr is not universe polymorphic
-Arguments ler0_derive1_nincr [R] [f]%function_scope 
-  [a b]%ring_scope (_ _ _)%function_scope [x y] _ 
-  _ _
+Arguments ler0_derive1_nincr [R] [f]%_function_scope 
+  [a b]%_ring_scope (_ _ _)%_function_scope [x y] 
+  _ _ _
 ler0_derive1_nincr is opaque
 Expands to: Constant mathcomp.analysis.derive.ler0_derive1_nincr
 Declared in library mathcomp.analysis.derive, line 1688, characters 6-24
@@ -5302,9 +5306,9 @@ x \in Interval (BSide sa a) (BSide sb b) ->
 y \in Interval (BSide sa a) (BSide sb b) ->
 (fun x0 y0 : R => is_true (x0 < y0)%R) x y -> (f x < f y)%R = true
 
-Arguments gtr0_derive1_lt {R} [f]%function_scope [a b]%ring_scope
-  (df dfgt0)%function_scope [sa sb]%bool_scope _%function_scope 
-  [x y] _ _ _
+Arguments gtr0_derive1_lt {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dfgt0)%_function_scope [sa sb]%_bool_scope
+  _%_function_scope [x y] _ _ _
 gtr0_derive1_lt is opaque
 Expands to: Constant mathcomp.analysis.derive.gtr0_derive1_lt
 Declared in library mathcomp.analysis.derive, line 1705, characters 6-21
@@ -5347,8 +5351,8 @@ x \in `[a, b]%R ->
 y \in `[a, b]%R ->
 (fun x0 y0 : R => is_true (x0 < y0)%R) x y -> (f x < f y)%R = true
 
-Arguments gtr0_derive1_lt_cc {R} [f]%function_scope 
-  [a b]%ring_scope (df dfgt0 _)%function_scope [x y] 
+Arguments gtr0_derive1_lt_cc {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dfgt0 _)%_function_scope [x y] 
   _ _ _
 gtr0_derive1_lt_cc is opaque
 Expands to: Constant mathcomp.analysis.derive.gtr0_derive1_lt_cc
@@ -5379,8 +5383,8 @@ x \in `[a, b[%R ->
 y \in `[a, b[%R ->
 (fun x0 y0 : R => is_true (x0 < y0)%R) x y -> (f x < f y)%R = true
 
-Arguments gtr0_derive1_lt_co {R} [f]%function_scope 
-  [a b]%ring_scope (df dfgt0 _)%function_scope [x y] 
+Arguments gtr0_derive1_lt_co {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dfgt0 _)%_function_scope [x y] 
   _ _ _
 gtr0_derive1_lt_co is opaque
 Expands to: Constant mathcomp.analysis.derive.gtr0_derive1_lt_co
@@ -5411,8 +5415,8 @@ x \in `]a, b]%R ->
 y \in `]a, b]%R ->
 (fun x0 y0 : R => is_true (x0 < y0)%R) x y -> (f x < f y)%R = true
 
-Arguments gtr0_derive1_lt_oc {R} [f]%function_scope 
-  [a b]%ring_scope (df dfgt0 _)%function_scope [x y] 
+Arguments gtr0_derive1_lt_oc {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dfgt0 _)%_function_scope [x y] 
   _ _ _
 gtr0_derive1_lt_oc is opaque
 Expands to: Constant mathcomp.analysis.derive.gtr0_derive1_lt_oc
@@ -5455,8 +5459,8 @@ x \in `]a, b[%R ->
 y \in `]a, b[%R ->
 (fun x0 y0 : R => is_true (x0 < y0)%R) x y -> (f x < f y)%R = true
 
-Arguments gtr0_derive1_lt_oo {R} [f]%function_scope 
-  [a b]%ring_scope (df dfgt0)%function_scope _ [x y] 
+Arguments gtr0_derive1_lt_oo {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dfgt0)%_function_scope _ [x y] 
   _ _ _
 gtr0_derive1_lt_oo is opaque
 Expands to: Constant mathcomp.analysis.derive.gtr0_derive1_lt_oo
@@ -5480,9 +5484,9 @@ forall [R : realType] [f : R -> R] [a b : R],
 forall [x y : R], (a <= x)%R -> (x < y)%R -> (y <= b)%R -> (f x < f y)%R
 
 gtr0_derive1_incr is not universe polymorphic
-Arguments gtr0_derive1_incr [R] [f]%function_scope 
-  [a b]%ring_scope (_ _ _)%function_scope [x y] _ 
-  _ _
+Arguments gtr0_derive1_incr [R] [f]%_function_scope 
+  [a b]%_ring_scope (_ _ _)%_function_scope [x y] 
+  _ _ _
 gtr0_derive1_incr is opaque
 Expands to: Constant mathcomp.analysis.derive.gtr0_derive1_incr
 Declared in library mathcomp.analysis.derive, line 1743, characters 6-23
@@ -5527,9 +5531,9 @@ x \in Interval (BSide sa a) (BSide sb b) ->
 y \in Interval (BSide sa a) (BSide sb b) ->
 (fun y0 x0 : R => is_true (x0 < y0)%R) x y -> (f x < f y)%R = true
 
-Arguments ltr0_derive1_lt {R} [f]%function_scope [a b]%ring_scope
-  (df dflt0)%function_scope [sa sb]%bool_scope _%function_scope 
-  [x y] _ _ _
+Arguments ltr0_derive1_lt {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dflt0)%_function_scope [sa sb]%_bool_scope
+  _%_function_scope [x y] _ _ _
 ltr0_derive1_lt is opaque
 Expands to: Constant mathcomp.analysis.derive.ltr0_derive1_lt
 Declared in library mathcomp.analysis.derive, line 1761, characters 6-21
@@ -5568,8 +5572,8 @@ x \in `[a, b]%R ->
 y \in `[a, b]%R ->
 (fun y0 x0 : R => is_true (x0 < y0)%R) x y -> (f x < f y)%R = true
 
-Arguments ltr0_derive1_lt_cc {R} [f]%function_scope 
-  [a b]%ring_scope (df dflt0 _)%function_scope [x y] 
+Arguments ltr0_derive1_lt_cc {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dflt0 _)%_function_scope [x y] 
   _ _ _
 ltr0_derive1_lt_cc is opaque
 Expands to: Constant mathcomp.analysis.derive.ltr0_derive1_lt_cc
@@ -5600,8 +5604,8 @@ x \in `[a, b[%R ->
 y \in `[a, b[%R ->
 (fun y0 x0 : R => is_true (x0 < y0)%R) x y -> (f x < f y)%R = true
 
-Arguments ltr0_derive1_lt_co {R} [f]%function_scope 
-  [a b]%ring_scope (df dflt0 _)%function_scope [x y] 
+Arguments ltr0_derive1_lt_co {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dflt0 _)%_function_scope [x y] 
   _ _ _
 ltr0_derive1_lt_co is opaque
 Expands to: Constant mathcomp.analysis.derive.ltr0_derive1_lt_co
@@ -5632,8 +5636,8 @@ x \in `]a, b]%R ->
 y \in `]a, b]%R ->
 (fun y0 x0 : R => is_true (x0 < y0)%R) x y -> (f x < f y)%R = true
 
-Arguments ltr0_derive1_lt_oc {R} [f]%function_scope 
-  [a b]%ring_scope (df dflt0 _)%function_scope [x y] 
+Arguments ltr0_derive1_lt_oc {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dflt0 _)%_function_scope [x y] 
   _ _ _
 ltr0_derive1_lt_oc is opaque
 Expands to: Constant mathcomp.analysis.derive.ltr0_derive1_lt_oc
@@ -5676,8 +5680,8 @@ x \in `]a, b[%R ->
 y \in `]a, b[%R ->
 (fun y0 x0 : R => is_true (x0 < y0)%R) x y -> (f x < f y)%R = true
 
-Arguments ltr0_derive1_lt_oo {R} [f]%function_scope 
-  [a b]%ring_scope (df dflt0)%function_scope _ [x y] 
+Arguments ltr0_derive1_lt_oo {R} [f]%_function_scope 
+  [a b]%_ring_scope (df dflt0)%_function_scope _ [x y] 
   _ _ _
 ltr0_derive1_lt_oo is opaque
 Expands to: Constant mathcomp.analysis.derive.ltr0_derive1_lt_oo
@@ -5701,9 +5705,9 @@ forall [R : realType] [f : R -> R] [a b : R],
 forall [x y : R], (a <= x)%R -> (x < y)%R -> (y <= b)%R -> (f y < f x)%R
 
 ltr0_derive1_decr is not universe polymorphic
-Arguments ltr0_derive1_decr [R] [f]%function_scope 
-  [a b]%ring_scope (_ _ _)%function_scope [x y] _ 
-  _ _
+Arguments ltr0_derive1_decr [R] [f]%_function_scope 
+  [a b]%_ring_scope (_ _ _)%_function_scope [x y] 
+  _ _ _
 ltr0_derive1_decr is opaque
 Expands to: Constant mathcomp.analysis.derive.ltr0_derive1_decr
 Declared in library mathcomp.analysis.derive, line 1795, characters 6-23
@@ -5739,8 +5743,9 @@ forall {R : realType} [f : R -> R] [a : R],
 forall [x y : R], (a <= x)%R -> (x <= y)%R -> (f y <= f x)%R
 
 ler0_derive1_nincry is not universe polymorphic
-Arguments ler0_derive1_nincry {R} [f]%function_scope 
-  [a]%ring_scope (_ _ _)%function_scope [x y] _ _
+Arguments ler0_derive1_nincry {R} [f]%_function_scope 
+  [a]%_ring_scope (_ _ _)%_function_scope [x y] _ 
+  _
 ler0_derive1_nincry is opaque
 Expands to: Constant mathcomp.analysis.derive.ler0_derive1_nincry
 Declared in library mathcomp.analysis.derive, line 1817, characters 6-25
@@ -5770,8 +5775,9 @@ forall {R : realType} [f : R -> R] [b : R],
 forall [x y : R], (x <= y)%R -> (y <= b)%R -> (f y <= f x)%R
 
 ler0_derive1_nincrNy is not universe polymorphic
-Arguments ler0_derive1_nincrNy {R} [f]%function_scope 
-  [b]%ring_scope (_ _ _)%function_scope [x y] _ _
+Arguments ler0_derive1_nincrNy {R} [f]%_function_scope 
+  [b]%_ring_scope (_ _ _)%_function_scope [x y] _ 
+  _
 ler0_derive1_nincrNy is opaque
 Expands to: Constant mathcomp.analysis.derive.ler0_derive1_nincrNy
 Declared in library mathcomp.analysis.derive, line 1833, characters 6-26
@@ -5801,9 +5807,9 @@ forall [R : realType] [f : R -> R] [a b : R],
 forall [x y : R], (a <= x)%R -> (x <= y)%R -> (y <= b)%R -> (f x <= f y)%R
 
 ger0_derive1_ndecr is not universe polymorphic
-Arguments ger0_derive1_ndecr [R] [f]%function_scope 
-  [a b]%ring_scope (_ _ _)%function_scope [x y] _ 
-  _ _
+Arguments ger0_derive1_ndecr [R] [f]%_function_scope 
+  [a b]%_ring_scope (_ _ _)%_function_scope [x y] 
+  _ _ _
 ger0_derive1_ndecr is opaque
 Expands to: Constant mathcomp.analysis.derive.ger0_derive1_ndecr
 Declared in library mathcomp.analysis.derive, line 1849, characters 6-24
@@ -5831,8 +5837,9 @@ forall {R : realType} [f : R -> R] [a : R],
 forall [x y : R], (a <= x)%R -> (x <= y)%R -> (f x <= f y)%R
 
 ger0_derive1_ndecry is not universe polymorphic
-Arguments ger0_derive1_ndecry {R} [f]%function_scope 
-  [a]%ring_scope (_ _ _)%function_scope [x y] _ _
+Arguments ger0_derive1_ndecry {R} [f]%_function_scope 
+  [a]%_ring_scope (_ _ _)%_function_scope [x y] _ 
+  _
 ger0_derive1_ndecry is opaque
 Expands to: Constant mathcomp.analysis.derive.ger0_derive1_ndecry
 Declared in library mathcomp.analysis.derive, line 1863, characters 6-25
@@ -5862,8 +5869,9 @@ forall {R : realType} [f : R -> R] [b : R],
 forall [x y : R], (x <= y)%R -> (y <= b)%R -> (f x <= f y)%R
 
 ger0_derive1_ndecrNy is not universe polymorphic
-Arguments ger0_derive1_ndecrNy {R} [f]%function_scope 
-  [b]%ring_scope (_ _ _)%function_scope [x y] _ _
+Arguments ger0_derive1_ndecrNy {R} [f]%_function_scope 
+  [b]%_ring_scope (_ _ _)%_function_scope [x y] _ 
+  _
 ger0_derive1_ndecrNy is opaque
 Expands to: Constant mathcomp.analysis.derive.ger0_derive1_ndecrNy
 Declared in library mathcomp.analysis.derive, line 1879, characters 6-26
@@ -5896,8 +5904,8 @@ forall {R : realFieldType} [f : R -> R] [D : set R] [x : R],
 topology_structure.interior D x -> (f^`()%classic x <= 0)%R
 
 decr_derive1_le0 is not universe polymorphic
-Arguments decr_derive1_le0 {R} [f]%function_scope 
-  [D]%classical_set_scope [x]%ring_scope _ _ _
+Arguments decr_derive1_le0 {R} [f]%_function_scope 
+  [D]%_classical_set_scope [x]%_ring_scope _ _ _
 decr_derive1_le0 is opaque
 Expands to: Constant mathcomp.analysis.derive.decr_derive1_le0
 Declared in library mathcomp.analysis.derive, line 1895, characters 6-22
@@ -5936,8 +5944,8 @@ forall {R : realType} [f : R -> R] [b0 b1 : bool] [a b z : R],
 z \in `]a, b[%R -> (f^`()%classic z <= 0)%R
 
 decr_derive1_le0_itv is not universe polymorphic
-Arguments decr_derive1_le0_itv {R} [f]%function_scope 
-  [b0 b1]%bool_scope [a b z]%ring_scope _ _ _
+Arguments decr_derive1_le0_itv {R} [f]%_function_scope 
+  [b0 b1]%_bool_scope [a b z]%_ring_scope _ _ _
 decr_derive1_le0_itv is opaque
 Expands to: Constant mathcomp.analysis.derive.decr_derive1_le0_itv
 Declared in library mathcomp.analysis.derive, line 1921, characters 6-26
@@ -5964,8 +5972,8 @@ forall {R : realType} [f : R -> R] [b0 : bool] [a z : R],
 z \in `]a, +oo[%R -> (f^`()%classic z <= 0)%R
 
 decr_derive1_le0_itvy is not universe polymorphic
-Arguments decr_derive1_le0_itvy {R} [f]%function_scope 
-  [b0]%bool_scope [a z]%ring_scope _ _ _
+Arguments decr_derive1_le0_itvy {R} [f]%_function_scope 
+  [b0]%_bool_scope [a z]%_ring_scope _ _ _
 decr_derive1_le0_itvy is opaque
 Expands to: Constant mathcomp.analysis.derive.decr_derive1_le0_itvy
 Declared in library mathcomp.analysis.derive, line 1935, characters 6-27
@@ -5991,8 +5999,8 @@ forall {R : realType} [f : R -> R] [b1 : bool] [b z : R],
 z \in `]-oo, b[%R -> (f^`()%classic z <= 0)%R
 
 decr_derive1_le0_itvNy is not universe polymorphic
-Arguments decr_derive1_le0_itvNy {R} [f]%function_scope 
-  [b1]%bool_scope [b z]%ring_scope _ _ _
+Arguments decr_derive1_le0_itvNy {R} [f]%_function_scope 
+  [b1]%_bool_scope [b z]%_ring_scope _ _ _
 decr_derive1_le0_itvNy is opaque
 Expands to: Constant mathcomp.analysis.derive.decr_derive1_le0_itvNy
 Declared in library mathcomp.analysis.derive, line 1948, characters 6-28
@@ -6018,8 +6026,8 @@ forall {R : realFieldType} [f : R -> R] [D : set R] [x : R],
 topology_structure.interior D x -> (0 <= f^`()%classic x)%R
 
 incr_derive1_ge0 is not universe polymorphic
-Arguments incr_derive1_ge0 {R} [f]%function_scope 
-  [D]%classical_set_scope [x]%ring_scope _ _ _
+Arguments incr_derive1_ge0 {R} [f]%_function_scope 
+  [D]%_classical_set_scope [x]%_ring_scope _ _ _
 incr_derive1_ge0 is opaque
 Expands to: Constant mathcomp.analysis.derive.incr_derive1_ge0
 Declared in library mathcomp.analysis.derive, line 1961, characters 6-22
@@ -6045,8 +6053,8 @@ forall {R : realType} [f : R -> R] [b0 b1 : bool] [a b z : R],
 z \in `]a, b[%R -> (0 <= f^`()%classic z)%R
 
 incr_derive1_ge0_itv is not universe polymorphic
-Arguments incr_derive1_ge0_itv {R} [f]%function_scope 
-  [b0 b1]%bool_scope [a b z]%ring_scope _ _ _
+Arguments incr_derive1_ge0_itv {R} [f]%_function_scope 
+  [b0 b1]%_bool_scope [a b z]%_ring_scope _ _ _
 incr_derive1_ge0_itv is opaque
 Expands to: Constant mathcomp.analysis.derive.incr_derive1_ge0_itv
 Declared in library mathcomp.analysis.derive, line 1974, characters 6-26
@@ -6073,8 +6081,8 @@ forall {R : realType} [f : R -> R] [b0 : bool] [a z : R],
 z \in `]a, +oo[%R -> (0 <= f^`()%classic z)%R
 
 incr_derive1_ge0_itvy is not universe polymorphic
-Arguments incr_derive1_ge0_itvy {R} [f]%function_scope 
-  [b0]%bool_scope [a z]%ring_scope _ _ _
+Arguments incr_derive1_ge0_itvy {R} [f]%_function_scope 
+  [b0]%_bool_scope [a z]%_ring_scope _ _ _
 incr_derive1_ge0_itvy is opaque
 Expands to: Constant mathcomp.analysis.derive.incr_derive1_ge0_itvy
 Declared in library mathcomp.analysis.derive, line 1988, characters 6-27
@@ -6101,8 +6109,8 @@ forall {R : realType} [f : R -> R] [b1 : bool] [b z : R],
 z \in `]-oo, b[%R -> (0 <= f^`()%classic z)%R
 
 incr_derive1_ge0_itvNy is not universe polymorphic
-Arguments incr_derive1_ge0_itvNy {R} [f]%function_scope 
-  [b1]%bool_scope [b z]%ring_scope _ _ _
+Arguments incr_derive1_ge0_itvNy {R} [f]%_function_scope 
+  [b1]%_bool_scope [b z]%_ring_scope _ _ _
 incr_derive1_ge0_itvNy is opaque
 Expands to: Constant mathcomp.analysis.derive.incr_derive1_ge0_itvNy
 Declared in library mathcomp.analysis.derive, line 2002, characters 6-28
@@ -6131,7 +6139,7 @@ derivable g (f x) 1 ->
 (g \o f)^`()%classic x = (g^`()%classic (f x) * f^`()%classic x)%R
 
 derive1_comp is not universe polymorphic
-Arguments derive1_comp [R] [f g]%function_scope [x]%ring_scope _ _
+Arguments derive1_comp [R] [f g]%_function_scope [x]%_ring_scope _ _
 derive1_comp is opaque
 Expands to: Constant mathcomp.analysis.derive.derive1_comp
 Declared in library mathcomp.analysis.derive, line 2016, characters 6-18
@@ -6159,7 +6167,7 @@ filter.prop_near1 0%R
       (h^-1 *: (f (h *: v + a) - f a))%R = (h^-1 *: (g (h *: v + a) - g a))%R))
 
 near_eq_growth_rate is not universe polymorphic
-Arguments near_eq_growth_rate [R V W] [f g]%function_scope [a v] _ _
+Arguments near_eq_growth_rate [R V W] [f g]%_function_scope [a v] _ _
 near_eq_growth_rate is opaque
 Expands to: Constant mathcomp.analysis.derive.near_eq_growth_rate
 Declared in library mathcomp.analysis.derive, line 2026, characters 6-25
@@ -6211,7 +6219,7 @@ exists2 i : R,
          ((fun h : R => (h^-1 *: ((g \o shift a) (h *: v) - g a))%R) @^-1` t)
            t0))%classic
 
-Arguments near_eq_derivable [R V W] [f g]%function_scope [a v] _ _ _ [t] _
+Arguments near_eq_derivable [R V W] [f g]%_function_scope [a v] _ _ _ [t] _
 near_eq_derivable is opaque
 Expands to: Constant mathcomp.analysis.derive.near_eq_derivable
 Declared in library mathcomp.analysis.derive, line 2036, characters 6-23
@@ -6233,7 +6241,7 @@ filter.prop_near1 a (P:=fun a0 : V => f a0 = g a0)
 'D_v f a = 'D_v g a
 
 near_eq_derive is not universe polymorphic
-Arguments near_eq_derive [R V W] [f g]%function_scope [a v] _ _
+Arguments near_eq_derive [R V W] [f g]%_function_scope [a v] _ _
 near_eq_derive is opaque
 Expands to: Constant mathcomp.analysis.derive.near_eq_derive
 Declared in library mathcomp.analysis.derive, line 2044, characters 6-20
@@ -6257,7 +6265,7 @@ filter.prop_near1 a (P:=fun a0 : V => f a0 = g a0)
 is_derive a v f df -> is_derive a v g df
 
 near_eq_is_derive is not universe polymorphic
-Arguments near_eq_is_derive [R V W] [f g]%function_scope [a v df] _ _ _
+Arguments near_eq_is_derive [R V W] [f g]%_function_scope [a v df] _ _ _
 near_eq_is_derive is opaque
 Expands to: Constant mathcomp.analysis.derive.near_eq_is_derive
 Declared in library mathcomp.analysis.derive, line 2053, characters 6-23
@@ -6276,7 +6284,7 @@ forall {R : realFieldType} [f : R -> R] [x : R],
 derivable f x 1 -> ((- f)%R)^`()%classic x = (- f^`()%classic x)%R
 
 derive1N is not universe polymorphic
-Arguments derive1N {R} [f]%function_scope [x]%ring_scope _
+Arguments derive1N {R} [f]%_function_scope [x]%_ring_scope _
 derive1N is opaque
 Expands to: Constant mathcomp.analysis.derive.derive1N
 Declared in library mathcomp.analysis.derive, line 2061, characters 6-14
@@ -6325,7 +6333,7 @@ exists2 i : R,
          ((fun h : R => (h^-1 *: ((-%R \o shift x) (h *: v) - - x))%R) @^-1`
           t) t0))%classic
 
-Arguments derivable_opp {R} [x v]%ring_scope [t] _
+Arguments derivable_opp {R} [x v]%_ring_scope [t] _
 derivable_opp is opaque
 Expands to: Constant mathcomp.analysis.derive.derivable_opp
 Declared in library mathcomp.analysis.derive, line 2065, characters 6-19
@@ -6338,7 +6346,7 @@ Declared in library mathcomp.analysis.derive, line 2065, characters 6-19
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="derive1_id" class="id"><a name="derive1_id" class="" title="derive1_id : forall {R : realFieldType} (x : R), id^`()%classic x = 1%R
 
 derive1_id is not universe polymorphic
-Arguments derive1_id {R} x%ring_scope
+Arguments derive1_id {R} x%_ring_scope
 derive1_id is opaque
 Expands to: Constant mathcomp.analysis.derive.derive1_id
 Declared in library mathcomp.analysis.derive, line 2068, characters 6-16
@@ -6355,7 +6363,7 @@ forall [R : realType] [f : R -> R]
 is_derive x (1%R : R) f x1 -> x1 = y1 -> is_derive x 1%R f y1
 
 trigger_derive is not universe polymorphic
-Arguments trigger_derive [R] [f]%function_scope [x x1 y1] _ _
+Arguments trigger_derive [R] [f]%_function_scope [x x1 y1] _ _
 trigger_derive is opaque
 Expands to: Constant mathcomp.analysis.derive.trigger_derive
 Declared in library mathcomp.analysis.derive, line 2072, characters 6-20
@@ -6388,7 +6396,7 @@ forall [R : realFieldType] (p : {poly R}) (r : R),
 horner (p * 'X + r%:P) = (horner (p * 'X) + horner r%:P)%R
 
 hornerD_ext is not universe polymorphic
-Arguments hornerD_ext [R] (p r)%ring_scope
+Arguments hornerD_ext [R] (p r)%_ring_scope
 hornerD_ext is opaque
 Expands to: Constant mathcomp.analysis.derive.hornerD_ext
 Declared in library mathcomp.analysis.derive, line 2083, characters 6-17
@@ -6404,7 +6412,7 @@ forall [R : realFieldType] (p : {poly R}),
 horner (p * 'X) = (fun x : R => (p.[x] * x)%R)
 
 horner_scale_ext is not universe polymorphic
-Arguments horner_scale_ext [R] p%ring_scope
+Arguments horner_scale_ext [R] p%_ring_scope
 horner_scale_ext is opaque
 Expands to: Constant mathcomp.analysis.derive.horner_scale_ext
 Declared in library mathcomp.analysis.derive, line 2087, characters 6-22
@@ -6418,7 +6426,7 @@ Declared in library mathcomp.analysis.derive, line 2087, characters 6-22
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="hornerC_ext" class="id"><a name="hornerC_ext" class="" title="hornerC_ext : forall [R : realFieldType] (r : R), horner r%:P = cst r
 
 hornerC_ext is not universe polymorphic
-Arguments hornerC_ext [R] r%ring_scope
+Arguments hornerC_ext [R] r%_ring_scope
 hornerC_ext is opaque
 Expands to: Constant mathcomp.analysis.derive.hornerC_ext
 Declared in library mathcomp.analysis.derive, line 2091, characters 6-17
@@ -6466,7 +6474,7 @@ exists2 i : R,
          ((fun h : R => (h^-1 *: ((horner p \o shift x) h%:A - p.[x]))%R) @^-1`
           t) t0))%classic
 
-Arguments derivable_horner [R] [p x]%ring_scope [t] _
+Arguments derivable_horner [R] [p x]%_ring_scope [t] _
 derivable_horner is opaque
 Expands to: Constant mathcomp.analysis.derive.derivable_horner
 Declared in library mathcomp.analysis.derive, line 2094, characters 6-22
@@ -6557,7 +6565,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` horner p @^-1` t)%classic
 
-Arguments continuous_horner [R] [p]%ring_scope [x t] _
+Arguments continuous_horner [R] [p]%_ring_scope [x t] _
 continuous_horner is opaque
 Expands to: Constant mathcomp.analysis.derive.continuous_horner
 Declared in library mathcomp.analysis.derive, line 2121, characters 6-23

@@ -250,8 +250,8 @@ forall [d d' : measure_display] [T : sigmaRingType d] [U : sigmaRingType d'],
 set T -> (T -> U) -> Prop
 
 measurable_fun is not universe polymorphic
-Arguments measurable_fun [d d']%measure_display_scope 
-  [T U] D%classical_set_scope f%function_scope
+Arguments measurable_fun [d d']%_measure_display_scope 
+  [T U] D%_classical_set_scope f%_function_scope
 measurable_fun is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_fun
@@ -281,8 +281,8 @@ forall {d d' : measure_display} {aT : measurableType d}
 measurable_fun (T:=aT) (U:=rT) D s
 
 measurable_funP is not universe polymorphic
-Arguments measurable_funP {d d'}%measure_display_scope 
-  {aT rT} {D}%classical_set_scope s _ Y _
+Arguments measurable_funP {d d'}%_measure_display_scope 
+  {aT rT} {D}%_classical_set_scope s _ Y _
 measurable_funP is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_funP
@@ -306,8 +306,8 @@ forall {d d' : measure_display} {aT : measurableType d}
 d'.-measurable%classic Y -> d.-measurable%classic (f @^-1` Y)
 
 measurable_funPTI is not universe polymorphic
-Arguments measurable_funPTI {d d'}%measure_display_scope 
-  {aT rT} f [Y]%classical_set_scope _
+Arguments measurable_funPTI {d d'}%_measure_display_scope 
+  {aT rT} f [Y]%_classical_set_scope _
 measurable_funPTI is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_funPTI
@@ -331,7 +331,7 @@ forall {d d' : measure_display} {aT : sigmaRingType d}
 {pred aT -> rT}
 
 mfun is not universe polymorphic
-Arguments mfun {d d'}%measure_display_scope {aT rT} _
+Arguments mfun {d d'}%_measure_display_scope {aT rT} _
 mfun is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.mfun
@@ -344,7 +344,7 @@ forall {d d' : measure_display} {aT : sigmaRingType d}
 pred_key (T:=aT -> rT) mfun
 
 mfun_key is not universe polymorphic
-Arguments mfun_key {d d'}%measure_display_scope {aT rT}
+Arguments mfun_key {d d'}%_measure_display_scope {aT rT}
 mfun_key is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.mfun_key
@@ -361,7 +361,7 @@ forall {d d' : measure_display} {aT : sigmaRingType d}
 keyed_pred mfun_key
 
 mfun_keyed is not universe polymorphic
-Arguments mfun_keyed {d d'}%measure_display_scope {aT rT}
+Arguments mfun_keyed {d d'}%_measure_display_scope {aT rT}
 mfun_keyed is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.mfun_keyed
@@ -393,8 +393,8 @@ d1.-measurable%classic Y ->
       class) in
  measurable) (D `&` id @^-1` Y)%classic
 
-Arguments measurable_id [d1]%measure_display_scope 
-  [T1] [D]%classical_set_scope _ [Y] _
+Arguments measurable_id [d1]%_measure_display_scope 
+  [T1] [D]%_classical_set_scope _ [Y] _
 measurable_id is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_id
@@ -436,10 +436,10 @@ d3.-measurable%classic Y ->
       class) in
  measurable) (E `&` (f \o g) @^-1` Y)%classic
 
-Arguments measurable_comp [d1 d2 d3]%measure_display_scope 
-  [T1 T2 T3] [F]%classical_set_scope [f]%function_scope
-  [E]%classical_set_scope [g]%function_scope _ _ _ 
-  _ _ [Y] _
+Arguments measurable_comp [d1 d2 d3]%_measure_display_scope 
+  [T1 T2 T3] [F]%_classical_set_scope [f]%_function_scope
+  [E]%_classical_set_scope [g]%_function_scope _ _ 
+  _ _ _ [Y] _
 measurable_comp is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_comp
@@ -467,9 +467,9 @@ forall {d1 d2 : measure_display} {T1 : sigmaRingType d1}
 measurable_fun (T:=T1) (U:=T2) D f -> measurable_fun (T:=T1) (U:=T2) D g
 
 eq_measurable_fun is not universe polymorphic
-Arguments eq_measurable_fun {d1 d2}%measure_display_scope 
-  {T1 T2} {D}%classical_set_scope f%function_scope 
-  {g}%function_scope _ _ _ Y _
+Arguments eq_measurable_fun {d1 d2}%_measure_display_scope 
+  {T1 T2} {D}%_classical_set_scope f%_function_scope 
+  {g}%_function_scope _ _ _ Y _
 eq_measurable_fun is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.eq_measurable_fun
@@ -492,9 +492,9 @@ forall {d1 d2 : measure_display} {T1 : sigmaRingType d1}
 measurable_fun (T:=T1) (U:=T2) D f <-> measurable_fun (T:=T1) (U:=T2) D g
 
 measurable_fun_eqP is not universe polymorphic
-Arguments measurable_fun_eqP {d1 d2}%measure_display_scope 
-  {T1 T2} {D}%classical_set_scope f%function_scope 
-  {g}%function_scope _
+Arguments measurable_fun_eqP {d1 d2}%_measure_display_scope 
+  {T1 T2} {D}%_classical_set_scope f%_function_scope 
+  {g}%_function_scope _
 measurable_fun_eqP is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_fun_eqP
@@ -528,8 +528,8 @@ d2.-measurable%classic Y ->
       class) in
  measurable) (D `&` (cst r : T1 -> T2) @^-1` Y)%classic
 
-Arguments measurable_cst [d1 d2]%measure_display_scope 
-  [T1 T2] [D]%classical_set_scope r _ [Y] _
+Arguments measurable_cst [d1 d2]%_measure_display_scope 
+  [T1 T2] [D]%_classical_set_scope r _ [Y] _
 measurable_cst is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_cst
@@ -550,8 +550,8 @@ measurable_fun (T:=T1) (U:=T2) (\bigcup_i E i) f <->
 (forall i : nat, measurable_fun (T:=T1) (U:=T2) (E i) f)
 
 measurable_fun_bigcup is not universe polymorphic
-Arguments measurable_fun_bigcup [d1 d2]%measure_display_scope 
-  [T1 T2 E] (f _)%function_scope
+Arguments measurable_fun_bigcup [d1 d2]%_measure_display_scope 
+  [T1 T2 E] (f _)%_function_scope
 measurable_fun_bigcup is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_fun_bigcup
@@ -579,8 +579,8 @@ measurable_fun (T:=T1) (U:=T2) (D `|` E) f <->
 measurable_fun (T:=T1) (U:=T2) D f /\ measurable_fun (T:=T1) (U:=T2) E f
 
 measurable_funU is not universe polymorphic
-Arguments measurable_funU [d1 d2]%measure_display_scope 
-  [T1 T2] [D E]%classical_set_scope f%function_scope 
+Arguments measurable_funU [d1 d2]%_measure_display_scope 
+  [T1 T2] [D E]%_classical_set_scope f%_function_scope 
   _ _
 measurable_funU is opaque
 Expands to: Constant
@@ -623,8 +623,8 @@ d2.-measurable%classic Y ->
       class) in
  measurable) (D `&` f @^-1` Y)%classic
 
-Arguments measurable_funS [d1 d2]%measure_display_scope 
-  [T1 T2] [E D]%classical_set_scope [f]%function_scope 
+Arguments measurable_funS [d1 d2]%_measure_display_scope 
+  [T1 T2] [E D]%_classical_set_scope [f]%_function_scope 
   _ _ _ _ [Y] _
 measurable_funS is opaque
 Expands to: Constant
@@ -676,9 +676,9 @@ d2.-measurable%classic Y ->
       class) in
  measurable) (D `&` (fun t : T1 => if f t then g t else h t) @^-1` Y)%classic
 
-Arguments measurable_fun_if [d1 d2]%measure_display_scope 
-  [T1 T2] [g h]%function_scope [D]%classical_set_scope 
-  mD [f]%function_scope mf _ _ _ [Y] _
+Arguments measurable_fun_if [d1 d2]%_measure_display_scope 
+  [T1 T2] [g h]%_function_scope [D]%_classical_set_scope 
+  mD [f]%_function_scope mf _ _ _ [Y] _
 measurable_fun_if is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_fun_if
@@ -722,8 +722,8 @@ d2.-measurable%classic Y ->
       class) in
  measurable) (set0 `&` f @^-1` Y)%classic
 
-Arguments measurable_fun_set0 [d1 d2]%measure_display_scope 
-  [T1 T2] f%function_scope _ [Y] _
+Arguments measurable_fun_set0 [d1 d2]%_measure_display_scope 
+  [T1 T2] f%_function_scope _ [Y] _
 measurable_fun_set0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_fun_set0
@@ -755,8 +755,8 @@ d2.-measurable%classic Y ->
       class) in
  measurable) ([set a] `&` f @^-1` Y)%classic
 
-Arguments measurable_fun_set1 [d1 d2]%measure_display_scope 
-  [T1 T2 a] f%function_scope _ [Y] _
+Arguments measurable_fun_set1 [d1 d2]%_measure_display_scope 
+  [T1 T2 a] f%_function_scope _ [Y] _
 measurable_fun_set1 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_fun_set1
@@ -791,8 +791,8 @@ forall {d d' : measure_display} {aT : sigmaRingType d}
 f \in mfun -> isMeasurableFun.axioms_ d d' aT rT f
 
 mfun_Sub_subproof is not universe polymorphic
-Arguments mfun_Sub_subproof {d d'}%measure_display_scope 
-  {aT rT} [f]%function_scope fP
+Arguments mfun_Sub_subproof {d d'}%_measure_display_scope 
+  {aT rT} [f]%_function_scope fP
 mfun_Sub_subproof is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.mfun_Sub_subproof
@@ -806,7 +806,7 @@ f \in mfun -> {mfun aT >-> rT}
 
 measurable_function_f__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments measurable_function_f__canonical__measurable_function_MeasurableFun
-  {d d'}%measure_display_scope {aT rT} [f]%function_scope 
+  {d d'}%_measure_display_scope {aT rT} [f]%_function_scope 
   fP
 measurable_function_f__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
@@ -820,7 +820,7 @@ f \in mfun -> {mfun aT >-> rT}
 
 measurable_function_f__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments measurable_function_f__canonical__measurable_function_MeasurableFun
-  {d d'}%measure_display_scope {aT rT} [f]%function_scope 
+  {d d'}%_measure_display_scope {aT rT} [f]%_function_scope 
   fP
 measurable_function_f__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
@@ -834,7 +834,7 @@ f \in mfun -> {mfun aT >-> rT}
 
 measurable_function_f__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments measurable_function_f__canonical__measurable_function_MeasurableFun
-  {d d'}%measure_display_scope {aT rT} [f]%function_scope 
+  {d d'}%_measure_display_scope {aT rT} [f]%_function_scope 
   fP
 measurable_function_f__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
@@ -848,7 +848,7 @@ f \in mfun -> {mfun aT >-> rT}
 
 measurable_function_f__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments measurable_function_f__canonical__measurable_function_MeasurableFun
-  {d d'}%measure_display_scope {aT rT} [f]%function_scope 
+  {d d'}%_measure_display_scope {aT rT} [f]%_function_scope 
   fP
 measurable_function_f__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
@@ -862,7 +862,7 @@ f \in mfun -> {mfun aT >-> rT}
 
 measurable_function_f__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments measurable_function_f__canonical__measurable_function_MeasurableFun
-  {d d'}%measure_display_scope {aT rT} [f]%function_scope 
+  {d d'}%_measure_display_scope {aT rT} [f]%_function_scope 
   fP
 measurable_function_f__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
@@ -876,7 +876,7 @@ f \in mfun -> {mfun aT >-> rT}
 
 measurable_function_f__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments measurable_function_f__canonical__measurable_function_MeasurableFun
-  {d d'}%measure_display_scope {aT rT} [f]%function_scope 
+  {d d'}%_measure_display_scope {aT rT} [f]%_function_scope 
   fP
 measurable_function_f__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
@@ -890,7 +890,8 @@ forall {d d' : measure_display} {aT : sigmaRingType d}
 f \in mfun -> {mfun aT >-> rT}
 
 mfun_Sub is not universe polymorphic
-Arguments mfun_Sub {d d'}%measure_display_scope {aT rT} [f]%function_scope fP
+Arguments mfun_Sub {d d'}%_measure_display_scope {aT rT} 
+  [f]%_function_scope fP
 mfun_Sub is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.mfun_Sub
@@ -906,8 +907,8 @@ forall {d d' : measure_display} {aT : sigmaRingType d}
 forall u : {mfun aT >-> rT}, K u
 
 mfun_rect is not universe polymorphic
-Arguments mfun_rect {d d'}%measure_display_scope {aT rT} 
-  [K]%function_scope _%function_scope u
+Arguments mfun_rect {d d'}%_measure_display_scope 
+  {aT rT} [K]%_function_scope _%_function_scope u
 mfun_rect is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.mfun_rect
@@ -928,8 +929,8 @@ forall {d d' : measure_display} {aT : sigmaRingType d}
 mfun_Sub (f:=f) Pf = f
 
 mfun_valP is not universe polymorphic
-Arguments mfun_valP {d d'}%measure_display_scope {aT rT} 
-  [f]%function_scope Pf
+Arguments mfun_valP {d d'}%_measure_display_scope 
+  {aT rT} [f]%_function_scope Pf
 mfun_valP is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.mfun_valP
@@ -948,7 +949,7 @@ subType (T:=aT -> rT) (in_mem^~ (mem mfun))
 
 MeasurableFun_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments MeasurableFun_type__canonical__eqtype_SubType
-  {d d'}%measure_display_scope {aT rT}
+  {d d'}%_measure_display_scope {aT rT}
 MeasurableFun_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.MeasurableFun_type__canonical__eqtype_SubType
@@ -961,7 +962,7 @@ subType (T:=aT -> rT) (in_mem^~ (mem mfun))
 
 MeasurableFun_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments MeasurableFun_type__canonical__eqtype_SubType
-  {d d'}%measure_display_scope {aT rT}
+  {d d'}%_measure_display_scope {aT rT}
 MeasurableFun_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.MeasurableFun_type__canonical__eqtype_SubType
@@ -974,7 +975,7 @@ subType (T:=aT -> rT) (in_mem^~ (mem mfun))
 
 MeasurableFun_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments MeasurableFun_type__canonical__eqtype_SubType
-  {d d'}%measure_display_scope {aT rT}
+  {d d'}%_measure_display_scope {aT rT}
 MeasurableFun_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.MeasurableFun_type__canonical__eqtype_SubType
@@ -987,7 +988,7 @@ subType (T:=aT -> rT) (in_mem^~ (mem mfun))
 
 MeasurableFun_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments MeasurableFun_type__canonical__eqtype_SubType
-  {d d'}%measure_display_scope {aT rT}
+  {d d'}%_measure_display_scope {aT rT}
 MeasurableFun_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.MeasurableFun_type__canonical__eqtype_SubType
@@ -1000,7 +1001,7 @@ subType (T:=aT -> rT) (in_mem^~ (mem mfun))
 
 MeasurableFun_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments MeasurableFun_type__canonical__eqtype_SubType
-  {d d'}%measure_display_scope {aT rT}
+  {d d'}%_measure_display_scope {aT rT}
 MeasurableFun_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.MeasurableFun_type__canonical__eqtype_SubType
@@ -1014,7 +1015,7 @@ forall {d d' : measure_display} {aT : sigmaRingType d}
 f = g <-> f =1 g
 
 mfuneqP is not universe polymorphic
-Arguments mfuneqP {d d'}%measure_display_scope {aT rT} f g
+Arguments mfuneqP {d d'}%_measure_display_scope {aT rT} f g
 mfuneqP is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.mfuneqP
@@ -1033,7 +1034,7 @@ subChoiceType (T:=aT -> rT) (in_mem^~ (mem mfun))
 
 MeasurableFun_type__canonical__choice_SubChoice is not universe polymorphic
 Arguments MeasurableFun_type__canonical__choice_SubChoice
-  {d d'}%measure_display_scope {aT rT}
+  {d d'}%_measure_display_scope {aT rT}
 MeasurableFun_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.MeasurableFun_type__canonical__choice_SubChoice
@@ -1046,7 +1047,7 @@ subChoiceType (T:=aT -> rT) (in_mem^~ (mem mfun))
 
 MeasurableFun_type__canonical__choice_SubChoice is not universe polymorphic
 Arguments MeasurableFun_type__canonical__choice_SubChoice
-  {d d'}%measure_display_scope {aT rT}
+  {d d'}%_measure_display_scope {aT rT}
 MeasurableFun_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.MeasurableFun_type__canonical__choice_SubChoice
@@ -1059,7 +1060,7 @@ subChoiceType (T:=aT -> rT) (in_mem^~ (mem mfun))
 
 MeasurableFun_type__canonical__choice_SubChoice is not universe polymorphic
 Arguments MeasurableFun_type__canonical__choice_SubChoice
-  {d d'}%measure_display_scope {aT rT}
+  {d d'}%_measure_display_scope {aT rT}
 MeasurableFun_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.MeasurableFun_type__canonical__choice_SubChoice
@@ -1072,7 +1073,7 @@ subChoiceType (T:=aT -> rT) (in_mem^~ (mem mfun))
 
 MeasurableFun_type__canonical__choice_SubChoice is not universe polymorphic
 Arguments MeasurableFun_type__canonical__choice_SubChoice
-  {d d'}%measure_display_scope {aT rT}
+  {d d'}%_measure_display_scope {aT rT}
 MeasurableFun_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.MeasurableFun_type__canonical__choice_SubChoice
@@ -1085,7 +1086,7 @@ subChoiceType (T:=aT -> rT) (in_mem^~ (mem mfun))
 
 MeasurableFun_type__canonical__choice_SubChoice is not universe polymorphic
 Arguments MeasurableFun_type__canonical__choice_SubChoice
-  {d d'}%measure_display_scope {aT rT}
+  {d d'}%_measure_display_scope {aT rT}
 MeasurableFun_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.MeasurableFun_type__canonical__choice_SubChoice
@@ -1100,7 +1101,7 @@ rT -> {mfun aT >-> rT}
 
 functions_cst__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments functions_cst__canonical__measurable_function_MeasurableFun
-  {d d'}%measure_display_scope {aT rT} x
+  {d d'}%_measure_display_scope {aT rT} x
 functions_cst__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.functions_cst__canonical__measurable_function_MeasurableFun
@@ -1113,7 +1114,7 @@ rT -> {mfun aT >-> rT}
 
 functions_cst__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments functions_cst__canonical__measurable_function_MeasurableFun
-  {d d'}%measure_display_scope {aT rT} x
+  {d d'}%_measure_display_scope {aT rT} x
 functions_cst__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.functions_cst__canonical__measurable_function_MeasurableFun
@@ -1126,7 +1127,7 @@ rT -> {mfun aT >-> rT}
 
 functions_cst__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments functions_cst__canonical__measurable_function_MeasurableFun
-  {d d'}%measure_display_scope {aT rT} x
+  {d d'}%_measure_display_scope {aT rT} x
 functions_cst__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.functions_cst__canonical__measurable_function_MeasurableFun
@@ -1139,7 +1140,7 @@ rT -> {mfun aT >-> rT}
 
 functions_cst__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments functions_cst__canonical__measurable_function_MeasurableFun
-  {d d'}%measure_display_scope {aT rT} x
+  {d d'}%_measure_display_scope {aT rT} x
 functions_cst__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.functions_cst__canonical__measurable_function_MeasurableFun
@@ -1152,7 +1153,7 @@ rT -> {mfun aT >-> rT}
 
 functions_cst__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments functions_cst__canonical__measurable_function_MeasurableFun
-  {d d'}%measure_display_scope {aT rT} x
+  {d d'}%_measure_display_scope {aT rT} x
 functions_cst__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.functions_cst__canonical__measurable_function_MeasurableFun
@@ -1165,7 +1166,7 @@ rT -> {mfun aT >-> rT}
 
 functions_cst__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments functions_cst__canonical__measurable_function_MeasurableFun
-  {d d'}%measure_display_scope {aT rT} x
+  {d d'}%_measure_display_scope {aT rT} x
 functions_cst__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.functions_cst__canonical__measurable_function_MeasurableFun
@@ -1207,9 +1208,9 @@ d3.-measurable%classic Y ->
       class) in
  measurable) (E `&` (f \o g) @^-1` Y)%classic
 
-Arguments measurableT_comp [d1 d2 d3]%measure_display_scope 
-  [T1 T2 T3] [f]%function_scope [E]%classical_set_scope 
-  [g]%function_scope _ _ _ [Y] _
+Arguments measurableT_comp [d1 d2 d3]%_measure_display_scope 
+  [T1 T2 T3] [f]%_function_scope [E]%_classical_set_scope 
+  [g]%_function_scope _ _ _ [Y] _
 measurableT_comp is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurableT_comp
@@ -1244,8 +1245,8 @@ d2.-measurable%classic Y ->
       class) in
  measurable) (D `&` f @^-1` Y)%classic
 
-Arguments measurable_funTS [d1 d2]%measure_display_scope 
-  [T1 T2] [D]%classical_set_scope [f]%function_scope 
+Arguments measurable_funTS [d1 d2]%_measure_display_scope 
+  [T1 T2] [D]%_classical_set_scope [f]%_function_scope 
   _ _ [Y] _
 measurable_funTS is opaque
 Expands to: Constant
@@ -1268,8 +1269,8 @@ measurable_fun (T:=T1) (U:=T2) (E `&` D) f <->
 measurable_fun (T:=T1) (U:=T2) E (f \_ D)
 
 measurable_restrict is not universe polymorphic
-Arguments measurable_restrict [d1 d2]%measure_display_scope 
-  [T1 T2] [D E]%classical_set_scope f%function_scope 
+Arguments measurable_restrict [d1 d2]%_measure_display_scope 
+  [T1 T2] [D E]%_classical_set_scope f%_function_scope 
   _ _
 measurable_restrict is opaque
 Expands to: Constant
@@ -1301,8 +1302,8 @@ measurable_fun (T:=T1) (U:=T2) D f <->
 measurable_fun (T:=T1) (U:=T2) [set: T1] (f \_ D)
 
 measurable_restrictT is not universe polymorphic
-Arguments measurable_restrictT [d1 d2]%measure_display_scope 
-  [T1 T2] [D]%classical_set_scope f%function_scope 
+Arguments measurable_restrictT [d1 d2]%_measure_display_scope 
+  [T1 T2] [D]%_classical_set_scope f%_function_scope 
   _
 measurable_restrictT is opaque
 Expands to: Constant
@@ -1347,8 +1348,8 @@ d2.-measurable%classic Y ->
  measurable)
   ([set: T1] `&` (fun t : T1 => if f t then g t else h t) @^-1` Y)%classic
 
-Arguments measurable_fun_ifT [d1 d2]%measure_display_scope 
-  [T1 T2] [g h f]%function_scope mf _ _ _ [Y] _
+Arguments measurable_fun_ifT [d1 d2]%_measure_display_scope 
+  [T1 T2] [g h f]%_function_scope mf _ _ _ [Y] _
 measurable_fun_ifT is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_fun_ifT
@@ -1392,9 +1393,9 @@ measurable_fun (T:=T1)
   (U:=Datatypes_bool__canonical__measurable_structure_SigmaRing) D f
 
 measurable_fun_bool is not universe polymorphic
-Arguments measurable_fun_bool {d1}%measure_display_scope 
-  {T1} {D}%classical_set_scope {f}%function_scope 
-  b%bool_scope _ _ Y _
+Arguments measurable_fun_bool {d1}%_measure_display_scope 
+  {T1} {D}%_classical_set_scope {f}%_function_scope 
+  b%_bool_scope _ _ Y _
 measurable_fun_bool is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_fun_bool
@@ -1443,8 +1444,8 @@ forall [Y : set Datatypes_bool__canonical__measurable_structure_SigmaRing],
       class) in
  measurable) (D `&` (fun x : T1 => f x && g x) @^-1` Y)%classic
 
-Arguments measurable_and [d1]%measure_display_scope 
-  [T1] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_and [d1]%_measure_display_scope 
+  [T1] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_and is opaque
 Expands to: Constant
@@ -1489,8 +1490,8 @@ forall [Y : set Datatypes_bool__canonical__measurable_structure_SigmaRing],
       class) in
  measurable) (D `&` (fun x : T1 => ~~ f x) @^-1` Y)%classic
 
-Arguments measurable_neg [d1]%measure_display_scope 
-  [T1] [D]%classical_set_scope [f]%function_scope 
+Arguments measurable_neg [d1]%_measure_display_scope 
+  [T1] [D]%_classical_set_scope [f]%_function_scope 
   _ _ [Y] _
 measurable_neg is opaque
 Expands to: Constant
@@ -1538,8 +1539,8 @@ forall [Y : set Datatypes_bool__canonical__measurable_structure_SigmaRing],
       class) in
  measurable) (D `&` (fun x : T1 => f x || g x) @^-1` Y)%classic
 
-Arguments measurable_or [d1]%measure_display_scope 
-  [T1] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_or [d1]%_measure_display_scope 
+  [T1] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_or is opaque
 Expands to: Constant
@@ -1588,8 +1589,8 @@ forall {d1 : measure_display} {T1 : measurableType d1}
 
 ssrfun_comp__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments ssrfun_comp__canonical__measurable_function_MeasurableFun
-  {d1}%measure_display_scope {T1} {d2}%measure_display_scope 
-  {T2} {d3}%measure_display_scope {T3} f g
+  {d1}%_measure_display_scope {T1} {d2}%_measure_display_scope 
+  {T2} {d3}%_measure_display_scope {T3} f g
 ssrfun_comp__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.ssrfun_comp__canonical__measurable_function_MeasurableFun
@@ -1603,8 +1604,8 @@ forall {d1 : measure_display} {T1 : measurableType d1}
 
 ssrfun_comp__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments ssrfun_comp__canonical__measurable_function_MeasurableFun
-  {d1}%measure_display_scope {T1} {d2}%measure_display_scope 
-  {T2} {d3}%measure_display_scope {T3} f g
+  {d1}%_measure_display_scope {T1} {d2}%_measure_display_scope 
+  {T2} {d3}%_measure_display_scope {T3} f g
 ssrfun_comp__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.ssrfun_comp__canonical__measurable_function_MeasurableFun
@@ -1618,8 +1619,8 @@ forall {d1 : measure_display} {T1 : measurableType d1}
 
 ssrfun_comp__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments ssrfun_comp__canonical__measurable_function_MeasurableFun
-  {d1}%measure_display_scope {T1} {d2}%measure_display_scope 
-  {T2} {d3}%measure_display_scope {T3} f g
+  {d1}%_measure_display_scope {T1} {d2}%_measure_display_scope 
+  {T2} {d3}%_measure_display_scope {T3} f g
 ssrfun_comp__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.ssrfun_comp__canonical__measurable_function_MeasurableFun
@@ -1633,8 +1634,8 @@ forall {d1 : measure_display} {T1 : measurableType d1}
 
 ssrfun_comp__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments ssrfun_comp__canonical__measurable_function_MeasurableFun
-  {d1}%measure_display_scope {T1} {d2}%measure_display_scope 
-  {T2} {d3}%measure_display_scope {T3} f g
+  {d1}%_measure_display_scope {T1} {d2}%_measure_display_scope 
+  {T2} {d3}%_measure_display_scope {T3} f g
 ssrfun_comp__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.ssrfun_comp__canonical__measurable_function_MeasurableFun
@@ -1648,8 +1649,8 @@ forall {d1 : measure_display} {T1 : measurableType d1}
 
 ssrfun_comp__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments ssrfun_comp__canonical__measurable_function_MeasurableFun
-  {d1}%measure_display_scope {T1} {d2}%measure_display_scope 
-  {T2} {d3}%measure_display_scope {T3} f g
+  {d1}%_measure_display_scope {T1} {d2}%_measure_display_scope 
+  {T2} {d3}%_measure_display_scope {T3} f g
 ssrfun_comp__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.ssrfun_comp__canonical__measurable_function_MeasurableFun
@@ -1693,8 +1694,8 @@ i
   ((D : set (g_sigma_algebraType (preimage_set_system D f d.-measurable)))
    `&` f @^-1` Y)%classic
 
-Arguments preimage_set_system_measurable_fun [d]%measure_display_scope
-  [aT rT] [D]%classical_set_scope [f]%function_scope 
+Arguments preimage_set_system_measurable_fun [d]%_measure_display_scope
+  [aT rT] [D]%_classical_set_scope [f]%_function_scope 
   _ [Y] _ [i] _
 preimage_set_system_measurable_fun is opaque
 Expands to: Constant
@@ -1719,9 +1720,9 @@ d'.-measurable%classic = <<s G >>%classic ->
 measurable_fun (T:=aT) (U:=rT) D f
 
 measurability is not universe polymorphic
-Arguments measurability {d d'}%measure_display_scope 
-  {aT rT} {D}%classical_set_scope {f}%function_scope 
-  G%classical_set_scope _ _ _ Y _
+Arguments measurability {d d'}%_measure_display_scope 
+  {aT rT} {D}%_classical_set_scope {f}%_function_scope 
+  G%_classical_set_scope _ _ _ Y _
 measurability is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurability
@@ -1765,8 +1766,8 @@ measurable_fun (T:=T) (U:=T1) [set: T] (fst \o h) /\
 measurable_fun (T:=T) (U:=T2) [set: T] (snd \o h)
 
 measurable_fun_pairP is not universe polymorphic
-Arguments measurable_fun_pairP [d d1 d2]%measure_display_scope 
-  [T T1 T2] h%function_scope
+Arguments measurable_fun_pairP [d d1 d2]%_measure_display_scope 
+  [T T1 T2] h%_function_scope
 measurable_fun_pairP is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_fun_pairP
@@ -1816,8 +1817,8 @@ forall
       class) in
  measurable) ([set: T] `&` (fun x : T => (f x, g x)) @^-1` Y)%classic
 
-Arguments measurable_fun_pair [d d1 d2]%measure_display_scope 
-  [T T1 T2] [f g]%function_scope _ _ _ [Y] _
+Arguments measurable_fun_pair [d d1 d2]%_measure_display_scope 
+  [T T1 T2] [f g]%_function_scope _ _ _ [Y] _
 measurable_fun_pair is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_fun_pair
@@ -1848,7 +1849,7 @@ measurable_fun
   (U:=T1) [set: T1 * T2] fst
 
 measurable_fst is not universe polymorphic
-Arguments measurable_fst {d1 d2}%measure_display_scope {T1 T2} _ Y _ i _
+Arguments measurable_fst {d1 d2}%_measure_display_scope {T1 T2} _ Y _ i _
 measurable_fst is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_fst
@@ -1870,7 +1871,7 @@ measurable_fun
   (U:=T2) [set: T1 * T2] snd
 
 measurable_snd is not universe polymorphic
-Arguments measurable_snd {d1 d2}%measure_display_scope {T1 T2} _ Y _ i _
+Arguments measurable_snd {d1 d2}%_measure_display_scope {T1 T2} _ Y _ i _
 measurable_snd is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_snd
@@ -1911,7 +1912,8 @@ i
   ([set: Datatypes_prod__canonical__measurable_structure_SigmaRing T1 T2]
    `&` swap @^-1` Y)%classic
 
-Arguments measurable_swap [d1 d2]%measure_display_scope [T1 T2] _ [Y] _ [i] _
+Arguments measurable_swap [d1 d2]%_measure_display_scope 
+  [T1 T2] _ [Y] _ [i] _
 measurable_swap is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_swap
@@ -1954,8 +1956,8 @@ forall [i0 : set (set (n.-tuple T))],
   i0 ->
 i0 ([set: n.-tuple T] `&` (tnth (T:=T))^~ i @^-1` Y)%classic
 
-Arguments measurable_tnth [d]%measure_display_scope 
-  [T] [n]%nat_scope i _ [Y] _ [i] _
+Arguments measurable_tnth [d]%_measure_display_scope 
+  [T] [n]%_nat_scope i _ [Y] _ [i] _
 measurable_tnth is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_tnth
@@ -1984,8 +1986,8 @@ measurable_fun (T:=T1)
  measurable_fun (T:=T1) (U:=T2) [set: T1] ((tnth (T:=T2))^~ i \o f))
 
 measurable_fun_tnthP is not universe polymorphic
-Arguments measurable_fun_tnthP [d1 d2]%measure_display_scope 
-  [T1 T2] [n]%nat_scope f%function_scope
+Arguments measurable_fun_tnthP [d1 d2]%_measure_display_scope 
+  [T1 T2] [n]%_nat_scope f%_function_scope
 measurable_fun_tnthP is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_fun_tnthP
@@ -2049,8 +2051,8 @@ forall
  measurable)
   ([set: T1] `&` (fun x : T1 => [the (n.+1).-tuple T2 of f x :: g x]) @^-1` Y)%classic
 
-Arguments measurable_cons [d1 d2]%measure_display_scope 
-  [T1 T2] [f]%function_scope [n]%nat_scope [g]%function_scope 
+Arguments measurable_cons [d1 d2]%_measure_display_scope 
+  [T1 T2] [f]%_function_scope [n]%_nat_scope [g]%_function_scope 
   _ _ _ [Y] _
 measurable_cons is opaque
 Expands to: Constant
@@ -2111,8 +2113,8 @@ i
         [tuple of behead x]) @^-1`
        Y)%classic
 
-Arguments measurable_behead [d]%measure_display_scope 
-  [T] [n]%nat_scope _ [Y] _ [i] _
+Arguments measurable_behead [d]%_measure_display_scope 
+  [T] [n]%_nat_scope _ [Y] _ [i] _
 measurable_behead is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_behead
@@ -2198,8 +2200,8 @@ i
         if tb.2 then x tb.1 else y tb.1) @^-1`
        Y0)%classic
 
-Arguments measurable_fun_if_pair [d d']%measure_display_scope 
-  [X Y] [x y]%function_scope _ _ _ [Y] _ [i] _
+Arguments measurable_fun_if_pair [d d']%_measure_display_scope 
+  [X Y] [x y]%_function_scope _ _ _ [Y] _ [i] _
 measurable_fun_if_pair is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_fun_if_pair
@@ -2243,7 +2245,7 @@ forall
       class) in
  measurable) ([set: T2] `&` pair x @^-1` Y)%classic
 
-Arguments pair1_measurable [d1 d2]%measure_display_scope [T1 T2] x _ [Y] _
+Arguments pair1_measurable [d1 d2]%_measure_display_scope [T1 T2] x _ [Y] _
 pair1_measurable is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.pair1_measurable
@@ -2281,7 +2283,7 @@ forall
       class) in
  measurable) ([set: T1] `&` pair^~ y @^-1` Y)%classic
 
-Arguments pair2_measurable [d1 d2]%measure_display_scope [T1 T2] y _ [Y] _
+Arguments pair2_measurable [d1 d2]%_measure_display_scope [T1 T2] y _ [Y] _
 pair2_measurable is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.pair2_measurable
@@ -2317,8 +2319,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 d2.-measurable%classic (xsection A x)
 
 measurable_xsection is not universe polymorphic
-Arguments measurable_xsection [d1 d2]%measure_display_scope 
-  [T1 T2] [A]%classical_set_scope x _
+Arguments measurable_xsection [d1 d2]%_measure_display_scope 
+  [T1 T2] [A]%_classical_set_scope x _
 measurable_xsection is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_xsection
@@ -2341,8 +2343,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 d1.-measurable%classic (ysection A y)
 
 measurable_ysection is not universe polymorphic
-Arguments measurable_ysection [d1 d2]%measure_display_scope 
-  [T1 T2] [A]%classical_set_scope y _
+Arguments measurable_ysection [d1 d2]%_measure_display_scope 
+  [T1 T2] [A]%_classical_set_scope y _
 measurable_ysection is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_ysection
@@ -2388,8 +2390,8 @@ d3.-measurable%classic Y ->
       class) in
  measurable) ([set: T1] `&` (fun x : T1 => f (x, y)) @^-1` Y)%classic
 
-Arguments measurable_fun_pair1 [d1 d2 d3]%measure_display_scope 
-  [T1 T2 T3] [f]%function_scope y _ _ [Y] _
+Arguments measurable_fun_pair1 [d1 d2 d3]%_measure_display_scope 
+  [T1 T2 T3] [f]%_function_scope y _ _ [Y] _
 measurable_fun_pair1 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_fun_pair1
@@ -2432,8 +2434,8 @@ d3.-measurable%classic Y ->
       class) in
  measurable) ([set: T2] `&` (fun y : T2 => f (x, y)) @^-1` Y)%classic
 
-Arguments measurable_fun_pair2 [d1 d2 d3]%measure_display_scope 
-  [T1 T2 T3] [f]%function_scope x _ _ [Y] _
+Arguments measurable_fun_pair2 [d1 d2 d3]%_measure_display_scope 
+  [T1 T2 T3] [f]%_function_scope x _ _ [Y] _
 measurable_fun_pair2 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measurable_function.measurable_fun_pair2

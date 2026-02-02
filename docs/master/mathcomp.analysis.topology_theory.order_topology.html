@@ -475,7 +475,7 @@ forall {d : disp_t} {T : orderTopologicalType d} [A : set T],
 (A !=set0)%classic ->
 topology_structure.closed A -> forall [t : T], infimums (T:=T) A t -> A t
 
-Arguments itv_closed_infimums {d T} [A]%classical_set_scope _ _ [t] _
+Arguments itv_closed_infimums {d T} [A]%_classical_set_scope _ _ [t] _
 itv_closed_infimums is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.itv_closed_infimums
@@ -516,7 +516,7 @@ forall {d : disp_t} {T : orderTopologicalType d} [A : set T],
 (A !=set0)%classic ->
 topology_structure.closed A -> forall [t : T], supremums (T:=T) A t -> A t
 
-Arguments itv_closed_supremums {d T} [A]%classical_set_scope _ _ [t] _
+Arguments itv_closed_supremums {d T} [A]%_classical_set_scope _ _ [t] _
 itv_closed_supremums is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.itv_closed_supremums
@@ -560,7 +560,7 @@ topology_structure.clopen
       [set` i]%classic)
 
 clopen_bigcup_clopen is not universe polymorphic
-Arguments clopen_bigcup_clopen {d T} [x] [U]%classical_set_scope _ _
+Arguments clopen_bigcup_clopen {d T} [x] [U]%_classical_set_scope _ _
 clopen_bigcup_clopen is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.clopen_bigcup_clopen
@@ -599,7 +599,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="order_topology" class="id"><a name="order_topology" class="" title="order_topology : Type -> Type
 
 order_topology is not universe polymorphic
-Arguments order_topology T%type_scope
+Arguments order_topology T%_type_scope
 order_topology is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.order_topology
@@ -1021,8 +1021,8 @@ filter.nbhs ((f \min g) x) t ->
       class) in
  nbhs) x ((f \min g) @^-1` t)%classic
 
-Arguments min_fun_continuous {d X T} [f g]%function_scope
-  (_ _)%function_scope [x t] _
+Arguments min_fun_continuous {d X T} [f g]%_function_scope
+  (_ _)%_function_scope [x t] _
 min_fun_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.min_fun_continuous
@@ -1164,8 +1164,8 @@ filter.nbhs ((f \max g) x) t ->
       class) in
  nbhs) x ((f \max g) @^-1` t)%classic
 
-Arguments max_fun_continuous {d X T} [f g]%function_scope
-  (_ _)%function_scope [x t] _
+Arguments max_fun_continuous {d X T} [f g]%_function_scope
+  (_ _)%_function_scope [x t] _
 max_fun_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.order_topology.max_fun_continuous

@@ -281,8 +281,8 @@ compact A ->
 lebesgue_measure.-integrable A (EFin \o f)
 
 continuous_compact_integrable is not universe polymorphic
-Arguments continuous_compact_integrable [rT] [f]%function_scope
-  [A]%classical_set_scope _ _%function_scope
+Arguments continuous_compact_integrable [rT] [f]%_function_scope
+  [A]%_classical_set_scope _ _%_function_scope
 continuous_compact_integrable is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.continuous_compact_integrable
@@ -341,7 +341,8 @@ exists g_ : (rT -> rT) ^nat,
 
 approximation_continuous_integrable is not universe polymorphic
 Arguments approximation_continuous_integrable [rT] 
-  [E]%classical_set_scope [f]%function_scope _ _ _
+  [E]%_classical_set_scope [f]%_function_scope _ _ 
+  _
 approximation_continuous_integrable is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.approximation_continuous_integrable
@@ -504,8 +505,8 @@ exists2 i : rT,
           t) t0))%classic
 
 Arguments lebesgue_differentiation_continuous [rT] 
-  [f]%function_scope [A]%classical_set_scope [x] _ 
-  _ _ _ [t] _
+  [f]%_function_scope [A]%_classical_set_scope [x] 
+  _ _ _ _ [t] _
 lebesgue_differentiation_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.lebesgue_differentiation_continuous
@@ -593,7 +594,7 @@ library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentia
 <span class="vernacular">Definition</span><span class="id"> </span><span id="locally_integrable" class="id"><a name="locally_integrable" class="" title="locally_integrable : forall {R : realType}, set R -> (R -> R) -> Prop
 
 locally_integrable is not universe polymorphic
-Arguments locally_integrable {R} D%classical_set_scope f%function_scope
+Arguments locally_integrable {R} D%_classical_set_scope f%_function_scope
 locally_integrable is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.locally_integrable
@@ -608,8 +609,8 @@ topology_structure.open D ->
 lebesgue_measure.-integrable D (EFin \o f) -> locally_integrable D f
 
 open_integrable_locally is not universe polymorphic
-Arguments open_integrable_locally {R} [D]%classical_set_scope
-  [f]%function_scope _ _
+Arguments open_integrable_locally {R} [D]%_classical_set_scope
+  [f]%_function_scope _ _
 open_integrable_locally is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.open_integrable_locally
@@ -633,8 +634,8 @@ forall {R : realType} [D : set R] [f : R -> R],
 locally_integrable D f -> locally_integrable D (\- f)%R
 
 locally_integrableN is not universe polymorphic
-Arguments locally_integrableN {R} [D]%classical_set_scope 
-  [f]%function_scope _
+Arguments locally_integrableN {R} [D]%_classical_set_scope
+  [f]%_function_scope _
 locally_integrableN is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.locally_integrableN
@@ -655,8 +656,8 @@ locally_integrable D f ->
 locally_integrable D g -> locally_integrable D (f \+ g)%R
 
 locally_integrableD is not universe polymorphic
-Arguments locally_integrableD {R} [D]%classical_set_scope
-  [f g]%function_scope _ _
+Arguments locally_integrableD {R} [D]%_classical_set_scope
+  [f g]%_function_scope _ _
 locally_integrableD is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.locally_integrableD
@@ -687,8 +688,8 @@ locally_integrable D f ->
 locally_integrable D g -> locally_integrable D (f \- g)%R
 
 locally_integrableB is not universe polymorphic
-Arguments locally_integrableB {R} [D]%classical_set_scope
-  [f g]%function_scope _ _
+Arguments locally_integrableB {R} [D]%_classical_set_scope
+  [f g]%_function_scope _ _
 locally_integrableB is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.locally_integrableB
@@ -709,7 +710,7 @@ topology_structure.open D ->
 'measurable%classic A -> locally_integrable D (\1_A)%R
 
 locally_integrable_indic is not universe polymorphic
-Arguments locally_integrable_indic {R} [D A]%classical_set_scope _ _
+Arguments locally_integrable_indic {R} [D A]%_classical_set_scope _ _
 locally_integrable_indic is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.locally_integrable_indic
@@ -738,8 +739,8 @@ forall {R : realType} [A B : set R] [f : R -> R],
 locally_integrable [set: R] (f \_ B) -> locally_integrable [set: R] (f \_ A)
 
 locally_integrableS is not universe polymorphic
-Arguments locally_integrableS {R} [A B]%classical_set_scope
-  [f]%function_scope _ _ _ _
+Arguments locally_integrableS {R} [A B]%_classical_set_scope
+  [f]%_function_scope _ _ _ _
 locally_integrableS is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.locally_integrableS
@@ -774,8 +775,8 @@ lebesgue_measure.-integrable A (EFin \o f) ->
 locally_integrable [set: R] (f \_ A)
 
 integrable_locally_restrict is not universe polymorphic
-Arguments integrable_locally_restrict {R} [f]%function_scope
-  [A]%classical_set_scope _ _
+Arguments integrable_locally_restrict {R} [f]%_function_scope
+  [A]%_classical_set_scope _ _
 integrable_locally_restrict is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.integrable_locally_restrict
@@ -813,7 +814,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="iavg" class="id"><a name="iavg" class="" title="iavg : forall {R : realType}, (R -> R) -> set R -> \bar R
 
 iavg is not universe polymorphic
-Arguments iavg {R} f%function_scope A%classical_set_scope
+Arguments iavg {R} f%_function_scope A%_classical_set_scope
 iavg is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.iavg
@@ -824,7 +825,7 @@ library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentia
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="iavg0" class="id"><a name="iavg0" class="" title="iavg0 : forall {R : realType} (f : R -> R), iavg f set0 = 0%R
 
 iavg0 is not universe polymorphic
-Arguments iavg0 {R} f%function_scope
+Arguments iavg0 {R} f%_function_scope
 iavg0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.iavg0
@@ -840,7 +841,7 @@ library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentia
 forall {R : realType} (f : R -> R) (A : set R), (0%R <= iavg f A)%E
 
 iavg_ge0 is not universe polymorphic
-Arguments iavg_ge0 {R} f%function_scope A%classical_set_scope
+Arguments iavg_ge0 {R} f%_function_scope A%_classical_set_scope
 iavg_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.iavg_ge0
@@ -860,7 +861,7 @@ iavg (f \_ D) A =
 ((lebesgue_measure A)^-1 * \int[lebesgue_measure]_(y in D `&` A) `|f y|%:E)%E
 
 iavg_restrict is not universe polymorphic
-Arguments iavg_restrict {R} f%function_scope [D A]%classical_set_scope _ _
+Arguments iavg_restrict {R} f%_function_scope [D A]%_classical_set_scope _ _
 iavg_restrict is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.iavg_restrict
@@ -887,7 +888,7 @@ measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
 (iavg (f \+ g)%R A <= (iavg f A + iavg g A)%R)%E
 
 iavgD is not universe polymorphic
-Arguments iavgD {R} [f g]%function_scope [A]%classical_set_scope _ _ _ _
+Arguments iavgD {R} [f g]%_function_scope [A]%_classical_set_scope _ _ _ _
 iavgD is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.iavgD
@@ -931,7 +932,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="HL_maximal" class="id"><a name="HL_maximal" class="" title="HL_maximal : forall {R : realType}, (R -> R) -> R -> \bar R
 
 HL_maximal is not universe polymorphic
-Arguments HL_maximal {R} f%function_scope x%ring_scope
+Arguments HL_maximal {R} f%_function_scope x%_ring_scope
 HL_maximal is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.HL_maximal
@@ -947,8 +948,8 @@ forall {R : realType} [f : R -> R] [D : set R],
 locally_integrable D f -> forall x : R, (0%R <= HL_maximal (f \_ D) x)%E
 
 HL_maximal_ge0 is not universe polymorphic
-Arguments HL_maximal_ge0 {R} [f]%function_scope [D]%classical_set_scope 
-  _ x%ring_scope
+Arguments HL_maximal_ge0 {R} [f]%_function_scope [D]%_classical_set_scope 
+  _ x%_ring_scope
 HL_maximal_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.HL_maximal_ge0
@@ -973,7 +974,7 @@ forall {R : realType} [f : R -> R],
 locally_integrable [set: R] f -> forall x : R, (0%R <= HL_maximal f x)%E
 
 HL_maximalT_ge0 is not universe polymorphic
-Arguments HL_maximalT_ge0 {R} [f]%function_scope _ x%ring_scope
+Arguments HL_maximalT_ge0 {R} [f]%_function_scope _ x%_ring_scope
 HL_maximalT_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.HL_maximalT_ge0
@@ -1027,7 +1028,7 @@ exists2
              R),
   V y -> (a%:E < HL_maximal f y)%E
 
-Arguments lower_semicontinuous_HL_maximal {R} [f]%function_scope _ [x a] _
+Arguments lower_semicontinuous_HL_maximal {R} [f]%_function_scope _ [x a] _
 lower_semicontinuous_HL_maximal is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.lower_semicontinuous_HL_maximal
@@ -1150,7 +1151,7 @@ i
   ([set: Real_sort__canonical__measurable_structure_SigmaRing R]
    `&` HL_maximal f @^-1` Y)%classic
 
-Arguments measurable_HL_maximal {R} [f]%function_scope _ _ [Y] _ [i] _
+Arguments measurable_HL_maximal {R} [f]%_function_scope _ _ [Y] _ [i] _
 measurable_HL_maximal is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.measurable_HL_maximal
@@ -1179,7 +1180,7 @@ locally_integrable [set: R] f ->
   \int[lebesgue_measure]_(y in D) `|(f0 y)%:E|) [set: R]%classic f)%E
 
 maximal_inequality is not universe polymorphic
-Arguments maximal_inequality {R} [f]%function_scope [c] _ _
+Arguments maximal_inequality {R} [f]%_function_scope [c] _ _
 maximal_inequality is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.maximal_inequality
@@ -1259,7 +1260,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="davg" class="id"><a name="davg" class="" title="davg : forall {R : realType}, (R -> R) -> R -> R -> \bar R
 
 davg is not universe polymorphic
-Arguments davg {R} f%function_scope (x r)%ring_scope
+Arguments davg {R} f%_function_scope (x r)%_ring_scope
 davg is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.davg
@@ -1272,7 +1273,7 @@ forall {R : realType} (f : R -> R) (x : R) [r : R],
 (r <= 0)%R -> davg f x r = 0%R
 
 davg0 is not universe polymorphic
-Arguments davg0 {R} f%function_scope x%ring_scope [r]%ring_scope _
+Arguments davg0 {R} f%_function_scope x%_ring_scope [r]%_ring_scope _
 davg0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.davg0
@@ -1288,7 +1289,7 @@ library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentia
 forall {R : realType} (f : R -> R) (x r : R), (0%R <= davg f x r)%E
 
 davg_ge0 is not universe polymorphic
-Arguments davg_ge0 {R} f%function_scope (x r)%ring_scope
+Arguments davg_ge0 {R} f%_function_scope (x r)%_ring_scope
 davg_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.davg_ge0
@@ -1311,7 +1312,7 @@ measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
 (davg (f \+ g)%R x r <= (davg f x \+ davg g x) r)%E
 
 davgD is not universe polymorphic
-Arguments davgD {R} [f g]%function_scope [x r]%ring_scope _ _
+Arguments davgD {R} [f g]%_function_scope [x r]%_ring_scope _ _
 davgD is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.davgD
@@ -1343,7 +1344,7 @@ filter.prop_near1 (0^'+)%classic
      (forall r : R, davg f x r = davg (f \_ [set` Interval a (BRight u)]) x r))
 
 near_davg is not universe polymorphic
-Arguments near_davg {R} f%function_scope [a x] [u]%ring_scope _ _
+Arguments near_davg {R} f%_function_scope [a x] [u]%_ring_scope _ _
 near_davg is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.near_davg
@@ -1460,8 +1461,8 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] 0%R i `<=` [eta davg f x] @^-1` t)%classic
 
-Arguments continuous_cvg_davg {R} [f]%function_scope 
-  [x]%ring_scope [U]%classical_set_scope xU mU mUf 
+Arguments continuous_cvg_davg {R} [f]%_function_scope 
+  [x]%_ring_scope [U]%_classical_set_scope xU mU mUf 
   fx [t] _
 continuous_cvg_davg is opaque
 Expands to: Constant
@@ -1507,7 +1508,7 @@ library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentia
 <span class="vernacular">Definition</span><span class="id"> </span><span id="lim_sup_davg" class="id"><a name="lim_sup_davg" class="" title="lim_sup_davg : forall {R : realType}, (R -> R) -> R -> \bar R
 
 lim_sup_davg is not universe polymorphic
-Arguments lim_sup_davg {R} f%function_scope x%ring_scope
+Arguments lim_sup_davg {R} f%_function_scope x%_ring_scope
 lim_sup_davg is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.lim_sup_davg
@@ -1521,7 +1522,7 @@ library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentia
 forall {R : realType} (f : R -> R) (x : R), (0%R <= lim_sup_davg f x)%E
 
 lim_sup_davg_ge0 is not universe polymorphic
-Arguments lim_sup_davg_ge0 {R} f%function_scope x%ring_scope
+Arguments lim_sup_davg_ge0 {R} f%_function_scope x%_ring_scope
 lim_sup_davg_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.lim_sup_davg_ge0
@@ -1548,8 +1549,8 @@ measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
 (lim_sup_davg (f \+ g)%R x <= (lim_sup_davg f \+ lim_sup_davg g) x)%E
 
 lim_sup_davg_le is not universe polymorphic
-Arguments lim_sup_davg_le {R} [f g]%function_scope 
-  [x] [U]%classical_set_scope _ _ _ _
+Arguments lim_sup_davg_le {R} [f g]%_function_scope 
+  [x] [U]%_classical_set_scope _ _ _ _
 lim_sup_davg_le is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.lim_sup_davg_le
@@ -1593,8 +1594,8 @@ measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
 lim_sup_davg f x = 0%R
 
 continuous_lim_sup_davg is not universe polymorphic
-Arguments continuous_lim_sup_davg {R} [f]%function_scope 
-  [x] [U]%classical_set_scope _ _ _ _
+Arguments continuous_lim_sup_davg {R} [f]%_function_scope 
+  [x] [U]%_classical_set_scope _ _ _ _
 continuous_lim_sup_davg is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.continuous_lim_sup_davg
@@ -1630,8 +1631,8 @@ measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
 locally_integrable [set: R] g -> lim_sup_davg (f \- g)%R x = lim_sup_davg f x
 
 lim_sup_davgB is not universe polymorphic
-Arguments lim_sup_davgB {R} [f g]%function_scope [x] 
-  [U]%classical_set_scope _ _ _ _ _
+Arguments lim_sup_davgB {R} [f g]%_function_scope 
+  [x] [U]%_classical_set_scope _ _ _ _ _
 lim_sup_davgB is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.lim_sup_davgB
@@ -1681,7 +1682,7 @@ locally_integrable [set: R] f ->
 (lim_sup_davg f x <= (HL_maximal f x + `|f x|%:E)%R)%E
 
 lim_sup_davgT_HL_maximal is not universe polymorphic
-Arguments lim_sup_davgT_HL_maximal {R} [f]%function_scope x%ring_scope _
+Arguments lim_sup_davgT_HL_maximal {R} [f]%_function_scope x%_ring_scope _
 lim_sup_davgT_HL_maximal is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.lim_sup_davgT_HL_maximal
@@ -1732,7 +1733,7 @@ library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentia
 <span class="vernacular">Definition</span><span class="id"> </span><span id="lebesgue_pt" class="id"><a name="lebesgue_pt" class="" title="lebesgue_pt : forall {R : realType}, (R -> R) -> R -> Prop
 
 lebesgue_pt is not universe polymorphic
-Arguments lebesgue_pt {R} f%function_scope x%ring_scope
+Arguments lebesgue_pt {R} f%_function_scope x%_ring_scope
 lebesgue_pt is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.lebesgue_pt
@@ -1788,8 +1789,8 @@ exists2 i : R,
          (fun u : R => is_true ((0 : R) < u)%R) t0 ->
          ([eta davg f x] @^-1` t) t0))%classic
 
-Arguments continuous_lebesgue_pt {R} [f]%function_scope 
-  [x] [U]%classical_set_scope _ _ _ _ [t] _
+Arguments continuous_lebesgue_pt {R} [f]%_function_scope 
+  [x] [U]%_classical_set_scope _ _ _ _ [t] _
 continuous_lebesgue_pt is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.continuous_lebesgue_pt
@@ -1828,7 +1829,7 @@ exists2 i : R,
          (fun u0 : R => is_true ((0 : R) < u0)%R) t0 ->
          ([eta davg (f \_ [set` Interval a (BRight u)]) x] @^-1` t) t0))%classic
 
-Arguments lebesgue_pt_restrict {R} [f]%function_scope [a x u] _ _ _ [t] _
+Arguments lebesgue_pt_restrict {R} [f]%_function_scope [a x u] _ _ _ [t] _
 lebesgue_pt_restrict is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.lebesgue_pt_restrict
@@ -2034,7 +2035,7 @@ locally_integrable [set: R] f ->
 \forall x \ae lebesgue_measure, lebesgue_pt f x
 
 lebesgue_differentiation is not universe polymorphic
-Arguments lebesgue_differentiation {R} [f]%function_scope _
+Arguments lebesgue_differentiation {R} [f]%_function_scope _
 lebesgue_differentiation is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.lebesgue_differentiation
@@ -2127,7 +2128,7 @@ forall {R : realType} [A : set R],
                                   (filter.nbhs (\1_A x)%:E)
 
 lebesgue_density is not universe polymorphic
-Arguments lebesgue_density {R} [A]%classical_set_scope _
+Arguments lebesgue_density {R} [A]%_classical_set_scope _
 lebesgue_density is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.lebesgue_density
@@ -2207,7 +2208,7 @@ library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentia
 <span class="vernacular">Definition</span><span class="id"> </span><span id="nicely_shrinking" class="id"><a name="nicely_shrinking" class="" title="nicely_shrinking : forall {R : realType}, R -> (set R) ^nat -> Prop
 
 nicely_shrinking is not universe polymorphic
-Arguments nicely_shrinking {R} x%ring_scope E
+Arguments nicely_shrinking {R} x%_ring_scope E
 nicely_shrinking is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.nicely_shrinking
@@ -2225,7 +2226,7 @@ forall {R : realType} [x : R] [E : (set R) ^nat],
 nicely_shrinking x E -> forall n : nat, (0%R < lebesgue_measure (E n))%E
 
 nicely_shrinking_gt0 is not universe polymorphic
-Arguments nicely_shrinking_gt0 {R} [x]%ring_scope [E] _ n%nat_scope
+Arguments nicely_shrinking_gt0 {R} [x]%_ring_scope [E] _ n%_nat_scope
 nicely_shrinking_gt0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.nicely_shrinking_gt0
@@ -2247,7 +2248,7 @@ forall {R : realType} [x : R] [E : (set R) ^nat],
 nicely_shrinking x E -> forall n : nat, (lebesgue_measure (E n) < +oo)%E
 
 nicely_shrinking_lty is not universe polymorphic
-Arguments nicely_shrinking_lty {R} [x]%ring_scope [E] _ n%nat_scope
+Arguments nicely_shrinking_lty {R} [x]%_ring_scope [E] _ n%_nat_scope
 nicely_shrinking_lty is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.nicely_shrinking_lty
@@ -2269,7 +2270,7 @@ forall {R : realType} [x : R] [E : (set R) ^nat],
 nicely_shrinking x E -> forall n : nat, lebesgue_measure (E n) \is a fin_num
 
 nicely_shrinking_fin_num is not universe polymorphic
-Arguments nicely_shrinking_fin_num {R} [x]%ring_scope [E] _ n%nat_scope
+Arguments nicely_shrinking_fin_num {R} [x]%_ring_scope [E] _ n%_nat_scope
 nicely_shrinking_fin_num is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.nicely_shrinking_fin_num
@@ -2327,8 +2328,8 @@ exists2 i : nat,
           \int[lebesgue_measure]_(y in E x n) (f y)%:E)%E) @^-1`
         t)%classic
 
-Arguments nice_lebesgue_differentiation {R} [E]%function_scope
-  hE%function_scope [f]%function_scope _ [x]%ring_scope 
+Arguments nice_lebesgue_differentiation {R} [E]%_function_scope
+  hE%_function_scope [f]%_function_scope _ [x]%_ring_scope 
   _ [t] _
 nice_lebesgue_differentiation is opaque
 Expands to: Constant

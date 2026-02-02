@@ -243,7 +243,7 @@ forall {T : topology_structure.Topological.type},
 set (topology_structure.Topological.sort T) -> Prop
 
 connected is not universe polymorphic
-Arguments connected {T} A%classical_set_scope
+Arguments connected {T} A%_classical_set_scope
 connected is transparent
 Expands to: Constant mathcomp.analysis.topology_theory.connected.connected
 Declared in
@@ -283,7 +283,7 @@ set (topology_structure.Topological.sort T) ->
 set (topology_structure.Topological.sort T) -> Prop
 
 separated is not universe polymorphic
-Arguments separated [T] (A B)%classical_set_scope
+Arguments separated [T] (A B)%_classical_set_scope
 separated is transparent
 Expands to: Constant mathcomp.analysis.topology_theory.connected.separated
 Declared in
@@ -297,7 +297,7 @@ forall [T : topology_structure.Topological.type]
 separated (T:=T) A B = separated (T:=T) B A
 
 separatedC is not universe polymorphic
-Arguments separatedC [T] (A B)%classical_set_scope
+Arguments separatedC [T] (A B)%_classical_set_scope
 separatedC is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.connected.separatedC
 Declared in
@@ -314,7 +314,7 @@ forall [T : topology_structure.Topological.type]
 separated (T:=T) A B -> (A `&` B)%classic = set0
 
 separated_disjoint is not universe polymorphic
-Arguments separated_disjoint [T] [A B]%classical_set_scope _
+Arguments separated_disjoint [T] [A B]%_classical_set_scope _
 separated_disjoint is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.separated_disjoint
@@ -338,7 +338,7 @@ forall [T : topology_structure.Topological.type]
      & separated (T:=T) (E false) (E true)])
 
 connectedPn is not universe polymorphic
-Arguments connectedPn [T] A%classical_set_scope
+Arguments connectedPn [T] A%_classical_set_scope
 connectedPn is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.connected.connectedPn
 Declared in
@@ -387,7 +387,7 @@ connected A <->
    & separated (T:=T) (E false) (E true)])
 
 connectedP is not universe polymorphic
-Arguments connectedP [T] A%classical_set_scope
+Arguments connectedP [T] A%_classical_set_scope
 connectedP is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.connected.connectedP
 Declared in
@@ -409,7 +409,7 @@ separated (T:=T) A B ->
 connected C -> (C `<=` A)%classic \/ (C `<=` B)%classic
 
 connected_subset is not universe polymorphic
-Arguments connected_subset [T] [A B C]%classical_set_scope _ _ _
+Arguments connected_subset [T] [A B C]%_classical_set_scope _ _ _
 connected_subset is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.connected_subset
@@ -488,8 +488,8 @@ forall [B : set (topology_structure.Topological.sort T)],
    topology_structure.closed C & B = (\bigcup_(i in P) A i `&` C)%classic) ->
 B = (\bigcup_(i in P) A i)%classic
 
-Arguments bigcup_connected [T] [I]%type_scope [A P]%function_scope 
-  _ _%function_scope [B] _ _ _
+Arguments bigcup_connected [T] [I]%_type_scope [A P]%_function_scope 
+  _ _%_function_scope [B] _ _ _
 bigcup_connected is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.bigcup_connected
@@ -545,7 +545,7 @@ forall [B0 : set (topology_structure.Topological.sort T)],
    topology_structure.closed C & B0 = ((A `|` B) `&` C)%classic) ->
 B0 = (A `|` B)%classic
 
-Arguments connectedU [T] [A B]%classical_set_scope _ _ _ [B] _ _ _
+Arguments connectedU [T] [A B]%_classical_set_scope _ _ _ [B] _ _ _
 connectedU is opaque
 Expands to: Constant mathcomp.analysis.topology_theory.connected.connectedU
 Declared in
@@ -581,7 +581,7 @@ forall [B : set (topology_structure.Topological.sort T)],
    B = (topology_structure.closure A `&` C)%classic) ->
 B = topology_structure.closure A
 
-Arguments connected_closure [T] [A]%classical_set_scope _ [B] _ _ _
+Arguments connected_closure [T] [A]%_classical_set_scope _ [B] _ _ _
 connected_closure is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.connected_closure
@@ -610,7 +610,7 @@ topology_structure.Topological.sort T ->
 set (topology_structure.Topological.sort T)
 
 connected_component is not universe polymorphic
-Arguments connected_component {T} A%classical_set_scope x _
+Arguments connected_component {T} A%_classical_set_scope x _
 connected_component is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.connected_component
@@ -639,7 +639,7 @@ forall [T : topology_structure.Topological.type]
    topology_structure.closed C & B = (connected_component A x `&` C)%classic) ->
 B = connected_component A x
 
-Arguments component_connected [T] [A]%classical_set_scope [x B] _ _ _
+Arguments component_connected [T] [A]%_classical_set_scope [x B] _ _ _
 component_connected is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.component_connected
@@ -665,7 +665,7 @@ forall [T : topology_structure.Topological.type]
   [x t : topology_structure.Topological.sort T],
 connected_component A x t -> A t
 
-Arguments connected_component_sub [T] [A]%classical_set_scope [x t] _
+Arguments connected_component_sub [T] [A]%_classical_set_scope [x t] _
 connected_component_sub is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.connected_component_sub
@@ -684,7 +684,7 @@ forall [T : topology_structure.Topological.type]
 A x -> connected A -> connected_component A x = A
 
 connected_component_id is not universe polymorphic
-Arguments connected_component_id [T] [A]%classical_set_scope [x] _ _
+Arguments connected_component_id [T] [A]%_classical_set_scope [x] _ _
 connected_component_id is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.connected_component_id
@@ -706,7 +706,7 @@ forall [T : topology_structure.Topological.type]
 ~ A x -> connected_component A x = set0
 
 connected_component_out is not universe polymorphic
-Arguments connected_component_out [T] [A]%classical_set_scope [x] _
+Arguments connected_component_out [T] [A]%_classical_set_scope [x] _
 connected_component_out is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.connected_component_out
@@ -740,7 +740,7 @@ B t ->
 exists2 i : set (topology_structure.Topological.sort T),
   [set C | [/\ C x, C `<=` A & connected C]]%classic i & id i t
 
-Arguments connected_component_max [T] [A B]%classical_set_scope 
+Arguments connected_component_max [T] [A B]%_classical_set_scope 
   [x] _ _ _ [t] _
 connected_component_max is opaque
 Expands to: Constant
@@ -761,7 +761,7 @@ forall [T : topology_structure.Topological.type]
 A x -> connected_component A x x
 
 connected_component_refl is not universe polymorphic
-Arguments connected_component_refl [T] [A]%classical_set_scope [x] _
+Arguments connected_component_refl [T] [A]%_classical_set_scope [x] _
 connected_component_refl is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.connected_component_refl
@@ -779,7 +779,7 @@ forall [T : topology_structure.Topological.type]
 (\bigcup_(A0 in [set connected_component A x | x in A]) A0)%classic = A
 
 connected_component_cover is not universe polymorphic
-Arguments connected_component_cover [T] A%classical_set_scope
+Arguments connected_component_cover [T] A%_classical_set_scope
 connected_component_cover is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.connected_component_cover
@@ -801,7 +801,7 @@ forall [T : topology_structure.Topological.type]
 connected_component A x y -> connected_component A y x
 
 connected_component_sym is not universe polymorphic
-Arguments connected_component_sym [T] [A]%classical_set_scope [x y] _
+Arguments connected_component_sym [T] [A]%_classical_set_scope [x y] _
 connected_component_sym is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.connected_component_sym
@@ -822,7 +822,7 @@ connected_component A x y ->
 connected_component A y z -> connected_component A x z
 
 connected_component_trans is not universe polymorphic
-Arguments connected_component_trans [T] [A]%classical_set_scope [y x z] _ _
+Arguments connected_component_trans [T] [A]%_classical_set_scope [y x z] _ _
 connected_component_trans is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.connected_component_trans
@@ -846,7 +846,7 @@ connected_component A x y ->
 connected_component A x = connected_component A y
 
 same_connected_component is not universe polymorphic
-Arguments same_connected_component [T] [A]%classical_set_scope [x y] _
+Arguments same_connected_component [T] [A]%_classical_set_scope [x y] _
 same_connected_component is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.same_connected_component
@@ -880,7 +880,7 @@ topology_structure.closure (connected_component A x) t ->
 exists2 i : set (topology_structure.Topological.sort T),
   [set C | [/\ C x, C `<=` A & connected C]]%classic i & id i t
 
-Arguments component_closed [T] [A]%classical_set_scope [x] _ [t] _
+Arguments component_closed [T] [A]%_classical_set_scope [x] _ [t] _
 component_closed is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.component_closed
@@ -906,7 +906,7 @@ forall [T : topology_structure.Topological.type]
 topology_structure.clopen A <-> separated (T:=T) A (~` A)
 
 clopen_separatedP is not universe polymorphic
-Arguments clopen_separatedP [T] A%classical_set_scope
+Arguments clopen_separatedP [T] A%_classical_set_scope
 clopen_separatedP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.connected.clopen_separatedP

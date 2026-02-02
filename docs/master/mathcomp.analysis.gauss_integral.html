@@ -240,7 +240,7 @@
 <span class="vernacular">Definition</span><span class="id"> </span><span id="gauss_fun" class="id"><a name="gauss_fun" class="" title="gauss_fun : forall {R : realType}, R -> R
 
 gauss_fun is not universe polymorphic
-Arguments gauss_fun {R} x%ring_scope
+Arguments gauss_fun {R} x%_ring_scope
 gauss_fun is transparent
 Expands to: Constant mathcomp.analysis.gauss_integral.gauss_fun
 Declared in
@@ -250,7 +250,7 @@ library mathcomp.analysis.gauss_integral, line 28, characters 11-20
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="gauss_fun_ge0" class="id"><a name="gauss_fun_ge0" class="" title="gauss_fun_ge0 : forall {R : realType} (x : R), (0 <= gauss_fun x)%R
 
 gauss_fun_ge0 is not universe polymorphic
-Arguments gauss_fun_ge0 {R} x%ring_scope
+Arguments gauss_fun_ge0 {R} x%_ring_scope
 gauss_fun_ge0 is opaque
 Expands to: Constant mathcomp.analysis.gauss_integral.gauss_fun_ge0
 Declared in
@@ -264,7 +264,7 @@ library mathcomp.analysis.gauss_integral, line 30, characters 6-19
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="gauss_fun_le1" class="id"><a name="gauss_fun_le1" class="" title="gauss_fun_le1 : forall {R : realType} (x : R), (gauss_fun x <= 1)%R
 
 gauss_fun_le1 is not universe polymorphic
-Arguments gauss_fun_le1 {R} x%ring_scope
+Arguments gauss_fun_le1 {R} x%_ring_scope
 gauss_fun_le1 is opaque
 Expands to: Constant mathcomp.analysis.gauss_integral.gauss_fun_le1
 Declared in
@@ -410,7 +410,7 @@ library mathcomp.analysis.gauss_integral, line 63, characters 11-27
 <span class="vernacular">Definition</span><span class="id"> </span><span id="gauss_integral_proof.integral0_gauss" class="id"><a name="gauss_integral_proof.integral0_gauss" class="" title="gauss_integral_proof.integral0_gauss : forall {R : realType}, R -> R
 
 gauss_integral_proof.integral0_gauss is not universe polymorphic
-Arguments gauss_integral_proof.integral0_gauss {R} x%ring_scope
+Arguments gauss_integral_proof.integral0_gauss {R} x%_ring_scope
 gauss_integral_proof.integral0_gauss is transparent
 Expands to: Constant
             mathcomp.analysis.gauss_integral.gauss_integral_proof.integral0_gauss
@@ -423,7 +423,7 @@ forall {R : realType} (x : R),
 (0 <= gauss_integral_proof.integral0_gauss x)%R
 
 gauss_integral_proof.integral0_gauss_ge0 is not universe polymorphic
-Arguments gauss_integral_proof.integral0_gauss_ge0 {R} x%ring_scope
+Arguments gauss_integral_proof.integral0_gauss_ge0 {R} x%_ring_scope
 gauss_integral_proof.integral0_gauss_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.gauss_integral.gauss_integral_proof.integral0_gauss_ge0
@@ -449,7 +449,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="gauss_integral_proof.u" class="id"><a name="gauss_integral_proof.u" class="" title="gauss_integral_proof.u : forall {R : realType}, R -> R -> R
 
 gauss_integral_proof.u is not universe polymorphic
-Arguments gauss_integral_proof.u {R} (x t)%ring_scope
+Arguments gauss_integral_proof.u {R} (x t)%_ring_scope
 gauss_integral_proof.u is transparent
 Expands to: Constant mathcomp.analysis.gauss_integral.gauss_integral_proof.u
 Declared in
@@ -521,7 +521,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="gauss_integral_proof.integral01_u" class="id"><a name="gauss_integral_proof.integral01_u" class="" title="gauss_integral_proof.integral01_u : forall {R : realType}, R -> R
 
 gauss_integral_proof.integral01_u is not universe polymorphic
-Arguments gauss_integral_proof.integral01_u {R} x%ring_scope
+Arguments gauss_integral_proof.integral01_u {R} x%_ring_scope
 gauss_integral_proof.integral01_u is transparent
 Expands to: Constant
             mathcomp.analysis.gauss_integral.gauss_integral_proof.integral01_u
@@ -632,7 +632,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="gauss_integral_proof.h" class="id"><a name="gauss_integral_proof.h" class="" title="gauss_integral_proof.h : forall {R : realType}, R -> R
 
 gauss_integral_proof.h is not universe polymorphic
-Arguments gauss_integral_proof.h {R} x%ring_scope
+Arguments gauss_integral_proof.h {R} x%_ring_scope
 gauss_integral_proof.h is transparent
 Expands to: Constant mathcomp.analysis.gauss_integral.gauss_integral_proof.h
 Declared in

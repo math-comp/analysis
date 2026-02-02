@@ -257,8 +257,8 @@ all (coprime (F a)) [seq F i | i <- l & P i] ->
 coprime (F a) (\prod_(j <- l | P j) F j)
 
 coprime_prodr is not universe polymorphic
-Arguments coprime_prodr [I]%type_scope r%seq_scope 
-  [P] [F]%function_scope [a] [l]%seq_scope _
+Arguments coprime_prodr [I]%_type_scope r%_seq_scope 
+  [P] [F]%_function_scope [a] [l]%_seq_scope _
 coprime_prodr is opaque
 Expands to: Constant mathcomp.classical.unstable.coprime_prodr
 Declared in library mathcomp.classical.unstable, line 40, characters 6-19
@@ -282,8 +282,8 @@ reflect (forall i : I, i \in r -> P i -> F i %| n)
   (\prod_(i <- r | P i) F i %| n)
 
 Gauss_dvd_prod is not universe polymorphic
-Arguments Gauss_dvd_prod [I] [r]%seq_scope [P] [F]%function_scope 
-  n%nat_scope _
+Arguments Gauss_dvd_prod [I] [r]%_seq_scope [P] [F]%_function_scope
+  n%_nat_scope _
 Gauss_dvd_prod is opaque
 Expands to: Constant mathcomp.classical.unstable.Gauss_dvd_prod
 Declared in library mathcomp.classical.unstable, line 51, characters 6-20
@@ -316,7 +316,7 @@ forall [I : eqType] (r : seq I) (P : {pred I}) (F : I -> nat) (n : nat),
 ((\prod_(i <- r | P i) F i) ^ n)%N = \prod_(i <- r | P i) F i ^ n
 
 expn_prod is not universe polymorphic
-Arguments expn_prod [I] r%seq_scope P F%function_scope n%nat_scope
+Arguments expn_prod [I] r%_seq_scope P F%_function_scope n%_nat_scope
 expn_prod is opaque
 Expands to: Constant mathcomp.classical.unstable.expn_prod
 Declared in library mathcomp.classical.unstable, line 73, characters 6-15
@@ -337,7 +337,7 @@ m <= y ->
 \prod_(m <= i < y) i * \prod_(n <= i < x) i <= \prod_(n + m <= i < x + y) i
 
 leq_Mprod_prodD is not universe polymorphic
-Arguments leq_Mprod_prodD [x y n m]%nat_scope _ _
+Arguments leq_Mprod_prodD [x y n m]%_nat_scope _ _
 leq_Mprod_prodD is opaque
 Expands to: Constant mathcomp.classical.unstable.leq_Mprod_prodD
 Declared in library mathcomp.classical.unstable, line 81, characters 6-21
@@ -363,7 +363,7 @@ forall [x y n m : nat],
 n <= x -> m <= y -> x`! * y`! * ((n + m).+1)`! <= n`! * m`! * ((x + y).+1)`!
 
 leq_fact2 is not universe polymorphic
-Arguments leq_fact2 [x y n m]%nat_scope _ _
+Arguments leq_fact2 [x y n m]%_nat_scope _ _
 leq_fact2 is opaque
 Expands to: Constant mathcomp.classical.unstable.leq_fact2
 Declared in library mathcomp.classical.unstable, line 96, characters 6-15
@@ -397,7 +397,7 @@ forall [F : realFieldType] (x y : F),
 Num.max x y = ((x + y + `|x - y|) / 2)%R
 
 maxr_absE is not universe polymorphic
-Arguments maxr_absE [F] (x y)%ring_scope
+Arguments maxr_absE [F] (x y)%_ring_scope
 maxr_absE is opaque
 Expands to: Constant
             mathcomp.algebra.num_theory.numfield.Num.Theory.maxr_absE
@@ -418,7 +418,7 @@ forall [F : realFieldType] (x y : F),
 Num.min x y = ((x + y - `|x - y|) / 2)%R
 
 minr_absE is not universe polymorphic
-Arguments minr_absE [F] (x y)%ring_scope
+Arguments minr_absE [F] (x y)%_ring_scope
 minr_absE is opaque
 Expands to: Constant
             mathcomp.algebra.num_theory.numfield.Num.Theory.minr_absE
@@ -447,7 +447,8 @@ forall {disp : Order.disp_t} {T : orderType disp}
 i0 \in r -> P i0 -> (F i0 <= \big[Order.Def.max/x]_(i <- r | P i) F i)%O
 
 le_bigmax_seq is not universe polymorphic
-Arguments le_bigmax_seq {disp T I} {r}%seq_scope x i0 P F%function_scope _ _
+Arguments le_bigmax_seq {disp T I} {r}%_seq_scope 
+  x i0 P F%_function_scope _ _
 le_bigmax_seq is opaque
 Expands to: Constant mathcomp.order.order.Order.TotalTheory.le_bigmax_seq
 Declared in library mathcomp.order.order, line 3212, characters 6-19
@@ -469,8 +470,8 @@ i0 \in r ->
 P i0 -> (t <= F i0)%O -> (t <= \big[Order.Def.max/x]_(i <- r | P i) F i)%O
 
 bigmax_sup_seq is not universe polymorphic
-Arguments bigmax_sup_seq {disp T I} {r}%seq_scope 
-  x i0 P t F%function_scope _ _ _
+Arguments bigmax_sup_seq {disp T I} {r}%_seq_scope 
+  x i0 P t F%_function_scope _ _ _
 bigmax_sup_seq is opaque
 Expands to: Constant mathcomp.order.order.Order.TotalTheory.bigmax_sup_seq
 Declared in library mathcomp.order.order, line 3224, characters 6-20
@@ -488,7 +489,7 @@ Declared in library mathcomp.order.order, line 3224, characters 6-20
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="leq_ltn_expn" class="id"><a name="leq_ltn_expn" class="" title="leq_ltn_expn : forall m : nat, exists n : nat, 2 ^ n <= m.+1 < 2 ^ n.+1
 
 leq_ltn_expn is not universe polymorphic
-Arguments leq_ltn_expn m%nat_scope
+Arguments leq_ltn_expn m%_nat_scope
 leq_ltn_expn is opaque
 Expands to: Constant mathcomp.classical.unstable.leq_ltn_expn
 Declared in library mathcomp.classical.unstable, line 159, characters 6-18
@@ -510,7 +511,7 @@ forall [d : Order.disp_t] [T : porderType d] [d' : Order.disp_t]
 pT -> (T -> T') -> Prop
 
 monotonic is not universe polymorphic
-Arguments monotonic [d T d' T' pT] A f%function_scope
+Arguments monotonic [d T d' T' pT] A f%_function_scope
 monotonic is transparent
 Expands to: Constant mathcomp.classical.unstable.monotonic
 Declared in library mathcomp.classical.unstable, line 169, characters 11-20
@@ -524,7 +525,7 @@ forall [d : Order.disp_t] [T : porderType d] [d' : Order.disp_t]
 pT -> (T -> T') -> Prop
 
 strict_monotonic is not universe polymorphic
-Arguments strict_monotonic [d T d' T' pT] A f%function_scope
+Arguments strict_monotonic [d T d' T' pT] A f%_function_scope
 strict_monotonic is transparent
 Expands to: Constant mathcomp.classical.unstable.strict_monotonic
 Declared in library mathcomp.classical.unstable, line 173, characters 11-27
@@ -540,7 +541,7 @@ strict_monotonic (T:=T) (T':=T') (pT:=pT) A f ->
 monotonic (T:=T) (T':=T') (pT:=pT) A f
 
 strict_monotonicW is not universe polymorphic
-Arguments strict_monotonicW [d T d' T' pT A] [f]%function_scope _
+Arguments strict_monotonicW [d T d' T' pT A] [f]%_function_scope _
 strict_monotonicW is opaque
 Expands to: Constant mathcomp.classical.unstable.strict_monotonicW
 Declared in library mathcomp.classical.unstable, line 177, characters 6-23
@@ -557,7 +558,7 @@ Qed.</div></details>
 forall [f : nat -> nat], {mono f : m n / m <= n} -> forall n : nat, n <= f n
 
 mono_leq_infl is not universe polymorphic
-Arguments mono_leq_infl [f]%function_scope _ n%nat_scope
+Arguments mono_leq_infl [f]%_function_scope _ n%_nat_scope
 mono_leq_infl is opaque
 Expands to: Constant mathcomp.classical.unstable.mono_leq_infl
 Declared in library mathcomp.classical.unstable, line 184, characters 6-19
@@ -578,7 +579,7 @@ forall {d : Order.disp_t} {T : orderType d} {a : T} (P : pred T) (s : seq T),
 P a -> P (last a [seq x <- s | P x])
 
 last_filterP is not universe polymorphic
-Arguments last_filterP {d T a} P s%seq_scope _
+Arguments last_filterP {d T a} P s%_seq_scope _
 last_filterP is opaque
 Expands to: Constant mathcomp.classical.unstable.last_filterP
 Declared in library mathcomp.classical.unstable, line 195, characters 6-18
@@ -595,7 +596,7 @@ forall [d : Order.disp_t] {T : orderType d} [a : T] [s : seq T],
 path <%O a s -> [seq x <- s | (x < a)%O] = [::]
 
 path_lt_filter0 is not universe polymorphic
-Arguments path_lt_filter0 [d] {T} [a] [s]%seq_scope _
+Arguments path_lt_filter0 [d] {T} [a] [s]%_seq_scope _
 path_lt_filter0 is opaque
 Expands to: Constant mathcomp.classical.unstable.path_lt_filter0
 Declared in library mathcomp.classical.unstable, line 201, characters 6-21
@@ -613,7 +614,7 @@ forall [d : Order.disp_t] {T : orderType d} [a : T] [s : seq T],
 path <%O a s -> [seq x <- s | (a < x)%O] = s
 
 path_lt_filterT is not universe polymorphic
-Arguments path_lt_filterT [d] {T} [a] [s]%seq_scope _
+Arguments path_lt_filterT [d] {T} [a] [s]%_seq_scope _
 path_lt_filterT is opaque
 Expands to: Constant mathcomp.classical.unstable.path_lt_filterT
 Declared in library mathcomp.classical.unstable, line 208, characters 6-21
@@ -630,7 +631,7 @@ forall [d : Order.disp_t] {T : orderType d} [a b : T] [s : seq T],
 (a < b)%O -> path <%O b s -> path <%O a s
 
 path_lt_head is not universe polymorphic
-Arguments path_lt_head [d] {T} [a b] [s]%seq_scope _ _
+Arguments path_lt_head [d] {T} [a b] [s]%_seq_scope _ _
 path_lt_head is opaque
 Expands to: Constant mathcomp.classical.unstable.path_lt_head
 Declared in library mathcomp.classical.unstable, line 214, characters 6-18
@@ -648,7 +649,7 @@ forall [d : Order.disp_t] {T : orderType d} [a b c : T] [s : seq T],
 path <%O a s -> last a s = b -> last c [seq x <- s | (c < x)%O] = b
 
 path_lt_last_filter is not universe polymorphic
-Arguments path_lt_last_filter [d] {T} [a b c] [s]%seq_scope _ _ _ _
+Arguments path_lt_last_filter [d] {T} [a b c] [s]%_seq_scope _ _ _ _
 path_lt_last_filter is opaque
 Expands to: Constant mathcomp.classical.unstable.path_lt_last_filter
 Declared in library mathcomp.classical.unstable, line 220, characters 6-25
@@ -670,7 +671,7 @@ forall [d : Order.disp_t] {T : orderType d} [a : T] [s : seq T],
 path <%O a s -> (a <= last a s)%O
 
 path_lt_le_last is not universe polymorphic
-Arguments path_lt_le_last [d] {T} [a] [s]%seq_scope _
+Arguments path_lt_le_last [d] {T} [a] [s]%_seq_scope _
 path_lt_le_last is opaque
 Expands to: Constant mathcomp.classical.unstable.path_lt_le_last
 Declared in library mathcomp.classical.unstable, line 231, characters 6-21
@@ -696,7 +697,7 @@ forall [X : choiceType] [A : {fset X}] (f : X -> nat),
 A != fset0 -> exists i : X, i \in A /\ (forall j : X, j \in A -> f j <= f i)
 
 fset_nat_maximum is not universe polymorphic
-Arguments fset_nat_maximum [X A] f%function_scope _
+Arguments fset_nat_maximum [X A] f%_function_scope _
 fset_nat_maximum is opaque
 Expands to: Constant mathcomp.classical.unstable.fset_nat_maximum
 Declared in library mathcomp.classical.unstable, line 247, characters 6-22
@@ -717,7 +718,7 @@ forall (n : nat) (f : nat -> nat),
 exists i : nat, i <= n /\ (forall j : nat, j <= n -> f j <= f i)
 
 image_nat_maximum is not universe polymorphic
-Arguments image_nat_maximum n%nat_scope f%function_scope
+Arguments image_nat_maximum n%_nat_scope f%_function_scope
 image_nat_maximum is opaque
 Expands to: Constant mathcomp.classical.unstable.image_nat_maximum
 Declared in library mathcomp.classical.unstable, line 257, characters 6-23
@@ -740,7 +741,7 @@ forall [I : Type] [T : finType] (r : seq I) (P : {pred I}) (F : I -> {set T}),
 #|\bigcup_(i <- r | P i) F i| <= \sum_(i <- r | P i) #|F i|
 
 card_big_setU is not universe polymorphic
-Arguments card_big_setU [I]%type_scope [T] r%seq_scope P F%function_scope
+Arguments card_big_setU [I]%_type_scope [T] r%_seq_scope P F%_function_scope
 card_big_setU is opaque
 Expands to: Constant mathcomp.classical.unstable.card_big_setU
 Declared in library mathcomp.classical.unstable, line 269, characters 6-19
@@ -757,7 +758,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="onem" class="id"><a name="onem" class="" title="onem : forall {R : pzRingType}, R -> R
 
 onem is not universe polymorphic
-Arguments onem {R} r%ring_scope
+Arguments onem {R} r%_ring_scope
 onem is transparent
 Expands to: Constant mathcomp.classical.unstable.onem
 Declared in library mathcomp.classical.unstable, line 277, characters 11-15
@@ -801,7 +802,7 @@ Declared in library mathcomp.classical.unstable, line 290, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="onemK" class="id"><a name="onemK" class="" title="onemK : forall {R : pzRingType} (r : R), (r.~).~%R = r
 
 onemK is not universe polymorphic
-Arguments onemK {R} r%ring_scope
+Arguments onemK {R} r%_ring_scope
 onemK is opaque
 Expands to: Constant mathcomp.classical.unstable.onemK
 Declared in library mathcomp.classical.unstable, line 292, characters 6-11
@@ -814,7 +815,7 @@ Declared in library mathcomp.classical.unstable, line 292, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="add_onemK" class="id"><a name="add_onemK" class="" title="add_onemK : forall {R : pzRingType} (r : R), (r + r.~)%R = 1%R
 
 add_onemK is not universe polymorphic
-Arguments add_onemK {R} r%ring_scope
+Arguments add_onemK {R} r%_ring_scope
 add_onemK is opaque
 Expands to: Constant mathcomp.classical.unstable.add_onemK
 Declared in library mathcomp.classical.unstable, line 294, characters 6-15
@@ -827,7 +828,7 @@ Declared in library mathcomp.classical.unstable, line 294, characters 6-15
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="onemD" class="id"><a name="onemD" class="" title="onemD : forall {R : pzRingType} (r s : R), (r + s).~%R = (r.~ - s)%R
 
 onemD is not universe polymorphic
-Arguments onemD {R} (r s)%ring_scope
+Arguments onemD {R} (r s)%_ring_scope
 onemD is opaque
 Expands to: Constant mathcomp.classical.unstable.onemD
 Declared in library mathcomp.classical.unstable, line 296, characters 6-11
@@ -840,7 +841,7 @@ Declared in library mathcomp.classical.unstable, line 296, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="onemMr" class="id"><a name="onemMr" class="" title="onemMr : forall {R : pzRingType} (r s : R), (s * r.~)%R = (s - s * r)%R
 
 onemMr is not universe polymorphic
-Arguments onemMr {R} (r s)%ring_scope
+Arguments onemMr {R} (r s)%_ring_scope
 onemMr is opaque
 Expands to: Constant mathcomp.classical.unstable.onemMr
 Declared in library mathcomp.classical.unstable, line 299, characters 6-12
@@ -854,7 +855,7 @@ Declared in library mathcomp.classical.unstable, line 299, characters 6-12
 forall {R : pzRingType} (r s : R), (r * s).~%R = (r.~ + s.~ - r.~ * s.~)%R
 
 onemM is not universe polymorphic
-Arguments onemM {R} (r s)%ring_scope
+Arguments onemM {R} (r s)%_ring_scope
 onemM is opaque
 Expands to: Constant mathcomp.classical.unstable.onemM
 Declared in library mathcomp.classical.unstable, line 302, characters 6-11
@@ -873,7 +874,7 @@ Declared in library mathcomp.classical.unstable, line 302, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="onem_gt0" class="id"><a name="onem_gt0" class="" title="onem_gt0 : forall [R : numDomainType] [r : R], (r < 1)%R -> (0 < r.~)%R
 
 onem_gt0 is not universe polymorphic
-Arguments onem_gt0 [R] [r]%ring_scope _
+Arguments onem_gt0 [R] [r]%_ring_scope _
 onem_gt0 is opaque
 Expands to: Constant mathcomp.classical.unstable.onem_gt0
 Declared in library mathcomp.classical.unstable, line 311, characters 6-14
@@ -886,7 +887,7 @@ Declared in library mathcomp.classical.unstable, line 311, characters 6-14
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="onem_ge0" class="id"><a name="onem_ge0" class="" title="onem_ge0 : forall [R : numDomainType] [r : R], (r <= 1)%R -> (0 <= r.~)%R
 
 onem_ge0 is not universe polymorphic
-Arguments onem_ge0 [R] [r]%ring_scope _
+Arguments onem_ge0 [R] [r]%_ring_scope _
 onem_ge0 is opaque
 Expands to: Constant mathcomp.classical.unstable.onem_ge0
 Declared in library mathcomp.classical.unstable, line 313, characters 6-14
@@ -899,7 +900,7 @@ Declared in library mathcomp.classical.unstable, line 313, characters 6-14
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="onem_le1" class="id"><a name="onem_le1" class="" title="onem_le1 : forall [R : numDomainType] [r : R], (0 <= r)%R -> (r.~ <= 1)%R
 
 onem_le1 is not universe polymorphic
-Arguments onem_le1 [R] [r]%ring_scope _
+Arguments onem_le1 [R] [r]%_ring_scope _
 onem_le1 is opaque
 Expands to: Constant mathcomp.classical.unstable.onem_le1
 Declared in library mathcomp.classical.unstable, line 316, characters 6-14
@@ -912,7 +913,7 @@ Declared in library mathcomp.classical.unstable, line 316, characters 6-14
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="onem_lt1" class="id"><a name="onem_lt1" class="" title="onem_lt1 : forall [R : numDomainType] [r : R], (0 < r)%R -> (r.~ < 1)%R
 
 onem_lt1 is not universe polymorphic
-Arguments onem_lt1 [R] [r]%ring_scope _
+Arguments onem_lt1 [R] [r]%_ring_scope _
 onem_lt1 is opaque
 Expands to: Constant mathcomp.classical.unstable.onem_lt1
 Declared in library mathcomp.classical.unstable, line 319, characters 6-14
@@ -927,7 +928,7 @@ forall [R : numDomainType] [r : R] (n : nat),
 (0 <= r)%R -> (r <= 1)%R -> (0 <= (r ^+ n).~)%R
 
 onemX_ge0 is not universe polymorphic
-Arguments onemX_ge0 [R] [r]%ring_scope n%nat_scope _ _
+Arguments onemX_ge0 [R] [r]%_ring_scope n%_nat_scope _ _
 onemX_ge0 is opaque
 Expands to: Constant mathcomp.classical.unstable.onemX_ge0
 Declared in library mathcomp.classical.unstable, line 322, characters 6-15
@@ -941,7 +942,7 @@ Declared in library mathcomp.classical.unstable, line 322, characters 6-15
 forall [R : numDomainType] [r : R] (n : nat), (0 < r)%R -> ((r ^+ n).~ < 1)%R
 
 onemX_lt1 is not universe polymorphic
-Arguments onemX_lt1 [R] [r]%ring_scope n%nat_scope _
+Arguments onemX_lt1 [R] [r]%_ring_scope n%_nat_scope _
 onemX_lt1 is opaque
 Expands to: Constant mathcomp.classical.unstable.onemX_lt1
 Declared in library mathcomp.classical.unstable, line 325, characters 6-15
@@ -957,7 +958,7 @@ Declared in library mathcomp.classical.unstable, line 325, characters 6-15
 forall {R : realDomainType} [x : R], (0 <= x <= 1)%R -> (`|x.~| <= 1)%R
 
 normr_onem is not universe polymorphic
-Arguments normr_onem {R} [x]%ring_scope _
+Arguments normr_onem {R} [x]%_ring_scope _
 normr_onem is opaque
 Expands to: Constant mathcomp.classical.unstable.normr_onem
 Declared in library mathcomp.classical.unstable, line 330, characters 6-16
@@ -975,7 +976,7 @@ Qed.</div></details>
 forall [F : numFieldType] [x : F], x != 0%R -> (x^-1).~%R = ((x - 1) / x)%R
 
 onemV is not universe polymorphic
-Arguments onemV [F] [x]%ring_scope _
+Arguments onemV [F] [x]%_ring_scope _
 onemV is opaque
 Expands to: Constant mathcomp.classical.unstable.onemV
 Declared in library mathcomp.classical.unstable, line 338, characters 6-11
@@ -988,7 +989,7 @@ Declared in library mathcomp.classical.unstable, line 338, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lez_abs2" class="id"><a name="lez_abs2" class="" title="lez_abs2 : forall [a b : int], (0 <= a)%R -> (a <= b)%R -> `|a| <= `|b|
 
 lez_abs2 is not universe polymorphic
-Arguments lez_abs2 [a b]%ring_scope _ _
+Arguments lez_abs2 [a b]%_ring_scope _ _
 lez_abs2 is opaque
 Expands to: Constant mathcomp.classical.unstable.lez_abs2
 Declared in library mathcomp.classical.unstable, line 341, characters 6-14
@@ -1003,7 +1004,7 @@ forall [R : numFieldType] (x y : R),
 reflect (forall z : R, (y < z)%R -> (x <= z)%R) (x <= y)%R
 
 ler_gtP is not universe polymorphic
-Arguments ler_gtP [R] (x y)%ring_scope
+Arguments ler_gtP [R] (x y)%_ring_scope
 ler_gtP is opaque
 Expands to: Constant mathcomp.classical.unstable.ler_gtP
 Declared in library mathcomp.classical.unstable, line 344, characters 6-13
@@ -1022,7 +1023,7 @@ forall [R : numFieldType] (x y : R),
 reflect (forall z : R, (z < x)%R -> (z <= y)%R) (x <= y)%R
 
 ler_ltP is not universe polymorphic
-Arguments ler_ltP [R] (x y)%ring_scope
+Arguments ler_ltP [R] (x y)%_ring_scope
 ler_ltP is opaque
 Expands to: Constant mathcomp.classical.unstable.ler_ltP
 Declared in library mathcomp.classical.unstable, line 352, characters 6-13
@@ -1039,7 +1040,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="inv_fun" class="id"><a name="inv_fun" class="" title="inv_fun : forall {T : Type} {R : unitRingType}, (T -> R) -> T -> R
 
 inv_fun is not universe polymorphic
-Arguments inv_fun {T}%type_scope {R} f%function_scope x /
+Arguments inv_fun {T}%_type_scope {R} f%_function_scope x /
 The reduction tactics unfold inv_fun when applied to 4 arguments
 inv_fun is transparent
 Expands to: Constant mathcomp.classical.unstable.inv_fun
@@ -1052,7 +1053,7 @@ Declared in library mathcomp.classical.unstable, line 360, characters 11-18
 forall [d : Order.disp_t] [T : porderType d], bool -> itv_bound T -> bool
 
 bound_side is not universe polymorphic
-Arguments bound_side [d T] c%bool_scope x
+Arguments bound_side [d T] c%_bool_scope x
 bound_side is transparent
 Expands to: Constant mathcomp.classical.unstable.bound_side
 Declared in library mathcomp.classical.unstable, line 364, characters 11-21
@@ -1064,7 +1065,7 @@ forall [R : numDomainType] [x y : R] (e : R),
 (x - y)%R \is Num.real -> (`|x - y| < e)%R = (x - e < y < x + e)%R
 
 real_ltr_distlC is not universe polymorphic
-Arguments real_ltr_distlC [R] [x y]%ring_scope e%ring_scope _
+Arguments real_ltr_distlC [R] [x y]%_ring_scope e%_ring_scope _
 real_ltr_distlC is opaque
 Expands to: Constant mathcomp.classical.unstable.real_ltr_distlC
 Declared in library mathcomp.classical.unstable, line 367, characters 6-21
@@ -1078,7 +1079,7 @@ Declared in library mathcomp.classical.unstable, line 367, characters 6-21
 <span class="vernacular">Definition</span><span class="id"> </span><span id="swap" class="id"><a name="swap" class="" title="swap : forall {T1 T2 : Type}, T1 * T2 -> T2 * T1
 
 swap is not universe polymorphic
-Arguments swap {T1 T2}%type_scope x
+Arguments swap {T1 T2}%_type_scope x
 swap is transparent
 Expands to: Constant mathcomp.classical.unstable.swap
 Declared in library mathcomp.classical.unstable, line 371, characters 11-15
@@ -1090,7 +1091,7 @@ Declared in library mathcomp.classical.unstable, line 371, characters 11-15
 <span class="vernacular">Definition</span><span class="id"> </span><span id="prodA" class="id"><a name="prodA" class="" title="prodA : forall {X Y Z : Type}, X * Y * Z -> X * (Y * Z)
 
 prodA is not universe polymorphic
-Arguments prodA {X Y Z}%type_scope xyz
+Arguments prodA {X Y Z}%_type_scope xyz
 prodA is transparent
 Expands to: Constant mathcomp.classical.unstable.prodA
 Declared in library mathcomp.classical.unstable, line 376, characters 11-16
@@ -1100,7 +1101,7 @@ Declared in library mathcomp.classical.unstable, line 376, characters 11-16
 <span class="vernacular">Definition</span><span class="id"> </span><span id="prodAr" class="id"><a name="prodAr" class="" title="prodAr : forall {X Y Z : Type}, X * (Y * Z) -> X * Y * Z
 
 prodAr is not universe polymorphic
-Arguments prodAr {X Y Z}%type_scope xyz
+Arguments prodAr {X Y Z}%_type_scope xyz
 prodAr is transparent
 Expands to: Constant mathcomp.classical.unstable.prodAr
 Declared in library mathcomp.classical.unstable, line 379, characters 11-17
@@ -1110,7 +1111,7 @@ Declared in library mathcomp.classical.unstable, line 379, characters 11-17
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="prodAK" class="id"><a name="prodAK" class="" title="prodAK : forall {X Y Z : Type}, cancel prodA prodAr
 
 prodAK is not universe polymorphic
-Arguments prodAK {X Y Z}%type_scope x
+Arguments prodAK {X Y Z}%_type_scope x
 prodAK is opaque
 Expands to: Constant mathcomp.classical.unstable.prodAK
 Declared in library mathcomp.classical.unstable, line 382, characters 6-12
@@ -1123,7 +1124,7 @@ Declared in library mathcomp.classical.unstable, line 382, characters 6-12
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="prodArK" class="id"><a name="prodArK" class="" title="prodArK : forall {X Y Z : Type}, cancel prodAr prodA
 
 prodArK is not universe polymorphic
-Arguments prodArK {X Y Z}%type_scope x
+Arguments prodArK {X Y Z}%_type_scope x
 prodArK is opaque
 Expands to: Constant mathcomp.classical.unstable.prodArK
 Declared in library mathcomp.classical.unstable, line 385, characters 6-13
@@ -1138,7 +1139,7 @@ Declared in library mathcomp.classical.unstable, line 385, characters 6-13
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="swapK" class="id"><a name="swapK" class="" title="swapK : forall {T1 T2 : Type}, cancel swap swap
 
 swapK is not universe polymorphic
-Arguments swapK {T1 T2}%type_scope x
+Arguments swapK {T1 T2}%_type_scope x
 swapK is opaque
 Expands to: Constant mathcomp.classical.unstable.swapK
 Declared in library mathcomp.classical.unstable, line 390, characters 6-11
@@ -1151,7 +1152,7 @@ Declared in library mathcomp.classical.unstable, line 390, characters 6-11
 <span class="vernacular">Definition</span><span class="id"> </span><span id="map_pair" class="id"><a name="map_pair" class="" title="map_pair : forall {S U : Type}, (S -> U) -> S * S -> U * U
 
 map_pair is not universe polymorphic
-Arguments map_pair {S U}%type_scope f%function_scope x
+Arguments map_pair {S U}%_type_scope f%_function_scope x
 map_pair is transparent
 Expands to: Constant mathcomp.classical.unstable.map_pair
 Declared in library mathcomp.classical.unstable, line 393, characters 11-19
@@ -1188,7 +1189,8 @@ forall [A B : Type] [f : A -> B] (P : B -> Prop),
 bijective f -> (forall y : B, P y) <-> (forall x : A, P (f x))
 
 bij_forall is not universe polymorphic
-Arguments bij_forall [A B]%type_scope [f]%function_scope P%function_scope _
+Arguments bij_forall [A B]%_type_scope [f]%_function_scope 
+  P%_function_scope _
 bij_forall is opaque
 Expands to: Constant mathcomp.classical.unstable.bij_forall
 Declared in library mathcomp.classical.unstable, line 410, characters 6-16
@@ -1208,7 +1210,7 @@ forall [T : Type] (p : mem_pred T) (P Q : T -> Prop),
 {in p, forall x : T, P x} /\ {in p, forall x : T, Q x}
 
 and_prop_in is not universe polymorphic
-Arguments and_prop_in [T]%type_scope p (P Q)%function_scope
+Arguments and_prop_in [T]%_type_scope p (P Q)%_function_scope
 and_prop_in is opaque
 Expands to: Constant mathcomp.classical.unstable.and_prop_in
 Declared in library mathcomp.classical.unstable, line 418, characters 6-17
@@ -1236,7 +1238,7 @@ forall [x : T],
 (fun x0 : T => is_true (x0 \in `[a, b]%R)) x ->
 (f x \in `[f a, f b]%R) = true
 
-Arguments mem_inc_segment [d T a b] [f]%function_scope _ [x] _
+Arguments mem_inc_segment [d T a b] [f]%_function_scope _ [x] _
 mem_inc_segment is opaque
 Expands to: Constant mathcomp.classical.unstable.mem_inc_segment
 Declared in library mathcomp.classical.unstable, line 426, characters 6-21
@@ -1264,7 +1266,7 @@ forall [x : T],
 (fun x0 : T => is_true (x0 \in `[a, b]%R)) x ->
 (f x \in `[f b, f a]%R) = true
 
-Arguments mem_dec_segment [d T a b] [f]%function_scope _ [x] _
+Arguments mem_dec_segment [d T a b] [f]%_function_scope _ [x] _
 mem_dec_segment is opaque
 Expands to: Constant mathcomp.classical.unstable.mem_dec_segment
 Declared in library mathcomp.classical.unstable, line 434, characters 6-21
@@ -1283,8 +1285,8 @@ forall {I : Type} {X : I -> Type} {T : Type},
 (forall i : I, X i -> T) -> {i : I & X i} -> T
 
 sigT_fun is not universe polymorphic
-Arguments sigT_fun {I}%type_scope {X}%function_scope 
-  {T}%type_scope f%function_scope x
+Arguments sigT_fun {I}%_type_scope {X}%_function_scope 
+  {T}%_type_scope f%_function_scope x
 sigT_fun is transparent
 Expands to: Constant mathcomp.classical.unstable.sigT_fun
 Declared in library mathcomp.classical.unstable, line 442, characters 11-19
@@ -1310,9 +1312,9 @@ forall [T I : choiceType] [R : Type] [idx : R] (op : com_law idx)
 \big[op/idx]_(k <- K) \big[op/idx]_(i <- F k) f i
 
 partition_disjoint_bigfcup is not universe polymorphic
-Arguments partition_disjoint_bigfcup [T I] [R]%type_scope 
-  [idx] op f%function_scope [F]%function_scope [K] 
-  _%function_scope
+Arguments partition_disjoint_bigfcup [T I] [R]%_type_scope 
+  [idx] op f%_function_scope [F]%_function_scope [K] 
+  _%_function_scope
 partition_disjoint_bigfcup is opaque
 Expands to: Constant mathcomp.finmap.finmap.partition_disjoint_bigfcup
 Declared in library mathcomp.finmap.finmap, line 2679, characters 6-32
@@ -1347,8 +1349,8 @@ forall [R : numDomainType] {I : Type} (s : seq I) [P : pred I] [F : I -> R],
 (forall i : I, P i -> (0 <= F i <= 1)%R) -> (\prod_(j <- s | P j) F j <= 1)%R
 
 prodr_ile1 is not universe polymorphic
-Arguments prodr_ile1 [R] {I}%type_scope s%seq_scope 
-  [P] [F]%function_scope _%function_scope
+Arguments prodr_ile1 [R] {I}%_type_scope s%_seq_scope 
+  [P] [F]%_function_scope _%_function_scope
 prodr_ile1 is opaque
 Expands to: Constant
             mathcomp.algebra.num_theory.numdomain.Num.Theory.prodr_ile1
@@ -1372,7 +1374,7 @@ forall [T : Type] (a : pred T) (s : seq T),
 (0 < size [seq x <- s | a x]) = has a s
 
 size_filter_gt0 is not universe polymorphic
-Arguments size_filter_gt0 [T]%type_scope a s%seq_scope
+Arguments size_filter_gt0 [T]%_type_scope a s%_seq_scope
 size_filter_gt0 is opaque
 Expands to: Constant mathcomp.boot.seq.size_filter_gt0
 Declared in library mathcomp.boot.seq, line 488, characters 6-21
@@ -1389,8 +1391,8 @@ has P r ->
 (\sum_(i <- r | P i) F i < \sum_(i <- r | P i) G i)%R
 
 ltr_sum is not universe polymorphic
-Arguments ltr_sum [R] [I]%type_scope [r]%seq_scope 
-  [P] [F G]%function_scope _ _%function_scope
+Arguments ltr_sum [R] [I]%_type_scope [r]%_seq_scope 
+  [P] [F G]%_function_scope _ _%_function_scope
 ltr_sum is opaque
 Expands to: Constant mathcomp.algebra.num_theory.numdomain.Num.Theory.ltr_sum
 Declared in
@@ -1416,8 +1418,8 @@ m < n ->
 (\sum_(m <= i < n) F i < \sum_(m <= i < n) G i)%R
 
 ltr_sum_nat is not universe polymorphic
-Arguments ltr_sum_nat [R] [m n]%nat_scope [F G]%function_scope 
-  _ _%function_scope
+Arguments ltr_sum_nat [R] [m n]%_nat_scope [F G]%_function_scope 
+  _ _%_function_scope
 ltr_sum_nat is opaque
 Expands to: Constant
             mathcomp.algebra.num_theory.numdomain.Num.Theory.ltr_sum_nat
@@ -1439,8 +1441,8 @@ forall [A : Type] [P P' : A -> Prop] (Q : A -> Prop),
 (exists2 x : A, P x & Q x) <-> (exists2 x : A, P' x & Q x)
 
 eq_exists2l is not universe polymorphic
-Arguments eq_exists2l [A]%type_scope [P P']%function_scope
-  (Q _)%function_scope
+Arguments eq_exists2l [A]%_type_scope [P P']%_function_scope
+  (Q _)%_function_scope
 eq_exists2l is opaque
 Expands to: Constant mathcomp.classical.unstable.eq_exists2l
 Declared in library mathcomp.classical.unstable, line 519, characters 6-17
@@ -1459,8 +1461,8 @@ forall [A : Type] (P : A -> Prop) [Q Q' : A -> Prop],
 (exists2 x : A, P x & Q x) <-> (exists2 x : A, P x & Q' x)
 
 eq_exists2r is not universe polymorphic
-Arguments eq_exists2r [A]%type_scope P%function_scope 
-  [Q Q']%function_scope _%function_scope
+Arguments eq_exists2r [A]%_type_scope P%_function_scope
+  [Q Q']%_function_scope _%_function_scope
 eq_exists2r is opaque
 Expands to: Constant mathcomp.classical.unstable.eq_exists2r
 Declared in library mathcomp.classical.unstable, line 526, characters 6-17

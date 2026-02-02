@@ -253,7 +253,7 @@ lemmas in particular for the case of sums of non-negative terms.
 <span class="vernacular">Definition</span><span class="id"> </span><span id="fsets" class="id"><a name="fsets" class="" title="fsets : forall [T : choiceType], set T -> set (set T)
 
 fsets is not universe polymorphic
-Arguments fsets [T] S%classical_set_scope _
+Arguments fsets [T] S%_classical_set_scope _
 fsets is transparent
 Expands to: Constant mathcomp.analysis.esum.fsets
 Declared in library mathcomp.analysis.esum, line 41, characters 11-16
@@ -262,7 +262,7 @@ Declared in library mathcomp.analysis.esum, line 41, characters 11-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="fsets_set0" class="id"><a name="fsets_set0" class="" title="fsets_set0 : forall [T : choiceType] (S : set T), fsets (T:=T) S set0
 
 fsets_set0 is not universe polymorphic
-Arguments fsets_set0 [T] S%classical_set_scope
+Arguments fsets_set0 [T] S%_classical_set_scope
 fsets_set0 is opaque
 Expands to: Constant mathcomp.analysis.esum.fsets_set0
 Declared in library mathcomp.analysis.esum, line 43, characters 6-16
@@ -276,7 +276,7 @@ Declared in library mathcomp.analysis.esum, line 43, characters 6-16
 forall [T : choiceType] [F : set T], finite_set F -> fsets (T:=T) F F
 
 fsets_self is not universe polymorphic
-Arguments fsets_self [T] [F]%classical_set_scope _
+Arguments fsets_self [T] [F]%_classical_set_scope _
 fsets_self is opaque
 Expands to: Constant mathcomp.analysis.esum.fsets_self
 Declared in library mathcomp.analysis.esum, line 45, characters 6-16
@@ -313,7 +313,7 @@ set T ->
 (T -> \bar R) -> constructive_ereal_extended__canonical__Order_POrder
 
 esum is not universe polymorphic
-Arguments esum [R T] S%classical_set_scope a%function_scope
+Arguments esum [R T] S%_classical_set_scope a%_function_scope
 esum is transparent
 Expands to: Constant mathcomp.analysis.esum.esum
 Declared in library mathcomp.analysis.esum, line 60, characters 11-15
@@ -326,7 +326,7 @@ forall [R : realFieldType] [T : choiceType] (a : T -> \bar R),
 (\esum_(i in set0) a i)%R = 0%R
 
 esum_set0 is not universe polymorphic
-Arguments esum_set0 [R T] a%function_scope
+Arguments esum_set0 [R T] a%_function_scope
 esum_set0 is opaque
 Expands to: Constant mathcomp.analysis.esum.esum_set0
 Declared in library mathcomp.analysis.esum, line 64, characters 6-15
@@ -352,8 +352,8 @@ forall [R : realType] [T : choiceType] [S : set T] [a : T -> \bar R],
 (forall x : T, S x -> (0%R <= a x)%E) -> (0%R <= (\esum_(i in S) a i)%R)%E
 
 esum_ge0 is not universe polymorphic
-Arguments esum_ge0 [R T] [S]%classical_set_scope [a]%function_scope
-  _%function_scope
+Arguments esum_ge0 [R T] [S]%_classical_set_scope 
+  [a]%_function_scope _%_function_scope
 esum_ge0 is opaque
 Expands to: Constant mathcomp.analysis.esum.esum_ge0
 Declared in library mathcomp.analysis.esum, line 79, characters 6-14
@@ -373,8 +373,8 @@ finite_set F ->
 (\esum_(i in F) a i)%R = (\sum_(i \in F) a i)%R
 
 esum_fset is not universe polymorphic
-Arguments esum_fset [R T] [F]%classical_set_scope 
-  [a]%function_scope _ _%function_scope
+Arguments esum_fset [R T] [F]%_classical_set_scope 
+  [a]%_function_scope _ _%_function_scope
 esum_fset is opaque
 Expands to: Constant mathcomp.analysis.esum.esum_fset
 Declared in library mathcomp.analysis.esum, line 86, characters 6-15
@@ -396,7 +396,7 @@ forall [R : realType] [T : choiceType] [t : T] [a : T -> \bar R],
 (0%R <= a t)%E -> (\esum_(i in [set t]) a i)%R = a t
 
 esum_set1 is not universe polymorphic
-Arguments esum_set1 [R T t] [a]%function_scope _
+Arguments esum_set1 [R T t] [a]%_function_scope _
 esum_set1 is opaque
 Expands to: Constant mathcomp.analysis.esum.esum_set1
 Declared in library mathcomp.analysis.esum, line 97, characters 6-15
@@ -414,8 +414,8 @@ forall [R : realFieldType] [I : choiceType] [D : set I] [a : I -> \bar R],
 (forall i : I, D i -> a i = 0%R) -> (\esum_(i in D) a i)%R = 0%R
 
 esum1 is not universe polymorphic
-Arguments esum1 [R I] [D]%classical_set_scope [a]%function_scope
-  _%function_scope
+Arguments esum1 [R I] [D]%_classical_set_scope [a]%_function_scope
+  _%_function_scope
 esum1 is opaque
 Expands to: Constant mathcomp.analysis.esum.esum1
 Declared in library mathcomp.analysis.esum, line 104, characters 6-11
@@ -437,8 +437,8 @@ forall [R : realType] [T : choiceType] [I : set T]
 (x <= (\esum_(i in I) a i)%R)%E
 
 esum_ge is not universe polymorphic
-Arguments esum_ge [R T] [I]%classical_set_scope [a]%function_scope
-  [x]%ereal_scope _
+Arguments esum_ge [R T] [I]%_classical_set_scope [a]%_function_scope
+  [x]%_ereal_scope _
 esum_ge is opaque
 Expands to: Constant mathcomp.analysis.esum.esum_ge
 Declared in library mathcomp.analysis.esum, line 113, characters 6-13
@@ -456,8 +456,8 @@ forall [R : realType] [T : choiceType] [I : set T] [a b : T -> \bar R],
 ((\esum_(i in I) a i)%R <= (\esum_(i in I) b i)%R)%E
 
 le_esum is not universe polymorphic
-Arguments le_esum [R T] [I]%classical_set_scope [a b]%function_scope
-  _%function_scope
+Arguments le_esum [R T] [I]%_classical_set_scope [a b]%_function_scope
+  _%_function_scope
 le_esum is opaque
 Expands to: Constant mathcomp.analysis.esum.le_esum
 Declared in library mathcomp.analysis.esum, line 118, characters 6-13
@@ -477,8 +477,8 @@ forall [R : realType] [T : choiceType] [I : set T] [a b : T -> \bar R],
 (\esum_(i in I) a i)%R = (\esum_(i in I) b i)%R
 
 eq_esum is not universe polymorphic
-Arguments eq_esum [R T] [I]%classical_set_scope [a b]%function_scope
-  _%function_scope
+Arguments eq_esum [R T] [I]%_classical_set_scope [a b]%_function_scope
+  _%_function_scope
 eq_esum is opaque
 Expands to: Constant mathcomp.analysis.esum.eq_esum
 Declared in library mathcomp.analysis.esum, line 126, characters 6-13
@@ -497,8 +497,8 @@ forall [R : realType] [T : choiceType] [I : set T] [a b : T -> \bar R],
 (\esum_(i in I) (a i + b i))%R = (\esum_(i in I) a i + \esum_(i in I) b i)%R
 
 esumD is not universe polymorphic
-Arguments esumD [R T] [I]%classical_set_scope [a b]%function_scope
-  (_ _)%function_scope
+Arguments esumD [R T] [I]%_classical_set_scope [a b]%_function_scope
+  (_ _)%_function_scope
 esumD is opaque
 Expands to: Constant mathcomp.analysis.esum.esumD
 Declared in library mathcomp.analysis.esum, line 131, characters 6-11
@@ -546,7 +546,7 @@ forall [R : realType] [T : choiceType] (I : set T) (a : T -> \bar R),
 (\esum_(i in [set: T]) (if i \in I then a i else 0))%R
 
 esum_mkcond is not universe polymorphic
-Arguments esum_mkcond [R T] I%classical_set_scope a%function_scope
+Arguments esum_mkcond [R T] I%_classical_set_scope a%_function_scope
 esum_mkcond is opaque
 Expands to: Constant mathcomp.analysis.esum.esum_mkcond
 Declared in library mathcomp.analysis.esum, line 167, characters 6-17
@@ -571,7 +571,7 @@ forall [R : realType] [T : choiceType] (I J : set T) (a : T -> \bar R),
 (\esum_(i in I) (if i \in J then a i else 0))%R
 
 esum_mkcondr is not universe polymorphic
-Arguments esum_mkcondr [R T] (I J)%classical_set_scope a%function_scope
+Arguments esum_mkcondr [R T] (I J)%_classical_set_scope a%_function_scope
 esum_mkcondr is opaque
 Expands to: Constant mathcomp.analysis.esum.esum_mkcondr
 Declared in library mathcomp.analysis.esum, line 180, characters 6-18
@@ -591,7 +591,7 @@ forall [R : realType] [T : choiceType] (I J : set T) (a : T -> \bar R),
 (\esum_(i in J) (if i \in I then a i else 0))%R
 
 esum_mkcondl is not universe polymorphic
-Arguments esum_mkcondl [R T] (I J)%classical_set_scope a%function_scope
+Arguments esum_mkcondl [R T] (I J)%_classical_set_scope a%_function_scope
 esum_mkcondl is opaque
 Expands to: Constant mathcomp.analysis.esum.esum_mkcondl
 Declared in library mathcomp.analysis.esum, line 188, characters 6-18
@@ -612,7 +612,7 @@ forall {R : realType} {I : choiceType} (B A : set I) (F : I -> \bar R),
 (\esum_(i in A `&` B) F i + \esum_(i in A `&` ~` B) F i)%R
 
 esumID is not universe polymorphic
-Arguments esumID {R I} (B A)%classical_set_scope (F _)%function_scope
+Arguments esumID {R I} (B A)%_classical_set_scope (F _)%_function_scope
 esumID is opaque
 Expands to: Constant mathcomp.analysis.esum.esumID
 Declared in library mathcomp.analysis.esum, line 196, characters 6-12
@@ -637,8 +637,8 @@ forall [R : realType] [T1 T2 : choiceType] [I : set T1]
 (\sum_(j <- r | P j) \esum_(i in I) a i j)%R
 
 esum_sum is not universe polymorphic
-Arguments esum_sum [R T1 T2] [I]%classical_set_scope 
-  r%seq_scope [P] [a]%function_scope _%function_scope
+Arguments esum_sum [R T1 T2] [I]%_classical_set_scope 
+  r%_seq_scope [P] [a]%_function_scope _%_function_scope
 esum_sum is opaque
 Expands to: Constant mathcomp.analysis.esum.esum_sum
 Declared in library mathcomp.analysis.esum, line 207, characters 6-14
@@ -667,8 +667,8 @@ forall [R : realType] [T1 T2 : choiceType] [I : set T1]
 (\esum_(k in I `*`` J) a k.1 k.2)%R
 
 esum_esum is not universe polymorphic
-Arguments esum_esum [R T1 T2] [I]%classical_set_scope 
-  [J a]%function_scope _%function_scope
+Arguments esum_esum [R T1 T2] [I]%_classical_set_scope 
+  [J a]%_function_scope _%_function_scope
 esum_esum is opaque
 Expands to: Constant mathcomp.analysis.esum.esum_esum
 Declared in library mathcomp.analysis.esum, line 222, characters 6-15
@@ -740,7 +740,7 @@ forall {R : realDomainType} {f : (\bar R) ^nat} (F : {fset nat})
 ((\sum_(i <- F | P i) f i)%R <= (\sum_(0 <= i < n | P i) f i)%R)%E
 
 lee_sum_fset_nat is not universe polymorphic
-Arguments lee_sum_fset_nat {R f} F n%nat_scope P _%function_scope _
+Arguments lee_sum_fset_nat {R f} F n%_nat_scope P _%_function_scope _
 lee_sum_fset_nat is opaque
 Expands to: Constant mathcomp.analysis.esum.lee_sum_fset_nat
 Declared in library mathcomp.analysis.esum, line 280, characters 6-22
@@ -769,7 +769,7 @@ forall {R : realType} {f : (\bar R) ^nat} (F : {fset nat}) (P : pred nat),
 ((\sum_(i <- F | P i) f i)%R <= \big[+%R/0%R]_(0 <= i <oo | P i) f i)%E
 
 lee_sum_fset_lim is not universe polymorphic
-Arguments lee_sum_fset_lim {R f} F P _%function_scope
+Arguments lee_sum_fset_lim {R f} F P _%_function_scope
 lee_sum_fset_lim is opaque
 Expands to: Constant mathcomp.analysis.esum.lee_sum_fset_lim
 Declared in library mathcomp.analysis.esum, line 297, characters 6-22
@@ -794,7 +794,7 @@ forall [R : realType] [a : nat -> \bar R] [P : pred nat],
 \big[+%R/0%R]_(0 <= i <oo | P i) a i = (\esum_(i in [set x | P x]) a i)%R
 
 nneseries_esum is not universe polymorphic
-Arguments nneseries_esum [R] [a]%function_scope [P] _%function_scope
+Arguments nneseries_esum [R] [a]%_function_scope [P] _%_function_scope
 nneseries_esum is opaque
 Expands to: Constant mathcomp.analysis.esum.nneseries_esum
 Declared in library mathcomp.analysis.esum, line 310, characters 6-20
@@ -823,7 +823,7 @@ forall {R : realType} [a : nat -> \bar R],
 \big[+%R/0%R]_(0 <= i <oo) a i = (\esum_(i in [set: nat]) a i)%R
 
 nneseries_esumT is not universe polymorphic
-Arguments nneseries_esumT {R} [a]%function_scope _%function_scope
+Arguments nneseries_esumT {R} [a]%_function_scope _%_function_scope
 nneseries_esumT is opaque
 Expands to: Constant mathcomp.analysis.esum.nneseries_esumT
 Declared in library mathcomp.analysis.esum, line 327, characters 6-21
@@ -840,8 +840,8 @@ forall {R : realType} {T T' : choiceType} (P : set T)
 set_bij P Q e -> (\esum_(j in Q) a j)%R = (\esum_(i in P) a (e i))%R
 
 reindex_esum is not universe polymorphic
-Arguments reindex_esum {R T T'} (P Q)%classical_set_scope
-  (e a)%function_scope _
+Arguments reindex_esum {R T T'} (P Q)%_classical_set_scope
+  (e a)%_function_scope _
 reindex_esum is opaque
 Expands to: Constant mathcomp.analysis.esum.reindex_esum
 Declared in library mathcomp.analysis.esum, line 331, characters 6-18
@@ -897,7 +897,7 @@ forall [R : realType] [a : nat -> nat -> \bar R] (P Q : pred nat),
 \big[+%R/0%R]_(0 <= j <oo | Q j) \big[+%R/0%R]_(0 <= i <oo | P i) a i j
 
 nneseries_interchange is not universe polymorphic
-Arguments nneseries_interchange [R] [a]%function_scope P Q _%function_scope
+Arguments nneseries_interchange [R] [a]%_function_scope P Q _%_function_scope
 nneseries_interchange is opaque
 Expands to: Constant mathcomp.analysis.esum.nneseries_interchange
 Declared in library mathcomp.analysis.esum, line 372, characters 6-27
@@ -924,7 +924,7 @@ set_inj P e ->
 (\esum_(j in [set e x | x in P]) a j)%R = (\esum_(i in P) a (e i))%R
 
 esum_image is not universe polymorphic
-Arguments esum_image {R T T'} P%classical_set_scope (e a)%function_scope _
+Arguments esum_image {R T T'} P%_classical_set_scope (e a)%_function_scope _
 esum_image is opaque
 Expands to: Constant mathcomp.analysis.esum.esum_image
 Declared in library mathcomp.analysis.esum, line 386, characters 6-16
@@ -947,7 +947,7 @@ set_inj (fun x : nat => P x) e ->
 \big[+%R/0%R]_(0 <= i <oo | P i) a (e i)
 
 esum_pred_image is not universe polymorphic
-Arguments esum_pred_image {R T} (a e)%function_scope P _%function_scope _
+Arguments esum_pred_image {R T} (a e)%_function_scope P _%_function_scope _
 esum_pred_image is opaque
 Expands to: Constant mathcomp.analysis.esum.esum_pred_image
 Declared in library mathcomp.analysis.esum, line 393, characters 6-21
@@ -971,8 +971,8 @@ set_inj P e ->
 \big[+%R/0%R]_(0 <= i <oo | i \in P) a (e i)
 
 esum_set_image is not universe polymorphic
-Arguments esum_set_image {R T} (a e)%function_scope 
-  P%classical_set_scope _%function_scope _
+Arguments esum_set_image {R T} (a e)%_function_scope 
+  P%_classical_set_scope _%_function_scope _
 esum_set_image is opaque
 Expands to: Constant mathcomp.analysis.esum.esum_set_image
 Declared in library mathcomp.analysis.esum, line 401, characters 6-20
@@ -1002,8 +1002,8 @@ trivIset (T:=T) [set: nat] J ->
 (\esum_(i in K) \esum_(j in J i) a j)%R
 
 esum_bigcupT is not universe polymorphic
-Arguments esum_bigcupT {R T} {K}%classical_set_scope 
-  (J a)%function_scope _ _%function_scope
+Arguments esum_bigcupT {R T} {K}%_classical_set_scope 
+  (J a)%_function_scope _ _%_function_scope
 esum_bigcupT is opaque
 Expands to: Constant mathcomp.analysis.esum.esum_bigcupT
 Declared in library mathcomp.analysis.esum, line 416, characters 6-18
@@ -1030,8 +1030,8 @@ trivIset (T:=T) [set i | [set a x | x in J i]%classic != [set 0%R]%classic] J ->
 (\esum_(k in K) \esum_(j in J k) a j)%R
 
 esum_bigcup is not universe polymorphic
-Arguments esum_bigcup {R T} {K}%classical_set_scope 
-  (J a)%function_scope _ _%function_scope
+Arguments esum_bigcup {R T} {K}%_classical_set_scope 
+  (J a)%_function_scope _ _%_function_scope
 esum_bigcup is opaque
 Expands to: Constant mathcomp.analysis.esum.esum_bigcup
 Declared in library mathcomp.analysis.esum, line 428, characters 6-17
@@ -1081,8 +1081,8 @@ trivIset (T:=T) [set: nat] F ->
 \big[+%R/0%R]_(0 <= i <oo) (\esum_(j in F i) f j)%R
 
 nneseries_sum_bigcup is not universe polymorphic
-Arguments nneseries_sum_bigcup {R} [T F] [f]%function_scope 
-  _ _%function_scope
+Arguments nneseries_sum_bigcup {R} [T F] [f]%_function_scope 
+  _ _%_function_scope
 nneseries_sum_bigcup is opaque
 Expands to: Constant mathcomp.analysis.esum.nneseries_sum_bigcup
 Declared in library mathcomp.analysis.esum, line 464, characters 6-26
@@ -1101,7 +1101,7 @@ Qed.</div></details>
 forall [T : choiceType] [R : realType], set T -> (T -> \bar R) -> bool
 
 summable is not universe polymorphic
-Arguments summable [T R] D%classical_set_scope f%function_scope
+Arguments summable [T R] D%_classical_set_scope f%_function_scope
 summable is transparent
 Expands to: Constant mathcomp.analysis.esum.summable
 Declared in library mathcomp.analysis.esum, line 473, characters 11-19
@@ -1118,8 +1118,8 @@ forall [T : choiceType] [R : realType] [D : set T] [f : T -> \bar R],
 summable (T:=T) (R:=R) D f -> forall [x : T], D x -> (`|f x| < +oo)%E
 
 summable_pinfty is not universe polymorphic
-Arguments summable_pinfty [T R] [D]%classical_set_scope 
-  [f]%function_scope _ [x] _
+Arguments summable_pinfty [T R] [D]%_classical_set_scope 
+  [f]%_function_scope _ [x] _
 summable_pinfty is opaque
 Expands to: Constant mathcomp.analysis.esum.summable_pinfty
 Declared in library mathcomp.analysis.esum, line 481, characters 6-21
@@ -1137,7 +1137,7 @@ forall [T : choiceType] [R : realType] (D : set T) (f : T -> \bar R),
 summable (T:=T) (R:=R) D f = ((\esum_(x in D) `|f x|%E)%R \is a fin_num)
 
 summableE is not universe polymorphic
-Arguments summableE [T R] D%classical_set_scope f%function_scope
+Arguments summableE [T R] D%_classical_set_scope f%_function_scope
 summableE is opaque
 Expands to: Constant mathcomp.analysis.esum.summableE
 Declared in library mathcomp.analysis.esum, line 488, characters 6-15
@@ -1155,7 +1155,7 @@ summable (T:=T) (R:=R) D f ->
 summable (T:=T) (R:=R) D g -> summable (T:=T) (R:=R) D (f \+ g)%E
 
 summableD is not universe polymorphic
-Arguments summableD [T R] [D]%classical_set_scope [f g]%function_scope _ _
+Arguments summableD [T R] [D]%_classical_set_scope [f g]%_function_scope _ _
 summableD is opaque
 Expands to: Constant mathcomp.analysis.esum.summableD
 Declared in library mathcomp.analysis.esum, line 494, characters 6-15
@@ -1172,7 +1172,7 @@ forall [T : choiceType] [R : realType] (D : set T) (f : T -> \bar R),
 summable (T:=T) (R:=R) D f = summable (T:=T) (R:=R) D (\- f)%E
 
 summableN is not universe polymorphic
-Arguments summableN [T R] D%classical_set_scope f%function_scope
+Arguments summableN [T R] D%_classical_set_scope f%_function_scope
 summableN is opaque
 Expands to: Constant mathcomp.analysis.esum.summableN
 Declared in library mathcomp.analysis.esum, line 500, characters 6-15
@@ -1189,7 +1189,7 @@ summable (T:=T) (R:=R) D f ->
 summable (T:=T) (R:=R) D g -> summable (T:=T) (R:=R) D (f \- g)%E
 
 summableB is not universe polymorphic
-Arguments summableB [T R] [D]%classical_set_scope [f g]%function_scope _ _
+Arguments summableB [T R] [D]%_classical_set_scope [f g]%_function_scope _ _
 summableB is opaque
 Expands to: Constant mathcomp.analysis.esum.summableB
 Declared in library mathcomp.analysis.esum, line 505, characters 6-15
@@ -1204,7 +1204,8 @@ forall [T : choiceType] [R : realType] [D : set T] [f : T -> \bar R],
 summable (T:=T) (R:=R) D f -> summable (T:=T) (R:=R) D f^\+%E
 
 summable_funepos is not universe polymorphic
-Arguments summable_funepos [T R] [D]%classical_set_scope [f]%function_scope _
+Arguments summable_funepos [T R] [D]%_classical_set_scope 
+  [f]%_function_scope _
 summable_funepos is opaque
 Expands to: Constant mathcomp.analysis.esum.summable_funepos
 Declared in library mathcomp.analysis.esum, line 508, characters 6-22
@@ -1221,7 +1222,8 @@ forall [T : choiceType] [R : realType] [D : set T] [f : T -> \bar R],
 summable (T:=T) (R:=R) D f -> summable (T:=T) (R:=R) D f^\-%E
 
 summable_funeneg is not universe polymorphic
-Arguments summable_funeneg [T R] [D]%classical_set_scope [f]%function_scope _
+Arguments summable_funeneg [T R] [D]%_classical_set_scope 
+  [f]%_function_scope _
 summable_funeneg is opaque
 Expands to: Constant mathcomp.analysis.esum.summable_funeneg
 Declared in library mathcomp.analysis.esum, line 514, characters 6-22
@@ -1248,7 +1250,7 @@ summable (T:=Datatypes_nat__canonical__choice_Choice) (R:=R)
 (\sum_(0 <= k < r | P k) fine (f k))%R = fine (\sum_(0 <= k < r | P k) f k)%R
 
 summable_fine_sum is not universe polymorphic
-Arguments summable_fine_sum [R] r%nat_scope [P] [f]%function_scope _
+Arguments summable_fine_sum [R] r%_nat_scope [P] [f]%_function_scope _
 summable_fine_sum is opaque
 Expands to: Constant mathcomp.analysis.esum.summable_fine_sum
 Declared in library mathcomp.analysis.esum, line 528, characters 6-23
@@ -1290,7 +1292,7 @@ exists2 i : nat,
   ((fun N : nat => [set n | N <= n]) i
    `<=` (fun n : nat => (\sum_(0 <= k < n | P k) fine (f k))%R) @^-1` t)%classic
 
-Arguments summable_cvg [R P f] _%function_scope _ [t] _
+Arguments summable_cvg [R P f] _%_function_scope _ [t] _
 summable_cvg is opaque
 Expands to: Constant mathcomp.analysis.esum.summable_cvg
 Declared in library mathcomp.analysis.esum, line 539, characters 6-18
@@ -1322,7 +1324,7 @@ summable (T:=Datatypes_nat__canonical__choice_Choice) (R:=R)
 (\big[+%R/0]_(0 <= k <oo | P k) fine (f k))%:E
 
 summable_nneseries_lim is not universe polymorphic
-Arguments summable_nneseries_lim [R P f] _%function_scope _
+Arguments summable_nneseries_lim [R P f] _%_function_scope _
 summable_nneseries_lim is opaque
 Expands to: Constant mathcomp.analysis.esum.summable_nneseries_lim
 Declared in library mathcomp.analysis.esum, line 556, characters 6-28
@@ -1350,7 +1352,7 @@ summable (T:=Datatypes_nat__canonical__choice_Choice) (R:=R)
  \big[+%R/0%R]_(0 <= i <oo | P i) f^\- i)%E
 
 summable_eseries is not universe polymorphic
-Arguments summable_eseries [R] [f]%function_scope [P] _
+Arguments summable_eseries [R] [f]%_function_scope [P] _
 summable_eseries is opaque
 Expands to: Constant mathcomp.analysis.esum.summable_eseries
 Declared in library mathcomp.analysis.esum, line 569, characters 6-22
@@ -1401,7 +1403,7 @@ summable (T:=Datatypes_nat__canonical__choice_Choice) (R:=R)
  (\esum_(i in fun x : Datatypes_nat__canonical__choice_Choice => P x) f^\- i)%R)%E
 
 summable_eseries_esum is not universe polymorphic
-Arguments summable_eseries_esum [R] [f]%function_scope [P] _
+Arguments summable_eseries_esum [R] [f]%_function_scope [P] _
 summable_eseries_esum is opaque
 Expands to: Constant mathcomp.analysis.esum.summable_eseries_esum
 Declared in library mathcomp.analysis.esum, line 605, characters 6-27
@@ -1443,8 +1445,8 @@ summable (T:=T) (R:=R) D g ->
 ((\esum_(i in D) f i)%R - (\esum_(i in D) g i)%R)%E
 
 esumB is not universe polymorphic
-Arguments esumB [R T] [D]%classical_set_scope [f g]%function_scope 
-  _ _ (_ _)%function_scope
+Arguments esumB [R T] [D]%_classical_set_scope [f g]%_function_scope 
+  _ _ (_ _)%_function_scope
 esumB is opaque
 Expands to: Constant mathcomp.analysis.esum.esumB
 Declared in library mathcomp.analysis.esum, line 629, characters 6-11

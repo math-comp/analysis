@@ -239,7 +239,7 @@ forall {I : choiceType} {X : I -> topology_structure.Topological.type},
 filter.set_system {i : I & topology_structure.Topological.sort (X i)}
 
 sigT_nbhs is not universe polymorphic
-Arguments sigT_nbhs {I} {X}%function_scope x _
+Arguments sigT_nbhs {I} {X}%_function_scope x _
 sigT_nbhs is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.sigT_nbhs
@@ -258,7 +258,7 @@ filter.fmap
   (filter.nbhs (filter.nbhs x))
 
 sigT_nbhsE is not universe polymorphic
-Arguments sigT_nbhsE {I} {X}%function_scope i x
+Arguments sigT_nbhsE {I} {X}%_function_scope i x
 sigT_nbhsE is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.sigT_nbhsE
@@ -276,7 +276,7 @@ forall {I : choiceType},
 (I -> topology_structure.Topological.type) -> filter.Nbhs.type
 
 Specif_sigT__canonical__filter_Nbhs is not universe polymorphic
-Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%function_scope
+Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%_function_scope
 Specif_sigT__canonical__filter_Nbhs is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__filter_Nbhs
@@ -287,7 +287,7 @@ forall {I : choiceType},
 (I -> topology_structure.Topological.type) -> filter.Nbhs.type
 
 Specif_sigT__canonical__filter_Nbhs is not universe polymorphic
-Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%function_scope
+Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%_function_scope
 Specif_sigT__canonical__filter_Nbhs is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__filter_Nbhs
@@ -298,7 +298,7 @@ forall {I : choiceType},
 (I -> topology_structure.Topological.type) -> filter.Nbhs.type
 
 Specif_sigT__canonical__filter_Nbhs is not universe polymorphic
-Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%function_scope
+Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%_function_scope
 Specif_sigT__canonical__filter_Nbhs is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__filter_Nbhs
@@ -309,7 +309,7 @@ forall {I : choiceType},
 (I -> topology_structure.Topological.type) -> filter.Nbhs.type
 
 Specif_sigT__canonical__filter_Nbhs is not universe polymorphic
-Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%function_scope
+Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%_function_scope
 Specif_sigT__canonical__filter_Nbhs is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__filter_Nbhs
@@ -320,7 +320,7 @@ forall {I : choiceType},
 (I -> topology_structure.Topological.type) -> filter.Nbhs.type
 
 Specif_sigT__canonical__filter_Nbhs is not universe polymorphic
-Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%function_scope
+Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%_function_scope
 Specif_sigT__canonical__filter_Nbhs is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__filter_Nbhs
@@ -359,7 +359,7 @@ topology_structure.Topological.type
 
 Specif_sigT__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Specif_sigT__canonical__topology_structure_Topological 
-  {I} {X}%function_scope
+  {I} {X}%_function_scope
 Specif_sigT__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__topology_structure_Topological
@@ -372,7 +372,7 @@ topology_structure.Topological.type
 
 Specif_sigT__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Specif_sigT__canonical__topology_structure_Topological 
-  {I} {X}%function_scope
+  {I} {X}%_function_scope
 Specif_sigT__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__topology_structure_Topological
@@ -385,7 +385,7 @@ topology_structure.Topological.type
 
 Specif_sigT__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Specif_sigT__canonical__topology_structure_Topological 
-  {I} {X}%function_scope
+  {I} {X}%_function_scope
 Specif_sigT__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__topology_structure_Topological
@@ -398,7 +398,7 @@ topology_structure.Topological.type
 
 Specif_sigT__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Specif_sigT__canonical__topology_structure_Topological 
-  {I} {X}%function_scope
+  {I} {X}%_function_scope
 Specif_sigT__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__topology_structure_Topological
@@ -411,7 +411,7 @@ topology_structure.Topological.type
 
 Specif_sigT__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Specif_sigT__canonical__topology_structure_Topological 
-  {I} {X}%function_scope
+  {I} {X}%_function_scope
 Specif_sigT__canonical__topology_structure_Topological is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.Specif_sigT__canonical__topology_structure_Topological
@@ -433,7 +433,7 @@ filter.continuous_at
   (existT (fun x0 : I => topology_structure.Topological.sort (X x0)) i)
 
 existT_continuous is not universe polymorphic
-Arguments existT_continuous {I} {X}%function_scope i x t _
+Arguments existT_continuous {I} {X}%_function_scope i x t _
 existT_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.existT_continuous
@@ -454,8 +454,8 @@ topology_structure.open
      | x in A]%classic
 
 existT_open_map is not universe polymorphic
-Arguments existT_open_map {I} {X}%function_scope i 
-  A%classical_set_scope _ t _
+Arguments existT_open_map {I} {X}%_function_scope 
+  i A%_classical_set_scope _ t _
 existT_open_map is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.existT_open_map
@@ -482,7 +482,7 @@ filter.nbhs
      | x in U]%classic
 
 existT_nbhs is not universe polymorphic
-Arguments existT_nbhs {I} {X}%function_scope i x U%classical_set_scope _
+Arguments existT_nbhs {I} {X}%_function_scope i x U%_classical_set_scope _
 existT_nbhs is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.existT_nbhs
@@ -505,7 +505,7 @@ topology_structure.open U <->
     U)%classic)
 
 sigT_openP is not universe polymorphic
-Arguments sigT_openP {I} {X}%function_scope U%classical_set_scope
+Arguments sigT_openP {I} {X}%_function_scope U%_classical_set_scope
 sigT_openP is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.sigT_openP
@@ -544,8 +544,8 @@ filter.continuous_at (T:=Specif_sigT__canonical__filter_Nbhs)
   x (sigT_fun f)
 
 sigT_continuous is not universe polymorphic
-Arguments sigT_continuous {I} {X}%function_scope {Z} 
-  (f _)%function_scope x t _
+Arguments sigT_continuous {I} {X}%_function_scope 
+  {Z} (f _)%_function_scope x t _
 sigT_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.sigT_continuous
@@ -564,7 +564,7 @@ forall {I : choiceType} {X : I -> topology_structure.Topological.type},
 (\bigcup_i range (existT (fun i0 : I => let (sort, _) := X i0 in sort) i))%classic
 
 sigT_setUE is not universe polymorphic
-Arguments sigT_setUE {I} {X}%function_scope
+Arguments sigT_setUE {I} {X}%_function_scope
 sigT_setUE is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.sigT_setUE
@@ -583,7 +583,7 @@ finite_set [set: I] ->
 compact [set: {i : I & topology_structure.Topological.sort (X i)}]
 
 sigT_compact is not universe polymorphic
-Arguments sigT_compact {I} {X}%function_scope _ _%function_scope F _ _
+Arguments sigT_compact {I} {X}%_function_scope _ _%_function_scope F _ _
 sigT_compact is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.sigT_topology.sigT_compact

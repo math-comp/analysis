@@ -235,7 +235,7 @@
 <span class="vernacular">Definition</span><span class="id"> </span><span id="quotient_topology" class="id"><a name="quotient_topology" class="" title="quotient_topology : forall [T : Type], quotType T -> Type
 
 quotient_topology is not universe polymorphic
-Arguments quotient_topology [T]%type_scope Q
+Arguments quotient_topology [T]%_type_scope Q
 quotient_topology is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.quotient_topology.quotient_topology
@@ -520,7 +520,7 @@ forall {T : topology_structure.Topological.type}
 set (quotient_topology Q0) -> Prop
 
 quotient_open is not universe polymorphic
-Arguments quotient_open {T Q0} U%classical_set_scope
+Arguments quotient_open {T Q0} U%_classical_set_scope
 quotient_open is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.quotient_topology.quotient_open
@@ -709,7 +709,7 @@ forall {T : topology_structure.Topological.type}
    x (f \o \pi_(quotient_topology Q0)%qT))
 
 quotient_continuous is not universe polymorphic
-Arguments quotient_continuous {T Q0 Z} f%function_scope
+Arguments quotient_continuous {T Q0 Z} f%_function_scope
 quotient_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.quotient_topology.quotient_continuous
@@ -794,8 +794,8 @@ exists B : set (quotient_topology Q0),
              quotient_topology Q0 -> topology_structure.Topological.sort Z) @^-1`
             t)%classic]
 
-Arguments repr_comp_continuous {T Q0} [Z] [g]%function_scope 
-  _%function_scope _ [x t] _
+Arguments repr_comp_continuous {T Q0} [Z] [g]%_function_scope
+  _%_function_scope _ [x t] _
 repr_comp_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.quotient_topology.repr_comp_continuous

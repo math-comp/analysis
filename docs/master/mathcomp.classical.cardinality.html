@@ -272,7 +272,7 @@ only relations A #&lt;= B and A #= B to compare the cardinals of two sets
 <span class="vernacular">Definition</span><span class="id"> </span><span id="card_le" class="id"><a name="card_le" class="" title="card_le : forall [T U : Type], set T -> set U -> bool
 
 card_le is not universe polymorphic
-Arguments card_le [T U]%type_scope (A B)%classical_set_scope
+Arguments card_le [T U]%_type_scope (A B)%_classical_set_scope
 card_le is transparent
 Expands to: Constant mathcomp.classical.cardinality.card_le
 Declared in library mathcomp.classical.cardinality, line 60, characters 11-18
@@ -284,7 +284,7 @@ Declared in library mathcomp.classical.cardinality, line 60, characters 11-18
 <span class="vernacular">Definition</span><span class="id"> </span><span id="card_eq" class="id"><a name="card_eq" class="" title="card_eq : forall [T U : Type], set T -> set U -> bool
 
 card_eq is not universe polymorphic
-Arguments card_eq [T U]%type_scope (A B)%classical_set_scope
+Arguments card_eq [T U]%_type_scope (A B)%_classical_set_scope
 card_eq is transparent
 Expands to: Constant mathcomp.classical.cardinality.card_eq
 Declared in library mathcomp.classical.cardinality, line 65, characters 11-18
@@ -296,7 +296,7 @@ Declared in library mathcomp.classical.cardinality, line 65, characters 11-18
 <span class="vernacular">Definition</span><span class="id"> </span><span id="finite_set" class="id"><a name="finite_set" class="" title="finite_set : forall {T : Type}, set T -> Prop
 
 finite_set is not universe polymorphic
-Arguments finite_set {T}%type_scope A%classical_set_scope
+Arguments finite_set {T}%_type_scope A%_classical_set_scope
 finite_set is transparent
 Expands to: Constant mathcomp.classical.cardinality.finite_set
 Declared in library mathcomp.classical.cardinality, line 70, characters 11-21
@@ -309,7 +309,7 @@ forall {T U : Type} {A : set T},
 $| {inj A >-> U} | <-> (exists f : T -> U, set_inj A f)
 
 injPex is not universe polymorphic
-Arguments injPex {T U}%type_scope {A}%classical_set_scope
+Arguments injPex {T U}%_type_scope {A}%_classical_set_scope
 injPex is opaque
 Expands to: Constant mathcomp.classical.cardinality.injPex
 Declared in library mathcomp.classical.cardinality, line 74, characters 6-12
@@ -325,7 +325,7 @@ forall {T U : Type} {A : set T} {B : set U},
 $| {surj A >-> B} | <-> (exists f : T -> U, set_surj A B f)
 
 surjPex is not universe polymorphic
-Arguments surjPex {T U}%type_scope {A B}%classical_set_scope
+Arguments surjPex {T U}%_type_scope {A B}%_classical_set_scope
 surjPex is opaque
 Expands to: Constant mathcomp.classical.cardinality.surjPex
 Declared in library mathcomp.classical.cardinality, line 78, characters 6-13
@@ -341,7 +341,7 @@ forall {T U : Type} {A : set T} {B : set U},
 $| {bij A >-> B} | <-> (exists f : T -> U, set_bij A B f)
 
 bijPex is not universe polymorphic
-Arguments bijPex {T U}%type_scope {A B}%classical_set_scope
+Arguments bijPex {T U}%_type_scope {A B}%_classical_set_scope
 bijPex is opaque
 Expands to: Constant mathcomp.classical.cardinality.bijPex
 Declared in library mathcomp.classical.cardinality, line 82, characters 6-12
@@ -358,7 +358,7 @@ $| {surjfun A >-> B} | <->
 (exists f : T -> U, B = [set f x | x in A]%classic)
 
 surjfunPex is not universe polymorphic
-Arguments surjfunPex {T U}%type_scope {A B}%classical_set_scope
+Arguments surjfunPex {T U}%_type_scope {A B}%_classical_set_scope
 surjfunPex is opaque
 Expands to: Constant mathcomp.classical.cardinality.surjfunPex
 Declared in library mathcomp.classical.cardinality, line 86, characters 6-16
@@ -376,7 +376,7 @@ forall {T U : Type} {A : set T} {B : set U},
 $| {injfun A >-> B} | <-> (exists2 f : T -> U, set_fun A B f & set_inj A f)
 
 injfunPex is not universe polymorphic
-Arguments injfunPex {T U}%type_scope {A B}%classical_set_scope
+Arguments injfunPex {T U}%_type_scope {A B}%_classical_set_scope
 injfunPex is opaque
 Expands to: Constant mathcomp.classical.cardinality.injfunPex
 Declared in library mathcomp.classical.cardinality, line 93, characters 6-15
@@ -392,7 +392,7 @@ forall {T U : Type} {A : set T} {B : set U},
 reflect $| {injfun [set: A] >-> [set: B]} | (A #<= B)%card
 
 card_leP is not universe polymorphic
-Arguments card_leP {T U}%type_scope {A B}%classical_set_scope
+Arguments card_leP {T U}%_type_scope {A B}%_classical_set_scope
 card_leP is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_leP
 Declared in library mathcomp.classical.cardinality, line 97, characters 6-14
@@ -408,7 +408,7 @@ forall {T U : Type} {A : set T} {B : set U},
 {injfun A >-> B} -> (A #<= B)%card
 
 inj_card_le is not universe polymorphic
-Arguments inj_card_le {T U}%type_scope {A B}%classical_set_scope _
+Arguments inj_card_le {T U}%_type_scope {A B}%_classical_set_scope _
 inj_card_le is opaque
 Expands to: Constant mathcomp.classical.cardinality.inj_card_le
 Declared in library mathcomp.classical.cardinality, line 101, characters 6-17
@@ -423,7 +423,7 @@ forall {T : Type} {U : pointedType} {A : set T} {B : set U},
 reflect $| {injfun A >-> B} | (A #<= B)%card
 
 pcard_leP is not universe polymorphic
-Arguments pcard_leP {T}%type_scope {U} {A B}%classical_set_scope
+Arguments pcard_leP {T}%_type_scope {U} {A B}%_classical_set_scope
 pcard_leP is opaque
 Expands to: Constant mathcomp.classical.cardinality.pcard_leP
 Declared in library mathcomp.classical.cardinality, line 104, characters 6-15
@@ -440,7 +440,7 @@ forall {T : Type} {U : pointedType} {A : set T},
 reflect $| {inj A >-> U} | (A #<= [set: U])%card
 
 pcard_leTP is not universe polymorphic
-Arguments pcard_leTP {T}%type_scope {U} {A}%classical_set_scope
+Arguments pcard_leTP {T}%_type_scope {U} {A}%_classical_set_scope
 pcard_leTP is opaque
 Expands to: Constant mathcomp.classical.cardinality.pcard_leTP
 Declared in library mathcomp.classical.cardinality, line 110, characters 6-16
@@ -457,7 +457,7 @@ forall {T : Type} {U : pointedType} {A : set T},
 reflect (exists f : T -> U, {in A &, injective f}) (A #<= [set: U])%card
 
 pcard_injP is not universe polymorphic
-Arguments pcard_injP {T}%type_scope {U} {A}%classical_set_scope
+Arguments pcard_injP {T}%_type_scope {U} {A}%_classical_set_scope
 pcard_injP is opaque
 Expands to: Constant mathcomp.classical.cardinality.pcard_injP
 Declared in library mathcomp.classical.cardinality, line 116, characters 6-16
@@ -473,7 +473,7 @@ forall {T U : pointedType} {A : set T} {B : set U},
 reflect $| {splitinjfun A >-> B} | (A #<= B)%card
 
 ppcard_leP is not universe polymorphic
-Arguments ppcard_leP {T U} {A B}%classical_set_scope
+Arguments ppcard_leP {T U} {A B}%_classical_set_scope
 ppcard_leP is opaque
 Expands to: Constant mathcomp.classical.cardinality.ppcard_leP
 Declared in library mathcomp.classical.cardinality, line 120, characters 6-16
@@ -487,7 +487,7 @@ Declared in library mathcomp.classical.cardinality, line 120, characters 6-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="card_ge0" class="id"><a name="card_ge0" class="" title="card_ge0 : forall (T : Type) [U : Type] (S : set U), (set0 #<= S)%card
 
 card_ge0 is not universe polymorphic
-Arguments card_ge0 T%type_scope [U]%type_scope S%classical_set_scope
+Arguments card_ge0 T%_type_scope [U]%_type_scope S%_classical_set_scope
 card_ge0 is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_ge0
 Declared in library mathcomp.classical.cardinality, line 124, characters 6-14
@@ -503,7 +503,7 @@ forall [T : Type] (U : Type) (A : set T),
 reflect (A = set0) (A #<= set0)%card
 
 card_le0P is not universe polymorphic
-Arguments card_le0P [T]%type_scope U%type_scope A%classical_set_scope
+Arguments card_le0P [T]%_type_scope U%_type_scope A%_classical_set_scope
 card_le0P is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_le0P
 Declared in library mathcomp.classical.cardinality, line 128, characters 6-15
@@ -519,7 +519,7 @@ Qed.</div></details>
 forall [T : Type] (U : Type) (A : set T), (A #<= set0)%card = (A == set0)
 
 card_le0 is not universe polymorphic
-Arguments card_le0 [T]%type_scope U%type_scope A%classical_set_scope
+Arguments card_le0 [T]%_type_scope U%_type_scope A%_classical_set_scope
 card_le0 is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_le0
 Declared in library mathcomp.classical.cardinality, line 134, characters 6-14
@@ -534,7 +534,7 @@ forall {T U : Type} {A : set T} {B : set U},
 reflect $| {bij [set: A] >-> [set: B]} | (A #= B)%card
 
 card_eqP is not universe polymorphic
-Arguments card_eqP {T U}%type_scope {A B}%classical_set_scope
+Arguments card_eqP {T U}%_type_scope {A B}%_classical_set_scope
 card_eqP is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eqP
 Declared in library mathcomp.classical.cardinality, line 137, characters 6-14
@@ -549,7 +549,7 @@ Declared in library mathcomp.classical.cardinality, line 137, characters 6-14
 forall {T U : Type} {A : set T} {B : set U}, {bij A >-> B} -> (A #= B)%card
 
 pcard_eq is not universe polymorphic
-Arguments pcard_eq {T U}%type_scope {A B}%classical_set_scope _
+Arguments pcard_eq {T U}%_type_scope {A B}%_classical_set_scope _
 pcard_eq is opaque
 Expands to: Constant mathcomp.classical.cardinality.pcard_eq
 Declared in library mathcomp.classical.cardinality, line 141, characters 6-14
@@ -564,7 +564,7 @@ forall {T : Type} {U : pointedType} {A : set T} {B : set U},
 reflect $| {bij A >-> B} | (A #= B)%card
 
 pcard_eqP is not universe polymorphic
-Arguments pcard_eqP {T}%type_scope {U} {A B}%classical_set_scope
+Arguments pcard_eqP {T}%_type_scope {U} {A B}%_classical_set_scope
 pcard_eqP is opaque
 Expands to: Constant mathcomp.classical.cardinality.pcard_eqP
 Declared in library mathcomp.classical.cardinality, line 144, characters 6-15
@@ -581,7 +581,7 @@ forall {T U : Type} {A : set T} {B : set U},
 reflect (exists f : A -> B, bijective f) (A #= B)%card
 
 card_bijP is not universe polymorphic
-Arguments card_bijP {T U}%type_scope {A B}%classical_set_scope
+Arguments card_bijP {T U}%_type_scope {A B}%_classical_set_scope
 card_bijP is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_bijP
 Declared in library mathcomp.classical.cardinality, line 150, characters 6-15
@@ -598,7 +598,7 @@ forall {T U : Type} {A : set T} {B : set U},
 reflect $| {splitbij [set: A] >-> [set: B]} | (A #= B)%card
 
 card_eqVP is not universe polymorphic
-Arguments card_eqVP {T U}%type_scope {A B}%classical_set_scope
+Arguments card_eqVP {T U}%_type_scope {A B}%_classical_set_scope
 card_eqVP is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eqVP
 Declared in library mathcomp.classical.cardinality, line 156, characters 6-15
@@ -614,7 +614,7 @@ forall {T : Type} {U : pointedType} {A : set T} {B : set U},
 reflect (exists f : T -> U, set_bij A B f) (A #= B)%card
 
 card_set_bijP is not universe polymorphic
-Arguments card_set_bijP {T}%type_scope {U} {A B}%classical_set_scope
+Arguments card_set_bijP {T}%_type_scope {U} {A B}%_classical_set_scope
 card_set_bijP is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_set_bijP
 Declared in library mathcomp.classical.cardinality, line 160, characters 6-19
@@ -631,7 +631,7 @@ forall {T U : pointedType} {A : set T} {B : set U},
 reflect $| {splitbij A >-> B} | (A #= B)%card
 
 ppcard_eqP is not universe polymorphic
-Arguments ppcard_eqP {T U} {A B}%classical_set_scope
+Arguments ppcard_eqP {T U} {A B}%_classical_set_scope
 ppcard_eqP is opaque
 Expands to: Constant mathcomp.classical.cardinality.ppcard_eqP
 Declared in library mathcomp.classical.cardinality, line 166, characters 6-16
@@ -645,7 +645,7 @@ Declared in library mathcomp.classical.cardinality, line 166, characters 6-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="card_eqxx" class="id"><a name="card_eqxx" class="" title="card_eqxx : forall [T : Type] (A : set T), (A #= A)%card
 
 card_eqxx is not universe polymorphic
-Arguments card_eqxx [T]%type_scope A%classical_set_scope
+Arguments card_eqxx [T]%_type_scope A%_classical_set_scope
 card_eqxx is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eqxx
 Declared in library mathcomp.classical.cardinality, line 170, characters 6-15
@@ -659,7 +659,7 @@ Declared in library mathcomp.classical.cardinality, line 170, characters 6-15
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="card_eq00" class="id"><a name="card_eq00" class="" title="card_eq00 : forall T U : Type, (set0 #= set0)%card
 
 card_eq00 is not universe polymorphic
-Arguments card_eq00 (T U)%type_scope
+Arguments card_eq00 (T U)%_type_scope
 card_eq00 is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eq00
 Declared in library mathcomp.classical.cardinality, line 174, characters 6-15
@@ -691,7 +691,7 @@ library mathcomp.classical.classical_sets, line 2554, characters 6-15
 forall [T : emptyType] [U : Type] (A : set T) (B : set U), (A #<= B)%card
 
 card_le_emptyl is not universe polymorphic
-Arguments card_le_emptyl [T] [U]%type_scope (A B)%classical_set_scope
+Arguments card_le_emptyl [T] [U]%_type_scope (A B)%_classical_set_scope
 card_le_emptyl is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_le_emptyl
 Declared in library mathcomp.classical.cardinality, line 185, characters 6-20
@@ -705,7 +705,7 @@ forall [T : emptyType] [U : Type] (A : set T) (B : set U),
 (B #<= A)%card = (B == set0)
 
 card_le_emptyr is not universe polymorphic
-Arguments card_le_emptyr [T] [U]%type_scope (A B)%classical_set_scope
+Arguments card_le_emptyr [T] [U]%_type_scope (A B)%_classical_set_scope
 card_le_emptyr is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_le_emptyr
 Declared in library mathcomp.classical.cardinality, line 187, characters 6-20
@@ -735,7 +735,7 @@ forall [T U : Type] [A : set T] [B : set U],
 (A #<= B)%card -> (B #<= A)%card -> (A #= B)%card
 
 Cantor_Bernstein is not universe polymorphic
-Arguments Cantor_Bernstein [T U]%type_scope [A B]%classical_set_scope _ _
+Arguments Cantor_Bernstein [T U]%_type_scope [A B]%_classical_set_scope _ _
 Cantor_Bernstein is opaque
 Expands to: Constant mathcomp.classical.cardinality.Cantor_Bernstein
 Declared in library mathcomp.classical.cardinality, line 193, characters 8-24
@@ -774,7 +774,7 @@ Qed.</div></details>
 forall [T U : Type] [A : set T] [B : set U], (A #= B)%card -> (B #= A)%card
 
 card_esym is not universe polymorphic
-Arguments card_esym [T U]%type_scope [A B]%classical_set_scope _
+Arguments card_esym [T U]%_type_scope [A B]%_classical_set_scope _
 card_esym is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_esym
 Declared in library mathcomp.classical.cardinality, line 222, characters 6-15
@@ -789,7 +789,7 @@ forall [T U : Type] (A : set T) (B : set U),
 (A #= B)%card = (A #<= B)%card && (B #<= A)%card
 
 card_eq_le is not universe polymorphic
-Arguments card_eq_le [T U]%type_scope (A B)%classical_set_scope
+Arguments card_eq_le [T U]%_type_scope (A B)%_classical_set_scope
 card_eq_le is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eq_le
 Declared in library mathcomp.classical.cardinality, line 225, characters 6-16
@@ -807,7 +807,7 @@ forall [T U : Type] (A : set T) (B : set U),
 (A #= B)%card <-> (A #<= B)%card /\ (B #<= A)%card
 
 card_eqPle is not universe polymorphic
-Arguments card_eqPle [T U]%type_scope (A B)%classical_set_scope
+Arguments card_eqPle [T U]%_type_scope (A B)%_classical_set_scope
 card_eqPle is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eqPle
 Declared in library mathcomp.classical.cardinality, line 232, characters 6-16
@@ -821,7 +821,7 @@ Declared in library mathcomp.classical.cardinality, line 232, characters 6-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="card_lexx" class="id"><a name="card_lexx" class="" title="card_lexx : forall [T : Type] (A : set T), (A #<= A)%card
 
 card_lexx is not universe polymorphic
-Arguments card_lexx [T]%type_scope A%classical_set_scope
+Arguments card_lexx [T]%_type_scope A%_classical_set_scope
 card_lexx is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_lexx
 Declared in library mathcomp.classical.cardinality, line 236, characters 6-15
@@ -835,7 +835,7 @@ Declared in library mathcomp.classical.cardinality, line 236, characters 6-15
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="card_leT" class="id"><a name="card_leT" class="" title="card_leT : forall [T : Type] (S : set T), (S #<= [set: T])%card
 
 card_leT is not universe polymorphic
-Arguments card_leT [T]%type_scope S%classical_set_scope
+Arguments card_leT [T]%_type_scope S%_classical_set_scope
 card_leT is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_leT
 Declared in library mathcomp.classical.cardinality, line 240, characters 6-14
@@ -849,7 +849,7 @@ Declared in library mathcomp.classical.cardinality, line 240, characters 6-14
 forall [T : Type] [A B : set T], (A `<=` B)%classic -> (A #<= B)%card
 
 subset_card_le is not universe polymorphic
-Arguments subset_card_le [T]%type_scope [A B]%classical_set_scope _
+Arguments subset_card_le [T]%_type_scope [A B]%_classical_set_scope _
 subset_card_le is opaque
 Expands to: Constant mathcomp.classical.cardinality.subset_card_le
 Declared in library mathcomp.classical.cardinality, line 243, characters 6-20
@@ -863,8 +863,8 @@ Declared in library mathcomp.classical.cardinality, line 243, characters 6-20
 forall {T U : Type} (f : T -> U) (A : set T), ([set f x | x in A] #<= A)%card
 
 card_image_le is not universe polymorphic
-Arguments card_image_le {T U}%type_scope f%function_scope
-  A%classical_set_scope
+Arguments card_image_le {T U}%_type_scope f%_function_scope
+  A%_classical_set_scope
 card_image_le is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_image_le
 Declared in library mathcomp.classical.cardinality, line 246, characters 6-19
@@ -881,7 +881,7 @@ forall {T U : Type} {A : set_predType T} {f : T -> U},
 {in A &, injective f} -> ([set f x | x in A] #= A)%card
 
 inj_card_eq is not universe polymorphic
-Arguments inj_card_eq {T U}%type_scope {A} {f}%function_scope _
+Arguments inj_card_eq {T U}%_type_scope {A} {f}%_function_scope _
 inj_card_eq is opaque
 Expands to: Constant mathcomp.classical.cardinality.inj_card_eq
 Declared in library mathcomp.classical.cardinality, line 252, characters 6-17
@@ -895,7 +895,7 @@ Declared in library mathcomp.classical.cardinality, line 252, characters 6-17
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="card_some" class="id"><a name="card_some" class="" title="card_some : forall {T : Type} {A : set T}, ([set Some x | x in A] #= A)%card
 
 card_some is not universe polymorphic
-Arguments card_some {T}%type_scope {A}%classical_set_scope
+Arguments card_some {T}%_type_scope {A}%_classical_set_scope
 card_some is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_some
 Declared in library mathcomp.classical.cardinality, line 256, characters 6-15
@@ -910,7 +910,7 @@ forall [T T' : finType] [f : T -> T'],
 injective f -> forall A : {pred T}, #|[seq f x | x in A]| = #|A|
 
 card_image is not universe polymorphic
-Arguments card_image [T T'] [f]%function_scope injf A
+Arguments card_image [T T'] [f]%_function_scope injf A
 card_image is opaque
 Expands to: Constant mathcomp.boot.fintype.card_image
 Declared in library mathcomp.boot.fintype, line 1284, characters 6-16
@@ -925,8 +925,8 @@ forall {T U : Type} [A : set T] (f : {inj A >-> U}) [X : set T],
 (X `<=` A)%classic -> ([set f x | x in X] #= X)%card
 
 card_imsub is not universe polymorphic
-Arguments card_imsub {T U}%type_scope [A]%classical_set_scope 
-  f [X]%classical_set_scope _
+Arguments card_imsub {T U}%_type_scope [A]%_classical_set_scope 
+  f [X]%_classical_set_scope _
 card_imsub is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_imsub
 Declared in library mathcomp.classical.cardinality, line 262, characters 6-16
@@ -941,7 +941,7 @@ forall [T U V : Type] [B : set U] [A : set T] [C : set V],
 (A #<= B)%card -> (B #<= C)%card -> (A #<= C)%card
 
 card_le_trans is not universe polymorphic
-Arguments card_le_trans [T U V]%type_scope [B A C]%classical_set_scope _ _
+Arguments card_le_trans [T U V]%_type_scope [B A C]%_classical_set_scope _ _
 card_le_trans is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_le_trans
 Declared in library mathcomp.classical.cardinality, line 265, characters 6-19
@@ -956,7 +956,7 @@ Declared in library mathcomp.classical.cardinality, line 265, characters 6-19
 forall [T U : Type] (A : set T) (B : set U), (A #= B)%card = (B #= A)%card
 
 card_eq_sym is not universe polymorphic
-Arguments card_eq_sym [T U]%type_scope (A B)%classical_set_scope
+Arguments card_eq_sym [T U]%_type_scope (A B)%_classical_set_scope
 card_eq_sym is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eq_sym
 Declared in library mathcomp.classical.cardinality, line 269, characters 6-17
@@ -971,7 +971,7 @@ forall [T U V : Type] [A : set T] [B : set U] [C : set V],
 (A #= B)%card -> (B #= C)%card -> (A #= C)%card
 
 card_eq_trans is not universe polymorphic
-Arguments card_eq_trans [T U V]%type_scope [A B C]%classical_set_scope _ _
+Arguments card_eq_trans [T U V]%_type_scope [A B C]%_classical_set_scope _ _
 card_eq_trans is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eq_trans
 Declared in library mathcomp.classical.cardinality, line 272, characters 6-19
@@ -987,7 +987,7 @@ forall [T T' T'' : Type] [A : set T] [B : set T'] [C : set T''],
 (A #= B)%card -> (A #<= C)%card = (B #<= C)%card
 
 card_le_eql is not universe polymorphic
-Arguments card_le_eql [T T' T'']%type_scope [A B C]%classical_set_scope _
+Arguments card_le_eql [T T' T'']%_type_scope [A B C]%_classical_set_scope _
 card_le_eql is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_le_eql
 Declared in library mathcomp.classical.cardinality, line 276, characters 6-17
@@ -1003,7 +1003,7 @@ forall [T T' T'' : Type] [A : set T] [B : set T'] [C : set T''],
 (A #= B)%card -> (C #<= A)%card = (C #<= B)%card
 
 card_le_eqr is not universe polymorphic
-Arguments card_le_eqr [T T' T'']%type_scope [A B C]%classical_set_scope _
+Arguments card_le_eqr [T T' T'']%_type_scope [A B C]%_classical_set_scope _
 card_le_eqr is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_le_eqr
 Declared in library mathcomp.classical.cardinality, line 280, characters 6-17
@@ -1019,7 +1019,7 @@ forall [T T' T'' : Type] [A : set T] [B : set T'] [C : set T''],
 (A #= B)%card -> (A #= C)%card = (B #= C)%card
 
 card_eql is not universe polymorphic
-Arguments card_eql [T T' T'']%type_scope [A B C]%classical_set_scope _
+Arguments card_eql [T T' T'']%_type_scope [A B C]%_classical_set_scope _
 card_eql is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eql
 Declared in library mathcomp.classical.cardinality, line 284, characters 6-14
@@ -1035,7 +1035,7 @@ forall [T T' T'' : Type] [A : set T] [B : set T'] [C : set T''],
 (A #= B)%card -> (C #= A)%card = (C #= B)%card
 
 card_eqr is not universe polymorphic
-Arguments card_eqr [T T' T'']%type_scope [A B C]%classical_set_scope _
+Arguments card_eqr [T T' T'']%_type_scope [A B C]%_classical_set_scope _
 card_eqr is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eqr
 Declared in library mathcomp.classical.cardinality, line 288, characters 6-14
@@ -1051,8 +1051,8 @@ forall {T U V : Type} {A : set T} (f : {inj A >-> U}) [X : set T] (Y : set V),
 (X `<=` A)%classic -> ([set f x | x in X] #<= Y)%card = (X #<= Y)%card
 
 card_ge_image is not universe polymorphic
-Arguments card_ge_image {T U V}%type_scope {A}%classical_set_scope 
-  f [X]%classical_set_scope Y%classical_set_scope 
+Arguments card_ge_image {T U V}%_type_scope {A}%_classical_set_scope 
+  f [X]%_classical_set_scope Y%_classical_set_scope 
   _
 card_ge_image is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_ge_image
@@ -1069,8 +1069,8 @@ forall {T U V : Type} {A : set T} (f : {inj A >-> U}) [X : set T] (Y : set V),
 (X `<=` A)%classic -> (Y #<= [set f x | x in X])%card = (Y #<= X)%card
 
 card_le_image is not universe polymorphic
-Arguments card_le_image {T U V}%type_scope {A}%classical_set_scope 
-  f [X]%classical_set_scope Y%classical_set_scope 
+Arguments card_le_image {T U V}%_type_scope {A}%_classical_set_scope 
+  f [X]%_classical_set_scope Y%_classical_set_scope 
   _
 card_le_image is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_le_image
@@ -1089,8 +1089,8 @@ forall {T U : Type} [A : set T] (f : {inj A >-> U}) [X Y : set T],
 ([set f x | x in X] #<= [set f x | x in Y])%card = (X #<= Y)%card
 
 card_le_image2 is not universe polymorphic
-Arguments card_le_image2 {T U}%type_scope [A]%classical_set_scope 
-  f [X Y]%classical_set_scope _ _
+Arguments card_le_image2 {T U}%_type_scope [A]%_classical_set_scope 
+  f [X Y]%_classical_set_scope _ _
 card_le_image2 is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_le_image2
 Declared in library mathcomp.classical.cardinality, line 300, characters 6-20
@@ -1107,8 +1107,8 @@ forall {T U V : Type} {A : set T} (f : {inj A >-> U}) [X : set T] (Y : set V),
 (X `<=` A)%classic -> ([set f x | x in X] #= Y)%card = (X #= Y)%card
 
 card_eq_image is not universe polymorphic
-Arguments card_eq_image {T U V}%type_scope {A}%classical_set_scope 
-  f [X]%classical_set_scope Y%classical_set_scope 
+Arguments card_eq_image {T U V}%_type_scope {A}%_classical_set_scope 
+  f [X]%_classical_set_scope Y%_classical_set_scope 
   _
 card_eq_image is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eq_image
@@ -1125,8 +1125,8 @@ forall {T U V : Type} {A : set T} (f : {inj A >-> U}) [X : set T] (Y : set V),
 (X `<=` A)%classic -> (Y #= [set f x | x in X])%card = (Y #= X)%card
 
 card_eq_imager is not universe polymorphic
-Arguments card_eq_imager {T U V}%type_scope {A}%classical_set_scope 
-  f [X]%classical_set_scope Y%classical_set_scope 
+Arguments card_eq_imager {T U V}%_type_scope {A}%_classical_set_scope 
+  f [X]%_classical_set_scope Y%_classical_set_scope 
   _
 card_eq_imager is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eq_imager
@@ -1145,8 +1145,8 @@ forall {T U : Type} [A : set T] (f : {inj A >-> U}) [X Y : set T],
 ([set f x | x in X] #= [set f x | x in Y])%card = (X #= Y)%card
 
 card_eq_image2 is not universe polymorphic
-Arguments card_eq_image2 {T U}%type_scope [A]%classical_set_scope 
-  f [X Y]%classical_set_scope _ _
+Arguments card_eq_image2 {T U}%_type_scope [A]%_classical_set_scope 
+  f [X Y]%_classical_set_scope _ _
 card_eq_image2 is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eq_image2
 Declared in library mathcomp.classical.cardinality, line 313, characters 6-20
@@ -1163,7 +1163,7 @@ forall {T T' : Type} {A : set T} {B : set T'},
 ([set Some x | x in A] #<= B)%card = (A #<= B)%card
 
 card_ge_some is not universe polymorphic
-Arguments card_ge_some {T T'}%type_scope {A B}%classical_set_scope
+Arguments card_ge_some {T T'}%_type_scope {A B}%_classical_set_scope
 card_ge_some is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_ge_some
 Declared in library mathcomp.classical.cardinality, line 318, characters 6-18
@@ -1179,7 +1179,7 @@ forall {T T' : Type} {A : set T} {B : set T'},
 (A #<= [set Some x | x in B])%card = (A #<= B)%card
 
 card_le_some is not universe polymorphic
-Arguments card_le_some {T T'}%type_scope {A B}%classical_set_scope
+Arguments card_le_some {T T'}%_type_scope {A B}%_classical_set_scope
 card_le_some is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_le_some
 Declared in library mathcomp.classical.cardinality, line 322, characters 6-18
@@ -1195,7 +1195,7 @@ forall {T T' : Type} {A : set T} {B : set T'},
 ([set Some x | x in A] #<= [set Some x | x in B])%card = (A #<= B)%card
 
 card_le_some2 is not universe polymorphic
-Arguments card_le_some2 {T T'}%type_scope {A B}%classical_set_scope
+Arguments card_le_some2 {T T'}%_type_scope {A B}%_classical_set_scope
 card_le_some2 is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_le_some2
 Declared in library mathcomp.classical.cardinality, line 326, characters 6-19
@@ -1211,7 +1211,7 @@ forall {T T' : Type} {A : set T} {B : set T'},
 ([set Some x | x in A] #= B)%card = (A #= B)%card
 
 card_eq_somel is not universe polymorphic
-Arguments card_eq_somel {T T'}%type_scope {A B}%classical_set_scope
+Arguments card_eq_somel {T T'}%_type_scope {A B}%_classical_set_scope
 card_eq_somel is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eq_somel
 Declared in library mathcomp.classical.cardinality, line 330, characters 6-19
@@ -1227,7 +1227,7 @@ forall {T T' : Type} {A : set T} {B : set T'},
 (A #= [set Some x | x in B])%card = (A #= B)%card
 
 card_eq_somer is not universe polymorphic
-Arguments card_eq_somer {T T'}%type_scope {A B}%classical_set_scope
+Arguments card_eq_somer {T T'}%_type_scope {A B}%_classical_set_scope
 card_eq_somer is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eq_somer
 Declared in library mathcomp.classical.cardinality, line 334, characters 6-19
@@ -1243,7 +1243,7 @@ forall {T T' : Type} {A : set T} {B : set T'},
 ([set Some x | x in A] #= [set Some x | x in B])%card = (A #= B)%card
 
 card_eq_some2 is not universe polymorphic
-Arguments card_eq_some2 {T T'}%type_scope {A B}%classical_set_scope
+Arguments card_eq_some2 {T T'}%_type_scope {A B}%_classical_set_scope
 card_eq_some2 is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eq_some2
 Declared in library mathcomp.classical.cardinality, line 338, characters 6-19
@@ -1257,7 +1257,7 @@ Declared in library mathcomp.classical.cardinality, line 338, characters 6-19
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="card_eq0" class="id"><a name="card_eq0" class="" title="card_eq0 : forall {T U : Type} {A : set T}, (A #= set0)%card = (A == set0)
 
 card_eq0 is not universe polymorphic
-Arguments card_eq0 {T U}%type_scope {A}%classical_set_scope
+Arguments card_eq0 {T U}%_type_scope {A}%_classical_set_scope
 card_eq0 is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eq0
 Declared in library mathcomp.classical.cardinality, line 342, characters 6-14
@@ -1270,7 +1270,7 @@ Declared in library mathcomp.classical.cardinality, line 342, characters 6-14
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="card_set1" class="id"><a name="card_set1" class="" title="card_set1 : forall {T : Type} {x : T}, ([set x] #= `I_1)%card
 
 card_set1 is not universe polymorphic
-Arguments card_set1 {T}%type_scope {x}
+Arguments card_set1 {T}%_type_scope {x}
 card_set1 is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_set1
 Declared in library mathcomp.classical.cardinality, line 345, characters 6-15
@@ -1301,7 +1301,7 @@ forall [T : emptyType] [U : Type] (A : set T) (B : set U),
 (B #= A)%card = (B == set0)
 
 card_eq_emptyr is not universe polymorphic
-Arguments card_eq_emptyr [T] [U]%type_scope (A B)%classical_set_scope
+Arguments card_eq_emptyr [T] [U]%_type_scope (A B)%_classical_set_scope
 card_eq_emptyr is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eq_emptyr
 Declared in library mathcomp.classical.cardinality, line 354, characters 6-20
@@ -1317,7 +1317,7 @@ forall [T : emptyType] [U : Type] (A : set T) (B : set U),
 (A #= B)%card = (B == set0)
 
 card_eq_emptyl is not universe polymorphic
-Arguments card_eq_emptyl [T] [U]%type_scope (A B)%classical_set_scope
+Arguments card_eq_emptyl [T] [U]%_type_scope (A B)%_classical_set_scope
 card_eq_emptyl is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eq_emptyl
 Declared in library mathcomp.classical.cardinality, line 358, characters 6-20
@@ -1349,7 +1349,7 @@ library mathcomp.classical.cardinality, line 362, characters 11-17
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="card_setT" class="id"><a name="card_setT" class="" title="card_setT : forall [T : Type] (A : set T), ([set: A] #= A)%card
 
 card_setT is not universe polymorphic
-Arguments card_setT [T]%type_scope A%classical_set_scope
+Arguments card_setT [T]%_type_scope A%_classical_set_scope
 card_setT is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_setT
 Declared in library mathcomp.classical.cardinality, line 364, characters 6-15
@@ -1363,7 +1363,7 @@ Declared in library mathcomp.classical.cardinality, line 364, characters 6-15
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="card_setT_sym" class="id"><a name="card_setT_sym" class="" title="card_setT_sym : forall [T : Type] (A : set T), (A #= [set: A])%card
 
 card_setT_sym is not universe polymorphic
-Arguments card_setT_sym [T]%type_scope A%classical_set_scope
+Arguments card_setT_sym [T]%_type_scope A%_classical_set_scope
 card_setT_sym is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_setT_sym
 Declared in library mathcomp.classical.cardinality, line 368, characters 6-19
@@ -1378,7 +1378,7 @@ Declared in library mathcomp.classical.cardinality, line 368, characters 6-19
 forall {T U : Type} {A : set T} {B : set U}, {surj B >-> A} -> (A #<= B)%card
 
 surj_card_ge is not universe polymorphic
-Arguments surj_card_ge {T U}%type_scope {A B}%classical_set_scope g
+Arguments surj_card_ge {T U}%_type_scope {A B}%_classical_set_scope g
   (where some original arguments have been renamed)
 surj_card_ge is opaque
 Expands to: Constant mathcomp.classical.cardinality.surj_card_ge
@@ -1396,7 +1396,7 @@ forall {T : pointedType} {U : Type} {A : set T} {B : set U},
 reflect (exists g : U -> T, set_surj B A g) (A #<= B)%card
 
 pcard_surjP is not universe polymorphic
-Arguments pcard_surjP {T} {U}%type_scope {A B}%classical_set_scope
+Arguments pcard_surjP {T} {U}%_type_scope {A B}%_classical_set_scope
 pcard_surjP is opaque
 Expands to: Constant mathcomp.classical.cardinality.pcard_surjP
 Declared in library mathcomp.classical.cardinality, line 378, characters 6-17
@@ -1415,7 +1415,7 @@ forall {T : pointedType} {U : Type} {A : set T} {B : set U},
 reflect $| {surj B >-> A} | (A #<= B)%card
 
 pcard_geP is not universe polymorphic
-Arguments pcard_geP {T} {U}%type_scope {A B}%classical_set_scope
+Arguments pcard_geP {T} {U}%_type_scope {A B}%_classical_set_scope
 pcard_geP is opaque
 Expands to: Constant mathcomp.classical.cardinality.pcard_geP
 Declared in library mathcomp.classical.cardinality, line 386, characters 6-15
@@ -1431,7 +1431,7 @@ forall {T U : Type} {A : set T} {B : set U},
 reflect $| {surj B >-> [set Some x | x in A]} | (A #<= B)%card
 
 ocard_geP is not universe polymorphic
-Arguments ocard_geP {T U}%type_scope {A B}%classical_set_scope
+Arguments ocard_geP {T U}%_type_scope {A B}%_classical_set_scope
 ocard_geP is opaque
 Expands to: Constant mathcomp.classical.cardinality.ocard_geP
 Declared in library mathcomp.classical.cardinality, line 390, characters 6-15
@@ -1448,7 +1448,7 @@ forall {T U : Type} {A : set T} {B : set U},
 reflect (A = set0 \/ $| {surjfun B >-> A} |) (A #<= B)%card
 
 pfcard_geP is not universe polymorphic
-Arguments pfcard_geP {T U}%type_scope {A B}%classical_set_scope
+Arguments pfcard_geP {T U}%_type_scope {A B}%_classical_set_scope
 pfcard_geP is opaque
 Expands to: Constant mathcomp.classical.cardinality.pfcard_geP
 Declared in library mathcomp.classical.cardinality, line 396, characters 6-16
@@ -1471,7 +1471,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="card_le_II" class="id"><a name="card_le_II" class="" title="card_le_II : forall n m : nat, (`I_n #<= `I_m)%card = (n <= m)
 
 card_le_II is not universe polymorphic
-Arguments card_le_II (n m)%nat_scope
+Arguments card_le_II (n m)%_nat_scope
 card_le_II is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_le_II
 Declared in library mathcomp.classical.cardinality, line 410, characters 6-16
@@ -1490,7 +1490,7 @@ forall {T U : Type} {A : set T} {B : set U},
 reflect $| {bij A >-> [set Some x | x in B]} | (A #= B)%card
 
 ocard_eqP is not universe polymorphic
-Arguments ocard_eqP {T U}%type_scope {A B}%classical_set_scope
+Arguments ocard_eqP {T U}%_type_scope {A B}%_classical_set_scope
 ocard_eqP is opaque
 Expands to: Constant mathcomp.classical.cardinality.ocard_eqP
 Declared in library mathcomp.classical.cardinality, line 418, characters 6-15
@@ -1509,7 +1509,7 @@ reflect $| {splitbij [set Some x | x in A] >-> [set Some x | x in B]} |
   (A #= B)%card
 
 oocard_eqP is not universe polymorphic
-Arguments oocard_eqP {T U}%type_scope {A B}%classical_set_scope
+Arguments oocard_eqP {T U}%_type_scope {A B}%_classical_set_scope
 oocard_eqP is opaque
 Expands to: Constant mathcomp.classical.cardinality.oocard_eqP
 Declared in library mathcomp.classical.cardinality, line 425, characters 6-16
@@ -1526,7 +1526,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="card_eq_II" class="id"><a name="card_eq_II" class="" title="card_eq_II : forall {n m : nat}, reflect (n = m) (`I_n #= `I_m)%card
 
 card_eq_II is not universe polymorphic
-Arguments card_eq_II {n m}%nat_scope
+Arguments card_eq_II {n m}%_nat_scope
 card_eq_II is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eq_II
 Declared in library mathcomp.classical.cardinality, line 433, characters 6-16
@@ -1541,8 +1541,8 @@ forall {T : Type} {A : set T} (X : set A),
 ([set set_val x | x in X] `<=` A)%classic
 
 sub_setP is not universe polymorphic
-Arguments sub_setP {T}%type_scope {A}%classical_set_scope
-  X%classical_set_scope t _
+Arguments sub_setP {T}%_type_scope {A}%_classical_set_scope
+  X%_classical_set_scope t _
 sub_setP is opaque
 Expands to: Constant mathcomp.classical.cardinality.sub_setP
 Declared in library mathcomp.classical.cardinality, line 436, characters 6-14
@@ -1560,7 +1560,7 @@ reflect (exists2 C : set U, (C #= A)%card & (C `<=` B)%classic)
   (A #<= B)%card
 
 card_subP is not universe polymorphic
-Arguments card_subP [T U]%type_scope (A B)%classical_set_scope
+Arguments card_subP [T U]%_type_scope (A B)%_classical_set_scope
 card_subP is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_subP
 Declared in library mathcomp.classical.cardinality, line 441, characters 6-15
@@ -1582,7 +1582,7 @@ forall [m n : nat] [f : nat -> nat],
 ([set f x | x in `I_m] `<=` `I_n)%classic -> m <= n
 
 pigeonhole is not universe polymorphic
-Arguments pigeonhole [m n]%nat_scope [f]%function_scope _ _
+Arguments pigeonhole [m n]%_nat_scope [f]%_function_scope _ _
 pigeonhole is opaque
 Expands to: Constant mathcomp.classical.cardinality.pigeonhole
 Declared in library mathcomp.classical.cardinality, line 451, characters 6-16
@@ -1598,7 +1598,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="countable" class="id"><a name="countable" class="" title="countable : forall [T : Type], set T -> bool
 
 countable is not universe polymorphic
-Arguments countable [T]%type_scope A%classical_set_scope
+Arguments countable [T]%_type_scope A%_classical_set_scope
 countable is transparent
 Expands to: Constant mathcomp.classical.cardinality.countable
 Declared in
@@ -1610,7 +1610,7 @@ forall [T U : Type] [A : set T] [B : set U],
 (A #= B)%card -> countable (T:=T) A = countable (T:=U) B
 
 eq_countable is not universe polymorphic
-Arguments eq_countable [T U]%type_scope [A B]%classical_set_scope _
+Arguments eq_countable [T U]%_type_scope [A B]%_classical_set_scope _
 eq_countable is opaque
 Expands to: Constant mathcomp.classical.cardinality.eq_countable
 Declared in library mathcomp.classical.cardinality, line 460, characters 6-18
@@ -1624,7 +1624,7 @@ Declared in library mathcomp.classical.cardinality, line 460, characters 6-18
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="countableP" class="id"><a name="countableP" class="" title="countableP : forall [T : countType] (A : set T), countable (T:=T) A
 
 countableP is not universe polymorphic
-Arguments countableP [T] A%classical_set_scope
+Arguments countableP [T] A%_classical_set_scope
 countableP is opaque
 Expands to: Constant mathcomp.classical.cardinality.countableP
 Declared in library mathcomp.classical.cardinality, line 464, characters 6-16
@@ -1638,7 +1638,7 @@ Declared in library mathcomp.classical.cardinality, line 464, characters 6-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="countable0" class="id"><a name="countable0" class="" title="countable0 : forall T : Type, countable (T:=T) set0
 
 countable0 is not universe polymorphic
-Arguments countable0 T%type_scope
+Arguments countable0 T%_type_scope
 countable0 is opaque
 Expands to: Constant mathcomp.classical.cardinality.countable0
 Declared in library mathcomp.classical.cardinality, line 468, characters 6-16
@@ -1654,7 +1654,7 @@ forall [T : Type] (A : set T),
 reflect (exists f : T -> nat, {in A &, injective f}) (countable (T:=T) A)
 
 countable_injP is not universe polymorphic
-Arguments countable_injP [T]%type_scope A%classical_set_scope
+Arguments countable_injP [T]%_type_scope A%_classical_set_scope
 countable_injP is opaque
 Expands to: Constant mathcomp.classical.cardinality.countable_injP
 Declared in library mathcomp.classical.cardinality, line 471, characters 6-20
@@ -1670,7 +1670,7 @@ forall [T : Type] (A : set T),
 reflect (exists B : set nat, (A #= B)%card) (countable (T:=T) A)
 
 countable_bijP is not universe polymorphic
-Arguments countable_bijP [T]%type_scope A%classical_set_scope
+Arguments countable_bijP [T]%_type_scope A%_classical_set_scope
 countable_bijP is opaque
 Expands to: Constant mathcomp.classical.cardinality.countable_bijP
 Declared in library mathcomp.classical.cardinality, line 475, characters 6-20
@@ -1689,7 +1689,7 @@ forall [T U : Type] [A : set T] [B : set U],
 (A #<= B)%card -> countable (T:=U) B -> countable (T:=T) A
 
 sub_countable is not universe polymorphic
-Arguments sub_countable [T U]%type_scope [A B]%classical_set_scope _ _
+Arguments sub_countable [T U]%_type_scope [A B]%_classical_set_scope _ _
 sub_countable is opaque
 Expands to: Constant mathcomp.classical.cardinality.sub_countable
 Declared in library mathcomp.classical.cardinality, line 483, characters 6-19
@@ -1705,7 +1705,7 @@ forall [T : Type] (A : set T),
 finite_set A <-> (exists n : nat, (A #= `I_n)%card)
 
 finite_setP is not universe polymorphic
-Arguments finite_setP [T]%type_scope A%classical_set_scope
+Arguments finite_setP [T]%_type_scope A%_classical_set_scope
 finite_setP is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_setP
 Declared in library mathcomp.classical.cardinality, line 487, characters 6-17
@@ -1718,7 +1718,7 @@ Declared in library mathcomp.classical.cardinality, line 487, characters 6-17
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_II" class="id"><a name="finite_II" class="" title="finite_II : forall n : nat, finite_set `I_n
 
 finite_II is not universe polymorphic
-Arguments finite_II n%nat_scope
+Arguments finite_II n%_nat_scope
 finite_II is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_II
 Declared in library mathcomp.classical.cardinality, line 490, characters 6-15
@@ -1732,7 +1732,7 @@ Declared in library mathcomp.classical.cardinality, line 490, characters 6-15
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="card_II" class="id"><a name="card_II" class="" title="card_II : forall {n : nat}, (`I_n #= [set: 'I_n])%card
 
 card_II is not universe polymorphic
-Arguments card_II {n}%nat_scope
+Arguments card_II {n}%_nat_scope
 card_II is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_II
 Declared in library mathcomp.classical.cardinality, line 493, characters 6-13
@@ -1747,7 +1747,7 @@ forall {T : choiceType} {A : set T},
 finite_set A <-> (exists X : {fset T}, A = [set` X]%classic)
 
 finite_fsetP is not universe polymorphic
-Arguments finite_fsetP {T} {A}%classical_set_scope
+Arguments finite_fsetP {T} {A}%_classical_set_scope
 finite_fsetP is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_fsetP
 Declared in library mathcomp.classical.cardinality, line 496, characters 6-18
@@ -1770,7 +1770,7 @@ forall {T : choiceType} (X : {fset T}) {A : set T},
 (A `<=` [set` X])%classic -> finite_set A
 
 finite_subfset is not universe polymorphic
-Arguments finite_subfset {T} X {A}%classical_set_scope _
+Arguments finite_subfset {T} X {A}%_classical_set_scope _
 finite_subfset is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_subfset
 Declared in library mathcomp.classical.cardinality, line 508, characters 6-20
@@ -1788,7 +1788,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_set0" class="id"><a name="finite_set0" class="" title="finite_set0 : forall T : Type, finite_set (set0 : set T)
 
 finite_set0 is not universe polymorphic
-Arguments finite_set0 T%type_scope
+Arguments finite_set0 T%_type_scope
 finite_set0 is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_set0
 Declared in library mathcomp.classical.cardinality, line 517, characters 6-17
@@ -1802,7 +1802,7 @@ Declared in library mathcomp.classical.cardinality, line 517, characters 6-17
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cofinite_setT" class="id"><a name="cofinite_setT" class="" title="cofinite_setT : forall T : Type, cofinite_set [set: T]
 
 cofinite_setT is not universe polymorphic
-Arguments cofinite_setT T%type_scope
+Arguments cofinite_setT T%_type_scope
 cofinite_setT is opaque
 Expands to: Constant mathcomp.classical.cardinality.cofinite_setT
 Declared in library mathcomp.classical.cardinality, line 521, characters 6-19
@@ -1817,7 +1817,7 @@ Declared in library mathcomp.classical.cardinality, line 521, characters 6-19
 forall {T : Type} [A : set T], infinite_set A -> (A !=set0)%classic
 
 infinite_setN0 is not universe polymorphic
-Arguments infinite_setN0 {T}%type_scope [A]%classical_set_scope _
+Arguments infinite_setN0 {T}%_type_scope [A]%_classical_set_scope _
 infinite_setN0 is opaque
 Expands to: Constant mathcomp.classical.cardinality.infinite_setN0
 Declared in library mathcomp.classical.cardinality, line 525, characters 6-20
@@ -1832,7 +1832,7 @@ forall {T : eqType} (A : set T),
 finite_set A <-> (exists s : seq T, A = [set` s]%classic)
 
 finite_seqP is not universe polymorphic
-Arguments finite_seqP {T} A%classical_set_scope
+Arguments finite_seqP {T} A%_classical_set_scope
 finite_seqP is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_seqP
 Declared in library mathcomp.classical.cardinality, line 528, characters 6-17
@@ -1849,7 +1849,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_seq" class="id"><a name="finite_seq" class="" title="finite_seq : forall {T : eqType} (s : seq T), finite_set [set` s]
 
 finite_seq is not universe polymorphic
-Arguments finite_seq {T} s%seq_scope
+Arguments finite_seq {T} s%_seq_scope
 finite_seq is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_seq
 Declared in library mathcomp.classical.cardinality, line 536, characters 6-16
@@ -1896,7 +1896,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_finset" class="id"><a name="finite_finset" class="" title="finite_finset : forall {T : finType} {X : set T}, finite_set X
 
 finite_finset is not universe polymorphic
-Arguments finite_finset {T} {X}%classical_set_scope
+Arguments finite_finset {T} {X}%_classical_set_scope
 finite_finset is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_finset
 Declared in library mathcomp.classical.cardinality, line 553, characters 6-19
@@ -1912,7 +1912,7 @@ Qed.</div></details>
 forall [T : Type] [A : set T], finite_set A -> countable (T:=T) A
 
 finite_set_countable is not universe polymorphic
-Arguments finite_set_countable [T]%type_scope [A]%classical_set_scope _
+Arguments finite_set_countable [T]%_type_scope [A]%_classical_set_scope _
 finite_set_countable is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_set_countable
 Declared in library mathcomp.classical.cardinality, line 559, characters 6-26
@@ -1926,7 +1926,7 @@ Declared in library mathcomp.classical.cardinality, line 559, characters 6-26
 forall [T : Type] (A : set T), infinite_set A <-> ([set: nat] #<= A)%card
 
 infiniteP is not universe polymorphic
-Arguments infiniteP [T]%type_scope A%classical_set_scope
+Arguments infiniteP [T]%_type_scope A%_classical_set_scope
 infiniteP is opaque
 Expands to: Constant mathcomp.classical.cardinality.infiniteP
 Declared in library mathcomp.classical.cardinality, line 562, characters 6-15
@@ -1976,7 +1976,7 @@ Qed.</div></details>
 forall [T : Type] (A : set T), finite_set A <-> ~ ([set: nat] #<= A)%card
 
 finite_setPn is not universe polymorphic
-Arguments finite_setPn [T]%type_scope A%classical_set_scope
+Arguments finite_setPn [T]%_type_scope A%_classical_set_scope
 finite_setPn is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_setPn
 Declared in library mathcomp.classical.cardinality, line 602, characters 6-18
@@ -1991,7 +1991,7 @@ forall [T U : Type] [A : set T] [B : set U],
 (A #<= B)%card -> finite_set B -> finite_set A
 
 card_le_finite is not universe polymorphic
-Arguments card_le_finite [T U]%type_scope [A B]%classical_set_scope _ _
+Arguments card_le_finite [T U]%_type_scope [A B]%_classical_set_scope _ _
 card_le_finite is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_le_finite
 Declared in library mathcomp.classical.cardinality, line 605, characters 6-20
@@ -2008,7 +2008,7 @@ forall [T : Type] [A B : set T],
 (A `<=` B)%classic -> finite_set B -> finite_set A
 
 sub_finite_set is not universe polymorphic
-Arguments sub_finite_set [T]%type_scope [A B]%classical_set_scope _ _
+Arguments sub_finite_set [T]%_type_scope [A B]%_classical_set_scope _ _
 sub_finite_set is opaque
 Expands to: Constant mathcomp.classical.cardinality.sub_finite_set
 Declared in library mathcomp.classical.cardinality, line 611, characters 6-20
@@ -2024,7 +2024,7 @@ forall [T : Type] [A B : set T],
 (A `<=` B)%classic -> cofinite_set A -> cofinite_set B
 
 sub_cofinite_set is not universe polymorphic
-Arguments sub_cofinite_set [T]%type_scope [A B]%classical_set_scope _ _
+Arguments sub_cofinite_set [T]%_type_scope [A B]%_classical_set_scope _ _
 sub_cofinite_set is opaque
 Expands to: Constant mathcomp.classical.cardinality.sub_cofinite_set
 Declared in library mathcomp.classical.cardinality, line 615, characters 6-22
@@ -2040,7 +2040,7 @@ forall [T : Type] [A B : set T],
 (A `<=` B)%classic -> infinite_set A -> infinite_set B
 
 sub_infinite_set is not universe polymorphic
-Arguments sub_infinite_set [T]%type_scope [A B]%classical_set_scope _ _ _
+Arguments sub_infinite_set [T]%_type_scope [A B]%_classical_set_scope _ _ _
 sub_infinite_set is opaque
 Expands to: Constant mathcomp.classical.cardinality.sub_infinite_set
 Declared in library mathcomp.classical.cardinality, line 619, characters 6-22
@@ -2056,7 +2056,7 @@ forall [T : Type] (A : set T),
 finite_set A <-> (exists n : nat, (A #<= `I_n)%card)
 
 finite_set_leP is not universe polymorphic
-Arguments finite_set_leP [T]%type_scope A%classical_set_scope
+Arguments finite_set_leP [T]%_type_scope A%_classical_set_scope
 finite_set_leP is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_set_leP
 Declared in library mathcomp.classical.cardinality, line 623, characters 6-20
@@ -2073,8 +2073,8 @@ forall {T U : Type} [B : set U] [f : T -> U],
 {in (f @^-1` B)%classic &, injective f} -> (f @^-1` B #<= B)%card
 
 card_ge_preimage is not universe polymorphic
-Arguments card_ge_preimage {T U}%type_scope [B]%classical_set_scope
-  [f]%function_scope _
+Arguments card_ge_preimage {T U}%_type_scope [B]%_classical_set_scope
+  [f]%_function_scope _
 card_ge_preimage is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_ge_preimage
 Declared in library mathcomp.classical.cardinality, line 629, characters 6-22
@@ -2093,8 +2093,8 @@ forall {T U : Type} [B : set U] [f : T -> U],
 finite_set B -> finite_set (f @^-1` B)
 
 finite_preimage is not universe polymorphic
-Arguments finite_preimage {T U}%type_scope [B]%classical_set_scope
-  [f]%function_scope _ _
+Arguments finite_preimage {T U}%_type_scope [B]%_classical_set_scope
+  [f]%_function_scope _ _
 finite_preimage is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_preimage
 Declared in
@@ -2111,7 +2111,7 @@ forall [T U : Type] [A : set T] [B : set U],
 (A #= B)%card -> finite_set A = finite_set B
 
 eq_finite_set is not universe polymorphic
-Arguments eq_finite_set [T U]%type_scope [A B]%classical_set_scope _
+Arguments eq_finite_set [T U]%_type_scope [A B]%_classical_set_scope _
 eq_finite_set is opaque
 Expands to: Constant mathcomp.classical.cardinality.eq_finite_set
 Declared in library mathcomp.classical.cardinality, line 640, characters 6-19
@@ -2127,7 +2127,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="card_le_setD" class="id"><a name="card_le_setD" class="" title="card_le_setD : forall [T : Type] (A B : set T), (A `\` B #<= A)%card
 
 card_le_setD is not universe polymorphic
-Arguments card_le_setD [T]%type_scope (A B)%classical_set_scope
+Arguments card_le_setD [T]%_type_scope (A B)%_classical_set_scope
 card_le_setD is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_le_setD
 Declared in library mathcomp.classical.cardinality, line 647, characters 6-18
@@ -2142,8 +2142,8 @@ forall [T T' : Type] [A : set T] (f : T -> T'),
 finite_set A -> finite_set [set f x | x in A]
 
 finite_image is not universe polymorphic
-Arguments finite_image [T T']%type_scope [A]%classical_set_scope
-  f%function_scope _
+Arguments finite_image [T T']%_type_scope [A]%_classical_set_scope
+  f%_function_scope _
 finite_image is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_image
 Declared in library mathcomp.classical.cardinality, line 650, characters 6-18
@@ -2158,7 +2158,7 @@ forall [T T' : Type] [A : set T] [B : set T'],
 finite_set (A `*` B) -> finite_set A \/ finite_set B
 
 finite_setX_or is not universe polymorphic
-Arguments finite_setX_or [T T']%type_scope [A B]%classical_set_scope _
+Arguments finite_setX_or [T T']%_type_scope [A B]%_classical_set_scope _
 finite_setX_or is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_setX_or
 Declared in library mathcomp.classical.cardinality, line 653, characters 6-20
@@ -2178,7 +2178,7 @@ forall {T : Type} {A B : set T},
 infinite_set A -> infinite_set B -> infinite_set (A `*` B)
 
 infinite_setX is not universe polymorphic
-Arguments infinite_setX {T}%type_scope {A B}%classical_set_scope _ _ _
+Arguments infinite_setX {T}%_type_scope {A B}%_classical_set_scope _ _ _
 infinite_setX is opaque
 Expands to: Constant mathcomp.classical.cardinality.infinite_setX
 Declared in library mathcomp.classical.cardinality, line 662, characters 6-19
@@ -2193,7 +2193,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_set1" class="id"><a name="finite_set1" class="" title="finite_set1 : forall [T : Type] (x : T), finite_set [set x]
 
 finite_set1 is not universe polymorphic
-Arguments finite_set1 [T]%type_scope x
+Arguments finite_set1 [T]%_type_scope x
 finite_set1 is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_set1
 Declared in library mathcomp.classical.cardinality, line 668, characters 6-17
@@ -2211,8 +2211,8 @@ forall [T : Type] [A : set T] (B : set T),
 finite_set A -> finite_set (A `\` B)
 
 finite_setD is not universe polymorphic
-Arguments finite_setD [T]%type_scope [A]%classical_set_scope
-  B%classical_set_scope _
+Arguments finite_setD [T]%_type_scope [A]%_classical_set_scope
+  B%_classical_set_scope _
 finite_setD is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_setD
 Declared in library mathcomp.classical.cardinality, line 675, characters 6-17
@@ -2227,8 +2227,8 @@ forall [T : Type] [A : set T] (B : set T),
 cofinite_set A -> cofinite_set (A `|` B)
 
 cofinite_setUl is not universe polymorphic
-Arguments cofinite_setUl [T]%type_scope [A]%classical_set_scope
-  B%classical_set_scope _
+Arguments cofinite_setUl [T]%_type_scope [A]%_classical_set_scope
+  B%_classical_set_scope _
 cofinite_setUl is opaque
 Expands to: Constant mathcomp.classical.cardinality.cofinite_setUl
 Declared in library mathcomp.classical.cardinality, line 678, characters 6-20
@@ -2243,8 +2243,8 @@ forall [T : Type] (A : set T) [B : set T],
 cofinite_set B -> cofinite_set (A `|` B)
 
 cofinite_setUr is not universe polymorphic
-Arguments cofinite_setUr [T]%type_scope A%classical_set_scope
-  [B]%classical_set_scope _
+Arguments cofinite_setUr [T]%_type_scope A%_classical_set_scope
+  [B]%_classical_set_scope _
 cofinite_setUr is opaque
 Expands to: Constant mathcomp.classical.cardinality.cofinite_setUr
 Declared in library mathcomp.classical.cardinality, line 681, characters 6-20
@@ -2259,7 +2259,7 @@ forall [T : Type] [A B : set T],
 cofinite_set A \/ cofinite_set B -> cofinite_set (A `|` B)
 
 cofinite_setU is not universe polymorphic
-Arguments cofinite_setU [T]%type_scope [A B]%classical_set_scope _
+Arguments cofinite_setU [T]%_type_scope [A B]%_classical_set_scope _
 cofinite_setU is opaque
 Expands to: Constant mathcomp.classical.cardinality.cofinite_setU
 Declared in library mathcomp.classical.cardinality, line 684, characters 6-19
@@ -2275,7 +2275,7 @@ forall [T : Type] (A B : set T),
 finite_set (A `|` B) = (finite_set A /\ finite_set B)
 
 finite_setU is not universe polymorphic
-Arguments finite_setU [T]%type_scope (A B)%classical_set_scope
+Arguments finite_setU [T]%_type_scope (A B)%_classical_set_scope
 finite_setU is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_setU
 Declared in library mathcomp.classical.cardinality, line 688, characters 6-17
@@ -2294,7 +2294,7 @@ forall [T : Type] (A B : set T),
 cofinite_set (A `&` B) = (cofinite_set A /\ cofinite_set B)
 
 cofinite_setI is not universe polymorphic
-Arguments cofinite_setI [T]%type_scope (A B)%classical_set_scope
+Arguments cofinite_setI [T]%_type_scope (A B)%_classical_set_scope
 cofinite_setI is opaque
 Expands to: Constant mathcomp.classical.cardinality.cofinite_setI
 Declared in library mathcomp.classical.cardinality, line 696, characters 6-19
@@ -2308,7 +2308,7 @@ Declared in library mathcomp.classical.cardinality, line 696, characters 6-19
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_set2" class="id"><a name="finite_set2" class="" title="finite_set2 : forall [T : Type] (x y : T), finite_set [set x; y]
 
 finite_set2 is not universe polymorphic
-Arguments finite_set2 [T]%type_scope x y
+Arguments finite_set2 [T]%_type_scope x y
 finite_set2 is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_set2
 Declared in library mathcomp.classical.cardinality, line 700, characters 6-17
@@ -2322,7 +2322,7 @@ Declared in library mathcomp.classical.cardinality, line 700, characters 6-17
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_set3" class="id"><a name="finite_set3" class="" title="finite_set3 : forall [T : Type] (x y z : T), finite_set [set x; y; z]
 
 finite_set3 is not universe polymorphic
-Arguments finite_set3 [T]%type_scope x y z
+Arguments finite_set3 [T]%_type_scope x y z
 finite_set3 is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_set3
 Declared in library mathcomp.classical.cardinality, line 704, characters 6-17
@@ -2336,7 +2336,7 @@ Declared in library mathcomp.classical.cardinality, line 704, characters 6-17
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_set4" class="id"><a name="finite_set4" class="" title="finite_set4 : forall [T : Type] (x y z t : T), finite_set [set x; y; z; t]
 
 finite_set4 is not universe polymorphic
-Arguments finite_set4 [T]%type_scope x y z t
+Arguments finite_set4 [T]%_type_scope x y z t
 finite_set4 is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_set4
 Declared in library mathcomp.classical.cardinality, line 708, characters 6-17
@@ -2351,7 +2351,7 @@ Declared in library mathcomp.classical.cardinality, line 708, characters 6-17
 forall [T : Type] (x y z t u : T), finite_set [set x; y; z; t; u]
 
 finite_set5 is not universe polymorphic
-Arguments finite_set5 [T]%type_scope x y z t u
+Arguments finite_set5 [T]%_type_scope x y z t u
 finite_set5 is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_set5
 Declared in library mathcomp.classical.cardinality, line 712, characters 6-17
@@ -2366,7 +2366,7 @@ Declared in library mathcomp.classical.cardinality, line 712, characters 6-17
 forall [T : Type] (x y z t u v : T), finite_set [set x; y; z; t; u; v]
 
 finite_set6 is not universe polymorphic
-Arguments finite_set6 [T]%type_scope x y z t u v
+Arguments finite_set6 [T]%_type_scope x y z t u v
 finite_set6 is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_set6
 Declared in library mathcomp.classical.cardinality, line 716, characters 6-17
@@ -2381,7 +2381,7 @@ Declared in library mathcomp.classical.cardinality, line 716, characters 6-17
 forall [T : Type] (x y z t u v w : T), finite_set [set x; y; z; t; u; v; w]
 
 finite_set7 is not universe polymorphic
-Arguments finite_set7 [T]%type_scope x y z t u v w
+Arguments finite_set7 [T]%_type_scope x y z t u v w
 finite_set7 is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_set7
 Declared in library mathcomp.classical.cardinality, line 720, characters 6-17
@@ -2397,7 +2397,7 @@ forall [T : Type] [A B : set T],
 finite_set A \/ finite_set B -> finite_set (A `&` B)
 
 finite_setI is not universe polymorphic
-Arguments finite_setI [T]%type_scope [A B]%classical_set_scope _
+Arguments finite_setI [T]%_type_scope [A B]%_classical_set_scope _
 finite_setI is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_setI
 Declared in library mathcomp.classical.cardinality, line 724, characters 6-17
@@ -2415,8 +2415,8 @@ forall [T : Type] [A : set T] (B : set T),
 finite_set A -> finite_set (A `&` B)
 
 finite_setIl is not universe polymorphic
-Arguments finite_setIl [T]%type_scope [A]%classical_set_scope
-  B%classical_set_scope _
+Arguments finite_setIl [T]%_type_scope [A]%_classical_set_scope
+  B%_classical_set_scope _
 finite_setIl is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_setIl
 Declared in library mathcomp.classical.cardinality, line 731, characters 6-18
@@ -2431,8 +2431,8 @@ forall [T : Type] (A : set T) [B : set T],
 finite_set B -> finite_set (A `&` B)
 
 finite_setIr is not universe polymorphic
-Arguments finite_setIr [T]%type_scope A%classical_set_scope
-  [B]%classical_set_scope _
+Arguments finite_setIr [T]%_type_scope A%_classical_set_scope
+  [B]%_classical_set_scope _
 finite_setIr is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_setIr
 Declared in library mathcomp.classical.cardinality, line 734, characters 6-18
@@ -2447,7 +2447,7 @@ forall [T T' : Type] [A : set T] [B : set T'],
 finite_set A -> finite_set B -> finite_set (A `*` B)
 
 finite_setX is not universe polymorphic
-Arguments finite_setX [T T']%type_scope [A B]%classical_set_scope _ _
+Arguments finite_setX [T T']%_type_scope [A B]%_classical_set_scope _ _
 finite_setX is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_setX
 Declared in library mathcomp.classical.cardinality, line 737, characters 6-17
@@ -2467,8 +2467,8 @@ forall [aT bT rT : Type] [A : set aT] [B : set bT] (f : aT -> bT -> rT),
 finite_set A -> finite_set B -> finite_set [set f x y | x in A & y in B]
 
 finite_image2 is not universe polymorphic
-Arguments finite_image2 [aT bT rT]%type_scope [A B]%classical_set_scope
-  f%function_scope _ _
+Arguments finite_image2 [aT bT rT]%_type_scope [A B]%_classical_set_scope
+  f%_function_scope _ _
 finite_image2 is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_image2
 Declared in library mathcomp.classical.cardinality, line 746, characters 6-19
@@ -2487,8 +2487,8 @@ finite_set [set fa x | x in X] ->
 finite_set [set fb x | x in X] -> finite_set [set g (fa x) (fb x) | x in X]
 
 finite_image11 is not universe polymorphic
-Arguments finite_image11 [xT aT bT rT]%type_scope 
-  [X]%classical_set_scope g%function_scope [fa fb]%function_scope 
+Arguments finite_image11 [xT aT bT rT]%_type_scope 
+  [X]%_classical_set_scope g%_function_scope [fa fb]%_function_scope 
   _ _
 finite_image11 is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_image11
@@ -2507,7 +2507,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="fset_set" class="id"><a name="fset_set" class="" title="fset_set : forall [T : choiceType], set T -> {fset T}
 
 fset_set is not universe polymorphic
-Arguments fset_set [T] A%classical_set_scope
+Arguments fset_set [T] A%_classical_set_scope
 fset_set is transparent
 Expands to: Constant mathcomp.classical.cardinality.fset_set
 Declared in
@@ -2521,7 +2521,7 @@ forall [T : choiceType] [A : set T],
 finite_set A -> [set` fset_set (T:=T) A]%classic = A
 
 fset_setK is not universe polymorphic
-Arguments fset_setK [T] [A]%classical_set_scope _
+Arguments fset_setK [T] [A]%_classical_set_scope _
 fset_setK is opaque
 Expands to: Constant mathcomp.classical.cardinality.fset_setK
 Declared in library mathcomp.classical.cardinality, line 764, characters 6-15
@@ -2536,7 +2536,7 @@ Declared in library mathcomp.classical.cardinality, line 764, characters 6-15
 forall [T : choiceType] [A : set T], finite_set A -> fset_set (T:=T) A =i A
 
 in_fset_set is not universe polymorphic
-Arguments in_fset_set [T] [A]%classical_set_scope _ x
+Arguments in_fset_set [T] [A]%_classical_set_scope _ x
 in_fset_set is opaque
 Expands to: Constant mathcomp.classical.cardinality.in_fset_set
 Declared in library mathcomp.classical.cardinality, line 768, characters 6-17
@@ -2555,7 +2555,7 @@ finite_set B ->
 (A `<=` B)%classic = (fset_set (T:=T) A `<=` fset_set (T:=T) B)%fset
 
 fset_set_sub is not universe polymorphic
-Arguments fset_set_sub [T] [A B]%classical_set_scope _ _
+Arguments fset_set_sub [T] [A B]%_classical_set_scope _ _
 fset_set_sub is opaque
 Expands to: Constant mathcomp.classical.cardinality.fset_set_sub
 Declared in library mathcomp.classical.cardinality, line 774, characters 6-18
@@ -2574,7 +2574,7 @@ forall [T : choiceType] [A : set T],
 finite_set A -> fset_set (T:=T) A = fset0 -> A = set0
 
 fset_set_set0 is not universe polymorphic
-Arguments fset_set_set0 [T] [A]%classical_set_scope _ _
+Arguments fset_set_set0 [T] [A]%_classical_set_scope _ _
 fset_set_set0 is opaque
 Expands to: Constant mathcomp.classical.cardinality.fset_set_set0
 Declared in library mathcomp.classical.cardinality, line 782, characters 6-19
@@ -2624,7 +2624,7 @@ finite_set B ->
 fset_set (T:=T) (A `|` B) = (fset_set (T:=T) A `|` fset_set (T:=T) B)%fset
 
 fset_setU is not universe polymorphic
-Arguments fset_setU {T} [A B]%classical_set_scope _ _
+Arguments fset_setU {T} [A B]%_classical_set_scope _ _
 fset_setU is opaque
 Expands to: Constant mathcomp.classical.cardinality.fset_setU
 Declared in library mathcomp.classical.cardinality, line 800, characters 6-15
@@ -2646,7 +2646,7 @@ finite_set B ->
 fset_set (T:=T) (A `&` B) = (fset_set (T:=T) A `&` fset_set (T:=T) B)%fset
 
 fset_setI is not universe polymorphic
-Arguments fset_setI {T} [A B]%classical_set_scope _ _
+Arguments fset_setI {T} [A B]%_classical_set_scope _ _
 fset_setI is opaque
 Expands to: Constant mathcomp.classical.cardinality.fset_setI
 Declared in library mathcomp.classical.cardinality, line 809, characters 6-15
@@ -2666,7 +2666,7 @@ forall {T : choiceType} (x : T) [A : set T],
 finite_set A -> fset_set (T:=T) (x |` A) = (x |` fset_set (T:=T) A)%fset
 
 fset_setU1 is not universe polymorphic
-Arguments fset_setU1 {T} x [A]%classical_set_scope _
+Arguments fset_setU1 {T} x [A]%_classical_set_scope _
 fset_setU1 is opaque
 Expands to: Constant mathcomp.classical.cardinality.fset_setU1
 Declared in library mathcomp.classical.cardinality, line 818, characters 6-16
@@ -2684,7 +2684,7 @@ finite_set B ->
 fset_set (T:=T) (A `\` B) = (fset_set (T:=T) A `\` fset_set (T:=T) B)%fset
 
 fset_setD is not universe polymorphic
-Arguments fset_setD {T} [A B]%classical_set_scope _ _
+Arguments fset_setD {T} [A B]%_classical_set_scope _ _
 fset_setD is opaque
 Expands to: Constant mathcomp.classical.cardinality.fset_setD
 Declared in library mathcomp.classical.cardinality, line 822, characters 6-15
@@ -2704,7 +2704,7 @@ forall {T : choiceType} (x : T) [A : set T],
 finite_set A -> fset_set (T:=T) (A `\ x) = (fset_set (T:=T) A `\ x)%fset
 
 fset_setD1 is not universe polymorphic
-Arguments fset_setD1 {T} x [A]%classical_set_scope _
+Arguments fset_setD1 {T} x [A]%_classical_set_scope _
 fset_setD1 is opaque
 Expands to: Constant mathcomp.classical.cardinality.fset_setD1
 Declared in library mathcomp.classical.cardinality, line 831, characters 6-16
@@ -2723,7 +2723,7 @@ fset_set (T:=Datatypes_prod__canonical__choice_Choice T1 T2) (A `*` B) =
 (fset_set (T:=T1) A `*` fset_set (T:=T2) B)%fset
 
 fset_setX is not universe polymorphic
-Arguments fset_setX {T1 T2} [A B]%classical_set_scope _ _
+Arguments fset_setX {T1 T2} [A B]%_classical_set_scope _ _
 fset_setX is opaque
 Expands to: Constant mathcomp.classical.cardinality.fset_setX
 Declared in library mathcomp.classical.cardinality, line 835, characters 6-15
@@ -2767,7 +2767,7 @@ forall [T1 T2 : choiceType] [A : set (T1 * T2)],
 finite_set A -> finite_set A.`1
 
 finite_set_fst is not universe polymorphic
-Arguments finite_set_fst [T1 T2] [A]%classical_set_scope _
+Arguments finite_set_fst [T1 T2] [A]%_classical_set_scope _
 finite_set_fst is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_set_fst
 Declared in library mathcomp.classical.cardinality, line 852, characters 6-20
@@ -2786,7 +2786,7 @@ forall [T1 T2 : choiceType] [A : set (T1 * T2)],
 finite_set A -> finite_set A.`2
 
 finite_set_snd is not universe polymorphic
-Arguments finite_set_snd [T1 T2] [A]%classical_set_scope _
+Arguments finite_set_snd [T1 T2] [A]%_classical_set_scope _
 finite_set_snd is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_set_snd
 Declared in library mathcomp.classical.cardinality, line 860, characters 6-20
@@ -2806,8 +2806,8 @@ finite_set D ->
 (forall i : I, D i -> finite_set (F i)) -> finite_set (\bigcup_(i in D) F i)
 
 bigcup_finite is not universe polymorphic
-Arguments bigcup_finite {I T}%type_scope [D]%classical_set_scope
-  [F]%function_scope _ _%function_scope
+Arguments bigcup_finite {I T}%_type_scope [D]%_classical_set_scope
+  [F]%_function_scope _ _%_function_scope
 bigcup_finite is opaque
 Expands to: Constant mathcomp.classical.cardinality.bigcup_finite
 Declared in library mathcomp.classical.cardinality, line 868, characters 6-19
@@ -2836,7 +2836,8 @@ forall {T : Type} [A : set T],
 infinite_set [set: T] -> cofinite_set A -> infinite_set A
 
 cofinite_set_infinite is not universe polymorphic
-Arguments cofinite_set_infinite {T}%type_scope [A]%classical_set_scope _ _ _
+Arguments cofinite_set_infinite {T}%_type_scope [A]%_classical_set_scope 
+  _ _ _
 cofinite_set_infinite is opaque
 Expands to: Constant mathcomp.classical.cardinality.cofinite_set_infinite
 Declared in library mathcomp.classical.cardinality, line 886, characters 6-27
@@ -2855,8 +2856,8 @@ trivIset (T:=T) [set: nat] F ->
 #|` fset_set (T:=T) (\big[setU/set0]_(k < n) F k)|
 
 trivIset_sum_card is not universe polymorphic
-Arguments trivIset_sum_card [T] [F]%function_scope 
-  n%nat_scope _%function_scope _
+Arguments trivIset_sum_card [T] [F]%_function_scope 
+  n%_nat_scope _%_function_scope _
 trivIset_sum_card is opaque
 Expands to: Constant mathcomp.classical.cardinality.trivIset_sum_card
 Declared in library mathcomp.classical.cardinality, line 890, characters 6-23
@@ -2883,8 +2884,8 @@ finite_set A ->
 (forall x : T, A x -> finite_set (B x)) -> finite_set (A `*`` B)
 
 finite_setXR is not universe polymorphic
-Arguments finite_setXR [T T'] [A]%classical_set_scope 
-  [B]%function_scope _ _%function_scope
+Arguments finite_setXR [T T'] [A]%_classical_set_scope 
+  [B]%_function_scope _ _%_function_scope
 finite_setXR is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_setXR
 Declared in library mathcomp.classical.cardinality, line 905, characters 6-18
@@ -2903,8 +2904,8 @@ forall [T T' : choiceType] [A : T' -> set T] [B : set T'],
 finite_set B -> finite_set (A ``*` B)
 
 finite_setXL is not universe polymorphic
-Arguments finite_setXL [T T'] [A]%function_scope [B]%classical_set_scope
-  _%function_scope _
+Arguments finite_setXL [T T'] [A]%_function_scope 
+  [B]%_classical_set_scope _%_function_scope _
 finite_setXL is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_setXL
 Declared in library mathcomp.classical.cardinality, line 912, characters 6-18
@@ -2923,7 +2924,7 @@ fset_set (T:=Datatypes_nat__canonical__choice_Choice) `I_n =
 [fset \val i | i in 'I_n]%fset
 
 fset_set_II is not universe polymorphic
-Arguments fset_set_II n%nat_scope
+Arguments fset_set_II n%_nat_scope
 fset_set_II is opaque
 Expands to: Constant mathcomp.classical.cardinality.fset_set_II
 Declared in library mathcomp.classical.cardinality, line 919, characters 6-17
@@ -2959,7 +2960,7 @@ finite_set A ->
 fset_set (T:=U) [set f x | x in A] = (f @` fset_set (T:=T) A)%fset
 
 fset_set_image is not universe polymorphic
-Arguments fset_set_image {T U} f%function_scope [A]%classical_set_scope _
+Arguments fset_set_image {T U} f%_function_scope [A]%_classical_set_scope _
 fset_set_image is opaque
 Expands to: Constant mathcomp.classical.cardinality.fset_set_image
 Declared in library mathcomp.classical.cardinality, line 933, characters 6-20
@@ -2981,7 +2982,7 @@ finite_set A ->
 finite_set B -> fset_set (T:=T) A = fset_set (T:=T) B -> A = B
 
 fset_set_inj is not universe polymorphic
-Arguments fset_set_inj {T} [A B]%classical_set_scope _ _ _
+Arguments fset_set_inj {T} [A B]%_classical_set_scope _ _ _
 fset_set_inj is opaque
 Expands to: Constant mathcomp.classical.cardinality.fset_set_inj
 Declared in library mathcomp.classical.cardinality, line 943, characters 6-18
@@ -2998,8 +2999,8 @@ finite_set A ->
 \big[setU/set0]_(i <- fset_set (T:=I) A) F i = (\bigcup_(i in A) F i)%classic
 
 bigsetU_fset_set is not universe polymorphic
-Arguments bigsetU_fset_set [T]%type_scope [I] [A]%classical_set_scope
-  F%function_scope _
+Arguments bigsetU_fset_set [T]%_type_scope [I] [A]%_classical_set_scope
+  F%_function_scope _
 bigsetU_fset_set is opaque
 Expands to: Constant mathcomp.classical.cardinality.bigsetU_fset_set
 Declared in library mathcomp.classical.cardinality, line 947, characters 6-22
@@ -3020,8 +3021,8 @@ finite_set A ->
 (\bigcup_(i in A) F i)%classic = \big[setU/set0]_(i <- fset_set (T:=I) A) F i
 
 __deprecated__bigcup_fset_set is not universe polymorphic
-Arguments __deprecated__bigcup_fset_set [T]%type_scope 
-  [I] [A]%classical_set_scope F%function_scope _
+Arguments __deprecated__bigcup_fset_set [T]%_type_scope 
+  [I] [A]%_classical_set_scope F%_function_scope _
 __deprecated__bigcup_fset_set is opaque
 Expands to: Constant
             mathcomp.classical.cardinality.__deprecated__bigcup_fset_set
@@ -3042,8 +3043,8 @@ finite_set A ->
 (\bigcup_(i in A `&` (fun x : I => P x)) F i)%classic
 
 bigsetU_fset_set_cond is not universe polymorphic
-Arguments bigsetU_fset_set_cond [T]%type_scope [I] 
-  [A]%classical_set_scope F%function_scope P _
+Arguments bigsetU_fset_set_cond [T]%_type_scope [I] 
+  [A]%_classical_set_scope F%_function_scope P _
 bigsetU_fset_set_cond is opaque
 Expands to: Constant mathcomp.classical.cardinality.bigsetU_fset_set_cond
 Declared in library mathcomp.classical.cardinality, line 962, characters 6-27
@@ -3063,8 +3064,9 @@ finite_set A ->
 \big[setU/set0]_(i <- fset_set (T:=I) A | P i) F i
 
 __deprecated__bigcup_fset_set_cond is not universe polymorphic
-Arguments __deprecated__bigcup_fset_set_cond [T]%type_scope 
-  [I] [A]%classical_set_scope F%function_scope P _
+Arguments __deprecated__bigcup_fset_set_cond [T]%_type_scope 
+  [I] [A]%_classical_set_scope F%_function_scope P 
+  _
 __deprecated__bigcup_fset_set_cond is opaque
 Expands to: Constant
             mathcomp.classical.cardinality.__deprecated__bigcup_fset_set_cond
@@ -3086,8 +3088,8 @@ finite_set A ->
 (\bigcap_(i in A) F i)%classic
 
 bigsetI_fset_set is not universe polymorphic
-Arguments bigsetI_fset_set [T]%type_scope [I] [A]%classical_set_scope
-  F%function_scope _
+Arguments bigsetI_fset_set [T]%_type_scope [I] [A]%_classical_set_scope
+  F%_function_scope _
 bigsetI_fset_set is opaque
 Expands to: Constant mathcomp.classical.cardinality.bigsetI_fset_set
 Declared in library mathcomp.classical.cardinality, line 976, characters 6-22
@@ -3106,8 +3108,8 @@ finite_set A ->
 \big[setI/[set: T]%classic]_(i <- fset_set (T:=I) A) F i
 
 __deprecated__bigcap_fset_set is not universe polymorphic
-Arguments __deprecated__bigcap_fset_set [T]%type_scope 
-  [I] [A]%classical_set_scope F%function_scope _
+Arguments __deprecated__bigcap_fset_set [T]%_type_scope 
+  [I] [A]%_classical_set_scope F%_function_scope _
 __deprecated__bigcap_fset_set is opaque
 Expands to: Constant
             mathcomp.classical.cardinality.__deprecated__bigcap_fset_set
@@ -3128,8 +3130,8 @@ finite_set A ->
 (\bigcap_(i in A `&` (fun x : I => P x)) F i)%classic
 
 bigsetI_fset_set_cond is not universe polymorphic
-Arguments bigsetI_fset_set_cond [T]%type_scope [I] 
-  [A]%classical_set_scope F%function_scope P _
+Arguments bigsetI_fset_set_cond [T]%_type_scope [I] 
+  [A]%_classical_set_scope F%_function_scope P _
 bigsetI_fset_set_cond is opaque
 Expands to: Constant mathcomp.classical.cardinality.bigsetI_fset_set_cond
 Declared in library mathcomp.classical.cardinality, line 988, characters 6-27
@@ -3149,7 +3151,7 @@ forall [T U : Type] [X A : set T] [Y B : set U] (f : {bij X >-> Y}),
 (A `\` X #= B `\` Y)%card -> exists g : {bij A >-> B}, {in X, g =1 f}
 
 super_bij is not universe polymorphic
-Arguments super_bij [T U]%type_scope [X A Y B]%classical_set_scope f _ _ _
+Arguments super_bij [T U]%_type_scope [X A Y B]%_classical_set_scope f _ _ _
 super_bij is opaque
 Expands to: Constant mathcomp.classical.cardinality.super_bij
 Declared in library mathcomp.classical.cardinality, line 995, characters 6-15
@@ -3175,7 +3177,7 @@ forall {T : choiceType} {A : {fset T}} {n : nat},
 reflect (#|` A| = n) ([set` A] #= `I_n)%card
 
 card_eq_fsetP is not universe polymorphic
-Arguments card_eq_fsetP {T A} {n}%nat_scope
+Arguments card_eq_fsetP {T A} {n}%_nat_scope
 card_eq_fsetP is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_eq_fsetP
 Declared in
@@ -3203,7 +3205,7 @@ forall {T : choiceType} [A : set T] [n : nat],
 (A #= `I_n)%card -> #|` fset_set (T:=T) A| = n
 
 card_fset_set is not universe polymorphic
-Arguments card_fset_set {T} [A]%classical_set_scope [n]%nat_scope _
+Arguments card_fset_set {T} [A]%_classical_set_scope [n]%_nat_scope _
 card_fset_set is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_fset_set
 Declared in
@@ -3222,7 +3224,7 @@ forall {T : choiceType} [A : set T] [n : nat],
 (A #<= `I_n)%card -> #|` fset_set (T:=T) A| <= n
 
 geq_card_fset_set is not universe polymorphic
-Arguments geq_card_fset_set {T} [A]%classical_set_scope [n]%nat_scope _
+Arguments geq_card_fset_set {T} [A]%_classical_set_scope [n]%_nat_scope _
 geq_card_fset_set is opaque
 Expands to: Constant mathcomp.classical.cardinality.geq_card_fset_set
 Declared in
@@ -3242,7 +3244,7 @@ forall {T : choiceType} [A : set T] [n : nat],
 finite_set A -> (`I_n #<= A)%card -> n <= #|` fset_set (T:=T) A|
 
 leq_card_fset_set is not universe polymorphic
-Arguments leq_card_fset_set {T} [A]%classical_set_scope [n]%nat_scope _ _
+Arguments leq_card_fset_set {T} [A]%_classical_set_scope [n]%_nat_scope _ _
 leq_card_fset_set is opaque
 Expands to: Constant mathcomp.classical.cardinality.leq_card_fset_set
 Declared in
@@ -3261,7 +3263,7 @@ forall {T : Type} [A B : set T],
 infinite_set A -> finite_set B -> infinite_set (A `\` B)
 
 infinite_setD is not universe polymorphic
-Arguments infinite_setD {T}%type_scope [A B]%classical_set_scope _ _ _
+Arguments infinite_setD {T}%_type_scope [A B]%_classical_set_scope _ _ _
 infinite_setD is opaque
 Expands to: Constant mathcomp.classical.cardinality.infinite_setD
 Declared in
@@ -3281,7 +3283,7 @@ forall {T : Type} [A B : set T],
 infinite_set A -> cofinite_set B -> infinite_set (A `&` B)
 
 infinite_setIl is not universe polymorphic
-Arguments infinite_setIl {T}%type_scope [A B]%classical_set_scope _ _ _
+Arguments infinite_setIl {T}%_type_scope [A B]%_classical_set_scope _ _ _
 infinite_setIl is opaque
 Expands to: Constant mathcomp.classical.cardinality.infinite_setIl
 Declared in
@@ -3298,7 +3300,7 @@ forall {T : Type} [A B : set T],
 cofinite_set A -> infinite_set B -> infinite_set (A `&` B)
 
 infinite_setIr is not universe polymorphic
-Arguments infinite_setIr {T}%type_scope [A B]%classical_set_scope _ _ _
+Arguments infinite_setIr {T}%_type_scope [A B]%_classical_set_scope _ _ _
 infinite_setIr is opaque
 Expands to: Constant mathcomp.classical.cardinality.infinite_setIr
 Declared in
@@ -3316,7 +3318,7 @@ infinite_set A ->
 exists2 B : {fset T}, ([set` B] `<=` A)%classic & n <= #|` B|
 
 infinite_set_fset is not universe polymorphic
-Arguments infinite_set_fset {T} [A]%classical_set_scope n%nat_scope _
+Arguments infinite_set_fset {T} [A]%_classical_set_scope n%_nat_scope _
 infinite_set_fset is opaque
 Expands to: Constant mathcomp.classical.cardinality.infinite_set_fset
 Declared in
@@ -3342,7 +3344,7 @@ infinite_set A <->
  exists2 B : {fset T}, ([set` B] `<=` A)%classic & n <= #|` B|)
 
 infinite_set_fsetP is not universe polymorphic
-Arguments infinite_set_fsetP {T} A%classical_set_scope
+Arguments infinite_set_fsetP {T} A%_classical_set_scope
 infinite_set_fsetP is opaque
 Expands to: Constant mathcomp.classical.cardinality.infinite_set_fsetP
 Declared in
@@ -3370,7 +3372,7 @@ finite_set B ->
 reflect (#|` fset_set (T:=T) A| = #|` fset_set (T:=T') B|) (A #= B)%card
 
 fcard_eq is not universe polymorphic
-Arguments fcard_eq {T T'} [A B]%classical_set_scope _ _
+Arguments fcard_eq {T T'} [A B]%_classical_set_scope _ _
 fcard_eq is opaque
 Expands to: Constant mathcomp.classical.cardinality.fcard_eq
 Declared in
@@ -3389,7 +3391,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="card_IID" class="id"><a name="card_IID" class="" title="card_IID : forall {n k : nat}, (`I_n `\` `I_k #= `I_(n - k))%card
 
 card_IID is not universe polymorphic
-Arguments card_IID {n k}%nat_scope
+Arguments card_IID {n k}%_nat_scope
 card_IID is opaque
 Expands to: Constant mathcomp.classical.cardinality.card_IID
 Declared in
@@ -3413,8 +3415,8 @@ exists (f : {bij `I_n >-> A}) (k : nat),
   k <= n /\ (`I_n `&` f @^-1` S0)%classic = `I_k
 
 finite_set_bij is not universe polymorphic
-Arguments finite_set_bij [T]%type_scope [A]%classical_set_scope 
-  [n]%nat_scope [S]%classical_set_scope _ _ _
+Arguments finite_set_bij [T]%_type_scope [A]%_classical_set_scope
+  [n]%_nat_scope [S]%_classical_set_scope _ _ _
 finite_set_bij is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_set_bij
 Declared in
@@ -3450,7 +3452,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="countable1" class="id"><a name="countable1" class="" title="countable1 : forall [T : Type] (x : T), countable (T:=T) [set x]
 
 countable1 is not universe polymorphic
-Arguments countable1 [T]%type_scope x
+Arguments countable1 [T]%_type_scope x
 countable1 is opaque
 Expands to: Constant mathcomp.classical.cardinality.countable1
 Declared in
@@ -3499,7 +3501,7 @@ forall [T : Type] [A : set T],
 countable (T:=T) A -> infinite_set A -> (A #= [set: nat])%card
 
 eq_card_nat is not universe polymorphic
-Arguments eq_card_nat [T]%type_scope [A]%classical_set_scope _ _
+Arguments eq_card_nat [T]%_type_scope [A]%_classical_set_scope _ _
 eq_card_nat is opaque
 Expands to: Constant mathcomp.classical.cardinality.eq_card_nat
 Declared in
@@ -3555,7 +3557,7 @@ forall [f : nat -> nat],
 injective f -> forall n : nat, exists m : nat, n < f m
 
 injective_gtn is not universe polymorphic
-Arguments injective_gtn [f]%function_scope _ n%nat_scope
+Arguments injective_gtn [f]%_function_scope _ n%_nat_scope
 injective_gtn is opaque
 Expands to: Constant mathcomp.classical.cardinality.injective_gtn
 Declared in
@@ -3706,7 +3708,7 @@ library mathcomp.classical.cardinality, line 1191, characters 6-18
 forall {T : Type}, countable (T:=T) [set: T] -> {T' : countType | T = T'}
 
 Pcountable is not universe polymorphic
-Arguments Pcountable {T}%type_scope _
+Arguments Pcountable {T}%_type_scope _
 Pcountable is opaque
 Expands to: Constant mathcomp.classical.cardinality.Pcountable
 Declared in
@@ -3725,8 +3727,8 @@ countable (T:=I) D ->
 countable (T:=T) (\bigcup_(i in D) F i)
 
 bigcup_countable is not universe polymorphic
-Arguments bigcup_countable {I T}%type_scope [D]%classical_set_scope
-  [F]%function_scope _ _%function_scope
+Arguments bigcup_countable {I T}%_type_scope [D]%_classical_set_scope
+  [F]%_function_scope _ _%_function_scope
 bigcup_countable is opaque
 Expands to: Constant mathcomp.classical.cardinality.bigcup_countable
 Declared in
@@ -3757,8 +3759,8 @@ countable (T:=T) A ->
 countable (T:=T * T') (A `*`` B)
 
 countableXR is not universe polymorphic
-Arguments countableXR [T T']%type_scope [A]%classical_set_scope
-  [B]%function_scope _ _%function_scope
+Arguments countableXR [T T']%_type_scope [A]%_classical_set_scope
+  [B]%_function_scope _ _%_function_scope
 countableXR is opaque
 Expands to: Constant mathcomp.classical.cardinality.countableXR
 Declared in
@@ -3783,7 +3785,7 @@ countable (T:=T1) D1 ->
 countable (T:=T2) D2 -> countable (T:=T1 * T2) (D1 `*` D2)
 
 countableX is not universe polymorphic
-Arguments countableX [T1 T2]%type_scope [D1 D2]%classical_set_scope _ _
+Arguments countableX [T1 T2]%_type_scope [D1 D2]%_classical_set_scope _ _
 countableX is opaque
 Expands to: Constant mathcomp.classical.cardinality.countableX
 Declared in
@@ -3802,8 +3804,8 @@ countable (T:=T') B ->
 countable (T:=T * T') (A ``*` B)
 
 countableXL is not universe polymorphic
-Arguments countableXL [T T']%type_scope [A]%function_scope
-  [B]%classical_set_scope _ _%function_scope
+Arguments countableXL [T T']%_type_scope [A]%_function_scope
+  [B]%_classical_set_scope _ _%_function_scope
 countableXL is opaque
 Expands to: Constant mathcomp.classical.cardinality.countableXL
 Declared in
@@ -3823,8 +3825,8 @@ infinite_set A ->
 (forall i : T, (B i !=set0)%classic) -> infinite_set (A `*`` B)
 
 infiniteXRl is not universe polymorphic
-Arguments infiniteXRl [T T']%type_scope [A]%classical_set_scope
-  [B]%function_scope _ _%function_scope _
+Arguments infiniteXRl [T T']%_type_scope [A]%_classical_set_scope
+  [B]%_function_scope _ _%_function_scope _
 infiniteXRl is opaque
 Expands to: Constant mathcomp.classical.cardinality.infiniteXRl
 Declared in
@@ -3846,8 +3848,8 @@ forall [T T' : Type] [A : set T] [B : T -> set T'],
 (A `*`` B #= [set: nat])%card
 
 cardXR_eq_nat is not universe polymorphic
-Arguments cardXR_eq_nat [T T']%type_scope [A]%classical_set_scope
-  [B]%function_scope _ _%function_scope
+Arguments cardXR_eq_nat [T T']%_type_scope [A]%_classical_set_scope
+  [B]%_function_scope _ _%_function_scope
 cardXR_eq_nat is opaque
 Expands to: Constant mathcomp.classical.cardinality.cardXR_eq_nat
 Declared in
@@ -3867,7 +3869,7 @@ forall {T : Type} (A : set T) (n : nat),
 reflect (exists2 x : T, A x & (A `\ x #= `I_n)%card) (A #= `I_n.+1)%card
 
 eq_cardSP is not universe polymorphic
-Arguments eq_cardSP {T}%type_scope A%classical_set_scope n%nat_scope
+Arguments eq_cardSP {T}%_type_scope A%_classical_set_scope n%_nat_scope
 eq_cardSP is opaque
 Expands to: Constant mathcomp.classical.cardinality.eq_cardSP
 Declared in
@@ -3895,8 +3897,8 @@ countable (T:=T) D ->
 countable (T:=set T) [set A | (A `<=` D)%classic /\ (A #= `I_n)%card]
 
 countable_n_subset is not universe polymorphic
-Arguments countable_n_subset {T}%type_scope [D]%classical_set_scope
-  n%nat_scope _
+Arguments countable_n_subset {T}%_type_scope [D]%_classical_set_scope
+  n%_nat_scope _
 countable_n_subset is opaque
 Expands to: Constant mathcomp.classical.cardinality.countable_n_subset
 Declared in
@@ -3922,7 +3924,7 @@ countable (T:=T) D ->
 countable (T:=set T) [set A | (A `<=` D)%classic /\ finite_set A]
 
 countable_finite_subset is not universe polymorphic
-Arguments countable_finite_subset {T}%type_scope [D]%classical_set_scope _
+Arguments countable_finite_subset {T}%_type_scope [D]%_classical_set_scope _
 countable_finite_subset is opaque
 Expands to: Constant mathcomp.classical.cardinality.countable_finite_subset
 Declared in
@@ -3944,7 +3946,7 @@ forall {T : pointedType} (D : set T),
 ([set A | (A `<=` D)%classic /\ finite_set A] #= [set A | {subset A <= D}])%card
 
 eq_card_fset_subset is not universe polymorphic
-Arguments eq_card_fset_subset {T} D%classical_set_scope
+Arguments eq_card_fset_subset {T} D%_classical_set_scope
 eq_card_fset_subset is opaque
 Expands to: Constant mathcomp.classical.cardinality.eq_card_fset_subset
 Declared in
@@ -3966,7 +3968,7 @@ forall {T : pointedType} [D : set T],
 countable (T:=T) D -> countable (T:={fset T}) [set A | {subset A <= D}]
 
 fset_subset_countable is not universe polymorphic
-Arguments fset_subset_countable {T} [D]%classical_set_scope _
+Arguments fset_subset_countable {T} [D]%_classical_set_scope _
 fset_subset_countable is opaque
 Expands to: Constant mathcomp.classical.cardinality.fset_subset_countable
 Declared in
@@ -4000,7 +4002,7 @@ forall {aT rT : Type} (f : {fimfun aT >-> rT}) (D : set aT),
 finite_set [set f x | x in D]
 
 fimfun_inP is not universe polymorphic
-Arguments fimfun_inP {aT rT}%type_scope f D%classical_set_scope
+Arguments fimfun_inP {aT rT}%_type_scope f D%_classical_set_scope
 fimfun_inP is opaque
 Expands to: Constant mathcomp.classical.cardinality.fimfun_inP
 Declared in
@@ -4021,8 +4023,8 @@ fset_set (T:=T3) [set (g \o f) x | x in D] =
 [fset g x | x in fset_set (T:=T2) [set f x | x in D]]%fset
 
 fset_set_comp is not universe polymorphic
-Arguments fset_set_comp [T1]%type_scope [T2 T3] D%classical_set_scope 
-  f g%function_scope
+Arguments fset_set_comp [T1]%_type_scope [T2 T3] D%_classical_set_scope 
+  f g%_function_scope
 fset_set_comp is opaque
 Expands to: Constant mathcomp.classical.cardinality.fset_set_comp
 Declared in
@@ -4041,7 +4043,7 @@ library mathcomp.classical.cardinality, line 1331, characters 6-19
 <span class="vernacular">Definition</span><span class="id"> </span><span id="fimfun" class="id"><a name="fimfun" class="" title="fimfun : forall {aT rT : Type}, {pred aT -> rT}
 
 fimfun is not universe polymorphic
-Arguments fimfun {aT rT}%type_scope _
+Arguments fimfun {aT rT}%_type_scope _
 fimfun is transparent
 Expands to: Constant mathcomp.classical.cardinality.fimfun
 Declared in
@@ -4050,7 +4052,7 @@ library mathcomp.classical.cardinality, line 1339, characters 11-17
 <span class="vernacular">Definition</span><span class="id"> </span><span id="fimfun_key" class="id"><a name="fimfun_key" class="" title="fimfun_key : forall {aT rT : Type}, pred_key (T:=aT -> rT) fimfun
 
 fimfun_key is not universe polymorphic
-Arguments fimfun_key {aT rT}%type_scope
+Arguments fimfun_key {aT rT}%_type_scope
 fimfun_key is opaque
 Expands to: Constant mathcomp.classical.cardinality.fimfun_key
 Declared in
@@ -4063,7 +4065,7 @@ library mathcomp.classical.cardinality, line 1340, characters 11-21
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="fimfun_keyed" class="id"><a name="fimfun_keyed" class="" title="fimfun_keyed : forall {aT rT : Type}, keyed_pred fimfun_key
 
 fimfun_keyed is not universe polymorphic
-Arguments fimfun_keyed {aT rT}%type_scope
+Arguments fimfun_keyed {aT rT}%_type_scope
 fimfun_keyed is transparent
 Expands to: Constant mathcomp.classical.cardinality.fimfun_keyed
 Declared in
@@ -4082,7 +4084,7 @@ forall {aT rT : Type} [f : aT -> rT],
 f \in fimfun -> FiniteImage.axioms_ aT rT f
 
 fimfun_Sub_subproof is not universe polymorphic
-Arguments fimfun_Sub_subproof {aT rT}%type_scope [f]%function_scope fP
+Arguments fimfun_Sub_subproof {aT rT}%_type_scope [f]%_function_scope fP
 fimfun_Sub_subproof is transparent
 Expands to: Constant mathcomp.classical.cardinality.fimfun_Sub_subproof
 Declared in
@@ -4093,7 +4095,7 @@ forall {aT rT : Type} [f : aT -> rT], f \in fimfun -> {fimfun aT >-> rT}
 
 cardinality_f__canonical__cardinality_FImFun is not universe polymorphic
 Arguments cardinality_f__canonical__cardinality_FImFun 
-  {aT rT}%type_scope [f]%function_scope fP
+  {aT rT}%_type_scope [f]%_function_scope fP
 cardinality_f__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.cardinality_f__canonical__cardinality_FImFun
@@ -4104,7 +4106,7 @@ forall {aT rT : Type} [f : aT -> rT], f \in fimfun -> {fimfun aT >-> rT}
 
 cardinality_f__canonical__cardinality_FImFun is not universe polymorphic
 Arguments cardinality_f__canonical__cardinality_FImFun 
-  {aT rT}%type_scope [f]%function_scope fP
+  {aT rT}%_type_scope [f]%_function_scope fP
 cardinality_f__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.cardinality_f__canonical__cardinality_FImFun
@@ -4115,7 +4117,7 @@ forall {aT rT : Type} [f : aT -> rT], f \in fimfun -> {fimfun aT >-> rT}
 
 cardinality_f__canonical__cardinality_FImFun is not universe polymorphic
 Arguments cardinality_f__canonical__cardinality_FImFun 
-  {aT rT}%type_scope [f]%function_scope fP
+  {aT rT}%_type_scope [f]%_function_scope fP
 cardinality_f__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.cardinality_f__canonical__cardinality_FImFun
@@ -4126,7 +4128,7 @@ forall {aT rT : Type} [f : aT -> rT], f \in fimfun -> {fimfun aT >-> rT}
 
 cardinality_f__canonical__cardinality_FImFun is not universe polymorphic
 Arguments cardinality_f__canonical__cardinality_FImFun 
-  {aT rT}%type_scope [f]%function_scope fP
+  {aT rT}%_type_scope [f]%_function_scope fP
 cardinality_f__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.cardinality_f__canonical__cardinality_FImFun
@@ -4137,7 +4139,7 @@ forall {aT rT : Type} [f : aT -> rT], f \in fimfun -> {fimfun aT >-> rT}
 
 cardinality_f__canonical__cardinality_FImFun is not universe polymorphic
 Arguments cardinality_f__canonical__cardinality_FImFun 
-  {aT rT}%type_scope [f]%function_scope fP
+  {aT rT}%_type_scope [f]%_function_scope fP
 cardinality_f__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.cardinality_f__canonical__cardinality_FImFun
@@ -4148,7 +4150,7 @@ forall {aT rT : Type} [f : aT -> rT], f \in fimfun -> {fimfun aT >-> rT}
 
 cardinality_f__canonical__cardinality_FImFun is not universe polymorphic
 Arguments cardinality_f__canonical__cardinality_FImFun 
-  {aT rT}%type_scope [f]%function_scope fP
+  {aT rT}%_type_scope [f]%_function_scope fP
 cardinality_f__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.cardinality_f__canonical__cardinality_FImFun
@@ -4159,7 +4161,7 @@ library mathcomp.classical.cardinality, line 1352, characters 0-57
 forall {aT rT : Type} [f : aT -> rT], f \in fimfun -> {fimfun aT >-> rT}
 
 fimfun_Sub is not universe polymorphic
-Arguments fimfun_Sub {aT rT}%type_scope [f]%function_scope fP
+Arguments fimfun_Sub {aT rT}%_type_scope [f]%_function_scope fP
 fimfun_Sub is transparent
 Expands to: Constant mathcomp.classical.cardinality.fimfun_Sub
 Declared in
@@ -4173,8 +4175,8 @@ forall {aT rT : Type} [K : {fimfun aT >-> rT} -> Type],
 forall u : {fimfun aT >-> rT}, K u
 
 fimfun_rect is not universe polymorphic
-Arguments fimfun_rect {aT rT}%type_scope [K]%function_scope 
-  _%function_scope u
+Arguments fimfun_rect {aT rT}%_type_scope [K]%_function_scope
+  _%_function_scope u
 fimfun_rect is opaque
 Expands to: Constant mathcomp.classical.cardinality.fimfun_rect
 Declared in
@@ -4193,7 +4195,7 @@ forall {aT rT : Type} [f : aT -> rT] (Pf : f \in fimfun),
 fimfun_Sub (f:=f) Pf = f
 
 fimfun_valP is not universe polymorphic
-Arguments fimfun_valP {aT rT}%type_scope [f]%function_scope Pf
+Arguments fimfun_valP {aT rT}%_type_scope [f]%_function_scope Pf
 fimfun_valP is opaque
 Expands to: Constant mathcomp.classical.cardinality.fimfun_valP
 Declared in
@@ -4208,7 +4210,7 @@ library mathcomp.classical.cardinality, line 1363, characters 6-17
 forall {aT rT : Type}, subType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__eqtype_SubType is not universe polymorphic
-Arguments FImFun_type__canonical__eqtype_SubType {aT rT}%type_scope
+Arguments FImFun_type__canonical__eqtype_SubType {aT rT}%_type_scope
 FImFun_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__eqtype_SubType
@@ -4218,7 +4220,7 @@ library mathcomp.classical.cardinality, line 1366, characters 0-70
 forall {aT rT : Type}, subType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__eqtype_SubType is not universe polymorphic
-Arguments FImFun_type__canonical__eqtype_SubType {aT rT}%type_scope
+Arguments FImFun_type__canonical__eqtype_SubType {aT rT}%_type_scope
 FImFun_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__eqtype_SubType
@@ -4228,7 +4230,7 @@ library mathcomp.classical.cardinality, line 1366, characters 0-70
 forall {aT rT : Type}, subType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__eqtype_SubType is not universe polymorphic
-Arguments FImFun_type__canonical__eqtype_SubType {aT rT}%type_scope
+Arguments FImFun_type__canonical__eqtype_SubType {aT rT}%_type_scope
 FImFun_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__eqtype_SubType
@@ -4238,7 +4240,7 @@ library mathcomp.classical.cardinality, line 1366, characters 0-70
 forall {aT rT : Type}, subType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__eqtype_SubType is not universe polymorphic
-Arguments FImFun_type__canonical__eqtype_SubType {aT rT}%type_scope
+Arguments FImFun_type__canonical__eqtype_SubType {aT rT}%_type_scope
 FImFun_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__eqtype_SubType
@@ -4248,7 +4250,7 @@ library mathcomp.classical.cardinality, line 1366, characters 0-70
 forall {aT rT : Type}, subType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__eqtype_SubType is not universe polymorphic
-Arguments FImFun_type__canonical__eqtype_SubType {aT rT}%type_scope
+Arguments FImFun_type__canonical__eqtype_SubType {aT rT}%_type_scope
 FImFun_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__eqtype_SubType
@@ -4261,7 +4263,7 @@ library mathcomp.classical.cardinality, line 1366, characters 0-70
 forall [aT rT : Type] (f g : {fimfun aT >-> rT}), f = g <-> f =1 g
 
 fimfuneqP is not universe polymorphic
-Arguments fimfuneqP [aT rT]%type_scope f g
+Arguments fimfuneqP [aT rT]%_type_scope f g
 fimfuneqP is opaque
 Expands to: Constant mathcomp.classical.cardinality.fimfuneqP
 Declared in
@@ -4278,7 +4280,7 @@ forall (aT : Type) (rT : eqType),
 subEqType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__eqtype_SubEquality is not universe polymorphic
-Arguments FImFun_type__canonical__eqtype_SubEquality aT%type_scope rT
+Arguments FImFun_type__canonical__eqtype_SubEquality aT%_type_scope rT
 FImFun_type__canonical__eqtype_SubEquality is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__eqtype_SubEquality
@@ -4289,7 +4291,7 @@ forall (aT : Type) (rT : eqType),
 subEqType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__eqtype_SubEquality is not universe polymorphic
-Arguments FImFun_type__canonical__eqtype_SubEquality aT%type_scope rT
+Arguments FImFun_type__canonical__eqtype_SubEquality aT%_type_scope rT
 FImFun_type__canonical__eqtype_SubEquality is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__eqtype_SubEquality
@@ -4300,7 +4302,7 @@ forall (aT : Type) (rT : eqType),
 subEqType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__eqtype_SubEquality is not universe polymorphic
-Arguments FImFun_type__canonical__eqtype_SubEquality aT%type_scope rT
+Arguments FImFun_type__canonical__eqtype_SubEquality aT%_type_scope rT
 FImFun_type__canonical__eqtype_SubEquality is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__eqtype_SubEquality
@@ -4311,7 +4313,7 @@ forall (aT : Type) (rT : eqType),
 subEqType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__eqtype_SubEquality is not universe polymorphic
-Arguments FImFun_type__canonical__eqtype_SubEquality aT%type_scope rT
+Arguments FImFun_type__canonical__eqtype_SubEquality aT%_type_scope rT
 FImFun_type__canonical__eqtype_SubEquality is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__eqtype_SubEquality
@@ -4322,7 +4324,7 @@ forall (aT : Type) (rT : eqType),
 subEqType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__eqtype_SubEquality is not universe polymorphic
-Arguments FImFun_type__canonical__eqtype_SubEquality aT%type_scope rT
+Arguments FImFun_type__canonical__eqtype_SubEquality aT%_type_scope rT
 FImFun_type__canonical__eqtype_SubEquality is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__eqtype_SubEquality
@@ -4333,7 +4335,7 @@ forall (aT : Type) (rT : eqType),
 subEqType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__eqtype_SubEquality is not universe polymorphic
-Arguments FImFun_type__canonical__eqtype_SubEquality aT%type_scope rT
+Arguments FImFun_type__canonical__eqtype_SubEquality aT%_type_scope rT
 FImFun_type__canonical__eqtype_SubEquality is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__eqtype_SubEquality
@@ -4344,7 +4346,7 @@ forall (aT : Type) (rT : eqType),
 subEqType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__eqtype_SubEquality is not universe polymorphic
-Arguments FImFun_type__canonical__eqtype_SubEquality aT%type_scope rT
+Arguments FImFun_type__canonical__eqtype_SubEquality aT%_type_scope rT
 FImFun_type__canonical__eqtype_SubEquality is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__eqtype_SubEquality
@@ -4358,7 +4360,7 @@ forall (aT : Type) (rT : choiceType),
 subChoiceType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__choice_SubChoice is not universe polymorphic
-Arguments FImFun_type__canonical__choice_SubChoice aT%type_scope rT
+Arguments FImFun_type__canonical__choice_SubChoice aT%_type_scope rT
 FImFun_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__choice_SubChoice
@@ -4369,7 +4371,7 @@ forall (aT : Type) (rT : choiceType),
 subChoiceType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__choice_SubChoice is not universe polymorphic
-Arguments FImFun_type__canonical__choice_SubChoice aT%type_scope rT
+Arguments FImFun_type__canonical__choice_SubChoice aT%_type_scope rT
 FImFun_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__choice_SubChoice
@@ -4380,7 +4382,7 @@ forall (aT : Type) (rT : choiceType),
 subChoiceType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__choice_SubChoice is not universe polymorphic
-Arguments FImFun_type__canonical__choice_SubChoice aT%type_scope rT
+Arguments FImFun_type__canonical__choice_SubChoice aT%_type_scope rT
 FImFun_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__choice_SubChoice
@@ -4391,7 +4393,7 @@ forall (aT : Type) (rT : choiceType),
 subChoiceType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__choice_SubChoice is not universe polymorphic
-Arguments FImFun_type__canonical__choice_SubChoice aT%type_scope rT
+Arguments FImFun_type__canonical__choice_SubChoice aT%_type_scope rT
 FImFun_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__choice_SubChoice
@@ -4402,7 +4404,7 @@ forall (aT : Type) (rT : choiceType),
 subChoiceType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__choice_SubChoice is not universe polymorphic
-Arguments FImFun_type__canonical__choice_SubChoice aT%type_scope rT
+Arguments FImFun_type__canonical__choice_SubChoice aT%_type_scope rT
 FImFun_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__choice_SubChoice
@@ -4413,7 +4415,7 @@ forall (aT : Type) (rT : choiceType),
 subChoiceType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__choice_SubChoice is not universe polymorphic
-Arguments FImFun_type__canonical__choice_SubChoice aT%type_scope rT
+Arguments FImFun_type__canonical__choice_SubChoice aT%_type_scope rT
 FImFun_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__choice_SubChoice
@@ -4424,7 +4426,7 @@ forall (aT : Type) (rT : choiceType),
 subChoiceType (T:=aT -> rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__choice_SubChoice is not universe polymorphic
-Arguments FImFun_type__canonical__choice_SubChoice aT%type_scope rT
+Arguments FImFun_type__canonical__choice_SubChoice aT%_type_scope rT
 FImFun_type__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__choice_SubChoice
@@ -4437,7 +4439,7 @@ library mathcomp.classical.cardinality, line 1376, characters 0-88
 forall {aT rT : Type} (x : rT), finite_set (range (cst x : aT -> rT))
 
 finite_image_cst is not universe polymorphic
-Arguments finite_image_cst {aT rT}%type_scope x
+Arguments finite_image_cst {aT rT}%_type_scope x
 finite_image_cst is opaque
 Expands to: Constant mathcomp.classical.cardinality.finite_image_cst
 Declared in
@@ -4457,7 +4459,7 @@ forall (aT : Type) [rT : Type], rT -> {fimfun aT >-> rT}
 
 functions_cst__canonical__cardinality_FImFun is not universe polymorphic
 Arguments functions_cst__canonical__cardinality_FImFun 
-  aT%type_scope [rT]%type_scope x
+  aT%_type_scope [rT]%_type_scope x
 functions_cst__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.functions_cst__canonical__cardinality_FImFun
@@ -4468,7 +4470,7 @@ forall (aT : Type) [rT : Type], rT -> {fimfun aT >-> rT}
 
 functions_cst__canonical__cardinality_FImFun is not universe polymorphic
 Arguments functions_cst__canonical__cardinality_FImFun 
-  aT%type_scope [rT]%type_scope x
+  aT%_type_scope [rT]%_type_scope x
 functions_cst__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.functions_cst__canonical__cardinality_FImFun
@@ -4479,7 +4481,7 @@ forall (aT : Type) [rT : Type], rT -> {fimfun aT >-> rT}
 
 functions_cst__canonical__cardinality_FImFun is not universe polymorphic
 Arguments functions_cst__canonical__cardinality_FImFun 
-  aT%type_scope [rT]%type_scope x
+  aT%_type_scope [rT]%_type_scope x
 functions_cst__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.functions_cst__canonical__cardinality_FImFun
@@ -4490,7 +4492,7 @@ forall (aT : Type) [rT : Type], rT -> {fimfun aT >-> rT}
 
 functions_cst__canonical__cardinality_FImFun is not universe polymorphic
 Arguments functions_cst__canonical__cardinality_FImFun 
-  aT%type_scope [rT]%type_scope x
+  aT%_type_scope [rT]%_type_scope x
 functions_cst__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.functions_cst__canonical__cardinality_FImFun
@@ -4501,7 +4503,7 @@ forall (aT : Type) [rT : Type], rT -> {fimfun aT >-> rT}
 
 functions_cst__canonical__cardinality_FImFun is not universe polymorphic
 Arguments functions_cst__canonical__cardinality_FImFun 
-  aT%type_scope [rT]%type_scope x
+  aT%_type_scope [rT]%_type_scope x
 functions_cst__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.functions_cst__canonical__cardinality_FImFun
@@ -4512,7 +4514,7 @@ forall (aT : Type) [rT : Type], rT -> {fimfun aT >-> rT}
 
 functions_cst__canonical__cardinality_FImFun is not universe polymorphic
 Arguments functions_cst__canonical__cardinality_FImFun 
-  aT%type_scope [rT]%type_scope x
+  aT%_type_scope [rT]%_type_scope x
 functions_cst__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.functions_cst__canonical__cardinality_FImFun
@@ -4523,7 +4525,7 @@ forall (aT : Type) [rT : Type], rT -> {fimfun aT >-> rT}
 
 functions_cst__canonical__cardinality_FImFun is not universe polymorphic
 Arguments functions_cst__canonical__cardinality_FImFun 
-  aT%type_scope [rT]%type_scope x
+  aT%_type_scope [rT]%_type_scope x
 functions_cst__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.functions_cst__canonical__cardinality_FImFun
@@ -4535,7 +4537,7 @@ library mathcomp.classical.cardinality, line 1387, characters 0-98
 <span class="vernacular">Definition</span><span class="id"> </span><span id="cst_fimfun" class="id"><a name="cst_fimfun" class="" title="cst_fimfun : forall {aT rT : Type}, rT -> {fimfun aT >-> rT}
 
 cst_fimfun is not universe polymorphic
-Arguments cst_fimfun {aT rT}%type_scope x
+Arguments cst_fimfun {aT rT}%_type_scope x
 cst_fimfun is transparent
 Expands to: Constant mathcomp.classical.cardinality.cst_fimfun
 Declared in
@@ -4545,7 +4547,7 @@ library mathcomp.classical.cardinality, line 1390, characters 11-21
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="fimfun_cst" class="id"><a name="fimfun_cst" class="" title="fimfun_cst : forall [aT rT : Type] (x : rT), cst_fimfun x =1 cst x
 
 fimfun_cst is not universe polymorphic
-Arguments fimfun_cst [aT rT]%type_scope x x
+Arguments fimfun_cst [aT rT]%_type_scope x x
 fimfun_cst is opaque
 Expands to: Constant mathcomp.classical.cardinality.fimfun_cst
 Declared in
@@ -4561,7 +4563,7 @@ forall [aT rT sT : Type] (f : {fimfun aT >-> rT}) (g : rT -> sT),
 FiniteImage.phant_axioms (g \o f)
 
 comp_fimfun_subproof is not universe polymorphic
-Arguments comp_fimfun_subproof [aT rT sT]%type_scope f g%function_scope
+Arguments comp_fimfun_subproof [aT rT sT]%_type_scope f g%_function_scope
 comp_fimfun_subproof is opaque
 Expands to: Constant mathcomp.classical.cardinality.comp_fimfun_subproof
 Declared in
@@ -4578,7 +4580,7 @@ forall [aT rT sT : Type],
 
 ssrfun_comp__canonical__cardinality_FImFun is not universe polymorphic
 Arguments ssrfun_comp__canonical__cardinality_FImFun 
-  [aT rT sT]%type_scope f g%function_scope
+  [aT rT sT]%_type_scope f g%_function_scope
 ssrfun_comp__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.ssrfun_comp__canonical__cardinality_FImFun
@@ -4590,7 +4592,7 @@ forall [aT rT sT : Type],
 
 ssrfun_comp__canonical__cardinality_FImFun is not universe polymorphic
 Arguments ssrfun_comp__canonical__cardinality_FImFun 
-  [aT rT sT]%type_scope f g%function_scope
+  [aT rT sT]%_type_scope f g%_function_scope
 ssrfun_comp__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.ssrfun_comp__canonical__cardinality_FImFun
@@ -4602,7 +4604,7 @@ forall [aT rT sT : Type],
 
 ssrfun_comp__canonical__cardinality_FImFun is not universe polymorphic
 Arguments ssrfun_comp__canonical__cardinality_FImFun 
-  [aT rT sT]%type_scope f g%function_scope
+  [aT rT sT]%_type_scope f g%_function_scope
 ssrfun_comp__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.ssrfun_comp__canonical__cardinality_FImFun
@@ -4614,7 +4616,7 @@ forall [aT rT sT : Type],
 
 ssrfun_comp__canonical__cardinality_FImFun is not universe polymorphic
 Arguments ssrfun_comp__canonical__cardinality_FImFun 
-  [aT rT sT]%type_scope f g%function_scope
+  [aT rT sT]%_type_scope f g%_function_scope
 ssrfun_comp__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.ssrfun_comp__canonical__cardinality_FImFun
@@ -4626,7 +4628,7 @@ forall [aT rT sT : Type],
 
 ssrfun_comp__canonical__cardinality_FImFun is not universe polymorphic
 Arguments ssrfun_comp__canonical__cardinality_FImFun 
-  [aT rT sT]%type_scope f g%function_scope
+  [aT rT sT]%_type_scope f g%_function_scope
 ssrfun_comp__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.ssrfun_comp__canonical__cardinality_FImFun
@@ -4638,7 +4640,7 @@ forall [aT rT sT : Type],
 
 ssrfun_comp__canonical__cardinality_FImFun is not universe polymorphic
 Arguments ssrfun_comp__canonical__cardinality_FImFun 
-  [aT rT sT]%type_scope f g%function_scope
+  [aT rT sT]%_type_scope f g%_function_scope
 ssrfun_comp__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.ssrfun_comp__canonical__cardinality_FImFun
@@ -4650,7 +4652,7 @@ forall [aT rT sT : Type],
 
 ssrfun_comp__canonical__cardinality_FImFun is not universe polymorphic
 Arguments ssrfun_comp__canonical__cardinality_FImFun 
-  [aT rT sT]%type_scope f g%function_scope
+  [aT rT sT]%_type_scope f g%_function_scope
 ssrfun_comp__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.ssrfun_comp__canonical__cardinality_FImFun
@@ -4662,7 +4664,7 @@ forall [aT rT sT : Type],
 
 ssrfun_comp__canonical__cardinality_FImFun is not universe polymorphic
 Arguments ssrfun_comp__canonical__cardinality_FImFun 
-  [aT rT sT]%type_scope f g%function_scope
+  [aT rT sT]%_type_scope f g%_function_scope
 ssrfun_comp__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.ssrfun_comp__canonical__cardinality_FImFun
@@ -4674,7 +4676,7 @@ forall [aT rT sT : Type],
 
 ssrfun_comp__canonical__cardinality_FImFun is not universe polymorphic
 Arguments ssrfun_comp__canonical__cardinality_FImFun 
-  [aT rT sT]%type_scope f g%function_scope
+  [aT rT sT]%_type_scope f g%_function_scope
 ssrfun_comp__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.ssrfun_comp__canonical__cardinality_FImFun
@@ -4686,7 +4688,7 @@ forall [aT rT sT : Type],
 
 ssrfun_comp__canonical__cardinality_FImFun is not universe polymorphic
 Arguments ssrfun_comp__canonical__cardinality_FImFun 
-  [aT rT sT]%type_scope f g%function_scope
+  [aT rT sT]%_type_scope f g%_function_scope
 ssrfun_comp__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.ssrfun_comp__canonical__cardinality_FImFun
@@ -4701,7 +4703,7 @@ forall (aT : Type) (rT : GRing.Zmodule.Exports.zmodType),
 zmod_closed (V:=prod__canonical__Algebra_Zmodule aT rT) fimfun
 
 fimfun_zmod_closed is not universe polymorphic
-Arguments fimfun_zmod_closed aT%type_scope rT
+Arguments fimfun_zmod_closed aT%_type_scope rT
 fimfun_zmod_closed is opaque
 Expands to: Constant mathcomp.classical.cardinality.fimfun_zmod_closed
 Declared in
@@ -4718,7 +4720,7 @@ forall (aT : Type) (rT : GRing.Zmodule.Exports.zmodType),
 GRing.ZmodClosed.Exports.zmodClosed (prod__canonical__Algebra_Zmodule aT rT)
 
 cardinality_fimfun__canonical__Algebra_ZmodClosed is not universe polymorphic
-Arguments cardinality_fimfun__canonical__Algebra_ZmodClosed aT%type_scope rT
+Arguments cardinality_fimfun__canonical__Algebra_ZmodClosed aT%_type_scope rT
 cardinality_fimfun__canonical__Algebra_ZmodClosed is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.cardinality_fimfun__canonical__Algebra_ZmodClosed
@@ -4729,7 +4731,7 @@ forall (aT : Type) (rT : GRing.Zmodule.Exports.zmodType),
 GRing.ZmodClosed.Exports.zmodClosed (prod__canonical__Algebra_Zmodule aT rT)
 
 cardinality_fimfun__canonical__Algebra_ZmodClosed is not universe polymorphic
-Arguments cardinality_fimfun__canonical__Algebra_ZmodClosed aT%type_scope rT
+Arguments cardinality_fimfun__canonical__Algebra_ZmodClosed aT%_type_scope rT
 cardinality_fimfun__canonical__Algebra_ZmodClosed is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.cardinality_fimfun__canonical__Algebra_ZmodClosed
@@ -4740,7 +4742,7 @@ forall (aT : Type) (rT : GRing.Zmodule.Exports.zmodType),
 GRing.ZmodClosed.Exports.zmodClosed (prod__canonical__Algebra_Zmodule aT rT)
 
 cardinality_fimfun__canonical__Algebra_ZmodClosed is not universe polymorphic
-Arguments cardinality_fimfun__canonical__Algebra_ZmodClosed aT%type_scope rT
+Arguments cardinality_fimfun__canonical__Algebra_ZmodClosed aT%_type_scope rT
 cardinality_fimfun__canonical__Algebra_ZmodClosed is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.cardinality_fimfun__canonical__Algebra_ZmodClosed
@@ -4751,7 +4753,7 @@ forall (aT : Type) (rT : GRing.Zmodule.Exports.zmodType),
 GRing.ZmodClosed.Exports.zmodClosed (prod__canonical__Algebra_Zmodule aT rT)
 
 cardinality_fimfun__canonical__Algebra_ZmodClosed is not universe polymorphic
-Arguments cardinality_fimfun__canonical__Algebra_ZmodClosed aT%type_scope rT
+Arguments cardinality_fimfun__canonical__Algebra_ZmodClosed aT%_type_scope rT
 cardinality_fimfun__canonical__Algebra_ZmodClosed is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.cardinality_fimfun__canonical__Algebra_ZmodClosed
@@ -4765,7 +4767,7 @@ GRing.SubZmodule.Exports.subZmodType
   (V:=prod__canonical__Algebra_Zmodule aT rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__Algebra_SubZmodule is not universe polymorphic
-Arguments FImFun_type__canonical__Algebra_SubZmodule aT%type_scope rT
+Arguments FImFun_type__canonical__Algebra_SubZmodule aT%_type_scope rT
 FImFun_type__canonical__Algebra_SubZmodule is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__Algebra_SubZmodule
@@ -4777,7 +4779,7 @@ GRing.SubZmodule.Exports.subZmodType
   (V:=prod__canonical__Algebra_Zmodule aT rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__Algebra_SubZmodule is not universe polymorphic
-Arguments FImFun_type__canonical__Algebra_SubZmodule aT%type_scope rT
+Arguments FImFun_type__canonical__Algebra_SubZmodule aT%_type_scope rT
 FImFun_type__canonical__Algebra_SubZmodule is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__Algebra_SubZmodule
@@ -4789,7 +4791,7 @@ GRing.SubZmodule.Exports.subZmodType
   (V:=prod__canonical__Algebra_Zmodule aT rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__Algebra_SubZmodule is not universe polymorphic
-Arguments FImFun_type__canonical__Algebra_SubZmodule aT%type_scope rT
+Arguments FImFun_type__canonical__Algebra_SubZmodule aT%_type_scope rT
 FImFun_type__canonical__Algebra_SubZmodule is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__Algebra_SubZmodule
@@ -4801,7 +4803,7 @@ GRing.SubZmodule.Exports.subZmodType
   (V:=prod__canonical__Algebra_Zmodule aT rT) (in_mem^~ (mem fimfun))
 
 FImFun_type__canonical__Algebra_SubZmodule is not universe polymorphic
-Arguments FImFun_type__canonical__Algebra_SubZmodule aT%type_scope rT
+Arguments FImFun_type__canonical__Algebra_SubZmodule aT%_type_scope rT
 FImFun_type__canonical__Algebra_SubZmodule is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.FImFun_type__canonical__Algebra_SubZmodule
@@ -4818,7 +4820,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType]
 (f + g)%R = (f \+ g)%R
 
 fimfunD is not universe polymorphic
-Arguments fimfunD [aT]%type_scope [rT] f g
+Arguments fimfunD [aT]%_type_scope [rT] f g
 fimfunD is opaque
 Expands to: Constant mathcomp.classical.cardinality.fimfunD
 Declared in
@@ -4834,7 +4836,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType]
 (- f)%R = (\- f)%R
 
 fimfunN is not universe polymorphic
-Arguments fimfunN [aT]%type_scope [rT] f
+Arguments fimfunN [aT]%_type_scope [rT] f
 fimfunN is opaque
 Expands to: Constant mathcomp.classical.cardinality.fimfunN
 Declared in
@@ -4850,7 +4852,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType]
 (f - g)%R = (f \- g)%R
 
 fimfunB is not universe polymorphic
-Arguments fimfunB [aT]%type_scope [rT] f g
+Arguments fimfunB [aT]%_type_scope [rT] f g
 fimfunB is opaque
 Expands to: Constant mathcomp.classical.cardinality.fimfunB
 Declared in
@@ -4865,7 +4867,7 @@ forall (aT : Type) (rT : GRing.Zmodule.Exports.zmodType),
 (0%R : {fimfun aT >-> rT}) = cst 0%R
 
 fimfun0 is not universe polymorphic
-Arguments fimfun0 aT%type_scope rT
+Arguments fimfun0 aT%_type_scope rT
 fimfun0 is opaque
 Expands to: Constant mathcomp.classical.cardinality.fimfun0
 Declared in
@@ -4882,8 +4884,8 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType]
 (\sum_(i <- r | P i) f i)%R x = (\sum_(i <- r | P i) f i x)%R
 
 fimfun_sum is not universe polymorphic
-Arguments fimfun_sum [aT]%type_scope [rT] [I]%type_scope 
-  r%seq_scope P f%function_scope x
+Arguments fimfun_sum [aT]%_type_scope [rT] [I]%_type_scope 
+  r%_seq_scope P f%_function_scope x
 fimfun_sum is opaque
 Expands to: Constant mathcomp.classical.cardinality.fimfun_sum
 Declared in
@@ -4901,7 +4903,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_add_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_add_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f g
+  [aT]%_type_scope [rT] f g
 Algebra_add_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_add_fun__canonical__cardinality_FImFun
@@ -4913,7 +4915,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_add_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_add_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f g
+  [aT]%_type_scope [rT] f g
 Algebra_add_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_add_fun__canonical__cardinality_FImFun
@@ -4925,7 +4927,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_add_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_add_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f g
+  [aT]%_type_scope [rT] f g
 Algebra_add_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_add_fun__canonical__cardinality_FImFun
@@ -4937,7 +4939,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_add_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_add_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f g
+  [aT]%_type_scope [rT] f g
 Algebra_add_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_add_fun__canonical__cardinality_FImFun
@@ -4949,7 +4951,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_add_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_add_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f g
+  [aT]%_type_scope [rT] f g
 Algebra_add_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_add_fun__canonical__cardinality_FImFun
@@ -4961,7 +4963,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_add_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_add_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f g
+  [aT]%_type_scope [rT] f g
 Algebra_add_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_add_fun__canonical__cardinality_FImFun
@@ -4973,7 +4975,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_add_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_add_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f g
+  [aT]%_type_scope [rT] f g
 Algebra_add_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_add_fun__canonical__cardinality_FImFun
@@ -4986,7 +4988,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_opp_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_opp_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f
+  [aT]%_type_scope [rT] f
 Algebra_opp_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_opp_fun__canonical__cardinality_FImFun
@@ -4998,7 +5000,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_opp_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_opp_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f
+  [aT]%_type_scope [rT] f
 Algebra_opp_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_opp_fun__canonical__cardinality_FImFun
@@ -5010,7 +5012,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_opp_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_opp_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f
+  [aT]%_type_scope [rT] f
 Algebra_opp_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_opp_fun__canonical__cardinality_FImFun
@@ -5022,7 +5024,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_opp_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_opp_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f
+  [aT]%_type_scope [rT] f
 Algebra_opp_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_opp_fun__canonical__cardinality_FImFun
@@ -5034,7 +5036,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_opp_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_opp_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f
+  [aT]%_type_scope [rT] f
 Algebra_opp_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_opp_fun__canonical__cardinality_FImFun
@@ -5046,7 +5048,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_opp_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_opp_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f
+  [aT]%_type_scope [rT] f
 Algebra_opp_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_opp_fun__canonical__cardinality_FImFun
@@ -5058,7 +5060,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_opp_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_opp_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f
+  [aT]%_type_scope [rT] f
 Algebra_opp_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_opp_fun__canonical__cardinality_FImFun
@@ -5071,7 +5073,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_sub_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f g
+  [aT]%_type_scope [rT] f g
 Algebra_sub_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_sub_fun__canonical__cardinality_FImFun
@@ -5083,7 +5085,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_sub_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f g
+  [aT]%_type_scope [rT] f g
 Algebra_sub_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_sub_fun__canonical__cardinality_FImFun
@@ -5095,7 +5097,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_sub_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f g
+  [aT]%_type_scope [rT] f g
 Algebra_sub_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_sub_fun__canonical__cardinality_FImFun
@@ -5107,7 +5109,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_sub_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f g
+  [aT]%_type_scope [rT] f g
 Algebra_sub_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_sub_fun__canonical__cardinality_FImFun
@@ -5119,7 +5121,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_sub_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f g
+  [aT]%_type_scope [rT] f g
 Algebra_sub_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_sub_fun__canonical__cardinality_FImFun
@@ -5131,7 +5133,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_sub_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f g
+  [aT]%_type_scope [rT] f g
 Algebra_sub_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_sub_fun__canonical__cardinality_FImFun
@@ -5143,7 +5145,7 @@ forall [aT : Type] [rT : GRing.Zmodule.Exports.zmodType],
 
 Algebra_sub_fun__canonical__cardinality_FImFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__cardinality_FImFun 
-  [aT]%type_scope [rT] f g
+  [aT]%_type_scope [rT] f g
 Algebra_sub_fun__canonical__cardinality_FImFun is transparent
 Expands to: Constant
             mathcomp.classical.cardinality.Algebra_sub_fun__canonical__cardinality_FImFun

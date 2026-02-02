@@ -236,7 +236,7 @@ Declared in library Stdlib.Reals.RIneq, line 2744, characters 0-46
 Req_dec_T : forall r1 r2 : R, {r1 = r2} + {r1 <> r2}
 
 Req_dec_T is not universe polymorphic
-Arguments Req_dec_T (r1 r2)%R_scope
+Arguments Req_dec_T (r1 r2)%_R_scope
 Req_dec_T is opaque
 Expands to: Constant Stdlib.Reals.RIneq.Req_dec_T
 Declared in library Stdlib.Reals.RIneq, line 148, characters 6-15
@@ -253,7 +253,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="eqr" class="id"><a name="eqr" class="" title="eqr : R -> R -> bool
 
 eqr is not universe polymorphic
-Arguments eqr (r1 r2)%R_scope
+Arguments eqr (r1 r2)%_R_scope
 eqr is transparent
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.eqr
 Declared in library mathcomp.reals_stdlib.Rstruct, line 49, characters 11-14
@@ -333,7 +333,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 59, characters 5-9
 <span class="vernacular">Definition</span><span class="id"> </span><span id="pickR" class="id"><a name="pickR" class="" title="pickR : pred R -> nat -> option R
 
 pickR is not universe polymorphic
-Arguments pickR P n%nat_scope
+Arguments pickR P n%_nat_scope
 pickR is transparent
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.pickR
 Declared in library mathcomp.reals_stdlib.Rstruct, line 62, characters 11-16
@@ -343,7 +343,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 62, characters 11-16
 <span class="vernacular">Fact</span><span class="id"> </span><span id="pickR_some" class="id"><a name="pickR_some" class="" title="pickR_some : forall [P : pred R] [n : nat] [x : R], pickR P n = Some x -> P x
 
 pickR_some is not universe polymorphic
-Arguments pickR_some [P] [n]%nat_scope [x]%R_scope _
+Arguments pickR_some [P] [n]%_nat_scope [x]%_R_scope _
 pickR_some is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.pickR_some
 Declared in library mathcomp.reals_stdlib.Rstruct, line 65, characters 5-15
@@ -775,7 +775,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 114, characters 11-17
 forall [x y : R], (y * x)%R = 1%R /\ (x * y)%R = 1%R -> unit_R x
 
 intro_unit_R is not universe polymorphic
-Arguments intro_unit_R [x y]%R_scope _
+Arguments intro_unit_R [x y]%_R_scope _
 intro_unit_R is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.intro_unit_R
 Declared in library mathcomp.reals_stdlib.Rstruct, line 116, characters 6-18
@@ -871,7 +871,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 149, characters 6-14
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Rinvx" class="id"><a name="Rinvx" class="" title="Rinvx : R -> R
 
 Rinvx is not universe polymorphic
-Arguments Rinvx _%R_scope
+Arguments Rinvx _%_R_scope
 Rinvx is transparent
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rinvx
 Declared in library mathcomp.reals_stdlib.Rstruct, line 155, characters 11-16
@@ -927,7 +927,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 157, characters 0-114
 forall [x y : R], (x * y)%R = 0%R -> (x == 0%R) || (y == 0%R)
 
 R_idomainMixin is not universe polymorphic
-Arguments R_idomainMixin [x y]%R_scope _
+Arguments R_idomainMixin [x y]%_R_scope _
 R_idomainMixin is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.R_idomainMixin
 Declared in library mathcomp.reals_stdlib.Rstruct, line 161, characters 6-20
@@ -1040,7 +1040,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 169, characters 0-72
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Rleb" class="id"><a name="Rleb" class="" title="Rleb : R -> R -> bool
 
 Rleb is not universe polymorphic
-Arguments Rleb (r1 r2)%R_scope
+Arguments Rleb (r1 r2)%_R_scope
 Rleb is transparent
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rleb
 Declared in library mathcomp.reals_stdlib.Rstruct, line 173, characters 11-15
@@ -1048,7 +1048,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 173, characters 11-15
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Rltb" class="id"><a name="Rltb" class="" title="Rltb : R -> R -> bool
 
 Rltb is not universe polymorphic
-Arguments Rltb (r1 r2)%R_scope
+Arguments Rltb (r1 r2)%_R_scope
 Rltb is transparent
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rltb
 Declared in library mathcomp.reals_stdlib.Rstruct, line 174, characters 11-15
@@ -1056,7 +1056,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 174, characters 11-15
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Rgeb" class="id"><a name="Rgeb" class="" title="Rgeb : R -> R -> bool
 
 Rgeb is not universe polymorphic
-Arguments Rgeb (r1 r2)%R_scope
+Arguments Rgeb (r1 r2)%_R_scope
 Rgeb is transparent
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rgeb
 Declared in library mathcomp.reals_stdlib.Rstruct, line 175, characters 11-15
@@ -1064,7 +1064,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 175, characters 11-15
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Rgtb" class="id"><a name="Rgtb" class="" title="Rgtb : R -> R -> bool
 
 Rgtb is not universe polymorphic
-Arguments Rgtb (r1 r2)%R_scope
+Arguments Rgtb (r1 r2)%_R_scope
 Rgtb is transparent
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rgtb
 Declared in library mathcomp.reals_stdlib.Rstruct, line 176, characters 11-15
@@ -1073,7 +1073,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 176, characters 11-15
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RlebP" class="id"><a name="RlebP" class="" title="RlebP : forall r1 r2 : R, reflect (r1 <= r2)%R (Rleb r1 r2)
 
 RlebP is not universe polymorphic
-Arguments RlebP (r1 r2)%R_scope
+Arguments RlebP (r1 r2)%_R_scope
 RlebP is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RlebP
 Declared in library mathcomp.reals_stdlib.Rstruct, line 178, characters 6-11
@@ -1086,7 +1086,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 178, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RltbP" class="id"><a name="RltbP" class="" title="RltbP : forall r1 r2 : R, reflect (r1 < r2)%R (Rltb r1 r2)
 
 RltbP is not universe polymorphic
-Arguments RltbP (r1 r2)%R_scope
+Arguments RltbP (r1 r2)%_R_scope
 RltbP is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RltbP
 Declared in library mathcomp.reals_stdlib.Rstruct, line 181, characters 6-11
@@ -1108,7 +1108,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Rleb_norm_add" class="id"><a name="Rleb_norm_add" class="" title="Rleb_norm_add : forall x y : R, Rleb (Rabs (x + y)) (Rabs x + Rabs y)
 
 Rleb_norm_add is not universe polymorphic
-Arguments Rleb_norm_add (x y)%R_scope
+Arguments Rleb_norm_add (x y)%_R_scope
 Rleb_norm_add is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rleb_norm_add
 Declared in library mathcomp.reals_stdlib.Rstruct, line 198, characters 6-19
@@ -1121,7 +1121,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 198, characters 6-19
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="addr_Rgtb0" class="id"><a name="addr_Rgtb0" class="" title="addr_Rgtb0 : forall [x y : R], Rltb 0 x -> Rltb 0 y -> Rltb 0 (x + y)
 
 addr_Rgtb0 is not universe polymorphic
-Arguments addr_Rgtb0 [x y]%R_scope _ _
+Arguments addr_Rgtb0 [x y]%_R_scope _ _
 addr_Rgtb0 is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.addr_Rgtb0
 Declared in library mathcomp.reals_stdlib.Rstruct, line 201, characters 6-16
@@ -1134,7 +1134,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 201, characters 6-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Rnorm0_eq0" class="id"><a name="Rnorm0_eq0" class="" title="Rnorm0_eq0 : forall [x : R], Rabs x = 0%R -> x = 0%R
 
 Rnorm0_eq0 is not universe polymorphic
-Arguments Rnorm0_eq0 [x]%R_scope _
+Arguments Rnorm0_eq0 [x]%_R_scope _
 Rnorm0_eq0 is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rnorm0_eq0
 Declared in library mathcomp.reals_stdlib.Rstruct, line 204, characters 6-16
@@ -1147,7 +1147,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 204, characters 6-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Rleb_leVge" class="id"><a name="Rleb_leVge" class="" title="Rleb_leVge : forall [x y : R], Rleb 0 x -> Rleb 0 y -> Rleb x y || Rleb y x
 
 Rleb_leVge is not universe polymorphic
-Arguments Rleb_leVge [x y]%R_scope _ _
+Arguments Rleb_leVge [x y]%_R_scope _ _
 Rleb_leVge is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rleb_leVge
 Declared in library mathcomp.reals_stdlib.Rstruct, line 207, characters 6-16
@@ -1176,7 +1176,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 214, characters 6-12
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Rleb_def" class="id"><a name="Rleb_def" class="" title="Rleb_def : forall x y : R, Rleb x y = (Rabs (y - x) == (y - x)%R)
 
 Rleb_def is not universe polymorphic
-Arguments Rleb_def (x y)%R_scope
+Arguments Rleb_def (x y)%_R_scope
 Rleb_def is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rleb_def
 Declared in library mathcomp.reals_stdlib.Rstruct, line 217, characters 6-14
@@ -1196,7 +1196,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Rltb_def" class="id"><a name="Rltb_def" class="" title="Rltb_def : forall x y : R, Rltb x y = (y != x) && Rleb x y
 
 Rltb_def is not universe polymorphic
-Arguments Rltb_def (x y)%R_scope
+Arguments Rltb_def (x y)%_R_scope
 Rltb_def is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rltb_def
 Declared in library mathcomp.reals_stdlib.Rstruct, line 228, characters 6-14
@@ -1253,7 +1253,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 238, characters 0-139
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RleP" class="id"><a name="RleP" class="" title="RleP : forall {x y : R}, reflect (x <= y)%R (x <= y)%R
 
 RleP is not universe polymorphic
-Arguments RleP {x y}%R_scope
+Arguments RleP {x y}%_R_scope
 RleP is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RleP
 Declared in library mathcomp.reals_stdlib.Rstruct, line 241, characters 6-10
@@ -1265,7 +1265,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 241, characters 6-10
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RltP" class="id"><a name="RltP" class="" title="RltP : forall {x y : R}, reflect (x < y)%R (x < y)%R
 
 RltP is not universe polymorphic
-Arguments RltP {x y}%R_scope
+Arguments RltP {x y}%_R_scope
 RltP is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RltP
 Declared in library mathcomp.reals_stdlib.Rstruct, line 243, characters 6-10
@@ -1278,7 +1278,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 243, characters 6-10
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Rreal_axiom" class="id"><a name="Rreal_axiom" class="" title="Rreal_axiom : forall x : R, (0 <= x)%R || (x <= 0)%R
 
 Rreal_axiom is not universe polymorphic
-Arguments Rreal_axiom x%R_scope
+Arguments Rreal_axiom x%_R_scope
 Rreal_axiom is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rreal_axiom
 Declared in library mathcomp.reals_stdlib.Rstruct, line 251, characters 6-17
@@ -1450,7 +1450,7 @@ exists alp : R,
    D_x no_cond x x0 /\ (dist R_met x0 x < alp)%R ->
    (dist R_met (g x0) (g x) < eps)%R)
 
-Arguments continuity_eq [f g]%function_scope _ _ x [eps] _
+Arguments continuity_eq [f g]%_function_scope _ _ x [eps] _
 continuity_eq is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.continuity_eq
 Declared in library mathcomp.reals_stdlib.Rstruct, line 313, characters 6-19
@@ -1483,8 +1483,8 @@ exists alp : R,
       ((fun x1 : R => (\sum_(i | P i) F i x1)%R) x) <
     eps)%R)
 
-Arguments continuity_sum [I] [F]%function_scope [P] 
-  _%function_scope x [eps] _
+Arguments continuity_sum [I] [F]%_function_scope [P] 
+  _%_function_scope x [eps] _
 continuity_sum is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.continuity_sum
 Declared in library mathcomp.reals_stdlib.Rstruct, line 320, characters 6-20
@@ -1528,7 +1528,7 @@ exists alp : R,
       ((fun x1 : R => (f x1 ^+ n)%R) x) <
     eps)%R)
 
-Arguments continuity_exp [f]%function_scope n%nat_scope _ x [eps] _
+Arguments continuity_exp [f]%_function_scope n%_nat_scope _ x [eps] _
 continuity_exp is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.continuity_exp
 Declared in library mathcomp.reals_stdlib.Rstruct, line 339, characters 6-20
@@ -1635,7 +1635,7 @@ is_upper_bound E x =
 ubound (T:=RbaseSymbolsImpl_R__canonical__Order_POrder) E x
 
 is_upper_boundE is not universe polymorphic
-Arguments is_upper_boundE E%classical_set_scope x%R_scope
+Arguments is_upper_boundE E%_classical_set_scope x%_R_scope
 is_upper_boundE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.is_upper_boundE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 384, characters 6-21
@@ -1652,7 +1652,7 @@ forall E : set R,
 bound E = has_ubound (T:=RbaseSymbolsImpl_R__canonical__Order_POrder) E
 
 boundE is not universe polymorphic
-Arguments boundE E%classical_set_scope
+Arguments boundE E%_classical_set_scope
 boundE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.boundE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 390, characters 6-12
@@ -1669,7 +1669,7 @@ has_sup (T:=RbaseSymbolsImpl_R__canonical__Order_POrder) E ->
 | isLub (T:=RbaseSymbolsImpl_R__canonical__Order_POrder) E m}
 
 Rcondcomplete is not universe polymorphic
-Arguments Rcondcomplete [E]%classical_set_scope _
+Arguments Rcondcomplete [E]%_classical_set_scope _
 Rcondcomplete is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rcondcomplete
 Declared in library mathcomp.reals_stdlib.Rstruct, line 393, characters 6-19
@@ -1688,7 +1688,7 @@ has_sup (T:=RbaseSymbolsImpl_R__canonical__Order_POrder) E ->
 (supremums (T:=RbaseSymbolsImpl_R__canonical__Order_POrder) E !=set0)%classic
 
 Rsupremums_neq0 is not universe polymorphic
-Arguments Rsupremums_neq0 [E]%classical_set_scope _
+Arguments Rsupremums_neq0 [E]%_classical_set_scope _
 Rsupremums_neq0 is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rsupremums_neq0
 Declared in library mathcomp.reals_stdlib.Rstruct, line 400, characters 6-21
@@ -1705,7 +1705,7 @@ isLub (T:=RbaseSymbolsImpl_R__canonical__Order_POrder) E
   (supremum (T:=RbaseSymbolsImpl_R__canonical__Order_POrder) x0 E)
 
 Rsup_isLub is not universe polymorphic
-Arguments Rsup_isLub x0 [E]%classical_set_scope _
+Arguments Rsup_isLub x0 [E]%_classical_set_scope _
 Rsup_isLub is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rsup_isLub
 Declared in library mathcomp.reals_stdlib.Rstruct, line 403, characters 6-16
@@ -1731,7 +1731,7 @@ exists2 e : R,
   (supremum (T:=RbaseSymbolsImpl_R__canonical__Order_POrder) x0 E - eps < e)%R
 
 real_sup_adherent is not universe polymorphic
-Arguments real_sup_adherent x0 [E]%classical_set_scope [eps]%R_scope _ _
+Arguments real_sup_adherent x0 [E]%_classical_set_scope [eps]%_R_scope _ _
 real_sup_adherent is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.real_sup_adherent
 Declared in library mathcomp.reals_stdlib.Rstruct, line 415, characters 6-23
@@ -1765,7 +1765,7 @@ E x ->
 (x <= supremum (T:=RbaseSymbolsImpl_R__canonical__Order_POrder) x0 E)%R =
 true
 
-Arguments Rsup_ub x0 [E]%classical_set_scope _ [x] _
+Arguments Rsup_ub x0 [E]%_classical_set_scope _ [x] _
 Rsup_ub is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rsup_ub
 Declared in library mathcomp.reals_stdlib.Rstruct, line 427, characters 6-13
@@ -1835,7 +1835,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 447, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expRD" class="id"><a name="expRD" class="" title="expRD : forall x y : R, (exp x * exp y)%R = exp (x + y)
 
 expRD is not universe polymorphic
-Arguments expRD (x y)%R_scope
+Arguments expRD (x y)%_R_scope
 expRD is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.expRD
 Declared in library mathcomp.reals_stdlib.Rstruct, line 450, characters 6-11
@@ -1848,7 +1848,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 450, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expRX" class="id"><a name="expRX" class="" title="expRX : forall (x : R) (n : nat), (exp x ^+ n)%R = exp (x *+ n)%R
 
 expRX is not universe polymorphic
-Arguments expRX x%R_scope n%nat_scope
+Arguments expRX x%_R_scope n%_nat_scope
 expRX is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.expRX
 Declared in library mathcomp.reals_stdlib.Rstruct, line 453, characters 6-11
@@ -1863,7 +1863,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sinD" class="id"><a name="sinD" class="" title="sinD : forall x y : R, sin (x + y) = (sin x * cos y + cos x * sin y)%R
 
 sinD is not universe polymorphic
-Arguments sinD (x y)%R_scope
+Arguments sinD (x y)%_R_scope
 sinD is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.sinD
 Declared in library mathcomp.reals_stdlib.Rstruct, line 459, characters 6-10
@@ -1876,7 +1876,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 459, characters 6-10
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cosD" class="id"><a name="cosD" class="" title="cosD : forall x y : R, cos (x + y) = (cos x * cos y - sin x * sin y)%R
 
 cosD is not universe polymorphic
-Arguments cosD (x y)%R_scope
+Arguments cosD (x y)%_R_scope
 cosD is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.cosD
 Declared in library mathcomp.reals_stdlib.Rstruct, line 462, characters 6-10
@@ -1889,7 +1889,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 462, characters 6-10
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RplusE" class="id"><a name="RplusE" class="" title="RplusE : forall x y : R, (x + y)%R = (x + y)%R
 
 RplusE is not universe polymorphic
-Arguments RplusE (x y)%R_scope
+Arguments RplusE (x y)%_R_scope
 RplusE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RplusE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 465, characters 6-12
@@ -1902,7 +1902,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 465, characters 6-12
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RminusE" class="id"><a name="RminusE" class="" title="RminusE : forall x y : R, (x - y)%R = (x - y)%R
 
 RminusE is not universe polymorphic
-Arguments RminusE (x y)%R_scope
+Arguments RminusE (x y)%_R_scope
 RminusE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RminusE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 467, characters 6-13
@@ -1915,7 +1915,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 467, characters 6-13
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RmultE" class="id"><a name="RmultE" class="" title="RmultE : forall x y : R, (x * y)%R = (x * y)%R
 
 RmultE is not universe polymorphic
-Arguments RmultE (x y)%R_scope
+Arguments RmultE (x y)%_R_scope
 RmultE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RmultE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 469, characters 6-12
@@ -1928,7 +1928,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 469, characters 6-12
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RoppE" class="id"><a name="RoppE" class="" title="RoppE : forall x : R, (- x)%R = (- x)%R
 
 RoppE is not universe polymorphic
-Arguments RoppE x%R_scope
+Arguments RoppE x%_R_scope
 RoppE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RoppE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 471, characters 6-11
@@ -1941,7 +1941,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 471, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RinvE" class="id"><a name="RinvE" class="" title="RinvE : forall x : R, (/ x)%R = x^-1%R
 
 RinvE is not universe polymorphic
-Arguments RinvE x%R_scope
+Arguments RinvE x%_R_scope
 RinvE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RinvE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 473, characters 6-11
@@ -1954,7 +1954,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 473, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RdivE" class="id"><a name="RdivE" class="" title="RdivE : forall x y : R, (x / y)%R = (x / y)%R
 
 RdivE is not universe polymorphic
-Arguments RdivE (x y)%R_scope
+Arguments RdivE (x y)%_R_scope
 RdivE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RdivE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 475, characters 6-11
@@ -1967,7 +1967,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 475, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="INRE" class="id"><a name="INRE" class="" title="INRE : forall n : nat, INR n = n%:R%R
 
 INRE is not universe polymorphic
-Arguments INRE n%nat_scope
+Arguments INRE n%_nat_scope
 INRE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.INRE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 477, characters 6-10
@@ -1980,7 +1980,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 477, characters 6-10
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Pos_to_natE" class="id"><a name="Pos_to_natE" class="" title="Pos_to_natE : forall p : positive, Pos.to_nat p = nat_of_pos p
 
 Pos_to_natE is not universe polymorphic
-Arguments Pos_to_natE p%positive_scope
+Arguments Pos_to_natE p%_positive_scope
 Pos_to_natE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.Pos_to_natE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 480, characters 6-17
@@ -1997,7 +1997,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="IZRposE" class="id"><a name="IZRposE" class="" title="IZRposE : forall p : positive, IZR (Z.pos p) = INR (nat_of_pos p)
 
 IZRposE is not universe polymorphic
-Arguments IZRposE p%positive_scope
+Arguments IZRposE p%_positive_scope
 IZRposE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.IZRposE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 488, characters 6-13
@@ -2019,7 +2019,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RsqrtE" class="id"><a name="RsqrtE" class="" title="RsqrtE : forall x : R, sqrt x = Num.ExtraDef.sqrtr x
 
 RsqrtE is not universe polymorphic
-Arguments RsqrtE x%R_scope
+Arguments RsqrtE x%_R_scope
 RsqrtE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RsqrtE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 498, characters 6-12
@@ -2038,7 +2038,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RpowE" class="id"><a name="RpowE" class="" title="RpowE : forall (x : R) (n : nat), (x ^ n)%R = (x ^+ n)%R
 
 RpowE is not universe polymorphic
-Arguments RpowE x%R_scope n%nat_scope
+Arguments RpowE x%_R_scope n%_nat_scope
 RpowE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RpowE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 508, characters 6-11
@@ -2051,7 +2051,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 508, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RmaxE" class="id"><a name="RmaxE" class="" title="RmaxE : forall x y : R, Rmax x y = Num.max x y
 
 RmaxE is not universe polymorphic
-Arguments RmaxE (x y)%R_scope
+Arguments RmaxE (x y)%_R_scope
 RmaxE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RmaxE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 511, characters 6-11
@@ -2066,7 +2066,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RminE" class="id"><a name="RminE" class="" title="RminE : forall x y : R, Rmin x y = Num.min x y
 
 RminE is not universe polymorphic
-Arguments RminE (x y)%R_scope
+Arguments RminE (x y)%_R_scope
 RminE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RminE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 518, characters 6-11
@@ -2081,7 +2081,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RabsE" class="id"><a name="RabsE" class="" title="RabsE : forall x : R, Rabs x = `|x|%R
 
 RabsE is not universe polymorphic
-Arguments RabsE x%R_scope
+Arguments RabsE x%_R_scope
 RabsE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RabsE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 524, characters 6-11
@@ -2096,7 +2096,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RdistE" class="id"><a name="RdistE" class="" title="RdistE : forall x y : R, Rdist x y = `|x - y|%R
 
 RdistE is not universe polymorphic
-Arguments RdistE (x y)%R_scope
+Arguments RdistE (x y)%_R_scope
 RdistE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.RdistE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 530, characters 6-12
@@ -2110,7 +2110,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 530, characters 6-12
 forall (f : nat -> R) (n : nat), sum_f_R0 f n = (\sum_(0 <= k < n.+1) f k)%R
 
 sum_f_R0E is not universe polymorphic
-Arguments sum_f_R0E f%function_scope n%nat_scope
+Arguments sum_f_R0E f%_function_scope n%_nat_scope
 sum_f_R0E is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.sum_f_R0E
 Declared in library mathcomp.reals_stdlib.Rstruct, line 533, characters 6-15
@@ -2128,7 +2128,7 @@ Qed.</div></details>
                               end
 
 factE is not universe polymorphic
-Arguments factE n%nat_scope
+Arguments factE n%_nat_scope
 factE is opaque
 Expands to: Constant mathcomp.boot.ssrnat.factE
 Declared in library mathcomp.boot.ssrnat, line 1368, characters 6-11
@@ -2145,7 +2145,7 @@ Declared in library mathcomp.boot.ssrnat, line 1368, characters 6-11
 <span class="vernacular">Definition</span><span class="id"> </span><span id="bigmaxr" class="id"><a name="bigmaxr" class="" title="bigmaxr : forall {R : realDomainType}, R -> seq R -> R
 
 bigmaxr is not universe polymorphic
-Arguments bigmaxr {R} r%ring_scope s%seq_scope
+Arguments bigmaxr {R} r%_ring_scope s%_seq_scope
 bigmaxr is transparent
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bigmaxr
 Declared in library mathcomp.reals_stdlib.Rstruct, line 547, characters 11-18
@@ -2156,7 +2156,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 547, characters 11-18
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigmaxr_nil" class="id"><a name="bigmaxr_nil" class="" title="bigmaxr_nil : forall {R : realDomainType} (x0 : R), bigmaxr x0 [::] = x0
 
 bigmaxr_nil is not universe polymorphic
-Arguments bigmaxr_nil {R} x0%ring_scope
+Arguments bigmaxr_nil {R} x0%_ring_scope
 bigmaxr_nil is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bigmaxr_nil
 Declared in library mathcomp.reals_stdlib.Rstruct, line 551, characters 6-17
@@ -2172,7 +2172,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigmaxr_un" class="id"><a name="bigmaxr_un" class="" title="bigmaxr_un : forall {R : realDomainType} (x0 x : R), bigmaxr x0 [:: x] = x
 
 bigmaxr_un is not universe polymorphic
-Arguments bigmaxr_un {R} (x0 x)%ring_scope
+Arguments bigmaxr_un {R} (x0 x)%_ring_scope
 bigmaxr_un is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bigmaxr_un
 Declared in library mathcomp.reals_stdlib.Rstruct, line 558, characters 6-16
@@ -2190,7 +2190,7 @@ forall {R : realDomainType} (r : R) (s : seq R),
 bigmaxr r s = foldr Num.max (head r s) (behead s)
 
 bigmaxrE is not universe polymorphic
-Arguments bigmaxrE {R} r%ring_scope s%seq_scope
+Arguments bigmaxrE {R} r%_ring_scope s%_seq_scope
 bigmaxrE is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bigmaxrE
 Declared in library mathcomp.reals_stdlib.Rstruct, line 566, characters 6-14
@@ -2214,7 +2214,7 @@ Num.max x (\big[Num.max/x]_(j <- y :: s) j) =
 Num.max x (\big[Num.max/y]_(i <- y :: s) i)
 
 bigrmax_dflt is not universe polymorphic
-Arguments bigrmax_dflt {R} (x y)%ring_scope s%seq_scope
+Arguments bigrmax_dflt {R} (x y)%_ring_scope s%_seq_scope
 bigrmax_dflt is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bigrmax_dflt
 Declared in library mathcomp.reals_stdlib.Rstruct, line 578, characters 6-18
@@ -2235,7 +2235,7 @@ forall {R : realDomainType} (x0 x y : R) (lr : seq R),
 bigmaxr x0 [:: x, y & lr] = Num.max x (bigmaxr x0 (y :: lr))
 
 bigmaxr_cons is not universe polymorphic
-Arguments bigmaxr_cons {R} (x0 x y)%ring_scope lr%seq_scope
+Arguments bigmaxr_cons {R} (x0 x y)%_ring_scope lr%_seq_scope
 bigmaxr_cons is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bigmaxr_cons
 Declared in library mathcomp.reals_stdlib.Rstruct, line 588, characters 6-18
@@ -2255,7 +2255,7 @@ forall {R : realDomainType} (x0 : R) [s : seq R] [i : nat],
 i < size s -> (nth x0 s i <= bigmaxr x0 s)%R
 
 bigmaxr_ler is not universe polymorphic
-Arguments bigmaxr_ler {R} x0%ring_scope [s]%seq_scope [i]%nat_scope _
+Arguments bigmaxr_ler {R} x0%_ring_scope [s]%_seq_scope [i]%_nat_scope _
 bigmaxr_ler is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bigmaxr_ler
 Declared in library mathcomp.reals_stdlib.Rstruct, line 597, characters 6-17
@@ -2279,7 +2279,7 @@ forall {R : realDomainType} (x0 : R) (lr : seq R) (x : R),
 bigmaxr (x0 + x) [seq (y + x)%R | y <- lr] = (bigmaxr x0 lr + x)%R
 
 bigmaxr_addr is not universe polymorphic
-Arguments bigmaxr_addr {R} x0%ring_scope lr%seq_scope x%ring_scope
+Arguments bigmaxr_addr {R} x0%_ring_scope lr%_seq_scope x%_ring_scope
 bigmaxr_addr is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bigmaxr_addr
 Declared in library mathcomp.reals_stdlib.Rstruct, line 611, characters 6-18
@@ -2302,7 +2302,7 @@ forall {R : realDomainType} (x0 : R) [lr : seq R],
 0 < size lr -> bigmaxr x0 lr \in lr
 
 bigmaxr_mem is not universe polymorphic
-Arguments bigmaxr_mem {R} x0%ring_scope [lr]%seq_scope _
+Arguments bigmaxr_mem {R} x0%_ring_scope [lr]%_seq_scope _
 bigmaxr_mem is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bigmaxr_mem
 Declared in library mathcomp.reals_stdlib.Rstruct, line 623, characters 6-17
@@ -2327,7 +2327,8 @@ forall {R : realDomainType} [A : finType] (s : seq A) [k : R] (x : A -> R),
 bigmaxr 0 [seq (k * x i)%R | i <- s] = (k * bigmaxr 0 [seq x i | i <- s])%R
 
 bigmaxr_mulr is not universe polymorphic
-Arguments bigmaxr_mulr {R} [A] s%seq_scope [k]%ring_scope x%function_scope _
+Arguments bigmaxr_mulr {R} [A] s%_seq_scope [k]%_ring_scope 
+  x%_function_scope _
 bigmaxr_mulr is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bigmaxr_mulr
 Declared in library mathcomp.reals_stdlib.Rstruct, line 637, characters 6-18
@@ -2352,7 +2353,7 @@ forall {R : realDomainType} (x0 : R) [lr : seq R],
 0 < size lr -> index (bigmaxr x0 lr) lr < size lr
 
 bigmaxr_index is not universe polymorphic
-Arguments bigmaxr_index {R} x0%ring_scope [lr]%seq_scope _
+Arguments bigmaxr_index {R} x0%_ring_scope [lr]%_seq_scope _
 bigmaxr_index is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bigmaxr_index
 Declared in library mathcomp.reals_stdlib.Rstruct, line 651, characters 6-19
@@ -2377,7 +2378,7 @@ reflect (forall i : nat, i < size lr -> (nth x0 lr i <= x)%R)
   (bigmaxr x0 lr <= x)%R
 
 bigmaxr_lerP is not universe polymorphic
-Arguments bigmaxr_lerP {R} x0%ring_scope [lr]%seq_scope x%ring_scope _
+Arguments bigmaxr_lerP {R} x0%_ring_scope [lr]%_seq_scope x%_ring_scope _
 bigmaxr_lerP is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bigmaxr_lerP
 Declared in library mathcomp.reals_stdlib.Rstruct, line 663, characters 6-18
@@ -2403,7 +2404,7 @@ reflect (forall i : nat, i < size lr -> (nth x0 lr i < x)%R)
   (bigmaxr x0 lr < x)%R
 
 bigmaxr_ltrP is not universe polymorphic
-Arguments bigmaxr_ltrP {R} x0%ring_scope [lr]%seq_scope x%ring_scope _
+Arguments bigmaxr_ltrP {R} x0%_ring_scope [lr]%_seq_scope x%_ring_scope _
 bigmaxr_ltrP is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bigmaxr_ltrP
 Declared in library mathcomp.reals_stdlib.Rstruct, line 676, characters 6-18
@@ -2428,7 +2429,7 @@ x \in lr /\ (forall i : nat, i < size lr -> (nth x0 lr i <= x)%R) ->
 bigmaxr x0 lr = x
 
 bigmaxrP is not universe polymorphic
-Arguments bigmaxrP {R} [x0]%ring_scope [lr] [x]%ring_scope _
+Arguments bigmaxrP {R} [x0]%_ring_scope [lr] [x]%_ring_scope _
 bigmaxrP is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bigmaxrP
 Declared in library mathcomp.reals_stdlib.Rstruct, line 689, characters 6-14
@@ -2454,7 +2455,7 @@ i < size lr ->
 (nth x0 lr i <= bigmaxr x0 lr ?= iff (i == index (bigmaxr x0 lr) lr))%R
 
 bigmaxr_lerif is not universe polymorphic
-Arguments bigmaxr_lerif {R} x0%ring_scope [lr]%seq_scope _ [i]%nat_scope _
+Arguments bigmaxr_lerif {R} x0%_ring_scope [lr]%_seq_scope _ [i]%_nat_scope _
 bigmaxr_lerif is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bigmaxr_lerif
 Declared in library mathcomp.reals_stdlib.Rstruct, line 701, characters 6-19
@@ -2478,7 +2479,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="bmaxrf" class="id"><a name="bmaxrf" class="" title="bmaxrf : forall {R : realDomainType} [n : nat], {ffun 'I_n.+1 -> R} -> R
 
 bmaxrf is not universe polymorphic
-Arguments bmaxrf {R} [n]%nat_scope f
+Arguments bmaxrf {R} [n]%_nat_scope f
 bmaxrf is transparent
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bmaxrf
 Declared in library mathcomp.reals_stdlib.Rstruct, line 717, characters 11-17
@@ -2493,7 +2494,7 @@ forall {R : realDomainType} [n : nat] (f : {ffun 'I_n.+1 -> R})
 (f i <= bmaxrf f)%R
 
 bmaxrf_ler is not universe polymorphic
-Arguments bmaxrf_ler {R} [n]%nat_scope f i
+Arguments bmaxrf_ler {R} [n]%_nat_scope f i
 bmaxrf_ler is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bmaxrf_ler
 Declared in library mathcomp.reals_stdlib.Rstruct, line 722, characters 6-16
@@ -2517,7 +2518,7 @@ forall {R : realDomainType} [n : nat] (f : {ffun 'I_n.+1 -> R}),
 index (bmaxrf f) (codom f) < n.+1
 
 bmaxrf_index is not universe polymorphic
-Arguments bmaxrf_index {R} [n]%nat_scope f
+Arguments bmaxrf_index {R} [n]%_nat_scope f
 bmaxrf_index is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bmaxrf_index
 Declared in library mathcomp.reals_stdlib.Rstruct, line 735, characters 6-18
@@ -2540,7 +2541,7 @@ Qed.</div></details>
 forall {R : realDomainType} [n : nat], {ffun 'I_n.+1 -> R} -> 'I_n.+1
 
 index_bmaxrf is not universe polymorphic
-Arguments index_bmaxrf {R} [n]%nat_scope f
+Arguments index_bmaxrf {R} [n]%_nat_scope f
 index_bmaxrf is transparent
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.index_bmaxrf
 Declared in library mathcomp.reals_stdlib.Rstruct, line 748, characters 11-23
@@ -2550,7 +2551,7 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 748, characters 11-23
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ordnat" class="id"><a name="ordnat" class="" title="ordnat : forall [i n : nat] (ord_i : i < n), i = Ordinal (n:=n) (m:=i) ord_i
 
 ordnat is not universe polymorphic
-Arguments ordnat [i n]%nat_scope ord_i
+Arguments ordnat [i n]%_nat_scope ord_i
 ordnat is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.ordnat
 Declared in library mathcomp.reals_stdlib.Rstruct, line 751, characters 6-12
@@ -2567,7 +2568,7 @@ forall {R : realDomainType} [n : nat] (f : {ffun 'I_n.+1 -> R}),
 f (index_bmaxrf f) = bmaxrf f
 
 eq_index_bmaxrf is not universe polymorphic
-Arguments eq_index_bmaxrf {R} [n]%nat_scope f
+Arguments eq_index_bmaxrf {R} [n]%_nat_scope f
 eq_index_bmaxrf is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.eq_index_bmaxrf
 Declared in library mathcomp.reals_stdlib.Rstruct, line 756, characters 6-21
@@ -2595,7 +2596,7 @@ forall i : fintype_ordinal__canonical__fintype_Finite n.+1,
 (f i <= bmaxrf f ?= iff (i == index_bmaxrf f))%R
 
 bmaxrf_lerif is not universe polymorphic
-Arguments bmaxrf_lerif {R} [n]%nat_scope [f] _ i
+Arguments bmaxrf_lerif {R} [n]%_nat_scope [f] _ i
 bmaxrf_lerif is opaque
 Expands to: Constant mathcomp.reals_stdlib.Rstruct.bmaxrf_lerif
 Declared in library mathcomp.reals_stdlib.Rstruct, line 771, characters 6-18

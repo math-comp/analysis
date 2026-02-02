@@ -264,8 +264,8 @@ Declared in library mathcomp.classical.fsbigop, line 40, characters 6-22
 forall {I : choiceType} {T : Type}, T -> set I -> (I -> T) -> seq I
 
 finite_support is not universe polymorphic
-Arguments finite_support {I} {T}%type_scope idx D%classical_set_scope
-  F%function_scope
+Arguments finite_support {I} {T}%_type_scope idx D%_classical_set_scope
+  F%_function_scope
 finite_support is transparent
 Expands to: Constant mathcomp.classical.fsbigop.finite_support
 Declared in library mathcomp.classical.fsbigop, line 41, characters 11-25
@@ -282,8 +282,8 @@ finite_set (P `&` F @^-1` [set~ i]) ->
 finite_support i P F =i (P `&` F @^-1` [set~ i])%classic
 
 in_finite_support is not universe polymorphic
-Arguments in_finite_support [T]%type_scope [J i] [P]%classical_set_scope
-  [F]%function_scope _ x
+Arguments in_finite_support [T]%_type_scope [J i] 
+  [P]%_classical_set_scope [F]%_function_scope _ x
 in_finite_support is opaque
 Expands to: Constant mathcomp.classical.fsbigop.in_finite_support
 Declared in library mathcomp.classical.fsbigop, line 48, characters 6-23
@@ -300,8 +300,8 @@ forall [T : Type] [J : choiceType] (i : T) (P : set J) (F : J -> T),
 uniq (finite_support i P F)
 
 finite_support_uniq is not universe polymorphic
-Arguments finite_support_uniq [T]%type_scope [J] i 
-  P%classical_set_scope F%function_scope
+Arguments finite_support_uniq [T]%_type_scope [J] 
+  i P%_classical_set_scope F%_function_scope
 finite_support_uniq is opaque
 Expands to: Constant mathcomp.classical.fsbigop.finite_support_uniq
 Declared in library mathcomp.classical.fsbigop, line 53, characters 6-25
@@ -318,8 +318,8 @@ forall [T : Type] [J : choiceType] [i : T] [P : set J] [F : J -> T],
 infinite_set (P `&` F @^-1` [set~ i]) -> finite_support i P F = [::]
 
 no_finite_support is not universe polymorphic
-Arguments no_finite_support [T]%type_scope [J i] [P]%classical_set_scope
-  [F]%function_scope _
+Arguments no_finite_support [T]%_type_scope [J i] 
+  [P]%_classical_set_scope [F]%_function_scope _
 no_finite_support is opaque
 Expands to: Constant mathcomp.classical.fsbigop.no_finite_support
 Declared in library mathcomp.classical.fsbigop, line 58, characters 6-23
@@ -338,8 +338,8 @@ forall {I : choiceType} {T : Type} (idx : T) [D : set I] [F G : I -> T],
 {in D, F =1 G} -> finite_support idx D F = finite_support idx D G
 
 eq_finite_support is not universe polymorphic
-Arguments eq_finite_support {I} {T}%type_scope idx 
-  [D]%classical_set_scope [F G]%function_scope _
+Arguments eq_finite_support {I} {T}%_type_scope idx 
+  [D]%_classical_set_scope [F G]%_function_scope _
 eq_finite_support is opaque
 Expands to: Constant mathcomp.classical.fsbigop.eq_finite_support
 Declared in library mathcomp.classical.fsbigop, line 66, characters 6-23
@@ -366,8 +366,8 @@ forall [R : Type] [T : choiceType] (P : set T) (F : T -> R) (idx : R),
 finite_support_spec (T:=T) P F idx (finite_support idx P F)
 
 finite_supportP is not universe polymorphic
-Arguments finite_supportP [R]%type_scope [T] P%classical_set_scope
-  F%function_scope idx
+Arguments finite_supportP [R]%_type_scope [T] P%_classical_set_scope
+  F%_function_scope idx
 finite_supportP is opaque
 Expands to: Constant mathcomp.classical.fsbigop.finite_supportP
 Declared in library mathcomp.classical.fsbigop, line 82, characters 6-21
@@ -391,8 +391,9 @@ forall [R : Type] (idx : R) (op : R -> R -> R) [T : choiceType]
 P = Q -> \big[op/idx]_(x \in P) f x = \big[op/idx]_(x \in Q) f x
 
 eq_fsbigl is not universe polymorphic
-Arguments eq_fsbigl [R]%type_scope idx op%function_scope 
-  [T] f%function_scope [P Q]%classical_set_scope _
+Arguments eq_fsbigl [R]%_type_scope idx op%_function_scope 
+  [T] f%_function_scope [P Q]%_classical_set_scope 
+  _
 eq_fsbigl is opaque
 Expands to: Constant mathcomp.classical.fsbigop.eq_fsbigl
 Declared in library mathcomp.classical.fsbigop, line 94, characters 6-15
@@ -410,8 +411,8 @@ forall {R : Type} {idx : R} {op : com_law idx} {T : choiceType}
 {in P, f =1 g} -> \big[op/idx]_(x \in P) f x = \big[op/idx]_(x \in P) g x
 
 eq_fsbigr is not universe polymorphic
-Arguments eq_fsbigr {R}%type_scope {idx op T} {f}%function_scope
-  g%function_scope P%classical_set_scope _
+Arguments eq_fsbigr {R}%_type_scope {idx op T} {f}%_function_scope
+  g%_function_scope P%_classical_set_scope _
 eq_fsbigr is opaque
 Expands to: Constant mathcomp.classical.fsbigop.eq_fsbigr
 Declared in library mathcomp.classical.fsbigop, line 99, characters 6-15
@@ -433,7 +434,7 @@ forall {R : Type} {idx : R} {op : com_law idx} {T : choiceType}
 \big[op/idx]_(i \in [set: T]) f i = \big[op/idx]_(i <- A) f i
 
 fsbigTE is not universe polymorphic
-Arguments fsbigTE {R}%type_scope {idx op T} A (f _)%function_scope
+Arguments fsbigTE {R}%_type_scope {idx op T} A (f _)%_function_scope
 fsbigTE is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbigTE
 Declared in library mathcomp.classical.fsbigop, line 108, characters 6-13
@@ -465,8 +466,8 @@ forall [R : Type] [idx : R] (op : com_law idx) [T : choiceType]
 \big[op/idx]_(i \in [set: T]) patch (fun=> idx) A f i
 
 fsbig_mkcond is not universe polymorphic
-Arguments fsbig_mkcond [R]%type_scope [idx] op [T] 
-  A%classical_set_scope f%function_scope
+Arguments fsbig_mkcond [R]%_type_scope [idx] op [T] 
+  A%_classical_set_scope f%_function_scope
 fsbig_mkcond is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_mkcond
 Declared in library mathcomp.classical.fsbigop, line 127, characters 6-18
@@ -500,8 +501,8 @@ forall [R : Type] [idx : R] (op : com_law idx) [T : choiceType]
 \big[op/idx]_(i \in I) (if i \in J then a i else idx)
 
 fsbig_mkcondr is not universe polymorphic
-Arguments fsbig_mkcondr [R]%type_scope [idx] op [T] 
-  (I J)%classical_set_scope a%function_scope
+Arguments fsbig_mkcondr [R]%_type_scope [idx] op [T]
+  (I J)%_classical_set_scope a%_function_scope
 fsbig_mkcondr is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_mkcondr
 Declared in library mathcomp.classical.fsbigop, line 148, characters 6-19
@@ -523,8 +524,8 @@ forall [R : Type] [idx : R] (op : com_law idx) [T : choiceType]
 \big[op/idx]_(i \in J) (if i \in I then a i else idx)
 
 fsbig_mkcondl is not universe polymorphic
-Arguments fsbig_mkcondl [R]%type_scope [idx] op [T] 
-  (I J)%classical_set_scope a%function_scope
+Arguments fsbig_mkcondl [R]%_type_scope [idx] op [T]
+  (I J)%_classical_set_scope a%_function_scope
 fsbig_mkcondl is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_mkcondl
 Declared in library mathcomp.classical.fsbigop, line 157, characters 6-19
@@ -547,8 +548,8 @@ uniq r ->
 \big[op/idx]_(i <- r | P i) f i = \big[op/idx]_(i \in [set` P]) f i
 
 bigfs is not universe polymorphic
-Arguments bigfs [R]%type_scope [idx] op [T] [r]%seq_scope 
-  [P] [f]%function_scope _ _%function_scope
+Arguments bigfs [R]%_type_scope [idx] op [T] [r]%_seq_scope 
+  [P] [f]%_function_scope _ _%_function_scope
 bigfs is opaque
 Expands to: Constant mathcomp.classical.fsbigop.bigfs
 Declared in library mathcomp.classical.fsbigop, line 166, characters 6-11
@@ -575,8 +576,8 @@ uniq r ->
 \big[op/idx]_(i \in A) f i = \big[op/idx]_(i <- r | i \in A) f i
 
 fsbigE is not universe polymorphic
-Arguments fsbigE {R}%type_scope {idx op T} {A}%classical_set_scope
-  r%seq_scope f%function_scope _ _ _%function_scope
+Arguments fsbigE {R}%_type_scope {idx op T} {A}%_classical_set_scope
+  r%_seq_scope f%_function_scope _ _ _%_function_scope
 fsbigE is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbigE
 Declared in library mathcomp.classical.fsbigop, line 178, characters 6-12
@@ -600,8 +601,8 @@ forall [R : Type] [idx : R] (op : com_law idx) [I : choiceType]
 uniq r -> \big[op/idx]_(a <- r) F a = \big[op/idx]_(a \in [set` r]) F a
 
 fsbig_seq is not universe polymorphic
-Arguments fsbig_seq [R]%type_scope [idx] op [I] [r]%seq_scope
-  F%function_scope _
+Arguments fsbig_seq [R]%_type_scope [idx] op [I] [r]%_seq_scope
+  F%_function_scope _
 fsbig_seq is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_seq
 Declared in library mathcomp.classical.fsbigop, line 190, characters 6-15
@@ -622,8 +623,8 @@ forall [R : Type] [idx : R] (op : law idx) [I : choiceType]
 (forall i : I, P i -> F i = idx) -> \big[op/idx]_(i \in P) F i = idx
 
 fsbig1 is not universe polymorphic
-Arguments fsbig1 [R]%type_scope [idx] op [I] [P]%classical_set_scope
-  [F]%function_scope _%function_scope
+Arguments fsbig1 [R]%_type_scope [idx] op [I] [P]%_classical_set_scope
+  [F]%_function_scope _%_function_scope
 fsbig1 is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig1
 Declared in library mathcomp.classical.fsbigop, line 199, characters 6-12
@@ -643,8 +644,8 @@ forall [R : Type] [idx : R] (op : law idx) [I : choiceType]
 infinite_set (P `&` F @^-1` [set~ idx]) -> \big[op/idx]_(i \in P) F i = idx
 
 fsbig_dflt is not universe polymorphic
-Arguments fsbig_dflt [R]%type_scope [idx] op [I] [P]%classical_set_scope
-  [F]%function_scope _
+Arguments fsbig_dflt [R]%_type_scope [idx] op [I] 
+  [P]%_classical_set_scope [F]%_function_scope _
 fsbig_dflt is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_dflt
 Declared in library mathcomp.classical.fsbigop, line 207, characters 6-16
@@ -664,8 +665,8 @@ forall {T : choiceType} {R : Type} {idx : R} {op : com_law idx}
 \big[op/idx]_(i \in P) f i = \big[op/idx]_(i \in D) f i
 
 fsbig_widen is not universe polymorphic
-Arguments fsbig_widen {T} {R}%type_scope {idx op} 
-  (P D)%classical_set_scope f%function_scope _ _
+Arguments fsbig_widen {T} {R}%_type_scope {idx op} 
+  (P D)%_classical_set_scope f%_function_scope _ _
 fsbig_widen is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_widen
 Declared in library mathcomp.classical.fsbigop, line 212, characters 6-17
@@ -691,8 +692,8 @@ forall [T : choiceType] [R : Type] [idx : R] (op : com_law idx)
 \big[op/idx]_(i \in P `&` f @^-1` [set~ idx]) f i
 
 fsbig_supp is not universe polymorphic
-Arguments fsbig_supp [T] [R]%type_scope [idx] op P%classical_set_scope
-  f%function_scope
+Arguments fsbig_supp [T] [R]%_type_scope [idx] op 
+  P%_classical_set_scope f%_function_scope
 fsbig_supp is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_supp
 Declared in library mathcomp.classical.fsbigop, line 225, characters 6-16
@@ -713,8 +714,8 @@ uniq r ->
 \big[op/idx]_(i \in P) f i = \big[op/idx]_(i <- r) f i
 
 fsbig_fwiden is not universe polymorphic
-Arguments fsbig_fwiden {T R idx op} r%seq_scope P%classical_set_scope
-  f%function_scope _ _ _
+Arguments fsbig_fwiden {T R idx op} r%_seq_scope P%_classical_set_scope
+  f%_function_scope _ _ _
 fsbig_fwiden is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_fwiden
 Declared in library mathcomp.classical.fsbigop, line 230, characters 6-18
@@ -736,7 +737,7 @@ forall [R : Type] [idx : R] (op : com_law idx) [T : choiceType] (F : T -> R),
 \big[op/idx]_(x \in set0) F x = idx
 
 fsbig_set0 is not universe polymorphic
-Arguments fsbig_set0 [R]%type_scope [idx] op [T] F%function_scope
+Arguments fsbig_set0 [R]%_type_scope [idx] op [T] F%_function_scope
 fsbig_set0 is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_set0
 Declared in library mathcomp.classical.fsbigop, line 240, characters 6-16
@@ -753,7 +754,7 @@ forall [R : Type] [idx : R] (op : com_law idx) [T : choiceType]
 \big[op/idx]_(y \in [set x]) F y = F x
 
 fsbig_set1 is not universe polymorphic
-Arguments fsbig_set1 [R]%type_scope [idx] op [T] x F%function_scope
+Arguments fsbig_set1 [R]%_type_scope [idx] op [T] x F%_function_scope
 fsbig_set1 is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_set1
 Declared in library mathcomp.classical.fsbigop, line 244, characters 6-16
@@ -775,8 +776,8 @@ finite_set (A `&` F @^-1` [set~ idx]) ->
 op (\big[op/idx]_(i \in A `&` B) F i) (\big[op/idx]_(i \in A `&` ~` B) F i)
 
 __deprecated__full_fsbigID is not universe polymorphic
-Arguments __deprecated__full_fsbigID {R}%type_scope 
-  {idx op I} (B A)%classical_set_scope F%function_scope 
+Arguments __deprecated__full_fsbigID {R}%_type_scope 
+  {idx op I} (B A)%_classical_set_scope F%_function_scope 
   _
 __deprecated__full_fsbigID is opaque
 Expands to: Constant mathcomp.classical.fsbigop.__deprecated__full_fsbigID
@@ -813,8 +814,8 @@ finite_set A ->
 op (\big[op/idx]_(i \in A `&` B) F i) (\big[op/idx]_(i \in A `&` ~` B) F i)
 
 fsbigID is not universe polymorphic
-Arguments fsbigID {R}%type_scope {idx op I} (B A)%classical_set_scope
-  F%function_scope _
+Arguments fsbigID {R}%_type_scope {idx op I} (B A)%_classical_set_scope
+  F%_function_scope _
 fsbigID is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbigID
 Declared in library mathcomp.classical.fsbigop, line 274, characters 6-13
@@ -842,8 +843,8 @@ finite_set B ->
 op (\big[op/idx]_(i \in A) F i) (\big[op/idx]_(i \in B) F i)
 
 fsbigU is not universe polymorphic
-Arguments fsbigU {R}%type_scope {idx op I} [A B]%classical_set_scope
-  [F]%function_scope _ _ _
+Arguments fsbigU {R}%_type_scope {idx op I} [A B]%_classical_set_scope
+  [F]%_function_scope _ _ _
 fsbigU is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbigU
 Declared in library mathcomp.classical.fsbigop, line 285, characters 6-12
@@ -871,8 +872,8 @@ finite_set B ->
 op (\big[op/idx]_(i \in A) F i) (\big[op/idx]_(i \in B) F i)
 
 fsbigU0 is not universe polymorphic
-Arguments fsbigU0 [R]%type_scope [idx] op [I] [A B]%classical_set_scope
-  F%function_scope _ _ _
+Arguments fsbigU0 [R]%_type_scope [idx] op [I] [A B]%_classical_set_scope
+  F%_function_scope _ _ _
 fsbigU0 is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbigU0
 Declared in library mathcomp.classical.fsbigop, line 297, characters 6-13
@@ -894,8 +895,8 @@ A i ->
 \big[op/idx]_(j \in A) F j = op (F i) (\big[op/idx]_(j \in A `\ i) F j)
 
 fsbigD1 is not universe polymorphic
-Arguments fsbigD1 {R}%type_scope {idx op I} i A%classical_set_scope
-  F%function_scope _ _
+Arguments fsbigD1 {R}%_type_scope {idx op I} i A%_classical_set_scope
+  F%_function_scope _ _
 fsbigD1 is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbigD1
 Declared in library mathcomp.classical.fsbigop, line 304, characters 6-13
@@ -918,8 +919,8 @@ times a (\big[plus/zero]_(i \in P) F i) =
 \big[plus/zero]_(i \in P) times a (F i)
 
 full_fsbig_distrr is not universe polymorphic
-Arguments full_fsbig_distrr [R]%type_scope [zero times] 
-  plus [I] a [P]%classical_set_scope [F]%function_scope 
+Arguments full_fsbig_distrr [R]%_type_scope [zero times] 
+  plus [I] a [P]%_classical_set_scope [F]%_function_scope 
   _
 full_fsbig_distrr is opaque
 Expands to: Constant mathcomp.classical.fsbigop.full_fsbig_distrr
@@ -960,8 +961,8 @@ times a (\big[plus/zero]_(i \in P) F i) =
 \big[plus/zero]_(i \in P) times a (F i)
 
 fsbig_distrr is not universe polymorphic
-Arguments fsbig_distrr [R]%type_scope [zero times] 
-  plus [I] a [P]%classical_set_scope F%function_scope 
+Arguments fsbig_distrr [R]%_type_scope [zero times] 
+  plus [I] a [P]%_classical_set_scope F%_function_scope 
   _
 fsbig_distrr is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_distrr
@@ -982,8 +983,8 @@ forall [R : idomainType] [I : choiceType] (a : R) (P : set I) (F : I -> R),
 (a * \sum_(i \in P) F i)%R = (\sum_(i \in P) a * F i)%R
 
 mulr_fsumr is not universe polymorphic
-Arguments mulr_fsumr [R I] a%ring_scope P%classical_set_scope
-  F%function_scope
+Arguments mulr_fsumr [R I] a%_ring_scope P%_classical_set_scope
+  F%_function_scope
 mulr_fsumr is opaque
 Expands to: Constant mathcomp.classical.fsbigop.mulr_fsumr
 Declared in library mathcomp.classical.fsbigop, line 344, characters 6-16
@@ -1004,8 +1005,8 @@ forall [R : idomainType] [I : choiceType] (a : R) (P : set I) (F : I -> R),
 ((\sum_(i \in P) F i) * a)%R = (\sum_(i \in P) F i * a)%R
 
 mulr_fsuml is not universe polymorphic
-Arguments mulr_fsuml [R I] a%ring_scope P%classical_set_scope
-  F%function_scope
+Arguments mulr_fsuml [R I] a%_ring_scope P%_classical_set_scope
+  F%_function_scope
 mulr_fsuml is opaque
 Expands to: Constant mathcomp.classical.fsbigop.mulr_fsuml
 Declared in library mathcomp.classical.fsbigop, line 354, characters 6-16
@@ -1021,7 +1022,7 @@ forall [R : Type] [idx : R] (op : com_law idx) (n : nat) (F : nat -> R),
 \big[op/idx]_(a < n) F a = \big[op/idx]_(a \in `I_n) F a
 
 fsbig_ord is not universe polymorphic
-Arguments fsbig_ord [R]%type_scope [idx] op n%nat_scope F%function_scope
+Arguments fsbig_ord [R]%_type_scope [idx] op n%_nat_scope F%_function_scope
 fsbig_ord is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_ord
 Declared in library mathcomp.classical.fsbigop, line 358, characters 6-15
@@ -1041,8 +1042,8 @@ finite_set D ->
 \big[op/idx]_(x \in D) F x = \big[op/idx]_(x <- fset_set (T:=T) D) F x
 
 fsbig_finite is not universe polymorphic
-Arguments fsbig_finite [R]%type_scope [idx] op [T] 
-  [D]%classical_set_scope F%function_scope _
+Arguments fsbig_finite [R]%_type_scope [idx] op [T] 
+  [D]%_classical_set_scope F%_function_scope _
 fsbig_finite is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_finite
 Declared in library mathcomp.classical.fsbigop, line 365, characters 6-18
@@ -1065,8 +1066,8 @@ forall {R : Type} {idx : R} {op : com_law idx} {I J : choiceType}
 set_bij P Q h -> \big[op/idx]_(j \in Q) F j = \big[op/idx]_(i \in P) F (h i)
 
 reindex_fsbig is not universe polymorphic
-Arguments reindex_fsbig {R}%type_scope {idx op I J} 
-  h%function_scope (P Q)%classical_set_scope F%function_scope 
+Arguments reindex_fsbig {R}%_type_scope {idx op I J} 
+  h%_function_scope (P Q)%_classical_set_scope F%_function_scope 
   _
 reindex_fsbig is opaque
 Expands to: Constant mathcomp.classical.fsbigop.reindex_fsbig
@@ -1111,8 +1112,8 @@ set_inj P h ->
 \big[op/idx]_(j \in [set h x | x in P]) F j = \big[op/idx]_(i \in P) F (h i)
 
 fsbig_image is not universe polymorphic
-Arguments fsbig_image {R}%type_scope {idx op I J} 
-  P%classical_set_scope (h F)%function_scope _
+Arguments fsbig_image {R}%_type_scope {idx op I J} 
+  P%_classical_set_scope (h F)%_function_scope _
 fsbig_image is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_image
 Declared in library mathcomp.classical.fsbigop, line 409, characters 6-17
@@ -1132,8 +1133,8 @@ bijective h ->
 \big[op/idx]_(j \in P) F j = \big[op/idx]_(i \in Q) F (h i)
 
 __deprecated__reindex_inside is not universe polymorphic
-Arguments __deprecated__reindex_inside {R}%type_scope 
-  {idx op I J} (P Q)%classical_set_scope (h F)%function_scope 
+Arguments __deprecated__reindex_inside {R}%_type_scope 
+  {idx op I J} (P Q)%_classical_set_scope (h F)%_function_scope 
   _ _ _
 __deprecated__reindex_inside is opaque
 Expands to: Constant mathcomp.classical.fsbigop.__deprecated__reindex_inside
@@ -1155,7 +1156,7 @@ bijective h ->
 \big[op/idx]_(j \in [set: J]) F j = \big[op/idx]_(i \in [set: I]) F (h i)
 
 reindex_fsbigT is not universe polymorphic
-Arguments reindex_fsbigT {R}%type_scope {idx op I J} (h F)%function_scope _
+Arguments reindex_fsbigT {R}%_type_scope {idx op I J} (h F)%_function_scope _
 reindex_fsbigT is opaque
 Expands to: Constant mathcomp.classical.fsbigop.reindex_fsbigT
 Declared in library mathcomp.classical.fsbigop, line 422, characters 6-20
@@ -1183,8 +1184,8 @@ forall [R : eqType] [idx : R] [op : com_law idx] [T1 T2 : choiceType]
 \big[op/idx]_(y \in Q) f x y != idx -> exists2 y : T2, Q y & f x y != idx
 
 fsbigN1 is not universe polymorphic
-Arguments fsbigN1 [R idx op T1 T2] [Q]%classical_set_scope 
-  [f]%function_scope [x] _
+Arguments fsbigN1 [R idx op T1 T2] [Q]%_classical_set_scope
+  [f]%_function_scope [x] _
 fsbigN1 is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbigN1
 Declared in library mathcomp.classical.fsbigop, line 437, characters 6-13
@@ -1206,8 +1207,8 @@ finite_set P ->
 op (\big[op/idx]_(x \in P) f x) (\big[op/idx]_(x \in P) g x)
 
 fsbig_split is not universe polymorphic
-Arguments fsbig_split [T R idx] op [P]%classical_set_scope
-  (f g)%function_scope _
+Arguments fsbig_split [T R idx] op [P]%_classical_set_scope
+  (f g)%_function_scope _
 fsbig_split is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_split
 Declared in library mathcomp.classical.fsbigop, line 445, characters 6-17
@@ -1225,8 +1226,8 @@ forall [R : numDomainType] [I : choiceType] [P : set I] [F : I -> R],
 (forall i : I, P i -> (0 <= F i)%R) -> (0 <= \sum_(i \in P) F i)%R
 
 fsumr_ge0 is not universe polymorphic
-Arguments fsumr_ge0 [R I] [P]%classical_set_scope 
-  [F]%function_scope _%function_scope
+Arguments fsumr_ge0 [R I] [P]%_classical_set_scope 
+  [F]%_function_scope _%_function_scope
 fsumr_ge0 is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsumr_ge0
 Declared in library mathcomp.classical.fsbigop, line 451, characters 6-15
@@ -1244,8 +1245,8 @@ forall [R : numDomainType] [I : choiceType] [P : set I] [F : I -> R],
 (forall i : I, P i -> (F i <= 0)%R) -> (\sum_(i \in P) F i <= 0)%R
 
 fsumr_le0 is not universe polymorphic
-Arguments fsumr_le0 [R I] [P]%classical_set_scope 
-  [F]%function_scope _%function_scope
+Arguments fsumr_le0 [R I] [P]%_classical_set_scope 
+  [F]%_function_scope _%_function_scope
 fsumr_le0 is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsumr_le0
 Declared in library mathcomp.classical.fsbigop, line 458, characters 6-15
@@ -1265,8 +1266,8 @@ forall [P : set I] [F : I -> R],
 (0 < \sum_(i \in P) F i)%R -> exists2 i : I, P i & (0 < F i)%R
 
 fsumr_gt0 is not universe polymorphic
-Arguments fsumr_gt0 [R I] r%seq_scope [P]%classical_set_scope
-  [F]%function_scope _
+Arguments fsumr_gt0 [R I] r%_seq_scope [P]%_classical_set_scope
+  [F]%_function_scope _
 fsumr_gt0 is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsumr_gt0
 Declared in library mathcomp.classical.fsbigop, line 465, characters 6-15
@@ -1285,7 +1286,7 @@ forall [R : realDomainType] [I : choiceType] [P : set I] [F : I -> R],
 (\sum_(i \in P) F i < 0)%R -> exists2 i : I, P i & (F i < 0)%R
 
 fsumr_lt0 is not universe polymorphic
-Arguments fsumr_lt0 [R I] [P]%classical_set_scope [F]%function_scope _
+Arguments fsumr_lt0 [R I] [P]%_classical_set_scope [F]%_function_scope _
 fsumr_lt0 is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsumr_lt0
 Declared in library mathcomp.classical.fsbigop, line 473, characters 6-15
@@ -1306,8 +1307,8 @@ finite_set P ->
 (\sum_(i \in P) F i)%R = 0%R -> forall [i : I], P i -> F i = 0%R
 
 pfsumr_eq0 is not universe polymorphic
-Arguments pfsumr_eq0 [R I] [P]%classical_set_scope 
-  [F]%function_scope _ _%function_scope _ [i] _
+Arguments pfsumr_eq0 [R I] [P]%_classical_set_scope 
+  [F]%_function_scope _ _%_function_scope _ [i] _
 pfsumr_eq0 is opaque
 Expands to: Constant mathcomp.classical.fsbigop.pfsumr_eq0
 Declared in library mathcomp.classical.fsbigop, line 481, characters 6-16
@@ -1330,8 +1331,8 @@ finite_set A ->
 \big[setU/set0]_(i \in A) F i = (\bigcup_(i in A) F i)%classic
 
 fsbig_setU is not universe polymorphic
-Arguments fsbig_setU {T}%type_scope {I} [A]%classical_set_scope
-  F%function_scope _
+Arguments fsbig_setU {T}%_type_scope {I} [A]%_classical_set_scope
+  F%_function_scope _
 fsbig_setU is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_setU
 Declared in library mathcomp.classical.fsbigop, line 492, characters 6-16
@@ -1348,7 +1349,7 @@ forall {T : choiceType} [A : set T],
 finite_set A -> \big[setU/set0]_(x \in A) [set x]%classic = A
 
 fsbig_setU_set1 is not universe polymorphic
-Arguments fsbig_setU_set1 {T} [A]%classical_set_scope _
+Arguments fsbig_setU_set1 {T} [A]%_classical_set_scope _
 fsbig_setU_set1 is opaque
 Expands to: Constant mathcomp.classical.fsbigop.fsbig_setU_set1
 Declared in library mathcomp.classical.fsbigop, line 497, characters 6-21
@@ -1370,8 +1371,8 @@ finite_set Q ->
 \big[op/idx]_(p \in P `*` Q) F p.1 p.2
 
 pair_fsbig is not universe polymorphic
-Arguments pair_fsbig [R]%type_scope [idx] op [I J] 
-  [P Q]%classical_set_scope F%function_scope _ _
+Arguments pair_fsbig [R]%_type_scope [idx] op [I J]
+  [P Q]%_classical_set_scope F%_function_scope _ _
 pair_fsbig is opaque
 Expands to: Constant mathcomp.classical.fsbigop.pair_fsbig
 Declared in library mathcomp.classical.fsbigop, line 504, characters 6-16
@@ -1401,8 +1402,9 @@ finite_set Q ->
 \big[op/idx]_(j \in Q) \big[op/idx]_(i \in P) F i j
 
 exchange_fsbig is not universe polymorphic
-Arguments exchange_fsbig [R]%type_scope [idx] op [I J]
-  [P Q]%classical_set_scope F%function_scope _ _
+Arguments exchange_fsbig [R]%_type_scope [idx] op 
+  [I J] [P Q]%_classical_set_scope F%_function_scope 
+  _ _
 exchange_fsbig is opaque
 Expands to: Constant mathcomp.classical.fsbigop.exchange_fsbig
 Declared in library mathcomp.classical.fsbigop, line 519, characters 6-20

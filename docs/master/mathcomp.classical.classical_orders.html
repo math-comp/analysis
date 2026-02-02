@@ -241,7 +241,7 @@ axioms than mathcomp's own orders expect.
 <span class="vernacular">Definition</span><span class="id"> </span><span id="big_lexi_order" class="id"><a name="big_lexi_order" class="" title="big_lexi_order : forall {I : Type}, (I -> Type) -> Type
 
 big_lexi_order is not universe polymorphic
-Arguments big_lexi_order {I}%type_scope T%function_scope
+Arguments big_lexi_order {I}%_type_scope T%_function_scope
 big_lexi_order is transparent
 Expands to: Constant mathcomp.classical.classical_orders.big_lexi_order
 Declared in
@@ -252,7 +252,7 @@ forall [I : Type], (I -> choiceType) -> choiceType
 
 classical_orders_big_lexi_order__canonical__choice_Choice is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__choice_Choice
-  [I]%type_scope K%function_scope
+  [I]%_type_scope K%_function_scope
 classical_orders_big_lexi_order__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__choice_Choice
@@ -263,7 +263,7 @@ forall [I : Type], (I -> choiceType) -> choiceType
 
 classical_orders_big_lexi_order__canonical__choice_Choice is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__choice_Choice
-  [I]%type_scope K%function_scope
+  [I]%_type_scope K%_function_scope
 classical_orders_big_lexi_order__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__choice_Choice
@@ -274,7 +274,7 @@ forall [I : Type], (I -> choiceType) -> choiceType
 
 classical_orders_big_lexi_order__canonical__choice_Choice is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__choice_Choice
-  [I]%type_scope K%function_scope
+  [I]%_type_scope K%_function_scope
 classical_orders_big_lexi_order__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__choice_Choice
@@ -285,7 +285,7 @@ forall [I : Type], (I -> choiceType) -> choiceType
 
 classical_orders_big_lexi_order__canonical__choice_Choice is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__choice_Choice
-  [I]%type_scope K%function_scope
+  [I]%_type_scope K%_function_scope
 classical_orders_big_lexi_order__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__choice_Choice
@@ -296,7 +296,7 @@ forall [I : Type], (I -> choiceType) -> choiceType
 
 classical_orders_big_lexi_order__canonical__choice_Choice is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__choice_Choice
-  [I]%type_scope K%function_scope
+  [I]%_type_scope K%_function_scope
 classical_orders_big_lexi_order__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__choice_Choice
@@ -307,7 +307,7 @@ forall [I : Type], (I -> choiceType) -> choiceType
 
 classical_orders_big_lexi_order__canonical__choice_Choice is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__choice_Choice
-  [I]%type_scope K%function_scope
+  [I]%_type_scope K%_function_scope
 classical_orders_big_lexi_order__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__choice_Choice
@@ -318,7 +318,7 @@ forall [I : Type], (I -> choiceType) -> choiceType
 
 classical_orders_big_lexi_order__canonical__choice_Choice is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__choice_Choice
-  [I]%type_scope K%function_scope
+  [I]%_type_scope K%_function_scope
 classical_orders_big_lexi_order__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__choice_Choice
@@ -329,7 +329,7 @@ forall [I : Type], (I -> choiceType) -> choiceType
 
 classical_orders_big_lexi_order__canonical__choice_Choice is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__choice_Choice
-  [I]%type_scope K%function_scope
+  [I]%_type_scope K%_function_scope
 classical_orders_big_lexi_order__canonical__choice_Choice is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__choice_Choice
@@ -347,7 +347,7 @@ Order.NatOrder.Datatypes_nat__canonical__Order_Preorder ->
 (forall n : nat, K n) -> (forall n : nat, K n) -> Prop
 
 same_prefix is not universe polymorphic
-Arguments same_prefix {K}%function_scope n (t1 t2)%function_scope
+Arguments same_prefix {K}%_function_scope n (t1 t2)%_function_scope
 same_prefix is transparent
 Expands to: Constant mathcomp.classical.classical_orders.same_prefix
 Declared in
@@ -366,7 +366,7 @@ forall {K : nat -> eqType} (t1 t2 : forall n : nat, K n)
   [m : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder],
 (m < 0%N)%O -> t1 m = t2 m
 
-Arguments same_prefix0 {K}%function_scope (t1 t2)%function_scope [m] _
+Arguments same_prefix0 {K}%_function_scope (t1 t2)%_function_scope [m] _
 same_prefix0 is opaque
 Expands to: Constant mathcomp.classical.classical_orders.same_prefix0
 Declared in
@@ -385,7 +385,7 @@ forall {K : nat -> eqType}
 same_prefix n t1 t2 <-> same_prefix n t2 t1
 
 same_prefix_sym is not universe polymorphic
-Arguments same_prefix_sym {K}%function_scope n (t1 t2)%function_scope
+Arguments same_prefix_sym {K}%_function_scope n (t1 t2)%_function_scope
 same_prefix_sym is opaque
 Expands to: Constant mathcomp.classical.classical_orders.same_prefix_sym
 Declared in
@@ -409,8 +409,8 @@ same_prefix m t1 t2 ->
 forall [m0 : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder],
 (m0 < n)%O -> t1 m0 = t2 m0
 
-Arguments same_prefix_leq {K}%function_scope [n m]%nat_scope
-  [t1 t2]%function_scope _ _ [m] _
+Arguments same_prefix_leq {K}%_function_scope [n m]%_nat_scope
+  [t1 t2]%_function_scope _ _ [m] _
 same_prefix_leq is opaque
 Expands to: Constant mathcomp.classical.classical_orders.same_prefix_leq
 Declared in
@@ -439,7 +439,7 @@ forall {K : nat -> eqType}
   [m : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder],
 (m < n)%O -> x m = x m
 
-Arguments same_prefix_refl {K}%function_scope [n] x%function_scope [m] _
+Arguments same_prefix_refl {K}%_function_scope [n] x%_function_scope [m] _
 same_prefix_refl is opaque
 Expands to: Constant mathcomp.classical.classical_orders.same_prefix_refl
 Declared in
@@ -467,8 +467,8 @@ same_prefix n y z ->
 forall [m : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder],
 (m < n)%O -> x m = z m
 
-Arguments same_prefix_trans {K}%function_scope [n] 
-  [x y z]%function_scope _ _ [m] _
+Arguments same_prefix_trans {K}%_function_scope [n] 
+  [x y z]%_function_scope _ _ [m] _
 same_prefix_trans is opaque
 Expands to: Constant mathcomp.classical.classical_orders.same_prefix_trans
 Declared in
@@ -487,7 +487,7 @@ forall {K : nat -> eqType},
 (forall n : nat, K n) -> (forall n : nat, K n) -> option nat
 
 first_diff is not universe polymorphic
-Arguments first_diff {K}%function_scope (t1 t2)%function_scope
+Arguments first_diff {K}%_function_scope (t1 t2)%_function_scope
 first_diff is transparent
 Expands to: Constant mathcomp.classical.classical_orders.first_diff
 Declared in
@@ -500,7 +500,7 @@ forall {K : nat -> eqType} (t1 t2 : forall n : nat, K n),
 first_diff t1 t2 = first_diff t2 t1
 
 first_diff_sym is not universe polymorphic
-Arguments first_diff_sym {K}%function_scope (t1 t2)%function_scope
+Arguments first_diff_sym {K}%_function_scope (t1 t2)%_function_scope
 first_diff_sym is opaque
 Expands to: Constant mathcomp.classical.classical_orders.first_diff_sym
 Declared in
@@ -520,7 +520,7 @@ forall {K : nat -> eqType} [x y : forall n : nat, K n]
 same_prefix n x y -> x n != y n -> same_prefix m x y -> x m != y m -> n = m
 
 first_diff_unique is not universe polymorphic
-Arguments first_diff_unique {K}%function_scope [x y]%function_scope 
+Arguments first_diff_unique {K}%_function_scope [x y]%_function_scope 
   [n m] _ _ _ _
 first_diff_unique is opaque
 Expands to: Constant mathcomp.classical.classical_orders.first_diff_unique
@@ -543,8 +543,8 @@ forall {K : nat -> eqType} (x y : forall n : nat, K n) (n : nat),
 first_diff x y = Some n <-> same_prefix n x y /\ x n != y n
 
 first_diff_SomeP is not universe polymorphic
-Arguments first_diff_SomeP {K}%function_scope (x y)%function_scope
-  n%nat_scope
+Arguments first_diff_SomeP {K}%_function_scope (x y)%_function_scope
+  n%_nat_scope
 first_diff_SomeP is opaque
 Expands to: Constant mathcomp.classical.classical_orders.first_diff_SomeP
 Declared in
@@ -565,7 +565,7 @@ forall {K : nat -> eqType} (t1 t2 : forall n : nat, K n),
 t1 = t2 <-> first_diff t1 t2 = None
 
 first_diff_NoneP is not universe polymorphic
-Arguments first_diff_NoneP {K}%function_scope (t1 t2)%function_scope
+Arguments first_diff_NoneP {K}%_function_scope (t1 t2)%_function_scope
 first_diff_NoneP is opaque
 Expands to: Constant mathcomp.classical.classical_orders.first_diff_NoneP
 Declared in
@@ -589,8 +589,8 @@ n < m ->
 first_diff a x = Some n -> first_diff a y = Some m -> first_diff x y = Some n
 
 first_diff_lt is not universe polymorphic
-Arguments first_diff_lt {K}%function_scope [a x y]%function_scope
-  [n m]%nat_scope _ _ _
+Arguments first_diff_lt {K}%_function_scope [a x y]%_function_scope
+  [n m]%_nat_scope _ _ _
 first_diff_lt is opaque
 Expands to: Constant mathcomp.classical.classical_orders.first_diff_lt
 Declared in
@@ -615,8 +615,8 @@ first_diff a x = Some n ->
 first_diff a y = Some n -> first_diff x y = Some m -> n <= m
 
 first_diff_eq is not universe polymorphic
-Arguments first_diff_eq {K}%function_scope [a x y]%function_scope
-  [n m]%nat_scope _ _ _
+Arguments first_diff_eq {K}%_function_scope [a x y]%_function_scope
+  [n m]%_nat_scope _ _ _
 first_diff_eq is opaque
 Expands to: Constant mathcomp.classical.classical_orders.first_diff_eq
 Declared in
@@ -639,8 +639,8 @@ forall {K : nat -> eqType} (x : forall n : nat, K n) [i : nat] (b : K i),
 x i != b <-> first_diff x (dfwith x i b) = Some i
 
 first_diff_dfwith is not universe polymorphic
-Arguments first_diff_dfwith {K}%function_scope x%function_scope 
-  [i]%nat_scope b
+Arguments first_diff_dfwith {K}%_function_scope x%_function_scope
+  [i]%_nat_scope b
 first_diff_dfwith is opaque
 Expands to: Constant mathcomp.classical.classical_orders.first_diff_dfwith
 Declared in
@@ -661,7 +661,7 @@ forall {K : nat -> eqType},
 (forall n : nat, K n) -> (forall n : nat, K n) -> bool
 
 big_lexi_le is not universe polymorphic
-Arguments big_lexi_le {K}%function_scope (R t1 t2)%function_scope
+Arguments big_lexi_le {K}%_function_scope (R t1 t2)%_function_scope
 big_lexi_le is transparent
 Expands to: Constant mathcomp.classical.classical_orders.big_lexi_le
 Declared in
@@ -675,7 +675,7 @@ forall {K : nat -> eqType} (R : forall n : nat, K n -> K n -> bool),
 reflexive (T:=forall n : nat, K n) (big_lexi_le R)
 
 big_lexi_le_reflexive is not universe polymorphic
-Arguments big_lexi_le_reflexive {K}%function_scope R%function_scope x
+Arguments big_lexi_le_reflexive {K}%_function_scope R%_function_scope x
 big_lexi_le_reflexive is opaque
 Expands to: Constant
             mathcomp.classical.classical_orders.big_lexi_le_reflexive
@@ -702,8 +702,8 @@ forall {K : nat -> eqType} [R : forall x : nat, rel (K x)],
 forall [x y : forall n : nat, K n],
 big_lexi_le R x y && big_lexi_le R y x -> x = y
 
-Arguments big_lexi_le_anti {K}%function_scope [R]%function_scope
-  _%function_scope [x y] _
+Arguments big_lexi_le_anti {K}%_function_scope [R]%_function_scope
+  _%_function_scope [x y] _
 big_lexi_le_anti is opaque
 Expands to: Constant mathcomp.classical.classical_orders.big_lexi_le_anti
 Declared in
@@ -735,8 +735,8 @@ forall {K : nat -> eqType} [R : forall x : nat, rel (K x)],
 forall [y x z : forall n : nat, K n],
 big_lexi_le R x y -> big_lexi_le R y z -> big_lexi_le R x z = true
 
-Arguments big_lexi_le_trans {K}%function_scope [R]%function_scope
-  (_ _)%function_scope [y x z] _ _
+Arguments big_lexi_le_trans {K}%_function_scope [R]%_function_scope
+  (_ _)%_function_scope [y x z] _ _
 big_lexi_le_trans is opaque
 Expands to: Constant mathcomp.classical.classical_orders.big_lexi_le_trans
 Declared in
@@ -774,8 +774,8 @@ forall {K : nat -> eqType} [R : forall x : nat, rel (K x)],
 total (T:=forall n : nat, K n) (big_lexi_le R)
 
 big_lexi_le_total is not universe polymorphic
-Arguments big_lexi_le_total {K}%function_scope [R]%function_scope
-  _%function_scope x y
+Arguments big_lexi_le_total {K}%_function_scope [R]%_function_scope
+  _%_function_scope x y
 big_lexi_le_total is opaque
 Expands to: Constant mathcomp.classical.classical_orders.big_lexi_le_total
 Declared in
@@ -796,7 +796,8 @@ Order.NatOrder.Datatypes_nat__canonical__Order_Preorder ->
 (forall n : nat, K n) -> (forall n : nat, K n) -> forall i : nat, K i
 
 start_with is not universe polymorphic
-Arguments start_with {K}%function_scope n (t1 t2)%function_scope i%nat_scope
+Arguments start_with {K}%_function_scope n (t1 t2)%_function_scope
+  i%_nat_scope
 start_with is transparent
 Expands to: Constant mathcomp.classical.classical_orders.start_with
 Declared in
@@ -819,7 +820,8 @@ forall {K : nat -> eqType}
   [m : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder],
 (m < n)%O -> x m = start_with n x y m
 
-Arguments start_with_prefix {K}%function_scope [n] (x y)%function_scope [m] _
+Arguments start_with_prefix {K}%_function_scope [n] 
+  (x y)%_function_scope [m] _
 start_with_prefix is opaque
 Expands to: Constant mathcomp.classical.classical_orders.start_with_prefix
 Declared in
@@ -863,7 +865,7 @@ forall {d : Order.disp_t}, (nat -> porderType d) -> porderType d
 
 classical_orders_big_lexi_order__canonical__Order_POrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_POrder 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_POrder is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_POrder
@@ -874,7 +876,7 @@ forall {d : Order.disp_t}, (nat -> porderType d) -> porderType d
 
 classical_orders_big_lexi_order__canonical__Order_POrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_POrder 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_POrder is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_POrder
@@ -885,7 +887,7 @@ forall {d : Order.disp_t}, (nat -> porderType d) -> porderType d
 
 classical_orders_big_lexi_order__canonical__Order_POrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_POrder 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_POrder is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_POrder
@@ -896,7 +898,7 @@ forall {d : Order.disp_t}, (nat -> porderType d) -> porderType d
 
 classical_orders_big_lexi_order__canonical__Order_POrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_POrder 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_POrder is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_POrder
@@ -907,7 +909,7 @@ forall {d : Order.disp_t}, (nat -> porderType d) -> porderType d
 
 classical_orders_big_lexi_order__canonical__Order_POrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_POrder 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_POrder is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_POrder
@@ -926,7 +928,7 @@ match first_diff a b with
 end
 
 leEbig_lexi_order is not universe polymorphic
-Arguments leEbig_lexi_order {d} {K}%function_scope a b
+Arguments leEbig_lexi_order {d} {K}%_function_scope a b
 leEbig_lexi_order is opaque
 Expands to: Constant mathcomp.classical.classical_orders.leEbig_lexi_order
 Declared in
@@ -956,7 +958,7 @@ forall {d : Order.disp_t}, (nat -> orderType d) -> orderType d
 
 classical_orders_big_lexi_order__canonical__Order_Total is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_Total 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_Total is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_Total
@@ -967,7 +969,7 @@ forall {d : Order.disp_t}, (nat -> orderType d) -> orderType d
 
 classical_orders_big_lexi_order__canonical__Order_Total is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_Total 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_Total is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_Total
@@ -978,7 +980,7 @@ forall {d : Order.disp_t}, (nat -> orderType d) -> orderType d
 
 classical_orders_big_lexi_order__canonical__Order_Total is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_Total 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_Total is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_Total
@@ -989,7 +991,7 @@ forall {d : Order.disp_t}, (nat -> orderType d) -> orderType d
 
 classical_orders_big_lexi_order__canonical__Order_Total is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_Total 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_Total is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_Total
@@ -1000,7 +1002,7 @@ forall {d : Order.disp_t}, (nat -> orderType d) -> orderType d
 
 classical_orders_big_lexi_order__canonical__Order_Total is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_Total 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_Total is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_Total
@@ -1028,7 +1030,7 @@ forall {d : Order.disp_t}, (nat -> bPOrderType d) -> bPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_BPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_BPOrder 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_BPOrder is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_BPOrder
@@ -1039,7 +1041,7 @@ forall {d : Order.disp_t}, (nat -> bPOrderType d) -> bPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_BPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_BPOrder 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_BPOrder is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_BPOrder
@@ -1050,7 +1052,7 @@ forall {d : Order.disp_t}, (nat -> bPOrderType d) -> bPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_BPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_BPOrder 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_BPOrder is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_BPOrder
@@ -1061,7 +1063,7 @@ forall {d : Order.disp_t}, (nat -> bPOrderType d) -> bPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_BPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_BPOrder 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_BPOrder is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_BPOrder
@@ -1072,7 +1074,7 @@ forall {d : Order.disp_t}, (nat -> bPOrderType d) -> bPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_BPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_BPOrder 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_BPOrder is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_BPOrder
@@ -1100,7 +1102,7 @@ forall {d : Order.disp_t}, (nat -> tPOrderType d) -> tPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_TPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_TPOrder 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_TPOrder is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_TPOrder
@@ -1111,7 +1113,7 @@ forall {d : Order.disp_t}, (nat -> tPOrderType d) -> tPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_TPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_TPOrder 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_TPOrder is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_TPOrder
@@ -1122,7 +1124,7 @@ forall {d : Order.disp_t}, (nat -> tPOrderType d) -> tPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_TPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_TPOrder 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_TPOrder is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_TPOrder
@@ -1133,7 +1135,7 @@ forall {d : Order.disp_t}, (nat -> tPOrderType d) -> tPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_TPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_TPOrder 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_TPOrder is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_TPOrder
@@ -1144,7 +1146,7 @@ forall {d : Order.disp_t}, (nat -> tPOrderType d) -> tPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_TPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_TPOrder 
-  {d} {K}%function_scope
+  {d} {K}%_function_scope
 classical_orders_big_lexi_order__canonical__Order_TPOrder is transparent
 Expands to: Constant
             mathcomp.classical.classical_orders.classical_orders_big_lexi_order__canonical__Order_TPOrder
@@ -1164,8 +1166,8 @@ forall {d : Order.disp_t} {K : nat -> orderType d}
 (a < b)%O -> first_diff a b = Some n -> same_prefix n.+1 x b -> (a < x)%O
 
 big_lexi_order_prefix_lt is not universe polymorphic
-Arguments big_lexi_order_prefix_lt {d} {K}%function_scope 
-  [b a x] [n]%nat_scope _ _ _
+Arguments big_lexi_order_prefix_lt {d} {K}%_function_scope 
+  [b a x] [n]%_nat_scope _ _ _
 big_lexi_order_prefix_lt is opaque
 Expands to: Constant
             mathcomp.classical.classical_orders.big_lexi_order_prefix_lt
@@ -1198,8 +1200,8 @@ forall {d : Order.disp_t} {K : nat -> orderType d}
 (b < a)%O -> first_diff a b = Some n -> same_prefix n.+1 x b -> (x < a)%O
 
 big_lexi_order_prefix_gt is not universe polymorphic
-Arguments big_lexi_order_prefix_gt {d} {K}%function_scope 
-  [b a x] [n]%nat_scope _ _ _
+Arguments big_lexi_order_prefix_gt {d} {K}%_function_scope 
+  [b a x] [n]%_nat_scope _ _ _
 big_lexi_order_prefix_gt is opaque
 Expands to: Constant
             mathcomp.classical.classical_orders.big_lexi_order_prefix_gt
@@ -1246,7 +1248,7 @@ same_prefix n a b ->
 forall [m : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder],
 (m < n)%O -> x m = a m
 
-Arguments big_lexi_order_between {d} {K}%function_scope [a x b n] _ _ [m] _
+Arguments big_lexi_order_between {d} {K}%_function_scope [a x b n] _ _ [m] _
 big_lexi_order_between is opaque
 Expands to: Constant
             mathcomp.classical.classical_orders.big_lexi_order_between
@@ -1295,7 +1297,7 @@ exists n : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder,
   (same_prefix n x `<=` [set` i])%classic
 
 big_lexi_order_interval_prefix is not universe polymorphic
-Arguments big_lexi_order_interval_prefix {d} {K}%function_scope [i x] _ _
+Arguments big_lexi_order_interval_prefix {d} {K}%_function_scope [i x] _ _
 big_lexi_order_interval_prefix is opaque
 Expands to: Constant
             mathcomp.classical.classical_orders.big_lexi_order_interval_prefix
@@ -1348,7 +1350,7 @@ same_prefix n x =
                                            (fun n0 : nat => \top%O)]%classic
 
 big_lexi_order_prefix_closed_itv is not universe polymorphic
-Arguments big_lexi_order_prefix_closed_itv {d} {K}%function_scope n x
+Arguments big_lexi_order_prefix_closed_itv {d} {K}%_function_scope n x
 big_lexi_order_prefix_closed_itv is opaque
 Expands to: Constant
             mathcomp.classical.classical_orders.big_lexi_order_prefix_closed_itv

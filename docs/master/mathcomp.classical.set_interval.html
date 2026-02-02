@@ -338,7 +338,7 @@ forall [disp : Order.disp_t] [T : porderType disp]
 ([set` j] `<=` [set` i])%classic ->
 {in i, forall x : T, P x} -> forall [x : T], x \in j -> P x
 
-Arguments in1_subset_itv [disp T] [P]%function_scope [i j] _ _ [x] _
+Arguments in1_subset_itv [disp T] [P]%_function_scope [i j] _ _ [x] _
 in1_subset_itv is opaque
 Expands to: Constant mathcomp.classical.set_interval.in1_subset_itv
 Declared in library mathcomp.classical.set_interval, line 72, characters 6-20
@@ -366,7 +366,7 @@ forall [disp : Order.disp_t] [T : porderType disp]
 forall [t : T],
 `]y, z[%classic t -> (t \in Interval (BSide b0 x) (BSide b1 u)) = true
 
-Arguments subset_itvW [disp T x y z u] (b0 b1)%bool_scope _ _ [t] _
+Arguments subset_itvW [disp T x y z u] (b0 b1)%_bool_scope _ _ [t] _
 subset_itvW is opaque
 Expands to: Constant mathcomp.classical.set_interval.subset_itvW
 Declared in library mathcomp.classical.set_interval, line 76, characters 6-17
@@ -1138,7 +1138,7 @@ forall [R : numDomainType] (x : R) (b : bool) (a : itv_bound R),
 has_lbound (T:=R) [set` Interval (BSide b x) a]
 
 has_lbound_itv is not universe polymorphic
-Arguments has_lbound_itv [R] x%ring_scope b%bool_scope a
+Arguments has_lbound_itv [R] x%_ring_scope b%_bool_scope a
 has_lbound_itv is opaque
 Expands to: Constant mathcomp.classical.set_interval.has_lbound_itv
 Declared in
@@ -1155,7 +1155,7 @@ forall [R : numDomainType] (x : R) (b : bool) (a : itv_bound R),
 has_ubound (T:=R) [set` Interval a (BSide b x)]
 
 has_ubound_itv is not universe polymorphic
-Arguments has_ubound_itv [R] x%ring_scope b%bool_scope a
+Arguments has_ubound_itv [R] x%_ring_scope b%_bool_scope a
 has_ubound_itv is opaque
 Expands to: Constant mathcomp.classical.set_interval.has_ubound_itv
 Declared in
@@ -1198,7 +1198,7 @@ ubound
   [set (- x)%R | x in E] (- x)%R
 
 lb_ubN is not universe polymorphic
-Arguments lb_ubN [R] E%classical_set_scope x%ring_scope
+Arguments lb_ubN [R] E%_classical_set_scope x%_ring_scope
 lb_ubN is opaque
 Expands to: Constant mathcomp.classical.set_interval.lb_ubN
 Declared in
@@ -1220,7 +1220,7 @@ lbound
   [set (- x)%R | x in E] (- x)%R
 
 ub_lbN is not universe polymorphic
-Arguments ub_lbN [R] E%classical_set_scope x%ring_scope
+Arguments ub_lbN [R] E%_classical_set_scope x%_ring_scope
 ub_lbN is opaque
 Expands to: Constant mathcomp.classical.set_interval.ub_lbN
 Declared in
@@ -1238,7 +1238,7 @@ forall [R : numDomainType] (E : set R) (x : R),
 E x = [set (- x)%R | x in E]%classic (- x)%R
 
 memNE is not universe polymorphic
-Arguments memNE [R] E%classical_set_scope x%ring_scope
+Arguments memNE [R] E%_classical_set_scope x%_ring_scope
 memNE is opaque
 Expands to: Constant mathcomp.classical.set_interval.memNE
 Declared in
@@ -1254,7 +1254,7 @@ forall [R : numDomainType] (E : set R),
 ([set (- x)%R | x in E] !=set0)%classic <-> (E !=set0)%classic
 
 nonemptyN is not universe polymorphic
-Arguments nonemptyN [R] E%classical_set_scope
+Arguments nonemptyN [R] E%_classical_set_scope
 nonemptyN is opaque
 Expands to: Constant mathcomp.classical.set_interval.nonemptyN
 Declared in
@@ -1272,7 +1272,7 @@ forall [R : numDomainType] (E : set R),
 [set (- x)%R | x in E]%classic = set0 <-> E = set0
 
 opp_set_eq0 is not universe polymorphic
-Arguments opp_set_eq0 [R] E%classical_set_scope
+Arguments opp_set_eq0 [R] E%_classical_set_scope
 opp_set_eq0 is opaque
 Expands to: Constant mathcomp.classical.set_interval.opp_set_eq0
 Declared in
@@ -1291,7 +1291,7 @@ has_ubound
   [set (- x)%R | x in E]
 
 has_lb_ubN is not universe polymorphic
-Arguments has_lb_ubN [R] E%classical_set_scope
+Arguments has_lb_ubN [R] E%_classical_set_scope
 has_lb_ubN is opaque
 Expands to: Constant mathcomp.classical.set_interval.has_lb_ubN
 Declared in
@@ -1315,7 +1315,7 @@ forall [R : realDomainType] {E : set R},
 ~ has_ubound (T:=R) E <-> (forall x : R, exists2 y : R, E y & (x < y)%R)
 
 has_ubPn is not universe polymorphic
-Arguments has_ubPn [R] {E}%classical_set_scope
+Arguments has_ubPn [R] {E}%_classical_set_scope
 has_ubPn is opaque
 Expands to: Constant mathcomp.classical.set_interval.has_ubPn
 Declared in
@@ -1337,7 +1337,7 @@ forall [R : realDomainType] (E : set R),
 ~ has_lbound (T:=R) E <-> (forall x : R, exists2 y : R, E y & (y < x)%R)
 
 has_lbPn is not universe polymorphic
-Arguments has_lbPn [R] E%classical_set_scope
+Arguments has_lbPn [R] E%_classical_set_scope
 has_lbPn is opaque
 Expands to: Constant mathcomp.classical.set_interval.has_lbPn
 Declared in
@@ -1419,7 +1419,7 @@ forall [R : numDomainType] (x : R) (b : bool),
 [set` Interval -oo%O (BSide (~~ b) (- x)%R)]%classic
 
 opp_itv_bndy is not universe polymorphic
-Arguments opp_itv_bndy [R] x%ring_scope b%bool_scope
+Arguments opp_itv_bndy [R] x%_ring_scope b%_bool_scope
 opp_itv_bndy is opaque
 Expands to: Constant mathcomp.classical.set_interval.opp_itv_bndy
 Declared in
@@ -1444,7 +1444,7 @@ forall [R : numDomainType] (x : R) (b : bool),
 [set` Interval (BSide (~~ b) (- x)%R) +oo%O]%classic
 
 opp_itvNy_bnd is not universe polymorphic
-Arguments opp_itvNy_bnd [R] x%ring_scope b%bool_scope
+Arguments opp_itvNy_bnd [R] x%_ring_scope b%_bool_scope
 opp_itvNy_bnd is opaque
 Expands to: Constant mathcomp.classical.set_interval.opp_itvNy_bnd
 Declared in
@@ -1469,7 +1469,7 @@ forall [R : numDomainType] (a b : bool) (x y : R),
 [set` Interval (BSide (~~ b) (- y)%R) (BSide (~~ a) (- x)%R)]%classic
 
 opp_itv_bnd_bnd is not universe polymorphic
-Arguments opp_itv_bnd_bnd [R] (a b)%bool_scope (x y)%ring_scope
+Arguments opp_itv_bnd_bnd [R] (a b)%_bool_scope (x y)%_ring_scope
 opp_itv_bnd_bnd is opaque
 Expands to: Constant mathcomp.classical.set_interval.opp_itv_bnd_bnd
 Declared in
@@ -1491,7 +1491,7 @@ forall [R : numDomainType] (x y : R),
 [set (- x)%R | x in `]x, y[]%classic = `](- y)%R, (- x)%R[%classic
 
 opp_itvoo is not universe polymorphic
-Arguments opp_itvoo [R] (x y)%ring_scope
+Arguments opp_itvoo [R] (x y)%_ring_scope
 opp_itvoo is opaque
 Expands to: Constant mathcomp.classical.set_interval.opp_itvoo
 Declared in
@@ -1611,7 +1611,7 @@ forall [d : Order.disp_t] [T : orderType d] (b : bool) (x : T),
 [set: T]%classic
 
 itv_setU_setT is not universe polymorphic
-Arguments itv_setU_setT [d T] b%bool_scope x
+Arguments itv_setU_setT [d T] b%_bool_scope x
 itv_setU_setT is opaque
 Expands to: Constant mathcomp.classical.set_interval.itv_setU_setT
 Declared in
@@ -1636,7 +1636,7 @@ forall [R : numDomainType] (x y : bool) (a b t : R),
 ((a + t)%R \in Interval (BSide (~~ y) a) (BSide (~~ x) b))
 
 memB_itv is not universe polymorphic
-Arguments memB_itv [R] (x y)%bool_scope (a b t)%ring_scope
+Arguments memB_itv [R] (x y)%_bool_scope (a b t)%_ring_scope
 memB_itv is opaque
 Expands to: Constant mathcomp.classical.set_interval.memB_itv
 Declared in
@@ -1657,7 +1657,7 @@ forall [R : numDomainType] (x y : bool) (a b : R),
 (a \in Interval (BSide (~~ y) 0%R) (BSide (~~ x) b))
 
 memB_itv0 is not universe polymorphic
-Arguments memB_itv0 [R] (x y)%bool_scope (a b)%ring_scope
+Arguments memB_itv0 [R] (x y)%_bool_scope (a b)%_ring_scope
 memB_itv0 is opaque
 Expands to: Constant mathcomp.classical.set_interval.memB_itv0
 Declared in
@@ -1675,7 +1675,7 @@ forall [R : numDomainType] (t : R),
 ((1 - t)%R \in `[0, 1]%R) = (t \in `[0, 1]%R)
 
 __deprepcated__mem_1B_itvcc is not universe polymorphic
-Arguments __deprepcated__mem_1B_itvcc [R] t%ring_scope
+Arguments __deprepcated__mem_1B_itvcc [R] t%_ring_scope
 __deprepcated__mem_1B_itvcc is opaque
 Expands to: Constant
             mathcomp.classical.set_interval.__deprepcated__mem_1B_itvcc
@@ -1690,7 +1690,7 @@ library mathcomp.classical.set_interval, line 565, characters 6-33
 <span class="vernacular">Definition</span><span class="id"> </span><span id="line_path" class="id"><a name="line_path" class="" title="line_path : forall [R : numDomainType], R -> R -> R -> R
 
 line_path is not universe polymorphic
-Arguments line_path [R] (a b t)%ring_scope
+Arguments line_path [R] (a b t)%_ring_scope
 line_path is transparent
 Expands to: Constant mathcomp.classical.set_interval.line_path
 Declared in
@@ -1716,7 +1716,7 @@ forall [R : numDomainType] (a b t : R),
 line_path (R:=R) a b t = (t * (b - a) + a)%R
 
 line_pathEl is not universe polymorphic
-Arguments line_pathEl [R] (a b t)%ring_scope
+Arguments line_pathEl [R] (a b t)%_ring_scope
 line_pathEl is opaque
 Expands to: Constant mathcomp.classical.set_interval.line_pathEl
 Declared in
@@ -1732,7 +1732,7 @@ forall [R : numDomainType] (a b t : R),
 line_path (R:=R) a b t = ((1 - t) * (a - b) + b)%R
 
 line_pathEr is not universe polymorphic
-Arguments line_pathEr [R] (a b t)%ring_scope
+Arguments line_pathEr [R] (a b t)%_ring_scope
 line_pathEr is opaque
 Expands to: Constant mathcomp.classical.set_interval.line_pathEr
 Declared in
@@ -1747,7 +1747,7 @@ library mathcomp.classical.set_interval, line 576, characters 6-17
 forall [R : numDomainType] (t : R), line_path (R:=R) 1 0 t = (1 - t)%R
 
 line_path10 is not universe polymorphic
-Arguments line_path10 [R] t%ring_scope
+Arguments line_path10 [R] t%_ring_scope
 line_path10 is opaque
 Expands to: Constant mathcomp.classical.set_interval.line_path10
 Declared in
@@ -1761,7 +1761,7 @@ library mathcomp.classical.set_interval, line 579, characters 6-17
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="line_path0" class="id"><a name="line_path0" class="" title="line_path0 : forall [R : numDomainType] (a b : R), line_path (R:=R) a b 0 = a
 
 line_path0 is not universe polymorphic
-Arguments line_path0 [R] (a b)%ring_scope
+Arguments line_path0 [R] (a b)%_ring_scope
 line_path0 is opaque
 Expands to: Constant mathcomp.classical.set_interval.line_path0
 Declared in
@@ -1775,7 +1775,7 @@ library mathcomp.classical.set_interval, line 582, characters 6-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="line_path1" class="id"><a name="line_path1" class="" title="line_path1 : forall [R : numDomainType] (a b : R), line_path (R:=R) a b 1 = b
 
 line_path1 is not universe polymorphic
-Arguments line_path1 [R] (a b)%ring_scope
+Arguments line_path1 [R] (a b)%_ring_scope
 line_path1 is opaque
 Expands to: Constant mathcomp.classical.set_interval.line_path1
 Declared in
@@ -1791,7 +1791,7 @@ forall [R : numDomainType] (a b t : R),
 line_path (R:=R) a b t = line_path (R:=R) b a (1 - t)
 
 line_path_sym is not universe polymorphic
-Arguments line_path_sym [R] (a b t)%ring_scope
+Arguments line_path_sym [R] (a b t)%_ring_scope
 line_path_sym is opaque
 Expands to: Constant mathcomp.classical.set_interval.line_path_sym
 Declared in
@@ -1806,7 +1806,7 @@ library mathcomp.classical.set_interval, line 588, characters 6-19
 forall [R : numDomainType] (a : R), line_path (R:=R) a a = cst a
 
 line_path_flat is not universe polymorphic
-Arguments line_path_flat [R] a%ring_scope
+Arguments line_path_flat [R] a%_ring_scope
 line_path_flat is opaque
 Expands to: Constant mathcomp.classical.set_interval.line_path_flat
 Declared in
@@ -1830,7 +1830,7 @@ forall [x y : R],
 (fun x0 y0 : R => is_true (x0 <= y0)%R) x y ->
 (line_path (R:=R) a b x <= line_path (R:=R) a b y)%R = true
 
-Arguments leW_line_path [R] [a b]%ring_scope _ [x y] _
+Arguments leW_line_path [R] [a b]%_ring_scope _ [x y] _
 leW_line_path is opaque
 Expands to: Constant mathcomp.classical.set_interval.leW_line_path
 Declared in
@@ -1849,7 +1849,7 @@ R ->
 R -> join_GRing_PzRing_between_Algebra_BaseZmodule_and_GRing_PzSemiRing R
 
 factor is not universe polymorphic
-Arguments factor [R] (a b x)%ring_scope
+Arguments factor [R] (a b x)%_ring_scope
 factor is transparent
 Expands to: Constant mathcomp.classical.set_interval.factor
 Declared in
@@ -1869,7 +1869,7 @@ forall [x y : R],
 (fun x0 y0 : R => is_true (x0 <= y0)%R) x y ->
 (factor (R:=R) a b x <= factor (R:=R) a b y)%R = true
 
-Arguments leW_factor [R] [a b]%ring_scope _ [x y] _
+Arguments leW_factor [R] [a b]%_ring_scope _ [x y] _
 leW_factor is opaque
 Expands to: Constant mathcomp.classical.set_interval.leW_factor
 Declared in
@@ -1884,7 +1884,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="factor_flat" class="id"><a name="factor_flat" class="" title="factor_flat : forall [R : numDomainType] (a : R), factor (R:=R) a a = cst 0%R
 
 factor_flat is not universe polymorphic
-Arguments factor_flat [R] a%ring_scope
+Arguments factor_flat [R] a%_ring_scope
 factor_flat is opaque
 Expands to: Constant mathcomp.classical.set_interval.factor_flat
 Declared in
@@ -1898,7 +1898,7 @@ library mathcomp.classical.set_interval, line 606, characters 6-17
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="factorl" class="id"><a name="factorl" class="" title="factorl : forall [R : numDomainType] (a b : R), factor (R:=R) a b a = 0%R
 
 factorl is not universe polymorphic
-Arguments factorl [R] (a b)%ring_scope
+Arguments factorl [R] (a b)%_ring_scope
 factorl is opaque
 Expands to: Constant mathcomp.classical.set_interval.factorl
 Declared in
@@ -1912,7 +1912,7 @@ library mathcomp.classical.set_interval, line 609, characters 6-13
 <span class="vernacular">Definition</span><span class="id"> </span><span id="ndline_path" class="id"><a name="ndline_path" class="" title="ndline_path : forall [R : numDomainType] [a b : R], (a < b)%R -> R -> R
 
 ndline_path is not universe polymorphic
-Arguments ndline_path [R] [a b]%ring_scope _ t%ring_scope
+Arguments ndline_path [R] [a b]%_ring_scope _ t%_ring_scope
 ndline_path is transparent
 Expands to: Constant mathcomp.classical.set_interval.ndline_path
 Declared in
@@ -1924,7 +1924,7 @@ forall [R : numDomainType] [a b : R] (ab : (a < b)%R),
 ndline_path (R:=R) (a:=a) (b:=b) ab = line_path (R:=R) a b
 
 ndline_pathE is not universe polymorphic
-Arguments ndline_pathE [R] [a b]%ring_scope ab
+Arguments ndline_pathE [R] [a b]%_ring_scope ab
 ndline_pathE is opaque
 Expands to: Constant mathcomp.classical.set_interval.ndline_pathE
 Declared in
@@ -1947,7 +1947,7 @@ library mathcomp.classical.set_interval, line 614, characters 6-18
 forall [R : numFieldType] [a b : R], a != b -> factor (R:=R) a b b = 1%R
 
 factorr is not universe polymorphic
-Arguments factorr [R] [a b]%ring_scope _
+Arguments factorr [R] [a b]%_ring_scope _
 factorr is opaque
 Expands to: Constant mathcomp.classical.set_interval.factorr
 Declared in
@@ -1963,7 +1963,7 @@ forall [R : numFieldType] [a b : R],
 a != b -> cancel (factor (R:=R) a b) (line_path (R:=R) a b)
 
 factorK is not universe polymorphic
-Arguments factorK [R] [a b]%ring_scope _ x
+Arguments factorK [R] [a b]%_ring_scope _ x
 factorK is opaque
 Expands to: Constant mathcomp.classical.set_interval.factorK
 Declared in
@@ -1979,7 +1979,7 @@ forall [R : numFieldType] [a b : R],
 a != b -> cancel (line_path (R:=R) a b) (factor (R:=R) a b)
 
 line_pathK is not universe polymorphic
-Arguments line_pathK [R] [a b]%ring_scope _ x
+Arguments line_pathK [R] [a b]%_ring_scope _ x
 line_pathK is opaque
 Expands to: Constant mathcomp.classical.set_interval.line_pathK
 Declared in
@@ -2003,7 +2003,7 @@ a != b ->
 forall [x1 x2 : R],
 line_path (R:=R) a b x1 = line_path (R:=R) a b x2 -> x1 = x2
 
-Arguments line_path_inj [R] [a b]%ring_scope _ [x1 x2] _
+Arguments line_path_inj [R] [a b]%_ring_scope _ [x1 x2] _
 line_path_inj is opaque
 Expands to: Constant mathcomp.classical.set_interval.line_path_inj
 Declared in
@@ -2024,7 +2024,7 @@ forall [R : numFieldType] [a b : R],
 a != b ->
 forall [x1 x2 : R], factor (R:=R) a b x1 = factor (R:=R) a b x2 -> x1 = x2
 
-Arguments factor_inj [R] [a b]%ring_scope _ [x1 x2] _
+Arguments factor_inj [R] [a b]%_ring_scope _ [x1 x2] _
 factor_inj is opaque
 Expands to: Constant mathcomp.classical.set_interval.factor_inj
 Declared in
@@ -2040,7 +2040,7 @@ forall [R : numFieldType] [a b : R],
 a != b -> bijective (line_path (R:=R) a b)
 
 line_path_bij is not universe polymorphic
-Arguments line_path_bij [R] [a b]%ring_scope _
+Arguments line_path_bij [R] [a b]%_ring_scope _
 line_path_bij is opaque
 Expands to: Constant mathcomp.classical.set_interval.line_path_bij
 Declared in
@@ -2055,7 +2055,7 @@ library mathcomp.classical.set_interval, line 642, characters 6-19
 forall [R : numFieldType] [a b : R], a != b -> bijective (factor (R:=R) a b)
 
 factor_bij is not universe polymorphic
-Arguments factor_bij [R] [a b]%ring_scope _
+Arguments factor_bij [R] [a b]%_ring_scope _
 factor_bij is opaque
 Expands to: Constant mathcomp.classical.set_interval.factor_bij
 Declared in
@@ -2071,7 +2071,7 @@ forall [R : numFieldType] [a b : R],
 (a < b)%R -> {mono line_path (R:=R) a b : x y / (x <= y)%R}
 
 le_line_path is not universe polymorphic
-Arguments le_line_path [R] [a b]%ring_scope _ x y
+Arguments le_line_path [R] [a b]%_ring_scope _ x y
 le_line_path is opaque
 Expands to: Constant mathcomp.classical.set_interval.le_line_path
 Declared in
@@ -2090,7 +2090,7 @@ forall [R : numFieldType] [a b : R],
 (a < b)%R -> {mono factor (R:=R) a b : x y / (x <= y)%R >-> (x <= y)%R}
 
 le_factor is not universe polymorphic
-Arguments le_factor [R] [a b]%ring_scope _ x y
+Arguments le_factor [R] [a b]%_ring_scope _ x y
 le_factor is opaque
 Expands to: Constant mathcomp.classical.set_interval.le_factor
 Declared in
@@ -2109,7 +2109,7 @@ forall [R : numFieldType] [a b : R],
 (a < b)%R -> {mono line_path (R:=R) a b : x y / (x < y)%R}
 
 lt_line_path is not universe polymorphic
-Arguments lt_line_path [R] [a b]%ring_scope _ x y
+Arguments lt_line_path [R] [a b]%_ring_scope _ x y
 lt_line_path is opaque
 Expands to: Constant mathcomp.classical.set_interval.lt_line_path
 Declared in
@@ -2125,7 +2125,7 @@ forall [R : numFieldType] [a b : R],
 (a < b)%R -> {mono factor (R:=R) a b : x y / (x < y)%R >-> (x < y)%R}
 
 lt_factor is not universe polymorphic
-Arguments lt_factor [R] [a b]%ring_scope _ x y
+Arguments lt_factor [R] [a b]%_ring_scope _ x y
 lt_factor is opaque
 Expands to: Constant mathcomp.classical.set_interval.lt_factor
 Declared in
@@ -2148,7 +2148,7 @@ forall [R : numFieldType] [a b : R],
 
 set_interval_ndline_path__canonical__functions_SplitBij is not universe polymorphic
 Arguments set_interval_ndline_path__canonical__functions_SplitBij 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 set_interval_ndline_path__canonical__functions_SplitBij is transparent
 Expands to: Constant
             mathcomp.classical.set_interval.set_interval_ndline_path__canonical__functions_SplitBij
@@ -2160,7 +2160,7 @@ forall [R : numFieldType] [a b : R],
 
 set_interval_ndline_path__canonical__functions_SplitBij is not universe polymorphic
 Arguments set_interval_ndline_path__canonical__functions_SplitBij 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 set_interval_ndline_path__canonical__functions_SplitBij is transparent
 Expands to: Constant
             mathcomp.classical.set_interval.set_interval_ndline_path__canonical__functions_SplitBij
@@ -2172,7 +2172,7 @@ forall [R : numFieldType] [a b : R],
 
 set_interval_ndline_path__canonical__functions_SplitBij is not universe polymorphic
 Arguments set_interval_ndline_path__canonical__functions_SplitBij 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 set_interval_ndline_path__canonical__functions_SplitBij is transparent
 Expands to: Constant
             mathcomp.classical.set_interval.set_interval_ndline_path__canonical__functions_SplitBij
@@ -2184,7 +2184,7 @@ forall [R : numFieldType] [a b : R],
 
 set_interval_ndline_path__canonical__functions_SplitBij is not universe polymorphic
 Arguments set_interval_ndline_path__canonical__functions_SplitBij 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 set_interval_ndline_path__canonical__functions_SplitBij is transparent
 Expands to: Constant
             mathcomp.classical.set_interval.set_interval_ndline_path__canonical__functions_SplitBij
@@ -2196,7 +2196,7 @@ forall [R : numFieldType] [a b : R],
 
 set_interval_ndline_path__canonical__functions_SplitBij is not universe polymorphic
 Arguments set_interval_ndline_path__canonical__functions_SplitBij 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 set_interval_ndline_path__canonical__functions_SplitBij is transparent
 Expands to: Constant
             mathcomp.classical.set_interval.set_interval_ndline_path__canonical__functions_SplitBij
@@ -2208,7 +2208,7 @@ forall [R : numFieldType] [a b : R],
 
 set_interval_ndline_path__canonical__functions_SplitBij is not universe polymorphic
 Arguments set_interval_ndline_path__canonical__functions_SplitBij 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 set_interval_ndline_path__canonical__functions_SplitBij is transparent
 Expands to: Constant
             mathcomp.classical.set_interval.set_interval_ndline_path__canonical__functions_SplitBij
@@ -2220,7 +2220,7 @@ forall [R : numFieldType] [a b : R],
 
 set_interval_ndline_path__canonical__functions_SplitBij is not universe polymorphic
 Arguments set_interval_ndline_path__canonical__functions_SplitBij 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 set_interval_ndline_path__canonical__functions_SplitBij is transparent
 Expands to: Constant
             mathcomp.classical.set_interval.set_interval_ndline_path__canonical__functions_SplitBij
@@ -2232,7 +2232,7 @@ forall [R : numFieldType] [a b : R],
 
 set_interval_ndline_path__canonical__functions_SplitBij is not universe polymorphic
 Arguments set_interval_ndline_path__canonical__functions_SplitBij 
-  [R] [a b]%ring_scope ab
+  [R] [a b]%_ring_scope ab
 set_interval_ndline_path__canonical__functions_SplitBij is transparent
 Expands to: Constant
             mathcomp.classical.set_interval.set_interval_ndline_path__canonical__functions_SplitBij
@@ -2250,7 +2250,7 @@ set_bij [set` Interval (BSide ba 0%R) (BSide bb 1%R)]
   [set` Interval (BSide ba a) (BSide bb b)] (line_path (R:=R) a b)
 
 line_path_itv_bij is not universe polymorphic
-Arguments line_path_itv_bij [R] (ba bb)%bool_scope [a b]%ring_scope _
+Arguments line_path_itv_bij [R] (ba bb)%_bool_scope [a b]%_ring_scope _
 line_path_itv_bij is opaque
 Expands to: Constant mathcomp.classical.set_interval.line_path_itv_bij
 Declared in
@@ -2276,7 +2276,7 @@ set_bij [set` Interval (BSide ba a) (BSide bb b)]
   [set` Interval (BSide ba 0%R) (BSide bb 1%R)] (factor (R:=R) a b)
 
 factor_itv_bij is not universe polymorphic
-Arguments factor_itv_bij [R] (ba bb)%bool_scope [a b]%ring_scope _
+Arguments factor_itv_bij [R] (ba bb)%_bool_scope [a b]%_ring_scope _
 factor_itv_bij is opaque
 Expands to: Constant mathcomp.classical.set_interval.factor_itv_bij
 Declared in
@@ -2308,7 +2308,7 @@ forall
 [eta [set` Interval (BSide ba 0%R) (BSide bb 1%R)]%classic] x ->
 (line_path (R:=R) a b x \in Interval (BSide ba a) (BSide bb b)) = true
 
-Arguments mem_line_path_itv [R] [ba bb]%bool_scope [a b]%ring_scope _ [x] _
+Arguments mem_line_path_itv [R] [ba bb]%_bool_scope [a b]%_ring_scope _ [x] _
 mem_line_path_itv is opaque
 Expands to: Constant mathcomp.classical.set_interval.mem_line_path_itv
 Declared in
@@ -2335,7 +2335,7 @@ forall
          R],
 [eta `[0%R, 1%R]%classic] x -> (line_path (R:=R) a b x \in `[a, b]%R) = true
 
-Arguments mem_line_path_itvcc [R] [a b]%ring_scope _ [x] _
+Arguments mem_line_path_itvcc [R] [a b]%_ring_scope _ [x] _
 mem_line_path_itvcc is opaque
 Expands to: Constant mathcomp.classical.set_interval.mem_line_path_itvcc
 Declared in
@@ -2356,7 +2356,7 @@ forall [R : numFieldType] (ba bb : bool) [a b : R],
 [set` Interval (BSide ba a) (BSide bb b)]%classic
 
 range_line_path is not universe polymorphic
-Arguments range_line_path [R] (ba bb)%bool_scope [a b]%ring_scope _
+Arguments range_line_path [R] (ba bb)%_bool_scope [a b]%_ring_scope _
 range_line_path is opaque
 Expands to: Constant mathcomp.classical.set_interval.range_line_path
 Declared in
@@ -2376,7 +2376,7 @@ forall [R : numFieldType] (ba bb : bool) [a b : R],
 [set` Interval (BSide ba 0%R) (BSide bb 1%R)]%classic
 
 range_factor is not universe polymorphic
-Arguments range_factor [R] (ba bb)%bool_scope [a b]%ring_scope _
+Arguments range_factor [R] (ba bb)%_bool_scope [a b]%_ring_scope _
 range_factor is opaque
 Expands to: Constant mathcomp.classical.set_interval.range_factor
 Declared in
@@ -2394,7 +2394,7 @@ forall [R : numFieldType] [a b : R] (x : R),
 a != b -> unstable.onem (factor (R:=R) a b x) = factor (R:=R) b a x
 
 onem_factor is not universe polymorphic
-Arguments onem_factor [R] [a b]%ring_scope x%ring_scope _
+Arguments onem_factor [R] [a b]%_ring_scope x%_ring_scope _
 onem_factor is opaque
 Expands to: Constant mathcomp.classical.set_interval.onem_factor
 Declared in
@@ -2421,7 +2421,7 @@ forall [R : realFieldType] [ba bb : bool] [a b x : R],
 [eta [set` Interval (BSide ba a) (BSide bb b)]%classic] x ->
 (factor (R:=R) a b x \in Interval (BSide ba 0%R) (BSide bb 1%R)) = true
 
-Arguments mem_factor_itv [R] [ba bb]%bool_scope [a b]%ring_scope [x] _
+Arguments mem_factor_itv [R] [ba bb]%_bool_scope [a b]%_ring_scope [x] _
 mem_factor_itv is opaque
 Expands to: Constant mathcomp.classical.set_interval.mem_factor_itv
 Declared in
@@ -2445,7 +2445,7 @@ forall [i : IntervalCan.interval_interval__canonical__eqtype_Equality R],
 i \in s -> i.1 != +oo%O
 
 neitv_bnd1 is not universe polymorphic
-Arguments neitv_bnd1 [R] [s]%seq_scope _ [i] _
+Arguments neitv_bnd1 [R] [s]%_seq_scope _ [i] _
 neitv_bnd1 is opaque
 Expands to: Constant mathcomp.classical.set_interval.neitv_bnd1
 Declared in
@@ -2466,7 +2466,7 @@ forall [i : IntervalCan.interval_interval__canonical__eqtype_Equality R],
 i \in s -> i.2 != -oo%O
 
 neitv_bnd2 is not universe polymorphic
-Arguments neitv_bnd2 [R] [s]%seq_scope _ [i] _
+Arguments neitv_bnd2 [R] [s]%_seq_scope _ [i] _
 neitv_bnd2 is opaque
 Expands to: Constant mathcomp.classical.set_interval.neitv_bnd2
 Declared in
@@ -2488,7 +2488,8 @@ trivIset (T:=R) D (fun i : nat => [set` nth def s i]%classic) <->
 trivIset (T:=R) D [eta nth set0 [seq [set` j]%classic | j <- s]]
 
 trivIset_set_itv_nth is not universe polymorphic
-Arguments trivIset_set_itv_nth {R} def {s}%seq_scope D%classical_set_scope _
+Arguments trivIset_set_itv_nth {R} def {s}%_seq_scope 
+  D%_classical_set_scope _
 trivIset_set_itv_nth is opaque
 Expands to: Constant mathcomp.classical.set_interval.trivIset_set_itv_nth
 Declared in
@@ -2548,7 +2549,7 @@ forall {disp : Order.disp_t} {T : porderType disp} (b : bool) (x : T),
 disjoint_itv (Interval -oo%O (BSide b x)) (Interval (BSide b x) +oo%O)
 
 disjoint_rays is not universe polymorphic
-Arguments disjoint_rays {disp T} b%bool_scope x
+Arguments disjoint_rays {disp T} b%_bool_scope x
 disjoint_rays is opaque
 Expands to: Constant mathcomp.classical.set_interval.disjoint_rays
 Declared in
@@ -2597,7 +2598,7 @@ forall {R : numDomainType} [i j : interval R],
 (forall x y : R, x \in i -> y \in j -> (x < y)%R) -> disjoint_itv i j
 
 lt_disjoint is not universe polymorphic
-Arguments lt_disjoint {R} [i j] _%function_scope
+Arguments lt_disjoint {R} [i j] _%_function_scope
 lt_disjoint is opaque
 Expands to: Constant mathcomp.classical.set_interval.lt_disjoint
 Declared in
@@ -2620,7 +2621,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="is_open_itv" class="id"><a name="is_open_itv" class="" title="is_open_itv : forall {d : Order.disp_t} {T : porderType d}, set T -> Prop
 
 is_open_itv is not universe polymorphic
-Arguments is_open_itv {d T} A%classical_set_scope
+Arguments is_open_itv {d T} A%_classical_set_scope
 is_open_itv is transparent
 Expands to: Constant mathcomp.classical.set_interval.is_open_itv
 Declared in
@@ -2631,7 +2632,7 @@ library mathcomp.classical.set_interval, line 811, characters 11-22
 forall {d : Order.disp_t} {T : porderType d}, set T -> set (nat -> set T)
 
 open_itv_cover is not universe polymorphic
-Arguments open_itv_cover {d T} A%classical_set_scope _
+Arguments open_itv_cover {d T} A%_classical_set_scope _
 open_itv_cover is transparent
 Expands to: Constant mathcomp.classical.set_interval.open_itv_cover
 Declared in
@@ -2681,7 +2682,7 @@ forall {d : Order.disp_t} {T : porderType d} [l : itv_bound T]
 itv_open_ends (Interval l (BSide b t)) -> b = true
 
 itv_open_ends_rside is not universe polymorphic
-Arguments itv_open_ends_rside {d T} [l] [b]%bool_scope [t] _
+Arguments itv_open_ends_rside {d T} [l] [b]%_bool_scope [t] _
 itv_open_ends_rside is opaque
 Expands to: Constant mathcomp.classical.set_interval.itv_open_ends_rside
 Declared in
@@ -2698,7 +2699,7 @@ forall {d : Order.disp_t} {T : porderType d} [l : itv_bound T] [b : bool],
 itv_open_ends (Interval l (BInfty T b)) -> b = false
 
 itv_open_ends_rinfty is not universe polymorphic
-Arguments itv_open_ends_rinfty {d T} [l] [b]%bool_scope _
+Arguments itv_open_ends_rinfty {d T} [l] [b]%_bool_scope _
 itv_open_ends_rinfty is opaque
 Expands to: Constant mathcomp.classical.set_interval.itv_open_ends_rinfty
 Declared in
@@ -2716,7 +2717,7 @@ forall {d : Order.disp_t} {T : porderType d} [l : itv_bound T]
 itv_open_ends (Interval (BSide b t) l) -> b = false
 
 itv_open_ends_lside is not universe polymorphic
-Arguments itv_open_ends_lside {d T} [l] [b]%bool_scope [t] _
+Arguments itv_open_ends_lside {d T} [l] [b]%_bool_scope [t] _
 itv_open_ends_lside is opaque
 Expands to: Constant mathcomp.classical.set_interval.itv_open_ends_lside
 Declared in
@@ -2733,7 +2734,7 @@ forall {d : Order.disp_t} {T : porderType d} [l : itv_bound T] [b : bool],
 itv_open_ends (Interval (BInfty T b) l) -> b = true
 
 itv_open_ends_linfty is not universe polymorphic
-Arguments itv_open_ends_linfty {d T} [l] [b]%bool_scope _
+Arguments itv_open_ends_linfty {d T} [l] [b]%_bool_scope _
 itv_open_ends_linfty is opaque
 Expands to: Constant mathcomp.classical.set_interval.itv_open_ends_linfty
 Declared in

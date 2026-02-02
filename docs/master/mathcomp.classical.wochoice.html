@@ -252,7 +252,7 @@ can be found in `classical_sets.v` but expressed with `Prop` instead of
 <span class="vernacular">Definition</span><span class="id"> </span><span id="nonempty" class="id"><a name="nonempty" class="" title="nonempty : forall {T : Type}, {pred T} -> Prop
 
 nonempty is not universe polymorphic
-Arguments nonempty {T}%type_scope A
+Arguments nonempty {T}%_type_scope A
 nonempty is transparent
 Expands to: Constant mathcomp.classical.wochoice.nonempty
 Declared in library mathcomp.classical.wochoice, line 40, characters 11-19
@@ -272,7 +272,7 @@ forall [P : {pred T} -> Prop],
 phantom Prop (forall A : {pred T}, P A : Prop) -> Prop
 
 prop_within is not universe polymorphic
-Arguments prop_within {T}%type_scope d [P]%function_scope _
+Arguments prop_within {T}%_type_scope d [P]%_function_scope _
 prop_within is transparent
 Expands to: Constant mathcomp.classical.wochoice.prop_within
 Declared in library mathcomp.classical.wochoice, line 49, characters 11-22
@@ -290,8 +290,8 @@ forall {T : predArgType} [A : {pred T}] [P : {pred T} -> Prop],
 (forall A0 : {pred T}, P A0 : Prop) ->
 forall [A0 : {pred T}], {subset A0 <= A} -> P A0
 
-Arguments withinW {T}%type_scope [A] [P]%function_scope 
-  _%function_scope [A] _
+Arguments withinW {T}%_type_scope [A] [P]%_function_scope 
+  _%_function_scope [A] _
 withinW is opaque
 Expands to: Constant mathcomp.classical.wochoice.withinW
 Declared in library mathcomp.classical.wochoice, line 51, characters 6-13
@@ -307,7 +307,7 @@ forall {T : predArgType} [P : {pred T} -> Prop],
 forall A : {pred T}, P A : Prop
 
 withinT is not universe polymorphic
-Arguments withinT {T}%type_scope [P]%function_scope _ A
+Arguments withinT {T}%_type_scope [P]%_function_scope _ A
 withinT is opaque
 Expands to: Constant mathcomp.classical.wochoice.withinT
 Declared in library mathcomp.classical.wochoice, line 54, characters 6-13
@@ -331,7 +331,8 @@ sub_mem d d' ->
 forall [phP : phantom Prop (forall A : {pred T}, P A : Prop)],
 prop_within d' (P:=P) phP -> forall [A : {pred T}], sub_mem (mem A) d -> P A
 
-Arguments sub_within {T}%type_scope [d d'] [P]%function_scope _ [phP] _ [A] _
+Arguments sub_within {T}%_type_scope [d d'] [P]%_function_scope 
+  _ [phP] _ [A] _
 sub_within is opaque
 Expands to: Constant mathcomp.classical.wochoice.sub_within
 Declared in library mathcomp.classical.wochoice, line 57, characters 6-16
@@ -354,7 +355,7 @@ Declared in library mathcomp.classical.wochoice, line 57, characters 6-16
 <span class="vernacular">Definition</span><span class="id"> </span><span id="maximal" class="id"><a name="maximal" class="" title="maximal : forall [T : Type], rel T -> T -> Prop
 
 maximal is not universe polymorphic
-Arguments maximal [T]%type_scope R z
+Arguments maximal [T]%_type_scope R z
 maximal is transparent
 Expands to: Constant mathcomp.classical.wochoice.maximal
 Declared in library mathcomp.classical.wochoice, line 71, characters 11-18
@@ -363,7 +364,7 @@ Declared in library mathcomp.classical.wochoice, line 71, characters 11-18
 <span class="vernacular">Definition</span><span class="id"> </span><span id="minimal" class="id"><a name="minimal" class="" title="minimal : forall [T : Type], rel T -> T -> Prop
 
 minimal is not universe polymorphic
-Arguments minimal [T]%type_scope R z
+Arguments minimal [T]%_type_scope R z
 minimal is transparent
 Expands to: Constant mathcomp.classical.wochoice.minimal
 Declared in library mathcomp.classical.wochoice, line 73, characters 11-18
@@ -372,7 +373,7 @@ Declared in library mathcomp.classical.wochoice, line 73, characters 11-18
 <span class="vernacular">Definition</span><span class="id"> </span><span id="upper_bound" class="id"><a name="upper_bound" class="" title="upper_bound : forall [T : Type], rel T -> {pred T} -> T -> Prop
 
 upper_bound is not universe polymorphic
-Arguments upper_bound [T]%type_scope R A z
+Arguments upper_bound [T]%_type_scope R A z
 upper_bound is transparent
 Expands to: Constant mathcomp.classical.wochoice.upper_bound
 Declared in library mathcomp.classical.wochoice, line 75, characters 11-22
@@ -381,7 +382,7 @@ Declared in library mathcomp.classical.wochoice, line 75, characters 11-22
 <span class="vernacular">Definition</span><span class="id"> </span><span id="lower_bound" class="id"><a name="lower_bound" class="" title="lower_bound : forall [T : Type], rel T -> {pred T} -> T -> Prop
 
 lower_bound is not universe polymorphic
-Arguments lower_bound [T]%type_scope R A z
+Arguments lower_bound [T]%_type_scope R A z
 lower_bound is transparent
 Expands to: Constant mathcomp.classical.wochoice.lower_bound
 Declared in library mathcomp.classical.wochoice, line 77, characters 11-22
@@ -390,7 +391,7 @@ Declared in library mathcomp.classical.wochoice, line 77, characters 11-22
 <span class="vernacular">Definition</span><span class="id"> </span><span id="preorder" class="id"><a name="preorder" class="" title="preorder : forall [T : Type], rel T -> Prop
 
 preorder is not universe polymorphic
-Arguments preorder [T]%type_scope R
+Arguments preorder [T]%_type_scope R
 preorder is transparent
 Expands to: Constant mathcomp.classical.wochoice.preorder
 Declared in library mathcomp.classical.wochoice, line 79, characters 11-19
@@ -399,7 +400,7 @@ Declared in library mathcomp.classical.wochoice, line 79, characters 11-19
 <span class="vernacular">Definition</span><span class="id"> </span><span id="partial_order" class="id"><a name="partial_order" class="" title="partial_order : forall [T : Type], rel T -> Prop
 
 partial_order is not universe polymorphic
-Arguments partial_order [T]%type_scope R
+Arguments partial_order [T]%_type_scope R
 partial_order is transparent
 Expands to: Constant mathcomp.classical.wochoice.partial_order
 Declared in library mathcomp.classical.wochoice, line 81, characters 11-24
@@ -408,7 +409,7 @@ Declared in library mathcomp.classical.wochoice, line 81, characters 11-24
 <span class="vernacular">Definition</span><span class="id"> </span><span id="total_order" class="id"><a name="total_order" class="" title="total_order : forall [T : Type], rel T -> Prop
 
 total_order is not universe polymorphic
-Arguments total_order [T]%type_scope R
+Arguments total_order [T]%_type_scope R
 total_order is transparent
 Expands to: Constant mathcomp.classical.wochoice.total_order
 Declared in library mathcomp.classical.wochoice, line 83, characters 11-22
@@ -417,7 +418,7 @@ Declared in library mathcomp.classical.wochoice, line 83, characters 11-22
 <span class="vernacular">Definition</span><span class="id"> </span><span id="minimum_of" class="id"><a name="minimum_of" class="" title="minimum_of : forall [T : Type], rel T -> {pred T} -> T -> Prop
 
 minimum_of is not universe polymorphic
-Arguments minimum_of [T]%type_scope R A z
+Arguments minimum_of [T]%_type_scope R A z
 minimum_of is transparent
 Expands to: Constant mathcomp.classical.wochoice.minimum_of
 Declared in library mathcomp.classical.wochoice, line 85, characters 11-21
@@ -426,7 +427,7 @@ Declared in library mathcomp.classical.wochoice, line 85, characters 11-21
 <span class="vernacular">Definition</span><span class="id"> </span><span id="maximum_of" class="id"><a name="maximum_of" class="" title="maximum_of : forall [T : Type], rel T -> {pred T} -> T -> Prop
 
 maximum_of is not universe polymorphic
-Arguments maximum_of [T]%type_scope R A z
+Arguments maximum_of [T]%_type_scope R A z
 maximum_of is transparent
 Expands to: Constant mathcomp.classical.wochoice.maximum_of
 Declared in library mathcomp.classical.wochoice, line 87, characters 11-21
@@ -435,7 +436,7 @@ Declared in library mathcomp.classical.wochoice, line 87, characters 11-21
 <span class="vernacular">Definition</span><span class="id"> </span><span id="well_order" class="id"><a name="well_order" class="" title="well_order : forall [T : Type], rel T -> Prop
 
 well_order is not universe polymorphic
-Arguments well_order [T]%type_scope R
+Arguments well_order [T]%_type_scope R
 well_order is transparent
 Expands to: Constant mathcomp.classical.wochoice.well_order
 Declared in library mathcomp.classical.wochoice, line 89, characters 11-21
@@ -444,7 +445,7 @@ Declared in library mathcomp.classical.wochoice, line 89, characters 11-21
 <span class="vernacular">Definition</span><span class="id"> </span><span id="chain" class="id"><a name="chain" class="" title="chain : forall [T : Type], rel T -> {pred T} -> Prop
 
 chain is not universe polymorphic
-Arguments chain [T]%type_scope R C
+Arguments chain [T]%_type_scope R C
 chain is transparent
 Expands to: Constant mathcomp.classical.wochoice.chain
 Declared in library mathcomp.classical.wochoice, line 91, characters 11-16
@@ -453,7 +454,7 @@ Declared in library mathcomp.classical.wochoice, line 91, characters 11-16
 <span class="vernacular">Definition</span><span class="id"> </span><span id="wo_chain" class="id"><a name="wo_chain" class="" title="wo_chain : forall [T : Type], rel T -> {pred T} -> Prop
 
 wo_chain is not universe polymorphic
-Arguments wo_chain [T]%type_scope R C
+Arguments wo_chain [T]%_type_scope R C
 wo_chain is transparent
 Expands to: Constant mathcomp.classical.wochoice.wo_chain
 Declared in library mathcomp.classical.wochoice, line 93, characters 11-19
@@ -474,7 +475,7 @@ forall [T : Type] [R : rel T] [C : {pred T}],
 forall [A : {pred T}],
 {subset A <= C} -> nonempty A -> exists ! z : T, minimum_of R A z
 
-Arguments antisymmetric_wo_chain [T]%type_scope [R C] _ _ [A] _ _
+Arguments antisymmetric_wo_chain [T]%_type_scope [R C] _ _ [A] _ _
 antisymmetric_wo_chain is opaque
 Expands to: Constant mathcomp.classical.wochoice.antisymmetric_wo_chain
 Declared in library mathcomp.classical.wochoice, line 95, characters 6-28
@@ -503,8 +504,8 @@ antisymmetric (T:=T) R ->
 (forall A : {pred T}, nonempty A -> exists z : T, minimum_of R A z) ->
 forall [A : {pred T}], nonempty A -> exists ! z : T, minimum_of R A z
 
-Arguments antisymmetric_well_order [T]%type_scope 
-  [R] _ _%function_scope [A] _
+Arguments antisymmetric_well_order [T]%_type_scope 
+  [R] _ _%_function_scope [A] _
 antisymmetric_well_order is opaque
 Expands to: Constant mathcomp.classical.wochoice.antisymmetric_well_order
 Declared in library mathcomp.classical.wochoice, line 104, characters 6-30
@@ -737,7 +738,7 @@ chain (T:=T) R C ->
       chain (T:=T) R X -> {subset M <= X} -> {subset X <= S} -> M = X]}
 
 Hausdorff_maximal_principle is not universe polymorphic
-Arguments Hausdorff_maximal_principle [T]%type_scope [R S C] _ _ _ _
+Arguments Hausdorff_maximal_principle [T]%_type_scope [R S C] _ _ _ _
 Hausdorff_maximal_principle is opaque
 Expands to: Constant mathcomp.classical.wochoice.Hausdorff_maximal_principle
 Declared in library mathcomp.classical.wochoice, line 252, characters 8-35

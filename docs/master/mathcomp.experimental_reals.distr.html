@@ -330,7 +330,7 @@ library mathcomp.experimental_reals.distr, line 69, characters 6-17
 <span class="vernacular">Definition</span><span class="id"> </span><span id="clamp" class="id"><a name="clamp" class="" title="clamp : forall {R : realType}, R -> R
 
 clamp is not universe polymorphic
-Arguments clamp {R} x%ring_scope
+Arguments clamp {R} x%_ring_scope
 clamp is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.clamp
 Declared in
@@ -341,7 +341,7 @@ library mathcomp.experimental_reals.distr, line 80, characters 11-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ge0_clamp" class="id"><a name="ge0_clamp" class="" title="ge0_clamp : forall {R : realType} (x : R), (0 <= clamp x)%R
 
 ge0_clamp is not universe polymorphic
-Arguments ge0_clamp {R} x%ring_scope
+Arguments ge0_clamp {R} x%_ring_scope
 ge0_clamp is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.ge0_clamp
 Declared in
@@ -355,7 +355,7 @@ library mathcomp.experimental_reals.distr, line 83, characters 6-15
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="le1_clamp" class="id"><a name="le1_clamp" class="" title="le1_clamp : forall {R : realType} (x : R), (clamp x <= 1)%R
 
 le1_clamp is not universe polymorphic
-Arguments le1_clamp {R} x%ring_scope
+Arguments le1_clamp {R} x%_ring_scope
 le1_clamp is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.le1_clamp
 Declared in
@@ -399,7 +399,7 @@ library mathcomp.experimental_reals.distr, line 91, characters 6-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="clamp_id" class="id"><a name="clamp_id" class="" title="clamp_id : forall {R : realType} (x : R), clamp (clamp x) = clamp x
 
 clamp_id is not universe polymorphic
-Arguments clamp_id {R} x%ring_scope
+Arguments clamp_id {R} x%_ring_scope
 clamp_id is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.clamp_id
 Declared in
@@ -526,7 +526,7 @@ library mathcomp.experimental_reals.distr, line 123, characters 11-14
 <span class="vernacular">Definition</span><span class="id"> </span><span id="esp" class="id"><a name="esp" class="" title="esp : forall {R : realType} [T : choiceType], {distr T / R} -> (T -> R) -> R
 
 esp is not universe polymorphic
-Arguments esp {R} [T] mu f%function_scope
+Arguments esp {R} [T] mu f%_function_scope
 esp is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.esp
 Declared in
@@ -537,7 +537,7 @@ forall {R : realType} [T : choiceType],
 {distr T / R} -> (T -> R) -> pred T -> R
 
 espc is not universe polymorphic
-Arguments espc {R} [T] mu f%function_scope A
+Arguments espc {R} [T] mu f%_function_scope A
 espc is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.espc
 Declared in
@@ -548,7 +548,7 @@ library mathcomp.experimental_reals.distr, line 125, characters 11-15
 forall {R : realType} [T : choiceType], {distr T / R} -> (T -> R) -> Prop
 
 has_esp is not universe polymorphic
-Arguments has_esp {R} [T] mu f%function_scope
+Arguments has_esp {R} [T] mu f%_function_scope
 has_esp is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.has_esp
 Declared in
@@ -569,7 +569,7 @@ library mathcomp.experimental_reals.distr, line 127, characters 11-18
 <span class="vernacular">Definition</span><span class="id"> </span><span id="isdistr" class="id"><a name="isdistr" class="" title="isdistr : forall {R : realType} {T : choiceType}, (T -> R) -> Prop
 
 isdistr is not universe polymorphic
-Arguments isdistr {R T} mu%function_scope
+Arguments isdistr {R T} mu%_function_scope
 isdistr is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.isdistr
 Declared in
@@ -611,7 +611,7 @@ Qed.</div></details>
 forall {R : realType} {T : choiceType} [mu : T -> R], isdistr mu -> distr R T
 
 mkdistr is not universe polymorphic
-Arguments mkdistr {R T} [mu]%function_scope isd
+Arguments mkdistr {R T} [mu]%_function_scope isd
 mkdistr is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.mkdistr
 Declared in
@@ -623,7 +623,7 @@ forall {R : realType} {T : choiceType} [mu0 : T -> R] (isd : isdistr mu0),
 mkdistr (mu:=mu0) isd =1 mu0
 
 mkdistrE is not universe polymorphic
-Arguments mkdistrE {R T} [mu]%function_scope isd x
+Arguments mkdistrE {R T} [mu]%_function_scope isd x
 mkdistrE is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.mkdistrE
 Declared in
@@ -637,7 +637,7 @@ library mathcomp.experimental_reals.distr, line 166, characters 6-14
 <span class="vernacular">Definition</span><span class="id"> </span><span id="ispredistr" class="id"><a name="ispredistr" class="" title="ispredistr : forall {R : realType} {T : choiceType}, (T -> R) -> Prop
 
 ispredistr is not universe polymorphic
-Arguments ispredistr {R T} mu%function_scope
+Arguments ispredistr {R T} mu%_function_scope
 ispredistr is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.ispredistr
 Declared in
@@ -651,7 +651,7 @@ forall {R : realType} {I : finType} (mu : I -> R),
 isdistr mu <-> (forall x : I, (0 <= mu x)%R) /\ (\sum_j mu j <= 1)%R
 
 isdistr_finP is not universe polymorphic
-Arguments isdistr_finP {R I} mu%function_scope
+Arguments isdistr_finP {R I} mu%_function_scope
 isdistr_finP is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.isdistr_finP
 Declared in
@@ -740,7 +740,7 @@ library mathcomp.experimental_reals.distr, line 199, characters 6-12
 <span class="vernacular">Definition</span><span class="id"> </span><span id="mkdistrd" class="id"><a name="mkdistrd" class="" title="mkdistrd : forall {R : realType} {T : choiceType}, (T -> R) -> {distr T / R}
 
 mkdistrd is not universe polymorphic
-Arguments mkdistrd {R T} mu%function_scope
+Arguments mkdistrd {R T} mu%_function_scope
 mkdistrd is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.mkdistrd
 Declared in
@@ -887,7 +887,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="mrat" class="id"><a name="mrat" class="" title="mrat : forall {R : realType} [T : choiceType], seq T -> T -> R
 
 mrat is not universe polymorphic
-Arguments mrat {R} [T] s%seq_scope _
+Arguments mrat {R} [T] s%_seq_scope _
 mrat is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.mrat
 Declared in
@@ -900,7 +900,7 @@ forall {R : realType} [T : choiceType] (s : seq T) (x : T),
 (0 <= mrat (T:=T) s x)%R
 
 ge0_mrat is not universe polymorphic
-Arguments ge0_mrat {R} [T] s%seq_scope x
+Arguments ge0_mrat {R} [T] s%_seq_scope x
 ge0_mrat is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.ge0_mrat
 Declared in
@@ -958,7 +958,7 @@ Qed.</div></details>
 forall {R : realType} [T : choiceType] (s : seq T), isdistr (mrat (T:=T) s)
 
 isd_mrat is not universe polymorphic
-Arguments isd_mrat {R} [T] s%seq_scope
+Arguments isd_mrat {R} [T] s%_seq_scope
 isd_mrat is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.isd_mrat
 Declared in
@@ -972,7 +972,7 @@ library mathcomp.experimental_reals.distr, line 301, characters 6-14
 <span class="vernacular">Definition</span><span class="id"> </span><span id="drat" class="id"><a name="drat" class="" title="drat : forall {R : realType} [T : choiceType], seq T -> distr R T
 
 drat is not universe polymorphic
-Arguments drat {R} [T] s%seq_scope
+Arguments drat {R} [T] s%_seq_scope
 drat is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.drat
 Declared in
@@ -984,7 +984,7 @@ forall {R : realType} [T : choiceType] (s : seq T) (x : T),
 drat (T:=T) s x = ((count_mem x s)%:R / (size s)%:R)%R
 
 drat1E is not universe polymorphic
-Arguments drat1E {R} [T] s%seq_scope x
+Arguments drat1E {R} [T] s%_seq_scope x
 drat1E is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.drat1E
 Declared in
@@ -1008,7 +1008,7 @@ library mathcomp.experimental_reals.distr, line 310, characters 11-16
 <span class="vernacular">Definition</span><span class="id"> </span><span id="duni" class="id"><a name="duni" class="" title="duni : forall {R : realType} [T : choiceType], seq T -> distr R T
 
 duni is not universe polymorphic
-Arguments duni {R} [T] s%seq_scope
+Arguments duni {R} [T] s%_seq_scope
 duni is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.duni
 Declared in
@@ -1036,7 +1036,7 @@ forall {R : realType} [T : choiceType] (s : seq T) (x : T),
 duni (T:=T) s x = ((x \in s)%:R / (size (undup s))%:R)%R
 
 duni1E is not universe polymorphic
-Arguments duni1E {R} [T] s%seq_scope x
+Arguments duni1E {R} [T] s%_seq_scope x
 duni1E is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.duni1E
 Declared in
@@ -1073,7 +1073,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="mflip" class="id"><a name="mflip" class="" title="mflip : forall {R : realType}, R -> bool -> R
 
 mflip is not universe polymorphic
-Arguments mflip {R} xt%ring_scope b%bool_scope
+Arguments mflip {R} xt%_ring_scope b%_bool_scope
 mflip is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.mflip
 Declared in
@@ -1084,7 +1084,7 @@ library mathcomp.experimental_reals.distr, line 332, characters 11-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="isd_mflip" class="id"><a name="isd_mflip" class="" title="isd_mflip : forall {R : realType} (xt : R), isdistr (mflip xt)
 
 isd_mflip is not universe polymorphic
-Arguments isd_mflip {R} xt%ring_scope
+Arguments isd_mflip {R} xt%_ring_scope
 isd_mflip is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.isd_mflip
 Declared in
@@ -1102,7 +1102,7 @@ Qed.</div></details>
 forall {R : realType}, R -> distr R Datatypes_bool__canonical__choice_Choice
 
 dflip is not universe polymorphic
-Arguments dflip {R} xt%ring_scope
+Arguments dflip {R} xt%_ring_scope
 dflip is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.dflip
 Declared in
@@ -1112,7 +1112,7 @@ library mathcomp.experimental_reals.distr, line 341, characters 11-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="dflip1E" class="id"><a name="dflip1E" class="" title="dflip1E : forall {R : realType} (xt : R), dflip xt =1 mflip xt
 
 dflip1E is not universe polymorphic
-Arguments dflip1E {R} xt%ring_scope x
+Arguments dflip1E {R} xt%_ring_scope x
 dflip1E is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dflip1E
 Declared in
@@ -1139,7 +1139,7 @@ forall {R : realType} {T U : choiceType},
 (T -> {distr U / R}) -> {distr T / R} -> U -> R
 
 mlet is not universe polymorphic
-Arguments mlet {R T U} f%function_scope mu y
+Arguments mlet {R T U} f%_function_scope mu y
 mlet is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.mlet
 Declared in
@@ -1152,7 +1152,7 @@ forall {R : realType} {T U : choiceType} (f : T -> {distr U / R})
 isdistr (mlet f mu)
 
 isd_mlet is not universe polymorphic
-Arguments isd_mlet {R T U} f%function_scope mu
+Arguments isd_mlet {R T U} f%_function_scope mu
 isd_mlet is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.isd_mlet
 Declared in
@@ -1177,7 +1177,7 @@ forall {R : realType} {T U : choiceType},
 (T -> {distr U / R}) -> {distr T / R} -> distr R U
 
 dlet is not universe polymorphic
-Arguments dlet {R T U} f%function_scope mu
+Arguments dlet {R T U} f%_function_scope mu
 dlet is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.dlet
 Declared in
@@ -1190,7 +1190,7 @@ forall {R : realType} {T U : choiceType} (f : T -> {distr U / R})
 (\dlet_(i <- mu0) f i) y = psum (fun x : T => (mu0 x * f x y)%R)
 
 dletE is not universe polymorphic
-Arguments dletE {R T U} f%function_scope mu y
+Arguments dletE {R T U} f%_function_scope mu y
 dletE is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dletE
 Declared in
@@ -1209,7 +1209,7 @@ forall {R : realType} {A : choiceType},
 (A -> {distr A / R}) -> {distr A / R} -> distr R A
 
 dlift is not universe polymorphic
-Arguments dlift {R A} f%function_scope d
+Arguments dlift {R A} f%_function_scope d
 dlift is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.dlift
 Declared in
@@ -1222,7 +1222,7 @@ forall {R : realType} {A : choiceType},
 nat -> (A -> {distr A / R}) -> A -> {distr A / R}
 
 diter is not universe polymorphic
-Arguments diter {R A} n%nat_scope f%function_scope a
+Arguments diter {R A} n%_nat_scope f%_function_scope a
 diter is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.diter
 Declared in
@@ -1240,7 +1240,7 @@ forall {R : realType} [T U : choiceType] (f : T -> {distr U / R}),
 \dlet_(i <- dnull) f i =1 dnull
 
 dlet_null is not universe polymorphic
-Arguments dlet_null {R} [T U] f%function_scope x
+Arguments dlet_null {R} [T U] f%_function_scope x
 dlet_null is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dlet_null
 Declared in
@@ -1258,7 +1258,7 @@ forall {R : realType} [T U : choiceType] (f : T -> {distr U / R}) (v : T),
 \dlet_(y <- dunit (T:=T) v) f y =1 f v
 
 dlet_unit is not universe polymorphic
-Arguments dlet_unit {R} [T U] f%function_scope v x
+Arguments dlet_unit {R} [T U] f%_function_scope v x
 dlet_unit is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dlet_unit
 Declared in
@@ -1300,7 +1300,7 @@ forall {R : realType} [T U : choiceType] [f g : T -> {distr U / R}]
 mu0 =1 nu -> \dlet_(i <- mu0) f i =1 \dlet_(i <- nu) g i
 
 eq_in_dlet is not universe polymorphic
-Arguments eq_in_dlet {R} [T U] [f g]%function_scope [mu nu] _ _ x
+Arguments eq_in_dlet {R} [T U] [f g]%_function_scope [mu nu] _ _ x
 eq_in_dlet is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.eq_in_dlet
 Declared in
@@ -1321,7 +1321,7 @@ forall {R : realType} [T : choiceType] [f : T -> R] (mu0 : {distr T / R}),
 summable (T:=T) (R:=R) (fun x : T => (mu0 x * f x)%R)
 
 summable_mu_wgtd is not universe polymorphic
-Arguments summable_mu_wgtd {R} [T] [f]%function_scope mu _%function_scope
+Arguments summable_mu_wgtd {R} [T] [f]%_function_scope mu _%_function_scope
 summable_mu_wgtd is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.summable_mu_wgtd
 Declared in
@@ -1342,7 +1342,7 @@ forall {R : realType} [T U : choiceType] (f : T -> {distr U / R})
 summable (T:=T) (R:=R) (fun x : T => (mu0 x * f x y)%R)
 
 summable_mlet is not universe polymorphic
-Arguments summable_mlet {R} [T U] f%function_scope mu y
+Arguments summable_mlet {R} [T U] f%_function_scope mu y
 summable_mlet is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.summable_mlet
 Declared in
@@ -1360,7 +1360,7 @@ forall {R : realType} [T U : choiceType] [f g : T -> {distr U / R}]
 forall x : U, ((\dlet_(i <- mu0) f i) x <= (\dlet_(i <- mu0) g i) x)%R
 
 le_in_dlet is not universe polymorphic
-Arguments le_in_dlet {R} [T U] [f g]%function_scope [mu] _ x
+Arguments le_in_dlet {R} [T U] [f g]%_function_scope [mu] _ x
 le_in_dlet is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.le_in_dlet
 Declared in
@@ -1384,7 +1384,7 @@ forall {R : realType} [T U : choiceType] (f : T -> {distr U / R})
 forall x : U, ((\dlet_(i <- mu0) f i) x <= (\dlet_(i <- nu) f i) x)%R
 
 le_mu_dlet is not universe polymorphic
-Arguments le_mu_dlet {R} [T U] f%function_scope [mu nu] _%function_scope x
+Arguments le_mu_dlet {R} [T U] f%_function_scope [mu nu] _%_function_scope x
 le_mu_dlet is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.le_mu_dlet
 Declared in
@@ -1407,8 +1407,8 @@ forall {R : realType} [T U : choiceType] [f g : T -> {distr U / R}]
 forall x0 : U, ((\dlet_(x <- mu0) f x) x0 <= (\dlet_(x <- nu) g x) x0)%R
 
 le_dlet is not universe polymorphic
-Arguments le_dlet {R} [T U] [f g]%function_scope [mu nu] 
-  _%function_scope _ x0
+Arguments le_dlet {R} [T U] [f g]%_function_scope 
+  [mu nu] _%_function_scope _ x0
 le_dlet is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.le_dlet
 Declared in
@@ -1451,7 +1451,7 @@ y \in dinsupp (T:=U) (\dlet_(x <- mu0) f x) ->
 exists2 x : T, x \in dinsupp (T:=T) mu0 & f x y != 0%R
 
 dinsupp_dlet is not universe polymorphic
-Arguments dinsupp_dlet {R} [T U] [f]%function_scope [mu y] _
+Arguments dinsupp_dlet {R} [T U] [f]%_function_scope [mu y] _
 dinsupp_dlet is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dinsupp_dlet
 Declared in
@@ -1473,7 +1473,7 @@ x \in dinsupp (T:=T) mu0 ->
 f x y != 0%R -> y \in dinsupp (T:=U) (\dlet_(i <- mu0) f i)
 
 dlet_dinsupp is not universe polymorphic
-Arguments dlet_dinsupp {R} [T U] [f]%function_scope [mu x y] _ _
+Arguments dlet_dinsupp {R} [T U] [f]%_function_scope [mu x y] _ _
 dlet_dinsupp is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dlet_dinsupp
 Declared in
@@ -1495,7 +1495,7 @@ forall {R : realType} [T U : choiceType] [f : T -> U]
 (\dlet_(x <- mu0) dunit (T:=U) (f x)) y = 0%R
 
 dlet_eq0 is not universe polymorphic
-Arguments dlet_eq0 {R} [T U] [f]%function_scope [mu y] _
+Arguments dlet_eq0 {R} [T U] [f]%_function_scope [mu y] _
 dlet_eq0 is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dlet_eq0
 Declared in
@@ -1518,7 +1518,7 @@ forall {R : realType} [T U : choiceType] [mu0 : {distr T / R}]
 forall [x : T], x \in dinsupp (T:=T) mu0 -> F x y = 0%R
 
 eq0_dlet is not universe polymorphic
-Arguments eq0_dlet {R} [T U mu] [F]%function_scope [y] _ [x] _
+Arguments eq0_dlet {R} [T U mu] [F]%_function_scope [y] _ [x] _
 eq0_dlet is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.eq0_dlet
 Declared in
@@ -1546,7 +1546,7 @@ forall {R : realType} {T U V : choiceType} (f1 : T -> {distr U / R})
 \dlet_(y <- mu0) \dlet_(x <- f1 y) f2 x
 
 __deprecated__dlet_dlet is not universe polymorphic
-Arguments __deprecated__dlet_dlet {R T U V} (f1 f2)%function_scope mu x
+Arguments __deprecated__dlet_dlet {R T U V} (f1 f2)%_function_scope mu x
 __deprecated__dlet_dlet is opaque
 Expands to: Constant
             mathcomp.experimental_reals.distr.__deprecated__dlet_dlet
@@ -1584,8 +1584,8 @@ forall {R : realType} {T U : choiceType} [mu0 mu1 mu2 : {distr T / R}]
 ((\dlet_(x <- mu1) f x) z + (\dlet_(x <- mu2) f x) z)%E
 
 dlet_additive is not universe polymorphic
-Arguments dlet_additive {R T U} [mu mu1 mu2] f%function_scope 
-  z _%function_scope
+Arguments dlet_additive {R T U} [mu mu1 mu2] f%_function_scope 
+  z _%_function_scope
 dlet_additive is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dlet_additive
 Declared in
@@ -1607,7 +1607,7 @@ Qed.</div></details>
 forall {R : realType} [T : choiceType], (nat -> {distr T / R}) -> T -> R
 
 mlim is not universe polymorphic
-Arguments mlim {R} [T] f%function_scope _
+Arguments mlim {R} [T] f%_function_scope _
 mlim is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.mlim
 Declared in
@@ -1620,7 +1620,7 @@ forall {R : realType} [T : choiceType] (f : nat -> {distr T / R}),
 isdistr (mlim (T:=T) f)
 
 isd_mlim is not universe polymorphic
-Arguments isd_mlim {R} [T] f%function_scope
+Arguments isd_mlim {R} [T] f%_function_scope
 isd_mlim is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.isd_mlim
 Declared in
@@ -1658,7 +1658,7 @@ Qed.</div></details>
 forall {R : realType} [T : choiceType], (nat -> {distr T / R}) -> distr R T
 
 dlim is not universe polymorphic
-Arguments dlim {R} [T] f%function_scope
+Arguments dlim {R} [T] f%_function_scope
 dlim is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.dlim
 Declared in
@@ -1673,7 +1673,7 @@ forall {R : realType} [T : choiceType] (f : nat -> {distr T / R}) (x : T),
 (\dlim_(n) f n) x = fine (nlim (fun n : nat => f n x))
 
 dlimE is not universe polymorphic
-Arguments dlimE {R} [T] f%function_scope x
+Arguments dlimE {R} [T] f%_function_scope x
 dlimE is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dlimE
 Declared in
@@ -1713,7 +1713,7 @@ forall {R : realType} [T : choiceType] [f g : nat -> {distr T / R}],
 \dlim_(n) f n =1 \dlim_(n) g n
 
 eq_dlim is not universe polymorphic
-Arguments eq_dlim {R} [T] [f g]%function_scope _ x
+Arguments eq_dlim {R} [T] [f g]%_function_scope _ x
 eq_dlim is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.eq_dlim
 Declared in
@@ -1731,8 +1731,8 @@ forall {R : realType} [T : choiceType] [K : nat] [f g : nat -> {distr T / R}],
 (forall n : nat, K <= n -> f n =1 g n) -> \dlim_(n) f n =1 \dlim_(n) g n
 
 eq_from_dlim is not universe polymorphic
-Arguments eq_from_dlim {R} [T] [K]%nat_scope [f g]%function_scope
-  _%function_scope x
+Arguments eq_from_dlim {R} [T] [K]%_nat_scope [f g]%_function_scope
+  _%_function_scope x
 eq_from_dlim is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.eq_from_dlim
 Declared in
@@ -1751,7 +1751,7 @@ forall {R : realType} [T : choiceType] (mu0 : nat -> {distr T / R}),
 \dlim_(n) mu0 n.+1 =1 \dlim_(n) mu0 n
 
 dlim_bump is not universe polymorphic
-Arguments dlim_bump {R} [T] mu%function_scope x
+Arguments dlim_bump {R} [T] mu%_function_scope x
 dlim_bump is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dlim_bump
 Declared in
@@ -1768,7 +1768,7 @@ forall {R : realType} [T : choiceType] (mu0 : nat -> {distr T / R}) (p : nat),
 \dlim_(n) mu0 (n + p)%N =1 \dlim_(n) mu0 n
 
 dlim_lift is not universe polymorphic
-Arguments dlim_lift {R} [T] mu%function_scope p%nat_scope x
+Arguments dlim_lift {R} [T] mu%_function_scope p%_nat_scope x
 dlim_lift is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dlim_lift
 Declared in
@@ -1783,7 +1783,7 @@ library mathcomp.experimental_reals.distr, line 609, characters 11-20
 <span class="vernacular">Definition</span><span class="id"> </span><span id="dcvg" class="id"><a name="dcvg" class="" title="dcvg : forall {R : realType} {T : choiceType}, (nat -> {distr T / R}) -> Prop
 
 dcvg is not universe polymorphic
-Arguments dcvg {R T} f%function_scope
+Arguments dcvg {R T} f%_function_scope
 dcvg is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.dcvg
 Declared in
@@ -1795,7 +1795,7 @@ library mathcomp.experimental_reals.distr, line 613, characters 11-15
 forall {R : realType} {T : choiceType}, (nat -> {distr T / R}) -> Prop
 
 ducvg is not universe polymorphic
-Arguments ducvg {R T} f%function_scope
+Arguments ducvg {R T} f%_function_scope
 ducvg is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.ducvg
 Declared in
@@ -1815,7 +1815,7 @@ forall {R : realType} [T : choiceType] (f : nat -> {distr T / R}) (x : T),
 dlim_spec (T:=T) f x ((\dlim_(n) f n) x)
 
 dlimP is not universe polymorphic
-Arguments dlimP {R} [T] f%function_scope x
+Arguments dlimP {R} [T] f%_function_scope x
 dlimP is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dlimP
 Declared in
@@ -1840,7 +1840,7 @@ exists2
   (0 <= l <= 1)%R & ncvg (R:=R) (fun x0 : nat => f x0 x) l%:E
 
 dcvgP is not universe polymorphic
-Arguments dcvgP {R} [T] [f]%function_scope _ x
+Arguments dcvgP {R} [T] [f]%_function_scope _ x
 dcvgP is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dcvgP
 Declared in
@@ -1860,7 +1860,7 @@ forall {R : realType} [T : choiceType] [f : nat -> {distr T / R}],
 (forall n m : nat, n <= m -> forall x : T, (f n x <= f m x)%R) -> dcvg f
 
 dcvg_homo is not universe polymorphic
-Arguments dcvg_homo {R} [T] [f]%function_scope _%function_scope x
+Arguments dcvg_homo {R} [T] [f]%_function_scope _%_function_scope x
 dcvg_homo is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dcvg_homo
 Declared in
@@ -1883,7 +1883,7 @@ forall {R : realType} [T : choiceType] (f : nat -> {distr T / R}) (x : T),
 (0 <= (\dlim_(n) f n) x)%R
 
 ge0_dlim is not universe polymorphic
-Arguments ge0_dlim {R} [T] f%function_scope x
+Arguments ge0_dlim {R} [T] f%_function_scope x
 ge0_dlim is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.ge0_dlim
 Declared in
@@ -1899,7 +1899,7 @@ forall {R : realType} [T : choiceType] (f : nat -> {distr T / R}) (x : T),
 ((\dlim_(n) f n) x <= 1)%R
 
 le1_dlim is not universe polymorphic
-Arguments le1_dlim {R} [T] f%function_scope x
+Arguments le1_dlim {R} [T] f%_function_scope x
 le1_dlim is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.le1_dlim
 Declared in
@@ -1916,7 +1916,7 @@ forall {R : realType} [T : choiceType] [f g : nat -> {distr T / R}],
 dcvg g -> forall x : T, ((\dlim_(n) f n) x <= (\dlim_(n) g n) x)%R
 
 le_dlim is not universe polymorphic
-Arguments le_dlim {R} [T] [f g]%function_scope _%function_scope _ x
+Arguments le_dlim {R} [T] [f g]%_function_scope _%_function_scope _ x
 le_dlim is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.le_dlim
 Declared in
@@ -1938,7 +1938,7 @@ forall {R : realType} [T : choiceType] [f : nat -> {distr T / R}]
 forall x : T, ((\dlim_(n) f n) x <= mu0 x)%R
 
 leub_dlim is not universe polymorphic
-Arguments leub_dlim {R} [T] [f]%function_scope [mu] _%function_scope x
+Arguments leub_dlim {R} [T] [f]%_function_scope [mu] _%_function_scope x
 leub_dlim is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.leub_dlim
 Declared in
@@ -1958,7 +1958,8 @@ forall {R : realType} [T : choiceType] [f : nat -> {distr T / R}] (k : nat),
 forall x : T, (f k x <= (\dlim_(n) f n) x)%R
 
 dlim_ub is not universe polymorphic
-Arguments dlim_ub {R} [T] [f]%function_scope k%nat_scope _%function_scope x
+Arguments dlim_ub {R} [T] [f]%_function_scope k%_nat_scope 
+  _%_function_scope x
 dlim_ub is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dlim_ub
 Declared in
@@ -1981,11 +1982,11 @@ forall {R : realType} [T U : choiceType] [f : nat -> {distr T / R}]
 \dlet_(x <- \dlim_(n) f n) h x =1 \dlim_(n) \dlet_(x <- f n) h x
 
 __admitted__dlet_lim is not universe polymorphic
-Arguments __admitted__dlet_lim {R} [T U] [f]%function_scope
-  (h _)%function_scope x
+Arguments __admitted__dlet_lim {R} [T U] [f]%_function_scope
+  (h _)%_function_scope x
 Expands to: Constant mathcomp.experimental_reals.distr.__admitted__dlet_lim
 Declared in
-library mathcomp.experimental_reals.distr, line 685, characters 7-16
+library mathcomp.experimental_reals.distr, line 683, characters 6-26
 ">__admitted__dlet_lim</a></span><span class="id"> </span><span id="f:344" class="id"><a name="f:344" class="">f</a></span><span class="id"> </span><span id="h:345" class="id"><a name="h:345" class="">h</a></span><span class="id"> :</span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="n:346" class="id"><a name="n:346" class="">n</a></span><span class="id"> </span><span id="m:347" class="id"><a name="m:347" class="">m</a></span><span class="id">,</span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#n:346">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#cb53cf0ee22c036a03b4a9281c68b5a3"> &lt;=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#cb53cf0ee22c036a03b4a9281c68b5a3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#m:347">m</a></span>)<span class="id">%N</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:344">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#n:346">n</a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#dcb49d48dea0c82eb271ef74f5398ffa"> &lt;=1</a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#dcb49d48dea0c82eb271ef74f5398ffa"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:344">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#m:347">m</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3">\dlet_</a></span>(<span id="x:348" class="id"><a name="x:348" class="">x</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3"> &lt;-</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#dlim">dlim</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:344">f</a></span>)<span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#h:345">h</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:348">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> =1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#d309a09efc04bd13482fd8fc10181919">\dlim_</a></span>(<span id="n:349" class="id"><a name="n:349" class="">n</a></span>)<span class="id"><a href="mathcomp.experimental_reals.distr.html#d309a09efc04bd13482fd8fc10181919"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3">\dlet_</a></span>(<span id="x:350" class="id"><a name="x:350" class="">x</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3"> &lt;-</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:344">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#n:349">n</a></span>)<span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#h:345">h</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:350">x</a></span>.<br/>
 <details>
@@ -2001,11 +2002,11 @@ forall {R : realType} [T U : choiceType] [f : nat -> T -> {distr U / R}]
 \dlim_(n) \dlet_(x <- mu0) f n x =1 \dlet_(x <- mu0) \dlim_(n) f n x
 
 __admitted__dlim_let is not universe polymorphic
-Arguments __admitted__dlim_let {R} [T U] [f]%function_scope 
-  mu _%function_scope x
+Arguments __admitted__dlim_let {R} [T U] [f]%_function_scope 
+  mu _%_function_scope x
 Expands to: Constant mathcomp.experimental_reals.distr.__admitted__dlim_let
 Declared in
-library mathcomp.experimental_reals.distr, line 691, characters 18-27
+library mathcomp.experimental_reals.distr, line 687, characters 6-26
 ">__admitted__dlim_let</a></span> (<span id="f:351" class="id"><a name="f:351" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.DLimTheory.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.DLimTheory.U">U</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>) (<span id="mu:352" class="id"><a name="mu:352" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.DLimTheory.T">T</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:353" class="id"><a name="x:353" class="">x</a></span><span class="id"> </span><span id="n:354" class="id"><a name="n:354" class="">n</a></span><span class="id"> </span><span id="m:355" class="id"><a name="m:355" class="">m</a></span><span class="id">,</span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#n:354">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#cb53cf0ee22c036a03b4a9281c68b5a3"> &lt;=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#cb53cf0ee22c036a03b4a9281c68b5a3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#m:355">m</a></span>)<span class="id">%N</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:351">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#n:354">n</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:353">x</a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#dcb49d48dea0c82eb271ef74f5398ffa"> &lt;=1</a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#dcb49d48dea0c82eb271ef74f5398ffa"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:351">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#m:355">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:353">x</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.experimental_reals.distr.html#d309a09efc04bd13482fd8fc10181919">\dlim_</a></span>(<span id="n:356" class="id"><a name="n:356" class="">n</a></span>)<span class="id"><a href="mathcomp.experimental_reals.distr.html#d309a09efc04bd13482fd8fc10181919"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3">\dlet_</a></span>(<span id="x:357" class="id"><a name="x:357" class="">x</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3"> &lt;-</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:352">mu</a></span>) (<span class="id"><a href="mathcomp.experimental_reals.distr.html#f:351">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#n:356">n</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:357">x</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> =1</a></span><br/>
@@ -2027,7 +2028,7 @@ forall {R : realType} [T U : choiceType],
 (T -> U) -> {distr T / R} -> distr R U
 
 dmargin is not universe polymorphic
-Arguments dmargin {R} [T U] h%function_scope mu
+Arguments dmargin {R} [T U] h%_function_scope mu
 dmargin is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.dmargin
 Declared in
@@ -2039,7 +2040,7 @@ forall {R : realType} [T U : choiceType] (h : T -> U) (mu : {distr T / R}),
 dmargin (T:=T) (U:=U) h mu = \dlet_(y <- mu) dunit (T:=U) (h y)
 
 dmarginE is not universe polymorphic
-Arguments dmarginE {R} [T U] h%function_scope mu
+Arguments dmarginE {R} [T U] h%_function_scope mu
 dmarginE is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dmarginE
 Declared in
@@ -2060,7 +2061,7 @@ forall {R : realType} [T U : choiceType] (mu0 : {distr T / R})
 dmargin (T:=T) (U:=U) f mu0 y = psum (fun x : T => ((f x == y)%:R * mu0 x)%R)
 
 dmargin_psumE is not universe polymorphic
-Arguments dmargin_psumE {R} [T U] mu f%function_scope y
+Arguments dmargin_psumE {R} [T U] mu f%_function_scope y
 dmargin_psumE is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dmargin_psumE
 Declared in
@@ -2080,7 +2081,7 @@ forall {R : realType} [T U V : choiceType] (mu0 : {distr T / R})
 \dlet_(u <- dmargin (T:=T) (U:=U) f mu0) g u =1 \dlet_(t <- mu0) g (f t)
 
 __deprecated__dlet_dmargin is not universe polymorphic
-Arguments __deprecated__dlet_dmargin {R} [T U V] mu (f g)%function_scope x
+Arguments __deprecated__dlet_dmargin {R} [T U V] mu (f g)%_function_scope x
 __deprecated__dlet_dmargin is opaque
 Expands to: Constant
             mathcomp.experimental_reals.distr.__deprecated__dlet_dmargin
@@ -2102,7 +2103,7 @@ dmargin (T:=U) (U:=V) f (\dlet_(t <- mu0) g t) =1
 \dlet_(t <- mu0) dmargin (T:=U) (U:=V) f (g t)
 
 __deprecated__dmargin_dlet is not universe polymorphic
-Arguments __deprecated__dmargin_dlet {R} [T U V] mu (f g)%function_scope x
+Arguments __deprecated__dmargin_dlet {R} [T U V] mu (f g)%_function_scope x
 __deprecated__dmargin_dlet is opaque
 Expands to: Constant
             mathcomp.experimental_reals.distr.__deprecated__dmargin_dlet
@@ -2121,7 +2122,7 @@ dmargin (T:=T) (U:=U) f (dunit (T:=T) t) =1
 (dunit (T:=U) (f t) : {distr U / R})
 
 dmargin_dunit is not universe polymorphic
-Arguments dmargin_dunit {R} [T U] t f%function_scope x
+Arguments dmargin_dunit {R} [T U] t f%_function_scope x
 dmargin_dunit is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.dmargin_dunit
 Declared in
@@ -2485,7 +2486,7 @@ forall {R : realType} {T : choiceType} (f : T -> R) (x : T),
 \E_[dunit (T:=T) x] f = f x
 
 exp_dunit is not universe polymorphic
-Arguments exp_dunit {R T} f%function_scope x
+Arguments exp_dunit {R T} f%_function_scope x
 exp_dunit is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.exp_dunit
 Declared in
@@ -2504,7 +2505,7 @@ forall {R : realType} {T : choiceType} (mu : {distr T / R}) (r : R),
 \E_[mu] (fun=> r) = (\P_[mu] predT * r)%R
 
 exp_cst is not universe polymorphic
-Arguments exp_cst {R T} mu r%ring_scope
+Arguments exp_cst {R T} mu r%_ring_scope
 exp_cst is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.exp_cst
 Declared in
@@ -2537,7 +2538,7 @@ forall {R : realType} {T : choiceType} (mu : {distr T / R}) (c : R),
 \E?_[mu] (fun=> c)
 
 has_expC is not universe polymorphic
-Arguments has_expC {R T} mu c%ring_scope
+Arguments has_expC {R T} mu c%_ring_scope
 has_expC is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.has_expC
 Declared in
@@ -2586,7 +2587,7 @@ forall {R : realType} {T : choiceType} [mu : {distr T / R}]
 \E?_[mu] F -> \E?_[mu] (c \*o F)%R
 
 has_expZ is not universe polymorphic
-Arguments has_expZ {R T} [mu] c%ring_scope [F]%function_scope _
+Arguments has_expZ {R T} [mu] c%_ring_scope [F]%_function_scope _
 has_expZ is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.has_expZ
 Declared in
@@ -2605,7 +2606,7 @@ forall {R : realType} {T : choiceType} (mu : {distr T / R})
 \E_[mu] (c \*o F)%R = (c * \E_[mu] F)%R
 
 expZ is not universe polymorphic
-Arguments expZ {R T} mu F%function_scope c%ring_scope
+Arguments expZ {R T} mu F%_function_scope c%_ring_scope
 expZ is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.expZ
 Declared in
@@ -2689,7 +2690,7 @@ forall {R : realType} {T : choiceType} [mu : {distr T / R}] [f1 f2 : T -> R],
 {in dinsupp (T:=T) mu, f1 =1 f2} -> \E_[mu] f1 = \E_[mu] f2
 
 eq_exp is not universe polymorphic
-Arguments eq_exp {R T} [mu] [f1 f2]%function_scope _
+Arguments eq_exp {R T} [mu] [f1 f2]%_function_scope _
 eq_exp is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.eq_exp
 Declared in
@@ -2732,7 +2733,7 @@ forall {R : realType} {T U : choiceType} (E : pred T)
 \P_[\dlet_(i <- mu) f i] E = \E_[mu] (fun x : U => \P_[f x] E)
 
 __deprecated__pr_dlet is not universe polymorphic
-Arguments __deprecated__pr_dlet {R T U} E f%function_scope mu
+Arguments __deprecated__pr_dlet {R T U} E f%_function_scope mu
 __deprecated__pr_dlet is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.__deprecated__pr_dlet
 Declared in
@@ -2761,7 +2762,7 @@ forall {R : realType} {T U : choiceType} (E : pred T)
 \P_[dmargin (T:=U) (U:=T) f mu] E = \P_[mu] [pred x | f x \in E]
 
 pr_dmargin is not universe polymorphic
-Arguments pr_dmargin {R T U} E f%function_scope mu
+Arguments pr_dmargin {R T U} E f%_function_scope mu
 pr_dmargin is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.pr_dmargin
 Declared in
@@ -2779,7 +2780,7 @@ forall {R : realType} {T : choiceType} [A : pred T] [mu : {distr T / R}],
 (forall x : T, x \in dinsupp (T:=T) mu -> x \notin A) -> \P_[mu] A = 0%R
 
 eq0_pr is not universe polymorphic
-Arguments eq0_pr {R T} [A mu] _%function_scope
+Arguments eq0_pr {R T} [A mu] _%_function_scope
 eq0_pr is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.eq0_pr
 Declared in
@@ -2800,7 +2801,7 @@ forall {R : realType} {T : choiceType} [A B : pred T] [mu : {distr T / R}],
 \P_[mu, B] A = 0%R
 
 eq0_prc is not universe polymorphic
-Arguments eq0_prc {R T} [A B mu] _%function_scope
+Arguments eq0_prc {R T} [A B mu] _%_function_scope
 eq0_prc is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.eq0_prc
 Declared in
@@ -2862,7 +2863,7 @@ forall {R : realType} {T : choiceType} [mu : {distr T / R}] [f1 f2 : T -> R],
 (forall x : T, (f1 x <= f2 x)%R) -> (\E_[mu] f1 <= \E_[mu] f2)%R
 
 le_exp is not universe polymorphic
-Arguments le_exp {R T} [mu] [f1 f2]%function_scope _ _ _%function_scope
+Arguments le_exp {R T} [mu] [f1 f2]%_function_scope _ _ _%_function_scope
 le_exp is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.le_exp
 Declared in
@@ -2882,7 +2883,7 @@ forall {R : realType} {T : choiceType} [E1 E2 : pred T] [mu : {distr T / R}],
 (\P_[mu] E1 <= \P_[mu] E2)%R
 
 le_in_pr is not universe polymorphic
-Arguments le_in_pr {R T} [E1 E2 mu] _%function_scope
+Arguments le_in_pr {R T} [E1 E2 mu] _%_function_scope
 le_in_pr is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.le_in_pr
 Declared in
@@ -2906,7 +2907,7 @@ forall {R : realType} {T : choiceType} [A : pred T] [mu0 nu : {distr T / R}],
 (\P_[nu] A <= \P_[mu0] A)%R
 
 le_mu_pr is not universe polymorphic
-Arguments le_mu_pr {R T} [A mu nu] _%function_scope
+Arguments le_mu_pr {R T} [A mu nu] _%_function_scope
 le_mu_pr is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.le_mu_pr
 Declared in
@@ -3011,7 +3012,7 @@ forall {R : realType} {T : choiceType} [A B : pred T] (mu : {distr T / R}),
 \P_[mu] [predU A & B] = (\P_[mu] A + \P_[mu] B)%E
 
 pr_or_indep is not universe polymorphic
-Arguments pr_or_indep {R T} [A B] mu _%function_scope
+Arguments pr_or_indep {R T} [A B] mu _%_function_scope
 pr_or_indep is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.pr_or_indep
 Declared in
@@ -3037,7 +3038,7 @@ uniq r ->
 \P_[mu] [pred x | f x \in r] = (\sum_(y <- r) \P_[mu] [pred x | f x == y])%R
 
 pr_mem_map is not universe polymorphic
-Arguments pr_mem_map {R T U} f%function_scope mu [r]%seq_scope _
+Arguments pr_mem_map {R T U} f%_function_scope mu [r]%_seq_scope _
 pr_mem_map is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.pr_mem_map
 Declared in
@@ -3058,7 +3059,7 @@ forall {R : realType} {T : choiceType} (mu0 : {distr T / R}) [r : seq T],
 uniq r -> \P_[mu0] [pred x in r] = (\sum_(x <- r) mu0 x)%R
 
 pr_mem is not universe polymorphic
-Arguments pr_mem {R T} mu [r]%seq_scope _
+Arguments pr_mem {R T} mu [r]%_seq_scope _
 pr_mem is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.pr_mem
 Declared in
@@ -3083,8 +3084,8 @@ uniq r ->
 (\sum_(p <- r) \P_[mu] (P p))%R
 
 pr_bigor_indep is not universe polymorphic
-Arguments pr_bigor_indep {R T I} mu [P]%function_scope 
-  [r]%seq_scope _ _%function_scope
+Arguments pr_bigor_indep {R T I} mu [P]%_function_scope 
+  [r]%_seq_scope _ _%_function_scope
 pr_bigor_indep is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.pr_bigor_indep
 Declared in
@@ -3235,10 +3236,10 @@ forall {R : realType} {T : choiceType} (A : pred T)
 ((\P_[mu] A * \E_[mu, A] f)%R + (\P_[mu] (predC A) * \E_[mu, predC A] f)%R)%E
 
 __admitted__exp_split is not universe polymorphic
-Arguments __admitted__exp_split {R T} A [f]%function_scope [mu] _
+Arguments __admitted__exp_split {R T} A [f]%_function_scope [mu] _
 Expands to: Constant mathcomp.experimental_reals.distr.__admitted__exp_split
 Declared in
-library mathcomp.experimental_reals.distr, line 1168, characters 18-27
+library mathcomp.experimental_reals.distr, line 1165, characters 6-27
 ">__admitted__exp_split</a></span><span class="id"> </span><span id="A:588" class="id"><a name="A:588" class="">A</a></span><span class="id"> </span><span id="f:589" class="id"><a name="f:589" class="">f</a></span><span class="id"> </span><span id="mu:590" class="id"><a name="mu:590" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9875df328d7dbcc3862ed78911dc5436">\E?_[</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:590">mu</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9875df328d7dbcc3862ed78911dc5436">]</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9875df328d7dbcc3862ed78911dc5436"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:589">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9f025f9cba3ba79db326cf7f7ea63c54">\E_[</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:590">mu</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9f025f9cba3ba79db326cf7f7ea63c54">]</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9f025f9cba3ba79db326cf7f7ea63c54"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:589">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.experimental_reals.distr.html#629993b0b4637c71222f0376061ee71c">\P_[</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:590">mu</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#629993b0b4637c71222f0376061ee71c">]</a></span>       <span class="id"><a href="mathcomp.experimental_reals.distr.html#629993b0b4637c71222f0376061ee71c"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#A:588">A</a></span> <span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#52774d8ac414cb02a86a542d8c0114a1">\E_[</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:590">mu</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#52774d8ac414cb02a86a542d8c0114a1">,</a></span>      <span class="id"><a href="mathcomp.experimental_reals.distr.html#52774d8ac414cb02a86a542d8c0114a1"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#A:588">A</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#52774d8ac414cb02a86a542d8c0114a1">]</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#52774d8ac414cb02a86a542d8c0114a1"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:589">f</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752">+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#629993b0b4637c71222f0376061ee71c">\P_[</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:590">mu</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#629993b0b4637c71222f0376061ee71c">]</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#predC">predC</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#A:588">A</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#52774d8ac414cb02a86a542d8c0114a1">\E_[</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:590">mu</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#52774d8ac414cb02a86a542d8c0114a1">,</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#52774d8ac414cb02a86a542d8c0114a1"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#predC">predC</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#A:588">A</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#52774d8ac414cb02a86a542d8c0114a1">]</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#52774d8ac414cb02a86a542d8c0114a1"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:589">f</a></span>.<br/>
@@ -3272,7 +3273,7 @@ forall {R : realType} {T : choiceType} [f : T -> R] (mu : {distr T / R}),
 \E?_[mu] f
 
 has_esp_bounded is not universe polymorphic
-Arguments has_esp_bounded {R T} [f]%function_scope mu _
+Arguments has_esp_bounded {R T} [f]%_function_scope mu _
 has_esp_bounded is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.has_esp_bounded
 Declared in
@@ -3323,7 +3324,7 @@ forall {R : realType} {T : choiceType} (mu : {distr T / R}) [F : T -> R],
 \E?_[mu] F
 
 bounded_has_exp is not universe polymorphic
-Arguments bounded_has_exp {R T} mu [F]%function_scope _
+Arguments bounded_has_exp {R T} mu [F]%_function_scope _
 bounded_has_exp is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.bounded_has_exp
 Declared in
@@ -3340,7 +3341,7 @@ forall {R : realType} {T : choiceType} (mu : {distr T / R}) [F : T -> R],
 summable (T:=T) (R:=R) F -> \E?_[mu] F
 
 summable_has_exp is not universe polymorphic
-Arguments summable_has_exp {R T} mu [F]%function_scope _
+Arguments summable_has_exp {R T} mu [F]%_function_scope _
 summable_has_exp is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.summable_has_exp
 Declared in
@@ -3359,8 +3360,8 @@ forall {R : realType} {T : choiceType} (mu : {distr T / R})
 (0 <= M)%R -> (forall x : T, (`|F x| <= M)%R) -> (\E_[mu] F <= M)%R
 
 exp_le_bd is not universe polymorphic
-Arguments exp_le_bd {R T} mu [F]%function_scope [M]%ring_scope 
-  _ _%function_scope
+Arguments exp_le_bd {R T} mu [F]%_function_scope [M]%_ring_scope 
+  _ _%_function_scope
 exp_le_bd is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.exp_le_bd
 Declared in
@@ -3385,11 +3386,11 @@ forall {R : realType} {T U : choiceType} (mu : {distr T / R})
 \E_[\dlet_(i <- mu) nu i] F = \E_[mu] (fun x : T => \E_[nu x] F)
 
 __admitted__exp_dlet is not universe polymorphic
-Arguments __admitted__exp_dlet {R T U} mu nu%function_scope
-  [F]%function_scope _%function_scope
+Arguments __admitted__exp_dlet {R T U} mu nu%_function_scope
+  [F]%_function_scope _%_function_scope
 Expands to: Constant mathcomp.experimental_reals.distr.__admitted__exp_dlet
 Declared in
-library mathcomp.experimental_reals.distr, line 1208, characters 19-28
+library mathcomp.experimental_reals.distr, line 1205, characters 6-26
 ">__admitted__exp_dlet</a></span><span class="id"> </span><span id="mu:612" class="id"><a name="mu:612" class="">mu</a></span> (<span id="nu:613" class="id"><a name="nu:613" class="">nu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#PrTheory.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#PrTheory.U">U</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#PrTheory.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>)<span class="id"> </span><span id="F:614" class="id"><a name="F:614" class="">F</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="eta:615" class="id"><a name="eta:615" class="">eta</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9875df328d7dbcc3862ed78911dc5436">\E?_[</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#eta:615">eta</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9875df328d7dbcc3862ed78911dc5436">]</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9875df328d7dbcc3862ed78911dc5436"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#F:614">F</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.experimental_reals.distr.html#9f025f9cba3ba79db326cf7f7ea63c54">\E_[</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#dlet">dlet</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#nu:613">nu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:612">mu</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9f025f9cba3ba79db326cf7f7ea63c54">]</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9f025f9cba3ba79db326cf7f7ea63c54"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#F:614">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9f025f9cba3ba79db326cf7f7ea63c54">\E_[</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:612">mu</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9f025f9cba3ba79db326cf7f7ea63c54">]</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:616" class="id"><a name="x:616" class="">x</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9f025f9cba3ba79db326cf7f7ea63c54">\E_[</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#nu:613">nu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:616">x</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9f025f9cba3ba79db326cf7f7ea63c54">]</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#9f025f9cba3ba79db326cf7f7ea63c54"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#F:614">F</a></span>).<br/>
@@ -3411,7 +3412,7 @@ library mathcomp.experimental_reals.distr, line 1208, characters 19-28
 <span class="vernacular">Definition</span><span class="id"> </span><span id="convexon" class="id"><a name="convexon" class="" title="convexon : forall {R : realType}, \bar R -> \bar R -> (R -> R) -> Prop
 
 convexon is not universe polymorphic
-Arguments convexon {R} (a b)%ereal_scope f%function_scope
+Arguments convexon {R} (a b)%_ereal_scope f%_function_scope
 convexon is transparent
 Expands to: Constant mathcomp.experimental_reals.distr.convexon
 Declared in
@@ -3437,8 +3438,9 @@ convexon -oo +oo f ->
 (\sum_i l i)%R = 1%R -> (f (\sum_i l i * x i) <= \sum_i l i * f (x i))%R
 
 Jensen is not universe polymorphic
-Arguments Jensen {R I} [f]%function_scope x%function_scope 
-  [l]%function_scope cvx_f ge0_l%function_scope eq1_l
+Arguments Jensen {R I} [f]%_function_scope x%_function_scope
+  [l]%_function_scope cvx_f ge0_l%_function_scope 
+  eq1_l
 Jensen is opaque
 Expands to: Constant mathcomp.experimental_reals.distr.Jensen
 Declared in

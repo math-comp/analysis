@@ -548,7 +548,7 @@ subType (T:=T -> V)
 
 landau_littleo_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_littleo_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V W} F g%function_scope
+  {K} {T}%_type_scope {V W} F g%_function_scope
 landau_littleo_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_littleo_type__canonical__eqtype_SubType
@@ -569,7 +569,7 @@ subType (T:=T -> V)
 
 landau_littleo_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_littleo_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V W} F g%function_scope
+  {K} {T}%_type_scope {V W} F g%_function_scope
 landau_littleo_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_littleo_type__canonical__eqtype_SubType
@@ -590,7 +590,7 @@ subType (T:=T -> V)
 
 landau_littleo_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_littleo_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V W} F g%function_scope
+  {K} {T}%_type_scope {V W} F g%_function_scope
 landau_littleo_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_littleo_type__canonical__eqtype_SubType
@@ -611,7 +611,7 @@ subType (T:=T -> V)
 
 landau_littleo_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_littleo_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V W} F g%function_scope
+  {K} {T}%_type_scope {V W} F g%_function_scope
 landau_littleo_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_littleo_type__canonical__eqtype_SubType
@@ -632,7 +632,7 @@ subType (T:=T -> V)
 
 landau_littleo_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_littleo_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V W} F g%function_scope
+  {K} {T}%_type_scope {V W} F g%_function_scope
 landau_littleo_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_littleo_type__canonical__eqtype_SubType
@@ -653,7 +653,7 @@ subType (T:=T -> V)
 
 landau_littleo_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_littleo_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V W} F g%function_scope
+  {K} {T}%_type_scope {V W} F g%_function_scope
 landau_littleo_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_littleo_type__canonical__eqtype_SubType
@@ -674,7 +674,7 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
       F f g >]
 
 littleo_class is not universe polymorphic
-Arguments littleo_class {K} {T}%type_scope {V W} [F] [g]%function_scope f
+Arguments littleo_class {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
 littleo_class is opaque
 Expands to: Constant mathcomp.analysis.landau.littleo_class
 Declared in library mathcomp.analysis.landau, line 316, characters 6-19
@@ -702,8 +702,8 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
 phant_id (littleo_class fT) c -> {o_F g}
 
 littleo_clone is not universe polymorphic
-Arguments littleo_clone {K} {T}%type_scope {V W} [F] 
-  [g f]%function_scope [fT c] _
+Arguments littleo_clone {K} {T}%_type_scope {V W} 
+  [F] [g f]%_function_scope [fT c] _
 littleo_clone is transparent
 Expands to: Constant mathcomp.analysis.landau.littleo_clone
 Declared in library mathcomp.analysis.landau, line 321, characters 11-24
@@ -736,8 +736,8 @@ forall
            K],
 (0 < eps)%R -> F (fun x : T => (`|(0 : T -> V) x| <= eps * `|g x|)%R)
 
-Arguments littleo0_subproof {K} {T}%type_scope {V W} 
-  [F] g%function_scope _ [eps] _
+Arguments littleo0_subproof {K} {T}%_type_scope {V W} 
+  [F] g%_function_scope _ [eps] _
 littleo0_subproof is opaque
 Expands to: Constant mathcomp.analysis.landau.littleo0_subproof
 Declared in library mathcomp.analysis.landau, line 326, characters 6-23
@@ -756,7 +756,7 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
 {o_(filter.filter F) g}
 
 littleo0 is not universe polymorphic
-Arguments littleo0 {K} {T}%type_scope {V W} F g%function_scope
+Arguments littleo0 {K} {T}%_type_scope {V W} F g%_function_scope
 littleo0 is transparent
 Expands to: Constant mathcomp.analysis.landau.littleo0
 Declared in library mathcomp.analysis.landau, line 333, characters 10-18
@@ -771,8 +771,8 @@ phantom (filter.set_system T) (filter.filter F) ->
 (T -> V) -> (T -> W) -> T -> V
 
 the_littleo is not universe polymorphic
-Arguments the_littleo {K} {T}%type_scope {V W} _ F 
-  phF (f h)%function_scope _ : simpl never
+Arguments the_littleo {K} {T}%_type_scope {V W} _ 
+  F phF (f h)%_function_scope _ : simpl never
 The reduction tactics never unfold the_littleo
 the_littleo is transparent
 Expands to: Constant mathcomp.analysis.landau.the_littleo
@@ -839,7 +839,8 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
            K],
 (0 < eps)%R -> F (fun x : T => (`|f x| <= eps * `|g x|)%R)
 
-Arguments littleoP {K} {T}%type_scope {V W} [F] [g]%function_scope f [eps] _
+Arguments littleoP {K} {T}%_type_scope {V W} [F] [g]%_function_scope 
+  f [eps] _
 littleoP is opaque
 Expands to: Constant mathcomp.analysis.landau.littleoP
 Declared in library mathcomp.analysis.landau, line 381, characters 6-14
@@ -869,8 +870,8 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
 ('o) h = f
 
 littleoE is not universe polymorphic
-Arguments littleoE {K} {T}%type_scope {V W} tag [F] 
-  phF [f h]%function_scope _%function_scope
+Arguments littleoE {K} {T}%_type_scope {V W} tag [F] 
+  phF [f h]%_function_scope _%_function_scope
 littleoE is opaque
 Expands to: Constant mathcomp.analysis.landau.littleoE
 Declared in library mathcomp.analysis.landau, line 388, characters 6-14
@@ -899,8 +900,8 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
 ('o) h = 0%R
 
 littleoE0 is not universe polymorphic
-Arguments littleoE0 {K} {T}%type_scope {V W} tag [F] 
-  phF [f h]%function_scope _
+Arguments littleoE0 {K} {T}%_type_scope {V W} tag 
+  [F] phF [f h]%_function_scope _
 littleoE0 is opaque
 Expands to: Constant mathcomp.analysis.landau.littleoE0
 Declared in library mathcomp.analysis.landau, line 393, characters 6-15
@@ -920,8 +921,8 @@ phantom (filter.set_system T) (filter.filter F) ->
 (T -> V) -> forall h : T -> W, {o_(filter.filter F) h}
 
 the_littleo_littleo is not universe polymorphic
-Arguments the_littleo_littleo {K} {T}%type_scope {V W} 
-  tag [F] phF (f h)%function_scope
+Arguments the_littleo_littleo {K} {T}%_type_scope 
+  {V W} tag [F] phF (f h)%_function_scope
 the_littleo_littleo is transparent
 Expands to: Constant mathcomp.analysis.landau.the_littleo_littleo
 Declared in library mathcomp.analysis.landau, line 398, characters 10-29
@@ -937,7 +938,7 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
 littleo_spec F g f
 
 littleo is not universe polymorphic
-Arguments littleo {K} {T}%type_scope {V W} [F] [g]%function_scope f
+Arguments littleo {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
 littleo is opaque
 Expands to: Constant mathcomp.analysis.landau.littleo
 Declared in library mathcomp.analysis.landau, line 404, characters 6-13
@@ -970,8 +971,8 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
 (let (filter, _) := F in filter)
   (fun x : T => (`|(- (df : T -> V)) x| <= eps * `|e x|)%R)
 
-Arguments opp_littleo_subproof {K} {T}%type_scope 
-  {V W} [F] [e]%function_scope df [eps] _
+Arguments opp_littleo_subproof {K} {T}%_type_scope 
+  {V W} [F] [e]%_function_scope df [eps] _
 opp_littleo_subproof is opaque
 Expands to: Constant mathcomp.analysis.landau.opp_littleo_subproof
 Declared in library mathcomp.analysis.landau, line 407, characters 6-26
@@ -989,7 +990,7 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
 {o_(filter.filter F) e} -> {o_(filter.filter F) e}
 
 opp_littleo is not universe polymorphic
-Arguments opp_littleo {K} {T}%type_scope {V W} [F] [e]%function_scope df
+Arguments opp_littleo {K} {T}%_type_scope {V W} [F] [e]%_function_scope df
 opp_littleo is transparent
 Expands to: Constant mathcomp.analysis.landau.opp_littleo
 Declared in library mathcomp.analysis.landau, line 413, characters 10-21
@@ -1002,7 +1003,7 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
 (- 'o_(filter.filter F) e)%R = 'o_(filter.filter F) e 
 
 oppo is not universe polymorphic
-Arguments oppo {K} {T}%type_scope {V W} F (f e)%function_scope
+Arguments oppo {K} {T}%_type_scope {V W} F (f e)%_function_scope
 oppo is opaque
 Expands to: Constant mathcomp.analysis.landau.oppo
 Declared in library mathcomp.analysis.landau, line 416, characters 6-10
@@ -1019,7 +1020,7 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
 (- 'o_(filter.filter F) e x)%R = 'o_(filter.filter F) e x
 
 oppox is not universe polymorphic
-Arguments oppox {K} {T}%type_scope {V W} F (f e)%function_scope x
+Arguments oppox {K} {T}%_type_scope {V W} F (f e)%_function_scope x
 oppox is opaque
 Expands to: Constant mathcomp.analysis.landau.oppox
 Declared in library mathcomp.analysis.landau, line 419, characters 6-11
@@ -1058,8 +1059,8 @@ forall
 (let (filter, _) := F in filter)
   (fun x : T => (`|(f - g) x| <= eps * `|e x|)%R)
 
-Arguments eqadd_some_oP {K} {T}%type_scope {V W} [F] 
-  [f g e h]%function_scope _ [eps] _
+Arguments eqadd_some_oP {K} {T}%_type_scope {V W} 
+  [F] [f g e h]%_function_scope _ [eps] _
 eqadd_some_oP is opaque
 Expands to: Constant mathcomp.analysis.landau.eqadd_some_oP
 Declared in library mathcomp.analysis.landau, line 423, characters 6-19
@@ -1088,7 +1089,7 @@ f = (g + 'o_(filter.filter F) e )%R <->
   (filter.filter F) (f - g)%R e
 
 eqaddoP is not universe polymorphic
-Arguments eqaddoP {K} {T}%type_scope {V W} F (f g e)%function_scope
+Arguments eqaddoP {K} {T}%_type_scope {V W} F (f g e)%_function_scope
 eqaddoP is opaque
 Expands to: Constant mathcomp.analysis.landau.eqaddoP
 Declared in library mathcomp.analysis.landau, line 432, characters 6-13
@@ -1114,7 +1115,7 @@ f = 'o_(filter.filter F) e  <->
   (filter.filter F) f e
 
 eqoP is not universe polymorphic
-Arguments eqoP {K} {T}%type_scope {V W} F (e f)%function_scope
+Arguments eqoP {K} {T}%_type_scope {V W} F (e f)%_function_scope
 eqoP is opaque
 Expands to: Constant mathcomp.analysis.landau.eqoP
 Declared in library mathcomp.analysis.landau, line 438, characters 6-10
@@ -1150,8 +1151,8 @@ forall
 (0 < eps)%R ->
 (let (filter, _) := F in filter) (fun x : T => (`|f x| <= eps * `|e x|)%R)
 
-Arguments eq_some_oP {K} {T}%type_scope {V W} [F] 
-  [e f h]%function_scope _ [eps] _
+Arguments eq_some_oP {K} {T}%_type_scope {V W} [F] 
+  [e f h]%_function_scope _ [eps] _
 eq_some_oP is opaque
 Expands to: Constant mathcomp.analysis.landau.eq_some_oP
 Declared in library mathcomp.analysis.landau, line 442, characters 6-16
@@ -1168,7 +1169,7 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
 f = (g + 'a_o_(filter.filter F) e )%R -> f = (g + 'o_(filter.filter F) e )%R
 
 eqaddoE is not universe polymorphic
-Arguments eqaddoE {K} {T}%type_scope {V W} [F] [f g h e]%function_scope _
+Arguments eqaddoE {K} {T}%_type_scope {V W} [F] [f g h e]%_function_scope _
 eqaddoE is opaque
 Expands to: Constant mathcomp.analysis.landau.eqaddoE
 Declared in library mathcomp.analysis.landau, line 448, characters 6-13
@@ -1185,7 +1186,7 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
 f = 'a_o_(filter.filter F) e  -> f = 'o_(filter.filter F) e 
 
 eqoE is not universe polymorphic
-Arguments eqoE {K} {T}%type_scope {V W} [F] [f h e]%function_scope _
+Arguments eqoE {K} {T}%_type_scope {V W} [F] [f h e]%_function_scope _
 eqoE is opaque
 Expands to: Constant mathcomp.analysis.landau.eqoE
 Declared in library mathcomp.analysis.landau, line 452, characters 6-10
@@ -1203,8 +1204,8 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
 forall x : T, f x = 'o_(filter.filter F) [eta e]  x
 
 eqoEx is not universe polymorphic
-Arguments eqoEx {K} {T}%type_scope {V W} [F] [f h e]%function_scope
-  _%function_scope x
+Arguments eqoEx {K} {T}%_type_scope {V W} [F] [f h e]%_function_scope
+  _%_function_scope x
 eqoEx is opaque
 Expands to: Constant mathcomp.analysis.landau.eqoEx
 Declared in library mathcomp.analysis.landau, line 456, characters 6-11
@@ -1223,8 +1224,8 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
 forall x : T, f x = (g x + 'o_(filter.filter F) [eta e]  x)%R
 
 eqaddoEx is not universe polymorphic
-Arguments eqaddoEx {K} {T}%type_scope {V W} [F] [f g h e]%function_scope
-  _%function_scope x
+Arguments eqaddoEx {K} {T}%_type_scope {V W} [F] [f g h e]%_function_scope
+  _%_function_scope x
 eqaddoEx is opaque
 Expands to: Constant mathcomp.analysis.landau.eqaddoEx
 Declared in library mathcomp.analysis.landau, line 461, characters 6-14
@@ -1242,7 +1243,7 @@ forall {K : numDomainType} {T : Type} {V W : normedModType K}
 (f : T -> V) = 'o_(filter.filter F) g 
 
 littleo_eqo is not universe polymorphic
-Arguments littleo_eqo {K} {T}%type_scope {V W} [F] [g]%function_scope f
+Arguments littleo_eqo {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
 littleo_eqo is opaque
 Expands to: Constant mathcomp.analysis.landau.littleo_eqo
 Declared in library mathcomp.analysis.landau, line 466, characters 6-17
@@ -1292,7 +1293,7 @@ filter.Filter F ->
   F f g
 
 bigO_exP is not universe polymorphic
-Arguments bigO_exP {K} {T}%type_scope {V W} [F] (f g)%function_scope _
+Arguments bigO_exP {K} {T}%_type_scope {V W} [F] (f g)%_function_scope _
 bigO_exP is opaque
 Expands to: Constant mathcomp.analysis.landau.bigO_exP
 Declared in library mathcomp.analysis.landau, line 481, characters 6-14
@@ -1340,7 +1341,7 @@ subType (T:=T -> V)
 
 landau_bigO_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigO_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V W} F g%function_scope
+  {K} {T}%_type_scope {V W} F g%_function_scope
 landau_bigO_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigO_type__canonical__eqtype_SubType
@@ -1369,7 +1370,7 @@ subType (T:=T -> V)
 
 landau_bigO_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigO_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V W} F g%function_scope
+  {K} {T}%_type_scope {V W} F g%_function_scope
 landau_bigO_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigO_type__canonical__eqtype_SubType
@@ -1398,7 +1399,7 @@ subType (T:=T -> V)
 
 landau_bigO_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigO_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V W} F g%function_scope
+  {K} {T}%_type_scope {V W} F g%_function_scope
 landau_bigO_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigO_type__canonical__eqtype_SubType
@@ -1427,7 +1428,7 @@ subType (T:=T -> V)
 
 landau_bigO_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigO_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V W} F g%function_scope
+  {K} {T}%_type_scope {V W} F g%_function_scope
 landau_bigO_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigO_type__canonical__eqtype_SubType
@@ -1456,7 +1457,7 @@ subType (T:=T -> V)
 
 landau_bigO_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigO_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V W} F g%function_scope
+  {K} {T}%_type_scope {V W} F g%_function_scope
 landau_bigO_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigO_type__canonical__eqtype_SubType
@@ -1485,7 +1486,7 @@ subType (T:=T -> V)
 
 landau_bigO_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigO_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V W} F g%function_scope
+  {K} {T}%_type_scope {V W} F g%_function_scope
 landau_bigO_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigO_type__canonical__eqtype_SubType
@@ -1512,7 +1513,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
       F f g >]
 
 bigO_class is not universe polymorphic
-Arguments bigO_class {K} {T}%type_scope {V W} [F] [g]%function_scope f
+Arguments bigO_class {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
 bigO_class is opaque
 Expands to: Constant mathcomp.analysis.landau.bigO_class
 Declared in library mathcomp.analysis.landau, line 502, characters 6-16
@@ -1547,8 +1548,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 phant_id (bigO_class fT) c -> {O_F g}
 
 bigO_clone is not universe polymorphic
-Arguments bigO_clone {K} {T}%type_scope {V W} [F] 
-  [g f]%function_scope [fT c] _
+Arguments bigO_clone {K} {T}%_type_scope {V W} [F] 
+  [g f]%_function_scope [fT c] _
 bigO_clone is transparent
 Expands to: Constant mathcomp.analysis.landau.bigO_clone
 Declared in library mathcomp.analysis.landau, line 507, characters 11-21
@@ -1577,7 +1578,7 @@ filter.Filter F ->
   F (0%R : T -> V) g
 
 bigO0_subproof is not universe polymorphic
-Arguments bigO0_subproof {K} {T}%type_scope {V W} [F] g%function_scope _
+Arguments bigO0_subproof {K} {T}%_type_scope {V W} [F] g%_function_scope _
 bigO0_subproof is opaque
 Expands to: Constant mathcomp.analysis.landau.bigO0_subproof
 Declared in library mathcomp.analysis.landau, line 512, characters 6-20
@@ -1595,7 +1596,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 {O_(filter.filter F) g}
 
 bigO0 is not universe polymorphic
-Arguments bigO0 {K} {T}%type_scope {V W} F g%function_scope
+Arguments bigO0 {K} {T}%_type_scope {V W} F g%_function_scope
 bigO0 is transparent
 Expands to: Constant mathcomp.analysis.landau.bigO0
 Declared in library mathcomp.analysis.landau, line 518, characters 10-15
@@ -1609,8 +1610,8 @@ phantom (filter.set_system T) (filter.filter F) ->
 (T -> V) -> (T -> W) -> T -> V
 
 the_bigO is not universe polymorphic
-Arguments the_bigO {K} {T}%type_scope {V W} u F phF 
-  (f h)%function_scope _ : simpl never
+Arguments the_bigO {K} {T}%_type_scope {V W} u F phF 
+  (f h)%_function_scope _ : simpl never
 The reduction tactics never unfold the_bigO
 the_bigO is transparent
 Expands to: Constant mathcomp.analysis.landau.the_bigO
@@ -1675,7 +1676,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
   F f g
 
 bigOP is not universe polymorphic
-Arguments bigOP {K} {T}%type_scope {V W} [F] [g]%function_scope f
+Arguments bigOP {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
 bigOP is opaque
 Expands to: Constant mathcomp.analysis.landau.bigOP
 Declared in library mathcomp.analysis.landau, line 566, characters 6-11
@@ -1711,7 +1712,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 ('O) h = f
 
 bigOE is not universe polymorphic
-Arguments bigOE {K} {T}%type_scope {V W} tag [F] phF [f h]%function_scope _
+Arguments bigOE {K} {T}%_type_scope {V W} tag [F] phF [f h]%_function_scope _
 bigOE is opaque
 Expands to: Constant mathcomp.analysis.landau.bigOE
 Declared in library mathcomp.analysis.landau, line 573, characters 6-11
@@ -1730,8 +1731,8 @@ phantom (filter.set_system T) (filter.filter F) ->
 (T -> V) -> forall h : T -> W, {O_(filter.filter F) h}
 
 the_bigO_bigO is not universe polymorphic
-Arguments the_bigO_bigO {K} {T}%type_scope {V W} tag 
-  [F] phF (f h)%function_scope
+Arguments the_bigO_bigO {K} {T}%_type_scope {V W} 
+  tag [F] phF (f h)%_function_scope
 the_bigO_bigO is transparent
 Expands to: Constant mathcomp.analysis.landau.the_bigO_bigO
 Declared in library mathcomp.analysis.landau, line 577, characters 10-23
@@ -1749,7 +1750,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 bigO_spec (filter.filter F) g f
 
 bigO is not universe polymorphic
-Arguments bigO {K} {T}%type_scope {V W} F g%function_scope f
+Arguments bigO {K} {T}%_type_scope {V W} F g%_function_scope f
 bigO is opaque
 Expands to: Constant mathcomp.analysis.landau.bigO
 Declared in library mathcomp.analysis.landau, line 585, characters 6-10
@@ -1778,8 +1779,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
   (filter.filter F) (- (df : T -> V))%R e
 
 opp_bigO_subproof is not universe polymorphic
-Arguments opp_bigO_subproof {K} {T}%type_scope {V W} 
-  [F] [e]%function_scope df
+Arguments opp_bigO_subproof {K} {T}%_type_scope {V W} 
+  [F] [e]%_function_scope df
 opp_bigO_subproof is opaque
 Expands to: Constant mathcomp.analysis.landau.opp_bigO_subproof
 Declared in library mathcomp.analysis.landau, line 588, characters 6-23
@@ -1798,7 +1799,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 {O_(filter.filter F) e} -> {O_(filter.filter F) e}
 
 Opp_bigO is not universe polymorphic
-Arguments Opp_bigO {K} {T}%type_scope {V W} [F] [e]%function_scope df
+Arguments Opp_bigO {K} {T}%_type_scope {V W} [F] [e]%_function_scope df
 Opp_bigO is transparent
 Expands to: Constant mathcomp.analysis.landau.Opp_bigO
 Declared in library mathcomp.analysis.landau, line 595, characters 10-18
@@ -1811,7 +1812,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 (- 'O_(filter.filter F) e)%R = 'O_(filter.filter F) e 
 
 oppO is not universe polymorphic
-Arguments oppO {K} {T}%type_scope {V W} F (f e)%function_scope
+Arguments oppO {K} {T}%_type_scope {V W} F (f e)%_function_scope
 oppO is opaque
 Expands to: Constant mathcomp.analysis.landau.oppO
 Declared in library mathcomp.analysis.landau, line 598, characters 6-10
@@ -1828,7 +1829,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 (- 'O_(filter.filter F) e x)%R = 'O_(filter.filter F) e x
 
 oppOx is not universe polymorphic
-Arguments oppOx {K} {T}%type_scope {V W} F (f e)%function_scope x
+Arguments oppOx {K} {T}%_type_scope {V W} F (f e)%_function_scope x
 oppOx is opaque
 Expands to: Constant mathcomp.analysis.landau.oppOx
 Declared in library mathcomp.analysis.landau, line 601, characters 6-11
@@ -1858,8 +1859,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
   (filter.filter F) (df \+ dg)%R e
 
 add_bigO_subproof is not universe polymorphic
-Arguments add_bigO_subproof {K} {T}%type_scope {V W} 
-  [F] [e]%function_scope df dg
+Arguments add_bigO_subproof {K} {T}%_type_scope {V W} 
+  [F] [e]%_function_scope df dg
 add_bigO_subproof is opaque
 Expands to: Constant mathcomp.analysis.landau.add_bigO_subproof
 Declared in library mathcomp.analysis.landau, line 605, characters 6-23
@@ -1879,7 +1880,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 {O_(filter.filter F) e} -> {O_(filter.filter F) e} -> {O_(filter.filter F) e}
 
 add_bigO is not universe polymorphic
-Arguments add_bigO {K} {T}%type_scope {V W} [F] [e]%function_scope df dg
+Arguments add_bigO {K} {T}%_type_scope {V W} [F] [e]%_function_scope df dg
 add_bigO is transparent
 Expands to: Constant mathcomp.analysis.landau.add_bigO
 Declared in library mathcomp.analysis.landau, line 613, characters 10-18
@@ -1891,7 +1892,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 {O_(filter.filter F) e} -> {O_(filter.filter F) e} -> {O_(filter.filter F) e}
 
 addfun_bigO is not universe polymorphic
-Arguments addfun_bigO {K} {T}%type_scope {V W} [F] [e]%function_scope df dg
+Arguments addfun_bigO {K} {T}%_type_scope {V W} [F] [e]%_function_scope df dg
 addfun_bigO is transparent
 Expands to: Constant mathcomp.analysis.landau.addfun_bigO
 Declared in library mathcomp.analysis.landau, line 615, characters 10-21
@@ -1904,7 +1905,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 ('O_(filter.filter F) e + 'O_(filter.filter F) e)%R = 'O_(filter.filter F) e 
 
 addO is not universe polymorphic
-Arguments addO {K} {T}%type_scope {V W} F (f g e)%function_scope
+Arguments addO {K} {T}%_type_scope {V W} F (f g e)%_function_scope
 addO is opaque
 Expands to: Constant mathcomp.analysis.landau.addO
 Declared in library mathcomp.analysis.landau, line 618, characters 6-10
@@ -1923,7 +1924,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 'O_(filter.filter F) e x
 
 addOx is not universe polymorphic
-Arguments addOx {K} {T}%type_scope {V W} F (f g e)%function_scope x
+Arguments addOx {K} {T}%_type_scope {V W} F (f g e)%_function_scope x
 addOx is opaque
 Expands to: Constant mathcomp.analysis.landau.addOx
 Declared in library mathcomp.analysis.landau, line 622, characters 6-11
@@ -1956,8 +1957,8 @@ f = (g + 'O_(filter.filter F) e)%R ->
   (filter.filter F) (f - g)%R e
 
 eqadd_some_OP is not universe polymorphic
-Arguments eqadd_some_OP {K} {T}%type_scope {V W} [F] 
-  [f g e h]%function_scope _
+Arguments eqadd_some_OP {K} {T}%_type_scope {V W} 
+  [F] [f g e h]%_function_scope _
 eqadd_some_OP is opaque
 Expands to: Constant mathcomp.analysis.landau.eqadd_some_OP
 Declared in library mathcomp.analysis.landau, line 627, characters 6-19
@@ -1992,7 +1993,7 @@ f = (g + 'O_(filter.filter F) e )%R <->
   (filter.filter F) (f - g)%R e
 
 eqaddOP is not universe polymorphic
-Arguments eqaddOP {K} {T}%type_scope {V W} F (f g e)%function_scope
+Arguments eqaddOP {K} {T}%_type_scope {V W} F (f g e)%_function_scope
 eqaddOP is opaque
 Expands to: Constant mathcomp.analysis.landau.eqaddOP
 Declared in library mathcomp.analysis.landau, line 636, characters 6-13
@@ -2023,7 +2024,7 @@ f = 'O_(filter.filter F) e  <->
   (filter.filter F) f e
 
 eqOP is not universe polymorphic
-Arguments eqOP {K} {T}%type_scope {V W} F (e f)%function_scope
+Arguments eqOP {K} {T}%_type_scope {V W} F (e f)%_function_scope
 eqOP is opaque
 Expands to: Constant mathcomp.analysis.landau.eqOP
 Declared in library mathcomp.analysis.landau, line 640, characters 6-10
@@ -2048,7 +2049,7 @@ f = 'O_(filter.filter F) e  <->
   (filter.filter F) f e
 
 eqO_exP is not universe polymorphic
-Arguments eqO_exP {K} {T}%type_scope {V W} F (e f)%function_scope
+Arguments eqO_exP {K} {T}%_type_scope {V W} F (e f)%_function_scope
 eqO_exP is opaque
 Expands to: Constant mathcomp.analysis.landau.eqO_exP
 Declared in library mathcomp.analysis.landau, line 644, characters 6-13
@@ -2079,7 +2080,7 @@ f = 'O_(filter.filter F) e ->
   (filter.filter F) f e
 
 eq_some_OP is not universe polymorphic
-Arguments eq_some_OP {K} {T}%type_scope {V W} [F] [e f h]%function_scope _
+Arguments eq_some_OP {K} {T}%_type_scope {V W} [F] [e f h]%_function_scope _
 eq_some_OP is opaque
 Expands to: Constant mathcomp.analysis.landau.eq_some_OP
 Declared in library mathcomp.analysis.landau, line 648, characters 6-16
@@ -2096,7 +2097,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 (f : T -> V) = 'O_(filter.filter F) g 
 
 bigO_eqO is not universe polymorphic
-Arguments bigO_eqO {K} {T}%type_scope {V W} [F] [g]%function_scope f
+Arguments bigO_eqO {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
 bigO_eqO is opaque
 Expands to: Constant mathcomp.analysis.landau.bigO_eqO
 Declared in library mathcomp.analysis.landau, line 652, characters 6-14
@@ -2127,7 +2128,7 @@ f = 'O_(filter.filter F) e  ->
   (filter.filter F) f e
 
 eqO_bigO is not universe polymorphic
-Arguments eqO_bigO {K} {T}%type_scope {V W} [F] [e f]%function_scope _
+Arguments eqO_bigO {K} {T}%_type_scope {V W} [F] [e f]%_function_scope _
 eqO_bigO is opaque
 Expands to: Constant mathcomp.analysis.landau.eqO_bigO
 Declared in library mathcomp.analysis.landau, line 656, characters 6-14
@@ -2144,7 +2145,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 f = (g + 'a_O_(filter.filter F) e )%R -> f = (g + 'O_(filter.filter F) e )%R
 
 eqaddOE is not universe polymorphic
-Arguments eqaddOE {K} {T}%type_scope {V W} [F] [f g h e]%function_scope _
+Arguments eqaddOE {K} {T}%_type_scope {V W} [F] [f g h e]%_function_scope _
 eqaddOE is opaque
 Expands to: Constant mathcomp.analysis.landau.eqaddOE
 Declared in library mathcomp.analysis.landau, line 662, characters 6-13
@@ -2161,7 +2162,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 f = 'a_O_(filter.filter F) e  -> f = 'O_(filter.filter F) e 
 
 eqOE is not universe polymorphic
-Arguments eqOE {K} {T}%type_scope {V W} [F] [f h e]%function_scope _
+Arguments eqOE {K} {T}%_type_scope {V W} [F] [f h e]%_function_scope _
 eqOE is opaque
 Expands to: Constant mathcomp.analysis.landau.eqOE
 Declared in library mathcomp.analysis.landau, line 666, characters 6-10
@@ -2179,8 +2180,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 forall x : T, f x = 'O_(filter.filter F) [eta e]  x
 
 eqOEx is not universe polymorphic
-Arguments eqOEx {K} {T}%type_scope {V W} [F] [f h e]%function_scope
-  _%function_scope x
+Arguments eqOEx {K} {T}%_type_scope {V W} [F] [f h e]%_function_scope
+  _%_function_scope x
 eqOEx is opaque
 Expands to: Constant mathcomp.analysis.landau.eqOEx
 Declared in library mathcomp.analysis.landau, line 670, characters 6-11
@@ -2199,8 +2200,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 forall x : T, f x = (g x + 'O_(filter.filter F) [eta e]  x)%R
 
 eqaddOEx is not universe polymorphic
-Arguments eqaddOEx {K} {T}%type_scope {V W} [F] [f g h e]%function_scope
-  _%function_scope x
+Arguments eqaddOEx {K} {T}%_type_scope {V W} [F] [f g h e]%_function_scope
+  _%_function_scope x
 eqaddOEx is opaque
 Expands to: Constant mathcomp.analysis.landau.eqaddOEx
 Declared in library mathcomp.analysis.landau, line 675, characters 6-14
@@ -2222,7 +2223,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 'o_(filter.filter F) e = 'O_(filter.filter F) e 
 
 eqoO is not universe polymorphic
-Arguments eqoO {K} {T}%type_scope {V W} F (f e)%function_scope
+Arguments eqoO {K} {T}%_type_scope {V W} F (f e)%_function_scope
 eqoO is opaque
 Expands to: Constant mathcomp.analysis.landau.eqoO
 Declared in library mathcomp.analysis.landau, line 687, characters 6-10
@@ -2242,7 +2243,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 (f : T -> V) = 'O_(filter.filter F) e 
 
 littleo_eqO is not universe polymorphic
-Arguments littleo_eqO {K} {T}%type_scope {V W} [F] [e]%function_scope f
+Arguments littleo_eqO {K} {T}%_type_scope {V W} [F] [e]%_function_scope f
 littleo_eqO is opaque
 Expands to: Constant mathcomp.analysis.landau.littleo_eqO
 Declared in library mathcomp.analysis.landau, line 695, characters 6-17
@@ -2259,7 +2260,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 {o_(filter.filter F) e} -> {O_(filter.filter F) e}
 
 littleo_is_bigO is not universe polymorphic
-Arguments littleo_is_bigO {K} {T}%type_scope {V W} [F] [e]%function_scope f
+Arguments littleo_is_bigO {K} {T}%_type_scope {V W} [F] [e]%_function_scope f
 littleo_is_bigO is transparent
 Expands to: Constant mathcomp.analysis.landau.littleo_is_bigO
 Declared in library mathcomp.analysis.landau, line 699, characters 10-25
@@ -2273,8 +2274,8 @@ phantom (filter.set_system T) (filter.filter F) ->
 (T -> V) -> forall h : T -> W, {O_(filter.filter F) h}
 
 the_littleo_bigO is not universe polymorphic
-Arguments the_littleo_bigO {K} {T}%type_scope {V W} 
-  tag [F] phF (f h)%function_scope
+Arguments the_littleo_bigO {K} {T}%_type_scope {V W} 
+  tag [F] phF (f h)%_function_scope
 the_littleo_bigO is transparent
 Expands to: Constant mathcomp.analysis.landau.the_littleo_bigO
 Declared in library mathcomp.analysis.landau, line 701, characters 10-26
@@ -2426,8 +2427,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 (let (filter, _) := F in filter)
   (fun x : T => (`|(df \+ dg) x| <= eps * `|e x|)%R)
 
-Arguments add_littleo_subproof {K} {T}%type_scope 
-  {V W} [F] [e]%function_scope df dg [eps] _
+Arguments add_littleo_subproof {K} {T}%_type_scope 
+  {V W} [F] [e]%_function_scope df dg [eps] _
 add_littleo_subproof is opaque
 Expands to: Constant mathcomp.analysis.landau.add_littleo_subproof
 Declared in library mathcomp.analysis.landau, line 835, characters 6-26
@@ -2447,7 +2448,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 {o_(filter.filter F) e} -> {o_(filter.filter F) e} -> {o_(filter.filter F) e}
 
 add_littleo is not universe polymorphic
-Arguments add_littleo {K} {T}%type_scope {V W} [F] [e]%function_scope df dg
+Arguments add_littleo {K} {T}%_type_scope {V W} [F] [e]%_function_scope df dg
 add_littleo is transparent
 Expands to: Constant mathcomp.analysis.landau.add_littleo
 Declared in library mathcomp.analysis.landau, line 843, characters 10-21
@@ -2459,8 +2460,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 {o_(filter.filter F) e} -> {o_(filter.filter F) e} -> {o_(filter.filter F) e}
 
 addfun_littleo is not universe polymorphic
-Arguments addfun_littleo {K} {T}%type_scope {V W} 
-  [F] [e]%function_scope df dg
+Arguments addfun_littleo {K} {T}%_type_scope {V W} 
+  [F] [e]%_function_scope df dg
 addfun_littleo is transparent
 Expands to: Constant mathcomp.analysis.landau.addfun_littleo
 Declared in library mathcomp.analysis.landau, line 845, characters 10-24
@@ -2473,7 +2474,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 ([o_F e of f] + [o_F e of g])%R =o_F e
 
 addo is not universe polymorphic
-Arguments addo {K} {T}%type_scope {V W} F (f g e)%function_scope
+Arguments addo {K} {T}%_type_scope {V W} F (f g e)%_function_scope
 addo is opaque
 Expands to: Constant mathcomp.analysis.landau.addo
 Declared in library mathcomp.analysis.landau, line 848, characters 6-10
@@ -2492,7 +2493,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 [o_(x \near F) (e x) of ([o_F e of f] + [o_F e of g])%R x]
 
 addox is not universe polymorphic
-Arguments addox {K} {T}%type_scope {V W} F (f g e)%function_scope x
+Arguments addox {K} {T}%_type_scope {V W} F (f g e)%_function_scope x
 addox is opaque
 Expands to: Constant mathcomp.analysis.landau.addox
 Declared in library mathcomp.analysis.landau, line 852, characters 6-11
@@ -2531,8 +2532,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 (let (filter, _) := F in filter)
   (fun x : T => (`|(a *: (df : T -> V)) x| <= eps * `|e x|)%R)
 
-Arguments scale_littleo_subproof {K} {T}%type_scope 
-  {V W} [F] [e]%function_scope df a%ring_scope [eps] 
+Arguments scale_littleo_subproof {K} {T}%_type_scope 
+  {V W} [F] [e]%_function_scope df a%_ring_scope [eps] 
   _
 scale_littleo_subproof is opaque
 Expands to: Constant mathcomp.analysis.landau.scale_littleo_subproof
@@ -2554,8 +2555,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 K -> {o_(filter.filter F) e} -> {o_(filter.filter F) e}
 
 scale_littleo is not universe polymorphic
-Arguments scale_littleo {K} {T}%type_scope {V W} [F] 
-  [e]%function_scope a%ring_scope df
+Arguments scale_littleo {K} {T}%_type_scope {V W} 
+  [F] [e]%_function_scope a%_ring_scope df
 scale_littleo is transparent
 Expands to: Constant mathcomp.analysis.landau.scale_littleo
 Declared in library mathcomp.analysis.landau, line 869, characters 10-23
@@ -2568,7 +2569,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 (a *: [o_F e of f])%R = [o_F e of (a *: [o_F e of f])%R]
 
 scaleo is not universe polymorphic
-Arguments scaleo {K} {T}%type_scope {V W} F a%ring_scope (f e)%function_scope
+Arguments scaleo {K} {T}%_type_scope {V W} F a%_ring_scope
+  (f e)%_function_scope
 scaleo is opaque
 Expands to: Constant mathcomp.analysis.landau.scaleo
 Declared in library mathcomp.analysis.landau, line 872, characters 6-12
@@ -2587,8 +2589,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 [o_(x \near F) (e x) of (a *: [o_F e of f])%R x]
 
 scaleox is not universe polymorphic
-Arguments scaleox {K} {T}%type_scope {V W} F a%ring_scope
-  (f e)%function_scope x
+Arguments scaleox {K} {T}%_type_scope {V W} F a%_ring_scope
+  (f e)%_function_scope x
 scaleox is opaque
 Expands to: Constant mathcomp.analysis.landau.scaleox
 Declared in library mathcomp.analysis.landau, line 876, characters 6-13
@@ -2608,7 +2610,7 @@ forall [K : numFieldType] [V W : normedModType K]
 ([o_(x \near F) (e x) of k x] *: a)%R = 'o_(x \near F) (e x)
 
 scaleolx is not universe polymorphic
-Arguments scaleolx [K V W] {T}%type_scope F a (k e)%function_scope x
+Arguments scaleolx [K V W] {T}%_type_scope F a (k e)%_function_scope x
 scaleolx is opaque
 Expands to: Constant mathcomp.analysis.landau.scaleolx
 Declared in library mathcomp.analysis.landau, line 883, characters 6-14
@@ -2638,7 +2640,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs l) <->
 f = cst l +o_F cst (1%R : K^o)
 
 eqolimP is not universe polymorphic
-Arguments eqolimP {K} {T}%type_scope {V} F f%function_scope l
+Arguments eqolimP {K} {T}%_type_scope {V} F f%_function_scope l
 eqolimP is opaque
 Expands to: Constant mathcomp.analysis.landau.eqolimP
 Declared in library mathcomp.analysis.landau, line 900, characters 6-13
@@ -2673,8 +2675,8 @@ f = (cst l + [o_F cst (1 : K^o) of e])%R ->
 forall [t : set V],
 filter.nbhs l t -> (let (filter, _) := F in filter) (f @^-1` t)%classic
 
-Arguments eqolim {K} {T}%type_scope {V} [F] [f]%function_scope 
-  [l] [e]%function_scope _ [t] _
+Arguments eqolim {K} {T}%_type_scope {V} [F] [f]%_function_scope 
+  [l] [e]%_function_scope _ [t] _
 eqolim is opaque
 Expands to: Constant mathcomp.analysis.landau.eqolim
 Declared in library mathcomp.analysis.landau, line 914, characters 6-12
@@ -2693,7 +2695,7 @@ filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
 f =o_F cst (1%R : K^o)
 
 eqolim0P is not universe polymorphic
-Arguments eqolim0P {K} {T}%type_scope {V} F f%function_scope
+Arguments eqolim0P {K} {T}%_type_scope {V} F f%_function_scope
 eqolim0P is opaque
 Expands to: Constant mathcomp.analysis.landau.eqolim0P
 Declared in library mathcomp.analysis.landau, line 918, characters 6-14
@@ -2721,7 +2723,7 @@ forall [t : set V],
 filter.nbhs (0%R : V) t ->
 (let (filter, _) := F in filter) (f @^-1` t)%classic
 
-Arguments eqolim0 {K} {T}%type_scope {V} [F] [f]%function_scope _ [t] _
+Arguments eqolim0 {K} {T}%_type_scope {V} [F] [f]%_function_scope _ [t] _
 eqolim0 is opaque
 Expands to: Constant mathcomp.analysis.landau.eqolim0
 Declared in library mathcomp.analysis.landau, line 922, characters 6-13
@@ -2740,8 +2742,8 @@ forall {K : numFieldType} {T : Type} {V W X : normedModType K}
 f =O_F g -> [o_F f of h] =o_F g
 
 littleo_bigO_eqo is not universe polymorphic
-Arguments littleo_bigO_eqo {K} {T}%type_scope {V W X F}
-  (g f h)%function_scope _
+Arguments littleo_bigO_eqo {K} {T}%_type_scope {V W X F}
+  (g f h)%_function_scope _
 littleo_bigO_eqo is opaque
 Expands to: Constant mathcomp.analysis.landau.littleo_bigO_eqo
 Declared in library mathcomp.analysis.landau, line 930, characters 6-22
@@ -2765,8 +2767,8 @@ forall {K : numFieldType} {T : Type} {V W X : normedModType K}
 f =o_F g -> [O_F f of h] =o_F g
 
 bigO_littleo_eqo is not universe polymorphic
-Arguments bigO_littleo_eqo {K} {T}%type_scope {V W X F}
-  (g f h)%function_scope _
+Arguments bigO_littleo_eqo {K} {T}%_type_scope {V W X F}
+  (g f h)%_function_scope _
 bigO_littleo_eqo is opaque
 Expands to: Constant mathcomp.analysis.landau.bigO_littleo_eqo
 Declared in library mathcomp.analysis.landau, line 941, characters 6-22
@@ -2787,7 +2789,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 f =o_F e -> g =o_F e -> (f + g)%R =o_F e
 
 add2o is not universe polymorphic
-Arguments add2o {K} {T}%type_scope {V W} [F] [f g e]%function_scope _ _
+Arguments add2o {K} {T}%_type_scope {V W} [F] [f g e]%_function_scope _ _
 add2o is opaque
 Expands to: Constant mathcomp.analysis.landau.add2o
 Declared in library mathcomp.analysis.landau, line 950, characters 6-11
@@ -2805,8 +2807,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 f =o_F e -> (f + [o_F e of h])%R =o_F e
 
 addfo is not universe polymorphic
-Arguments addfo {K} {T}%type_scope {V W} [F] h%function_scope
-  [f e]%function_scope _
+Arguments addfo {K} {T}%_type_scope {V W} [F] h%_function_scope
+  [f e]%_function_scope _
 addfo is opaque
 Expands to: Constant mathcomp.analysis.landau.addfo
 Declared in library mathcomp.analysis.landau, line 954, characters 6-11
@@ -2823,8 +2825,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 (T -> V) -> forall [f : T -> V] [e : T -> W], f =o_F e -> (- f)%R =o_F e
 
 oppfo is not universe polymorphic
-Arguments oppfo {K} {T}%type_scope {V W} [F] h%function_scope
-  [f e]%function_scope _
+Arguments oppfo {K} {T}%_type_scope {V W} [F] h%_function_scope
+  [f e]%_function_scope _
 oppfo is opaque
 Expands to: Constant mathcomp.analysis.landau.oppfo
 Declared in library mathcomp.analysis.landau, line 958, characters 6-11
@@ -2841,7 +2843,7 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 f =O_F e -> g =O_F e -> (f + g)%R =O_F e
 
 add2O is not universe polymorphic
-Arguments add2O {K} {T}%type_scope {V W} [F] [f g e]%function_scope _ _
+Arguments add2O {K} {T}%_type_scope {V W} [F] [f g e]%_function_scope _ _
 add2O is opaque
 Expands to: Constant mathcomp.analysis.landau.add2O
 Declared in library mathcomp.analysis.landau, line 962, characters 6-11
@@ -2859,8 +2861,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 f =O_F e -> (f + [O_F e of h])%R =O_F e
 
 addfO is not universe polymorphic
-Arguments addfO {K} {T}%type_scope {V W} [F] h%function_scope
-  [f e]%function_scope _
+Arguments addfO {K} {T}%_type_scope {V W} [F] h%_function_scope
+  [f e]%_function_scope _
 addfO is opaque
 Expands to: Constant mathcomp.analysis.landau.addfO
 Declared in library mathcomp.analysis.landau, line 966, characters 6-11
@@ -2877,8 +2879,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 (T -> V) -> forall [f : T -> V] [e : T -> W], f =O_F e -> (- f)%R =O_F e
 
 oppfO is not universe polymorphic
-Arguments oppfO {K} {T}%type_scope {V W} [F] h%function_scope
-  [f e]%function_scope _
+Arguments oppfO {K} {T}%_type_scope {V W} [F] h%_function_scope
+  [f e]%_function_scope _
 oppfO is opaque
 Expands to: Constant mathcomp.analysis.landau.oppfO
 Declared in library mathcomp.analysis.landau, line 970, characters 6-11
@@ -2895,7 +2897,7 @@ forall {K : numFieldType} {T : Type} {W : normedModType K}
 e =O_F e
 
 idO is not universe polymorphic
-Arguments idO {K} {T}%type_scope {W} F e%function_scope
+Arguments idO {K} {T}%_type_scope {W} F e%_function_scope
 idO is opaque
 Expands to: Constant mathcomp.analysis.landau.idO
 Declared in library mathcomp.analysis.landau, line 974, characters 6-9
@@ -2912,8 +2914,8 @@ forall {K : numFieldType} {T : Type} {V W X : normedModType K}
 f =o_F g -> [o_F f of h] =o_F g
 
 littleo_littleo is not universe polymorphic
-Arguments littleo_littleo {K} {T}%type_scope {V W X} 
-  [F] [f g]%function_scope h%function_scope _
+Arguments littleo_littleo {K} {T}%_type_scope {V W X} 
+  [F] [f g]%_function_scope h%_function_scope _
 littleo_littleo is opaque
 Expands to: Constant mathcomp.analysis.landau.littleo_littleo
 Declared in library mathcomp.analysis.landau, line 977, characters 6-21
@@ -2939,7 +2941,8 @@ forall {K : realFieldType} {T : Type} {V W X : normedModType K}
 f =O_F g -> ([O_F f of h] : T -> X) =O_F g
 
 bigO_bigO_eqO is not universe polymorphic
-Arguments bigO_bigO_eqO {K} {T}%type_scope {V W X F} (g f h)%function_scope _
+Arguments bigO_bigO_eqO {K} {T}%_type_scope {V W X F} 
+  (g f h)%_function_scope _
 bigO_bigO_eqO is opaque
 Expands to: Constant mathcomp.analysis.landau.bigO_bigO_eqO
 Declared in library mathcomp.analysis.landau, line 989, characters 6-19
@@ -2971,8 +2974,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 f = (g + [o_F e of fg])%R -> g = (h + [o_F e of gh])%R -> f = h +o_F e
 
 eqaddo_trans is not universe polymorphic
-Arguments eqaddo_trans {K} {T}%type_scope {V W} [F]
-  [f g h fg gh e]%function_scope _ _
+Arguments eqaddo_trans {K} {T}%_type_scope {V W} [F]
+  [f g h fg gh e]%_function_scope _ _
 eqaddo_trans is opaque
 Expands to: Constant mathcomp.analysis.landau.eqaddo_trans
 Declared in library mathcomp.analysis.landau, line 1008, characters 6-18
@@ -2995,8 +2998,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 f = (g + [O_F e of fg])%R -> g = (h + [O_F e of gh])%R -> f = h +O_F e
 
 eqaddO_trans is not universe polymorphic
-Arguments eqaddO_trans {K} {T}%type_scope {V W} [F]
-  [f g h fg gh e]%function_scope _ _
+Arguments eqaddO_trans {K} {T}%_type_scope {V W} [F]
+  [f g h fg gh e]%_function_scope _ _
 eqaddO_trans is opaque
 Expands to: Constant mathcomp.analysis.landau.eqaddO_trans
 Declared in library mathcomp.analysis.landau, line 1017, characters 6-18
@@ -3014,8 +3017,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 f = (g + [o_F e of fg])%R -> g = (h + [O_F e of gh])%R -> f = h +O_F e
 
 eqaddoO_trans is not universe polymorphic
-Arguments eqaddoO_trans {K} {T}%type_scope {V W} [F]
-  [f g h fg gh e]%function_scope _ _
+Arguments eqaddoO_trans {K} {T}%_type_scope {V W} 
+  [F] [f g h fg gh e]%_function_scope _ _
 eqaddoO_trans is opaque
 Expands to: Constant mathcomp.analysis.landau.eqaddoO_trans
 Declared in library mathcomp.analysis.landau, line 1021, characters 6-19
@@ -3033,8 +3036,8 @@ forall {K : numFieldType} {T : Type} {V W : normedModType K}
 f = (g + [O_F e of fg])%R -> g = (h + [o_F e of gh])%R -> f = h +O_F e
 
 eqaddOo_trans is not universe polymorphic
-Arguments eqaddOo_trans {K} {T}%type_scope {V W} [F]
-  [f g h fg gh e]%function_scope _ _
+Arguments eqaddOo_trans {K} {T}%_type_scope {V W} 
+  [F] [f g h fg gh e]%_function_scope _ _
 eqaddOo_trans is opaque
 Expands to: Constant mathcomp.analysis.landau.eqaddOo_trans
 Declared in library mathcomp.analysis.landau, line 1025, characters 6-19
@@ -3052,8 +3055,8 @@ forall {K : numFieldType} {T : Type} {V W Z : normedModType K}
 f = [o_F g of f'] -> g = [o_F h of g'] -> f =o_F h
 
 eqo_trans is not universe polymorphic
-Arguments eqo_trans {K} {T}%type_scope {V W Z} [F]
-  [f f' g g' h]%function_scope _ _
+Arguments eqo_trans {K} {T}%_type_scope {V W Z} [F]
+  [f f' g g' h]%_function_scope _ _
 eqo_trans is opaque
 Expands to: Constant mathcomp.analysis.landau.eqo_trans
 Declared in library mathcomp.analysis.landau, line 1029, characters 6-15
@@ -3071,8 +3074,8 @@ forall {K : numFieldType} {T : Type} {V W Z : normedModType K}
 f = [O_F g of f'] -> g = [o_F h of g'] -> f =o_F h
 
 eqOo_trans is not universe polymorphic
-Arguments eqOo_trans {K} {T}%type_scope {V W Z} [F]
-  [f f' g g' h]%function_scope _ _
+Arguments eqOo_trans {K} {T}%_type_scope {V W Z} [F]
+  [f f' g g' h]%_function_scope _ _
 eqOo_trans is opaque
 Expands to: Constant mathcomp.analysis.landau.eqOo_trans
 Declared in library mathcomp.analysis.landau, line 1033, characters 6-16
@@ -3090,8 +3093,8 @@ forall {K : numFieldType} {T : Type} {V W Z : normedModType K}
 f = [o_F g of f'] -> g = [O_F h of g'] -> f =o_F h
 
 eqoO_trans is not universe polymorphic
-Arguments eqoO_trans {K} {T}%type_scope {V W Z} [F]
-  [f f' g g' h]%function_scope _ _
+Arguments eqoO_trans {K} {T}%_type_scope {V W Z} [F]
+  [f f' g g' h]%_function_scope _ _
 eqoO_trans is opaque
 Expands to: Constant mathcomp.analysis.landau.eqoO_trans
 Declared in library mathcomp.analysis.landau, line 1037, characters 6-16
@@ -3114,8 +3117,8 @@ forall {K : realFieldType} {T : Type} {V W Z : normedModType K}
 f = [O_F g of f'] -> g = [O_F h of g'] -> f =O_F h
 
 eqO_trans is not universe polymorphic
-Arguments eqO_trans {K} {T}%type_scope {V W Z} [F]
-  [f f' g g' h]%function_scope _ _
+Arguments eqO_trans {K} {T}%_type_scope {V W Z} [F]
+  [f f' g g' h]%_function_scope _ _
 eqO_trans is opaque
 Expands to: Constant mathcomp.analysis.landau.eqO_trans
 Declared in library mathcomp.analysis.landau, line 1046, characters 6-15
@@ -3137,7 +3140,7 @@ forall [R : rcfType] [pT : pointedType] (F : filter.filter_on pT)
 ([o_F h1 of f] * [o_F h2 of g])%R =o_F (h1 * h2)%R
 
 mulo is not universe polymorphic
-Arguments mulo [R pT] F (h1 h2 f g)%function_scope
+Arguments mulo [R pT] F (h1 h2 f g)%_function_scope
 mulo is opaque
 Expands to: Constant mathcomp.analysis.landau.mulo
 Declared in library mathcomp.analysis.landau, line 1056, characters 6-10
@@ -3158,7 +3161,7 @@ forall [R : rcfType] [pT : pointedType] (F : filter.filter_on pT)
 ([O_F h1 of f] * [O_F h2 of g])%R =O_F (h1 * h2)%R
 
 mulO is not universe polymorphic
-Arguments mulO [R pT] F (h1 h2 f g)%function_scope
+Arguments mulO [R pT] F (h1 h2 f g)%_function_scope
 mulO is opaque
 Expands to: Constant mathcomp.analysis.landau.mulO
 Declared in library mathcomp.analysis.landau, line 1065, characters 6-10
@@ -3185,7 +3188,7 @@ forall [R : numClosedFieldType] [pT : pointedType]
 ([o_F h1 of f] * [o_F h2 of g])%R =o_F (h1 * h2)%R
 
 mulo_numClosedFieldType is not universe polymorphic
-Arguments mulo_numClosedFieldType [R pT] F (h1 h2 f g)%function_scope
+Arguments mulo_numClosedFieldType [R pT] F (h1 h2 f g)%_function_scope
 mulo_numClosedFieldType is opaque
 Expands to: Constant mathcomp.analysis.landau.mulo_numClosedFieldType
 Declared in library mathcomp.analysis.landau, line 1081, characters 6-29
@@ -3206,7 +3209,7 @@ forall [R : numClosedFieldType] [pT : pointedType]
 ([O_F h1 of f] * [O_F h2 of g])%R =O_F (h1 * h2)%R
 
 mulO_numClosedFieldType is not universe polymorphic
-Arguments mulO_numClosedFieldType [R pT] F (h1 h2 f g)%function_scope
+Arguments mulO_numClosedFieldType [R pT] F (h1 h2 f g)%_function_scope
 mulO_numClosedFieldType is opaque
 Expands to: Constant mathcomp.analysis.landau.mulO_numClosedFieldType
 Declared in library mathcomp.analysis.landau, line 1090, characters 6-29
@@ -3248,7 +3251,7 @@ filter.continuous_at
   f
 
 linear_for_continuous is not universe polymorphic
-Arguments linear_for_continuous {R U V s} {normm_s}%function_scope f _ x t _
+Arguments linear_for_continuous {R U V s} {normm_s}%_function_scope f _ x t _
 linear_for_continuous is opaque
 Expands to: Constant mathcomp.analysis.landau.linear_for_continuous
 Declared in library mathcomp.analysis.landau, line 1114, characters 6-27
@@ -3397,7 +3400,7 @@ forall {K : realFieldType} {T : Type} {V : normedModType K}
 f ~_F g -> f =O_F g
 
 equivOLR is not universe polymorphic
-Arguments equivOLR {K} {T}%type_scope {V} [F] [f g]%function_scope _
+Arguments equivOLR {K} {T}%_type_scope {V} [F] [f g]%_function_scope _
 equivOLR is opaque
 Expands to: Constant mathcomp.analysis.landau.equivOLR
 Declared in library mathcomp.analysis.landau, line 1164, characters 6-14
@@ -3410,7 +3413,7 @@ Declared in library mathcomp.analysis.landau, line 1164, characters 6-14
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="equiv_refl" class="id"><a name="equiv_refl" class="" title="equiv_refl : forall [T : Type] (e : equiv_rel T) (x : T), e x x
 
 equiv_refl is not universe polymorphic
-Arguments equiv_refl [T]%type_scope e x
+Arguments equiv_refl [T]%_type_scope e x
 equiv_refl is opaque
 Expands to: Constant mathcomp.boot.generic_quotient.equiv_refl
 Declared in library mathcomp.boot.generic_quotient, line 418, characters 6-16
@@ -3427,8 +3430,8 @@ forall {K : realFieldType} {T : Type} {V : normedModType K}
 f ~_F g -> [o_F g of h] =o_F f
 
 equivoRL is not universe polymorphic
-Arguments equivoRL {K} {T}%type_scope {V} [W' F] [f g]%function_scope
-  h%function_scope _
+Arguments equivoRL {K} {T}%_type_scope {V} [W' F] 
+  [f g]%_function_scope h%_function_scope _
 equivoRL is opaque
 Expands to: Constant mathcomp.analysis.landau.equivoRL
 Declared in library mathcomp.analysis.landau, line 1170, characters 6-14
@@ -3449,7 +3452,7 @@ Declared in library mathcomp.analysis.landau, line 1170, characters 6-14
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="equiv_sym" class="id"><a name="equiv_sym" class="" title="equiv_sym : forall [T : Type] (e : equiv_rel T), symmetric (T:=T) e
 
 equiv_sym is not universe polymorphic
-Arguments equiv_sym [T]%type_scope e x y
+Arguments equiv_sym [T]%_type_scope e x y
 equiv_sym is opaque
 Expands to: Constant mathcomp.boot.generic_quotient.equiv_sym
 Declared in library mathcomp.boot.generic_quotient, line 419, characters 6-15
@@ -3468,8 +3471,8 @@ forall {K : realFieldType} {T : Type} {V : normedModType K}
 f ~_F g -> [o_F f of h] =o_F g
 
 equivoLR is not universe polymorphic
-Arguments equivoLR {K} {T}%type_scope {V} [W' F] [f g]%function_scope
-  h%function_scope _
+Arguments equivoLR {K} {T}%_type_scope {V} [W' F] 
+  [f g]%_function_scope h%_function_scope _
 equivoLR is opaque
 Expands to: Constant mathcomp.analysis.landau.equivoLR
 Declared in library mathcomp.analysis.landau, line 1188, characters 6-14
@@ -3486,7 +3489,7 @@ forall {K : realFieldType} {T : Type} {V : normedModType K}
 f ~_F g -> g =O_F f
 
 equivORL is not universe polymorphic
-Arguments equivORL {K} {T}%type_scope {V} [F] [f g]%function_scope _
+Arguments equivORL {K} {T}%_type_scope {V} [F] [f g]%_function_scope _
 equivORL is opaque
 Expands to: Constant mathcomp.analysis.landau.equivORL
 Declared in library mathcomp.analysis.landau, line 1192, characters 6-14
@@ -3503,7 +3506,7 @@ forall {K : realFieldType} {T : Type} {V : normedModType K}
 [o_F (f + [o_F f of g])%R of h] =o_F f
 
 eqoaddo is not universe polymorphic
-Arguments eqoaddo {K} {T}%type_scope {V} [W'] F (f g h)%function_scope
+Arguments eqoaddo {K} {T}%_type_scope {V} [W'] F (f g h)%_function_scope
 eqoaddo is opaque
 Expands to: Constant mathcomp.analysis.landau.eqoaddo
 Declared in library mathcomp.analysis.landau, line 1195, characters 6-13
@@ -3522,7 +3525,7 @@ equiv_trans :
 forall [T : Type] [e : equiv_rel T] [y x z : T],
 e x y -> e y z -> e x z = true
 
-Arguments equiv_trans [T]%type_scope [e y x z] _ _
+Arguments equiv_trans [T]%_type_scope [e y x z] _ _
 equiv_trans is opaque
 Expands to: Constant mathcomp.boot.generic_quotient.equiv_trans
 Declared in library mathcomp.boot.generic_quotient, line 420, characters 6-17
@@ -3538,7 +3541,7 @@ forall {K : realFieldType} {T : Type} {V : normedModType K}
 equivalence_rel (T:=T -> V) (SimplRel (fun f g : T -> V => f ~~_F g))
 
 equivalence_rel_equiv is not universe polymorphic
-Arguments equivalence_rel_equiv {K} {T}%type_scope {V} F x y z
+Arguments equivalence_rel_equiv {K} {T}%_type_scope {V} F x y z
 equivalence_rel_equiv is opaque
 Expands to: Constant mathcomp.analysis.landau.equivalence_rel_equiv
 Declared in library mathcomp.analysis.landau, line 1202, characters 6-27
@@ -3586,7 +3589,7 @@ subType (T:=T -> V)
 
 landau_bigOmega_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigOmega_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V} [W] F g%function_scope
+  {K} {T}%_type_scope {V} [W] F g%_function_scope
 landau_bigOmega_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigOmega_type__canonical__eqtype_SubType
@@ -3609,7 +3612,7 @@ subType (T:=T -> V)
 
 landau_bigOmega_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigOmega_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V} [W] F g%function_scope
+  {K} {T}%_type_scope {V} [W] F g%_function_scope
 landau_bigOmega_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigOmega_type__canonical__eqtype_SubType
@@ -3632,7 +3635,7 @@ subType (T:=T -> V)
 
 landau_bigOmega_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigOmega_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V} [W] F g%function_scope
+  {K} {T}%_type_scope {V} [W] F g%_function_scope
 landau_bigOmega_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigOmega_type__canonical__eqtype_SubType
@@ -3655,7 +3658,7 @@ subType (T:=T -> V)
 
 landau_bigOmega_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigOmega_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V} [W] F g%function_scope
+  {K} {T}%_type_scope {V} [W] F g%_function_scope
 landau_bigOmega_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigOmega_type__canonical__eqtype_SubType
@@ -3678,7 +3681,7 @@ subType (T:=T -> V)
 
 landau_bigOmega_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigOmega_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V} [W] F g%function_scope
+  {K} {T}%_type_scope {V} [W] F g%_function_scope
 landau_bigOmega_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigOmega_type__canonical__eqtype_SubType
@@ -3701,7 +3704,7 @@ subType (T:=T -> V)
 
 landau_bigOmega_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigOmega_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V} [W] F g%function_scope
+  {K} {T}%_type_scope {V} [W] F g%_function_scope
 landau_bigOmega_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigOmega_type__canonical__eqtype_SubType
@@ -3724,7 +3727,7 @@ subType (T:=T -> V)
 
 landau_bigOmega_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigOmega_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V} [W] F g%function_scope
+  {K} {T}%_type_scope {V} [W] F g%_function_scope
 landau_bigOmega_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigOmega_type__canonical__eqtype_SubType
@@ -3746,7 +3749,7 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
       W F f g >]
 
 bigOmega_class is not universe polymorphic
-Arguments bigOmega_class {K} {T}%type_scope {V W} [F] [g]%function_scope f
+Arguments bigOmega_class {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
 bigOmega_class is opaque
 Expands to: Constant mathcomp.analysis.landau.bigOmega_class
 Declared in library mathcomp.analysis.landau, line 1229, characters 6-20
@@ -3775,8 +3778,8 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
 phant_id (bigOmega_class fT) c -> {Omega_F g}
 
 bigOmega_clone is not universe polymorphic
-Arguments bigOmega_clone {K} {T}%type_scope {V W} 
-  [F] [g f]%function_scope [fT c] _
+Arguments bigOmega_clone {K} {T}%_type_scope {V W} 
+  [F] [g f]%_function_scope [fT c] _
 bigOmega_clone is transparent
 Expands to: Constant mathcomp.analysis.landau.bigOmega_clone
 Declared in library mathcomp.analysis.landau, line 1234, characters 11-25
@@ -3800,8 +3803,8 @@ filter.Filter F ->
   V F g g
 
 bigOmega_refl_subproof is not universe polymorphic
-Arguments bigOmega_refl_subproof {K} {T}%type_scope 
-  {V} [F] g%function_scope _
+Arguments bigOmega_refl_subproof {K} {T}%_type_scope 
+  {V} [F] g%_function_scope _
 bigOmega_refl_subproof is opaque
 Expands to: Constant mathcomp.analysis.landau.bigOmega_refl_subproof
 Declared in library mathcomp.analysis.landau, line 1239, characters 6-28
@@ -3818,7 +3821,7 @@ forall {K : realFieldType} {T : Type} {V : normedModType K}
 {Omega_(filter.filter F) g}
 
 bigOmega_refl is not universe polymorphic
-Arguments bigOmega_refl {K} {T}%type_scope {V} F g%function_scope
+Arguments bigOmega_refl {K} {T}%_type_scope {V} F g%_function_scope
 bigOmega_refl is transparent
 Expands to: Constant mathcomp.analysis.landau.bigOmega_refl
 Declared in library mathcomp.analysis.landau, line 1244, characters 11-24
@@ -3833,8 +3836,8 @@ phantom (filter.set_system T) (filter.filter F) ->
 (T -> V) -> (T -> V) -> T -> V
 
 the_bigOmega is not universe polymorphic
-Arguments the_bigOmega {K} {T}%type_scope {V} u [F] 
-  phF (f g)%function_scope _
+Arguments the_bigOmega {K} {T}%_type_scope {V} u [F] 
+  phF (f g)%_function_scope _
 the_bigOmega is transparent
 Expands to: Constant mathcomp.analysis.landau.the_bigOmega
 Declared in library mathcomp.analysis.landau, line 1247, characters 11-23
@@ -3852,7 +3855,7 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K},
 filter.set_system T -> (T -> W) -> qualifier 0 (T -> V)
 
 is_bigOmega is not universe polymorphic
-Arguments is_bigOmega {K} {T}%type_scope {V W} F g%function_scope
+Arguments is_bigOmega {K} {T}%_type_scope {V W} F g%_function_scope
 is_bigOmega is transparent
 Expands to: Constant mathcomp.analysis.landau.is_bigOmega
 Declared in library mathcomp.analysis.landau, line 1256, characters 11-22
@@ -3864,7 +3867,7 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
 pred_key (T:=T -> V) 'Omega_F(g)
 
 is_bigOmega_key is not universe polymorphic
-Arguments is_bigOmega_key {K} {T}%type_scope {V W} F g%function_scope
+Arguments is_bigOmega_key {K} {T}%_type_scope {V W} F g%_function_scope
 is_bigOmega_key is opaque
 Expands to: Constant mathcomp.analysis.landau.is_bigOmega_key
 Declared in library mathcomp.analysis.landau, line 1258, characters 5-20
@@ -3879,7 +3882,7 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
 keyed_qualifier (q:='Omega_F(g)) (is_bigOmega_key F g)
 
 is_bigOmega_keyed is not universe polymorphic
-Arguments is_bigOmega_keyed {K} {T}%type_scope {V W} F g%function_scope
+Arguments is_bigOmega_keyed {K} {T}%_type_scope {V W} F g%_function_scope
 is_bigOmega_keyed is transparent
 Expands to: Constant mathcomp.analysis.landau.is_bigOmega_keyed
 Declared in library mathcomp.analysis.landau, line 1260, characters 10-27
@@ -3901,7 +3904,7 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
   W F f g
 
 bigOmegaP is not universe polymorphic
-Arguments bigOmegaP {K} {T}%type_scope {V W} [F] [g]%function_scope f
+Arguments bigOmegaP {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
 bigOmegaP is opaque
 Expands to: Constant mathcomp.analysis.landau.bigOmegaP
 Declared in library mathcomp.analysis.landau, line 1264, characters 6-15
@@ -3926,8 +3929,8 @@ phantom (filter.set_system T) (filter.filter F) ->
 (T -> V) -> forall h : T -> V, {Omega_(filter.filter F) h}
 
 the_bigOmega_bigOmega is not universe polymorphic
-Arguments the_bigOmega_bigOmega {K} {T}%type_scope 
-  {V} tag [F] phF (f h)%function_scope
+Arguments the_bigOmega_bigOmega {K} {T}%_type_scope 
+  {V} tag [F] phF (f h)%_function_scope
 the_bigOmega_bigOmega is transparent
 Expands to: Constant mathcomp.analysis.landau.the_bigOmega_bigOmega
 Declared in library mathcomp.analysis.landau, line 1274, characters 10-31
@@ -3945,7 +3948,7 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
 bigOmega_spec (filter.filter F) g f
 
 bigOmega is not universe polymorphic
-Arguments bigOmega {K} {T}%type_scope {V W} F g%function_scope f
+Arguments bigOmega {K} {T}%_type_scope {V W} F g%_function_scope f
 bigOmega is opaque
 Expands to: Constant mathcomp.analysis.landau.bigOmega
 Declared in library mathcomp.analysis.landau, line 1282, characters 6-14
@@ -3963,7 +3966,7 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
 (f \is 'Omega_(filter.filter F)(e)) = (e =O_F f)
 
 eqOmegaO is not universe polymorphic
-Arguments eqOmegaO {K} {T}%type_scope {V W} F (f e)%function_scope
+Arguments eqOmegaO {K} {T}%_type_scope {V W} F (f e)%_function_scope
 eqOmegaO is opaque
 Expands to: Constant mathcomp.analysis.landau.eqOmegaO
 Declared in library mathcomp.analysis.landau, line 1288, characters 6-14
@@ -3986,7 +3989,7 @@ forall {K : realFieldType} {T : Type} {V : normedModType K}
 (f =Omega_F e) = (f \is 'Omega_(filter.filter F)(e))
 
 eqOmegaE is not universe polymorphic
-Arguments eqOmegaE {K} {T}%type_scope {V} F (f e)%function_scope
+Arguments eqOmegaE {K} {T}%_type_scope {V} F (f e)%_function_scope
 eqOmegaE is opaque
 Expands to: Constant mathcomp.analysis.landau.eqOmegaE
 Declared in library mathcomp.analysis.landau, line 1299, characters 6-14
@@ -4006,7 +4009,8 @@ forall {K : realFieldType} {T : Type} {V : normedModType K}
 f =Omega_F g -> g =Omega_F h -> f =Omega_F h
 
 eqOmega_trans is not universe polymorphic
-Arguments eqOmega_trans {K} {T}%type_scope {V} [F] [f g h]%function_scope _ _
+Arguments eqOmega_trans {K} {T}%_type_scope {V} [F] 
+  [f g h]%_function_scope _ _
 eqOmega_trans is opaque
 Expands to: Constant mathcomp.analysis.landau.eqOmega_trans
 Declared in library mathcomp.analysis.landau, line 1307, characters 6-19
@@ -4039,8 +4043,8 @@ forall [pT : pointedType] [R : realFieldType] [F : filter.filter_on pT]
 (forall x : pT, (0 <= g x)%R) -> f =Omega_F h -> (f + g)%R =Omega_F h
 
 addOmega is not universe polymorphic
-Arguments addOmega [pT R F] [f g h]%function_scope
-  (f_nonneg g_nonneg)%function_scope _
+Arguments addOmega [pT R F] [f g h]%_function_scope
+  (f_nonneg g_nonneg)%_function_scope _
 addOmega is opaque
 Expands to: Constant mathcomp.analysis.landau.addOmega
 Declared in library mathcomp.analysis.landau, line 1326, characters 6-14
@@ -4062,7 +4066,7 @@ forall [pT : pointedType] [R : realFieldType] (F : filter.filter_on pT)
 (h1 * h2)%R
 
 mulOmega is not universe polymorphic
-Arguments mulOmega [pT R] F (h1 h2 f g)%function_scope
+Arguments mulOmega [pT R] F (h1 h2 f g)%_function_scope
 mulOmega is opaque
 Expands to: Constant mathcomp.analysis.landau.mulOmega
 Declared in library mathcomp.analysis.landau, line 1335, characters 6-14
@@ -4125,7 +4129,7 @@ subType (T:=T -> V)
 
 landau_bigTheta_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigTheta_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V} [W] F g%function_scope
+  {K} {T}%_type_scope {V} [W] F g%_function_scope
 landau_bigTheta_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigTheta_type__canonical__eqtype_SubType
@@ -4156,7 +4160,7 @@ subType (T:=T -> V)
 
 landau_bigTheta_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigTheta_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V} [W] F g%function_scope
+  {K} {T}%_type_scope {V} [W] F g%_function_scope
 landau_bigTheta_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigTheta_type__canonical__eqtype_SubType
@@ -4187,7 +4191,7 @@ subType (T:=T -> V)
 
 landau_bigTheta_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigTheta_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V} [W] F g%function_scope
+  {K} {T}%_type_scope {V} [W] F g%_function_scope
 landau_bigTheta_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigTheta_type__canonical__eqtype_SubType
@@ -4218,7 +4222,7 @@ subType (T:=T -> V)
 
 landau_bigTheta_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigTheta_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V} [W] F g%function_scope
+  {K} {T}%_type_scope {V} [W] F g%_function_scope
 landau_bigTheta_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigTheta_type__canonical__eqtype_SubType
@@ -4249,7 +4253,7 @@ subType (T:=T -> V)
 
 landau_bigTheta_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigTheta_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V} [W] F g%function_scope
+  {K} {T}%_type_scope {V} [W] F g%_function_scope
 landau_bigTheta_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigTheta_type__canonical__eqtype_SubType
@@ -4280,7 +4284,7 @@ subType (T:=T -> V)
 
 landau_bigTheta_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigTheta_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V} [W] F g%function_scope
+  {K} {T}%_type_scope {V} [W] F g%_function_scope
 landau_bigTheta_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigTheta_type__canonical__eqtype_SubType
@@ -4311,7 +4315,7 @@ subType (T:=T -> V)
 
 landau_bigTheta_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigTheta_type__canonical__eqtype_SubType 
-  {K} {T}%type_scope {V} [W] F g%function_scope
+  {K} {T}%_type_scope {V} [W] F g%_function_scope
 landau_bigTheta_type__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.analysis.landau.landau_bigTheta_type__canonical__eqtype_SubType
@@ -4339,7 +4343,7 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
       W F f g >]
 
 bigTheta_class is not universe polymorphic
-Arguments bigTheta_class {K} {T}%type_scope {V W} [F] [g]%function_scope f
+Arguments bigTheta_class {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
 bigTheta_class is opaque
 Expands to: Constant mathcomp.analysis.landau.bigTheta_class
 Declared in library mathcomp.analysis.landau, line 1369, characters 6-20
@@ -4375,8 +4379,8 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
 phant_id (bigTheta_class fT) c -> {Theta_ T V} F g
 
 bigTheta_clone is not universe polymorphic
-Arguments bigTheta_clone {K} {T}%type_scope {V W} 
-  [F] [g f]%function_scope [fT c] _
+Arguments bigTheta_clone {K} {T}%_type_scope {V W} 
+  [F] [g f]%_function_scope [fT c] _
 bigTheta_clone is transparent
 Expands to: Constant mathcomp.analysis.landau.bigTheta_clone
 Declared in library mathcomp.analysis.landau, line 1374, characters 11-25
@@ -4406,8 +4410,8 @@ filter.Filter F ->
   V F g g
 
 bigTheta_refl_subproof is not universe polymorphic
-Arguments bigTheta_refl_subproof {K} {T}%type_scope 
-  {V} [F] g%function_scope _
+Arguments bigTheta_refl_subproof {K} {T}%_type_scope 
+  {V} [F] g%_function_scope _
 bigTheta_refl_subproof is opaque
 Expands to: Constant mathcomp.analysis.landau.bigTheta_refl_subproof
 Declared in library mathcomp.analysis.landau, line 1379, characters 6-28
@@ -4424,7 +4428,7 @@ forall {K : realFieldType} {T : Type} {V : normedModType K}
 {Theta_ T V} (filter.filter F) g
 
 bigTheta_refl is not universe polymorphic
-Arguments bigTheta_refl {K} {T}%type_scope {V} F g%function_scope
+Arguments bigTheta_refl {K} {T}%_type_scope {V} F g%_function_scope
 bigTheta_refl is transparent
 Expands to: Constant mathcomp.analysis.landau.bigTheta_refl
 Declared in library mathcomp.analysis.landau, line 1384, characters 11-24
@@ -4439,8 +4443,8 @@ phantom (filter.set_system T) (filter.filter F) ->
 (T -> V) -> (T -> V) -> T -> V
 
 the_bigTheta is not universe polymorphic
-Arguments the_bigTheta {K} {T}%type_scope {V} u [F] 
-  phF (f g)%function_scope _
+Arguments the_bigTheta {K} {T}%_type_scope {V} u [F] 
+  phF (f g)%_function_scope _
 the_bigTheta is transparent
 Expands to: Constant mathcomp.analysis.landau.the_bigTheta
 Declared in library mathcomp.analysis.landau, line 1387, characters 11-23
@@ -4458,7 +4462,7 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K},
 filter.set_system T -> (T -> W) -> qualifier 0 (T -> V)
 
 is_bigTheta is not universe polymorphic
-Arguments is_bigTheta {K} {T}%type_scope {V W} F g%function_scope
+Arguments is_bigTheta {K} {T}%_type_scope {V W} F g%_function_scope
 is_bigTheta is transparent
 Expands to: Constant mathcomp.analysis.landau.is_bigTheta
 Declared in library mathcomp.analysis.landau, line 1396, characters 11-22
@@ -4470,7 +4474,7 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
 pred_key (T:=T -> V) 'Theta_F(g)
 
 is_bigTheta_key is not universe polymorphic
-Arguments is_bigTheta_key {K} {T}%type_scope {V W} F g%function_scope
+Arguments is_bigTheta_key {K} {T}%_type_scope {V W} F g%_function_scope
 is_bigTheta_key is opaque
 Expands to: Constant mathcomp.analysis.landau.is_bigTheta_key
 Declared in library mathcomp.analysis.landau, line 1398, characters 5-20
@@ -4485,7 +4489,7 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
 keyed_qualifier (q:='Theta_F(g)) (is_bigTheta_key F g)
 
 is_bigTheta_keyed is not universe polymorphic
-Arguments is_bigTheta_keyed {K} {T}%type_scope {V W} F g%function_scope
+Arguments is_bigTheta_keyed {K} {T}%_type_scope {V W} F g%_function_scope
 is_bigTheta_keyed is transparent
 Expands to: Constant mathcomp.analysis.landau.is_bigTheta_keyed
 Declared in library mathcomp.analysis.landau, line 1400, characters 10-27
@@ -4513,7 +4517,7 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
   W F f g
 
 bigThetaP is not universe polymorphic
-Arguments bigThetaP {K} {T}%type_scope {V W} [F] [g]%function_scope f
+Arguments bigThetaP {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
 bigThetaP is opaque
 Expands to: Constant mathcomp.analysis.landau.bigThetaP
 Declared in library mathcomp.analysis.landau, line 1404, characters 6-15
@@ -4536,8 +4540,8 @@ phantom (filter.set_system T) (filter.filter F) ->
 (T -> V) -> forall h : T -> V, {Theta_ T V} (filter.filter F) h
 
 the_bigTheta_bigTheta is not universe polymorphic
-Arguments the_bigTheta_bigTheta {K} {T}%type_scope 
-  {V} tag [F] phF (f h)%function_scope
+Arguments the_bigTheta_bigTheta {K} {T}%_type_scope 
+  {V} tag [F] phF (f h)%_function_scope
 the_bigTheta_bigTheta is transparent
 Expands to: Constant mathcomp.analysis.landau.the_bigTheta_bigTheta
 Declared in library mathcomp.analysis.landau, line 1412, characters 10-31
@@ -4557,7 +4561,7 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
 bigTheta_spec (filter.filter F) g f
 
 bigTheta is not universe polymorphic
-Arguments bigTheta {K} {T}%type_scope {V W} [F] [g]%function_scope f
+Arguments bigTheta {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
 bigTheta is opaque
 Expands to: Constant mathcomp.analysis.landau.bigTheta
 Declared in library mathcomp.analysis.landau, line 1421, characters 6-14
@@ -4579,7 +4583,7 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
 (f =O_F g /\ f \is 'Omega_(filter.filter F)(g))
 
 bigThetaE is not universe polymorphic
-Arguments bigThetaE {K} {T}%type_scope {V W} F (f g)%function_scope
+Arguments bigThetaE {K} {T}%_type_scope {V W} F (f g)%_function_scope
 bigThetaE is opaque
 Expands to: Constant mathcomp.analysis.landau.bigThetaE
 Declared in library mathcomp.analysis.landau, line 1430, characters 6-15
@@ -4603,7 +4607,7 @@ forall {K : realFieldType} {T : Type} {V : normedModType K}
 (f =Theta_F e) = (f \is 'Theta_(filter.filter F)(e))
 
 eqThetaE is not universe polymorphic
-Arguments eqThetaE {K} {T}%type_scope {V} F (f e)%function_scope
+Arguments eqThetaE {K} {T}%_type_scope {V} F (f e)%_function_scope
 eqThetaE is opaque
 Expands to: Constant mathcomp.analysis.landau.eqThetaE
 Declared in library mathcomp.analysis.landau, line 1442, characters 6-14
@@ -4623,7 +4627,7 @@ forall {K : realFieldType} {T : Type} {V : normedModType K}
 [Theta_F g of f] =O_F g
 
 eqThetaO is not universe polymorphic
-Arguments eqThetaO {K} {T}%type_scope {V} F (f g)%function_scope
+Arguments eqThetaO {K} {T}%_type_scope {V} F (f g)%_function_scope
 eqThetaO is opaque
 Expands to: Constant mathcomp.analysis.landau.eqThetaO
 Declared in library mathcomp.analysis.landau, line 1450, characters 6-14
@@ -4639,7 +4643,7 @@ forall {K : realFieldType} {T : Type} {V : normedModType K}
 f =Theta_F f
 
 idTheta is not universe polymorphic
-Arguments idTheta {K} {T}%type_scope {V} F f%function_scope
+Arguments idTheta {K} {T}%_type_scope {V} F f%_function_scope
 idTheta is opaque
 Expands to: Constant mathcomp.analysis.landau.idTheta
 Declared in library mathcomp.analysis.landau, line 1453, characters 6-13
@@ -4655,7 +4659,7 @@ forall {K : realFieldType} {T : Type} {V : normedModType K}
 (f =Theta_F g) = (g =Theta_F f)
 
 Theta_sym is not universe polymorphic
-Arguments Theta_sym {K} {T}%type_scope {V} F (f g)%function_scope
+Arguments Theta_sym {K} {T}%_type_scope {V} F (f g)%_function_scope
 Theta_sym is opaque
 Expands to: Constant mathcomp.analysis.landau.Theta_sym
 Declared in library mathcomp.analysis.landau, line 1456, characters 6-15
@@ -4672,7 +4676,8 @@ forall {K : realFieldType} {T : Type} {V : normedModType K}
 f =Theta_F g -> g =Theta_F h -> f =Theta_F h
 
 eqTheta_trans is not universe polymorphic
-Arguments eqTheta_trans {K} {T}%type_scope {V} [F] [f g h]%function_scope _ _
+Arguments eqTheta_trans {K} {T}%_type_scope {V} [F] 
+  [f g h]%_function_scope _ _
 eqTheta_trans is opaque
 Expands to: Constant mathcomp.analysis.landau.eqTheta_trans
 Declared in library mathcomp.analysis.landau, line 1460, characters 6-19
@@ -4709,7 +4714,8 @@ forall [R : rcfType] [pT : pointedType] (F : filter.filter_on pT)
 ([Theta_F h of f] + [O_F h of g])%R =Theta_F h
 
 addTheta is not universe polymorphic
-Arguments addTheta [R pT] F [f g h]%function_scope (f0 g0 h0)%function_scope
+Arguments addTheta [R pT] F [f g h]%_function_scope
+  (f0 g0 h0)%_function_scope
 addTheta is opaque
 Expands to: Constant mathcomp.analysis.landau.addTheta
 Declared in library mathcomp.analysis.landau, line 1482, characters 6-14
@@ -4735,7 +4741,7 @@ forall [R : rcfType] [pT : pointedType] (F : filter.filter_on pT)
 (h1 * h2)%R
 
 mulTheta is not universe polymorphic
-Arguments mulTheta [R pT] F (h1 h2 f g)%function_scope
+Arguments mulTheta [R pT] F (h1 h2 f g)%_function_scope
 mulTheta is opaque
 Expands to: Constant mathcomp.analysis.landau.mulTheta
 Declared in library mathcomp.analysis.landau, line 1495, characters 6-14

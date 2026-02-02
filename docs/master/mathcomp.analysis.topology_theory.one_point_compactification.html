@@ -233,7 +233,7 @@ embeds into its one-point compactification.
 <span class="vernacular">Definition</span><span class="id"> </span><span id="one_point_compactification" class="id"><a name="one_point_compactification" class="" title="one_point_compactification : Type -> Type
 
 one_point_compactification is not universe polymorphic
-Arguments one_point_compactification X%type_scope
+Arguments one_point_compactification X%_type_scope
 one_point_compactification is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification
@@ -587,7 +587,7 @@ forall {X : topology_structure.Topological.type}
 filter.nbhs x U -> filter.nbhs (Some x) [set Some x | x in U]%classic
 
 one_point_compactification_some_nbhs is not universe polymorphic
-Arguments one_point_compactification_some_nbhs {X} x U%classical_set_scope _
+Arguments one_point_compactification_some_nbhs {X} x U%_classical_set_scope _
 one_point_compactification_some_nbhs is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_some_nbhs
@@ -636,7 +636,7 @@ topology_structure.open [set Some x | x in U]%classic
 
 one_point_compactification_open_some is not universe polymorphic
 Arguments one_point_compactification_open_some {X} 
-  U%classical_set_scope _ t _
+  U%_classical_set_scope _ t _
 one_point_compactification_open_some is opaque
 Expands to: Constant
             mathcomp.analysis.topology_theory.one_point_compactification.one_point_compactification_open_some

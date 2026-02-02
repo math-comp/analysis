@@ -259,7 +259,7 @@ Main reference:
 <span class="vernacular">Definition</span><span class="id"> </span><span id="dyadic_itv" class="id"><a name="dyadic_itv" class="" title="dyadic_itv : forall R : realType, nat -> nat -> interval R
 
 dyadic_itv is not universe polymorphic
-Arguments dyadic_itv R (n k)%nat_scope
+Arguments dyadic_itv R (n k)%_nat_scope
 dyadic_itv is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.dyadic_itv
@@ -283,7 +283,7 @@ forall [R : realType] [n k : nat] [t : R],
 [set` dyadic_itv R n.+1 k.*2]%classic t \/
 [set` dyadic_itv R n.+1 k.*2.+1]%classic t
 
-Arguments dyadic_itv_subU [R] [n k]%nat_scope [t] _
+Arguments dyadic_itv_subU [R] [n k]%_nat_scope [t] _
 dyadic_itv_subU is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.dyadic_itv_subU
@@ -308,7 +308,7 @@ forall (R : realType) (n : nat),
    [set` dyadic_itv R n.+1 k]%classic
 
 bigsetU_dyadic_itv is not universe polymorphic
-Arguments bigsetU_dyadic_itv R n%nat_scope
+Arguments bigsetU_dyadic_itv R n%_nat_scope
 bigsetU_dyadic_itv is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.bigsetU_dyadic_itv
@@ -339,8 +339,8 @@ exists k : nat,
   f x \in [set x%:E | x in [set` dyadic_itv R n.+1 k]]%classic
 
 dyadic_itv_image is not universe polymorphic
-Arguments dyadic_itv_image [R] [n]%nat_scope [T]%type_scope
-  [f]%function_scope [x] _
+Arguments dyadic_itv_image [R] [n]%_nat_scope [T]%_type_scope
+  [f]%_function_scope [x] _
 dyadic_itv_image is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.dyadic_itv_image
@@ -377,8 +377,8 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 set T -> (T -> \bar R) -> nat -> nat -> set T
 
 dyadic_approx is not universe polymorphic
-Arguments dyadic_approx [d]%measure_display_scope 
-  [T R] D%classical_set_scope f%function_scope (n k)%nat_scope 
+Arguments dyadic_approx [d]%_measure_display_scope 
+  [T R] D%_classical_set_scope f%_function_scope (n k)%_nat_scope 
   _
 dyadic_approx is transparent
 Expands to: Constant
@@ -393,8 +393,8 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 set T -> (T -> \bar R) -> nat -> set T
 
 integer_approx is not universe polymorphic
-Arguments integer_approx [d]%measure_display_scope 
-  [T R] D%classical_set_scope f%function_scope n%nat_scope 
+Arguments integer_approx [d]%_measure_display_scope 
+  [T R] D%_classical_set_scope f%_function_scope n%_nat_scope 
   _
 integer_approx is transparent
 Expands to: Constant
@@ -411,8 +411,8 @@ forall [d : measure_display] [T : measurableType d] [R : realType],
 set T -> (T -> \bar R) -> (T -> R) ^nat
 
 approx is not universe polymorphic
-Arguments approx [d]%measure_display_scope [T R] D%classical_set_scope
-  f%function_scope _ _
+Arguments approx [d]%_measure_display_scope [T R] 
+  D%_classical_set_scope f%_function_scope _ _
 approx is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.approx
@@ -580,8 +580,8 @@ forall [d : measure_display] [T : measurableType d]
 (fun n m : nat => is_true (n <= m)) x y ->
 (approx (T:=T) (R:=R) D f x <= approx (T:=T) (R:=R) D f y)%O = true
 
-Arguments nd_approx [d]%measure_display_scope [T R] 
-  D%classical_set_scope f%function_scope [x y] _
+Arguments nd_approx [d]%_measure_display_scope [T R] 
+  D%_classical_set_scope f%_function_scope [x y] _
 nd_approx is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.nd_approx
@@ -667,9 +667,9 @@ exists2 i : nat,
   ((fun N : nat => [set n | N <= n]) i
    `<=` (approx (T:=T) (R:=R) D f)^~ x @^-1` t)%classic
 
-Arguments cvg_approx [d]%measure_display_scope [T R] 
-  [D]%classical_set_scope [f]%function_scope [x] f0%function_scope 
-  _ _ [t] _
+Arguments cvg_approx [d]%_measure_display_scope [T R]
+  [D]%_classical_set_scope [f]%_function_scope [x] 
+  f0%_function_scope _ _ [t] _
 cvg_approx is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.cvg_approx
@@ -710,9 +710,9 @@ forall [d : measure_display] [T : measurableType d]
 D x -> ((approx (T:=T) (R:=R) D f k x)%:E <= f x)%E
 
 le_approx is not universe polymorphic
-Arguments le_approx [d]%measure_display_scope [T R] 
-  [D]%classical_set_scope [f]%function_scope k%nat_scope 
-  [x] f0%function_scope _
+Arguments le_approx [d]%_measure_display_scope [T R] 
+  [D]%_classical_set_scope [f]%_function_scope k%_nat_scope 
+  [x] f0%_function_scope _
 le_approx is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.le_approx
@@ -752,9 +752,9 @@ filter.cvg_to
            (filter.nbhs filter.eventually))))
 
 dvg_approx is not universe polymorphic
-Arguments dvg_approx [d]%measure_display_scope [T R] 
-  [D]%classical_set_scope [f]%function_scope [x] _ 
-  _ _
+Arguments dvg_approx [d]%_measure_display_scope [T R]
+  [D]%_classical_set_scope [f]%_function_scope [x] 
+  _ _ _
 dvg_approx is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.dvg_approx
@@ -801,8 +801,8 @@ exists2 i : nat,
   ((fun N : nat => [set n | N <= n]) i
    `<=` (EFin \o (approx (T:=T) (R:=R) D f)^~ x) @^-1` t)%classic
 
-Arguments ecvg_approx [d]%measure_display_scope [T R] 
-  [D]%classical_set_scope [f]%function_scope f0%function_scope 
+Arguments ecvg_approx [d]%_measure_display_scope [T R]
+  [D]%_classical_set_scope [f]%_function_scope f0%_function_scope 
   [x] _ [t] _
 ecvg_approx is opaque
 Expands to: Constant
@@ -842,8 +842,8 @@ measurable_fun (T:=T)
 {nnsfun T >-> R} ^nat
 
 nnsfun_approx is not universe polymorphic
-Arguments nnsfun_approx [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope mD [f]%function_scope 
+Arguments nnsfun_approx [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope mD [f]%_function_scope 
   mf _
 nnsfun_approx is transparent
 Expands to: Constant
@@ -872,9 +872,9 @@ nnsfun_approx (T:=T) (R:=R) (D:=D) mD (f:=f) mf n =
 approx (T:=T) (R:=R) D f n
 
 nnsfun_approxE is not universe polymorphic
-Arguments nnsfun_approxE [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope mD [f]%function_scope 
-  mf n%nat_scope
+Arguments nnsfun_approxE [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope mD [f]%_function_scope 
+  mf n%_nat_scope
 nnsfun_approxE is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.nnsfun_approxE
@@ -932,9 +932,9 @@ exists2 i : nat,
             nnsfun_approx (T:=T) (R:=R) (D:=D) mD (f:=f) mf x0 x)) @^-1`
         t)%classic
 
-Arguments cvg_nnsfun_approx [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope mD [f]%function_scope 
-  mf f0%function_scope [x] _ [t] _
+Arguments cvg_nnsfun_approx [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope mD [f]%_function_scope 
+  mf f0%_function_scope [x] _ [t] _
 cvg_nnsfun_approx is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.cvg_nnsfun_approx
@@ -980,8 +980,8 @@ forall [d : measure_display] [T : measurableType d]
   (T -> R) ^nat) y)%O =
 true
 
-Arguments nd_nnsfun_approx [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope mD [f]%function_scope 
+Arguments nd_nnsfun_approx [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope mD [f]%_function_scope 
   mf [x y] _
 nd_nnsfun_approx is opaque
 Expands to: Constant
@@ -1019,9 +1019,9 @@ exists g : {nnsfun T >-> R} ^nat,
      (filter.nbhs (f x)))
 
 approximation is not universe polymorphic
-Arguments approximation [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope mD [f]%function_scope 
-  mf _%function_scope
+Arguments approximation [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope mD [f]%_function_scope 
+  mf _%_function_scope
 approximation is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.approximation
@@ -1050,7 +1050,7 @@ FiniteImage.axioms_ aT rT (cst x)
 
 cardinality_FImFun__to__cardinality_FiniteImage is not universe polymorphic
 Arguments cardinality_FImFun__to__cardinality_FiniteImage
-  {d}%measure_display_scope {aT rT} x%ring_scope
+  {d}%_measure_display_scope {aT rT} x%_ring_scope
 cardinality_FImFun__to__cardinality_FiniteImage is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.simple_functions.cardinality_FImFun__to__cardinality_FiniteImage
@@ -1062,7 +1062,7 @@ FiniteImage.axioms_ aT rT (cst x)
 
 cardinality_FImFun__to__cardinality_FiniteImage is not universe polymorphic
 Arguments cardinality_FImFun__to__cardinality_FiniteImage
-  {d}%measure_display_scope {aT rT} x%ring_scope
+  {d}%_measure_display_scope {aT rT} x%_ring_scope
 cardinality_FImFun__to__cardinality_FiniteImage is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.simple_functions.cardinality_FImFun__to__cardinality_FiniteImage
@@ -1074,7 +1074,7 @@ FiniteImage.axioms_ aT rT (cst x)
 
 cardinality_FImFun__to__cardinality_FiniteImage is not universe polymorphic
 Arguments cardinality_FImFun__to__cardinality_FiniteImage
-  {d}%measure_display_scope {aT rT} x%ring_scope
+  {d}%_measure_display_scope {aT rT} x%_ring_scope
 cardinality_FImFun__to__cardinality_FiniteImage is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.simple_functions.cardinality_FImFun__to__cardinality_FiniteImage
@@ -1086,7 +1086,7 @@ FiniteImage.axioms_ aT rT (cst x)
 
 cardinality_FImFun__to__cardinality_FiniteImage is not universe polymorphic
 Arguments cardinality_FImFun__to__cardinality_FiniteImage
-  {d}%measure_display_scope {aT rT} x%ring_scope
+  {d}%_measure_display_scope {aT rT} x%_ring_scope
 cardinality_FImFun__to__cardinality_FiniteImage is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.simple_functions.cardinality_FImFun__to__cardinality_FiniteImage
@@ -1098,7 +1098,7 @@ FiniteImage.axioms_ aT rT (cst x)
 
 cardinality_FImFun__to__cardinality_FiniteImage is not universe polymorphic
 Arguments cardinality_FImFun__to__cardinality_FiniteImage
-  {d}%measure_display_scope {aT rT} x%ring_scope
+  {d}%_measure_display_scope {aT rT} x%_ring_scope
 cardinality_FImFun__to__cardinality_FiniteImage is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.simple_functions.cardinality_FImFun__to__cardinality_FiniteImage
@@ -1110,7 +1110,7 @@ FiniteImage.axioms_ aT rT (cst x)
 
 cardinality_FImFun__to__cardinality_FiniteImage is not universe polymorphic
 Arguments cardinality_FImFun__to__cardinality_FiniteImage
-  {d}%measure_display_scope {aT rT} x%ring_scope
+  {d}%_measure_display_scope {aT rT} x%_ring_scope
 cardinality_FImFun__to__cardinality_FiniteImage is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.simple_functions.cardinality_FImFun__to__cardinality_FiniteImage
@@ -1126,7 +1126,7 @@ isNonNegFun.axioms_ T R (mindic (aT:=T) R (D:=D) mD)
 
 numfun_NonNegFun__to__numfun_isNonNegFun is not universe polymorphic
 Arguments numfun_NonNegFun__to__numfun_isNonNegFun 
-  [d]%measure_display_scope [T] R [D]%classical_set_scope 
+  [d]%_measure_display_scope [T] R [D]%_classical_set_scope 
   mD
 numfun_NonNegFun__to__numfun_isNonNegFun is transparent
 Expands to: Constant
@@ -1140,7 +1140,7 @@ isNonNegFun.axioms_ T R (mindic (aT:=T) R (D:=D) mD)
 
 numfun_NonNegFun__to__numfun_isNonNegFun is not universe polymorphic
 Arguments numfun_NonNegFun__to__numfun_isNonNegFun 
-  [d]%measure_display_scope [T] R [D]%classical_set_scope 
+  [d]%_measure_display_scope [T] R [D]%_classical_set_scope 
   mD
 numfun_NonNegFun__to__numfun_isNonNegFun is transparent
 Expands to: Constant
@@ -1154,7 +1154,7 @@ isNonNegFun.axioms_ T R (mindic (aT:=T) R (D:=D) mD)
 
 numfun_NonNegFun__to__numfun_isNonNegFun is not universe polymorphic
 Arguments numfun_NonNegFun__to__numfun_isNonNegFun 
-  [d]%measure_display_scope [T] R [D]%classical_set_scope 
+  [d]%_measure_display_scope [T] R [D]%_classical_set_scope 
   mD
 numfun_NonNegFun__to__numfun_isNonNegFun is transparent
 Expands to: Constant
@@ -1168,7 +1168,7 @@ isNonNegFun.axioms_ T R (mindic (aT:=T) R (D:=D) mD)
 
 numfun_NonNegFun__to__numfun_isNonNegFun is not universe polymorphic
 Arguments numfun_NonNegFun__to__numfun_isNonNegFun 
-  [d]%measure_display_scope [T] R [D]%classical_set_scope 
+  [d]%_measure_display_scope [T] R [D]%_classical_set_scope 
   mD
 numfun_NonNegFun__to__numfun_isNonNegFun is transparent
 Expands to: Constant
@@ -1182,7 +1182,7 @@ isNonNegFun.axioms_ T R (mindic (aT:=T) R (D:=D) mD)
 
 numfun_NonNegFun__to__numfun_isNonNegFun is not universe polymorphic
 Arguments numfun_NonNegFun__to__numfun_isNonNegFun 
-  [d]%measure_display_scope [T] R [D]%classical_set_scope 
+  [d]%_measure_display_scope [T] R [D]%_classical_set_scope 
   mD
 numfun_NonNegFun__to__numfun_isNonNegFun is transparent
 Expands to: Constant
@@ -1196,7 +1196,7 @@ isNonNegFun.axioms_ T R (mindic (aT:=T) R (D:=D) mD)
 
 numfun_NonNegFun__to__numfun_isNonNegFun is not universe polymorphic
 Arguments numfun_NonNegFun__to__numfun_isNonNegFun 
-  [d]%measure_display_scope [T] R [D]%classical_set_scope 
+  [d]%_measure_display_scope [T] R [D]%_classical_set_scope 
   mD
 numfun_NonNegFun__to__numfun_isNonNegFun is transparent
 Expands to: Constant
@@ -1224,8 +1224,8 @@ exists g : {sfun T >-> R} ^nat,
     (filter.nbhs (f x))
 
 approximation_sfun is not universe polymorphic
-Arguments approximation_sfun [d]%measure_display_scope 
-  [T R] [f]%function_scope [D]%classical_set_scope 
+Arguments approximation_sfun [d]%_measure_display_scope 
+  [T R] [f]%_function_scope [D]%_classical_set_scope 
   mD mf
 approximation_sfun is opaque
 Expands to: Constant
@@ -1298,8 +1298,8 @@ forall
       class) in
  measurable) (D `&` (f \+ g)%E @^-1` Y)%classic
 
-Arguments emeasurable_funD [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments emeasurable_funD [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 emeasurable_funD is opaque
 Expands to: Constant
@@ -1391,9 +1391,9 @@ forall
       class) in
  measurable) (D `&` (fun x : T => (\sum_(i <- s) h i x)%R) @^-1` Y)%classic
 
-Arguments emeasurable_sum [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [I]%type_scope s%seq_scope 
-  [h]%function_scope _%function_scope _ [Y] _
+Arguments emeasurable_sum [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [I]%_type_scope s%_seq_scope
+  [h]%_function_scope _%_function_scope _ [Y] _
 emeasurable_sum is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.emeasurable_sum
@@ -1451,9 +1451,9 @@ forall
       class) in
  measurable) (D `&` (fun x : T => (\sum_(i \in A) h i x)%R) @^-1` Y)%classic
 
-Arguments emeasurable_fsum [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [I] [A]%classical_set_scope
-  [h]%function_scope _ _%function_scope _ [Y] _
+Arguments emeasurable_fsum [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [I] [A]%_classical_set_scope
+  [h]%_function_scope _ _%_function_scope _ [Y] _
 emeasurable_fsum is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.emeasurable_fsum
@@ -1513,9 +1513,9 @@ forall
  measurable)
   (D `&` (fun x : T => \big[+%R/0%R]_(0 <= i <oo | i \in P) h i x) @^-1` Y)%classic
 
-Arguments ge0_emeasurable_sum [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [h]%function_scope 
-  [P] (_ _)%function_scope _ [Y] _
+Arguments ge0_emeasurable_sum [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [h]%_function_scope 
+  [P] (_ _)%_function_scope _ [Y] _
 ge0_emeasurable_sum is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.ge0_emeasurable_sum
@@ -1588,8 +1588,8 @@ forall
       class) in
  measurable) (D `&` (f \- g)%E @^-1` Y)%classic
 
-Arguments emeasurable_funB [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments emeasurable_funB [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 emeasurable_funB is opaque
 Expands to: Constant
@@ -1646,8 +1646,8 @@ forall
       class) in
  measurable) (D `&` (f \* g)%E @^-1` Y)%classic
 
-Arguments emeasurable_funM [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments emeasurable_funM [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 emeasurable_funM is opaque
 Expands to: Constant
@@ -1738,9 +1738,9 @@ forall
       class) in
  measurable) (D `&` (fun x : T => (k * f x)%E) @^-1` Y)%classic
 
-Arguments measurable_funeM [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f]%function_scope 
-  k%ereal_scope _ _ [Y] _
+Arguments measurable_funeM [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f]%_function_scope 
+  k%_ereal_scope _ _ [Y] _
 measurable_funeM is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.measurable_funeM
@@ -1797,9 +1797,9 @@ forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
       class) in
  measurable) (D `&` (fun x : T => (\sum_(i <- s) h i x)%R) @^-1` Y)%classic
 
-Arguments measurable_sum [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [I]%type_scope s%seq_scope 
-  [h]%function_scope _%function_scope _ [Y] _
+Arguments measurable_sum [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [I]%_type_scope s%_seq_scope
+  [h]%_function_scope _%_function_scope _ [Y] _
 measurable_sum is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.measurable_sum
@@ -1851,9 +1851,9 @@ forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
       class) in
  measurable) (D `&` (fun x : T => (\prod_(i <- s) h i x)%R) @^-1` Y)%classic
 
-Arguments measurable_prod [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [I] [s]%seq_scope 
-  [h]%function_scope _%function_scope _ [Y] _
+Arguments measurable_prod [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [I] [s]%_seq_scope 
+  [h]%_function_scope _%_function_scope _ [Y] _
 measurable_prod is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.measurable_prod
@@ -1896,8 +1896,8 @@ measurable_fun (T:=T)
 d.-measurable%classic (D `&` [set x | (f x < g x)%E])
 
 measurable_lte is not universe polymorphic
-Arguments measurable_lte [d]%measure_display_scope 
-  {T R} [D]%classical_set_scope mD [f g]%function_scope 
+Arguments measurable_lte [d]%_measure_display_scope 
+  {T R} [D]%_classical_set_scope mD [f g]%_function_scope 
   _ _
 measurable_lte is opaque
 Expands to: Constant
@@ -1929,8 +1929,8 @@ measurable_fun (T:=T)
 d.-measurable%classic (D `&` [set x | (f x <= g x)%E])
 
 measurable_lee is not universe polymorphic
-Arguments measurable_lee [d]%measure_display_scope 
-  {T R} [D]%classical_set_scope mD [f g]%function_scope 
+Arguments measurable_lee [d]%_measure_display_scope 
+  {T R} [D]%_classical_set_scope mD [f g]%_function_scope 
   _ _
 measurable_lee is opaque
 Expands to: Constant
@@ -1962,8 +1962,8 @@ measurable_fun (T:=T)
 d.-measurable%classic (D `&` [set x | f x = g x])
 
 measurable_eqe is not universe polymorphic
-Arguments measurable_eqe [d]%measure_display_scope 
-  {T R} [D]%classical_set_scope mD [f g]%function_scope 
+Arguments measurable_eqe [d]%_measure_display_scope 
+  {T R} [D]%_classical_set_scope mD [f g]%_function_scope 
   _ _
 measurable_eqe is opaque
 Expands to: Constant
@@ -1995,8 +1995,8 @@ measurable_fun (T:=T)
 d.-measurable%classic (D `&` [set x | f x != g x])
 
 measurable_neqe is not universe polymorphic
-Arguments measurable_neqe [d]%measure_display_scope 
-  {T R} [D]%classical_set_scope mD [f g]%function_scope 
+Arguments measurable_neqe [d]%_measure_display_scope 
+  {T R} [D]%_classical_set_scope mD [f g]%_function_scope 
   _ _
 measurable_neqe is opaque
 Expands to: Constant
@@ -2065,8 +2065,8 @@ forall [Y : set Datatypes_bool__canonical__measurable_structure_SigmaRing],
       class) in
  measurable) (D `&` (fun x : T => (f x < g x)%E) @^-1` Y)%classic
 
-Arguments measurable_fun_lte [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_fun_lte [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_fun_lte is opaque
 Expands to: Constant
@@ -2120,8 +2120,8 @@ forall [Y : set Datatypes_bool__canonical__measurable_structure_SigmaRing],
       class) in
  measurable) (D `&` (fun x : T => (f x <= g x)%E) @^-1` Y)%classic
 
-Arguments measurable_fun_lee [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_fun_lee [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_fun_lee is opaque
 Expands to: Constant
@@ -2175,8 +2175,8 @@ forall [Y : set Datatypes_bool__canonical__measurable_structure_SigmaRing],
       class) in
  measurable) (D `&` (fun x : T => f x == g x) @^-1` Y)%classic
 
-Arguments measurable_fun_eqe [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_fun_eqe [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_fun_eqe is opaque
 Expands to: Constant
@@ -2222,7 +2222,7 @@ exists2 x : set R,
     (fun A : set R => [eta setU [set x%:E | x in A]]) x y =
     ([set: \bar R] `&` poweR^~ r @^-1` Y)%classic
 
-Arguments measurable_poweR [R] r%ring_scope _ [Y] _
+Arguments measurable_poweR [R] r%_ring_scope _ [Y] _
 measurable_poweR is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.measurable_poweR
@@ -2265,8 +2265,8 @@ measurable_fun (T:=T)
 d.-measurable%classic (D `&` [set x | (f x <= g x)%R])
 
 measurable_fun_le is not universe polymorphic
-Arguments measurable_fun_le [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_fun_le [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _
 measurable_fun_le is opaque
 Expands to: Constant
@@ -2406,8 +2406,9 @@ exists
     & {within K, continuous f}%classic]
 
 measurable_almost_continuous is not universe polymorphic
-Arguments measurable_almost_continuous [rT] [A]%classical_set_scope 
-  mA finA [f]%function_scope [eps]%ring_scope _ _
+Arguments measurable_almost_continuous [rT] [A]%_classical_set_scope 
+  mA finA [f]%_function_scope [eps]%_ring_scope _ 
+  _
 measurable_almost_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.measurable_almost_continuous

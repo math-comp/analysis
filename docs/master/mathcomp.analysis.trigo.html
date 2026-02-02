@@ -289,7 +289,7 @@ exists2 i : nat,
   ((fun N : nat => [set n | N <= n]) i
    `<=` [series \sum_(n * k <= i0 < n.+1 * k) f i0]_n%R @^-1` t)%classic
 
-Arguments cvg_series_cvg_series_group [R f] [k]%nat_scope _ _ [t] _
+Arguments cvg_series_cvg_series_group [R f] [k]%_nat_scope _ _ [t] _
 cvg_series_cvg_series_group is opaque
 Expands to: Constant mathcomp.analysis.trigo.cvg_series_cvg_series_group
 Declared in library mathcomp.analysis.trigo, line 49, characters 6-33
@@ -318,7 +318,7 @@ filter.cvg_to
  filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))%R
 
 lt_sum_lim_series is not universe polymorphic
-Arguments lt_sum_lim_series [R f] [n]%nat_scope _ _%function_scope
+Arguments lt_sum_lim_series [R f] [n]%_nat_scope _ _%_function_scope
 lt_sum_lim_series is opaque
 Expands to: Constant mathcomp.analysis.trigo.lt_sum_lim_series
 Declared in library mathcomp.analysis.trigo, line 61, characters 6-23
@@ -354,7 +354,7 @@ Qed.</div></details>
 forall [U V : GRing.Zmodule.Exports.zmodType], (U -> V) -> U -> Prop
 
 periodic is not universe polymorphic
-Arguments periodic [U V] f%function_scope T%ring_scope
+Arguments periodic [U V] f%_function_scope T%_ring_scope
 periodic is transparent
 Expands to: Constant mathcomp.analysis.trigo.periodic
 Declared in library mathcomp.analysis.trigo, line 87, characters 11-19
@@ -366,8 +366,8 @@ periodic (U:=U) (V:=V) f T ->
 forall (n : nat) (a : U), f (a + T *+ n)%R = f a
 
 periodicn is not universe polymorphic
-Arguments periodicn [U V] [f]%function_scope [T]%ring_scope 
-  _ n%nat_scope a%ring_scope
+Arguments periodicn [U V] [f]%_function_scope [T]%_ring_scope 
+  _ n%_nat_scope a%_ring_scope
 periodicn is opaque
 Expands to: Constant mathcomp.analysis.trigo.periodicn
 Declared in library mathcomp.analysis.trigo, line 89, characters 6-15
@@ -388,7 +388,7 @@ forall [U : GRing.Zmodule.Exports.zmodType] [V : pzRingType],
 (U -> V) -> U -> Prop
 
 alternating is not universe polymorphic
-Arguments alternating [U V] f%function_scope T%ring_scope
+Arguments alternating [U V] f%_function_scope T%_ring_scope
 alternating is transparent
 Expands to: Constant mathcomp.analysis.trigo.alternating
 Declared in library mathcomp.analysis.trigo, line 99, characters 11-22
@@ -401,8 +401,8 @@ alternating (U:=U) (V:=V) f T ->
 forall (n : nat) (a : U), f (a + T *+ n)%R = ((-1) ^+ n * f a)%R
 
 alternatingn is not universe polymorphic
-Arguments alternatingn [U V] [f]%function_scope [T]%ring_scope 
-  _ n%nat_scope a%ring_scope
+Arguments alternatingn [U V] [f]%_function_scope [T]%_ring_scope 
+  _ n%_nat_scope a%_ring_scope
 alternatingn is opaque
 Expands to: Constant mathcomp.analysis.trigo.alternatingn
 Declared in library mathcomp.analysis.trigo, line 101, characters 6-18
@@ -423,7 +423,7 @@ R ->
 (join_GRing_PzRing_between_Algebra_BaseZmodule_and_GRing_PzSemiRing R) ^nat
 
 sin_coeff is not universe polymorphic
-Arguments sin_coeff {R} x%ring_scope _
+Arguments sin_coeff {R} x%_ring_scope _
 sin_coeff is transparent
 Expands to: Constant mathcomp.analysis.trigo.sin_coeff
 Declared in library mathcomp.analysis.trigo, line 110, characters 11-20
@@ -486,7 +486,7 @@ Declared in library mathcomp.analysis.trigo, line 114, characters 10-20
 <span class="vernacular">Definition</span><span class="id"> </span><span id="cos_coeff" class="id"><a name="cos_coeff" class="" title="cos_coeff : forall {R : realType}, R -> R ^nat
 
 cos_coeff is not universe polymorphic
-Arguments cos_coeff {R} x%ring_scope _
+Arguments cos_coeff {R} x%_ring_scope _
 cos_coeff is transparent
 Expands to: Constant mathcomp.analysis.trigo.cos_coeff
 Declared in library mathcomp.analysis.trigo, line 116, characters 11-20
@@ -557,7 +557,7 @@ sin_coeff x =
  ((fun n0 : nat => (odd n0)%:R * (-1) ^+ n0.-1./2 / n0`!%:R) n * x ^+ n)%R)
 
 sin_coeffE is not universe polymorphic
-Arguments sin_coeffE [R] x%ring_scope
+Arguments sin_coeffE [R] x%_ring_scope
 sin_coeffE is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin_coeffE
 Declared in library mathcomp.analysis.trigo, line 126, characters 6-16
@@ -572,7 +572,7 @@ Declared in library mathcomp.analysis.trigo, line 126, characters 6-16
 forall [R : realType] (n : nat) (x : R), sin_coeff x n.*2 = 0%R
 
 sin_coeff_even is not universe polymorphic
-Arguments sin_coeff_even [R] n%nat_scope x%ring_scope
+Arguments sin_coeff_even [R] n%_nat_scope x%_ring_scope
 sin_coeff_even is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin_coeff_even
 Declared in library mathcomp.analysis.trigo, line 130, characters 6-20
@@ -604,7 +604,7 @@ exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` series (sin_coeff x) @^-1` t)%classic
 
-Arguments is_cvg_series_sin_coeff [R] [x]%ring_scope [t] _
+Arguments is_cvg_series_sin_coeff [R] [x]%_ring_scope [t] _
 is_cvg_series_sin_coeff is opaque
 Expands to: Constant mathcomp.analysis.trigo.is_cvg_series_sin_coeff
 Declared in library mathcomp.analysis.trigo, line 133, characters 6-29
@@ -646,7 +646,7 @@ Declared in library mathcomp.analysis.trigo, line 144, characters 6-10
 <span class="vernacular">Definition</span><span class="id"> </span><span id="sin_coeff'" class="id"><a name="sin_coeff'" class="" title="sin_coeff' : forall [R : realType], R -> nat -> R
 
 sin_coeff' is not universe polymorphic
-Arguments sin_coeff' [R] x%ring_scope n%nat_scope
+Arguments sin_coeff' [R] x%_ring_scope n%_nat_scope
 sin_coeff' is transparent
 Expands to: Constant mathcomp.analysis.trigo.sin_coeff'
 Declared in library mathcomp.analysis.trigo, line 148, characters 11-21
@@ -657,7 +657,7 @@ forall [R : realType] (x : R) (n : nat),
 sin_coeff' (R:=R) x n = sin_coeff x n.*2.+1
 
 sin_coeff'E is not universe polymorphic
-Arguments sin_coeff'E [R] x%ring_scope n%nat_scope
+Arguments sin_coeff'E [R] x%_ring_scope n%_nat_scope
 sin_coeff'E is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin_coeff'E
 Declared in library mathcomp.analysis.trigo, line 150, characters 6-17
@@ -687,7 +687,7 @@ exists2 i : nat,
   ((fun N : nat => [set n | N <= n]) i
    `<=` series (sin_coeff' (R:=R) x) @^-1` t)%classic
 
-Arguments cvg_sin_coeff' [R] [x]%ring_scope [t] _
+Arguments cvg_sin_coeff' [R] [x]%_ring_scope [t] _
 cvg_sin_coeff' is opaque
 Expands to: Constant mathcomp.analysis.trigo.cvg_sin_coeff'
 Declared in library mathcomp.analysis.trigo, line 155, characters 6-20
@@ -730,7 +730,7 @@ Qed.</div></details>
 forall (R : realType) (n : nat), series (sin_coeff 0) n.+1 = 0%R
 
 series_sin_coeff0 is not universe polymorphic
-Arguments series_sin_coeff0 R n%nat_scope
+Arguments series_sin_coeff0 R n%_nat_scope
 series_sin_coeff0 is opaque
 Expands to: Constant mathcomp.analysis.trigo.series_sin_coeff0
 Declared in library mathcomp.analysis.trigo, line 175, characters 6-23
@@ -763,7 +763,7 @@ Declared in library mathcomp.analysis.trigo, line 181, characters 6-10
 forall [R : realType] (n : nat) (x : R), cos_coeff x n.*2.+1 = 0%R
 
 cos_coeff_odd is not universe polymorphic
-Arguments cos_coeff_odd [R] n%nat_scope x%ring_scope
+Arguments cos_coeff_odd [R] n%_nat_scope x%_ring_scope
 cos_coeff_odd is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos_coeff_odd
 Declared in library mathcomp.analysis.trigo, line 189, characters 6-19
@@ -821,7 +821,7 @@ cos_coeff x =
  ((fun n0 : nat => (~~ odd n0)%:R * (-1) ^+ n0./2 / n0`!%:R) n * x ^+ n)%R)
 
 cos_coeffE is not universe polymorphic
-Arguments cos_coeffE [R] x%ring_scope
+Arguments cos_coeffE [R] x%_ring_scope
 cos_coeffE is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos_coeffE
 Declared in library mathcomp.analysis.trigo, line 204, characters 6-16
@@ -856,7 +856,7 @@ exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` series (cos_coeff x) @^-1` t)%classic
 
-Arguments is_cvg_series_cos_coeff [R] [x]%ring_scope [t] _
+Arguments is_cvg_series_cos_coeff [R] [x]%_ring_scope [t] _
 is_cvg_series_cos_coeff is opaque
 Expands to: Constant mathcomp.analysis.trigo.is_cvg_series_cos_coeff
 Declared in library mathcomp.analysis.trigo, line 211, characters 6-29
@@ -902,7 +902,7 @@ Declared in library mathcomp.analysis.trigo, line 222, characters 6-10
 <span class="vernacular">Definition</span><span class="id"> </span><span id="cos_coeff'" class="id"><a name="cos_coeff'" class="" title="cos_coeff' : forall [R : realType], R -> nat -> R
 
 cos_coeff' is not universe polymorphic
-Arguments cos_coeff' [R] x%ring_scope n%nat_scope
+Arguments cos_coeff' [R] x%_ring_scope n%_nat_scope
 cos_coeff' is transparent
 Expands to: Constant mathcomp.analysis.trigo.cos_coeff'
 Declared in library mathcomp.analysis.trigo, line 228, characters 11-21
@@ -913,7 +913,7 @@ forall [R : realType] (x : R) (n : nat),
 cos_coeff' (R:=R) x n = cos_coeff x n.*2
 
 cos_coeff'E is not universe polymorphic
-Arguments cos_coeff'E [R] x%ring_scope n%nat_scope
+Arguments cos_coeff'E [R] x%_ring_scope n%_nat_scope
 cos_coeff'E is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos_coeff'E
 Declared in library mathcomp.analysis.trigo, line 230, characters 6-17
@@ -944,7 +944,7 @@ exists2 i : nat,
   ((fun N : nat => [set n | N <= n]) i
    `<=` series (cos_coeff' (R:=R) x) @^-1` t)%classic
 
-Arguments cvg_cos_coeff' [R] [x]%ring_scope [t] _
+Arguments cvg_cos_coeff' [R] [x]%_ring_scope [t] _
 cvg_cos_coeff' is opaque
 Expands to: Constant mathcomp.analysis.trigo.cvg_cos_coeff'
 Declared in library mathcomp.analysis.trigo, line 236, characters 6-20
@@ -990,7 +990,7 @@ Qed.</div></details>
 forall (R : realType) (n : nat), series (cos_coeff 0) n.+1 = 1%R
 
 series_cos_coeff0 is not universe polymorphic
-Arguments series_cos_coeff0 R n%nat_scope
+Arguments series_cos_coeff0 R n%_nat_scope
 series_cos_coeff0 is opaque
 Expands to: Constant mathcomp.analysis.trigo.series_cos_coeff0
 Declared in library mathcomp.analysis.trigo, line 259, characters 6-23
@@ -1068,7 +1068,7 @@ exists2 i : R,
          ((fun h : R => (h^-1 *: ((sin \o shift x) h%:A - sin x))%R) @^-1` t)
            t0))%classic
 
-Arguments derivable_sin [R] [x]%ring_scope [t] _
+Arguments derivable_sin [R] [x]%_ring_scope [t] _
 derivable_sin is opaque
 Expands to: Constant mathcomp.analysis.trigo.derivable_sin
 Declared in library mathcomp.analysis.trigo, line 291, characters 6-19
@@ -1166,7 +1166,7 @@ exists2 i : R,
          ((fun h : R => (h^-1 *: ((cos \o shift x) h%:A - cos x))%R) @^-1` t)
            t0))%classic
 
-Arguments derivable_cos [R] [x]%ring_scope [t] _
+Arguments derivable_cos [R] [x]%_ring_scope [t] _
 derivable_cos is opaque
 Expands to: Constant mathcomp.analysis.trigo.derivable_cos
 Declared in library mathcomp.analysis.trigo, line 323, characters 6-19
@@ -1212,7 +1212,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cos2Dsin2" class="id"><a name="cos2Dsin2" class="" title="cos2Dsin2 : forall [R : realType] (x : R), (cos x ^+ 2 + sin x ^+ 2)%R = 1%R
 
 cos2Dsin2 is not universe polymorphic
-Arguments cos2Dsin2 [R] x%ring_scope
+Arguments cos2Dsin2 [R] x%_ring_scope
 cos2Dsin2 is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos2Dsin2
 Declared in library mathcomp.analysis.trigo, line 331, characters 6-15
@@ -1229,7 +1229,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cos_max" class="id"><a name="cos_max" class="" title="cos_max : forall [R : realType] (x : R), (`|cos x| <= 1)%R
 
 cos_max is not universe polymorphic
-Arguments cos_max [R] x%ring_scope
+Arguments cos_max [R] x%_ring_scope
 cos_max is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos_max
 Declared in library mathcomp.analysis.trigo, line 339, characters 6-13
@@ -1244,7 +1244,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cos_geN1" class="id"><a name="cos_geN1" class="" title="cos_geN1 : forall [R : realType] (x : R), (-1 <= cos x)%R
 
 cos_geN1 is not universe polymorphic
-Arguments cos_geN1 [R] x%ring_scope
+Arguments cos_geN1 [R] x%_ring_scope
 cos_geN1 is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos_geN1
 Declared in library mathcomp.analysis.trigo, line 345, characters 6-14
@@ -1257,7 +1257,7 @@ Declared in library mathcomp.analysis.trigo, line 345, characters 6-14
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cos_le1" class="id"><a name="cos_le1" class="" title="cos_le1 : forall [R : realType] (x : R), (cos x <= 1)%R
 
 cos_le1 is not universe polymorphic
-Arguments cos_le1 [R] x%ring_scope
+Arguments cos_le1 [R] x%_ring_scope
 cos_le1 is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos_le1
 Declared in library mathcomp.analysis.trigo, line 348, characters 6-13
@@ -1270,7 +1270,7 @@ Declared in library mathcomp.analysis.trigo, line 348, characters 6-13
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sin_max" class="id"><a name="sin_max" class="" title="sin_max : forall [R : realType] (x : R), (`|sin x| <= 1)%R
 
 sin_max is not universe polymorphic
-Arguments sin_max [R] x%ring_scope
+Arguments sin_max [R] x%_ring_scope
 sin_max is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin_max
 Declared in library mathcomp.analysis.trigo, line 351, characters 6-13
@@ -1285,7 +1285,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sin_geN1" class="id"><a name="sin_geN1" class="" title="sin_geN1 : forall [R : realType] (x : R), (-1 <= sin x)%R
 
 sin_geN1 is not universe polymorphic
-Arguments sin_geN1 [R] x%ring_scope
+Arguments sin_geN1 [R] x%_ring_scope
 sin_geN1 is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin_geN1
 Declared in library mathcomp.analysis.trigo, line 357, characters 6-14
@@ -1298,7 +1298,7 @@ Declared in library mathcomp.analysis.trigo, line 357, characters 6-14
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sin_le1" class="id"><a name="sin_le1" class="" title="sin_le1 : forall [R : realType] (x : R), (sin x <= 1)%R
 
 sin_le1 is not universe polymorphic
-Arguments sin_le1 [R] x%ring_scope
+Arguments sin_le1 [R] x%_ring_scope
 sin_le1 is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin_le1
 Declared in library mathcomp.analysis.trigo, line 360, characters 6-13
@@ -1315,7 +1315,7 @@ forall [R : realType] (x y : R),
 0%R
 
 sinD_cosD is not universe polymorphic
-Arguments sinD_cosD [R] (x y)%ring_scope
+Arguments sinD_cosD [R] (x y)%_ring_scope
 sinD_cosD is opaque
 Expands to: Constant mathcomp.analysis.trigo.sinD_cosD
 Declared in library mathcomp.analysis.trigo, line 363, characters 5-14
@@ -1339,7 +1339,7 @@ forall [R : realType] (x y : R),
 sin (x + y) = (sin x * cos y + cos x * sin y)%R
 
 sinD is not universe polymorphic
-Arguments sinD [R] (x y)%ring_scope
+Arguments sinD [R] (x y)%_ring_scope
 sinD is opaque
 Expands to: Constant mathcomp.analysis.trigo.sinD
 Declared in library mathcomp.analysis.trigo, line 376, characters 6-10
@@ -1357,7 +1357,7 @@ forall [R : realType] (x y : R),
 cos (x + y) = (cos x * cos y - sin x * sin y)%R
 
 cosD is not universe polymorphic
-Arguments cosD [R] (x y)%ring_scope
+Arguments cosD [R] (x y)%_ring_scope
 cosD is opaque
 Expands to: Constant mathcomp.analysis.trigo.cosD
 Declared in library mathcomp.analysis.trigo, line 383, characters 6-10
@@ -1373,7 +1373,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sin2cos2" class="id"><a name="sin2cos2" class="" title="sin2cos2 : forall [R : realType] (x : R), (sin x ^+ 2)%R = (1 - cos x ^+ 2)%R
 
 sin2cos2 is not universe polymorphic
-Arguments sin2cos2 [R] x%ring_scope
+Arguments sin2cos2 [R] x%_ring_scope
 sin2cos2 is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin2cos2
 Declared in library mathcomp.analysis.trigo, line 390, characters 6-14
@@ -1386,7 +1386,7 @@ Declared in library mathcomp.analysis.trigo, line 390, characters 6-14
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cos2sin2" class="id"><a name="cos2sin2" class="" title="cos2sin2 : forall [R : realType] (x : R), (cos x ^+ 2)%R = (1 - sin x ^+ 2)%R
 
 cos2sin2 is not universe polymorphic
-Arguments cos2sin2 [R] x%ring_scope
+Arguments cos2sin2 [R] x%_ring_scope
 cos2sin2 is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos2sin2
 Declared in library mathcomp.analysis.trigo, line 393, characters 6-14
@@ -1400,7 +1400,7 @@ Declared in library mathcomp.analysis.trigo, line 393, characters 6-14
 forall [R : realType] (x : R), sin (x *+ 2) = (cos x * sin x *+ 2)%R
 
 sin_mulr2n is not universe polymorphic
-Arguments sin_mulr2n [R] x%ring_scope
+Arguments sin_mulr2n [R] x%_ring_scope
 sin_mulr2n is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin_mulr2n
 Declared in library mathcomp.analysis.trigo, line 396, characters 6-16
@@ -1414,7 +1414,7 @@ Declared in library mathcomp.analysis.trigo, line 396, characters 6-16
 forall [R : realType] (x : R), cos (x *+ 2) = (cos x ^+ 2 *+ 2 - 1)%R
 
 cos_mulr2n is not universe polymorphic
-Arguments cos_mulr2n [R] x%ring_scope
+Arguments cos_mulr2n [R] x%_ring_scope
 cos_mulr2n is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos_mulr2n
 Declared in library mathcomp.analysis.trigo, line 399, characters 6-16
@@ -1429,7 +1429,7 @@ forall [R : realType] (x : R),
 ((sin (- x) + sin x) ^+ 2 + (cos (- x) - cos x) ^+ 2)%R = 0%R
 
 sinN_cosN is not universe polymorphic
-Arguments sinN_cosN [R] x%ring_scope
+Arguments sinN_cosN [R] x%_ring_scope
 sinN_cosN is opaque
 Expands to: Constant mathcomp.analysis.trigo.sinN_cosN
 Declared in library mathcomp.analysis.trigo, line 402, characters 5-14
@@ -1450,7 +1450,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sinN" class="id"><a name="sinN" class="" title="sinN : forall [R : realType] (x : R), sin (- x) = (- sin x)%R
 
 sinN is not universe polymorphic
-Arguments sinN [R] x%ring_scope
+Arguments sinN [R] x%_ring_scope
 sinN is opaque
 Expands to: Constant mathcomp.analysis.trigo.sinN
 Declared in library mathcomp.analysis.trigo, line 414, characters 6-10
@@ -1466,7 +1466,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cosN" class="id"><a name="cosN" class="" title="cosN : forall [R : realType] (x : R), cos (- x) = cos x
 
 cosN is not universe polymorphic
-Arguments cosN [R] x%ring_scope
+Arguments cosN [R] x%_ring_scope
 cosN is opaque
 Expands to: Constant mathcomp.analysis.trigo.cosN
 Declared in library mathcomp.analysis.trigo, line 421, characters 6-10
@@ -1483,7 +1483,7 @@ Qed.</div></details>
 forall [R : realType] (x y : R), sin (Num.sg x * y) = (Num.sg x * sin y)%R
 
 sin_sg is not universe polymorphic
-Arguments sin_sg [R] (x y)%ring_scope
+Arguments sin_sg [R] (x y)%_ring_scope
 sin_sg is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin_sg
 Declared in library mathcomp.analysis.trigo, line 428, characters 6-12
@@ -1497,7 +1497,7 @@ Declared in library mathcomp.analysis.trigo, line 428, characters 6-12
 forall [R : realType] [x : R] (y : R), x != 0%R -> cos (Num.sg x * y) = cos y
 
 cos_sg is not universe polymorphic
-Arguments cos_sg [R] [x]%ring_scope y%ring_scope _
+Arguments cos_sg [R] [x]%_ring_scope y%_ring_scope _
 cos_sg is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos_sg
 Declared in library mathcomp.analysis.trigo, line 431, characters 6-12
@@ -1512,7 +1512,7 @@ forall [R : realType] (x y : R),
 cos (x - y) = (cos x * cos y + sin x * sin y)%R
 
 cosB is not universe polymorphic
-Arguments cosB [R] (x y)%ring_scope
+Arguments cosB [R] (x y)%_ring_scope
 cosB is opaque
 Expands to: Constant mathcomp.analysis.trigo.cosB
 Declared in library mathcomp.analysis.trigo, line 434, characters 6-10
@@ -1527,7 +1527,7 @@ forall [R : realType] (x y : R),
 sin (x - y) = (sin x * cos y - cos x * sin y)%R
 
 sinB is not universe polymorphic
-Arguments sinB [R] (x y)%ring_scope
+Arguments sinB [R] (x y)%_ring_scope
 sinB is opaque
 Expands to: Constant mathcomp.analysis.trigo.sinB
 Declared in library mathcomp.analysis.trigo, line 437, characters 6-10
@@ -1541,7 +1541,7 @@ Declared in library mathcomp.analysis.trigo, line 437, characters 6-10
 forall [R : realType] (x : R), (`|cos x|%R == 1%R) = (sin x == 0%R)
 
 norm_cos_eq1 is not universe polymorphic
-Arguments norm_cos_eq1 [R] x%ring_scope
+Arguments norm_cos_eq1 [R] x%_ring_scope
 norm_cos_eq1 is opaque
 Expands to: Constant mathcomp.analysis.trigo.norm_cos_eq1
 Declared in library mathcomp.analysis.trigo, line 440, characters 6-18
@@ -1557,7 +1557,7 @@ Qed.</div></details>
 forall [R : realType] (x : R), (`|sin x|%R == 1%R) = (cos x == 0%R)
 
 norm_sin_eq1 is not universe polymorphic
-Arguments norm_sin_eq1 [R] x%ring_scope
+Arguments norm_sin_eq1 [R] x%_ring_scope
 norm_sin_eq1 is opaque
 Expands to: Constant mathcomp.analysis.trigo.norm_sin_eq1
 Declared in library mathcomp.analysis.trigo, line 446, characters 6-18
@@ -1572,7 +1572,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cos1sin0" class="id"><a name="cos1sin0" class="" title="cos1sin0 : forall [R : realType] [x : R], `|cos x|%R = 1%R -> sin x = 0%R
 
 cos1sin0 is not universe polymorphic
-Arguments cos1sin0 [R] [x]%ring_scope _
+Arguments cos1sin0 [R] [x]%_ring_scope _
 cos1sin0 is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos1sin0
 Declared in library mathcomp.analysis.trigo, line 452, characters 6-14
@@ -1585,7 +1585,7 @@ Declared in library mathcomp.analysis.trigo, line 452, characters 6-14
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sin1cos0" class="id"><a name="sin1cos0" class="" title="sin1cos0 : forall [R : realType] [x : R], `|sin x|%R = 1%R -> cos x = 0%R
 
 sin1cos0 is not universe polymorphic
-Arguments sin1cos0 [R] [x]%ring_scope _
+Arguments sin1cos0 [R] [x]%_ring_scope _
 sin1cos0 is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin1cos0
 Declared in library mathcomp.analysis.trigo, line 455, characters 6-14
@@ -1598,7 +1598,7 @@ Declared in library mathcomp.analysis.trigo, line 455, characters 6-14
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sin0cos1" class="id"><a name="sin0cos1" class="" title="sin0cos1 : forall [R : realType] [x : R], sin x = 0%R -> `|cos x|%R = 1%R
 
 sin0cos1 is not universe polymorphic
-Arguments sin0cos1 [R] [x]%ring_scope _
+Arguments sin0cos1 [R] [x]%_ring_scope _
 sin0cos1 is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin0cos1
 Declared in library mathcomp.analysis.trigo, line 458, characters 6-14
@@ -1611,7 +1611,7 @@ Declared in library mathcomp.analysis.trigo, line 458, characters 6-14
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cos_norm" class="id"><a name="cos_norm" class="" title="cos_norm : forall [R : realType] (x : R), cos `|x| = cos x
 
 cos_norm is not universe polymorphic
-Arguments cos_norm [R] x%ring_scope
+Arguments cos_norm [R] x%_ring_scope
 cos_norm is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos_norm
 Declared in library mathcomp.analysis.trigo, line 461, characters 6-14
@@ -1630,7 +1630,7 @@ forall {R : realType} (x : R),
 Itv.spec (Itv.num_sem (R:=R)) (Itv.Real `[(-1)%Z, 1%Z]%R) (sin x)
 
 num_spec_sin is not universe polymorphic
-Arguments num_spec_sin {R} x%ring_scope
+Arguments num_spec_sin {R} x%_ring_scope
 num_spec_sin is opaque
 Expands to: Constant mathcomp.analysis.trigo.num_spec_sin
 Declared in library mathcomp.analysis.trigo, line 468, characters 6-18
@@ -1644,7 +1644,7 @@ Declared in library mathcomp.analysis.trigo, line 468, characters 6-18
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="sin_inum" class="id"><a name="sin_inum" class="" title="sin_inum : forall {R : realType}, R -> {itv R & `[(-1)%Z, 1%Z]%R}
 
 sin_inum is not universe polymorphic
-Arguments sin_inum {R} x%ring_scope
+Arguments sin_inum {R} x%_ring_scope
 sin_inum is transparent
 Expands to: Constant mathcomp.analysis.trigo.sin_inum
 Declared in library mathcomp.analysis.trigo, line 472, characters 10-18
@@ -1655,7 +1655,7 @@ forall {R : realType} (x : R),
 Itv.spec (Itv.num_sem (R:=R)) (Itv.Real `[(-1)%Z, 1%Z]%R) (cos x)
 
 num_spec_cos is not universe polymorphic
-Arguments num_spec_cos {R} x%ring_scope
+Arguments num_spec_cos {R} x%_ring_scope
 num_spec_cos is opaque
 Expands to: Constant mathcomp.analysis.trigo.num_spec_cos
 Declared in library mathcomp.analysis.trigo, line 474, characters 6-18
@@ -1669,7 +1669,7 @@ Declared in library mathcomp.analysis.trigo, line 474, characters 6-18
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="cos_inum" class="id"><a name="cos_inum" class="" title="cos_inum : forall {R : realType}, R -> {itv R & `[(-1)%Z, 1%Z]%R}
 
 cos_inum is not universe polymorphic
-Arguments cos_inum {R} x%ring_scope
+Arguments cos_inum {R} x%_ring_scope
 cos_inum is transparent
 Expands to: Constant mathcomp.analysis.trigo.cos_inum
 Declared in library mathcomp.analysis.trigo, line 478, characters 10-18
@@ -1686,7 +1686,7 @@ Declared in library mathcomp.boot.generic_quotient, line 157, characters 0-35
 pi.body : forall [T : Type] (qT : quotType T), T -> qT
 
 pi.body is not universe polymorphic
-Arguments pi.body [T]%type_scope qT%type_scope _
+Arguments pi.body [T]%_type_scope qT%_type_scope _
 Expands to: Constant mathcomp.boot.generic_quotient.pi.body
 Declared in library mathcomp.boot.generic_quotient, line 157, characters 0-35
 ">pi</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#Pi.R">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#get">get</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="x:172" class="id"><a name="x:172" class="">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:172">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id">2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#cos">cos</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:172">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id">2</span>.<br/>
@@ -1744,7 +1744,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sin2_gt0" class="id"><a name="sin2_gt0" class="" title="sin2_gt0 : forall [R : realType] [x : R], (0 < x < 2)%R -> (0 < sin x)%R
 
 sin2_gt0 is not universe polymorphic
-Arguments sin2_gt0 [R] [x]%ring_scope _
+Arguments sin2_gt0 [R] [x]%_ring_scope _
 sin2_gt0 is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin2_gt0
 Declared in library mathcomp.analysis.trigo, line 514, characters 6-14
@@ -1822,7 +1822,7 @@ forall [R : realType] [x y : R],
 (0 <= x <= 2)%R -> cos x = 0%R -> (0 <= y <= 2)%R -> cos y = 0%R -> x = y
 
 cos_02_uniq is not universe polymorphic
-Arguments cos_02_uniq [R] [x y]%ring_scope _ _ _ _
+Arguments cos_02_uniq [R] [x y]%_ring_scope _ _ _ _
 cos_02_uniq is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos_02_uniq
 Declared in library mathcomp.analysis.trigo, line 562, characters 6-17
@@ -1963,7 +1963,7 @@ Declared in library mathcomp.analysis.trigo, line 618, characters 6-12
 forall [R : realType] [x : R], (0 < x < trigo.pi / 2)%R -> (0 < sin x)%R
 
 sin_gt0_pihalf is not universe polymorphic
-Arguments sin_gt0_pihalf [R] [x]%ring_scope _
+Arguments sin_gt0_pihalf [R] [x]%_ring_scope _
 sin_gt0_pihalf is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin_gt0_pihalf
 Declared in library mathcomp.analysis.trigo, line 620, characters 6-20
@@ -1980,7 +1980,7 @@ forall [R : realType] [x : R],
 (- (trigo.pi / 2) < x < trigo.pi / 2)%R -> (0 < cos x)%R
 
 cos_gt0_pihalf is not universe polymorphic
-Arguments cos_gt0_pihalf [R] [x]%ring_scope _
+Arguments cos_gt0_pihalf [R] [x]%_ring_scope _
 cos_gt0_pihalf is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos_gt0_pihalf
 Declared in library mathcomp.analysis.trigo, line 626, characters 6-20
@@ -2042,7 +2042,7 @@ forall [R : realType] [x : R],
 (- (trigo.pi / 2) <= x <= trigo.pi / 2)%R -> (0 <= cos x)%R
 
 cos_ge0_pihalf is not universe polymorphic
-Arguments cos_ge0_pihalf [R] [x]%ring_scope _
+Arguments cos_ge0_pihalf [R] [x]%_ring_scope _
 cos_ge0_pihalf is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos_ge0_pihalf
 Declared in library mathcomp.analysis.trigo, line 657, characters 6-20
@@ -2165,7 +2165,7 @@ Declared in library mathcomp.analysis.trigo, line 689, characters 6-13
 forall [R : realType] (a : R), cos (a + trigo.pi / 2) = (- sin a)%R
 
 cosDpihalf is not universe polymorphic
-Arguments cosDpihalf [R] a%ring_scope
+Arguments cosDpihalf [R] a%_ring_scope
 cosDpihalf is opaque
 Expands to: Constant mathcomp.analysis.trigo.cosDpihalf
 Declared in library mathcomp.analysis.trigo, line 692, characters 6-16
@@ -2178,7 +2178,7 @@ Declared in library mathcomp.analysis.trigo, line 692, characters 6-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cosBpihalf" class="id"><a name="cosBpihalf" class="" title="cosBpihalf : forall [R : realType] (a : R), cos (a - trigo.pi / 2) = sin a
 
 cosBpihalf is not universe polymorphic
-Arguments cosBpihalf [R] a%ring_scope
+Arguments cosBpihalf [R] a%_ring_scope
 cosBpihalf is opaque
 Expands to: Constant mathcomp.analysis.trigo.cosBpihalf
 Declared in library mathcomp.analysis.trigo, line 695, characters 6-16
@@ -2191,7 +2191,7 @@ Declared in library mathcomp.analysis.trigo, line 695, characters 6-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sinDpihalf" class="id"><a name="sinDpihalf" class="" title="sinDpihalf : forall [R : realType] (a : R), sin (a + trigo.pi / 2) = cos a
 
 sinDpihalf is not universe polymorphic
-Arguments sinDpihalf [R] a%ring_scope
+Arguments sinDpihalf [R] a%_ring_scope
 sinDpihalf is opaque
 Expands to: Constant mathcomp.analysis.trigo.sinDpihalf
 Declared in library mathcomp.analysis.trigo, line 698, characters 6-16
@@ -2205,7 +2205,7 @@ Declared in library mathcomp.analysis.trigo, line 698, characters 6-16
 forall [R : realType] (a : R), sin (a - trigo.pi / 2) = (- cos a)%R
 
 sinBpihalf is not universe polymorphic
-Arguments sinBpihalf [R] a%ring_scope
+Arguments sinBpihalf [R] a%_ring_scope
 sinBpihalf is opaque
 Expands to: Constant mathcomp.analysis.trigo.sinBpihalf
 Declared in library mathcomp.analysis.trigo, line 701, characters 6-16
@@ -2219,7 +2219,7 @@ Declared in library mathcomp.analysis.trigo, line 701, characters 6-16
 forall [R : realType] [x : R], (0 <= x <= trigo.pi)%R -> (0 <= sin x)%R
 
 sin_ge0_pi is not universe polymorphic
-Arguments sin_ge0_pi [R] [x]%ring_scope _
+Arguments sin_ge0_pi [R] [x]%_ring_scope _
 sin_ge0_pi is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin_ge0_pi
 Declared in library mathcomp.analysis.trigo, line 704, characters 6-16
@@ -2234,7 +2234,7 @@ Qed.</div></details>
 forall [R : realType] [x : R], (0 < x < trigo.pi)%R -> (0 < sin x)%R
 
 sin_gt0_pi is not universe polymorphic
-Arguments sin_gt0_pi [R] [x]%ring_scope _
+Arguments sin_gt0_pi [R] [x]%_ring_scope _
 sin_gt0_pi is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin_gt0_pi
 Declared in library mathcomp.analysis.trigo, line 709, characters 6-16
@@ -2394,7 +2394,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="tan" class="id"><a name="tan" class="" title="tan : forall {R : realType}, R -> R
 
 tan is not universe polymorphic
-Arguments tan {R} x%ring_scope
+Arguments tan {R} x%_ring_scope
 tan is transparent
 Expands to: Constant mathcomp.analysis.trigo.tan
 Declared in library mathcomp.analysis.trigo, line 781, characters 11-14
@@ -2429,7 +2429,7 @@ Declared in library mathcomp.analysis.trigo, line 786, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="tanN" class="id"><a name="tanN" class="" title="tanN : forall [R : realType] (x : R), tan (- x) = (- tan x)%R
 
 tanN is not universe polymorphic
-Arguments tanN [R] x%ring_scope
+Arguments tanN [R] x%_ring_scope
 tanN is opaque
 Expands to: Constant mathcomp.analysis.trigo.tanN
 Declared in library mathcomp.analysis.trigo, line 789, characters 6-10
@@ -2445,7 +2445,7 @@ cos x != 0%R ->
 cos y != 0%R -> tan (x + y) = ((tan x + tan y) / (1 - tan x * tan y))%R
 
 tanD is not universe polymorphic
-Arguments tanD [R] [x y]%ring_scope _ _
+Arguments tanD [R] [x y]%_ring_scope _ _
 tanD is opaque
 Expands to: Constant mathcomp.analysis.trigo.tanD
 Declared in library mathcomp.analysis.trigo, line 792, characters 6-10
@@ -2464,7 +2464,7 @@ forall [R : realType] [x : R],
 cos x != 0%R -> tan (x *+ 2) = (tan x *+ 2 / (1 - tan x ^+ 2))%R
 
 tan_mulr2n is not universe polymorphic
-Arguments tan_mulr2n [R] [x]%ring_scope _
+Arguments tan_mulr2n [R] [x]%_ring_scope _
 tan_mulr2n is opaque
 Expands to: Constant mathcomp.analysis.trigo.tan_mulr2n
 Declared in library mathcomp.analysis.trigo, line 800, characters 6-16
@@ -2479,7 +2479,7 @@ forall [R : realType] [x : R],
 cos x != 0%R -> (cos x ^- 2)%R = (1 + tan x ^+ 2)%R
 
 cos2_tan2 is not universe polymorphic
-Arguments cos2_tan2 [R] [x]%ring_scope _
+Arguments cos2_tan2 [R] [x]%_ring_scope _
 cos2_tan2 is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos2_tan2
 Declared in library mathcomp.analysis.trigo, line 803, characters 6-15
@@ -2524,7 +2524,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="tanDpi" class="id"><a name="tanDpi" class="" title="tanDpi : forall [R : realType] (x : R), tan (x + trigo.pi) = tan x
 
 tanDpi is not universe polymorphic
-Arguments tanDpi [R] x%ring_scope
+Arguments tanDpi [R] x%_ring_scope
 tanDpi is opaque
 Expands to: Constant mathcomp.analysis.trigo.tanDpi
 Declared in library mathcomp.analysis.trigo, line 820, characters 6-12
@@ -2559,7 +2559,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` tan @^-1` t)%classic
 
-Arguments continuous_tan [R] [x]%ring_scope _ [t] _
+Arguments continuous_tan [R] [x]%_ring_scope _ [t] _
 continuous_tan is opaque
 Expands to: Constant mathcomp.analysis.trigo.continuous_tan
 Declared in library mathcomp.analysis.trigo, line 823, characters 6-20
@@ -2577,7 +2577,7 @@ forall [R : realType] [x : R],
 cos x != 0%R -> is_derive x 1%R tan (cos x ^- 2)%R
 
 is_derive_tan is not universe polymorphic
-Arguments is_derive_tan [R] [x]%ring_scope _
+Arguments is_derive_tan [R] [x]%_ring_scope _
 is_derive_tan is opaque
 Expands to: Constant mathcomp.analysis.trigo.is_derive_tan
 Declared in library mathcomp.analysis.trigo, line 830, characters 6-19
@@ -2621,7 +2621,7 @@ exists2 i : R,
          ((fun h : R => (h^-1 *: ((tan \o shift x) h%:A - tan x))%R) @^-1` t)
            t0))%classic
 
-Arguments derivable_tan [R] [x]%ring_scope _ [t] _
+Arguments derivable_tan [R] [x]%_ring_scope _ [t] _
 derivable_tan is opaque
 Expands to: Constant mathcomp.analysis.trigo.derivable_tan
 Declared in library mathcomp.analysis.trigo, line 837, characters 6-19
@@ -2762,7 +2762,7 @@ forall [R : realType] [x : R],
 (-1 <= x <= 1)%R -> (0 <= acos x <= trigo.pi)%R /\ cos (acos x) = x
 
 acos_def is not universe polymorphic
-Arguments acos_def [R] [x]%ring_scope _
+Arguments acos_def [R] [x]%_ring_scope _
 acos_def is opaque
 Expands to: Constant mathcomp.analysis.trigo.acos_def
 Declared in library mathcomp.analysis.trigo, line 879, characters 6-14
@@ -2786,7 +2786,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="acos_ge0" class="id"><a name="acos_ge0" class="" title="acos_ge0 : forall [R : realType] [x : R], (-1 <= x <= 1)%R -> (0 <= acos x)%R
 
 acos_ge0 is not universe polymorphic
-Arguments acos_ge0 [R] [x]%ring_scope _
+Arguments acos_ge0 [R] [x]%_ring_scope _
 acos_ge0 is opaque
 Expands to: Constant mathcomp.analysis.trigo.acos_ge0
 Declared in library mathcomp.analysis.trigo, line 894, characters 6-14
@@ -2800,7 +2800,7 @@ Declared in library mathcomp.analysis.trigo, line 894, characters 6-14
 forall [R : realType] [x : R], (-1 <= x <= 1)%R -> (acos x <= trigo.pi)%R
 
 acos_lepi is not universe polymorphic
-Arguments acos_lepi [R] [x]%ring_scope _
+Arguments acos_lepi [R] [x]%_ring_scope _
 acos_lepi is opaque
 Expands to: Constant mathcomp.analysis.trigo.acos_lepi
 Declared in library mathcomp.analysis.trigo, line 897, characters 6-15
@@ -2833,7 +2833,7 @@ Declared in library mathcomp.analysis.trigo, line 900, characters 6-11
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="acos_gt0" class="id"><a name="acos_gt0" class="" title="acos_gt0 : forall [R : realType] [x : R], (-1 <= x < 1)%R -> (0 < acos x)%R
 
 acos_gt0 is not universe polymorphic
-Arguments acos_gt0 [R] [x]%ring_scope _
+Arguments acos_gt0 [R] [x]%_ring_scope _
 acos_gt0 is opaque
 Expands to: Constant mathcomp.analysis.trigo.acos_gt0
 Declared in library mathcomp.analysis.trigo, line 903, characters 6-14
@@ -2851,7 +2851,7 @@ Qed.</div></details>
 forall [R : realType] [x : R], (-1 < x <= 1)%R -> (acos x < trigo.pi)%R
 
 acos_ltpi is not universe polymorphic
-Arguments acos_ltpi [R] [x]%ring_scope _
+Arguments acos_ltpi [R] [x]%_ring_scope _
 acos_ltpi is opaque
 Expands to: Constant mathcomp.analysis.trigo.acos_ltpi
 Declared in library mathcomp.analysis.trigo, line 911, characters 6-15
@@ -2958,7 +2958,7 @@ forall [R : realType] [x : R],
 (- trigo.pi <= x <= 0)%R -> acos (cos x) = (- x)%R
 
 cosKN is not universe polymorphic
-Arguments cosKN [R] [x]%ring_scope _
+Arguments cosKN [R] [x]%_ring_scope _
 cosKN is opaque
 Expands to: Constant mathcomp.analysis.trigo.cosKN
 Declared in library mathcomp.analysis.trigo, line 950, characters 6-11
@@ -2974,7 +2974,7 @@ forall [R : realType] [x : R],
 (-1 <= x <= 1)%R -> sin (acos x) = Num.ExtraDef.sqrtr (1 - x ^+ 2)
 
 sin_acos is not universe polymorphic
-Arguments sin_acos [R] [x]%ring_scope _
+Arguments sin_acos [R] [x]%_ring_scope _
 sin_acos is opaque
 Expands to: Constant mathcomp.analysis.trigo.sin_acos
 Declared in library mathcomp.analysis.trigo, line 955, characters 6-14
@@ -3012,7 +3012,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` acos @^-1` t)%classic
 
-Arguments continuous_acos [R] [x]%ring_scope _ [t] _
+Arguments continuous_acos [R] [x]%_ring_scope _ [t] _
 continuous_acos is opaque
 Expands to: Constant mathcomp.analysis.trigo.continuous_acos
 Declared in library mathcomp.analysis.trigo, line 962, characters 6-21
@@ -3037,7 +3037,7 @@ forall [R : realType] [x : R],
 is_derive x 1%R acos (- (Num.ExtraDef.sqrtr (1 - x ^+ 2))^-1)%R
 
 is_derive1_acos is not universe polymorphic
-Arguments is_derive1_acos [R] [x]%ring_scope _
+Arguments is_derive1_acos [R] [x]%_ring_scope _
 is_derive1_acos is opaque
 Expands to: Constant mathcomp.analysis.trigo.is_derive1_acos
 Declared in library mathcomp.analysis.trigo, line 975, characters 6-21
@@ -3134,7 +3134,7 @@ forall [R : realType] [x : R],
 (- (trigo.pi / 2) <= asin x <= trigo.pi / 2)%R /\ sin (asin x) = x
 
 asin_def is not universe polymorphic
-Arguments asin_def [R] [x]%ring_scope _
+Arguments asin_def [R] [x]%_ring_scope _
 asin_def is opaque
 Expands to: Constant mathcomp.analysis.trigo.asin_def
 Declared in library mathcomp.analysis.trigo, line 1005, characters 6-14
@@ -3161,7 +3161,7 @@ forall [R : realType] [x : R],
 (-1 <= x <= 1)%R -> (- (trigo.pi / 2) <= asin x)%R
 
 asin_geNpi2 is not universe polymorphic
-Arguments asin_geNpi2 [R] [x]%ring_scope _
+Arguments asin_geNpi2 [R] [x]%_ring_scope _
 asin_geNpi2 is opaque
 Expands to: Constant mathcomp.analysis.trigo.asin_geNpi2
 Declared in library mathcomp.analysis.trigo, line 1021, characters 6-17
@@ -3175,7 +3175,7 @@ Declared in library mathcomp.analysis.trigo, line 1021, characters 6-17
 forall [R : realType] [x : R], (-1 <= x <= 1)%R -> (asin x <= trigo.pi / 2)%R
 
 asin_lepi2 is not universe polymorphic
-Arguments asin_lepi2 [R] [x]%ring_scope _
+Arguments asin_lepi2 [R] [x]%_ring_scope _
 asin_lepi2 is opaque
 Expands to: Constant mathcomp.analysis.trigo.asin_lepi2
 Declared in library mathcomp.analysis.trigo, line 1024, characters 6-16
@@ -3209,7 +3209,7 @@ Declared in library mathcomp.analysis.trigo, line 1027, characters 6-11
 forall [R : realType] [x : R], (-1 <= x < 1)%R -> (asin x < trigo.pi / 2)%R
 
 asin_ltpi2 is not universe polymorphic
-Arguments asin_ltpi2 [R] [x]%ring_scope _
+Arguments asin_ltpi2 [R] [x]%_ring_scope _
 asin_ltpi2 is opaque
 Expands to: Constant mathcomp.analysis.trigo.asin_ltpi2
 Declared in library mathcomp.analysis.trigo, line 1030, characters 6-16
@@ -3229,7 +3229,7 @@ forall [R : realType] [x : R],
 (-1 < x <= 1)%R -> (- (trigo.pi / 2) < asin x)%R
 
 asin_gtNpi2 is not universe polymorphic
-Arguments asin_gtNpi2 [R] [x]%ring_scope _
+Arguments asin_gtNpi2 [R] [x]%_ring_scope _
 asin_gtNpi2 is opaque
 Expands to: Constant mathcomp.analysis.trigo.asin_gtNpi2
 Declared in library mathcomp.analysis.trigo, line 1039, characters 6-17
@@ -3273,7 +3273,7 @@ forall [R : realType] [x : R],
 (-1 <= x <= 1)%R -> cos (asin x) = Num.ExtraDef.sqrtr (1 - x ^+ 2)
 
 cos_asin is not universe polymorphic
-Arguments cos_asin [R] [x]%ring_scope _
+Arguments cos_asin [R] [x]%_ring_scope _
 cos_asin is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos_asin
 Declared in library mathcomp.analysis.trigo, line 1054, characters 6-14
@@ -3310,7 +3310,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` asin @^-1` t)%classic
 
-Arguments continuous_asin [R] [x]%ring_scope _ [t] _
+Arguments continuous_asin [R] [x]%_ring_scope _ [t] _
 continuous_asin is opaque
 Expands to: Constant mathcomp.analysis.trigo.continuous_asin
 Declared in library mathcomp.analysis.trigo, line 1060, characters 6-21
@@ -3335,7 +3335,7 @@ forall [R : realType] [x : R],
 (-1 < x < 1)%R -> is_derive x 1%R asin (Num.ExtraDef.sqrtr (1 - x ^+ 2))^-1%R
 
 is_derive1_asin is not universe polymorphic
-Arguments is_derive1_asin [R] [x]%ring_scope _
+Arguments is_derive1_asin [R] [x]%_ring_scope _
 is_derive1_asin is opaque
 Expands to: Constant mathcomp.analysis.trigo.is_derive1_asin
 Declared in library mathcomp.analysis.trigo, line 1074, characters 6-21
@@ -3430,7 +3430,7 @@ Declared in library mathcomp.analysis.trigo, line 1099, characters 10-21
 <span class="vernacular">Definition</span><span class="id"> </span><span id="oneDsqr" class="id"><a name="oneDsqr" class="" title="oneDsqr : forall {R : realType}, R -> R
 
 oneDsqr is not universe polymorphic
-Arguments oneDsqr {R} x%ring_scope
+Arguments oneDsqr {R} x%_ring_scope
 oneDsqr is transparent
 Expands to: Constant mathcomp.analysis.trigo.oneDsqr
 Declared in library mathcomp.analysis.trigo, line 1105, characters 11-18
@@ -3439,7 +3439,7 @@ Declared in library mathcomp.analysis.trigo, line 1105, characters 11-18
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="oneDsqr_ge1" class="id"><a name="oneDsqr_ge1" class="" title="oneDsqr_ge1 : forall {R : realType} (x : R), ((1 : R) <= (oneDsqr x : R))%R
 
 oneDsqr_ge1 is not universe polymorphic
-Arguments oneDsqr_ge1 {R} x%ring_scope
+Arguments oneDsqr_ge1 {R} x%_ring_scope
 oneDsqr_ge1 is opaque
 Expands to: Constant mathcomp.analysis.trigo.oneDsqr_ge1
 Declared in library mathcomp.analysis.trigo, line 1107, characters 6-17
@@ -3455,7 +3455,7 @@ Declared in library mathcomp.analysis.trigo, line 1107, characters 6-17
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="oneDsqr_inum" class="id"><a name="oneDsqr_inum" class="" title="oneDsqr_inum : forall {R : realType}, R -> {itv R & `[1%Z, +oo[%R}
 
 oneDsqr_inum is not universe polymorphic
-Arguments oneDsqr_inum {R} x%ring_scope
+Arguments oneDsqr_inum {R} x%_ring_scope
 oneDsqr_inum is transparent
 Expands to: Constant mathcomp.analysis.trigo.oneDsqr_inum
 Declared in library mathcomp.analysis.trigo, line 1113, characters 10-22
@@ -3465,7 +3465,7 @@ Declared in library mathcomp.analysis.trigo, line 1113, characters 10-22
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="oneDsqrV_le1" class="id"><a name="oneDsqrV_le1" class="" title="oneDsqrV_le1 : forall {R : realType} (x : R), ((oneDsqr\^-1) x <= 1)%R
 
 oneDsqrV_le1 is not universe polymorphic
-Arguments oneDsqrV_le1 {R} x%ring_scope
+Arguments oneDsqrV_le1 {R} x%_ring_scope
 oneDsqrV_le1 is opaque
 Expands to: Constant mathcomp.analysis.trigo.oneDsqrV_le1
 Declared in library mathcomp.analysis.trigo, line 1116, characters 6-18
@@ -3553,7 +3553,7 @@ forall [R : realType] (x : R),
 (- (trigo.pi / 2) < atan x < trigo.pi / 2)%R /\ tan (atan x) = x
 
 atan_def is not universe polymorphic
-Arguments atan_def [R] x%ring_scope
+Arguments atan_def [R] x%_ring_scope
 atan_def is opaque
 Expands to: Constant mathcomp.analysis.trigo.atan_def
 Declared in library mathcomp.analysis.trigo, line 1133, characters 6-14
@@ -3588,7 +3588,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="atan_gtNpi2" class="id"><a name="atan_gtNpi2" class="" title="atan_gtNpi2 : forall [R : realType] (x : R), (- (trigo.pi / 2) < atan x)%R
 
 atan_gtNpi2 is not universe polymorphic
-Arguments atan_gtNpi2 [R] x%ring_scope
+Arguments atan_gtNpi2 [R] x%_ring_scope
 atan_gtNpi2 is opaque
 Expands to: Constant mathcomp.analysis.trigo.atan_gtNpi2
 Declared in library mathcomp.analysis.trigo, line 1159, characters 6-17
@@ -3601,7 +3601,7 @@ Declared in library mathcomp.analysis.trigo, line 1159, characters 6-17
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="atan_ltpi2" class="id"><a name="atan_ltpi2" class="" title="atan_ltpi2 : forall [R : realType] (x : R), (atan x < trigo.pi / 2)%R
 
 atan_ltpi2 is not universe polymorphic
-Arguments atan_ltpi2 [R] x%ring_scope
+Arguments atan_ltpi2 [R] x%_ring_scope
 atan_ltpi2 is opaque
 Expands to: Constant mathcomp.analysis.trigo.atan_ltpi2
 Declared in library mathcomp.analysis.trigo, line 1162, characters 6-16
@@ -3661,7 +3661,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="atanN" class="id"><a name="atanN" class="" title="atanN : forall [R : realType] (x : R), atan (- x) = (- atan x)%R
 
 atanN is not universe polymorphic
-Arguments atanN [R] x%ring_scope
+Arguments atanN [R] x%_ring_scope
 atanN is opaque
 Expands to: Constant mathcomp.analysis.trigo.atanN
 Declared in library mathcomp.analysis.trigo, line 1184, characters 6-11
@@ -3720,7 +3720,7 @@ exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` atan @^-1` t)%classic
 
-Arguments continuous_atan [R] [x]%ring_scope [t] _
+Arguments continuous_atan [R] [x]%_ring_scope [t] _
 continuous_atan is opaque
 Expands to: Constant mathcomp.analysis.trigo.continuous_atan
 Declared in library mathcomp.analysis.trigo, line 1197, characters 6-21
@@ -3741,7 +3741,7 @@ forall [R : realType] (x : R),
 cos (atan x) = (Num.ExtraDef.sqrtr (1 + x ^+ 2))^-1%R
 
 cos_atan is not universe polymorphic
-Arguments cos_atan [R] x%ring_scope
+Arguments cos_atan [R] x%_ring_scope
 cos_atan is opaque
 Expands to: Constant mathcomp.analysis.trigo.cos_atan
 Declared in library mathcomp.analysis.trigo, line 1207, characters 6-14
@@ -3805,7 +3805,7 @@ exists2 i : R,
          ((fun h : R => (h^-1 *: ((atan \o shift x) h%:A - atan x))%R) @^-1`
           t) t0))%classic
 
-Arguments derivable_atan [R] [x]%ring_scope [t] _
+Arguments derivable_atan [R] [x]%_ring_scope [t] _
 derivable_atan is opaque
 Expands to: Constant mathcomp.analysis.trigo.derivable_atan
 Declared in library mathcomp.analysis.trigo, line 1233, characters 6-20

@@ -285,7 +285,7 @@ forall [R : Type] [idx : R] (op : law idx) [I : choiceType]
 \big[op/idx]_(i | P i) F i = idx
 
 big_fset0_cond is not universe polymorphic
-Arguments big_fset0_cond [R]%type_scope [idx] op [I] P F%function_scope
+Arguments big_fset0_cond [R]%_type_scope [idx] op [I] P F%_function_scope
 big_fset0_cond is opaque
 Expands to: Constant mathcomp.experimental_reals.xfinmap.big_fset0_cond
 Declared in
@@ -303,7 +303,7 @@ forall [R : Type] [idx : R] (op : law idx) [I : choiceType]
 \big[op/idx]_(i | P i) F i = idx
 
 big_fset0 is not universe polymorphic
-Arguments big_fset0 [R]%type_scope [idx] op [I] P F%function_scope
+Arguments big_fset0 [R]%_type_scope [idx] op [I] P F%_function_scope
 big_fset0 is opaque
 Expands to: Constant mathcomp.finmap.finmap.big_fset0
 Declared in library mathcomp.finmap.finmap, line 2299, characters 6-15
@@ -320,7 +320,7 @@ forall [R : Type] [idx : R] (op : law idx) [I : choiceType]
 \big[op/idx]_i F i = F.[fset11 (K:=I) a]%fmap
 
 big_fset1 is not universe polymorphic
-Arguments big_fset1 [R]%type_scope [idx] op [I a] F%function_scope
+Arguments big_fset1 [R]%_type_scope [idx] op [I a] F%_function_scope
 big_fset1 is opaque
 Expands to: Constant mathcomp.finmap.finmap.big_fset1
 Declared in library mathcomp.finmap.finmap, line 2306, characters 6-15
@@ -348,7 +348,8 @@ forall [R : Type] [idx : R] [op : com_law idx] [T : choiceType]
 \big[op/idx]_(x | P (\val x)) F (\val x) = \big[op/idx]_(x <- J | P x) F x
 
 big_fset_seq_cond is not universe polymorphic
-Arguments big_fset_seq_cond [R]%type_scope [idx op T J] (P F)%function_scope
+Arguments big_fset_seq_cond [R]%_type_scope [idx op T J]
+  (P F)%_function_scope
 big_fset_seq_cond is opaque
 Expands to: Constant mathcomp.experimental_reals.xfinmap.big_fset_seq_cond
 Declared in
@@ -369,7 +370,7 @@ forall [R : Type] [idx : R] [op : com_law idx] [T : choiceType]
 \big[op/idx]_x F (\val x) = \big[op/idx]_(x <- J) F x
 
 big_fset_seq is not universe polymorphic
-Arguments big_fset_seq [R]%type_scope [idx op T J] F%function_scope
+Arguments big_fset_seq [R]%_type_scope [idx op T J] F%_function_scope
 big_fset_seq is opaque
 Expands to: Constant mathcomp.experimental_reals.xfinmap.big_fset_seq
 Declared in
@@ -389,8 +390,8 @@ uniq s ->
 \big[op/idx]_(x | P (\val x)) F (\val x) = \big[op/idx]_(x <- s | P x) F x
 
 big_seq_fset_cond is not universe polymorphic
-Arguments big_seq_fset_cond [R]%type_scope [idx op T] 
-  [s]%seq_scope (P F)%function_scope _
+Arguments big_seq_fset_cond [R]%_type_scope [idx op T] 
+  [s]%_seq_scope (P F)%_function_scope _
 big_seq_fset_cond is opaque
 Expands to: Constant mathcomp.experimental_reals.xfinmap.big_seq_fset_cond
 Declared in
@@ -411,8 +412,8 @@ forall [R : Type] [idx : R] [op : com_law idx] [T : choiceType]
 uniq s -> \big[op/idx]_x F (\val x) = \big[op/idx]_(x <- s) F x
 
 big_seq_fset is not universe polymorphic
-Arguments big_seq_fset [R]%type_scope [idx op T] [s]%seq_scope
-  F%function_scope _
+Arguments big_seq_fset [R]%_type_scope [idx op T] 
+  [s]%_seq_scope F%_function_scope _
 big_seq_fset is opaque
 Expands to: Constant mathcomp.experimental_reals.xfinmap.big_seq_fset
 Declared in
@@ -442,7 +443,7 @@ forall {R : Type} {T : choiceType} [idx : R] (op : com_law idx)
 op (\big[op/idx]_j F (\val j)) (\big[op/idx]_j F (\val j))
 
 big_fsetU is not universe polymorphic
-Arguments big_fsetU {R}%type_scope {T} [idx] op [A B] F%function_scope _
+Arguments big_fsetU {R}%_type_scope {T} [idx] op [A B] F%_function_scope _
 big_fsetU is opaque
 Expands to: Constant mathcomp.experimental_reals.xfinmap.big_fsetU
 Declared in
@@ -471,7 +472,7 @@ forall [R : realDomainType] [T : choiceType] [I J : {fset T}] [F : T -> R],
 {subset I <= J} -> (\sum_i F (\val i) <= \sum_j F (\val j))%R
 
 big_fset_subset is not universe polymorphic
-Arguments big_fset_subset [R T I J] [F]%function_scope _%function_scope _
+Arguments big_fset_subset [R T I J] [F]%_function_scope _%_function_scope _
 big_fset_subset is opaque
 Expands to: Constant mathcomp.experimental_reals.xfinmap.big_fset_subset
 Declared in
@@ -496,7 +497,7 @@ forall [R : realDomainType] (F : nat -> R) (n : nat),
 (\sum_(0 <= i < n) F i)%R = (\sum_i F (\val i))%R
 
 big_nat_mkfset is not universe polymorphic
-Arguments big_nat_mkfset [R] F%function_scope n%nat_scope
+Arguments big_nat_mkfset [R] F%_function_scope n%_nat_scope
 big_nat_mkfset is opaque
 Expands to: Constant mathcomp.experimental_reals.xfinmap.big_nat_mkfset
 Declared in
@@ -519,7 +520,7 @@ forall [R : realDomainType] (F : nat -> R) (n : nat),
 (\sum_(i < n) F i)%R = (\sum_i F (\val i))%R
 
 big_ord_mkfset is not universe polymorphic
-Arguments big_ord_mkfset [R] F%function_scope n%nat_scope
+Arguments big_ord_mkfset [R] F%_function_scope n%_nat_scope
 big_ord_mkfset is opaque
 Expands to: Constant mathcomp.experimental_reals.xfinmap.big_ord_mkfset
 Declared in

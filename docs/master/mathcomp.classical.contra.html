@@ -275,7 +275,7 @@ view manually to an assumption (as in, move_viewP my_view some_assumption).
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Internals.move_viewP" class="id"><a name="Internals.move_viewP" class="" title="Internals.move_viewP : forall {S T : Type}, Internals.move_view S T -> S -> T
 
 Internals.move_viewP is not universe polymorphic
-Arguments Internals.move_viewP {S T}%type_scope mv _
+Arguments Internals.move_viewP {S T}%_type_scope mv _
 Internals.move_viewP is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.move_viewP
 Declared in library mathcomp.classical.contra, line 63, characters 11-21
@@ -291,7 +291,7 @@ Declared in library mathcomp.classical.contra, line 63, characters 11-21
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Internals.equivT_refl" class="id"><a name="Internals.equivT_refl" class="" title="Internals.equivT_refl : forall S : Type, Internals.equivT S S
 
 Internals.equivT_refl is not universe polymorphic
-Arguments Internals.equivT_refl S%type_scope
+Arguments Internals.equivT_refl S%_type_scope
 Internals.equivT_refl is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.equivT_refl
 Declared in library mathcomp.classical.contra, line 72, characters 11-22
@@ -301,7 +301,7 @@ forall {S T U : Type},
 Internals.equivT S T -> Internals.equivT S U -> Internals.equivT T U
 
 Internals.equivT_transl is not universe polymorphic
-Arguments Internals.equivT_transl {S T U}%type_scope _ _
+Arguments Internals.equivT_transl {S T U}%_type_scope _ _
 Internals.equivT_transl is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.equivT_transl
 Declared in library mathcomp.classical.contra, line 73, characters 11-24
@@ -314,7 +314,7 @@ Declared in library mathcomp.classical.contra, line 73, characters 11-24
 forall {S T : Type}, Internals.equivT S T -> Internals.equivT T S
 
 Internals.equivT_sym is not universe polymorphic
-Arguments Internals.equivT_sym {S T}%type_scope _
+Arguments Internals.equivT_sym {S T}%_type_scope _
 Internals.equivT_sym is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.equivT_sym
 Declared in library mathcomp.classical.contra, line 78, characters 11-21
@@ -325,7 +325,7 @@ forall {S T U : Type},
 Internals.equivT S T -> Internals.equivT T U -> Internals.equivT S U
 
 Internals.equivT_trans is not universe polymorphic
-Arguments Internals.equivT_trans {S T U}%type_scope _ _
+Arguments Internals.equivT_trans {S T U}%_type_scope _ _
 Internals.equivT_trans is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.equivT_trans
 Declared in library mathcomp.classical.contra, line 80, characters 11-23
@@ -336,7 +336,7 @@ forall {S T U : Type},
 Internals.equivT S T -> Internals.equivT U S -> Internals.equivT U T
 
 Internals.equivT_transr is not universe polymorphic
-Arguments Internals.equivT_transr {S T U}%type_scope eqST _
+Arguments Internals.equivT_transr {S T U}%_type_scope eqST _
 Internals.equivT_transr is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.equivT_transr
 Declared in library mathcomp.classical.contra, line 82, characters 11-24
@@ -346,7 +346,7 @@ Declared in library mathcomp.classical.contra, line 82, characters 11-24
 forall P Q : Prop, Internals.equivT P Q <-> Internals.equivT P Q
 
 Internals.equivT_Prop is not universe polymorphic
-Arguments Internals.equivT_Prop (P Q)%type_scope
+Arguments Internals.equivT_Prop (P Q)%_type_scope
 Internals.equivT_Prop is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.equivT_Prop
 Declared in library mathcomp.classical.contra, line 84, characters 11-22
@@ -358,7 +358,7 @@ Declared in library mathcomp.classical.contra, line 84, characters 11-22
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Internals.equivT_LR" class="id"><a name="Internals.equivT_LR" class="" title="Internals.equivT_LR : forall {S T : Type}, Internals.equivT S T -> S -> T
 
 Internals.equivT_LR is not universe polymorphic
-Arguments Internals.equivT_LR {S T}%type_scope eq _
+Arguments Internals.equivT_LR {S T}%_type_scope eq _
 Internals.equivT_LR is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.equivT_LR
 Declared in library mathcomp.classical.contra, line 86, characters 11-20
@@ -367,7 +367,7 @@ Declared in library mathcomp.classical.contra, line 86, characters 11-20
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Internals.equivT_RL" class="id"><a name="Internals.equivT_RL" class="" title="Internals.equivT_RL : forall {S T : Type}, Internals.equivT S T -> T -> S
 
 Internals.equivT_RL is not universe polymorphic
-Arguments Internals.equivT_RL {S T}%type_scope eq _
+Arguments Internals.equivT_RL {S T}%_type_scope eq _
 Internals.equivT_RL is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.equivT_RL
 Declared in library mathcomp.classical.contra, line 88, characters 11-20
@@ -412,7 +412,7 @@ This implementation has two important limitations:
 <span class="id">Polymorphic</span><span class="vernacular"> Definition</span><span class="id"> </span><span id="Internals.TypeForall" class="id"><a name="Internals.TypeForall" class="" title="Internals.TypeForall@{u u0} : forall A : Type, Internals.forallSort A
 
 Internals.TypeForall is universe polymorphic
-Arguments Internals.TypeForall A%type_scope
+Arguments Internals.TypeForall A%_type_scope
 Internals.TypeForall is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.TypeForall
 Declared in library mathcomp.classical.contra, line 126, characters 23-33
@@ -422,7 +422,7 @@ Declared in library mathcomp.classical.contra, line 126, characters 23-33
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.PropForall" class="id"><a name="Internals.PropForall" class="" title="Internals.PropForall : forall A : Type, Internals.forallSort A
 
 Internals.PropForall is not universe polymorphic
-Arguments Internals.PropForall A%type_scope
+Arguments Internals.PropForall A%_type_scope
 Internals.PropForall is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.PropForall
 Declared in library mathcomp.classical.contra, line 129, characters 10-20
@@ -431,7 +431,7 @@ Declared in library mathcomp.classical.contra, line 129, characters 10-20
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.SetForall" class="id"><a name="Internals.SetForall" class="" title="Internals.SetForall : forall A : Set, Internals.forallSort A
 
 Internals.SetForall is not universe polymorphic
-Arguments Internals.SetForall A%type_scope
+Arguments Internals.SetForall A%_type_scope
 Internals.SetForall is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.SetForall
 Declared in library mathcomp.classical.contra, line 133, characters 10-19
@@ -442,7 +442,7 @@ forall {A : Type} {S : Internals.forallSort A},
 (A -> Internals.forall_sort S) -> Internals.forall_sort S
 
 Internals.Forall is not universe polymorphic
-Arguments Internals.Forall {A}%type_scope {S} _%function_scope
+Arguments Internals.Forall {A}%_type_scope {S} _%_function_scope
 Internals.Forall is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.Forall
 Declared in library mathcomp.classical.contra, line 135, characters 11-17
@@ -470,7 +470,7 @@ polymorphism cannot instantiate Type with Prop.
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Internals.wrap4Prop" class="id"><a name="Internals.wrap4Prop" class="" title="Internals.wrap4Prop : Prop -> Internals.wrappedProp
 
 Internals.wrap4Prop is not universe polymorphic
-Arguments Internals.wrap4Prop unwrap_Prop%type_scope
+Arguments Internals.wrap4Prop unwrap_Prop%_type_scope
 Internals.wrap4Prop is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.wrap4Prop
 Declared in library mathcomp.classical.contra, line 171, characters 11-20
@@ -478,7 +478,7 @@ Declared in library mathcomp.classical.contra, line 171, characters 11-20
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Internals.wrap3Prop" class="id"><a name="Internals.wrap3Prop" class="" title="Internals.wrap3Prop : Prop -> Internals.wrappedProp
 
 Internals.wrap3Prop is not universe polymorphic
-Arguments Internals.wrap3Prop unwrap_Prop%type_scope
+Arguments Internals.wrap3Prop unwrap_Prop%_type_scope
 Internals.wrap3Prop is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.wrap3Prop
 Declared in library mathcomp.classical.contra, line 172, characters 11-20
@@ -486,7 +486,7 @@ Declared in library mathcomp.classical.contra, line 172, characters 11-20
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Internals.wrap2Prop" class="id"><a name="Internals.wrap2Prop" class="" title="Internals.wrap2Prop : Prop -> Internals.wrappedProp
 
 Internals.wrap2Prop is not universe polymorphic
-Arguments Internals.wrap2Prop unwrap_Prop%type_scope
+Arguments Internals.wrap2Prop unwrap_Prop%_type_scope
 Internals.wrap2Prop is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.wrap2Prop
 Declared in library mathcomp.classical.contra, line 173, characters 11-20
@@ -494,7 +494,7 @@ Declared in library mathcomp.classical.contra, line 173, characters 11-20
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.wrap1Prop" class="id"><a name="Internals.wrap1Prop" class="" title="Internals.wrap1Prop : Prop -> Internals.wrappedProp
 
 Internals.wrap1Prop is not universe polymorphic
-Arguments Internals.wrap1Prop P%type_scope
+Arguments Internals.wrap1Prop P%_type_scope
 Internals.wrap1Prop is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.wrap1Prop
 Declared in library mathcomp.classical.contra, line 174, characters 10-19
@@ -504,7 +504,7 @@ Declared in library mathcomp.classical.contra, line 174, characters 10-19
 <span class="id">Polymorphic</span><span class="vernacular"> Definition</span><span class="id"> </span><span id="Internals.wrap4Type" class="id"><a name="Internals.wrap4Type" class="" title="Internals.wrap4Type@{i} : Type -> Internals.wrappedType
 
 Internals.wrap4Type is universe polymorphic
-Arguments Internals.wrap4Type unwrap_Type%type_scope
+Arguments Internals.wrap4Type unwrap_Type%_type_scope
 Internals.wrap4Type is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.wrap4Type
 Declared in library mathcomp.classical.contra, line 177, characters 23-32
@@ -512,7 +512,7 @@ Declared in library mathcomp.classical.contra, line 177, characters 23-32
 <span class="id">Polymorphic</span><span class="vernacular"> Definition</span><span class="id"> </span><span id="Internals.wrap3Type" class="id"><a name="Internals.wrap3Type" class="" title="Internals.wrap3Type@{i} : Type -> Internals.wrappedType
 
 Internals.wrap3Type is universe polymorphic
-Arguments Internals.wrap3Type unwrap_Type%type_scope
+Arguments Internals.wrap3Type unwrap_Type%_type_scope
 Internals.wrap3Type is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.wrap3Type
 Declared in library mathcomp.classical.contra, line 178, characters 23-32
@@ -520,7 +520,7 @@ Declared in library mathcomp.classical.contra, line 178, characters 23-32
 <span class="id">Polymorphic</span><span class="vernacular"> Definition</span><span class="id"> </span><span id="Internals.wrap2Type" class="id"><a name="Internals.wrap2Type" class="" title="Internals.wrap2Type@{i} : Type -> Internals.wrappedType
 
 Internals.wrap2Type is universe polymorphic
-Arguments Internals.wrap2Type unwrap_Type%type_scope
+Arguments Internals.wrap2Type unwrap_Type%_type_scope
 Internals.wrap2Type is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.wrap2Type
 Declared in library mathcomp.classical.contra, line 179, characters 23-32
@@ -528,7 +528,7 @@ Declared in library mathcomp.classical.contra, line 179, characters 23-32
 <span class="id">Polymorphic</span><span class="vernacular"> Definition</span><span class="id"> </span><span id="Internals.wrap1Type" class="id"><a name="Internals.wrap1Type" class="" title="Internals.wrap1Type@{i} : Type -> Internals.wrappedType
 
 Internals.wrap1Type is universe polymorphic
-Arguments Internals.wrap1Type T%type_scope
+Arguments Internals.wrap1Type T%_type_scope
 Internals.wrap1Type is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.wrap1Type
 Declared in library mathcomp.classical.contra, line 180, characters 23-32
@@ -542,7 +542,7 @@ P =1 Q -> Internals.Forall P = Internals.Forall Q
 
 Internals.generic_forall_extensionality is not universe polymorphic
 Arguments Internals.generic_forall_extensionality 
-  {A}%type_scope {S} {P Q}%function_scope _
+  {A}%_type_scope {S} {P Q}%_function_scope _
 Internals.generic_forall_extensionality is opaque
 Expands to: Constant
             mathcomp.classical.contra.Internals.generic_forall_extensionality
@@ -639,7 +639,7 @@ forall {t : bool} {nP : Prop} (P : Internals.negatedProp t nP),
 (~ Internals.unwrap_Prop (Internals.negated_Prop P)) = nP
 
 Internals.lax_notE is not universe polymorphic
-Arguments Internals.lax_notE {t}%bool_scope {nP}%type_scope P
+Arguments Internals.lax_notE {t}%_bool_scope {nP}%_type_scope P
 Internals.lax_notE is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.lax_notE
 Declared in library mathcomp.classical.contra, line 267, characters 6-14
@@ -653,7 +653,7 @@ forall {t : bool} {nP : Prop} {P : Internals.negatedProp t nP},
 ~ Internals.unwrap_Prop (Internals.negated_Prop P) -> nP
 
 Internals.lax_notP is not universe polymorphic
-Arguments Internals.lax_notP {t}%bool_scope {nP}%type_scope {P} _
+Arguments Internals.lax_notP {t}%_bool_scope {nP}%_type_scope {P} _
 Internals.lax_notP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.lax_notP
 Declared in library mathcomp.classical.contra, line 268, characters 6-14
@@ -667,7 +667,7 @@ forall {t : bool} {nP : Prop} (P : Internals.negatedProp t nP),
 Internals.unwrap_Prop (Internals.negated_Prop P) = (~ nP)
 
 Internals.lax_notI is not universe polymorphic
-Arguments Internals.lax_notI {t}%bool_scope {nP}%type_scope P
+Arguments Internals.lax_notI {t}%_bool_scope {nP}%_type_scope P
 Internals.lax_notI is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.lax_notI
 Declared in library mathcomp.classical.contra, line 269, characters 11-19
@@ -679,7 +679,7 @@ forall {nP : Prop} (P : Internals.negatedProp false nP),
 (~ Internals.unwrap_Prop (Internals.negated_Prop P)) = nP
 
 Internals.notE is not universe polymorphic
-Arguments Internals.notE {nP}%type_scope P
+Arguments Internals.notE {nP}%_type_scope P
 Internals.notE is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.notE
 Declared in library mathcomp.classical.contra, line 272, characters 11-15
@@ -690,7 +690,7 @@ forall {nP : Prop} {P : Internals.negatedProp false nP},
 Internals.move_view (~ Internals.unwrap_Prop (Internals.negated_Prop P)) nP
 
 Internals.notP is not universe polymorphic
-Arguments Internals.notP {nP}%type_scope {P}
+Arguments Internals.notP {nP}%_type_scope {P}
 Internals.notP is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.notP
 Declared in library mathcomp.classical.contra, line 274, characters 11-15
@@ -701,7 +701,7 @@ forall [nP : Prop] (P : Internals.properNegatedProp nP),
 (~ Internals.proper_negated_Prop P) = nP
 
 Internals.proper_nPropP is not universe polymorphic
-Arguments Internals.proper_nPropP [nP]%type_scope P
+Arguments Internals.proper_nPropP [nP]%_type_scope P
 Internals.proper_nPropP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.proper_nPropP
 Declared in library mathcomp.classical.contra, line 276, characters 5-18
@@ -715,7 +715,7 @@ forall {nP : Prop} (P : Internals.properNegatedProp nP),
 Internals.proper_negated_Prop P = (~ nP)
 
 Internals.notI is not universe polymorphic
-Arguments Internals.notI {nP}%type_scope P
+Arguments Internals.notI {nP}%_type_scope P
 Internals.notI is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.notI
 Declared in library mathcomp.classical.contra, line 277, characters 11-15
@@ -727,7 +727,7 @@ forall [nP : Prop],
 Internals.properNegatedProp nP -> Internals.negatedProp false nP
 
 Internals.proper_nProp is not universe polymorphic
-Arguments Internals.proper_nProp [nP]%type_scope P
+Arguments Internals.proper_nProp [nP]%_type_scope P
 Internals.proper_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.proper_nProp
 Declared in library mathcomp.classical.contra, line 280, characters 10-22
@@ -740,7 +740,7 @@ Declared in library mathcomp.classical.contra, line 280, characters 10-22
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.trivial_nProp" class="id"><a name="Internals.trivial_nProp" class="" title="Internals.trivial_nProp : forall P : Prop, Internals.negatedProp true (~ P)
 
 Internals.trivial_nProp is not universe polymorphic
-Arguments Internals.trivial_nProp P%type_scope
+Arguments Internals.trivial_nProp P%_type_scope
 Internals.trivial_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.trivial_nProp
 Declared in library mathcomp.classical.contra, line 286, characters 10-23
@@ -765,7 +765,7 @@ Declared in library mathcomp.classical.contra, line 291, characters 10-21
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.not_nProp" class="id"><a name="Internals.not_nProp" class="" title="Internals.not_nProp : forall P : Prop, Internals.properNegatedProp P
 
 Internals.not_nProp is not universe polymorphic
-Arguments Internals.not_nProp P%type_scope
+Arguments Internals.not_nProp P%_type_scope
 Internals.not_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.not_nProp
 Declared in library mathcomp.classical.contra, line 292, characters 10-19
@@ -776,7 +776,8 @@ forall (P : Prop) [tQ : bool] [nQ : Prop] (Q : Internals.negatedProp tQ nQ),
 (~ (P /\ Internals.unwrap_Prop (Internals.negated_Prop Q))) = (P -> nQ)
 
 Internals.and_nPropP is not universe polymorphic
-Arguments Internals.and_nPropP P%type_scope [tQ]%bool_scope [nQ]%type_scope Q
+Arguments Internals.and_nPropP P%_type_scope [tQ]%_bool_scope
+  [nQ]%_type_scope Q
 Internals.and_nPropP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.and_nPropP
 Declared in library mathcomp.classical.contra, line 294, characters 5-15
@@ -790,7 +791,8 @@ forall (P : Prop) [tQ : bool] [nQ : Prop],
 Internals.negatedProp tQ nQ -> Internals.properNegatedProp (P -> nQ)
 
 Internals.and_nProp is not universe polymorphic
-Arguments Internals.and_nProp P%type_scope [tQ]%bool_scope [nQ]%type_scope Q
+Arguments Internals.and_nProp P%_type_scope [tQ]%_bool_scope 
+  [nQ]%_type_scope Q
 Internals.and_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.and_nProp
 Declared in library mathcomp.classical.contra, line 296, characters 10-19
@@ -803,8 +805,8 @@ forall (P Q : Prop) [tR : bool] [nR : Prop] (R : Internals.negatedProp tR nR),
 (P -> Q -> nR)
 
 Internals.and3_nPropP is not universe polymorphic
-Arguments Internals.and3_nPropP (P Q)%type_scope [tR]%bool_scope
-  [nR]%type_scope R
+Arguments Internals.and3_nPropP (P Q)%_type_scope 
+  [tR]%_bool_scope [nR]%_type_scope R
 Internals.and3_nPropP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.and3_nPropP
 Declared in library mathcomp.classical.contra, line 299, characters 5-16
@@ -818,8 +820,8 @@ forall (P Q : Prop) [tR : bool] [nR : Prop],
 Internals.negatedProp tR nR -> Internals.properNegatedProp (P -> Q -> nR)
 
 Internals.and3_nProp is not universe polymorphic
-Arguments Internals.and3_nProp (P Q)%type_scope [tR]%bool_scope
-  [nR]%type_scope R
+Arguments Internals.and3_nProp (P Q)%_type_scope [tR]%_bool_scope
+  [nR]%_type_scope R
 Internals.and3_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.and3_nProp
 Declared in library mathcomp.classical.contra, line 301, characters 10-20
@@ -833,8 +835,8 @@ forall (P Q R : Prop) [tS : bool] [nS : Prop]
 (P -> Q -> R -> nS)
 
 Internals.and4_nPropP is not universe polymorphic
-Arguments Internals.and4_nPropP (P Q R)%type_scope 
-  [tS]%bool_scope [nS]%type_scope S
+Arguments Internals.and4_nPropP (P Q R)%_type_scope 
+  [tS]%_bool_scope [nS]%_type_scope S
 Internals.and4_nPropP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.and4_nPropP
 Declared in library mathcomp.classical.contra, line 304, characters 5-16
@@ -850,8 +852,8 @@ Internals.negatedProp tS nS ->
 Internals.properNegatedProp (P -> Q -> R -> nS)
 
 Internals.and4_nProp is not universe polymorphic
-Arguments Internals.and4_nProp (P Q R)%type_scope 
-  [tS]%bool_scope [nS]%type_scope S
+Arguments Internals.and4_nProp (P Q R)%_type_scope 
+  [tS]%_bool_scope [nS]%_type_scope S
 Internals.and4_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.and4_nProp
 Declared in library mathcomp.classical.contra, line 307, characters 10-20
@@ -865,8 +867,8 @@ forall (P Q R S : Prop) [tT : bool] [nT : Prop]
 (P -> Q -> R -> S -> nT)
 
 Internals.and5_nPropP is not universe polymorphic
-Arguments Internals.and5_nPropP (P Q R S)%type_scope 
-  [tT]%bool_scope [nT]%type_scope T
+Arguments Internals.and5_nPropP (P Q R S)%_type_scope 
+  [tT]%_bool_scope [nT]%_type_scope T
 Internals.and5_nPropP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.and5_nPropP
 Declared in library mathcomp.classical.contra, line 310, characters 5-16
@@ -882,8 +884,8 @@ Internals.negatedProp tT nT ->
 Internals.properNegatedProp (P -> Q -> R -> S -> nT)
 
 Internals.and5_nProp is not universe polymorphic
-Arguments Internals.and5_nProp (P Q R S)%type_scope 
-  [tT]%bool_scope [nT]%type_scope T
+Arguments Internals.and5_nProp (P Q R S)%_type_scope 
+  [tT]%_bool_scope [nT]%_type_scope T
 Internals.and5_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.and5_nProp
 Declared in library mathcomp.classical.contra, line 313, characters 10-20
@@ -899,8 +901,8 @@ forall [tP : bool] [nP : Prop] (P : Internals.negatedProp tP nP)
 (nP /\ nQ)
 
 Internals.or_nPropP is not universe polymorphic
-Arguments Internals.or_nPropP [tP]%bool_scope [nP]%type_scope 
-  P [tQ]%bool_scope [nQ]%type_scope Q
+Arguments Internals.or_nPropP [tP]%_bool_scope [nP]%_type_scope 
+  P [tQ]%_bool_scope [nQ]%_type_scope Q
 Internals.or_nPropP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.or_nPropP
 Declared in library mathcomp.classical.contra, line 316, characters 5-14
@@ -917,8 +919,8 @@ forall [tQ : bool] [nQ : Prop],
 Internals.negatedProp tQ nQ -> Internals.properNegatedProp (nP /\ nQ)
 
 Internals.or_nProp is not universe polymorphic
-Arguments Internals.or_nProp [tP]%bool_scope [nP]%type_scope 
-  P [tQ]%bool_scope [nQ]%type_scope Q
+Arguments Internals.or_nProp [tP]%_bool_scope [nP]%_type_scope 
+  P [tQ]%_bool_scope [nQ]%_type_scope Q
 Internals.or_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.or_nProp
 Declared in library mathcomp.classical.contra, line 319, characters 10-18
@@ -936,9 +938,9 @@ forall [tP : bool] [nP : Prop] (P : Internals.negatedProp tP nP)
 [/\ nP, nQ & nR]
 
 Internals.or3_nPropP is not universe polymorphic
-Arguments Internals.or3_nPropP [tP]%bool_scope [nP]%type_scope 
-  P [tQ]%bool_scope [nQ]%type_scope Q [tR]%bool_scope 
-  [nR]%type_scope R
+Arguments Internals.or3_nPropP [tP]%_bool_scope [nP]%_type_scope 
+  P [tQ]%_bool_scope [nQ]%_type_scope Q [tR]%_bool_scope 
+  [nR]%_type_scope R
 Internals.or3_nPropP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.or3_nPropP
 Declared in library mathcomp.classical.contra, line 322, characters 5-15
@@ -957,9 +959,9 @@ forall [tR : bool] [nR : Prop],
 Internals.negatedProp tR nR -> Internals.properNegatedProp [/\ nP, nQ & nR]
 
 Internals.or3_nProp is not universe polymorphic
-Arguments Internals.or3_nProp [tP]%bool_scope [nP]%type_scope 
-  P [tQ]%bool_scope [nQ]%type_scope Q [tR]%bool_scope 
-  [nR]%type_scope R
+Arguments Internals.or3_nProp [tP]%_bool_scope [nP]%_type_scope 
+  P [tQ]%_bool_scope [nQ]%_type_scope Q [tR]%_bool_scope 
+  [nR]%_type_scope R
 Internals.or3_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.or3_nProp
 Declared in library mathcomp.classical.contra, line 325, characters 10-19
@@ -979,9 +981,9 @@ forall [tP : bool] [nP : Prop] (P : Internals.negatedProp tP nP)
 [/\ nP, nQ, nR & nS]
 
 Internals.or4_nPropP is not universe polymorphic
-Arguments Internals.or4_nPropP [tP]%bool_scope [nP]%type_scope 
-  P [tQ]%bool_scope [nQ]%type_scope Q [tR]%bool_scope 
-  [nR]%type_scope R [tS]%bool_scope [nS]%type_scope 
+Arguments Internals.or4_nPropP [tP]%_bool_scope [nP]%_type_scope 
+  P [tQ]%_bool_scope [nQ]%_type_scope Q [tR]%_bool_scope 
+  [nR]%_type_scope R [tS]%_bool_scope [nS]%_type_scope 
   S
 Internals.or4_nPropP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.or4_nPropP
@@ -1005,9 +1007,9 @@ Internals.negatedProp tS nS ->
 Internals.properNegatedProp [/\ nP, nQ, nR & nS]
 
 Internals.or4_nProp is not universe polymorphic
-Arguments Internals.or4_nProp [tP]%bool_scope [nP]%type_scope 
-  P [tQ]%bool_scope [nQ]%type_scope Q [tR]%bool_scope 
-  [nR]%type_scope R [tS]%bool_scope [nS]%type_scope 
+Arguments Internals.or4_nProp [tP]%_bool_scope [nP]%_type_scope 
+  P [tQ]%_bool_scope [nQ]%_type_scope Q [tR]%_bool_scope 
+  [nR]%_type_scope R [tS]%_bool_scope [nS]%_type_scope 
   S
 Internals.or4_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.or4_nProp
@@ -1029,7 +1031,7 @@ telescope pattern.
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.unary_and_rhs" class="id"><a name="Internals.unary_and_rhs" class="" title="Internals.unary_and_rhs : forall P : Prop, Internals.andRHS false P P P
 
 Internals.unary_and_rhs is not universe polymorphic
-Arguments Internals.unary_and_rhs P%type_scope
+Arguments Internals.unary_and_rhs P%_type_scope
 Internals.unary_and_rhs is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.unary_and_rhs
 Declared in library mathcomp.classical.contra, line 346, characters 10-23
@@ -1038,7 +1040,7 @@ Declared in library mathcomp.classical.contra, line 346, characters 10-23
 forall P Q : Prop, Internals.andRHS true P Q (P /\ Q)
 
 Internals.binary_and_rhs is not universe polymorphic
-Arguments Internals.binary_and_rhs (P Q)%type_scope
+Arguments Internals.binary_and_rhs (P Q)%_type_scope
 Internals.binary_and_rhs is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.binary_and_rhs
 Declared in library mathcomp.classical.contra, line 347, characters 10-24
@@ -1051,8 +1053,8 @@ forall [b : bool] [P nQ PnQ : Prop] [tR : bool]
 (~ (P -> Internals.unwrap_Prop (Internals.negated_Prop R))) = PnQ
 
 Internals.imply_nPropP is not universe polymorphic
-Arguments Internals.imply_nPropP [b]%bool_scope [P nQ PnQ]%type_scope
-  [tR]%bool_scope [nR] R
+Arguments Internals.imply_nPropP [b]%_bool_scope [P nQ PnQ]%_type_scope
+  [tR]%_bool_scope [nR] R
 Internals.imply_nPropP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.imply_nPropP
 Declared in library mathcomp.classical.contra, line 349, characters 5-17
@@ -1069,8 +1071,8 @@ Internals.negatedProp tR (Internals.and_RHS nR) ->
 Internals.properNegatedProp PnQ
 
 Internals.imply_nProp is not universe polymorphic
-Arguments Internals.imply_nProp [b]%bool_scope [P nQ PnQ]%type_scope
-  [tR]%bool_scope [nR] R
+Arguments Internals.imply_nProp [b]%_bool_scope [P nQ PnQ]%_type_scope
+  [tR]%_bool_scope [nR] R
 Internals.imply_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.imply_nProp
 Declared in library mathcomp.classical.contra, line 352, characters 10-21
@@ -1084,8 +1086,8 @@ forall [A : Type] [tP : bool] [nP : A -> Prop]
 (forall x : A, nP x)
 
 Internals.exists_nPropP is not universe polymorphic
-Arguments Internals.exists_nPropP [A]%type_scope [tP]%bool_scope
-  [nP]%function_scope P%function_scope
+Arguments Internals.exists_nPropP [A]%_type_scope 
+  [tP]%_bool_scope [nP]%_function_scope P%_function_scope
 Internals.exists_nPropP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.exists_nPropP
 Declared in library mathcomp.classical.contra, line 355, characters 5-18
@@ -1103,8 +1105,8 @@ forall [A : Type] [tP : bool] [nP : A -> Prop],
 Internals.properNegatedProp (forall x : A, nP x)
 
 Internals.exists_nProp is not universe polymorphic
-Arguments Internals.exists_nProp [A]%type_scope [tP]%bool_scope
-  [nP]%function_scope P%function_scope
+Arguments Internals.exists_nProp [A]%_type_scope [tP]%_bool_scope
+  [nP]%_function_scope P%_function_scope
 Internals.exists_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.exists_nProp
 Declared in library mathcomp.classical.contra, line 361, characters 10-22
@@ -1119,9 +1121,9 @@ forall [A : Type] (P : A -> Prop) [tQ : bool] [nQ : A -> Prop]
 (forall x : A, P x -> nQ x)
 
 Internals.exists2_nPropP is not universe polymorphic
-Arguments Internals.exists2_nPropP [A]%type_scope 
-  P%function_scope [tQ]%bool_scope [nQ]%function_scope 
-  Q%function_scope
+Arguments Internals.exists2_nPropP [A]%_type_scope 
+  P%_function_scope [tQ]%_bool_scope [nQ]%_function_scope 
+  Q%_function_scope
 Internals.exists2_nPropP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.exists2_nPropP
 Declared in library mathcomp.classical.contra, line 364, characters 5-19
@@ -1137,8 +1139,9 @@ forall [A : Type] (P : A -> Prop) [tQ : bool] [nQ : A -> Prop],
 Internals.properNegatedProp (forall x : A, P x -> nQ x)
 
 Internals.exists2_nProp is not universe polymorphic
-Arguments Internals.exists2_nProp [A]%type_scope P%function_scope
-  [tQ]%bool_scope [nQ]%function_scope Q%function_scope
+Arguments Internals.exists2_nProp [A]%_type_scope 
+  P%_function_scope [tQ]%_bool_scope [nQ]%_function_scope 
+  Q%_function_scope
 Internals.exists2_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.exists2_nProp
 Declared in library mathcomp.classical.contra, line 367, characters 10-23
@@ -1148,7 +1151,7 @@ Declared in library mathcomp.classical.contra, line 367, characters 10-23
 <span class="vernacular">Fact</span><span class="id"> </span><span id="Internals.inhabited_nPropP" class="id"><a name="Internals.inhabited_nPropP" class="" title="Internals.inhabited_nPropP : forall T : Type, (~ inhabited T) = (T -> False)
 
 Internals.inhabited_nPropP is not universe polymorphic
-Arguments Internals.inhabited_nPropP T%type_scope
+Arguments Internals.inhabited_nPropP T%_type_scope
 Internals.inhabited_nPropP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.inhabited_nPropP
 Declared in library mathcomp.classical.contra, line 370, characters 5-21
@@ -1161,7 +1164,7 @@ Declared in library mathcomp.classical.contra, line 370, characters 5-21
 forall T : Type, Internals.properNegatedProp (T -> False)
 
 Internals.inhabited_nProp is not universe polymorphic
-Arguments Internals.inhabited_nProp T%type_scope
+Arguments Internals.inhabited_nProp T%_type_scope
 Internals.inhabited_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.inhabited_nProp
 Declared in library mathcomp.classical.contra, line 372, characters 10-25
@@ -1204,9 +1207,9 @@ forall [A : Type] [b : bool] [P nQ : A -> Prop] [tR : bool]
 (if b then exists2 x : A, P x & nQ x else exists x : A, nQ x)
 
 Internals.forall_nPropP is not universe polymorphic
-Arguments Internals.forall_nPropP [A]%type_scope [b]%bool_scope
-  [P nQ]%function_scope [tR]%bool_scope [nR]%function_scope 
-  R%function_scope
+Arguments Internals.forall_nPropP [A]%_type_scope 
+  [b]%_bool_scope [P nQ]%_function_scope [tR]%_bool_scope
+  [nR]%_function_scope R%_function_scope
 Internals.forall_nPropP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.forall_nPropP
 Declared in library mathcomp.classical.contra, line 401, characters 5-18
@@ -1226,9 +1229,9 @@ Internals.negatedProp false
   (if b then exists2 x : A, P x & nQ x else exists x : A, nQ x)
 
 Internals.forall_nProp is not universe polymorphic
-Arguments Internals.forall_nProp [A]%type_scope [b]%bool_scope
-  [P nQ]%function_scope [tR]%bool_scope [nR]%function_scope 
-  R%function_scope
+Arguments Internals.forall_nProp [A]%_type_scope [b]%_bool_scope
+  [P nQ]%_function_scope [tR]%_bool_scope [nR]%_function_scope
+  R%_function_scope
 Internals.forall_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.forall_nProp
 Declared in library mathcomp.classical.contra, line 408, characters 10-22
@@ -1241,7 +1244,7 @@ Internals.properNegatedForallBody b P nQ nR ->
 nR = (if b then P /\ nQ else nQ)
 
 Internals.proper_nBodyP is not universe polymorphic
-Arguments Internals.proper_nBodyP [b]%bool_scope [P nQ nR]%type_scope _
+Arguments Internals.proper_nBodyP [b]%_bool_scope [P nQ nR]%_type_scope _
 Internals.proper_nBodyP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.proper_nBodyP
 Declared in library mathcomp.classical.contra, line 411, characters 5-18
@@ -1257,7 +1260,7 @@ Internals.properNegatedForallBody b P nQ nR ->
 Internals.negatedForallBody b P nQ false nR
 
 Internals.proper_nBody is not universe polymorphic
-Arguments Internals.proper_nBody [b]%bool_scope [P nQ nR]%type_scope R
+Arguments Internals.proper_nBody [b]%_bool_scope [P nQ nR]%_type_scope R
 Internals.proper_nBody is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.proper_nBody
 Declared in library mathcomp.classical.contra, line 414, characters 10-22
@@ -1270,7 +1273,7 @@ Internals.negatedProp tP nP ->
 Internals.negatedForallBody false True nP tP nP
 
 Internals.nonproper_nBody is not universe polymorphic
-Arguments Internals.nonproper_nBody [tP]%bool_scope [nP]%type_scope P
+Arguments Internals.nonproper_nBody [tP]%_bool_scope [nP]%_type_scope P
 Internals.nonproper_nBody is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.nonproper_nBody
 Declared in library mathcomp.classical.contra, line 417, characters 10-25
@@ -1282,7 +1285,7 @@ forall [b : bool] [P Q PQ : Prop],
 Internals.andRHS b P Q PQ -> PQ = (if b then P /\ Q else Q)
 
 Internals.andRHS_def is not universe polymorphic
-Arguments Internals.andRHS_def [b]%bool_scope [P Q PQ]%type_scope _
+Arguments Internals.andRHS_def [b]%_bool_scope [P Q PQ]%_type_scope _
 Internals.andRHS_def is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.andRHS_def
 Declared in library mathcomp.classical.contra, line 420, characters 5-15
@@ -1298,8 +1301,8 @@ Internals.negatedProp tR (Internals.and_RHS nR) ->
 Internals.properNegatedForallBody b P nQ PnQ
 
 Internals.bounded_nBody is not universe polymorphic
-Arguments Internals.bounded_nBody [b]%bool_scope [P nQ PnQ]%type_scope
-  [tR]%bool_scope [nR] R
+Arguments Internals.bounded_nBody [b]%_bool_scope 
+  [P nQ PnQ]%_type_scope [tR]%_bool_scope [nR] R
 Internals.bounded_nBody is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.bounded_nBody
 Declared in library mathcomp.classical.contra, line 422, characters 10-23
@@ -1311,7 +1314,7 @@ Internals.properNegatedProp nQ ->
 Internals.properNegatedForallBody false True nQ nQ
 
 Internals.unbounded_nBody is not universe polymorphic
-Arguments Internals.unbounded_nBody [nQ]%type_scope Q
+Arguments Internals.unbounded_nBody [nQ]%_type_scope Q
 Internals.unbounded_nBody is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.unbounded_nBody
 Declared in library mathcomp.classical.contra, line 424, characters 10-25
@@ -1347,7 +1350,7 @@ forall [nP : Prop],
 Internals.negatedBool nP -> Internals.properNegatedProp nP
 
 Internals.is_true_nProp is not universe polymorphic
-Arguments Internals.is_true_nProp [nP]%type_scope b
+Arguments Internals.is_true_nProp [nP]%_type_scope b
 Internals.is_true_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.is_true_nProp
 Declared in library mathcomp.classical.contra, line 447, characters 10-23
@@ -1415,7 +1418,7 @@ Declared in library mathcomp.classical.contra, line 456, characters 10-19
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.id_neg" class="id"><a name="Internals.id_neg" class="" title="Internals.id_neg : forall b : bool, Internals.negatedBool (~~ b)
 
 Internals.id_neg is not universe polymorphic
-Arguments Internals.id_neg b%bool_scope
+Arguments Internals.id_neg b%_bool_scope
 Internals.id_neg is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.id_neg
 Declared in library mathcomp.classical.contra, line 459, characters 10-16
@@ -1423,7 +1426,7 @@ Declared in library mathcomp.classical.contra, line 459, characters 10-16
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.id_pos" class="id"><a name="Internals.id_pos" class="" title="Internals.id_pos : forall b : bool, Internals.positedBool b
 
 Internals.id_pos is not universe polymorphic
-Arguments Internals.id_pos b%bool_scope
+Arguments Internals.id_pos b%_bool_scope
 Internals.id_pos is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.id_pos
 Declared in library mathcomp.classical.contra, line 460, characters 10-16
@@ -1439,7 +1442,7 @@ Declared in library mathcomp.classical.contra, line 460, characters 10-16
 forall [P : Prop], Internals.positedBool P -> Internals.negatedBool P
 
 Internals.negb_neg is not universe polymorphic
-Arguments Internals.negb_neg [P]%type_scope b
+Arguments Internals.negb_neg [P]%_type_scope b
 Internals.negb_neg is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.negb_neg
 Declared in library mathcomp.classical.contra, line 464, characters 10-18
@@ -1454,7 +1457,7 @@ Declared in library mathcomp.classical.contra, line 464, characters 10-18
 forall [nP : Prop], Internals.negatedBool nP -> Internals.positedBool nP
 
 Internals.negb_pos is not universe polymorphic
-Arguments Internals.negb_pos [nP]%type_scope b
+Arguments Internals.negb_pos [nP]%_type_scope b
 Internals.negb_pos is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.negb_pos
 Declared in library mathcomp.classical.contra, line 467, characters 10-18
@@ -1472,7 +1475,7 @@ comparison to perform the latter simplification.
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.neg_ltn_LHS" class="id"><a name="Internals.neg_ltn_LHS" class="" title="Internals.neg_ltn_LHS : forall n m : nat, Internals.negatedLeqLHS n (n <= m)
 
 Internals.neg_ltn_LHS is not universe polymorphic
-Arguments Internals.neg_ltn_LHS (n m)%nat_scope
+Arguments Internals.neg_ltn_LHS (n m)%_nat_scope
 Internals.neg_ltn_LHS is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.neg_ltn_LHS
 Declared in library mathcomp.classical.contra, line 478, characters 10-21
@@ -1480,7 +1483,7 @@ Declared in library mathcomp.classical.contra, line 478, characters 10-21
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.neg_leq_LHS" class="id"><a name="Internals.neg_leq_LHS" class="" title="Internals.neg_leq_LHS : forall n m : nat, Internals.negatedLeqLHS n (n < m)
 
 Internals.neg_leq_LHS is not universe polymorphic
-Arguments Internals.neg_leq_LHS (n m)%nat_scope
+Arguments Internals.neg_leq_LHS (n m)%_nat_scope
 Internals.neg_leq_LHS is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.neg_leq_LHS
 Declared in library mathcomp.classical.contra, line 479, characters 10-21
@@ -1497,7 +1500,7 @@ forall [n : nat] [lt_nm : bool],
 Internals.negatedLeqLHS n lt_nm -> Internals.negatedBool lt_nm
 
 Internals.leq_neg is not universe polymorphic
-Arguments Internals.leq_neg [n]%nat_scope [lt_nm]%bool_scope m
+Arguments Internals.leq_neg [n]%_nat_scope [lt_nm]%_bool_scope m
 Internals.leq_neg is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.leq_neg
 Declared in library mathcomp.classical.contra, line 483, characters 10-17
@@ -1531,7 +1534,7 @@ forall [nP : Prop] [T : Type] [x : T],
 Internals.neqRHS nP x -> Internals.properNegatedProp nP
 
 Internals.eq_nProp is not universe polymorphic
-Arguments Internals.eq_nProp [nP T]%type_scope [x] y
+Arguments Internals.eq_nProp [nP T]%_type_scope [x] y
 Internals.eq_nProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.eq_nProp
 Declared in library mathcomp.classical.contra, line 504, characters 10-18
@@ -1548,7 +1551,7 @@ forall [nP : Prop] [x : bool],
 Internals.boolNeqRHS nP x -> Internals.neqRHS nP x
 
 Internals.bool_neq is not universe polymorphic
-Arguments Internals.bool_neq [nP]%type_scope [x]%bool_scope y
+Arguments Internals.bool_neq [nP]%_type_scope [x]%_bool_scope y
 Internals.bool_neq is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.bool_neq
 Declared in library mathcomp.classical.contra, line 508, characters 10-18
@@ -1558,7 +1561,7 @@ forall [nP : Prop] (b : Internals.negatedBool nP),
 Internals.boolNeqRHS nP (Internals.negated_bool b)
 
 Internals.true_neq is not universe polymorphic
-Arguments Internals.true_neq [nP]%type_scope b
+Arguments Internals.true_neq [nP]%_type_scope b
 Internals.true_neq is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.true_neq
 Declared in library mathcomp.classical.contra, line 509, characters 10-18
@@ -1574,7 +1577,7 @@ forall [P : Prop] (b : Internals.positedBool P),
 Internals.boolNeqRHS P (Internals.posited_bool b)
 
 Internals.false_neq is not universe polymorphic
-Arguments Internals.false_neq [P]%type_scope b
+Arguments Internals.false_neq [P]%_type_scope b
 Internals.false_neq is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.false_neq
 Declared in library mathcomp.classical.contra, line 512, characters 10-19
@@ -1646,7 +1649,7 @@ forall {P : Prop} (T : Internals.witnessedType P),
 P -> Internals.unwrap_Type (Internals.witnessed_Type T)
 
 Internals.witnessedType_intro is not universe polymorphic
-Arguments Internals.witnessedType_intro {P}%type_scope T _
+Arguments Internals.witnessedType_intro {P}%_type_scope T _
 Internals.witnessedType_intro is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.witnessedType_intro
 Declared in library mathcomp.classical.contra, line 552, characters 6-25
@@ -1662,7 +1665,7 @@ forall {P : Prop} [T : Internals.witnessedType P],
 Internals.unwrap_Type (Internals.witnessed_Type T) -> P
 
 Internals.witnessedType_elim is not universe polymorphic
-Arguments Internals.witnessedType_elim {P}%type_scope [T] _
+Arguments Internals.witnessedType_elim {P}%_type_scope [T] _
 Internals.witnessedType_elim is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.witnessedType_elim
 Declared in library mathcomp.classical.contra, line 556, characters 6-24
@@ -1686,7 +1689,7 @@ Declared in library mathcomp.classical.contra, line 556, characters 6-24
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.Prop_wType" class="id"><a name="Internals.Prop_wType" class="" title="Internals.Prop_wType : forall P : Prop, Internals.witnessedType P
 
 Internals.Prop_wType is not universe polymorphic
-Arguments Internals.Prop_wType P%type_scope
+Arguments Internals.Prop_wType P%_type_scope
 Internals.Prop_wType is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.Prop_wType
 Declared in library mathcomp.classical.contra, line 567, characters 10-20
@@ -1700,7 +1703,7 @@ forall [P : Prop] (T : Internals.properWitnessedType P),
 inhabited (Internals.proper_witnessed_Type T) = P
 
 Internals.proper_wTypeP is not universe polymorphic
-Arguments Internals.proper_wTypeP [P]%type_scope T
+Arguments Internals.proper_wTypeP [P]%_type_scope T
 Internals.proper_wTypeP is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.proper_wTypeP
 Declared in library mathcomp.classical.contra, line 572, characters 6-19
@@ -1714,7 +1717,7 @@ forall [P : Prop],
 Internals.properWitnessedType P -> Internals.witnessedType P
 
 Internals.proper_wType is not universe polymorphic
-Arguments Internals.proper_wType [P]%type_scope T
+Arguments Internals.proper_wType [P]%_type_scope T
 Internals.proper_wType is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.proper_wType
 Declared in library mathcomp.classical.contra, line 574, characters 10-22
@@ -1735,8 +1738,8 @@ forall [A : Type] [P : A -> Prop],
 Internals.witnessedType (forall x : A, P x)
 
 Internals.forall_wType is not universe polymorphic
-Arguments Internals.forall_wType [A]%type_scope [P]%function_scope
-  T%function_scope
+Arguments Internals.forall_wType [A]%_type_scope [P]%_function_scope
+  T%_function_scope
 Internals.forall_wType is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.forall_wType
 Declared in library mathcomp.classical.contra, line 581, characters 10-22
@@ -1748,7 +1751,7 @@ Declared in library mathcomp.classical.contra, line 581, characters 10-22
 forall T : Type, Internals.witnessedType (inhabited T)
 
 Internals.inhabited_wType is not universe polymorphic
-Arguments Internals.inhabited_wType T%type_scope
+Arguments Internals.inhabited_wType T%_type_scope
 Internals.inhabited_wType is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.inhabited_wType
 Declared in library mathcomp.classical.contra, line 585, characters 10-25
@@ -1796,7 +1799,7 @@ Internals.witnessedType P ->
 Internals.witnessedType Q -> Internals.properWitnessedType (P /\ Q)
 
 Internals.pair_wType is not universe polymorphic
-Arguments Internals.pair_wType [P Q]%type_scope S T
+Arguments Internals.pair_wType [P Q]%_type_scope S T
 Internals.pair_wType is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.pair_wType
 Declared in library mathcomp.classical.contra, line 597, characters 10-20
@@ -1814,7 +1817,7 @@ Internals.witnessedType P ->
 Internals.witnessedType Q -> Internals.properWitnessedType (P \/ Q)
 
 Internals.sum_wType is not universe polymorphic
-Arguments Internals.sum_wType [P Q]%type_scope S T
+Arguments Internals.sum_wType [P Q]%_type_scope S T
 Internals.sum_wType is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.sum_wType
 Declared in library mathcomp.classical.contra, line 601, characters 10-19
@@ -1830,7 +1833,7 @@ Declared in library mathcomp.classical.contra, line 601, characters 10-19
 forall P Q : Prop, Internals.properWitnessedType (P \/ Q)
 
 Internals.sumbool_wType is not universe polymorphic
-Arguments Internals.sumbool_wType (P Q)%type_scope
+Arguments Internals.sumbool_wType (P Q)%_type_scope
 Internals.sumbool_wType is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.sumbool_wType
 Declared in library mathcomp.classical.contra, line 605, characters 10-23
@@ -1847,7 +1850,7 @@ forall [P : Prop] (Q : Prop),
 Internals.witnessedType P -> Internals.properWitnessedType (P \/ Q)
 
 Internals.sumor_wType is not universe polymorphic
-Arguments Internals.sumor_wType [P]%type_scope Q%type_scope T
+Arguments Internals.sumor_wType [P]%_type_scope Q%_type_scope T
 Internals.sumor_wType is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.sumor_wType
 Declared in library mathcomp.classical.contra, line 609, characters 10-21
@@ -1864,7 +1867,7 @@ forall [T : Type] (P : T -> Prop),
 Internals.properWitnessedType (exists x : T, P x)
 
 Internals.sig1_wType is not universe polymorphic
-Arguments Internals.sig1_wType [T]%type_scope P%function_scope
+Arguments Internals.sig1_wType [T]%_type_scope P%_function_scope
 Internals.sig1_wType is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.sig1_wType
 Declared in library mathcomp.classical.contra, line 613, characters 10-20
@@ -1882,7 +1885,7 @@ forall [T : Type] (P Q : T -> Prop),
 Internals.properWitnessedType (exists2 x : T, P x & Q x)
 
 Internals.sig2_wType is not universe polymorphic
-Arguments Internals.sig2_wType [T]%type_scope (P Q)%function_scope
+Arguments Internals.sig2_wType [T]%_type_scope (P Q)%_function_scope
 Internals.sig2_wType is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.sig2_wType
 Declared in library mathcomp.classical.contra, line 618, characters 10-20
@@ -1901,8 +1904,8 @@ forall [A : Type] [P : A -> Prop],
 Internals.properWitnessedType (exists x : A, P x)
 
 Internals.sigT_wType is not universe polymorphic
-Arguments Internals.sigT_wType [A]%type_scope [P]%function_scope
-  T%function_scope
+Arguments Internals.sigT_wType [A]%_type_scope [P]%_function_scope
+  T%_function_scope
 Internals.sigT_wType is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.sigT_wType
 Declared in library mathcomp.classical.contra, line 623, characters 10-20
@@ -1922,8 +1925,8 @@ forall [A : Type] [P Q : A -> Prop],
 Internals.properWitnessedType (exists2 x : A, P x & Q x)
 
 Internals.sigT2_wType is not universe polymorphic
-Arguments Internals.sigT2_wType [A]%type_scope [P Q]%function_scope
-  (S T)%function_scope
+Arguments Internals.sigT2_wType [A]%_type_scope [P Q]%_function_scope
+  (S T)%_function_scope
 Internals.sigT2_wType is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.sigT2_wType
 Declared in library mathcomp.classical.contra, line 628, characters 10-21
@@ -1997,7 +2000,7 @@ forall {t : bool} {T : Type} {P0 : Prop} {P : Internals.witnessProp t P0 T},
 Internals.move_view (Internals.unwrap_Prop (Internals.witness_Prop P)) T
 
 Internals.lax_witness is not universe polymorphic
-Arguments Internals.lax_witness {t}%bool_scope {T P0}%type_scope {P}
+Arguments Internals.lax_witness {t}%_bool_scope {T P0}%_type_scope {P}
 Internals.lax_witness is opaque
 Expands to: Constant mathcomp.classical.contra.Internals.lax_witness
 Declared in library mathcomp.classical.contra, line 688, characters 6-17
@@ -2011,7 +2014,7 @@ forall {T : Type} {P0 : Prop} {P : Internals.witnessProp false P0 T},
 Internals.move_view (Internals.unwrap_Prop (Internals.witness_Prop P)) T
 
 Internals.witness is not universe polymorphic
-Arguments Internals.witness {T P0}%type_scope {P}
+Arguments Internals.witness {T P0}%_type_scope {P}
 Internals.witness is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.witness
 Declared in library mathcomp.classical.contra, line 690, characters 11-18
@@ -2030,7 +2033,7 @@ forall [T : Type],
 Internals.properWitnessProp T -> Internals.witnessProp false True T
 
 Internals.proper_wProp is not universe polymorphic
-Arguments Internals.proper_wProp [T]%type_scope P
+Arguments Internals.proper_wProp [T]%_type_scope P
 Internals.proper_wProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.proper_wProp
 Declared in library mathcomp.classical.contra, line 696, characters 10-22
@@ -2051,8 +2054,8 @@ forall [A : Type] [T : A -> Type] [P0 : A -> Prop],
 Internals.witnessProp false True (forall x : A, T x)
 
 Internals.forall_wProp is not universe polymorphic
-Arguments Internals.forall_wProp [A]%type_scope [T P0]%function_scope
-  P%function_scope
+Arguments Internals.forall_wProp [A]%_type_scope [T P0]%_function_scope
+  P%_function_scope
 Internals.forall_wProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.forall_wProp
 Declared in library mathcomp.classical.contra, line 703, characters 10-22
@@ -2062,7 +2065,7 @@ Declared in library mathcomp.classical.contra, line 703, characters 10-22
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.trivial_wProp" class="id"><a name="Internals.trivial_wProp" class="" title="Internals.trivial_wProp : forall P : Prop, Internals.witnessProp true P P
 
 Internals.trivial_wProp is not universe polymorphic
-Arguments Internals.trivial_wProp P%type_scope
+Arguments Internals.trivial_wProp P%_type_scope
 Internals.trivial_wProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.trivial_wProp
 Declared in library mathcomp.classical.contra, line 706, characters 10-23
@@ -2074,7 +2077,7 @@ Declared in library mathcomp.classical.contra, line 706, characters 10-23
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.inhabited_wProp" class="id"><a name="Internals.inhabited_wProp" class="" title="Internals.inhabited_wProp : forall T : Type, Internals.properWitnessProp T
 
 Internals.inhabited_wProp is not universe polymorphic
-Arguments Internals.inhabited_wProp T%type_scope
+Arguments Internals.inhabited_wProp T%_type_scope
 Internals.inhabited_wProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.inhabited_wProp
 Declared in library mathcomp.classical.contra, line 711, characters 10-25
@@ -2093,7 +2096,7 @@ instance for P to return an arbitrary 'trivial' flag s, but then force the
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.nand_false_bool" class="id"><a name="Internals.nand_false_bool" class="" title="Internals.nand_false_bool : forall b : bool, Internals.nandBool b
 
 Internals.nand_false_bool is not universe polymorphic
-Arguments Internals.nand_false_bool b%bool_scope
+Arguments Internals.nand_false_bool b%_bool_scope
 Internals.nand_false_bool is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.nand_false_bool
 Declared in library mathcomp.classical.contra, line 723, characters 10-25
@@ -2121,8 +2124,8 @@ Internals.witnessProp (Internals.nand_bool t) Q0 T ->
 Internals.properWitnessProp (S * T)
 
 Internals.and_wProp is not universe polymorphic
-Arguments Internals.and_wProp [s]%bool_scope [S P0]%type_scope 
-  P [t] [T Q0]%type_scope Q
+Arguments Internals.and_wProp [s]%_bool_scope [S P0]%_type_scope 
+  P [t] [T Q0]%_type_scope Q
 Internals.and_wProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.and_wProp
 Declared in library mathcomp.classical.contra, line 729, characters 10-19
@@ -2147,8 +2150,8 @@ Internals.properWitnessProp
   (if t then if s then {P0} + {Q0} : Type else S + {Q0} else S + T : Type)
 
 Internals.or_wProp is not universe polymorphic
-Arguments Internals.or_wProp [s]%bool_scope [S P0]%type_scope 
-  P [t]%bool_scope [T Q0]%type_scope Q
+Arguments Internals.or_wProp [s]%_bool_scope [S P0]%_type_scope 
+  P [t]%_bool_scope [T Q0]%_type_scope Q
 Internals.or_wProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.or_wProp
 Declared in library mathcomp.classical.contra, line 741, characters 10-18
@@ -2168,8 +2171,8 @@ forall [A : Type] [t : bool] [T : A -> Type] [P0 : A -> Prop],
 Internals.properWitnessProp (if t then {x : A | P0 x} else {x : A & T x})
 
 Internals.exists_wProp is not universe polymorphic
-Arguments Internals.exists_wProp [A]%type_scope [t]%bool_scope
-  [T P0]%function_scope P%function_scope
+Arguments Internals.exists_wProp [A]%_type_scope [t]%_bool_scope
+  [T P0]%_function_scope P%_function_scope
 Internals.exists_wProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.exists_wProp
 Declared in library mathcomp.classical.contra, line 747, characters 10-22
@@ -2195,9 +2198,9 @@ Internals.properWitnessProp
    else {x : A & S x & T x})
 
 Internals.exists2_wProp is not universe polymorphic
-Arguments Internals.exists2_wProp [A]%type_scope [s]%bool_scope
-  [S P0]%function_scope P%function_scope [t]%bool_scope 
-  [T Q0]%function_scope Q%function_scope
+Arguments Internals.exists2_wProp [A]%_type_scope 
+  [s]%_bool_scope [S P0]%_function_scope P%_function_scope 
+  [t]%_bool_scope [T Q0]%_function_scope Q%_function_scope
 Internals.exists2_wProp is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.exists2_wProp
 Declared in library mathcomp.classical.contra, line 756, characters 10-23
@@ -2265,7 +2268,7 @@ Helper lemmas:
 <span class="id">#[warnings=</span><span class="id">&quot;-user-warn&quot;</span><span class="id">]</span><span class="vernacular"> Definition</span><span class="id"> </span><span id="notP" class="id"><a name="notP" class="" title="notP : forall {nP : Prop} {P : negatedProp false nP}, move_view (~ P) nP
 
 notP is not universe polymorphic
-Arguments notP {nP}%type_scope {P}
+Arguments notP {nP}%_type_scope {P}
 notP is transparent
 Expands to: Constant mathcomp.classical.contra.Internals.notP
 Declared in library mathcomp.classical.contra, line 274, characters 11-15
@@ -2284,7 +2287,7 @@ exposes its top-level constructive content.
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="assume_not" class="id"><a name="assume_not" class="" title="assume_not : forall {P : Prop}, (~ P -> P) -> P
 
 assume_not is not universe polymorphic
-Arguments assume_not {P}%type_scope _%function_scope
+Arguments assume_not {P}%_type_scope _%_function_scope
 assume_not is opaque
 Expands to: Constant mathcomp.classical.contra.assume_not
 Declared in library mathcomp.classical.contra, line 807, characters 6-16
@@ -2306,7 +2309,7 @@ is indeterminate. The more general notP defined above can be used instead.
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="absurd_not" class="id"><a name="absurd_not" class="" title="absurd_not : forall {P : Prop}, (~ P -> False) -> P
 
 absurd_not is not universe polymorphic
-Arguments absurd_not {P}%type_scope _%function_scope
+Arguments absurd_not {P}%_type_scope _%_function_scope
 absurd_not is opaque
 Expands to: Constant mathcomp.classical.contra.absurd_not
 Declared in library mathcomp.classical.contra, line 818, characters 6-16
@@ -2357,7 +2360,7 @@ Finally the Ltac absurd term form is also supported.
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="absurd" class="id"><a name="absurd" class="" title="absurd : forall T : Type, False -> T
 
 absurd is not universe polymorphic
-Arguments absurd T%type_scope _
+Arguments absurd T%_type_scope _
 absurd is opaque
 Expands to: Constant mathcomp.classical.contra.absurd
 Declared in library mathcomp.classical.contra, line 858, characters 6-12

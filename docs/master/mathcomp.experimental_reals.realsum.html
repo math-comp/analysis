@@ -235,7 +235,7 @@
 <span class="vernacular">Definition</span><span class="id"> </span><span id="summable" class="id"><a name="summable" class="" title="summable : forall [T : choiceType] [R : realType], (T -> R) -> Prop
 
 summable is not universe polymorphic
-Arguments summable [T R] f%function_scope
+Arguments summable [T R] f%_function_scope
 summable is transparent
 Expands to: Constant mathcomp.experimental_reals.realsum.summable
 Declared in
@@ -273,7 +273,7 @@ summable (T:=T) (R:=R) f ->
 | (0 <= M)%R & forall J : {fset T}, (\sum_x `|f (\val x)| <= M)%R}
 
 summableP is not universe polymorphic
-Arguments summableP [T R] [f]%function_scope _
+Arguments summableP [T R] [f]%_function_scope _
 summableP is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summableP
 Declared in
@@ -323,7 +323,7 @@ T ->
 |}
 
 fpos is not universe polymorphic
-Arguments fpos {R T} f%function_scope x
+Arguments fpos {R T} f%_function_scope x
 fpos is transparent
 Expands to: Constant mathcomp.experimental_reals.realsum.fpos
 Declared in
@@ -358,7 +358,7 @@ T ->
 |}
 
 fneg is not universe polymorphic
-Arguments fneg {R T} f%function_scope x
+Arguments fneg {R T} f%_function_scope x
 fneg is transparent
 Expands to: Constant mathcomp.experimental_reals.realsum.fneg
 Declared in
@@ -370,7 +370,7 @@ forall {R : realType} {T : choiceType} [f g : T -> R],
 f =1 g -> fpos f =1 fpos g
 
 eq_fpos is not universe polymorphic
-Arguments eq_fpos {R T} [f g]%function_scope _ x
+Arguments eq_fpos {R T} [f g]%_function_scope _ x
 eq_fpos is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.eq_fpos
 Declared in
@@ -386,7 +386,7 @@ forall {R : realType} {T : choiceType} [f g : T -> R],
 f =1 g -> fneg f =1 fneg g
 
 eq_fneg is not universe polymorphic
-Arguments eq_fneg {R T} [f g]%function_scope _ x
+Arguments eq_fneg {R T} [f g]%_function_scope _ x
 eq_fneg is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.eq_fneg
 Declared in
@@ -431,7 +431,7 @@ library mathcomp.experimental_reals.realsum, line 59, characters 6-11
 forall {R : realType} {T : choiceType} (f : T -> R), fneg (- f)%R =1 fpos f
 
 fnegN is not universe polymorphic
-Arguments fnegN {R T} f%function_scope x
+Arguments fnegN {R T} f%_function_scope x
 fnegN is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.fnegN
 Declared in
@@ -446,7 +446,7 @@ library mathcomp.experimental_reals.realsum, line 62, characters 6-11
 forall {R : realType} {T : choiceType} (f : T -> R), fpos (- f)%R =1 fneg f
 
 fposN is not universe polymorphic
-Arguments fposN {R T} f%function_scope x
+Arguments fposN {R T} f%_function_scope x
 fposN is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.fposN
 Declared in
@@ -464,7 +464,7 @@ forall {R : realType} {T : choiceType} (f : T -> R)
 (0 <= c)%R -> fpos (c \*o f)%R =1 (c \*o fpos f)%R
 
 fposZ is not universe polymorphic
-Arguments fposZ {R T} f%function_scope [c] _ x
+Arguments fposZ {R T} f%_function_scope [c] _ x
 fposZ is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.fposZ
 Declared in
@@ -484,7 +484,7 @@ forall {R : realType} {T : choiceType} (f : T -> R)
 (0 <= c)%R -> fneg (c \*o f)%R =1 (c \*o fneg f)%R
 
 fnegZ is not universe polymorphic
-Arguments fnegZ {R T} f%function_scope [c] _ x
+Arguments fnegZ {R T} f%_function_scope [c] _ x
 fnegZ is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.fnegZ
 Declared in
@@ -502,7 +502,7 @@ forall {R : realType} {T : choiceType} (f : T -> R) (n : T -> nat) (x : T),
 fpos (fun x0 : T => ((n x0)%:R * f x0)%R) x = ((n x)%:R * fpos f x)%R
 
 fpos_natrM is not universe polymorphic
-Arguments fpos_natrM {R T} (f n)%function_scope x
+Arguments fpos_natrM {R T} (f n)%_function_scope x
 fpos_natrM is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.fpos_natrM
 Declared in
@@ -521,7 +521,7 @@ forall {R : realType} {T : choiceType} (f : T -> R) (n : T -> nat) (x : T),
 fneg (fun x0 : T => ((n x0)%:R * f x0)%R) x = ((n x)%:R * fneg f x)%R
 
 fneg_natrM is not universe polymorphic
-Arguments fneg_natrM {R T} (f n)%function_scope x
+Arguments fneg_natrM {R T} (f n)%_function_scope x
 fneg_natrM is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.fneg_natrM
 Declared in
@@ -540,7 +540,7 @@ forall {R : realType} {T : choiceType} [f : T -> R] (x : T),
 (forall x0 : T, (0 <= f x0)%R) -> fneg f x = 0%R
 
 fneg_ge0 is not universe polymorphic
-Arguments fneg_ge0 {R T} [f]%function_scope x _%function_scope
+Arguments fneg_ge0 {R T} [f]%_function_scope x _%_function_scope
 fneg_ge0 is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.fneg_ge0
 Declared in
@@ -556,7 +556,7 @@ forall {R : realType} {T : choiceType} [f : T -> R] (x : T),
 (forall x0 : T, (0 <= f x0)%R) -> fpos f x = f x
 
 fpos_ge0 is not universe polymorphic
-Arguments fpos_ge0 {R T} [f]%function_scope x _%function_scope
+Arguments fpos_ge0 {R T} [f]%_function_scope x _%_function_scope
 fpos_ge0 is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.fpos_ge0
 Declared in
@@ -572,7 +572,7 @@ forall {R : realType} {T : choiceType} (f : T -> R) (x : T),
 (0 <= fpos f x)%R
 
 ge0_fpos is not universe polymorphic
-Arguments ge0_fpos {R T} f%function_scope x
+Arguments ge0_fpos {R T} f%_function_scope x
 ge0_fpos is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.ge0_fpos
 Declared in
@@ -588,7 +588,7 @@ forall {R : realType} {T : choiceType} (f : T -> R) (x : T),
 (0 <= fneg f x)%R
 
 ge0_fneg is not universe polymorphic
-Arguments ge0_fneg {R T} f%function_scope x
+Arguments ge0_fneg {R T} f%_function_scope x
 ge0_fneg is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.ge0_fneg
 Declared in
@@ -604,7 +604,7 @@ forall {R : realType} {T : choiceType} (f : T -> R) (x : T),
 (fpos f x <= `|f x|)%R
 
 le_fpos_norm is not universe polymorphic
-Arguments le_fpos_norm {R T} f%function_scope x
+Arguments le_fpos_norm {R T} f%_function_scope x
 le_fpos_norm is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.le_fpos_norm
 Declared in
@@ -622,7 +622,7 @@ forall {R : realType} {T : choiceType} [f1 f2 : T -> R],
 (forall x : T, (f1 x <= f2 x)%R) -> forall x : T, (fpos f1 x <= fpos f2 x)%R
 
 le_fpos is not universe polymorphic
-Arguments le_fpos {R T} [f1 f2]%function_scope _%function_scope x
+Arguments le_fpos {R T} [f1 f2]%_function_scope _%_function_scope x
 le_fpos is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.le_fpos
 Declared in
@@ -640,7 +640,7 @@ forall {R : realType} {T : choiceType} (f : T -> R) (x : T),
 (fpos f x - fneg f x)%R = f x
 
 fposBfneg is not universe polymorphic
-Arguments fposBfneg {R T} f%function_scope x
+Arguments fposBfneg {R T} f%_function_scope x
 fposBfneg is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.fposBfneg
 Declared in
@@ -658,7 +658,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="psum" class="id"><a name="psum" class="" title="psum : forall {R : realType} {T : choiceType}, (T -> R) -> R
 
 psum is not universe polymorphic
-Arguments psum {R T} f%function_scope
+Arguments psum {R T} f%_function_scope
 psum is transparent
 Expands to: Constant mathcomp.experimental_reals.realsum.psum
 Declared in
@@ -670,7 +670,7 @@ library mathcomp.experimental_reals.realsum, line 126, characters 11-15
 <span class="vernacular">Definition</span><span class="id"> </span><span id="sum" class="id"><a name="sum" class="" title="sum : forall {R : realType} {T : choiceType}, (T -> R) -> R
 
 sum is not universe polymorphic
-Arguments sum {R T} f%function_scope
+Arguments sum {R T} f%_function_scope
 sum is transparent
 Expands to: Constant mathcomp.experimental_reals.realsum.sum
 Declared in
@@ -686,7 +686,7 @@ forall [T : choiceType] [R : realType] [f : T -> R],
 summable (T:=T) (R:=R) f -> countable (T:=T) [pred x | f x != 0%R]
 
 summable_countn0 is not universe polymorphic
-Arguments summable_countn0 [T R] [f]%function_scope _
+Arguments summable_countn0 [T R] [f]%_function_scope _
 summable_countn0 is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summable_countn0
 Declared in
@@ -726,7 +726,7 @@ forall {R : realType} [u : nat -> R],
 exists2 l : \bar R, (-oo < l)%E & ncvg (R:=R) u l
 
 ncvg_mono is not universe polymorphic
-Arguments ncvg_mono {R} [u]%function_scope _%function_scope
+Arguments ncvg_mono {R} [u]%_function_scope _%_function_scope
 ncvg_mono is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.ncvg_mono
 Declared in
@@ -758,7 +758,7 @@ forall {R : realType} [u : nat -> R],
 nbounded (R:=R) u -> exists l : R, ncvg (R:=R) u l%:E
 
 ncvg_mono_bnd is not universe polymorphic
-Arguments ncvg_mono_bnd {R} [u]%function_scope _%function_scope _
+Arguments ncvg_mono_bnd {R} [u]%_function_scope _%_function_scope _
 ncvg_mono_bnd is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.ncvg_mono_bnd
 Declared in
@@ -813,7 +813,7 @@ has_sup
   [set x | (exists J : {fset T}, x = (\sum_j `|S (\val j)|)%R)]
 
 summable_sup is not universe polymorphic
-Arguments summable_sup {R} [T] [S]%function_scope _
+Arguments summable_sup {R} [T] [S]%_function_scope _
 summable_sup is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summable_sup
 Declared in
@@ -833,7 +833,7 @@ forall {R : realType} [T : choiceType] (S : T -> R),
 psum S = sup [set x | (exists J : {fset T}, x = (\sum_x0 `|S (\val x0)|)%R)]
 
 psum_sup is not universe polymorphic
-Arguments psum_sup {R} [T] S%function_scope
+Arguments psum_sup {R} [T] S%_function_scope
 psum_sup is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psum_sup
 Declared in
@@ -855,7 +855,7 @@ psum S =
 sup [set x | (exists2 J : seq T, uniq J & x = (\sum_(x0 <- J) `|S x0|)%R)]
 
 psum_sup_seq is not universe polymorphic
-Arguments psum_sup_seq {R} [T] S%function_scope
+Arguments psum_sup_seq {R} [T] S%_function_scope
 psum_sup_seq is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psum_sup_seq
 Declared in
@@ -879,7 +879,7 @@ forall {R : realType} [T : choiceType] [S1 S2 : T -> R],
 S1 =1 S2 -> summable (T:=T) (R:=R) S1 -> summable (T:=T) (R:=R) S2
 
 eq_summable is not universe polymorphic
-Arguments eq_summable {R} [T] [S1 S2]%function_scope _ _
+Arguments eq_summable {R} [T] [S1 S2]%_function_scope _ _
 eq_summable is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.eq_summable
 Declared in
@@ -900,7 +900,7 @@ S1 =1 S2 ->
 `[< summable (T:=T) (R:=R) S2 >] = `[< summable (T:=T) (R:=R) S1 >]
 
 eq_summableb is not universe polymorphic
-Arguments eq_summableb {R} [T] [S1 S2]%function_scope _
+Arguments eq_summableb {R} [T] [S1 S2]%_function_scope _
 eq_summableb is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.eq_summableb
 Declared in
@@ -919,7 +919,7 @@ sup [set x | (exists J : {fset T}, x = F1 J)] =
 sup [set x | (exists J : {fset T}, x = F2 J)]
 
 eq_ppsum is not universe polymorphic
-Arguments eq_ppsum {R} [T] [F1 F2]%function_scope _
+Arguments eq_ppsum {R} [T] [F1 F2]%_function_scope _
 eq_ppsum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.eq_ppsum
 Declared in
@@ -938,7 +938,7 @@ forall {R : realType} [T : choiceType] [F1 F2 : T -> R],
 F1 =1 F2 -> psum F1 = psum F2
 
 eq_psum is not universe polymorphic
-Arguments eq_psum {R} [T] [F1 F2]%function_scope _
+Arguments eq_psum {R} [T] [F1 F2]%_function_scope _
 eq_psum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.eq_psum
 Declared in
@@ -959,7 +959,7 @@ forall {R : realType} [T : choiceType] [F1 F2 : T -> R],
 F1 =1 F2 -> sum F1 = sum F2
 
 eq_sum is not universe polymorphic
-Arguments eq_sum {R} [T] [F1 F2]%function_scope _
+Arguments eq_sum {R} [T] [F1 F2]%_function_scope _
 eq_sum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.eq_sum
 Declared in
@@ -978,7 +978,7 @@ forall {R : realType} [T : choiceType] [F1 F2 : T -> R],
 summable (T:=T) (R:=R) F2 -> summable (T:=T) (R:=R) F1
 
 le_summable is not universe polymorphic
-Arguments le_summable {R} [T] [F1 F2]%function_scope _%function_scope _
+Arguments le_summable {R} [T] [F1 F2]%_function_scope _%_function_scope _
 le_summable is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.le_summable
 Declared in
@@ -999,7 +999,7 @@ forall {R : realType} [T : choiceType] [F1 F2 : T -> R],
 summable (T:=T) (R:=R) F2 -> (psum F1 <= psum F2)%R
 
 le_psum is not universe polymorphic
-Arguments le_psum {R} [T] [F1 F2]%function_scope _%function_scope _
+Arguments le_psum {R} [T] [F1 F2]%_function_scope _%_function_scope _
 le_psum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.le_psum
 Declared in
@@ -1024,7 +1024,7 @@ forall {R : realType} [T : choiceType] [S : T -> R],
 ~ summable (T:=T) (R:=R) S -> psum S = 0%R
 
 psum_out is not universe polymorphic
-Arguments psum_out {R} [T] [S]%function_scope _
+Arguments psum_out {R} [T] [S]%_function_scope _
 psum_out is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psum_out
 Declared in
@@ -1042,7 +1042,7 @@ summable (T:=T) (R:=R) S ->
 psum S = sup [set x | (exists J : {fset T}, x = (\sum_j S (\val j))%R)]
 
 psumE is not universe polymorphic
-Arguments psumE {R} [T] [S]%function_scope _%function_scope _
+Arguments psumE {R} [T] [S]%_function_scope _%_function_scope _
 psumE is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psumE
 Declared in
@@ -1062,7 +1062,7 @@ summable (T:=T) (R:=R) S ->
 psum S = sup [set x | (exists J : {fset T}, x = (\sum_j `|S (\val j)|)%R)]
 
 psum_absE is not universe polymorphic
-Arguments psum_absE {R} [T] [S]%function_scope _
+Arguments psum_absE {R} [T] [S]%_function_scope _
 psum_absE is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psum_absE
 Declared in
@@ -1105,7 +1105,7 @@ summable (T:=T) (R:=R) S <->
    (0 <= M)%R & forall s : seq T, uniq s -> (\sum_(x <- s) `|S x| <= M)%R)
 
 summable_seqP is not universe polymorphic
-Arguments summable_seqP {R} [T] S%function_scope
+Arguments summable_seqP {R} [T] S%_function_scope
 summable_seqP is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summable_seqP
 Declared in
@@ -1126,7 +1126,7 @@ forall {R : realType} [T : choiceType] [S : T -> R] (J : {fset T}),
 summable (T:=T) (R:=R) S -> (\sum_j `|S (\val j)| <= psum S)%R
 
 gerfin_psum is not universe polymorphic
-Arguments gerfin_psum {R} [T] [S]%function_scope J _
+Arguments gerfin_psum {R} [T] [S]%_function_scope J _
 gerfin_psum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.gerfin_psum
 Declared in
@@ -1145,7 +1145,7 @@ forall {R : realType} [T : choiceType] [S : T -> R] [r : seq T],
 uniq r -> summable (T:=T) (R:=R) S -> (\sum_(j <- r) `|S j| <= psum S)%R
 
 gerfinseq_psum is not universe polymorphic
-Arguments gerfinseq_psum {R} [T] [S]%function_scope [r]%seq_scope _ _
+Arguments gerfinseq_psum {R} [T] [S]%_function_scope [r]%_seq_scope _ _
 gerfinseq_psum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.gerfinseq_psum
 Declared in
@@ -1189,7 +1189,7 @@ forall {R : realType} [T : choiceType] [S : T -> R]
 (psum S <= z)%R
 
 psum_le is not universe polymorphic
-Arguments psum_le {R} [T] [S]%function_scope [z] _%function_scope
+Arguments psum_le {R} [T] [S]%_function_scope [z] _%_function_scope
 psum_le is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psum_le
 Declared in
@@ -1213,7 +1213,7 @@ summable (T:=T) (R:=R) F ->
 (l < psum F)%R -> exists J : {fset T}, (l < \sum_j `|F (\val j)|)%R
 
 lt_psum is not universe polymorphic
-Arguments lt_psum {R} [T] [F]%function_scope [l] _ _
+Arguments lt_psum {R} [T] [F]%_function_scope [l] _ _
 lt_psum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.lt_psum
 Declared in
@@ -1234,7 +1234,7 @@ forall {R : realType} [x : R] [E : set R],
 (E `&` ubound (T:=R) E)%classic x -> sup E = x
 
 max_sup is not universe polymorphic
-Arguments max_sup {R} [x]%ring_scope [E]%classical_set_scope _
+Arguments max_sup {R} [x]%_ring_scope [E]%_classical_set_scope _
 max_sup is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.max_sup
 Declared in
@@ -1257,7 +1257,7 @@ Qed.</div></details>
 forall {R : realType} [I : finType] (f : I -> R), summable (T:=I) (R:=R) f
 
 summable_fin is not universe polymorphic
-Arguments summable_fin {R} [I] f%function_scope
+Arguments summable_fin {R} [I] f%_function_scope
 summable_fin is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summable_fin
 Declared in
@@ -1276,7 +1276,7 @@ Qed.</div></details>
 forall {R : realType} [I : finType] (f : I -> R), psum f = (\sum_i `|f i|)%R
 
 psum_fin is not universe polymorphic
-Arguments psum_fin {R} [I] f%function_scope
+Arguments psum_fin {R} [I] f%_function_scope
 psum_fin is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psum_fin
 Declared in
@@ -1312,7 +1312,7 @@ forall {R : realType} [T : choiceType] [S : T -> R] [r : seq T],
 uniq r -> summable (T:=T) (R:=R) S -> (\sum_(x <- r) `|S x| <= psum S)%R
 
 ger_big_psum is not universe polymorphic
-Arguments ger_big_psum {R} [T] [S]%function_scope [r]%seq_scope _ _
+Arguments ger_big_psum {R} [T] [S]%_function_scope [r]%_seq_scope _ _
 ger_big_psum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.ger_big_psum
 Declared in
@@ -1334,7 +1334,7 @@ forall {R : realType} [T : choiceType] [S : T -> R] (x : T),
 summable (T:=T) (R:=R) S -> (`|S x| <= psum S)%R
 
 ger1_psum is not universe polymorphic
-Arguments ger1_psum {R} [T] [S]%function_scope x _
+Arguments ger1_psum {R} [T] [S]%_function_scope x _
 ger1_psum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.ger1_psum
 Declared in
@@ -1351,7 +1351,7 @@ Qed.</div></details>
 forall {R : realType} [T : choiceType] (S : T -> R), (0 <= psum S)%R
 
 ge0_psum is not universe polymorphic
-Arguments ge0_psum {R} [T] S%function_scope
+Arguments ge0_psum {R} [T] S%_function_scope
 ge0_psum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.ge0_psum
 Declared in
@@ -1378,7 +1378,7 @@ summable (T:=Datatypes_nat__canonical__choice_Choice) (R:=R) S ->
 forall n : nat, (\sum_(i < n) `|S i| <= psum S)%R
 
 ger_big_ord_psum is not universe polymorphic
-Arguments ger_big_ord_psum {R} [S]%function_scope smS n%nat_scope
+Arguments ger_big_ord_psum {R} [S]%_function_scope smS n%_nat_scope
 ger_big_ord_psum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.ger_big_ord_psum
 Declared in
@@ -1406,8 +1406,8 @@ forall {R : realType} [S : nat -> R],
 forall [x y : nat], x <= y -> (\sum_(i < x) S i <= \sum_(i < y) S i)%R
 
 ptsum_homo is not universe polymorphic
-Arguments ptsum_homo {R} [S]%function_scope ge0_S%function_scope
-  [x y]%nat_scope _
+Arguments ptsum_homo {R} [S]%_function_scope ge0_S%_function_scope
+  [x y]%_nat_scope _
 ptsum_homo is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.ptsum_homo
 Declared in
@@ -1427,7 +1427,8 @@ summable (T:=Datatypes_nat__canonical__choice_Choice) (R:=R) S ->
 nbounded (R:=R) (fun n : nat => (\sum_(i < n) S i)%R)
 
 psummable_ptbounded is not universe polymorphic
-Arguments psummable_ptbounded {R} [S]%function_scope ge0_S%function_scope smS
+Arguments psummable_ptbounded {R} [S]%_function_scope 
+  ge0_S%_function_scope smS
 psummable_ptbounded is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psummable_ptbounded
 Declared in
@@ -1451,7 +1452,7 @@ summable (T:=Datatypes_nat__canonical__choice_Choice) (R:=R) S ->
 ncvg (R:=R) (fun n : nat => (\sum_(i < n) S i)%R) (psum S)%:E
 
 ncvg_sum is not universe polymorphic
-Arguments ncvg_sum {R} [S]%function_scope ge0_S%function_scope smS v
+Arguments ncvg_sum {R} [S]%_function_scope ge0_S%_function_scope smS v
 ncvg_sum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.ncvg_sum
 Declared in
@@ -1505,8 +1506,8 @@ summable (T:=T) (R:=R) S ->
 psum S = fine (nlim (fun n : nat => (\sum_j S (\val j))%R))
 
 psum_as_lim is not universe polymorphic
-Arguments psum_as_lim {R T} [S P]%function_scope ge0_S%function_scope 
-  smS (homo_P cover_P)%function_scope
+Arguments psum_as_lim {R T} [S P]%_function_scope 
+  ge0_S%_function_scope smS (homo_P cover_P)%_function_scope
 psum_as_lim is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psum_as_lim
 Declared in
@@ -1554,7 +1555,7 @@ forall {R : realType} [T : choiceType] [S1 S2 : T -> R],
 summable (T:=T) (R:=R) (S1 \+ S2)%R -> summable (T:=T) (R:=R) (S2 \+ S1)%R
 
 summable_addrC is not universe polymorphic
-Arguments summable_addrC {R} [T] [S1 S2]%function_scope _
+Arguments summable_addrC {R} [T] [S1 S2]%_function_scope _
 summable_addrC is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summable_addrC
 Declared in
@@ -1571,7 +1572,7 @@ forall {R : realType} [T : choiceType] [S1 S2 : T -> R],
 summable (T:=T) (R:=R) (S1 \* S2)%R -> summable (T:=T) (R:=R) (S2 \* S1)%R
 
 summable_mulrC is not universe polymorphic
-Arguments summable_mulrC {R} [T] [S1 S2]%function_scope _
+Arguments summable_mulrC {R} [T] [S1 S2]%_function_scope _
 summable_mulrC is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summable_mulrC
 Declared in
@@ -1588,7 +1589,7 @@ forall {R : realType} [T : choiceType] (S : T -> R),
 summable (T:=T) (R:=R) (fun x : T => `|S x|%R) <-> summable (T:=T) (R:=R) S
 
 summable_abs is not universe polymorphic
-Arguments summable_abs {R} [T] S%function_scope
+Arguments summable_abs {R} [T] S%_function_scope
 summable_abs is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summable_abs
 Declared in
@@ -1625,7 +1626,7 @@ summable (T:=T) (R:=R) S1 ->
 summable (T:=T) (R:=R) S2 -> summable (T:=T) (R:=R) (S1 \+ S2)%R
 
 summableD is not universe polymorphic
-Arguments summableD {R} [T] [S1 S2]%function_scope _ _
+Arguments summableD {R} [T] [S1 S2]%_function_scope _ _
 summableD is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summableD
 Declared in
@@ -1647,7 +1648,7 @@ forall {R : realType} [T : choiceType] [S : T -> R],
 summable (T:=T) (R:=R) S -> summable (T:=T) (R:=R) (- S)%R
 
 summableN is not universe polymorphic
-Arguments summableN {R} [T] [S]%function_scope _
+Arguments summableN {R} [T] [S]%_function_scope _
 summableN is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summableN
 Declared in
@@ -1666,7 +1667,7 @@ forall {R : realType} [T : choiceType] (S : T -> R),
 `[< summable (T:=T) (R:=R) (- S)%R >] = `[< summable (T:=T) (R:=R) S >]
 
 summablebN is not universe polymorphic
-Arguments summablebN {R} [T] S%function_scope
+Arguments summablebN {R} [T] S%_function_scope
 summablebN is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summablebN
 Declared in
@@ -1686,7 +1687,7 @@ summable (T:=T) (R:=R) S1 ->
 `[< summable (T:=T) (R:=R) (S1 \+ S2)%R >] = `[< summable (T:=T) (R:=R) S2 >]
 
 summablebDl is not universe polymorphic
-Arguments summablebDl {R} [T] [S1]%function_scope S2%function_scope _
+Arguments summablebDl {R} [T] [S1]%_function_scope S2%_function_scope _
 summablebDl is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summablebDl
 Declared in
@@ -1708,7 +1709,7 @@ summable (T:=T) (R:=R) S2 ->
 `[< summable (T:=T) (R:=R) (S1 \+ S2)%R >] = `[< summable (T:=T) (R:=R) S1 >]
 
 summablebDr is not universe polymorphic
-Arguments summablebDr {R} [T] S1%function_scope [S2]%function_scope _
+Arguments summablebDr {R} [T] S1%_function_scope [S2]%_function_scope _
 summablebDr is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summablebDr
 Declared in
@@ -1727,7 +1728,7 @@ forall {R : realType} [T : choiceType] [S : T -> R] (c : R),
 summable (T:=T) (R:=R) S -> summable (T:=T) (R:=R) (c \*o S)%R
 
 summableZ is not universe polymorphic
-Arguments summableZ {R} [T] [S]%function_scope c%ring_scope _
+Arguments summableZ {R} [T] [S]%_function_scope c%_ring_scope _
 summableZ is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summableZ
 Declared in
@@ -1747,7 +1748,7 @@ forall {R : realType} [T : choiceType] [S : T -> R] (c : R),
 summable (T:=T) (R:=R) S -> summable (T:=T) (R:=R) (c \o* S)%R
 
 summableZr is not universe polymorphic
-Arguments summableZr {R} [T] [S]%function_scope c%ring_scope _
+Arguments summableZr {R} [T] [S]%_function_scope c%_ring_scope _
 summableZr is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summableZr
 Declared in
@@ -1788,7 +1789,7 @@ forall {R : realType} [T : choiceType] [S1 S2 : T -> R],
 summable (T:=T) (R:=R) S2 -> summable (T:=T) (R:=R) (S1 \* S2)%R
 
 summableMl is not universe polymorphic
-Arguments summableMl {R} [T] [S1 S2]%function_scope _ _
+Arguments summableMl {R} [T] [S1 S2]%_function_scope _ _
 summableMl is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summableMl
 Declared in
@@ -1833,7 +1834,7 @@ forall {R : realType} [T : choiceType] [S1 S2 : T -> R],
 summable (T:=T) (R:=R) S1 -> summable (T:=T) (R:=R) (S1 \* S2)%R
 
 summableMr is not universe polymorphic
-Arguments summableMr {R} [T] [S1 S2]%function_scope _ _
+Arguments summableMr {R} [T] [S1 S2]%_function_scope _ _
 summableMr is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summableMr
 Declared in
@@ -1851,7 +1852,7 @@ summable (T:=T) (R:=R) S1 ->
 summable (T:=T) (R:=R) S2 -> summable (T:=T) (R:=R) (S1 \* S2)%R
 
 summableM is not universe polymorphic
-Arguments summableM {R} [T] [S1 S2]%function_scope _ _
+Arguments summableM {R} [T] [S1 S2]%_function_scope _ _
 summableM is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summableM
 Declared in
@@ -1870,7 +1871,7 @@ forall {R : realType} [T : choiceType] [f : T -> R],
 summable (T:=T) (R:=R) f -> summable (T:=T) (R:=R) (fpos f)
 
 summable_fpos is not universe polymorphic
-Arguments summable_fpos {R} [T] [f]%function_scope _
+Arguments summable_fpos {R} [T] [f]%_function_scope _
 summable_fpos is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summable_fpos
 Declared in
@@ -1889,7 +1890,7 @@ forall {R : realType} [T : choiceType] [f : T -> R],
 summable (T:=T) (R:=R) f -> summable (T:=T) (R:=R) (fneg f)
 
 summable_fneg is not universe polymorphic
-Arguments summable_fneg {R} [T] [f]%function_scope _
+Arguments summable_fneg {R} [T] [f]%_function_scope _
 summable_fneg is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summable_fneg
 Declared in
@@ -1907,7 +1908,7 @@ summable (T:=T) (R:=R) S ->
 summable (T:=T) (R:=R) (fun x : T => ((P x)%:R * S x)%R)
 
 summable_condl is not universe polymorphic
-Arguments summable_condl {R} [T] [S]%function_scope P _
+Arguments summable_condl {R} [T] [S]%_function_scope P _
 summable_condl is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summable_condl
 Declared in
@@ -1929,7 +1930,7 @@ summable (T:=T) (R:=R) S ->
 summable (T:=T) (R:=R) (fun x : T => (S x * (P x)%:R)%R)
 
 summable_condr is not universe polymorphic
-Arguments summable_condr {R} [T] [S]%function_scope P _
+Arguments summable_condr {R} [T] [S]%_function_scope P _
 summable_condr is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summable_condr
 Declared in
@@ -1949,8 +1950,8 @@ forall {R : realType} [T : choiceType] [S : T -> R] [d : R],
 summable (T:=T) (R:=R) S /\ (psum S <= d)%R
 
 summable_of_bd is not universe polymorphic
-Arguments summable_of_bd {R} [T] [S]%function_scope 
-  [d]%ring_scope _%function_scope
+Arguments summable_of_bd {R} [T] [S]%_function_scope 
+  [d]%_ring_scope _%_function_scope
 summable_of_bd is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summable_of_bd
 Declared in
@@ -1977,8 +1978,8 @@ forall {R : realType} [T : choiceType] [I : Type]
 summable (T:=T) (R:=R) (fun x : T => (\sum_(i <- r | P i) F i x)%R)
 
 summable_sum is not universe polymorphic
-Arguments summable_sum {R} [T] [I]%type_scope [F]%function_scope 
-  [P] r%seq_scope _%function_scope
+Arguments summable_sum {R} [T] [I]%_type_scope [F]%_function_scope 
+  [P] r%_seq_scope _%_function_scope
 summable_sum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.summable_sum
 Declared in
@@ -2031,7 +2032,7 @@ forall {R : realType} [T : choiceType] [f : T -> R],
 (forall x : T, f x = 0%R) -> psum f = 0%R
 
 psum_eq0 is not universe polymorphic
-Arguments psum_eq0 {R} [T] [f]%function_scope _%function_scope
+Arguments psum_eq0 {R} [T] [f]%_function_scope _%_function_scope
 psum_eq0 is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psum_eq0
 Declared in
@@ -2047,7 +2048,7 @@ forall {R : realType} [T : choiceType] [f : T -> R],
 summable (T:=T) (R:=R) f -> psum f = 0%R -> forall x : T, f x = 0%R
 
 eq0_psum is not universe polymorphic
-Arguments eq0_psum {R} [T] [f]%function_scope _ _ x
+Arguments eq0_psum {R} [T] [f]%_function_scope _ _ x
 eq0_psum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.eq0_psum
 Declared in
@@ -2068,7 +2069,7 @@ forall {R : realType} [T : choiceType] [f : T -> R],
 psum f <> 0%R -> exists x : T, f x <> 0%R
 
 neq0_psum is not universe polymorphic
-Arguments neq0_psum {R} [T] [f]%function_scope _
+Arguments neq0_psum {R} [T] [f]%_function_scope _
 neq0_psum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.neq0_psum
 Declared in
@@ -2085,7 +2086,7 @@ forall {R : realType} [T : choiceType] (S : T -> R),
 psum (fun x : T => `|S x|%R) = psum S
 
 psum_abs is not universe polymorphic
-Arguments psum_abs {R} [T] S%function_scope
+Arguments psum_abs {R} [T] S%_function_scope
 psum_abs is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psum_abs
 Declared in
@@ -2109,7 +2110,7 @@ forall {R : realType} [T : choiceType] [S1 S2 : T -> R],
 (fun x : T => `|S1 x|%R) =1 (fun x : T => `|S2 x|%R) -> psum S1 = psum S2
 
 eq_psum_abs is not universe polymorphic
-Arguments eq_psum_abs {R} [T] [S1 S2]%function_scope _
+Arguments eq_psum_abs {R} [T] [S1 S2]%_function_scope _
 eq_psum_abs is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.eq_psum_abs
 Declared in
@@ -2128,7 +2129,7 @@ forall {R : realType} [T : choiceType] [S1 S2 : T -> R],
 summable (T:=T) (R:=R) S2 -> (psum S1 <= psum S2)%R
 
 le_psum_abs is not universe polymorphic
-Arguments le_psum_abs {R} [T] [S1 S2]%function_scope _%function_scope _
+Arguments le_psum_abs {R} [T] [S1 S2]%_function_scope _%_function_scope _
 le_psum_abs is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.le_psum_abs
 Declared in
@@ -2147,7 +2148,7 @@ forall {R : realType} [T : choiceType] [S : T -> R] (P : pred T),
 summable (T:=T) (R:=R) S -> (psum (fun x : T => (P x)%:R * S x) <= psum S)%R
 
 le_psum_condl is not universe polymorphic
-Arguments le_psum_condl {R} [T] [S]%function_scope P _
+Arguments le_psum_condl {R} [T] [S]%_function_scope P _
 le_psum_condl is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.le_psum_condl
 Declared in
@@ -2166,7 +2167,7 @@ forall {R : realType} [T : choiceType] [S : T -> R] (P : pred T),
 summable (T:=T) (R:=R) S -> (psum (fun x : T => S x * (P x)%:R) <= psum S)%R
 
 le_psum_condr is not universe polymorphic
-Arguments le_psum_condr {R} [T] [S]%function_scope P _
+Arguments le_psum_condr {R} [T] [S]%_function_scope P _
 le_psum_condr is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.le_psum_condr
 Declared in
@@ -2185,7 +2186,7 @@ Qed.</div></details>
 forall {R : realType} [T : choiceType] (S : T -> R), psum (- S)%R = psum S
 
 psumN is not universe polymorphic
-Arguments psumN {R} [T] S%function_scope
+Arguments psumN {R} [T] S%_function_scope
 psumN is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psumN
 Declared in
@@ -2208,7 +2209,7 @@ summable (T:=T) (R:=R) S1 ->
 summable (T:=T) (R:=R) S2 -> psum (S1 \+ S2)%R = (psum S1 + psum S2)%E
 
 psumD is not universe polymorphic
-Arguments psumD {R} [T] [S1 S2]%function_scope (_ _)%function_scope _ _
+Arguments psumD {R} [T] [S1 S2]%_function_scope (_ _)%_function_scope _ _
 psumD is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psumD
 Declared in
@@ -2248,10 +2249,11 @@ forall {R : realType} [T : choiceType] [S1 S2 : T -> R],
 summable (T:=T) (R:=R) S1 -> psum (S1 \- S2)%R = (psum S1 - psum S2)%R
 
 __admitted__psumB is not universe polymorphic
-Arguments __admitted__psumB {R} [T] [S1 S2]%function_scope _%function_scope _
+Arguments __admitted__psumB {R} [T] [S1 S2]%_function_scope 
+  _%_function_scope _
 Expands to: Constant mathcomp.experimental_reals.realsum.__admitted__psumB
 Declared in
-library mathcomp.experimental_reals.realsum, line 820, characters 18-27
+library mathcomp.experimental_reals.realsum, line 817, characters 6-23
 ">__admitted__psumB</a></span><span class="id"> </span><span id="S1:441" class="id"><a name="S1:441" class="">S1</a></span><span class="id"> </span><span id="S2:442" class="id"><a name="S2:442" class="">S2</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:443" class="id"><a name="x:443" class="">x</a></span><span class="id">,</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#S2:442">S2</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#x:443">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#S1:441">S1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#x:443">x</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#summable">summable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#S1:441">S1</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x">-&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#psum">psum</a></span> (<span class="id"><a href="mathcomp.experimental_reals.realsum.html#S1:441">S1</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#0bb5d11fe8761db1e6494d75cb45a3cb"> \-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#0bb5d11fe8761db1e6494d75cb45a3cb"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#S2:442">S2</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span> (<span class="id"><a href="mathcomp.experimental_reals.realsum.html#psum">psum</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#S1:441">S1</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#psum">psum</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#S2:442">S2</a></span>).<br/>
@@ -2263,7 +2265,7 @@ forall {R : realType} [T : choiceType] (S : T -> R)
 (0 <= c)%R -> psum (c \*o S)%R = (c * psum S)%R
 
 psumZ is not universe polymorphic
-Arguments psumZ {R} [T] S%function_scope [c] _
+Arguments psumZ {R} [T] S%_function_scope [c] _
 psumZ is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psumZ
 Declared in
@@ -2300,7 +2302,7 @@ forall {R : realType} [T : choiceType] (S : T -> R)
 (0 <= c)%R -> psum (c \o* S)%R = (psum S * c)%R
 
 psumZr is not universe polymorphic
-Arguments psumZr {R} [T] S%function_scope [c] _
+Arguments psumZr {R} [T] S%_function_scope [c] _
 psumZr is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psumZr
 Declared in
@@ -2323,8 +2325,8 @@ forall {R : realType} [T : choiceType] [I : Type]
 psum (fun x : T => (\sum_(i <- r | P i) F i x)%R)
 
 psum_bigop is not universe polymorphic
-Arguments psum_bigop {R} [T] [I]%type_scope [F]%function_scope
-  P%function_scope r%seq_scope (_ _)%function_scope
+Arguments psum_bigop {R} [T] [I]%_type_scope [F]%_function_scope
+  P%_function_scope r%_seq_scope (_ _)%_function_scope
 psum_bigop is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psum_bigop
 Declared in
@@ -2353,7 +2355,7 @@ psum S =
  psum (fun x : T => ((~~ P x)%:R * S x)%R))%E
 
 psumID is not universe polymorphic
-Arguments psumID {R} [T] [S]%function_scope P _
+Arguments psumID {R} [T] [S]%_function_scope P _
 psumID is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psumID
 Declared in
@@ -2381,7 +2383,7 @@ uniq r ->
 {subset [pred x | S x != 0%R] <= r} -> psum S = (\sum_(x <- r) `|S x|)%R
 
 psum_finseq is not universe polymorphic
-Arguments psum_finseq {R} [T] [S]%function_scope [r]%seq_scope _ _
+Arguments psum_finseq {R} [T] [S]%_function_scope [r]%_seq_scope _ _
 psum_finseq is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psum_finseq
 Declared in
@@ -2425,8 +2427,8 @@ forall {R : realType} {T U : choiceType} [S : T -> R]
 psum S = psum (fun x : U => S (h x))
 
 reindex_psum_onto is not universe polymorphic
-Arguments reindex_psum_onto {R T U} [S]%function_scope 
-  [P] [h h']%function_scope (_ _ _)%function_scope
+Arguments reindex_psum_onto {R T U} [S]%_function_scope 
+  [P] [h h']%_function_scope (_ _ _)%_function_scope
 reindex_psum_onto is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.reindex_psum_onto
 Declared in
@@ -2485,8 +2487,8 @@ forall {R : realType} {T U : choiceType} [S : T -> R]
 {on P, bijective h} -> psum S = psum (fun x : U => S (h x))
 
 reindex_psum is not universe polymorphic
-Arguments reindex_psum {R T U} [S]%function_scope 
-  [P] [h]%function_scope _%function_scope _
+Arguments reindex_psum {R T U} [S]%_function_scope 
+  [P] [h]%_function_scope _%_function_scope _
 reindex_psum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.reindex_psum
 Declared in
@@ -2515,7 +2517,7 @@ summable (T:=T) (R:=R) S ->
 psum S = psum (fun y : U => psum (fun x : T => (S x * (f x == y)%:R)%R))
 
 partition_psum is not universe polymorphic
-Arguments partition_psum {R T U} f%function_scope [S]%function_scope _
+Arguments partition_psum {R T U} f%_function_scope [S]%_function_scope _
 partition_psum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.partition_psum
 Declared in
@@ -2609,7 +2611,7 @@ psum
     psum (fun x : T => S x * (f x == y)%:R))%R)
 
 partition_psum_cond is not universe polymorphic
-Arguments partition_psum_cond {R T U} f%function_scope [S]%function_scope _
+Arguments partition_psum_cond {R T U} f%_function_scope [S]%_function_scope _
 partition_psum_cond is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.partition_psum_cond
 Declared in
@@ -2636,7 +2638,7 @@ summable (T:=Datatypes_prod__canonical__choice_Choice T U) (R:=R) S ->
 psum S = psum (fun x : T => psum (fun y : U => S (x, y)))
 
 psum_pair is not universe polymorphic
-Arguments psum_pair {R T U} [S]%function_scope _
+Arguments psum_pair {R T U} [S]%_function_scope _
 psum_pair is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psum_pair
 Declared in
@@ -2661,7 +2663,7 @@ summable (T:=Datatypes_prod__canonical__choice_Choice T U) (R:=R) S ->
 psum S = psum (fun y : U => psum (fun x : T => S (x, y)))
 
 psum_pair_swap is not universe polymorphic
-Arguments psum_pair_swap {R T U} [S]%function_scope _
+Arguments psum_pair_swap {R T U} [S]%_function_scope _
 psum_pair_swap is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psum_pair_swap
 Declared in
@@ -2693,12 +2695,12 @@ sup [set r | (exists x : T, r = sup [set r0 | (exists y : U, r0 = S x y)])] =
 sup [set r | (exists y : U, r == sup [set r0 | (exists x : T, r0 = S x y)])]
 
 __admitted__interchange_sup is not universe polymorphic
-Arguments __admitted__interchange_sup {R} {T U}%type_scope 
-  [S]%function_scope _%function_scope _
+Arguments __admitted__interchange_sup {R} {T U}%_type_scope
+  [S]%_function_scope _%_function_scope _
 Expands to: Constant
             mathcomp.experimental_reals.realsum.__admitted__interchange_sup
 Declared in
-library mathcomp.experimental_reals.realsum, line 1103, characters 18-27
+library mathcomp.experimental_reals.realsum, line 1098, characters 6-33
 ">__admitted__interchange_sup</a></span> (<span id="S:575" class="id"><a name="S:575" class="">S</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#SupInterchange.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#SupInterchange.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#SupInterchange.R">R</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:576" class="id"><a name="x:576" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#has_sup">has_sup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="r:577" class="id"><a name="r:577" class="">r</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="gallina-kwd"> exists</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="y:578" class="id"><a name="y:578" class="">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#r:577">r</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#S:575">S</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#x:576">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#y:578">y</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>)<br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x">-&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#has_sup">has_sup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="r:579" class="id"><a name="r:579" class="">r</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="gallina-kwd"> exists</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="x:580" class="id"><a name="x:580" class="">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#r:579">r</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#sup">sup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="r:581" class="id"><a name="r:581" class="">r</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="gallina-kwd"> exists</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="y:582" class="id"><a name="y:582" class="">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#r:581">r</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#S:575">S</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#x:580">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#y:582">y</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span><br/>
@@ -2720,12 +2722,12 @@ summable (T:=T) (R:=R) (fun x : T => psum [eta S x]) ->
 psum (fun x : T => psum [eta S x]) = psum (fun y : U => psum (S^~ y))
 
 __admitted__interchange_psum is not universe polymorphic
-Arguments __admitted__interchange_psum {R T U} [S]%function_scope
-  _%function_scope _
+Arguments __admitted__interchange_psum {R T U} [S]%_function_scope
+  _%_function_scope _
 Expands to: Constant
             mathcomp.experimental_reals.realsum.__admitted__interchange_psum
 Declared in
-library mathcomp.experimental_reals.realsum, line 1118, characters 18-27
+library mathcomp.experimental_reals.realsum, line 1114, characters 6-34
 ">__admitted__interchange_psum</a></span> (<span id="S:594" class="id"><a name="S:594" class="">S</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#PSumInterchange.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#PSumInterchange.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#PSumInterchange.R">R</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:595" class="id"><a name="x:595" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#summable">summable</a></span> (<span class="id"><a href="mathcomp.experimental_reals.realsum.html#S:594">S</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#x:595">x</a></span>))<br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x">-&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#summable">summable</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:596" class="id"><a name="x:596" class="">x</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#psum">psum</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="y:597" class="id"><a name="y:597" class="">y</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#S:594">S</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#x:596">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#y:597">y</a></span>))<br/>
@@ -2746,7 +2748,7 @@ forall {R : realType} {T : choiceType} [S : T -> R],
 (forall x : T, (0 <= S x)%R) -> psum S = sum S
 
 psum_sum is not universe polymorphic
-Arguments psum_sum {R T} [S]%function_scope _%function_scope
+Arguments psum_sum {R T} [S]%_function_scope _%_function_scope
 psum_sum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.psum_sum
 Declared in
@@ -2767,7 +2769,7 @@ summable (T:=T) (R:=R) S2 ->
 (forall x : T, (S1 x <= S2 x)%R) -> (sum S1 <= sum S2)%R
 
 le_sum is not universe polymorphic
-Arguments le_sum {R T} [S1 S2]%function_scope _ _ _%function_scope
+Arguments le_sum {R T} [S1 S2]%_function_scope _ _ _%_function_scope
 le_sum is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.le_sum
 Declared in
@@ -2805,7 +2807,7 @@ forall {R : realType} {T : choiceType} (S : T -> R),
 sum (- S)%R = (- sum S)%R
 
 sumN is not universe polymorphic
-Arguments sumN {R T} S%function_scope
+Arguments sumN {R T} S%_function_scope
 sumN is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.sumN
 Declared in
@@ -2821,7 +2823,7 @@ forall {R : realType} {T : choiceType} (S : T -> R) (c : R),
 sum (c \*o S)%R = (c * sum S)%R
 
 sumZ is not universe polymorphic
-Arguments sumZ {R T} S%function_scope c%ring_scope
+Arguments sumZ {R T} S%_function_scope c%_ring_scope
 sumZ is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.sumZ
 Declared in
@@ -2849,7 +2851,7 @@ sum S =
  sum (fun x : T => ((~~ P x)%:R * S x)%R))%E
 
 sumID is not universe polymorphic
-Arguments sumID {R T} [S]%function_scope P _
+Arguments sumID {R T} [S]%_function_scope P _
 sumID is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.sumID
 Declared in
@@ -2873,7 +2875,7 @@ uniq r ->
 {subset [pred x | S x != 0%R] <= r} -> sum S = (\sum_(x <- r) S x)%R
 
 sum_finseq is not universe polymorphic
-Arguments sum_finseq {R T} [S]%function_scope [r]%seq_scope _ _
+Arguments sum_finseq {R T} [S]%_function_scope [r]%_seq_scope _ _
 sum_finseq is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.sum_finseq
 Declared in
@@ -2900,7 +2902,7 @@ forall {R : realType} {T : choiceType} [S : T -> R] (x : T),
 (forall y : T, S y != 0%R -> x == y) -> sum S = S x
 
 sum_seq1 is not universe polymorphic
-Arguments sum_seq1 {R T} [S]%function_scope x _%function_scope
+Arguments sum_seq1 {R T} [S]%_function_scope x _%_function_scope
 sum_seq1 is opaque
 Expands to: Constant mathcomp.experimental_reals.realsum.sum_seq1
 Declared in

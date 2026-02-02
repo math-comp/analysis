@@ -1070,7 +1070,7 @@ topology_structure.BiPointedTopological.sort i ->
 topology_structure.Topological.sort T
 
 mk_path is not universe polymorphic
-Arguments mk_path {i T x y} [f]%function_scope ctsf%function_scope f0 f1 _
+Arguments mk_path {i T x y} [f]%_function_scope ctsf%_function_scope f0 f1 _
 mk_path is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.continuous_path.mk_path
@@ -1104,7 +1104,7 @@ topology_structure.Continuous.type
 
 continuous_path_mk_path__canonical__topology_structure_Continuous is not universe polymorphic
 Arguments continuous_path_mk_path__canonical__topology_structure_Continuous
-  {i T x y} [f]%function_scope ctsf%function_scope 
+  {i T x y} [f]%_function_scope ctsf%_function_scope 
   f0 f1
 continuous_path_mk_path__canonical__topology_structure_Continuous is transparent
 Expands to: Constant
@@ -1137,7 +1137,7 @@ topology_structure.Continuous.type
 
 continuous_path_mk_path__canonical__topology_structure_Continuous is not universe polymorphic
 Arguments continuous_path_mk_path__canonical__topology_structure_Continuous
-  {i T x y} [f]%function_scope ctsf%function_scope 
+  {i T x y} [f]%_function_scope ctsf%_function_scope 
   f0 f1
 continuous_path_mk_path__canonical__topology_structure_Continuous is transparent
 Expands to: Constant
@@ -1170,7 +1170,7 @@ topology_structure.Continuous.type
 
 continuous_path_mk_path__canonical__topology_structure_Continuous is not universe polymorphic
 Arguments continuous_path_mk_path__canonical__topology_structure_Continuous
-  {i T x y} [f]%function_scope ctsf%function_scope 
+  {i T x y} [f]%_function_scope ctsf%_function_scope 
   f0 f1
 continuous_path_mk_path__canonical__topology_structure_Continuous is transparent
 Expands to: Constant
@@ -1203,7 +1203,7 @@ topology_structure.Continuous.type
 
 continuous_path_mk_path__canonical__topology_structure_Continuous is not universe polymorphic
 Arguments continuous_path_mk_path__canonical__topology_structure_Continuous
-  {i T x y} [f]%function_scope ctsf%function_scope 
+  {i T x y} [f]%_function_scope ctsf%_function_scope 
   f0 f1
 continuous_path_mk_path__canonical__topology_structure_Continuous is transparent
 Expands to: Constant
@@ -1236,7 +1236,7 @@ topology_structure.Continuous.type
 
 continuous_path_mk_path__canonical__topology_structure_Continuous is not universe polymorphic
 Arguments continuous_path_mk_path__canonical__topology_structure_Continuous
-  {i T x y} [f]%function_scope ctsf%function_scope 
+  {i T x y} [f]%_function_scope ctsf%_function_scope 
   f0 f1
 continuous_path_mk_path__canonical__topology_structure_Continuous is transparent
 Expands to: Constant
@@ -1264,7 +1264,7 @@ f zero = x -> f one = y -> {path i from x to y in T}
 
 continuous_path_mk_path__canonical__continuous_path_Path is not universe polymorphic
 Arguments continuous_path_mk_path__canonical__continuous_path_Path 
-  {i T x y} [f]%function_scope ctsf%function_scope 
+  {i T x y} [f]%_function_scope ctsf%_function_scope 
   f0 f1
 continuous_path_mk_path__canonical__continuous_path_Path is transparent
 Expands to: Constant
@@ -1291,7 +1291,7 @@ f zero = x -> f one = y -> {path i from x to y in T}
 
 continuous_path_mk_path__canonical__continuous_path_Path is not universe polymorphic
 Arguments continuous_path_mk_path__canonical__continuous_path_Path 
-  {i T x y} [f]%function_scope ctsf%function_scope 
+  {i T x y} [f]%_function_scope ctsf%_function_scope 
   f0 f1
 continuous_path_mk_path__canonical__continuous_path_Path is transparent
 Expands to: Constant
@@ -1318,7 +1318,7 @@ f zero = x -> f one = y -> {path i from x to y in T}
 
 continuous_path_mk_path__canonical__continuous_path_Path is not universe polymorphic
 Arguments continuous_path_mk_path__canonical__continuous_path_Path 
-  {i T x y} [f]%function_scope ctsf%function_scope 
+  {i T x y} [f]%_function_scope ctsf%_function_scope 
   f0 f1
 continuous_path_mk_path__canonical__continuous_path_Path is transparent
 Expands to: Constant
@@ -1345,7 +1345,7 @@ f zero = x -> f one = y -> {path i from x to y in T}
 
 continuous_path_mk_path__canonical__continuous_path_Path is not universe polymorphic
 Arguments continuous_path_mk_path__canonical__continuous_path_Path 
-  {i T x y} [f]%function_scope ctsf%function_scope 
+  {i T x y} [f]%_function_scope ctsf%_function_scope 
   f0 f1
 continuous_path_mk_path__canonical__continuous_path_Path is transparent
 Expands to: Constant
@@ -1372,7 +1372,7 @@ f zero = x -> f one = y -> {path i from x to y in T}
 
 continuous_path_mk_path__canonical__continuous_path_Path is not universe polymorphic
 Arguments continuous_path_mk_path__canonical__continuous_path_Path 
-  {i T x y} [f]%function_scope ctsf%function_scope 
+  {i T x y} [f]%_function_scope ctsf%_function_scope 
   f0 f1
 continuous_path_mk_path__canonical__continuous_path_Path is transparent
 Expands to: Constant
@@ -1397,7 +1397,7 @@ wedge
 topology_structure.Topological.sort T
 
 chain_path is not universe polymorphic
-Arguments chain_path {i j T} (f g)%function_scope _
+Arguments chain_path {i j T} (f g)%_function_scope _
 chain_path is transparent
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.continuous_path.chain_path
@@ -1507,8 +1507,8 @@ exists
       B x
     & (B `<=` chain_path f g @^-1` t)%classic]
 
-Arguments chain_path_cts_point {i j T} [f g]%function_scope
-  (_ _)%function_scope _ [x t] _
+Arguments chain_path_cts_point {i j T} [f g]%_function_scope
+  (_ _)%_function_scope _ [x t] _
 chain_path_cts_point is opaque
 Expands to: Constant
             mathcomp.analysis.homotopy_theory.continuous_path.chain_path_cts_point

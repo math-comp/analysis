@@ -238,7 +238,7 @@ forall [R : realType] [x : R] [b : bool] [i : itv_bound R],
 (i < BSide b x)%O -> has_sup (T:=R) [set` Interval i (BSide b x)]
 
 has_sup_half is not universe polymorphic
-Arguments has_sup_half [R] [x]%ring_scope [b]%bool_scope [i] _
+Arguments has_sup_half [R] [x]%_ring_scope [b]%_bool_scope [i] _
 has_sup_half is opaque
 Expands to: Constant mathcomp.reals.real_interval.has_sup_half
 Declared in library mathcomp.reals.real_interval, line 24, characters 6-18
@@ -259,7 +259,7 @@ forall [R : realType] [x : R] [b : bool] [i : itv_bound R],
 (BSide b x < i)%O -> has_inf (T:=R) [set` Interval (BSide b x) i]
 
 has_inf_half is not universe polymorphic
-Arguments has_inf_half [R] [x]%ring_scope [b]%bool_scope [i] _
+Arguments has_inf_half [R] [x]%_ring_scope [b]%_bool_scope [i] _
 has_inf_half is opaque
 Expands to: Constant mathcomp.reals.real_interval.has_inf_half
 Declared in library mathcomp.reals.real_interval, line 34, characters 6-18
@@ -363,7 +363,7 @@ forall [R : realType] [a : interval_itv_bound__canonical__Order_Preorder R]
 (a < BSide b x)%O -> sup [set` Interval a (BSide b x)] = x
 
 sup_itv is not universe polymorphic
-Arguments sup_itv [R a] [b]%bool_scope [x]%ring_scope _
+Arguments sup_itv [R a] [b]%_bool_scope [x]%_ring_scope _
 sup_itv is opaque
 Expands to: Constant mathcomp.reals.real_interval.sup_itv
 Declared in library mathcomp.reals.real_interval, line 114, characters 6-13
@@ -380,7 +380,7 @@ forall [R : realType] [a : interval_itv_bound__canonical__Order_Preorder R]
 (BSide b x < a)%O -> inf [set` Interval (BSide b x) a] = x
 
 inf_itv is not universe polymorphic
-Arguments inf_itv [R a] [b]%bool_scope [x]%ring_scope _
+Arguments inf_itv [R a] [b]%_bool_scope [x]%_ring_scope _
 inf_itv is opaque
 Expands to: Constant mathcomp.reals.real_interval.inf_itv
 Declared in library mathcomp.reals.real_interval, line 118, characters 6-13
@@ -394,7 +394,7 @@ Declared in library mathcomp.reals.real_interval, line 118, characters 6-13
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sup_itvcc" class="id"><a name="sup_itvcc" class="" title="sup_itvcc : forall [R : realType] [x y : R], (x <= y)%R -> sup `[x, y] = y
 
 sup_itvcc is not universe polymorphic
-Arguments sup_itvcc [R] [x y]%ring_scope _
+Arguments sup_itvcc [R] [x y]%_ring_scope _
 sup_itvcc is opaque
 Expands to: Constant mathcomp.reals.real_interval.sup_itvcc
 Declared in library mathcomp.reals.real_interval, line 122, characters 6-15
@@ -407,7 +407,7 @@ Declared in library mathcomp.reals.real_interval, line 122, characters 6-15
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="inf_itvcc" class="id"><a name="inf_itvcc" class="" title="inf_itvcc : forall [R : realType] [x y : R], (x <= y)%R -> inf `[x, y] = x
 
 inf_itvcc is not universe polymorphic
-Arguments inf_itvcc [R] [x y]%ring_scope _
+Arguments inf_itvcc [R] [x y]%_ring_scope _
 inf_itvcc is opaque
 Expands to: Constant mathcomp.reals.real_interval.inf_itvcc
 Declared in library mathcomp.reals.real_interval, line 125, characters 6-15
@@ -429,7 +429,7 @@ forall [R : realType] (b : bool) (x : R),
 (\bigcap_k [set` Interval -oo%O (BSide b (x + k.+1%:R^-1%R)%E)])%classic
 
 itvNycEbigcap is not universe polymorphic
-Arguments itvNycEbigcap [R] b%bool_scope x%ring_scope
+Arguments itvNycEbigcap [R] b%_bool_scope x%_ring_scope
 itvNycEbigcap is opaque
 Expands to: Constant mathcomp.reals.real_interval.itvNycEbigcap
 Declared in library mathcomp.reals.real_interval, line 134, characters 6-19
@@ -453,7 +453,7 @@ forall [R : realType] (x : R),
 `[x, +oo[%classic = (\bigcap_k `](x - k.+1%:R^-1)%R, +oo[)%classic
 
 itvcyEbigcap is not universe polymorphic
-Arguments itvcyEbigcap [R] x%ring_scope
+Arguments itvcyEbigcap [R] x%_ring_scope
 itvcyEbigcap is opaque
 Expands to: Constant mathcomp.reals.real_interval.itvcyEbigcap
 Declared in library mathcomp.reals.real_interval, line 147, characters 6-18
@@ -477,7 +477,7 @@ forall [R : realType] (b : bool) (x : R),
 (\bigcup_k [set` Interval (BSide b x) (BLeft k%:R%R)])%classic
 
 itvbndyEbigcup is not universe polymorphic
-Arguments itvbndyEbigcup [R] b%bool_scope x%ring_scope
+Arguments itvbndyEbigcup [R] b%_bool_scope x%_ring_scope
 itvbndyEbigcup is opaque
 Expands to: Constant mathcomp.reals.real_interval.itvbndyEbigcup
 Declared in library mathcomp.reals.real_interval, line 159, characters 6-20
@@ -498,7 +498,7 @@ forall [R : realType] (b : bool) (x : R),
 (\bigcup_k [set` Interval (BRight (1 *- k)%R) (BSide b x)])%classic
 
 itvNybndEbigcup is not universe polymorphic
-Arguments itvNybndEbigcup [R] b%bool_scope x%ring_scope
+Arguments itvNybndEbigcup [R] b%_bool_scope x%_ring_scope
 itvNybndEbigcup is opaque
 Expands to: Constant mathcomp.reals.real_interval.itvNybndEbigcup
 Declared in library mathcomp.reals.real_interval, line 168, characters 6-21
@@ -518,7 +518,7 @@ forall [R : realType] (x : R),
 `]x, +oo[%classic = (\bigcup_k `[(x + k.+1%:R^-1%R)%E, +oo[)%classic
 
 itvoyEbigcup is not universe polymorphic
-Arguments itvoyEbigcup [R] x%ring_scope
+Arguments itvoyEbigcup [R] x%_ring_scope
 itvoyEbigcup is opaque
 Expands to: Constant mathcomp.reals.real_interval.itvoyEbigcup
 Declared in library mathcomp.reals.real_interval, line 177, characters 6-18
@@ -546,7 +546,7 @@ Qed.</div></details>
 <span class="vernacular">Coercion</span><span class="id"> </span><span id="ereal_of_itv_bound" class="id"><a name="ereal_of_itv_bound" class="" title="ereal_of_itv_bound : forall [T : Type], itv_bound T -> \bar T
 
 ereal_of_itv_bound is not universe polymorphic
-Arguments ereal_of_itv_bound [T]%type_scope !b
+Arguments ereal_of_itv_bound [T]%_type_scope !b
 ereal_of_itv_bound is a coercion
 The reduction tactics unfold ereal_of_itv_bound
   when the 2nd argument evaluates to a constructor
@@ -598,7 +598,7 @@ forall [R : realDomainType] [r : R] [a b : itv_bound R],
 r \in Interval a b -> (a <= r%:E <= b)%E
 
 Interval_ereal_mem is not universe polymorphic
-Arguments Interval_ereal_mem [R] [r]%ring_scope [a b] _
+Arguments Interval_ereal_mem [R] [r]%_ring_scope [a b] _
 Interval_ereal_mem is opaque
 Expands to: Constant mathcomp.reals.real_interval.Interval_ereal_mem
 Declared in library mathcomp.reals.real_interval, line 216, characters 6-24
@@ -616,7 +616,7 @@ forall [R : realDomainType] [r : R] [a b : itv_bound R],
 (a < r%:E < b)%E -> r \in Interval a b
 
 ereal_mem_Interval is not universe polymorphic
-Arguments ereal_mem_Interval [R] [r]%ring_scope [a b] _
+Arguments ereal_mem_Interval [R] [r]%_ring_scope [a b] _
 ereal_mem_Interval is opaque
 Expands to: Constant mathcomp.reals.real_interval.ereal_mem_Interval
 Declared in library mathcomp.reals.real_interval, line 223, characters 6-24
@@ -703,7 +703,7 @@ forall [R : realType] [T : Type] (f g : T -> \bar R),
 (\bigcup_n (fun n0 : nat => [set x | ((n0.+1%:R^-1)%:E <= f x - g x)%E]) n)%classic
 
 set_lte_bigcup is not universe polymorphic
-Arguments set_lte_bigcup [R] [T]%type_scope (f g)%function_scope
+Arguments set_lte_bigcup [R] [T]%_type_scope (f g)%_function_scope
 set_lte_bigcup is opaque
 Expands to: Constant mathcomp.reals.real_interval.set_lte_bigcup
 Declared in library mathcomp.reals.real_interval, line 258, characters 6-20
@@ -729,7 +729,7 @@ forall [R : realType] (r : R),
 [set r]%classic = (\bigcap_i `](r - i.+1%:R^-1)%R, r])%classic
 
 set1_bigcap_oc is not universe polymorphic
-Arguments set1_bigcap_oc [R] r%ring_scope
+Arguments set1_bigcap_oc [R] r%_ring_scope
 set1_bigcap_oc is opaque
 Expands to: Constant mathcomp.reals.real_interval.set1_bigcap_oc
 Declared in library mathcomp.reals.real_interval, line 273, characters 6-20
@@ -752,7 +752,7 @@ forall [R : realType] (b : bool) (r s : R),
 (\bigcup_n [set` Interval (BSide b r) (BRight (s - n.+1%:R^-1)%R)])%classic
 
 itv_bnd_open_bigcup is not universe polymorphic
-Arguments itv_bnd_open_bigcup [R] b%bool_scope (r s)%ring_scope
+Arguments itv_bnd_open_bigcup [R] b%_bool_scope (r s)%_ring_scope
 itv_bnd_open_bigcup is opaque
 Expands to: Constant mathcomp.reals.real_interval.itv_bnd_open_bigcup
 Declared in library mathcomp.reals.real_interval, line 284, characters 6-25
@@ -776,7 +776,7 @@ forall [R : realType] (b : bool) (r s : R),
 (\bigcup_n [set` Interval (BLeft (s + n.+1%:R^-1%R)%E) (BSide b r)])%classic
 
 itv_open_bnd_bigcup is not universe polymorphic
-Arguments itv_open_bnd_bigcup [R] b%bool_scope (r s)%ring_scope
+Arguments itv_open_bnd_bigcup [R] b%_bool_scope (r s)%_ring_scope
 itv_open_bnd_bigcup is opaque
 Expands to: Constant mathcomp.reals.real_interval.itv_open_bnd_bigcup
 Declared in library mathcomp.reals.real_interval, line 296, characters 6-25
@@ -799,8 +799,8 @@ forall {R : archiRealDomainType} (b : bool) (x : R) (n : nat),
 (\bigcup_i [set` Interval (BSide b x) (BLeft (x + (i + n)%:R%R)%E)])%classic
 
 itv_bndy_bigcup_BLeft_shift is not universe polymorphic
-Arguments itv_bndy_bigcup_BLeft_shift {R} b%bool_scope 
-  x%ring_scope n%nat_scope
+Arguments itv_bndy_bigcup_BLeft_shift {R} b%_bool_scope 
+  x%_ring_scope n%_nat_scope
 itv_bndy_bigcup_BLeft_shift is opaque
 Expands to: Constant mathcomp.reals.real_interval.itv_bndy_bigcup_BLeft_shift
 Declared in library mathcomp.reals.real_interval, line 307, characters 6-33
@@ -822,7 +822,7 @@ forall [R : archiRealDomainType] (b : bool) (x : R),
 (\bigcup_n [set` Interval (BSide b x) (BRight (x + n%:R%R)%E)])%classic
 
 itv_bndy_bigcup_BRight is not universe polymorphic
-Arguments itv_bndy_bigcup_BRight [R] b%bool_scope x%ring_scope
+Arguments itv_bndy_bigcup_BRight [R] b%_bool_scope x%_ring_scope
 itv_bndy_bigcup_BRight is opaque
 Expands to: Constant mathcomp.reals.real_interval.itv_bndy_bigcup_BRight
 Declared in library mathcomp.reals.real_interval, line 317, characters 6-28
@@ -869,7 +869,7 @@ forall [R : realType] (b : bool) (x : R),
 (\bigcup_i [set` Interval (BLeft (x - i%:R)%R) (BSide b x)])%classic
 
 itvNy_bnd_bigcup_BLeft is not universe polymorphic
-Arguments itvNy_bnd_bigcup_BLeft [R] b%bool_scope x%ring_scope
+Arguments itvNy_bnd_bigcup_BLeft [R] b%_bool_scope x%_ring_scope
 itvNy_bnd_bigcup_BLeft is opaque
 Expands to: Constant mathcomp.reals.real_interval.itvNy_bnd_bigcup_BLeft
 Declared in library mathcomp.reals.real_interval, line 341, characters 6-28
@@ -894,7 +894,7 @@ forall {R : archiRealDomainType} (b1 b2 : bool),
 [set: R]%classic
 
 bigcup_itvT is not universe polymorphic
-Arguments bigcup_itvT {R} (b1 b2)%bool_scope
+Arguments bigcup_itvT {R} (b1 b2)%_bool_scope
 bigcup_itvT is opaque
 Expands to: Constant mathcomp.reals.real_interval.bigcup_itvT
 Declared in library mathcomp.reals.real_interval, line 354, characters 6-17

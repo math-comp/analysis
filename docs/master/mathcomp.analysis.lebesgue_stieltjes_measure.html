@@ -295,8 +295,8 @@ exists2 i : R,
   (ball_ [eta normr] x i
    `<=` (fun t0 : R => (fun u : R => is_true (x < u)%R) t0 -> (f @^-1` t) t0))%classic
 
-Arguments right_continuousW [R] {d} [U] [f]%function_scope 
-  _%function_scope [x]%ring_scope [t] _
+Arguments right_continuousW [R] {d} [U] [f]%_function_scope 
+  _%_function_scope [x]%_ring_scope [t] _
 right_continuousW is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.right_continuousW
@@ -326,7 +326,8 @@ forall [R : realFieldType] (a : R) [e : R] (f : cumulative R R),
 (0 < e)%R -> exists d : {posnum R}%R, (f (a + d%:num) <= f a + e)%R
 
 nondecreasing_right_continuousP is not universe polymorphic
-Arguments nondecreasing_right_continuousP [R] a%ring_scope [e]%ring_scope f _
+Arguments nondecreasing_right_continuousP [R] a%_ring_scope 
+  [e]%_ring_scope f _
 nondecreasing_right_continuousP is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.nondecreasing_right_continuousP
@@ -486,7 +487,7 @@ ocitv (R:=R) X <->
 X = set0 \/ (exists2 x : R * R, (x.1 < x.2)%R & X = `]x.1, x.2]%classic)
 
 ocitvP is not universe polymorphic
-Arguments ocitvP [R] X%classical_set_scope
+Arguments ocitvP [R] X%_classical_set_scope
 ocitvP is opaque
 Expands to: Constant mathcomp.analysis.lebesgue_stieltjes_measure.ocitvP
 Declared in
@@ -577,7 +578,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="ocitv_display" class="id"><a name="ocitv_display" class="" title="ocitv_display : Type -> measure_display
 
 ocitv_display is not universe polymorphic
-Arguments ocitv_display _%type_scope
+Arguments ocitv_display _%_type_scope
 ocitv_display is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.ocitv_display
@@ -733,7 +734,7 @@ library mathcomp.analysis.lebesgue_stieltjes_measure, line 166, characters 0-114
 <span class="vernacular">Definition</span><span class="id"> </span><span id="wlength" class="id"><a name="wlength" class="" title="wlength : forall {R : realType}, (R -> R) -> set (ocitv_type R) -> \bar R
 
 wlength is not universe polymorphic
-Arguments wlength {R} f%function_scope A%classical_set_scope
+Arguments wlength {R} f%_function_scope A%_classical_set_scope
 wlength is transparent
 Expands to: Constant mathcomp.analysis.lebesgue_stieltjes_measure.wlength
 Declared in
@@ -744,7 +745,7 @@ library mathcomp.analysis.lebesgue_stieltjes_measure, line 186, characters 11-18
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="wlength0" class="id"><a name="wlength0" class="" title="wlength0 : forall {R : realType} (f : R -> R), wlength f (set0 : set R) = 0%R
 
 wlength0 is not universe polymorphic
-Arguments wlength0 {R} f%function_scope
+Arguments wlength0 {R} f%_function_scope
 wlength0 is opaque
 Expands to: Constant mathcomp.analysis.lebesgue_stieltjes_measure.wlength0
 Declared in
@@ -759,7 +760,7 @@ library mathcomp.analysis.lebesgue_stieltjes_measure, line 189, characters 6-14
 forall {R : realType} (f : R -> R) (r : R), wlength f `[r, r] = 0%R
 
 wlength_singleton is not universe polymorphic
-Arguments wlength_singleton {R} f%function_scope r%ring_scope
+Arguments wlength_singleton {R} f%_function_scope r%_ring_scope
 wlength_singleton is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.wlength_singleton
@@ -777,7 +778,7 @@ Qed.</div></details>
 forall {R : realType} (f : R -> R), wlength f [set: ocitv_type R] = +oo%E
 
 wlength_setT is not universe polymorphic
-Arguments wlength_setT {R} f%function_scope
+Arguments wlength_setT {R} f%_function_scope
 wlength_setT is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.wlength_setT
@@ -795,7 +796,7 @@ wlength f [set` i] =
 (if (i.1 < i.2)%E then (er_map f i.2 - er_map f i.1)%E else 0%R)
 
 wlength_itv is not universe polymorphic
-Arguments wlength_itv {R} f%function_scope i
+Arguments wlength_itv {R} f%_function_scope i
 wlength_itv is opaque
 Expands to: Constant mathcomp.analysis.lebesgue_stieltjes_measure.wlength_itv
 Declared in
@@ -823,7 +824,7 @@ neitv i ->
 (i.1 : \bar R) \is a fin_num /\ (i.2 : \bar R) \is a fin_num
 
 wlength_finite_fin_num is not universe polymorphic
-Arguments wlength_finite_fin_num {R} [f]%function_scope [i] _ _
+Arguments wlength_finite_fin_num {R} [f]%_function_scope [i] _ _
 wlength_finite_fin_num is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.wlength_finite_fin_num
@@ -847,7 +848,7 @@ neitv i ->
 wlength f [set` i] = ((fine (er_map f i.2))%:E - (fine (er_map f i.1))%:E)%E
 
 finite_wlength_itv is not universe polymorphic
-Arguments finite_wlength_itv {R} [f]%function_scope [i] _ _
+Arguments finite_wlength_itv {R} [f]%_function_scope [i] _ _
 finite_wlength_itv is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.finite_wlength_itv
@@ -874,8 +875,8 @@ forall {R : realType} (f : R -> R) [a b : R] (x y : bool),
 wlength f [set` Interval (BSide x a) (BSide y b)] = (f b - f a)%:E
 
 wlength_itv_bnd is not universe polymorphic
-Arguments wlength_itv_bnd {R} f%function_scope [a b]%ring_scope
-  (x y)%bool_scope _
+Arguments wlength_itv_bnd {R} f%_function_scope [a b]%_ring_scope
+  (x y)%_bool_scope _
 wlength_itv_bnd is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.wlength_itv_bnd
@@ -895,7 +896,7 @@ forall {R : realType} (f : R -> R) (b : bool) (r : R),
 wlength f [set` Interval -oo%O (BSide b r)] = +oo%E
 
 wlength_infty_bnd is not universe polymorphic
-Arguments wlength_infty_bnd {R} f%function_scope b%bool_scope r
+Arguments wlength_infty_bnd {R} f%_function_scope b%_bool_scope r
 wlength_infty_bnd is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.wlength_infty_bnd
@@ -913,7 +914,7 @@ forall {R : realType} (f : R -> R) (b : bool) (r : R),
 wlength f [set` Interval (BSide b r) +oo%O] = +oo%E
 
 wlength_bnd_infty is not universe polymorphic
-Arguments wlength_bnd_infty {R} f%function_scope b%bool_scope r
+Arguments wlength_bnd_infty {R} f%_function_scope b%_bool_scope r
 wlength_bnd_infty is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.wlength_bnd_infty
@@ -934,7 +935,7 @@ wlength f [set` i] = +oo%E ->
 i = `]-oo, +oo[%R
 
 pinfty_wlength_itv is not universe polymorphic
-Arguments pinfty_wlength_itv {R} [f]%function_scope [i] _
+Arguments pinfty_wlength_itv {R} [f]%_function_scope [i] _
 pinfty_wlength_itv is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.pinfty_wlength_itv
@@ -959,7 +960,7 @@ forall {R : realType} [f : R -> R],
 forall i : interval R, (0%R <= wlength f [set` i])%E
 
 wlength_itv_ge0 is not universe polymorphic
-Arguments wlength_itv_ge0 {R} [f]%function_scope ndf i
+Arguments wlength_itv_ge0 {R} [f]%_function_scope ndf i
 wlength_itv_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.wlength_itv_ge0
@@ -982,7 +983,7 @@ forall {R : realType} (f : R -> R) (A : set R),
 wlength f [set` Rhull (R:=R) A] = wlength f A
 
 wlength_Rhull is not universe polymorphic
-Arguments wlength_Rhull {R} f%function_scope A%classical_set_scope
+Arguments wlength_Rhull {R} f%_function_scope A%_classical_set_scope
 wlength_Rhull is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.wlength_Rhull
@@ -1001,7 +1002,7 @@ forall [i j : interval R],
 {subset i <= j} -> (wlength f [set` i] <= wlength f [set` j])%E
 
 le_wlength_itv is not universe polymorphic
-Arguments le_wlength_itv {R} [f]%function_scope ndf [i j] _
+Arguments le_wlength_itv {R} [f]%_function_scope ndf [i j] _
 le_wlength_itv is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.le_wlength_itv
@@ -1045,7 +1046,7 @@ forall [x y : set (ocitv_type R)],
 (fun A : set (ocitv_type R) => [eta subset A]) x y ->
 (wlength f x <= wlength f y)%E = true
 
-Arguments le_wlength {R} [f]%function_scope ndf [x y] _
+Arguments le_wlength {R} [f]%_function_scope ndf [x y] _
 le_wlength is opaque
 Expands to: Constant mathcomp.analysis.lebesgue_stieltjes_measure.le_wlength
 Declared in
@@ -1088,7 +1089,7 @@ trivIset
 (R.-ocitv).-measurable%classic (\big[setU/set0]_(k < n) F k) ->
 wlength f (\big[setU/set0]_(i < n) F i) = (\sum_(i < n) wlength f (F i))%R
 
-Arguments wlength_semi_additive {R} f%function_scope [F n] _ _ _
+Arguments wlength_semi_additive {R} f%_function_scope [F n] _ _ _
 wlength_semi_additive is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.wlength_semi_additive
@@ -1167,7 +1168,7 @@ forall {R : realType} (f : cumulative R R) (I : set (ocitv_type R)),
 (0%R <= wlength f I)%E
 
 wlength_ge0 is not universe polymorphic
-Arguments wlength_ge0 {R} f I%classical_set_scope
+Arguments wlength_ge0 {R} f I%_classical_set_scope
 wlength_ge0 is opaque
 Expands to: Constant mathcomp.analysis.lebesgue_stieltjes_measure.wlength_ge0
 Declared in
@@ -1289,7 +1290,7 @@ forall {R : realType} (f : cumulative R R) [D : {fset nat}]
 
 cumulative_content_sub_fsum is not universe polymorphic
 Arguments cumulative_content_sub_fsum {R} f [D a0 b0] 
-  [a b]%function_scope _%function_scope _
+  [a b]%_function_scope _%_function_scope _
 cumulative_content_sub_fsum is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.cumulative_content_sub_fsum
@@ -1529,7 +1530,7 @@ sigma_finite
   (R:=R) [set: ocitv_type R] (wlength f)
 
 wlength_sigma_finite is not universe polymorphic
-Arguments wlength_sigma_finite {R} f%function_scope
+Arguments wlength_sigma_finite {R} f%_function_scope
 wlength_sigma_finite is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.wlength_sigma_finite
@@ -1553,7 +1554,7 @@ forall {R : realType},
 cumulative R R -> set (g_sigma_algebraType (R.-ocitv).-measurable) -> \bar R
 
 lebesgue_stieltjes_measure is not universe polymorphic
-Arguments lebesgue_stieltjes_measure {R} f _%classical_set_scope
+Arguments lebesgue_stieltjes_measure {R} f _%_classical_set_scope
 lebesgue_stieltjes_measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.lebesgue_stieltjes_measure
@@ -1765,7 +1766,7 @@ lebesgue_stieltjes_measure f X = mu X
 
 lebesgue_stieltjes_measure_unique is not universe polymorphic
 Arguments lebesgue_stieltjes_measure_unique [R f mu] 
-  _%function_scope [X]%classical_set_scope _
+  _%_function_scope [X]%_classical_set_scope _
 lebesgue_stieltjes_measure_unique is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.lebesgue_stieltjes_measure_unique
@@ -1798,7 +1799,7 @@ set
 \bar R
 
 completed_lebesgue_stieltjes_measure is not universe polymorphic
-Arguments completed_lebesgue_stieltjes_measure {R} f _%classical_set_scope
+Arguments completed_lebesgue_stieltjes_measure {R} f _%_classical_set_scope
 completed_lebesgue_stieltjes_measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.completed_lebesgue_stieltjes_measure
@@ -2157,7 +2158,7 @@ forall [R : realType] (r : R)
   i ->
 i [set r]%classic
 
-Arguments measurable_set1 [R] r%ring_scope [i] _
+Arguments measurable_set1 [R] r%_ring_scope [i] _
 measurable_set1 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.measurable_set1
@@ -2243,8 +2244,9 @@ forall {d : measure_display} {aT : measurableType d}
 d.-measurable%classic D -> d.-measurable%classic (D `&` f @^-1` [set y])
 
 measurable_funP1 is not universe polymorphic
-Arguments measurable_funP1 {d}%measure_display_scope 
-  {aT rT} f [D]%classical_set_scope y%ring_scope _
+Arguments measurable_funP1 {d}%_measure_display_scope 
+  {aT rT} f [D]%_classical_set_scope y%_ring_scope 
+  _
 measurable_funP1 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_stieltjes_measure.measurable_funP1

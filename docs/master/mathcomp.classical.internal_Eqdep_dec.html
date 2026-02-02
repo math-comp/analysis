@@ -230,7 +230,7 @@ forall (U : Type) (P : U -> Type) (p q : U) (x : P p) (y : P q),
 eq_dep U P p x q y -> eq_dep U P q y p x
 
 eq_dep_sym is not universe polymorphic
-Arguments eq_dep_sym U%type_scope P%function_scope p q x y _
+Arguments eq_dep_sym U%_type_scope P%_function_scope p q x y _
 eq_dep_sym is opaque
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.eq_dep_sym
 Declared in
@@ -250,7 +250,7 @@ forall (U : Type) (P : U -> Type) (p q : U) (x : P p) (y : P q),
 eq_dep U P p x q y -> eq_dep1 U P p x q y
 
 eq_dep_dep1 is not universe polymorphic
-Arguments eq_dep_dep1 U%type_scope P%function_scope p q x y _
+Arguments eq_dep_dep1 U%_type_scope P%_function_scope p q x y _
 eq_dep_dep1 is opaque
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.eq_dep_dep1
 Declared in
@@ -273,7 +273,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_rect_eq_on" class="id"><a name="Eq_rect_eq_on" class="" title="Eq_rect_eq_on : forall (U : Type) (p : U) (Q : U -> Type), Q p -> Prop
 
 Eq_rect_eq_on is not universe polymorphic
-Arguments Eq_rect_eq_on U%type_scope p Q%function_scope x
+Arguments Eq_rect_eq_on U%_type_scope p Q%_function_scope x
 Eq_rect_eq_on is transparent
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_rect_eq_on
 Declared in
@@ -283,7 +283,7 @@ library mathcomp.classical.internal_Eqdep_dec, line 36, characters 11-24
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_rect_eq" class="id"><a name="Eq_rect_eq" class="" title="Eq_rect_eq : Type -> Prop
 
 Eq_rect_eq is not universe polymorphic
-Arguments Eq_rect_eq U%type_scope
+Arguments Eq_rect_eq U%_type_scope
 Eq_rect_eq is transparent
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_rect_eq
 Declared in
@@ -293,7 +293,7 @@ library mathcomp.classical.internal_Eqdep_dec, line 38, characters 11-21
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_dep_eq_on" class="id"><a name="Eq_dep_eq_on" class="" title="Eq_dep_eq_on : forall (U : Type) (P : U -> Type) (p : U), P p -> Prop
 
 Eq_dep_eq_on is not universe polymorphic
-Arguments Eq_dep_eq_on U%type_scope P%function_scope p x
+Arguments Eq_dep_eq_on U%_type_scope P%_function_scope p x
 Eq_dep_eq_on is transparent
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_dep_eq_on
 Declared in
@@ -303,7 +303,7 @@ library mathcomp.classical.internal_Eqdep_dec, line 40, characters 11-23
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_dep_eq" class="id"><a name="Eq_dep_eq" class="" title="Eq_dep_eq : Type -> Prop
 
 Eq_dep_eq is not universe polymorphic
-Arguments Eq_dep_eq U%type_scope
+Arguments Eq_dep_eq U%_type_scope
 Eq_dep_eq is transparent
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_dep_eq
 Declared in
@@ -313,7 +313,7 @@ library mathcomp.classical.internal_Eqdep_dec, line 42, characters 11-20
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Streicher_K_on_" class="id"><a name="Streicher_K_on_" class="" title="Streicher_K_on_ : forall (U : Type) (x : U), (x = x -> Prop) -> Prop
 
 Streicher_K_on_ is not universe polymorphic
-Arguments Streicher_K_on_ U%type_scope x P%function_scope
+Arguments Streicher_K_on_ U%_type_scope x P%_function_scope
 Streicher_K_on_ is transparent
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Streicher_K_on_
 Declared in
@@ -323,7 +323,7 @@ library mathcomp.classical.internal_Eqdep_dec, line 44, characters 11-26
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Streicher_K_" class="id"><a name="Streicher_K_" class="" title="Streicher_K_ : Type -> Prop
 
 Streicher_K_ is not universe polymorphic
-Arguments Streicher_K_ U%type_scope
+Arguments Streicher_K_ U%_type_scope
 Streicher_K_ is transparent
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Streicher_K_
 Declared in
@@ -335,8 +335,8 @@ forall (U : Type) (p : U) (P : U -> Type) (y : P p),
 Eq_rect_eq_on U p P y -> forall x : P p, eq_dep1 U P p x p y -> x = y
 
 eq_rect_eq_on__eq_dep1_eq_on is not universe polymorphic
-Arguments eq_rect_eq_on__eq_dep1_eq_on U%type_scope 
-  p P%function_scope y _ x _
+Arguments eq_rect_eq_on__eq_dep1_eq_on U%_type_scope 
+  p P%_function_scope y _ x _
 eq_rect_eq_on__eq_dep1_eq_on is opaque
 Expands to: Constant
             mathcomp.classical.internal_Eqdep_dec.eq_rect_eq_on__eq_dep1_eq_on
@@ -355,7 +355,7 @@ Eq_rect_eq U ->
 forall (P : U -> Type) (p : U) (x y : P p), eq_dep1 U P p x p y -> x = y
 
 eq_rect_eq__eq_dep1_eq is not universe polymorphic
-Arguments eq_rect_eq__eq_dep1_eq U%type_scope _ P%function_scope p x y _
+Arguments eq_rect_eq__eq_dep1_eq U%_type_scope _ P%_function_scope p x y _
 eq_rect_eq__eq_dep1_eq is opaque
 Expands to: Constant
             mathcomp.classical.internal_Eqdep_dec.eq_rect_eq__eq_dep1_eq
@@ -371,7 +371,8 @@ forall (U : Type) (p : U) (P : U -> Type) (x : P p),
 Eq_rect_eq_on U p P x -> Eq_dep_eq_on U P p x
 
 eq_rect_eq_on__eq_dep_eq_on is not universe polymorphic
-Arguments eq_rect_eq_on__eq_dep_eq_on U%type_scope p P%function_scope x _ y _
+Arguments eq_rect_eq_on__eq_dep_eq_on U%_type_scope 
+  p P%_function_scope x _ y _
 eq_rect_eq_on__eq_dep_eq_on is opaque
 Expands to: Constant
             mathcomp.classical.internal_Eqdep_dec.eq_rect_eq_on__eq_dep_eq_on
@@ -389,7 +390,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_rect_eq__eq_dep_eq" class="id"><a name="eq_rect_eq__eq_dep_eq" class="" title="eq_rect_eq__eq_dep_eq : forall U : Type, Eq_rect_eq U -> Eq_dep_eq U
 
 eq_rect_eq__eq_dep_eq is not universe polymorphic
-Arguments eq_rect_eq__eq_dep_eq U%type_scope _ P p x y _
+Arguments eq_rect_eq__eq_dep_eq U%_type_scope _ P p x y _
 eq_rect_eq__eq_dep_eq is opaque
 Expands to: Constant
             mathcomp.classical.internal_Eqdep_dec.eq_rect_eq__eq_dep_eq
@@ -405,7 +406,8 @@ Streicher_K_on_ U p (fun h : p = p => x = rew [P] h in x) ->
 Eq_rect_eq_on U p P x
 
 Streicher_K_on__eq_rect_eq_on is not universe polymorphic
-Arguments Streicher_K_on__eq_rect_eq_on U%type_scope p P%function_scope x _ h
+Arguments Streicher_K_on__eq_rect_eq_on U%_type_scope 
+  p P%_function_scope x _ h
 Streicher_K_on__eq_rect_eq_on is opaque
 Expands to: Constant
             mathcomp.classical.internal_Eqdep_dec.Streicher_K_on__eq_rect_eq_on
@@ -420,7 +422,7 @@ library mathcomp.classical.internal_Eqdep_dec, line 68, characters 6-35
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Streicher_K__eq_rect_eq" class="id"><a name="Streicher_K__eq_rect_eq" class="" title="Streicher_K__eq_rect_eq : forall U : Type, Streicher_K_ U -> Eq_rect_eq U
 
 Streicher_K__eq_rect_eq is not universe polymorphic
-Arguments Streicher_K__eq_rect_eq U%type_scope _ p Q x h
+Arguments Streicher_K__eq_rect_eq U%_type_scope _ p Q x h
 Streicher_K__eq_rect_eq is opaque
 Expands to: Constant
             mathcomp.classical.internal_Eqdep_dec.Streicher_K__eq_rect_eq
@@ -451,7 +453,7 @@ forall [A : Type] [x y : A] (u : x = y),
 erefl
 
 trans_sym_eq is not universe polymorphic
-Arguments trans_sym_eq [A]%type_scope [x y] u
+Arguments trans_sym_eq [A]%_type_scope [x y] u
 trans_sym_eq is opaque
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.trans_sym_eq
 Declared in
@@ -500,7 +502,7 @@ forall [A : Type] [x : A] (eq_dec : forall y : A, x = y \/ x <> y)
 u
 
 nu_left_inv_on is not universe polymorphic
-Arguments nu_left_inv_on [A]%type_scope [x] eq_dec%function_scope [y] u
+Arguments nu_left_inv_on [A]%_type_scope [x] eq_dec%_function_scope [y] u
 nu_left_inv_on is opaque
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.nu_left_inv_on
 Declared in
@@ -516,8 +518,8 @@ forall [A : Type] [x : A],
 (forall y : A, x = y \/ x <> y) -> forall [y : A] (p1 p2 : x = y), p1 = p2
 
 eq_proofs_unicity_on is not universe polymorphic
-Arguments eq_proofs_unicity_on [A]%type_scope [x] 
-  eq_dec%function_scope [y] p1 p2
+Arguments eq_proofs_unicity_on [A]%_type_scope [x] 
+  eq_dec%_function_scope [y] p1 p2
 eq_proofs_unicity_on is opaque
 Expands to: Constant
             mathcomp.classical.internal_Eqdep_dec.eq_proofs_unicity_on
@@ -539,7 +541,7 @@ forall [A : Type] [x : A],
 forall P : x = x -> Prop, P erefl -> forall p : x = x, P p
 
 K_dec_on is not universe polymorphic
-Arguments K_dec_on [A]%type_scope [x] (eq_dec P)%function_scope H p
+Arguments K_dec_on [A]%_type_scope [x] (eq_dec P)%_function_scope H p
 K_dec_on is opaque
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.K_dec_on
 Declared in
@@ -558,7 +560,8 @@ forall [A : Type],
 forall [x : A] (P : x = x -> Prop), P erefl -> forall p : x = x, P p
 
 K_dec is not universe polymorphic
-Arguments K_dec [A]%type_scope eq_dec%function_scope [x] P%function_scope _ p
+Arguments K_dec [A]%_type_scope eq_dec%_function_scope 
+  [x] P%_function_scope _ p
 K_dec is opaque
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.K_dec
 Declared in
@@ -580,8 +583,8 @@ forall [A : Type],
 forall [x : A] (P : x = x -> Prop), P erefl -> forall p : x = x, P p
 
 K_dec_type is not universe polymorphic
-Arguments K_dec_type [A]%type_scope eq_dec%function_scope 
-  [x] P%function_scope H p
+Arguments K_dec_type [A]%_type_scope eq_dec%_function_scope 
+  [x] P%_function_scope H p
 K_dec_type is opaque
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.K_dec_type
 Declared in
@@ -601,8 +604,8 @@ forall [A : Type],
 forall [p : A] (Q : A -> Type) (x : Q p) (h : p = p), x = rew [Q] h in x
 
 eq_rect_eq_dec is not universe polymorphic
-Arguments eq_rect_eq_dec [A]%type_scope eq_dec%function_scope 
-  [p] Q%function_scope x h
+Arguments eq_rect_eq_dec [A]%_type_scope eq_dec%_function_scope 
+  [p] Q%_function_scope x h
 eq_rect_eq_dec is opaque
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.eq_rect_eq_dec
 Declared in
@@ -621,7 +624,7 @@ forall (U : Type) (P : U -> Type) (p q : U) (x : P p) (y : P q),
 existT P p x = existT P q y -> eq_dep U P p x q y
 
 eq_sigT_eq_dep is not universe polymorphic
-Arguments eq_sigT_eq_dep U%type_scope P%function_scope p q x y _
+Arguments eq_sigT_eq_dep U%_type_scope P%_function_scope p q x y _
 eq_sigT_eq_dep is opaque
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.eq_sigT_eq_dep
 Declared in
@@ -640,7 +643,7 @@ library mathcomp.classical.internal_Eqdep_dec, line 142, characters 6-20
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Inj_dep_pair_on" class="id"><a name="Inj_dep_pair_on" class="" title="Inj_dep_pair_on : forall (U : Type) (P : U -> Type) (p : U), P p -> Prop
 
 Inj_dep_pair_on is not universe polymorphic
-Arguments Inj_dep_pair_on U%type_scope P%function_scope p x
+Arguments Inj_dep_pair_on U%_type_scope P%_function_scope p x
 Inj_dep_pair_on is transparent
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Inj_dep_pair_on
 Declared in
@@ -650,7 +653,7 @@ library mathcomp.classical.internal_Eqdep_dec, line 150, characters 11-26
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Inj_dep_pair" class="id"><a name="Inj_dep_pair" class="" title="Inj_dep_pair : Type -> Prop
 
 Inj_dep_pair is not universe polymorphic
-Arguments Inj_dep_pair U%type_scope
+Arguments Inj_dep_pair U%_type_scope
 Inj_dep_pair is transparent
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Inj_dep_pair
 Declared in
@@ -662,7 +665,8 @@ forall (U : Type) (P : U -> Type) (p : U) (x : P p),
 Eq_dep_eq_on U P p x -> Inj_dep_pair_on U P p x
 
 eq_dep_eq_on__inj_pair2_on is not universe polymorphic
-Arguments eq_dep_eq_on__inj_pair2_on U%type_scope P%function_scope p x _ y _
+Arguments eq_dep_eq_on__inj_pair2_on U%_type_scope 
+  P%_function_scope p x _ y _
 eq_dep_eq_on__inj_pair2_on is opaque
 Expands to: Constant
             mathcomp.classical.internal_Eqdep_dec.eq_dep_eq_on__inj_pair2_on
@@ -677,7 +681,7 @@ library mathcomp.classical.internal_Eqdep_dec, line 154, characters 6-32
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_dep_eq__inj_pair2" class="id"><a name="eq_dep_eq__inj_pair2" class="" title="eq_dep_eq__inj_pair2 : forall U : Type, Eq_dep_eq U -> Inj_dep_pair U
 
 eq_dep_eq__inj_pair2 is not universe polymorphic
-Arguments eq_dep_eq__inj_pair2 U%type_scope _ P p x y _
+Arguments eq_dep_eq__inj_pair2 U%_type_scope _ P p x y _
 eq_dep_eq__inj_pair2 is opaque
 Expands to: Constant
             mathcomp.classical.internal_Eqdep_dec.eq_dep_eq__inj_pair2
@@ -696,7 +700,7 @@ forall (P : A -> Type) (p : A) (x y : P p),
 existT P p x = existT P p y -> x = y
 
 inj_pair2_eq_dec is not universe polymorphic
-Arguments inj_pair2_eq_dec A%type_scope (eq_dec P)%function_scope p x y _
+Arguments inj_pair2_eq_dec A%_type_scope (eq_dec P)%_function_scope p x y _
 inj_pair2_eq_dec is opaque
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.inj_pair2_eq_dec
 Declared in

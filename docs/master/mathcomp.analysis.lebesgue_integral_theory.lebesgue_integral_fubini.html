@@ -306,8 +306,8 @@ measurable_fun (T:=T1)
   ((fun (A : set (T1 * T2)) (x : T1) => m2 x (xsection A x))
      (\bigcup_i F i)%classic)
 
-Arguments xsection_ndseq_closed [d1 d2]%measure_display_scope 
-  [T1 T2 R] [m2]%function_scope [F] _ _
+Arguments xsection_ndseq_closed [d1 d2]%_measure_display_scope 
+  [T1 T2 R] [m2]%_function_scope [F] _ _
 xsection_ndseq_closed is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.xsection_ndseq_closed
@@ -366,7 +366,7 @@ measurable_fun (T:=T2)
   [set: T2]
   ((fun A : set (T1 * T2) => m1 \o ysection A) (\bigcup_i F i)%classic)
 
-Arguments ysection_ndseq_closed [d1 d2]%measure_display_scope 
+Arguments ysection_ndseq_closed [d1 d2]%_measure_display_scope 
   [T1 T2 R m1 F] _ _
 ysection_ndseq_closed is opaque
 Expands to: Constant
@@ -405,7 +405,7 @@ measure T2 R -> forall [D : set T2], d2.-measurable%classic D -> measure T2 R
 
 lebesgue_integral_fubini_m2D__canonical__measure_function_Measure is not universe polymorphic
 Arguments lebesgue_integral_fubini_m2D__canonical__measure_function_Measure
-  [d2]%measure_display_scope [T2 R] m2 [D]%classical_set_scope 
+  [d2]%_measure_display_scope [T2 R] m2 [D]%_classical_set_scope 
   mD
 lebesgue_integral_fubini_m2D__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -418,7 +418,7 @@ measure T2 R -> forall [D : set T2], d2.-measurable%classic D -> measure T2 R
 
 lebesgue_integral_fubini_m2D__canonical__measure_function_Measure is not universe polymorphic
 Arguments lebesgue_integral_fubini_m2D__canonical__measure_function_Measure
-  [d2]%measure_display_scope [T2 R] m2 [D]%classical_set_scope 
+  [d2]%_measure_display_scope [T2 R] m2 [D]%_classical_set_scope 
   mD
 lebesgue_integral_fubini_m2D__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -431,7 +431,7 @@ measure T2 R -> forall [D : set T2], d2.-measurable%classic D -> measure T2 R
 
 lebesgue_integral_fubini_m2D__canonical__measure_function_Measure is not universe polymorphic
 Arguments lebesgue_integral_fubini_m2D__canonical__measure_function_Measure
-  [d2]%measure_display_scope [T2 R] m2 [D]%classical_set_scope 
+  [d2]%_measure_display_scope [T2 R] m2 [D]%_classical_set_scope 
   mD
 lebesgue_integral_fubini_m2D__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -444,7 +444,7 @@ measure T2 R -> forall [D : set T2], d2.-measurable%classic D -> measure T2 R
 
 lebesgue_integral_fubini_m2D__canonical__measure_function_Measure is not universe polymorphic
 Arguments lebesgue_integral_fubini_m2D__canonical__measure_function_Measure
-  [d2]%measure_display_scope [T2 R] m2 [D]%classical_set_scope 
+  [d2]%_measure_display_scope [T2 R] m2 [D]%_classical_set_scope 
   mD
 lebesgue_integral_fubini_m2D__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -457,7 +457,7 @@ measure T2 R -> forall [D : set T2], d2.-measurable%classic D -> measure T2 R
 
 lebesgue_integral_fubini_m2D__canonical__measure_function_Measure is not universe polymorphic
 Arguments lebesgue_integral_fubini_m2D__canonical__measure_function_Measure
-  [d2]%measure_display_scope [T2 R] m2 [D]%classical_set_scope 
+  [d2]%_measure_display_scope [T2 R] m2 [D]%_classical_set_scope 
   mD
 lebesgue_integral_fubini_m2D__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -509,8 +509,8 @@ measurable_fun (T:=T1)
   ((fun A : set (T1 * T2) => mrestr (T:=T2) (R:=R) (D:=D) m2 mD \o xsection A)
      t)
 
-Arguments measurable_prod_subset_xsection [d1 d2]%measure_display_scope
-  [T1 T2 R m2] [D]%classical_set_scope [mD] m2D_bounded 
+Arguments measurable_prod_subset_xsection [d1 d2]%_measure_display_scope
+  [T1 T2 R m2] [D]%_classical_set_scope [mD] m2D_bounded 
   [t] _
 measurable_prod_subset_xsection is opaque
 Expands to: Constant
@@ -562,7 +562,7 @@ measure T1 R -> forall [D : set T1], d1.-measurable%classic D -> measure T1 R
 
 lebesgue_integral_fubini_m1D__canonical__measure_function_Measure is not universe polymorphic
 Arguments lebesgue_integral_fubini_m1D__canonical__measure_function_Measure
-  [d1]%measure_display_scope [T1 R] m1 [D]%classical_set_scope 
+  [d1]%_measure_display_scope [T1 R] m1 [D]%_classical_set_scope 
   mD
 lebesgue_integral_fubini_m1D__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -575,7 +575,7 @@ measure T1 R -> forall [D : set T1], d1.-measurable%classic D -> measure T1 R
 
 lebesgue_integral_fubini_m1D__canonical__measure_function_Measure is not universe polymorphic
 Arguments lebesgue_integral_fubini_m1D__canonical__measure_function_Measure
-  [d1]%measure_display_scope [T1 R] m1 [D]%classical_set_scope 
+  [d1]%_measure_display_scope [T1 R] m1 [D]%_classical_set_scope 
   mD
 lebesgue_integral_fubini_m1D__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -588,7 +588,7 @@ measure T1 R -> forall [D : set T1], d1.-measurable%classic D -> measure T1 R
 
 lebesgue_integral_fubini_m1D__canonical__measure_function_Measure is not universe polymorphic
 Arguments lebesgue_integral_fubini_m1D__canonical__measure_function_Measure
-  [d1]%measure_display_scope [T1 R] m1 [D]%classical_set_scope 
+  [d1]%_measure_display_scope [T1 R] m1 [D]%_classical_set_scope 
   mD
 lebesgue_integral_fubini_m1D__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -601,7 +601,7 @@ measure T1 R -> forall [D : set T1], d1.-measurable%classic D -> measure T1 R
 
 lebesgue_integral_fubini_m1D__canonical__measure_function_Measure is not universe polymorphic
 Arguments lebesgue_integral_fubini_m1D__canonical__measure_function_Measure
-  [d1]%measure_display_scope [T1 R] m1 [D]%classical_set_scope 
+  [d1]%_measure_display_scope [T1 R] m1 [D]%_classical_set_scope 
   mD
 lebesgue_integral_fubini_m1D__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -614,7 +614,7 @@ measure T1 R -> forall [D : set T1], d1.-measurable%classic D -> measure T1 R
 
 lebesgue_integral_fubini_m1D__canonical__measure_function_Measure is not universe polymorphic
 Arguments lebesgue_integral_fubini_m1D__canonical__measure_function_Measure
-  [d1]%measure_display_scope [T1 R] m1 [D]%classical_set_scope 
+  [d1]%_measure_display_scope [T1 R] m1 [D]%_classical_set_scope 
   mD
 lebesgue_integral_fubini_m1D__canonical__measure_function_Measure is transparent
 Expands to: Constant
@@ -666,8 +666,8 @@ measurable_fun (T:=T2)
   ((fun A : set (T1 * T2) => mrestr (T:=T1) (R:=R) (D:=D) m1 mD \o ysection A)
      t)
 
-Arguments measurable_prod_subset_ysection [d1 d2]%measure_display_scope
-  [T1 T2 R m1] [D]%classical_set_scope [mD] m1_bounded 
+Arguments measurable_prod_subset_ysection [d1 d2]%_measure_display_scope
+  [T1 T2 R m1] [D]%_classical_set_scope [mD] m1_bounded 
   [t] _
 measurable_prod_subset_ysection is opaque
 Expands to: Constant
@@ -752,8 +752,8 @@ forall
  measurable)
   ([set: T1] `&` (fun A0 : set (T1 * T2) => m2 \o xsection A0) A @^-1` Y)%classic
 
-Arguments measurable_fun_xsection [d1 d2]%measure_display_scope 
-  [T1 T2 R] m2 [A]%classical_set_scope _ _ [Y] _
+Arguments measurable_fun_xsection [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m2 [A]%_classical_set_scope _ _ [Y] _
 measurable_fun_xsection is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.measurable_fun_xsection
@@ -829,8 +829,8 @@ forall
  measurable)
   ([set: T2] `&` (fun A0 : set (T1 * T2) => m1 \o ysection A0) A @^-1` Y)%classic
 
-Arguments measurable_fun_ysection [d1 d2]%measure_display_scope 
-  [T1 T2 R] m1 [A]%classical_set_scope _ _ [Y] _
+Arguments measurable_fun_ysection [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m1 [A]%_classical_set_scope _ _ [Y] _
 measurable_fun_ysection is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.measurable_fun_ysection
@@ -879,8 +879,8 @@ GRing.BaseAddMagma.sort
   constructive_ereal_extended__canonical__Algebra_BaseAddMagma
 
 product_measure1 is not universe polymorphic
-Arguments product_measure1 [d1 d2]%measure_display_scope 
-  [T1 T2 R] (m1 m2)%function_scope A%classical_set_scope
+Arguments product_measure1 [d1 d2]%_measure_display_scope 
+  [T1 T2 R] (m1 m2)%_function_scope A%_classical_set_scope
 product_measure1 is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.product_measure1
@@ -897,8 +897,8 @@ GRing.BaseAddMagma.sort
   constructive_ereal_extended__canonical__Algebra_BaseAddMagma
 
 product_measure2 is not universe polymorphic
-Arguments product_measure2 [d1 d2]%measure_display_scope 
-  [T1 T2 R] (m1 m2)%function_scope A%classical_set_scope
+Arguments product_measure2 [d1 d2]%_measure_display_scope 
+  [T1 T2 R] (m1 m2)%_function_scope A%_classical_set_scope
 product_measure2 is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.product_measure2
@@ -954,7 +954,7 @@ measure
 lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure
-  [d1 d2]%measure_display_scope [T1 T2 R] m1 m2
+  [d1 d2]%_measure_display_scope [T1 T2 R] m1 m2
 lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure
@@ -971,7 +971,7 @@ measure
 lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure
-  [d1 d2]%measure_display_scope [T1 T2 R] m1 m2
+  [d1 d2]%_measure_display_scope [T1 T2 R] m1 m2
 lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure
@@ -988,7 +988,7 @@ measure
 lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure
-  [d1 d2]%measure_display_scope [T1 T2 R] m1 m2
+  [d1 d2]%_measure_display_scope [T1 T2 R] m1 m2
 lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure
@@ -1005,7 +1005,7 @@ measure
 lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure
-  [d1 d2]%measure_display_scope [T1 T2 R] m1 m2
+  [d1 d2]%_measure_display_scope [T1 T2 R] m1 m2
 lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure
@@ -1022,7 +1022,7 @@ measure
 lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure
-  [d1 d2]%measure_display_scope [T1 T2 R] m1 m2
+  [d1 d2]%_measure_display_scope [T1 T2 R] m1 m2
 lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_product_measure1__canonical__measure_function_Measure
@@ -1049,8 +1049,8 @@ d1.-measurable%classic A1 ->
 d2.-measurable%classic A2 -> (m1 \x m2)%E (A1 `*` A2) = (m1 A1 * m2 A2)%E
 
 product_measure1E is not universe polymorphic
-Arguments product_measure1E [d1 d2]%measure_display_scope 
-  [T1 T2 R] m1 m2 [A1 A2]%classical_set_scope _ _
+Arguments product_measure1E [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m1 m2 [A1 A2]%_classical_set_scope _ _
 product_measure1E is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.product_measure1E
@@ -1089,7 +1089,7 @@ measure
 
 lebesgue_integral_fubini_prod__canonical__measure_function_Measure is not universe polymorphic
 Arguments lebesgue_integral_fubini_prod__canonical__measure_function_Measure
-  {d1 d2}%measure_display_scope {T1 T2 R} m12
+  {d1 d2}%_measure_display_scope {T1 T2 R} m12
 lebesgue_integral_fubini_prod__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_prod__canonical__measure_function_Measure
@@ -1104,7 +1104,7 @@ measure
 
 lebesgue_integral_fubini_prod__canonical__measure_function_Measure is not universe polymorphic
 Arguments lebesgue_integral_fubini_prod__canonical__measure_function_Measure
-  {d1 d2}%measure_display_scope {T1 T2 R} m12
+  {d1 d2}%_measure_display_scope {T1 T2 R} m12
 lebesgue_integral_fubini_prod__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_prod__canonical__measure_function_Measure
@@ -1119,7 +1119,7 @@ measure
 
 lebesgue_integral_fubini_prod__canonical__measure_function_Measure is not universe polymorphic
 Arguments lebesgue_integral_fubini_prod__canonical__measure_function_Measure
-  {d1 d2}%measure_display_scope {T1 T2 R} m12
+  {d1 d2}%_measure_display_scope {T1 T2 R} m12
 lebesgue_integral_fubini_prod__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_prod__canonical__measure_function_Measure
@@ -1134,7 +1134,7 @@ measure
 
 lebesgue_integral_fubini_prod__canonical__measure_function_Measure is not universe polymorphic
 Arguments lebesgue_integral_fubini_prod__canonical__measure_function_Measure
-  {d1 d2}%measure_display_scope {T1 T2 R} m12
+  {d1 d2}%_measure_display_scope {T1 T2 R} m12
 lebesgue_integral_fubini_prod__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_prod__canonical__measure_function_Measure
@@ -1149,7 +1149,7 @@ measure
 
 lebesgue_integral_fubini_prod__canonical__measure_function_Measure is not universe polymorphic
 Arguments lebesgue_integral_fubini_prod__canonical__measure_function_Measure
-  {d1 d2}%measure_display_scope {T1 T2 R} m12
+  {d1 d2}%_measure_display_scope {T1 T2 R} m12
 lebesgue_integral_fubini_prod__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_prod__canonical__measure_function_Measure
@@ -1175,7 +1175,7 @@ subprobability
 lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability
-  {d1 d2}%measure_display_scope {T1 T2 R} m12
+  {d1 d2}%_measure_display_scope {T1 T2 R} m12
 lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability
@@ -1191,7 +1191,7 @@ subprobability
 lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability
-  {d1 d2}%measure_display_scope {T1 T2 R} m12
+  {d1 d2}%_measure_display_scope {T1 T2 R} m12
 lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability
@@ -1207,7 +1207,7 @@ subprobability
 lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability
-  {d1 d2}%measure_display_scope {T1 T2 R} m12
+  {d1 d2}%_measure_display_scope {T1 T2 R} m12
 lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability
@@ -1223,7 +1223,7 @@ subprobability
 lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability
-  {d1 d2}%measure_display_scope {T1 T2 R} m12
+  {d1 d2}%_measure_display_scope {T1 T2 R} m12
 lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_prod__canonical__probability_measure_SubProbability
@@ -1238,7 +1238,7 @@ forall {d1 d2 : measure_display} {T1 : measurableType d1}
 subprobability T1 R * subprobability T2 R -> subprobability (T1 * T2)%type R
 
 product_subprobability is not universe polymorphic
-Arguments product_subprobability {d1 d2}%measure_display_scope {T1 T2 R} m12
+Arguments product_subprobability {d1 d2}%_measure_display_scope {T1 T2 R} m12
 product_subprobability is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.product_subprobability
@@ -1263,8 +1263,8 @@ forall {d1 d2 : measure_display} {T1 : measurableType d1}
 (P.1 \x P.2)%E (~` A) = ((P.1 \x P.2) [set: T1 * T2] - (P.1 \x P.2) A)%E
 
 product_subprobability_setC is not universe polymorphic
-Arguments product_subprobability_setC {d1 d2}%measure_display_scope 
-  {T1 T2 R} P [A]%classical_set_scope _
+Arguments product_subprobability_setC {d1 d2}%_measure_display_scope
+  {T1 T2 R} P [A]%_classical_set_scope _
 product_subprobability_setC is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.product_subprobability_setC
@@ -1397,8 +1397,8 @@ forall [X : set (T1 * T2)],
 ((d1, d2).-prod).-measurable%classic X -> (m1 \x m2)%E X = m' X
 
 product_measure_unique is not universe polymorphic
-Arguments product_measure_unique [d1 d2]%measure_display_scope
-  [T1 T2 R m1 m2 m'] _%function_scope [X]%classical_set_scope 
+Arguments product_measure_unique [d1 d2]%_measure_display_scope
+  [T1 T2 R m1 m2 m'] _%_function_scope [X]%_classical_set_scope 
   _
 product_measure_unique is opaque
 Expands to: Constant
@@ -1488,7 +1488,7 @@ measure
 lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure
-  [d1 d2]%measure_display_scope [T1 T2 R] m1 m2
+  [d1 d2]%_measure_display_scope [T1 T2 R] m1 m2
 lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure
@@ -1505,7 +1505,7 @@ measure
 lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure
-  [d1 d2]%measure_display_scope [T1 T2 R] m1 m2
+  [d1 d2]%_measure_display_scope [T1 T2 R] m1 m2
 lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure
@@ -1522,7 +1522,7 @@ measure
 lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure
-  [d1 d2]%measure_display_scope [T1 T2 R] m1 m2
+  [d1 d2]%_measure_display_scope [T1 T2 R] m1 m2
 lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure
@@ -1539,7 +1539,7 @@ measure
 lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure
-  [d1 d2]%measure_display_scope [T1 T2 R] m1 m2
+  [d1 d2]%_measure_display_scope [T1 T2 R] m1 m2
 lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure
@@ -1556,7 +1556,7 @@ measure
 lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure
-  [d1 d2]%measure_display_scope [T1 T2 R] m1 m2
+  [d1 d2]%_measure_display_scope [T1 T2 R] m1 m2
 lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.lebesgue_integral_fubini_product_measure2__canonical__measure_function_Measure
@@ -1582,8 +1582,8 @@ d1.-measurable%classic A1 ->
 d2.-measurable%classic A2 -> (m1 \x^ m2)%E (A1 `*` A2) = (m1 A1 * m2 A2)%E
 
 product_measure2E is not universe polymorphic
-Arguments product_measure2E [d1 d2]%measure_display_scope 
-  [T1 T2 R] m1 m2 [A1 A2]%classical_set_scope mA1 
+Arguments product_measure2E [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m1 m2 [A1 A2]%_classical_set_scope mA1 
   mA2
 product_measure2E is opaque
 Expands to: Constant
@@ -1634,7 +1634,7 @@ probability
 lebesgue_integral_fubini_product_measure1__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure1__canonical__probability_measure_Probability
-  {d1}%measure_display_scope {T1} {d2}%measure_display_scope 
+  {d1}%_measure_display_scope {T1} {d2}%_measure_display_scope 
   {T2} [R] P1 P2
 lebesgue_integral_fubini_product_measure1__canonical__probability_measure_Probability is transparent
 Expands to: Constant
@@ -1653,7 +1653,7 @@ probability
 lebesgue_integral_fubini_product_measure1__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure1__canonical__probability_measure_Probability
-  {d1}%measure_display_scope {T1} {d2}%measure_display_scope 
+  {d1}%_measure_display_scope {T1} {d2}%_measure_display_scope 
   {T2} [R] P1 P2
 lebesgue_integral_fubini_product_measure1__canonical__probability_measure_Probability is transparent
 Expands to: Constant
@@ -1672,7 +1672,7 @@ probability
 lebesgue_integral_fubini_product_measure1__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure1__canonical__probability_measure_Probability
-  {d1}%measure_display_scope {T1} {d2}%measure_display_scope 
+  {d1}%_measure_display_scope {T1} {d2}%_measure_display_scope 
   {T2} [R] P1 P2
 lebesgue_integral_fubini_product_measure1__canonical__probability_measure_Probability is transparent
 Expands to: Constant
@@ -1691,7 +1691,7 @@ probability
 lebesgue_integral_fubini_product_measure1__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure1__canonical__probability_measure_Probability
-  {d1}%measure_display_scope {T1} {d2}%measure_display_scope 
+  {d1}%_measure_display_scope {T1} {d2}%_measure_display_scope 
   {T2} [R] P1 P2
 lebesgue_integral_fubini_product_measure1__canonical__probability_measure_Probability is transparent
 Expands to: Constant
@@ -1710,7 +1710,7 @@ probability
 lebesgue_integral_fubini_product_measure1__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure1__canonical__probability_measure_Probability
-  {d1}%measure_display_scope {T1} {d2}%measure_display_scope 
+  {d1}%_measure_display_scope {T1} {d2}%_measure_display_scope 
   {T2} [R] P1 P2
 lebesgue_integral_fubini_product_measure1__canonical__probability_measure_Probability is transparent
 Expands to: Constant
@@ -1741,7 +1741,7 @@ probability
 lebesgue_integral_fubini_product_measure2__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure2__canonical__probability_measure_Probability
-  {d1}%measure_display_scope {T1} {d2}%measure_display_scope 
+  {d1}%_measure_display_scope {T1} {d2}%_measure_display_scope 
   {T2} [R] P1 P2
 lebesgue_integral_fubini_product_measure2__canonical__probability_measure_Probability is transparent
 Expands to: Constant
@@ -1760,7 +1760,7 @@ probability
 lebesgue_integral_fubini_product_measure2__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure2__canonical__probability_measure_Probability
-  {d1}%measure_display_scope {T1} {d2}%measure_display_scope 
+  {d1}%_measure_display_scope {T1} {d2}%_measure_display_scope 
   {T2} [R] P1 P2
 lebesgue_integral_fubini_product_measure2__canonical__probability_measure_Probability is transparent
 Expands to: Constant
@@ -1779,7 +1779,7 @@ probability
 lebesgue_integral_fubini_product_measure2__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure2__canonical__probability_measure_Probability
-  {d1}%measure_display_scope {T1} {d2}%measure_display_scope 
+  {d1}%_measure_display_scope {T1} {d2}%_measure_display_scope 
   {T2} [R] P1 P2
 lebesgue_integral_fubini_product_measure2__canonical__probability_measure_Probability is transparent
 Expands to: Constant
@@ -1798,7 +1798,7 @@ probability
 lebesgue_integral_fubini_product_measure2__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure2__canonical__probability_measure_Probability
-  {d1}%measure_display_scope {T1} {d2}%measure_display_scope 
+  {d1}%_measure_display_scope {T1} {d2}%_measure_display_scope 
   {T2} [R] P1 P2
 lebesgue_integral_fubini_product_measure2__canonical__probability_measure_Probability is transparent
 Expands to: Constant
@@ -1817,7 +1817,7 @@ probability
 lebesgue_integral_fubini_product_measure2__canonical__probability_measure_Probability is not universe polymorphic
 Arguments
   lebesgue_integral_fubini_product_measure2__canonical__probability_measure_Probability
-  {d1}%measure_display_scope {T1} {d2}%measure_display_scope 
+  {d1}%_measure_display_scope {T1} {d2}%_measure_display_scope 
   {T2} [R] P1 P2
 lebesgue_integral_fubini_product_measure2__canonical__probability_measure_Probability is transparent
 Expands to: Constant
@@ -1844,8 +1844,8 @@ GRing.BaseAddMagma.sort
   constructive_ereal_extended__canonical__Algebra_BaseAddMagma
 
 fubini_F is not universe polymorphic
-Arguments fubini_F [d1 d2]%measure_display_scope [T1 T2 R] 
-  m2 f%function_scope x
+Arguments fubini_F [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m2 f%_function_scope x
 fubini_F is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.fubini_F
@@ -1862,8 +1862,8 @@ GRing.BaseAddMagma.sort
   constructive_ereal_extended__canonical__Algebra_BaseAddMagma
 
 fubini_G is not universe polymorphic
-Arguments fubini_G [d1 d2]%measure_display_scope [T1 T2 R] 
-  m1 f%function_scope y
+Arguments fubini_G [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m1 f%_function_scope y
 fubini_G is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.fubini_G
@@ -1895,8 +1895,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 (0%R <= fubini_F (T1:=T1) (T2:=T2) (R:=R) m2 (EFin \o (\1_A)%R) x)%E
 
 indic_fubini_tonelli_F_ge0 is not universe polymorphic
-Arguments indic_fubini_tonelli_F_ge0 [d1 d2]%measure_display_scope 
-  [T1 T2 R] m2 A%classical_set_scope x
+Arguments indic_fubini_tonelli_F_ge0 [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m2 A%_classical_set_scope x
 indic_fubini_tonelli_F_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.indic_fubini_tonelli_F_ge0
@@ -1916,8 +1916,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 (0%R <= fubini_G (T1:=T1) (T2:=T2) (R:=R) m1 (EFin \o (\1_A)%R) x)%E
 
 indic_fubini_tonelli_G_ge0 is not universe polymorphic
-Arguments indic_fubini_tonelli_G_ge0 [d1 d2]%measure_display_scope 
-  [T1 T2 R] m1 A%classical_set_scope x
+Arguments indic_fubini_tonelli_G_ge0 [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m1 A%_classical_set_scope x
 indic_fubini_tonelli_G_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.indic_fubini_tonelli_G_ge0
@@ -1938,8 +1938,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 fubini_F (T1:=T1) (T2:=T2) (R:=R) m2 (EFin \o (\1_A)%R) = m2 \o xsection A
 
 indic_fubini_tonelli_FE is not universe polymorphic
-Arguments indic_fubini_tonelli_FE [d1 d2]%measure_display_scope 
-  [T1 T2 R] m2 [A]%classical_set_scope mA
+Arguments indic_fubini_tonelli_FE [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m2 [A]%_classical_set_scope mA
 indic_fubini_tonelli_FE is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.indic_fubini_tonelli_FE
@@ -1964,8 +1964,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 fubini_G (T1:=T1) (T2:=T2) (R:=R) m1 (EFin \o (\1_A)%R) = m1 \o ysection A
 
 indic_fubini_tonelli_GE is not universe polymorphic
-Arguments indic_fubini_tonelli_GE [d1 d2]%measure_display_scope 
-  [T1 T2 R] m1 [A]%classical_set_scope mA
+Arguments indic_fubini_tonelli_GE [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m1 [A]%_classical_set_scope mA
 indic_fubini_tonelli_GE is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.indic_fubini_tonelli_GE
@@ -2015,8 +2015,9 @@ forall
   ([set: T1]
    `&` fubini_F (T1:=T1) (T2:=T2) (R:=R) m2 (EFin \o (\1_A)%R) @^-1` Y)%classic
 
-Arguments indic_measurable_fun_fubini_tonelli_F [d1 d2]%measure_display_scope
-  [T1 T2 R] m2 [A]%classical_set_scope mA _ [Y] _
+Arguments indic_measurable_fun_fubini_tonelli_F
+  [d1 d2]%_measure_display_scope [T1 T2 R] m2 [A]%_classical_set_scope 
+  mA _ [Y] _
 indic_measurable_fun_fubini_tonelli_F is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.indic_measurable_fun_fubini_tonelli_F
@@ -2063,8 +2064,9 @@ forall
   ([set: T2]
    `&` fubini_G (T1:=T1) (T2:=T2) (R:=R) m1 (EFin \o (\1_A)%R) @^-1` Y)%classic
 
-Arguments indic_measurable_fun_fubini_tonelli_G [d1 d2]%measure_display_scope
-  [T1 T2 R] m1 [A]%classical_set_scope mA _ [Y] _
+Arguments indic_measurable_fun_fubini_tonelli_G
+  [d1 d2]%_measure_display_scope [T1 T2 R] m1 [A]%_classical_set_scope 
+  mA _ [Y] _
 indic_measurable_fun_fubini_tonelli_G is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.indic_measurable_fun_fubini_tonelli_G
@@ -2088,8 +2090,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 (\int[m1]_x fubini_F (T1:=T1) (T2:=T2) (R:=R) m2 (EFin \o (\1_A)%R) x)%E
 
 indic_fubini_tonelli1 is not universe polymorphic
-Arguments indic_fubini_tonelli1 [d1 d2]%measure_display_scope 
-  [T1 T2 R] m1 m2 [A]%classical_set_scope mA
+Arguments indic_fubini_tonelli1 [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m1 m2 [A]%_classical_set_scope mA
 indic_fubini_tonelli1 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.indic_fubini_tonelli1
@@ -2112,8 +2114,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 (\int[m2]_y fubini_G (T1:=T1) (T2:=T2) (R:=R) m1 (EFin \o (\1_A)%R) y)%E
 
 indic_fubini_tonelli2 is not universe polymorphic
-Arguments indic_fubini_tonelli2 [d1 d2]%measure_display_scope 
-  [T1 T2 R] m1 m2 [A]%classical_set_scope mA
+Arguments indic_fubini_tonelli2 [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m1 m2 [A]%_classical_set_scope mA
 indic_fubini_tonelli2 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.indic_fubini_tonelli2
@@ -2136,8 +2138,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 (\int[m2]_y fubini_G (T1:=T1) (T2:=T2) (R:=R) m1 (EFin \o (\1_A)%R) y)%E
 
 indic_fubini_tonelli is not universe polymorphic
-Arguments indic_fubini_tonelli [d1 d2]%measure_display_scope 
-  [T1 T2 R] m1 m2 [A]%classical_set_scope mA
+Arguments indic_fubini_tonelli [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m1 m2 [A]%_classical_set_scope mA
 indic_fubini_tonelli is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.indic_fubini_tonelli
@@ -2172,7 +2174,8 @@ fubini_F (T1:=T1) (T2:=T2) (R:=R) m2 (EFin \o f) =
  (\sum_(k \in range f) (k%:E * m2 (xsection (f @^-1` [set k]) x))%E)%R)
 
 sfun_fubini_tonelli_FE is not universe polymorphic
-Arguments sfun_fubini_tonelli_FE [d1 d2]%measure_display_scope [T1 T2 R] m2 f
+Arguments sfun_fubini_tonelli_FE [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m2 f
 sfun_fubini_tonelli_FE is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.sfun_fubini_tonelli_FE
@@ -2227,7 +2230,7 @@ forall
  measurable)
   ([set: T1] `&` fubini_F (T1:=T1) (T2:=T2) (R:=R) m2 (EFin \o f) @^-1` Y)%classic
 
-Arguments sfun_measurable_fun_fubini_tonelli_F [d1 d2]%measure_display_scope
+Arguments sfun_measurable_fun_fubini_tonelli_F [d1 d2]%_measure_display_scope
   [T1 T2 R] m2 f _ [Y] _
 sfun_measurable_fun_fubini_tonelli_F is opaque
 Expands to: Constant
@@ -2252,7 +2255,8 @@ fubini_G (T1:=T1) (T2:=T2) (R:=R) m1 (EFin \o f) =
  (\sum_(k \in range f) (k%:E * m1 (ysection (f @^-1` [set k]) y))%E)%R)
 
 sfun_fubini_tonelli_GE is not universe polymorphic
-Arguments sfun_fubini_tonelli_GE [d1 d2]%measure_display_scope [T1 T2 R] m1 f
+Arguments sfun_fubini_tonelli_GE [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m1 f
 sfun_fubini_tonelli_GE is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.sfun_fubini_tonelli_GE
@@ -2307,7 +2311,7 @@ forall
  measurable)
   ([set: T2] `&` fubini_G (T1:=T1) (T2:=T2) (R:=R) m1 (EFin \o f) @^-1` Y)%classic
 
-Arguments sfun_measurable_fun_fubini_tonelli_G [d1 d2]%measure_display_scope
+Arguments sfun_measurable_fun_fubini_tonelli_G [d1 d2]%_measure_display_scope
   [T1 T2 R] m1 f _ [Y] _
 sfun_measurable_fun_fubini_tonelli_G is opaque
 Expands to: Constant
@@ -2339,7 +2343,7 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 (\int[m1]_x fubini_F (T1:=T1) (T2:=T2) (R:=R) m2 (EFin \o f) x)%E
 
 sfun_fubini_tonelli1 is not universe polymorphic
-Arguments sfun_fubini_tonelli1 [d1 d2]%measure_display_scope 
+Arguments sfun_fubini_tonelli1 [d1 d2]%_measure_display_scope 
   [T1 T2 R] m1 m2 f
 sfun_fubini_tonelli1 is opaque
 Expands to: Constant
@@ -2385,7 +2389,7 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 (\int[m2]_y fubini_G (T1:=T1) (T2:=T2) (R:=R) m1 (EFin \o f) y)%E
 
 sfun_fubini_tonelli2 is not universe polymorphic
-Arguments sfun_fubini_tonelli2 [d1 d2]%measure_display_scope 
+Arguments sfun_fubini_tonelli2 [d1 d2]%_measure_display_scope 
   [T1 T2 R] m1 m2 f
 sfun_fubini_tonelli2 is opaque
 Expands to: Constant
@@ -2430,7 +2434,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 (\int[m1 \x m2]_z (f z)%:E)%E = (\int[m1 \x^ m2]_z (f z)%:E)%E
 
 sfun_fubini_tonelli is not universe polymorphic
-Arguments sfun_fubini_tonelli [d1 d2]%measure_display_scope [T1 T2 R] m1 m2 f
+Arguments sfun_fubini_tonelli [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m1 m2 f
 sfun_fubini_tonelli is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.sfun_fubini_tonelli
@@ -2478,8 +2483,8 @@ measurable_fun (T:=T1)
   [set: T1] (fubini_F (T1:=T1) (T2:=T2) (R:=R) m2 f)
 
 measurable_fun_fubini_tonelli_F is not universe polymorphic
-Arguments measurable_fun_fubini_tonelli_F {d1 d2}%measure_display_scope
-  {T1 T2 R m2} f%function_scope mf f0%function_scope 
+Arguments measurable_fun_fubini_tonelli_F {d1 d2}%_measure_display_scope
+  {T1 T2 R m2} f%_function_scope mf f0%_function_scope 
   _ Y _
 measurable_fun_fubini_tonelli_F is opaque
 Expands to: Constant
@@ -2520,8 +2525,8 @@ measurable_fun (T:=T2)
   [set: T2] (fubini_G (T1:=T1) (T2:=T2) (R:=R) m1 f)
 
 measurable_fun_fubini_tonelli_G is not universe polymorphic
-Arguments measurable_fun_fubini_tonelli_G {d1 d2}%measure_display_scope
-  {T1 T2 R m1} f%function_scope mf f0%function_scope 
+Arguments measurable_fun_fubini_tonelli_G {d1 d2}%_measure_display_scope
+  {T1 T2 R m1} f%_function_scope mf f0%_function_scope 
   _ Y _
 measurable_fun_fubini_tonelli_G is opaque
 Expands to: Constant
@@ -2560,8 +2565,8 @@ measurable_fun
 (\int[m1]_x fubini_F (T1:=T1) (T2:=T2) (R:=R) m2 f x)%E
 
 fubini_tonelli1 is not universe polymorphic
-Arguments fubini_tonelli1 {d1 d2}%measure_display_scope 
-  {T1 T2 R m1 m2} f%function_scope mf f0%function_scope
+Arguments fubini_tonelli1 {d1 d2}%_measure_display_scope 
+  {T1 T2 R m1 m2} f%_function_scope mf f0%_function_scope
 fubini_tonelli1 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.fubini_tonelli1
@@ -2617,8 +2622,8 @@ measurable_fun
 (\int[m2]_y fubini_G (T1:=T1) (T2:=T2) (R:=R) m1 f y)%E
 
 fubini_tonelli2 is not universe polymorphic
-Arguments fubini_tonelli2 {d1 d2}%measure_display_scope 
-  {T1 T2 R m1 m2} f%function_scope mf f0%function_scope
+Arguments fubini_tonelli2 {d1 d2}%_measure_display_scope 
+  {T1 T2 R m1 m2} f%_function_scope mf f0%_function_scope
 fubini_tonelli2 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.fubini_tonelli2
@@ -2673,8 +2678,8 @@ measurable_fun
 (\int[m1]_x \int[m2]_y f (x, y))%E = (\int[m2]_y \int[m1]_x f (x, y))%E
 
 fubini_tonelli is not universe polymorphic
-Arguments fubini_tonelli {d1 d2}%measure_display_scope 
-  {T1 T2 R m1 m2} f%function_scope mf f0%function_scope
+Arguments fubini_tonelli {d1 d2}%_measure_display_scope 
+  {T1 T2 R m1 m2} f%_function_scope mf f0%_function_scope
 fubini_tonelli is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.fubini_tonelli
@@ -2719,8 +2724,8 @@ measurable_fun
 (\int[m1]_x \int[m2]_y `|f (x, y)| < +oo)%E
 
 integrable12ltyP is not universe polymorphic
-Arguments integrable12ltyP [d1 d2]%measure_display_scope 
-  [T1 T2 R] m1 m2 [f]%function_scope _
+Arguments integrable12ltyP [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m1 m2 [f]%_function_scope _
 integrable12ltyP is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.integrable12ltyP
@@ -2752,8 +2757,8 @@ measurable_fun
 (\int[m2]_y \int[m1]_x `|f (x, y)| < +oo)%E
 
 integrable21ltyP is not universe polymorphic
-Arguments integrable21ltyP [d1 d2]%measure_display_scope 
-  [T1 T2 R] m1 m2 [f]%function_scope _
+Arguments integrable21ltyP [d1 d2]%_measure_display_scope 
+  [T1 T2 R] m1 m2 [f]%_function_scope _
 integrable21ltyP is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.integrable21ltyP
@@ -2805,8 +2810,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 \forall x \ae m1, m2.-integrable [set: T2] (fun y : T2 => f (x, y))
 
 ae_integrable1 is not universe polymorphic
-Arguments ae_integrable1 [d1 d2]%measure_display_scope 
-  [T1 T2 R m1 m2] [f]%function_scope imf
+Arguments ae_integrable1 [d1 d2]%_measure_display_scope 
+  [T1 T2 R m1 m2] [f]%_function_scope imf
 ae_integrable1 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.ae_integrable1
@@ -2839,8 +2844,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 \forall y \ae m2, m1.-integrable [set: T1] (fun x : T1 => f (x, y))
 
 ae_integrable2 is not universe polymorphic
-Arguments ae_integrable2 [d1 d2]%measure_display_scope 
-  [T1 T2 R m1 m2] [f]%function_scope imf
+Arguments ae_integrable2 [d1 d2]%_measure_display_scope 
+  [T1 T2 R m1 m2] [f]%_function_scope imf
 ae_integrable2 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.ae_integrable2
@@ -2927,8 +2932,8 @@ forall
  measurable)
   ([set: T1] `&` fubini_F (T1:=T1) (T2:=T2) (R:=R) m2 f @^-1` Y)%classic
 
-Arguments measurable_fubini_F [d1 d2]%measure_display_scope 
-  [T1 T2 R m1 m2] [f]%function_scope imf _ [Y] _
+Arguments measurable_fubini_F [d1 d2]%_measure_display_scope 
+  [T1 T2 R m1 m2] [f]%_function_scope imf _ [Y] _
 measurable_fubini_F is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.measurable_fubini_F
@@ -2991,8 +2996,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 m1.-integrable [set: T1] (fubini_F (T1:=T1) (T2:=T2) (R:=R) m2 f)
 
 integrable_fubini_F is not universe polymorphic
-Arguments integrable_fubini_F [d1 d2]%measure_display_scope 
-  [T1 T2 R m1 m2] [f]%function_scope imf
+Arguments integrable_fubini_F [d1 d2]%_measure_display_scope 
+  [T1 T2 R m1 m2] [f]%_function_scope imf
 integrable_fubini_F is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.integrable_fubini_F
@@ -3069,8 +3074,8 @@ forall
  measurable)
   ([set: T2] `&` fubini_G (T1:=T1) (T2:=T2) (R:=R) m1 f @^-1` Y)%classic
 
-Arguments measurable_fubini_G [d1 d2]%measure_display_scope 
-  [T1 T2 R m1 m2] [f]%function_scope imf _ [Y] _
+Arguments measurable_fubini_G [d1 d2]%_measure_display_scope 
+  [T1 T2 R m1 m2] [f]%_function_scope imf _ [Y] _
 measurable_fubini_G is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.measurable_fubini_G
@@ -3128,8 +3133,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 (\int[m1 \x m2]_z f z)%E
 
 integral12_prod_meas1 is not universe polymorphic
-Arguments integral12_prod_meas1 [d1 d2]%measure_display_scope 
-  [T1 T2 R m1 m2] [f]%function_scope imf
+Arguments integral12_prod_meas1 [d1 d2]%_measure_display_scope
+  [T1 T2 R m1 m2] [f]%_function_scope imf
 integral12_prod_meas1 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.integral12_prod_meas1
@@ -3156,8 +3161,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 (\int[m1 \x m2]_z f z)%E
 
 integral21_prod_meas1 is not universe polymorphic
-Arguments integral21_prod_meas1 [d1 d2]%measure_display_scope 
-  [T1 T2 R m1 m2] [f]%function_scope imf
+Arguments integral21_prod_meas1 [d1 d2]%_measure_display_scope
+  [T1 T2 R m1 m2] [f]%_function_scope imf
 integral21_prod_meas1 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.integral21_prod_meas1
@@ -3184,8 +3189,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 (\int[m1 \x^ m2]_z f z)%E
 
 integral21_prod_meas2 is not universe polymorphic
-Arguments integral21_prod_meas2 [d1 d2]%measure_display_scope 
-  [T1 T2 R m1 m2] [f]%function_scope imf
+Arguments integral21_prod_meas2 [d1 d2]%_measure_display_scope
+  [T1 T2 R m1 m2] [f]%_function_scope imf
 integral21_prod_meas2 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.integral21_prod_meas2
@@ -3211,8 +3216,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 (\int[m1 \x^ m2]_z f z)%E
 
 integral12_prod_meas2 is not universe polymorphic
-Arguments integral12_prod_meas2 [d1 d2]%measure_display_scope 
-  [T1 T2 R m1 m2] [f]%function_scope imf
+Arguments integral12_prod_meas2 [d1 d2]%_measure_display_scope
+  [T1 T2 R m1 m2] [f]%_function_scope imf
 integral12_prod_meas2 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.integral12_prod_meas2
@@ -3237,8 +3242,8 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 (\int[m1]_x \int[m2]_y f (x, y))%E = (\int[m2]_y \int[m1]_x f (x, y))%E
 
 Fubini is not universe polymorphic
-Arguments Fubini [d1 d2]%measure_display_scope [T1 T2 R m1 m2]
-  [f]%function_scope imf
+Arguments Fubini [d1 d2]%_measure_display_scope [T1 T2 R m1 m2]
+  [f]%_function_scope imf
 Fubini is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.Fubini
@@ -3283,8 +3288,8 @@ measurable_fun
 (\int[m1]_x \int[m2]_y f (x, y))%E = (\int[m2]_y \int[m1]_x f (x, y))%E
 
 sfinite_Fubini is not universe polymorphic
-Arguments sfinite_Fubini {d d'}%measure_display_scope 
-  {X Y R} m1 m2 (f f0)%function_scope mf
+Arguments sfinite_Fubini {d d'}%_measure_display_scope 
+  {X Y R} m1 m2 (f f0)%_function_scope mf
 sfinite_Fubini is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.sfinite_Fubini

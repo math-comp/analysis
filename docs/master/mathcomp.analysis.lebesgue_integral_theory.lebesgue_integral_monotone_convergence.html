@@ -272,8 +272,8 @@ filter.lim
      (filter.nbhs filter.eventually))
 
 nd_ge0_integral_lim is not universe polymorphic
-Arguments nd_ge0_integral_lim [d]%measure_display_scope 
-  [T R] mu [f]%function_scope [g] (f0 nd_g gf)%function_scope
+Arguments nd_ge0_integral_lim [d]%_measure_display_scope 
+  [T R] mu [f]%_function_scope [g] (f0 nd_g gf)%_function_scope
 nd_ge0_integral_lim is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_monotone_convergence.nd_ge0_integral_lim
@@ -350,9 +350,9 @@ measurable_fun (T:=T)
 (\int[mu]_(x in D) f1 x <= \int[mu]_(x in D) f2 x)%E
 
 ge0_le_integral is not universe polymorphic
-Arguments ge0_le_integral [d]%measure_display_scope 
-  [T R] mu [D]%classical_set_scope mD [f1 f2]%function_scope
-  f10%function_scope mf1 mf2 _%function_scope
+Arguments ge0_le_integral [d]%_measure_display_scope 
+  [T R] mu [D]%_classical_set_scope mD [f1 f2]%_function_scope
+  f10%_function_scope mf1 mf2 _%_function_scope
 ge0_le_integral is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_monotone_convergence.ge0_le_integral
@@ -561,8 +561,8 @@ filter.lim
      (filter.nbhs filter.eventually))
 
 monotone_convergence is not universe polymorphic
-Arguments monotone_convergence [d]%measure_display_scope 
-  [T R] mu [D]%classical_set_scope mD [g'] (mg' g'0 nd_g')%function_scope
+Arguments monotone_convergence [d]%_measure_display_scope 
+  [T R] mu [D]%_classical_set_scope mD [g'] (mg' g'0 nd_g')%_function_scope
 monotone_convergence is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_monotone_convergence.monotone_convergence
@@ -652,8 +652,8 @@ exists2 i : nat,
   ((fun N : nat => [set n | N <= n]) i
    `<=` (fun n : nat => (\int[mu]_(x in D) g' n x)%E) @^-1` t)%classic
 
-Arguments cvg_monotone_convergence [d]%measure_display_scope 
-  [T R mu] [D]%classical_set_scope mD [g'] (mg' g'0 nd_g')%function_scope 
+Arguments cvg_monotone_convergence [d]%_measure_display_scope 
+  [T R mu] [D]%_classical_set_scope mD [g'] (mg' g'0 nd_g')%_function_scope
   [t] _
 cvg_monotone_convergence is opaque
 Expands to: Constant
@@ -694,8 +694,8 @@ forall [f : (T -> \bar R) ^nat],
  limn_einf (fun n : nat => \int[mu]_(x in D) f n x))%E
 
 fatou is not universe polymorphic
-Arguments fatou [d]%measure_display_scope [T R] mu 
-  [D]%classical_set_scope mD [f] (mf f0)%function_scope
+Arguments fatou [d]%_measure_display_scope [T R] mu 
+  [D]%_classical_set_scope mD [f] (mf f0)%_function_scope
 fatou is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_monotone_convergence.fatou

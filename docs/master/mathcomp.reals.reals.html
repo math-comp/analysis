@@ -281,7 +281,7 @@ has_lbound
   [set (- x)%R | x in E]
 
 has_ub_lbN is not universe polymorphic
-Arguments has_ub_lbN [R] E%classical_set_scope
+Arguments has_ub_lbN [R] E%_classical_set_scope
 has_ub_lbN is opaque
 Expands to: Constant mathcomp.reals.reals.has_ub_lbN
 Declared in library mathcomp.reals.reals, line 71, characters 6-16
@@ -389,7 +389,7 @@ has_ubound
 has_ubound (T:=R) E
 
 has_ub_image_norm is not universe polymorphic
-Arguments has_ub_image_norm [R] [E]%classical_set_scope _
+Arguments has_ub_image_norm [R] [E]%_classical_set_scope _
 has_ub_image_norm is opaque
 Expands to: Constant mathcomp.reals.reals.has_ub_image_norm
 Declared in library mathcomp.reals.reals, line 97, characters 6-23
@@ -409,7 +409,7 @@ has_sup
 has_inf (T:=R) E
 
 has_inf_supN is not universe polymorphic
-Arguments has_inf_supN [R] E%classical_set_scope
+Arguments has_inf_supN [R] E%_classical_set_scope
 has_inf_supN is opaque
 Expands to: Constant mathcomp.reals.reals.has_inf_supN
 Declared in library mathcomp.reals.reals, line 103, characters 6-18
@@ -428,7 +428,7 @@ forall [R : realDomainType] {E : set R},
 ~ has_sup (T:=R) E <-> (forall x : R, exists2 y : R, E y & (x < y)%R)
 
 has_supPn is not universe polymorphic
-Arguments has_supPn [R] {E}%classical_set_scope _
+Arguments has_supPn [R] {E}%_classical_set_scope _
 has_supPn is opaque
 Expands to: Constant mathcomp.reals.reals.has_supPn
 Declared in library mathcomp.reals.reals, line 110, characters 6-15
@@ -460,7 +460,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="sup" class="id"><a name="sup" class="" title="sup : forall {R : realType}, set R -> R
 
 sup is not universe polymorphic
-Arguments sup {R} A%classical_set_scope
+Arguments sup {R} A%_classical_set_scope
 sup is transparent
 Expands to: Constant mathcomp.reals.reals.sup
 Declared in library mathcomp.reals.reals, line 135, characters 11-14
@@ -468,7 +468,7 @@ Declared in library mathcomp.reals.reals, line 135, characters 11-14
 <span class="vernacular">Definition</span><span class="id"> </span><span id="inf" class="id"><a name="inf" class="" title="inf : forall {R : realType}, set R -> R
 
 inf is not universe polymorphic
-Arguments inf {R} E%classical_set_scope
+Arguments inf {R} E%_classical_set_scope
 inf is transparent
 Expands to: Constant mathcomp.reals.reals.inf
 Declared in library mathcomp.reals.reals, line 136, characters 11-14
@@ -484,7 +484,7 @@ sup_upper_bound :
 forall {R : realType} [E : set R],
 has_sup (T:=R) E -> forall [x : R], E x -> (x <= sup E)%R = true
 
-Arguments sup_upper_bound {R} [E]%classical_set_scope _ [x] _
+Arguments sup_upper_bound {R} [E]%_classical_set_scope _ [x] _
 sup_upper_bound is opaque
 Expands to: Constant mathcomp.reals.reals.sup_upper_bound
 Declared in library mathcomp.reals.reals, line 139, characters 6-21
@@ -500,7 +500,7 @@ forall {R : realType} [E : set R] [eps : R],
 (0 < eps)%R -> has_sup (T:=R) E -> exists2 e : R, E e & (sup E - eps < e)%R
 
 sup_adherent is not universe polymorphic
-Arguments sup_adherent {R} [E]%classical_set_scope [eps]%ring_scope _ _
+Arguments sup_adherent {R} [E]%_classical_set_scope [eps]%_ring_scope _ _
 sup_adherent is opaque
 Expands to: Constant mathcomp.reals.reals.sup_adherent
 Declared in library mathcomp.reals.reals, line 143, characters 6-18
@@ -517,7 +517,7 @@ Declared in library mathcomp.reals.reals, line 143, characters 6-18
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Rint_pred" class="id"><a name="Rint_pred" class="" title="Rint_pred : forall {R : realFieldType}, R -> bool
 
 Rint_pred is not universe polymorphic
-Arguments Rint_pred {R} x%ring_scope /
+Arguments Rint_pred {R} x%_ring_scope /
 The reduction tactics unfold Rint_pred when applied to 2 arguments
 Rint_pred is transparent
 Expands to: Constant mathcomp.reals.reals.Rint_pred
@@ -538,7 +538,7 @@ forall {R : realFieldType} (x : R),
 (x \is a Rint) = `[< exists z : int, x == z%:~R%R >]
 
 Rint_def is not universe polymorphic
-Arguments Rint_def {R} x%ring_scope
+Arguments Rint_def {R} x%_ring_scope
 Rint_def is opaque
 Expands to: Constant mathcomp.reals.reals.Rint_def
 Declared in library mathcomp.reals.reals, line 155, characters 6-14
@@ -554,7 +554,7 @@ forall {R : realFieldType}
 reflect (exists z : int, x = z%:~R%R) (x \is a Rint)
 
 RintP is not universe polymorphic
-Arguments RintP {R} x%ring_scope
+Arguments RintP {R} x%_ring_scope
 RintP is opaque
 Expands to: Constant mathcomp.reals.reals.RintP
 Declared in library mathcomp.reals.reals, line 158, characters 6-11
@@ -568,7 +568,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RintC" class="id"><a name="RintC" class="" title="RintC : forall {R : realFieldType} (z : int), z%:~R%R \is a Rint
 
 RintC is not universe polymorphic
-Arguments RintC {R} z%ring_scope
+Arguments RintC {R} z%_ring_scope
 RintC is opaque
 Expands to: Constant mathcomp.reals.reals.RintC
 Declared in library mathcomp.reals.reals, line 163, characters 6-11
@@ -674,7 +674,7 @@ forall {R : realFieldType} [x y : R],
 x \is a Rint -> y \is a Rint -> (x + 1 <= y)%R = (x < y)%R
 
 Rint_ler_addr1 is not universe polymorphic
-Arguments Rint_ler_addr1 {R} [x y]%ring_scope _ _
+Arguments Rint_ler_addr1 {R} [x y]%_ring_scope _ _
 Rint_ler_addr1 is opaque
 Expands to: Constant mathcomp.reals.reals.Rint_ler_addr1
 Declared in library mathcomp.reals.reals, line 183, characters 6-20
@@ -692,7 +692,7 @@ forall {R : realFieldType} [x y : R],
 x \is a Rint -> y \is a Rint -> (x < y + 1)%R = (x <= y)%R
 
 Rint_ltr_addr1 is not universe polymorphic
-Arguments Rint_ltr_addr1 {R} [x y]%ring_scope _ _
+Arguments Rint_ltr_addr1 {R} [x y]%_ring_scope _ _
 Rint_ltr_addr1 is opaque
 Expands to: Constant mathcomp.reals.reals.Rint_ltr_addr1
 Declared in library mathcomp.reals.reals, line 190, characters 6-20
@@ -716,7 +716,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Rtoint" class="id"><a name="Rtoint" class="" title="Rtoint : forall {R : realType}, R -> int
 
 Rtoint is not universe polymorphic
-Arguments Rtoint {R} x%ring_scope
+Arguments Rtoint {R} x%_ring_scope
 Rtoint is transparent
 Expands to: Constant mathcomp.reals.reals.Rtoint
 Declared in library mathcomp.reals.reals, line 206, characters 11-17
@@ -728,7 +728,7 @@ Declared in library mathcomp.reals.reals, line 206, characters 11-17
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RtointK" class="id"><a name="RtointK" class="" title="RtointK : forall {R : realType} [x : R], x \is a Rint -> (Rtoint x)%:~R%R = x
 
 RtointK is not universe polymorphic
-Arguments RtointK {R} [x]%ring_scope _
+Arguments RtointK {R} [x]%_ring_scope _
 RtointK is opaque
 Expands to: Constant mathcomp.reals.reals.RtointK
 Declared in library mathcomp.reals.reals, line 211, characters 6-13
@@ -743,7 +743,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Rtointz" class="id"><a name="Rtointz" class="" title="Rtointz : forall {R : realType} (z : int), Rtoint z%:~R = z
 
 Rtointz is not universe polymorphic
-Arguments Rtointz {R} z%ring_scope
+Arguments Rtointz {R} z%_ring_scope
 Rtointz is opaque
 Expands to: Constant mathcomp.reals.reals.Rtointz
 Declared in library mathcomp.reals.reals, line 217, characters 6-13
@@ -756,7 +756,7 @@ Declared in library mathcomp.reals.reals, line 217, characters 6-13
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Rtointn" class="id"><a name="Rtointn" class="" title="Rtointn : forall {R : realType} (n : nat), Rtoint n%:R = n%:~R%R
 
 Rtointn is not universe polymorphic
-Arguments Rtointn {R} n%nat_scope
+Arguments Rtointn {R} n%_nat_scope
 Rtointn is opaque
 Expands to: Constant mathcomp.reals.reals.Rtointn
 Declared in library mathcomp.reals.reals, line 220, characters 6-13
@@ -788,7 +788,7 @@ Declared in library mathcomp.reals.reals, line 223, characters 6-16
 forall {R : realType} [x : R], x \is a Rint -> Rtoint (- x) = (- Rtoint x)%R
 
 RtointN is not universe polymorphic
-Arguments RtointN {R} [x]%ring_scope _
+Arguments RtointN {R} [x]%_ring_scope _
 RtointN is opaque
 Expands to: Constant mathcomp.reals.reals.RtointN
 Declared in library mathcomp.reals.reals, line 226, characters 6-13
@@ -810,7 +810,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="floor_set" class="id"><a name="floor_set" class="" title="floor_set : forall [R : realType], R -> set R
 
 floor_set is not universe polymorphic
-Arguments floor_set [R] x%ring_scope _
+Arguments floor_set [R] x%_ring_scope _
 floor_set is transparent
 Expands to: Constant mathcomp.reals.reals.floor_set
 Declared in library mathcomp.reals.reals, line 240, characters 11-20
@@ -819,7 +819,7 @@ Declared in library mathcomp.reals.reals, line 240, characters 11-20
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Rfloor" class="id"><a name="Rfloor" class="" title="Rfloor : forall [R : realType], R -> R
 
 Rfloor is not universe polymorphic
-Arguments Rfloor [R] x%ring_scope
+Arguments Rfloor [R] x%_ring_scope
 Rfloor is transparent
 Expands to: Constant mathcomp.reals.reals.Rfloor
 Declared in library mathcomp.reals.reals, line 242, characters 11-17
@@ -828,7 +828,7 @@ Declared in library mathcomp.reals.reals, line 242, characters 11-17
 <span class="vernacular">Definition</span><span class="id"> </span><span id="range1" class="id"><a name="range1" class="" title="range1 : forall [R : realType], R -> set R
 
 range1 is not universe polymorphic
-Arguments range1 [R] x%ring_scope _
+Arguments range1 [R] x%_ring_scope _
 range1 is transparent
 Expands to: Constant mathcomp.reals.reals.range1
 Declared in library mathcomp.reals.reals, line 244, characters 11-17
@@ -837,7 +837,7 @@ Declared in library mathcomp.reals.reals, line 244, characters 11-17
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Rceil" class="id"><a name="Rceil" class="" title="Rceil : forall [R : realType], R -> R
 
 Rceil is not universe polymorphic
-Arguments Rceil [R] x%ring_scope
+Arguments Rceil [R] x%_ring_scope
 Rceil is transparent
 Expands to: Constant mathcomp.reals.reals.Rceil
 Declared in library mathcomp.reals.reals, line 246, characters 11-16
@@ -856,7 +856,7 @@ Declared in library mathcomp.reals.reals, line 246, characters 11-16
 forall [R : realType] [E : set R], ~ has_sup (T:=R) E -> sup E = 0%R
 
 sup_out is not universe polymorphic
-Arguments sup_out [R] [E]%classical_set_scope _
+Arguments sup_out [R] [E]%_classical_set_scope _
 sup_out is opaque
 Expands to: Constant mathcomp.reals.reals.sup_out
 Declared in library mathcomp.reals.reals, line 258, characters 6-13
@@ -882,7 +882,7 @@ Declared in library mathcomp.reals.reals, line 260, characters 6-10
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sup1" class="id"><a name="sup1" class="" title="sup1 : forall [R : realType] (x : R), sup [set x] = x
 
 sup1 is not universe polymorphic
-Arguments sup1 [R] x%ring_scope
+Arguments sup1 [R] x%_ring_scope
 sup1 is opaque
 Expands to: Constant mathcomp.reals.reals.sup1
 Declared in library mathcomp.reals.reals, line 262, characters 6-10
@@ -902,7 +902,7 @@ ub_le_sup :
 forall [R : realType] {E : set R},
 has_ubound (T:=R) E -> forall [x : R], E x -> (x <= sup E)%R = true
 
-Arguments ub_le_sup [R] {E}%classical_set_scope _ [x] _
+Arguments ub_le_sup [R] {E}%_classical_set_scope _ [x] _
 ub_le_sup is opaque
 Expands to: Constant mathcomp.reals.reals.ub_le_sup
 Declared in library mathcomp.reals.reals, line 264, characters 6-15
@@ -926,7 +926,7 @@ forall [R : realType] [E : set R],
 has_ubound (T:=R) E ->
 ~ E (sup E) -> forall [t : R], E t -> (t < sup E)%R = true
 
-Arguments sup_ub_strict [R] [E]%classical_set_scope _ _ [t] _
+Arguments sup_ub_strict [R] [E]%_classical_set_scope _ _ [t] _
 sup_ub_strict is opaque
 Expands to: Constant mathcomp.reals.reals.sup_ub_strict
 Declared in library mathcomp.reals.reals, line 270, characters 6-19
@@ -944,7 +944,7 @@ forall [R : realType] {E : set R} (x : R),
 has_sup (T:=R) E -> down (T:=R) E x \/ (sup E <= x)%R
 
 sup_total is not universe polymorphic
-Arguments sup_total [R] {E}%classical_set_scope x%ring_scope _
+Arguments sup_total [R] {E}%_classical_set_scope x%_ring_scope _
 sup_total is opaque
 Expands to: Constant mathcomp.reals.reals.sup_total
 Declared in library mathcomp.reals.reals, line 277, characters 6-15
@@ -963,7 +963,7 @@ forall [R : realType] {E : set R} [x : R],
 (E !=set0)%classic -> ubound (T:=R) E x -> (sup E <= x)%R
 
 ge_sup is not universe polymorphic
-Arguments ge_sup [R] {E}%classical_set_scope [x]%ring_scope _ _
+Arguments ge_sup [R] {E}%_classical_set_scope [x]%_ring_scope _ _
 ge_sup is opaque
 Expands to: Constant mathcomp.reals.reals.ge_sup
 Declared in library mathcomp.reals.reals, line 285, characters 6-12
@@ -988,7 +988,7 @@ has_sup (T:=R) B ->
 (forall a b : R, A a -> B b -> (a <= b)%R) -> sup (A `|` B) = sup B
 
 sup_setU is not universe polymorphic
-Arguments sup_setU [R] [A B]%classical_set_scope _ _%function_scope
+Arguments sup_setU [R] [A B]%_classical_set_scope _ _%_function_scope
 sup_setU is opaque
 Expands to: Constant mathcomp.reals.reals.sup_setU
 Declared in library mathcomp.reals.reals, line 298, characters 6-14
@@ -1010,7 +1010,7 @@ forall [R : realType] [S : set R] [x : R],
 (S !=set0)%classic -> (x < sup S)%R -> exists2 y : R, S y & (x < y)%R
 
 sup_gt is not universe polymorphic
-Arguments sup_gt [R] [S]%classical_set_scope [x]%ring_scope _ _
+Arguments sup_gt [R] [S]%_classical_set_scope [x]%_ring_scope _ _
 sup_gt is opaque
 Expands to: Constant mathcomp.reals.reals.sup_gt
 Declared in library mathcomp.reals.reals, line 309, characters 6-12
@@ -1038,7 +1038,7 @@ has_sup (T:=R) A ->
 has_sup (T:=R) B -> sup [set (x + y)%R | x in A & y in B] = (sup A + sup B)%R
 
 sup_sumE is not universe polymorphic
-Arguments sup_sumE {R} [A B]%classical_set_scope _ _
+Arguments sup_sumE {R} [A B]%_classical_set_scope _ _
 sup_sumE is opaque
 Expands to: Constant mathcomp.reals.reals.sup_sumE
 Declared in library mathcomp.reals.reals, line 325, characters 6-14
@@ -1071,7 +1071,7 @@ has_inf (T:=R) A ->
 has_inf (T:=R) B -> inf [set (x + y)%R | x in A & y in B] = (inf A + inf B)%R
 
 inf_sumE is not universe polymorphic
-Arguments inf_sumE {R} [A B]%classical_set_scope _ _
+Arguments inf_sumE {R} [A B]%_classical_set_scope _ _
 inf_sumE is opaque
 Expands to: Constant mathcomp.reals.reals.inf_sumE
 Declared in library mathcomp.reals.reals, line 346, characters 6-14
@@ -1105,7 +1105,7 @@ forall [R : realType] [E : set R] [eps : R],
 (0 < eps)%R -> has_inf (T:=R) E -> exists2 e : R, E e & (e < inf E + eps)%R
 
 inf_adherent is not universe polymorphic
-Arguments inf_adherent [R] [E]%classical_set_scope [eps]%ring_scope _ _
+Arguments inf_adherent [R] [E]%_classical_set_scope [eps]%_ring_scope _ _
 inf_adherent is opaque
 Expands to: Constant mathcomp.reals.reals.inf_adherent
 Declared in library mathcomp.reals.reals, line 370, characters 6-18
@@ -1123,7 +1123,7 @@ Qed.</div></details>
 forall [R : realType] [E : set R], ~ has_inf (T:=R) E -> inf E = 0%R
 
 inf_out is not universe polymorphic
-Arguments inf_out [R] [E]%classical_set_scope _
+Arguments inf_out [R] [E]%_classical_set_scope _
 inf_out is opaque
 Expands to: Constant mathcomp.reals.reals.inf_out
 Declared in library mathcomp.reals.reals, line 378, characters 6-13
@@ -1151,7 +1151,7 @@ Declared in library mathcomp.reals.reals, line 384, characters 6-10
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="inf1" class="id"><a name="inf1" class="" title="inf1 : forall [R : realType] (x : R), inf [set x] = x
 
 inf1 is not universe polymorphic
-Arguments inf1 [R] x%ring_scope
+Arguments inf1 [R] x%_ring_scope
 inf1 is opaque
 Expands to: Constant mathcomp.reals.reals.inf1
 Declared in library mathcomp.reals.reals, line 387, characters 6-10
@@ -1171,7 +1171,7 @@ ge_inf :
 forall [R : realType] [E : set R],
 has_lbound (T:=R) E -> forall [x : R], E x -> (inf E <= x)%R = true
 
-Arguments ge_inf [R] [E]%classical_set_scope _ [x] _
+Arguments ge_inf [R] [E]%_classical_set_scope _ [x] _
 ge_inf is opaque
 Expands to: Constant mathcomp.reals.reals.ge_inf
 Declared in library mathcomp.reals.reals, line 390, characters 6-12
@@ -1193,7 +1193,7 @@ forall [R : realType] [E : set R],
 has_lbound (T:=R) E ->
 ~ E (inf E) -> forall [t : R], E t -> (inf E < t)%R = true
 
-Arguments inf_lb_strict [R] [E]%classical_set_scope _ _ [t] _
+Arguments inf_lb_strict [R] [E]%_classical_set_scope _ _ [t] _
 inf_lb_strict is opaque
 Expands to: Constant mathcomp.reals.reals.inf_lb_strict
 Declared in library mathcomp.reals.reals, line 393, characters 6-19
@@ -1211,7 +1211,7 @@ forall [R : realType] [E : set R] [x : R],
 (E !=set0)%classic -> lbound (T:=R) E x -> (x <= inf E)%R
 
 lb_le_inf is not universe polymorphic
-Arguments lb_le_inf [R] [E]%classical_set_scope [x]%ring_scope _ _
+Arguments lb_le_inf [R] [E]%_classical_set_scope [x]%_ring_scope _ _
 lb_le_inf is opaque
 Expands to: Constant mathcomp.reals.reals.lb_le_inf
 Declared in library mathcomp.reals.reals, line 400, characters 6-15
@@ -1228,7 +1228,7 @@ forall [R : realType] [E : set R],
 ~ has_inf (T:=R) E <-> (forall x : R, exists2 y : R, E y & (y < x)%R)
 
 has_infPn is not universe polymorphic
-Arguments has_infPn [R] [E]%classical_set_scope _
+Arguments has_infPn [R] [E]%_classical_set_scope _
 has_infPn is opaque
 Expands to: Constant mathcomp.reals.reals.has_infPn
 Declared in library mathcomp.reals.reals, line 405, characters 6-15
@@ -1247,7 +1247,7 @@ has_inf (T:=R) A ->
 (forall a b : R, A a -> B b -> (a <= b)%R) -> inf (A `|` B) = inf A
 
 inf_setU is not universe polymorphic
-Arguments inf_setU [R] [A B]%classical_set_scope _ _%function_scope
+Arguments inf_setU [R] [A B]%_classical_set_scope _ _%_function_scope
 inf_setU is opaque
 Expands to: Constant mathcomp.reals.reals.inf_setU
 Declared in library mathcomp.reals.reals, line 412, characters 6-14
@@ -1266,7 +1266,7 @@ forall [R : realType] [S : set R] [x : R],
 (S !=set0)%classic -> (inf S < x)%R -> exists2 y : R, S y & (y < x)%R
 
 inf_lt is not universe polymorphic
-Arguments inf_lt [R] [S]%classical_set_scope [x]%ring_scope _ _
+Arguments inf_lt [R] [S]%_classical_set_scope [x]%_ring_scope _ _
 inf_lt is opaque
 Expands to: Constant mathcomp.reals.reals.inf_lt
 Declared in library mathcomp.reals.reals, line 420, characters 6-12
@@ -1291,7 +1291,7 @@ Qed.</div></details>
 forall [R : realType] (x : R), has_sup (T:=R) (floor_set (R:=R) x)
 
 has_sup_floor_set is not universe polymorphic
-Arguments has_sup_floor_set [R] x%ring_scope
+Arguments has_sup_floor_set [R] x%_ring_scope
 has_sup_floor_set is opaque
 Expands to: Constant mathcomp.reals.reals.has_sup_floor_set
 Declared in library mathcomp.reals.reals, line 436, characters 6-23
@@ -1312,7 +1312,7 @@ Qed.</div></details>
 forall [R : realType] (x : R), floor_set (R:=R) x (sup (floor_set (R:=R) x))
 
 sup_in_floor_set is not universe polymorphic
-Arguments sup_in_floor_set [R] x%ring_scope
+Arguments sup_in_floor_set [R] x%_ring_scope
 sup_in_floor_set is opaque
 Expands to: Constant mathcomp.reals.reals.sup_in_floor_set
 Declared in library mathcomp.reals.reals, line 447, characters 6-22
@@ -1339,7 +1339,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="isint_Rfloor" class="id"><a name="isint_Rfloor" class="" title="isint_Rfloor : forall [R : realType] (x : R), Rfloor (R:=R) x \is a Rint
 
 isint_Rfloor is not universe polymorphic
-Arguments isint_Rfloor [R] x%ring_scope
+Arguments isint_Rfloor [R] x%_ring_scope
 isint_Rfloor is opaque
 Expands to: Constant mathcomp.reals.reals.isint_Rfloor
 Declared in library mathcomp.reals.reals, line 465, characters 6-18
@@ -1352,7 +1352,7 @@ Declared in library mathcomp.reals.reals, line 465, characters 6-18
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RfloorE" class="id"><a name="RfloorE" class="" title="RfloorE : forall [R : realType] (x : R), Rfloor (R:=R) x = (floor x)%:~R%R
 
 RfloorE is not universe polymorphic
-Arguments RfloorE [R] x%ring_scope
+Arguments RfloorE [R] x%_ring_scope
 RfloorE is opaque
 Expands to: Constant mathcomp.reals.reals.RfloorE
 Declared in library mathcomp.reals.reals, line 468, characters 6-13
@@ -1365,7 +1365,7 @@ Declared in library mathcomp.reals.reals, line 468, characters 6-13
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mem_rg1_floor" class="id"><a name="mem_rg1_floor" class="" title="mem_rg1_floor : forall [R : realType] (x : R), range1 (R:=R) (floor x)%:~R x
 
 mem_rg1_floor is not universe polymorphic
-Arguments mem_rg1_floor [R] x%ring_scope
+Arguments mem_rg1_floor [R] x%_ring_scope
 mem_rg1_floor is opaque
 Expands to: Constant mathcomp.reals.reals.mem_rg1_floor
 Declared in library mathcomp.reals.reals, line 471, characters 6-19
@@ -1379,7 +1379,7 @@ Declared in library mathcomp.reals.reals, line 471, characters 6-19
 forall [R : realType] (x : R), range1 (R:=R) (Rfloor (R:=R) x) x
 
 mem_rg1_Rfloor is not universe polymorphic
-Arguments mem_rg1_Rfloor [R] x%ring_scope
+Arguments mem_rg1_Rfloor [R] x%_ring_scope
 mem_rg1_Rfloor is opaque
 Expands to: Constant mathcomp.reals.reals.mem_rg1_Rfloor
 Declared in library mathcomp.reals.reals, line 474, characters 6-20
@@ -1392,7 +1392,7 @@ Declared in library mathcomp.reals.reals, line 474, characters 6-20
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Rfloor_le" class="id"><a name="Rfloor_le" class="" title="Rfloor_le : forall [R : realType] (x : R), (Rfloor (R:=R) x <= x)%R
 
 Rfloor_le is not universe polymorphic
-Arguments Rfloor_le [R] x%ring_scope
+Arguments Rfloor_le [R] x%_ring_scope
 Rfloor_le is opaque
 Expands to: Constant mathcomp.reals.reals.Rfloor_le
 Declared in library mathcomp.reals.reals, line 477, characters 6-15
@@ -1405,7 +1405,7 @@ Declared in library mathcomp.reals.reals, line 477, characters 6-15
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lt_succ_Rfloor" class="id"><a name="lt_succ_Rfloor" class="" title="lt_succ_Rfloor : forall [R : realType] (x : R), (x < Rfloor (R:=R) x + 1)%R
 
 lt_succ_Rfloor is not universe polymorphic
-Arguments lt_succ_Rfloor [R] x%ring_scope
+Arguments lt_succ_Rfloor [R] x%_ring_scope
 lt_succ_Rfloor is opaque
 Expands to: Constant mathcomp.reals.reals.lt_succ_Rfloor
 Declared in library mathcomp.reals.reals, line 480, characters 6-20
@@ -1420,7 +1420,7 @@ forall [R : realType] [x : R] [i1 i2 : int],
 range1 (R:=R) i1%:~R x -> range1 (R:=R) i2%:~R x -> i1 = i2
 
 range1z_inj is not universe polymorphic
-Arguments range1z_inj [R] [x i1 i2]%ring_scope _ _
+Arguments range1z_inj [R] [x i1 i2]%_ring_scope _ _
 range1z_inj is opaque
 Expands to: Constant mathcomp.reals.reals.range1z_inj
 Declared in library mathcomp.reals.reals, line 483, characters 6-17
@@ -1438,7 +1438,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="range1rr" class="id"><a name="range1rr" class="" title="range1rr : forall [R : realType] (x : R), range1 (R:=R) x x
 
 range1rr is not universe polymorphic
-Arguments range1rr [R] x%ring_scope
+Arguments range1rr [R] x%_ring_scope
 range1rr is opaque
 Expands to: Constant mathcomp.reals.reals.range1rr
 Declared in library mathcomp.reals.reals, line 492, characters 6-14
@@ -1453,7 +1453,7 @@ forall [R : realType] (i : int) (x : R),
 Rfloor (R:=R) x = i%:~R%R <-> range1 (R:=R) i%:~R x
 
 range1zP is not universe polymorphic
-Arguments range1zP [R] (i x)%ring_scope
+Arguments range1zP [R] (i x)%_ring_scope
 range1zP is opaque
 Expands to: Constant mathcomp.reals.reals.range1zP
 Declared in library mathcomp.reals.reals, line 495, characters 6-14
@@ -1468,7 +1468,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Rfloor_natz" class="id"><a name="Rfloor_natz" class="" title="Rfloor_natz : forall (R : realType) (i : int), Rfloor (R:=R) i%:~R = i%:~R%R
 
 Rfloor_natz is not universe polymorphic
-Arguments Rfloor_natz R i%ring_scope
+Arguments Rfloor_natz R i%_ring_scope
 Rfloor_natz is opaque
 Expands to: Constant mathcomp.reals.reals.Rfloor_natz
 Declared in library mathcomp.reals.reals, line 501, characters 6-17
@@ -1528,7 +1528,7 @@ forall [R : realType] (x : R) (i : int),
 (i%:~R <= x)%R = (i%:~R <= Rfloor (R:=R) x)%R
 
 Rfloor_ge_int is not universe polymorphic
-Arguments Rfloor_ge_int [R] (x i)%ring_scope
+Arguments Rfloor_ge_int [R] (x i)%_ring_scope
 Rfloor_ge_int is opaque
 Expands to: Constant mathcomp.reals.reals.Rfloor_ge_int
 Declared in library mathcomp.reals.reals, line 511, characters 6-19
@@ -1543,7 +1543,7 @@ forall [R : realType] (x : R) (i : int),
 (x < i%:~R)%R = (Rfloor (R:=R) x < i%:~R)%R
 
 Rfloor_lt_int is not universe polymorphic
-Arguments Rfloor_lt_int [R] (x i)%ring_scope
+Arguments Rfloor_lt_int [R] (x i)%_ring_scope
 Rfloor_lt_int is opaque
 Expands to: Constant mathcomp.reals.reals.Rfloor_lt_int
 Declared in library mathcomp.reals.reals, line 514, characters 6-19
@@ -1557,7 +1557,7 @@ Declared in library mathcomp.reals.reals, line 514, characters 6-19
 forall [R : realType] [x : R], (x <= 0)%R -> (Rfloor (R:=R) x <= 0)%R
 
 Rfloor_le0 is not universe polymorphic
-Arguments Rfloor_le0 [R] [x]%ring_scope _
+Arguments Rfloor_le0 [R] [x]%_ring_scope _
 Rfloor_le0 is opaque
 Expands to: Constant mathcomp.reals.reals.Rfloor_le0
 Declared in library mathcomp.reals.reals, line 517, characters 6-16
@@ -1571,7 +1571,7 @@ Declared in library mathcomp.reals.reals, line 517, characters 6-16
 forall [R : realType] [x : R], (x < 0)%R -> (Rfloor (R:=R) x < 0)%R
 
 Rfloor_lt0 is not universe polymorphic
-Arguments Rfloor_lt0 [R] [x]%ring_scope _
+Arguments Rfloor_lt0 [R] [x]%_ring_scope _
 Rfloor_lt0 is opaque
 Expands to: Constant mathcomp.reals.reals.Rfloor_lt0
 Declared in library mathcomp.reals.reals, line 520, characters 6-16
@@ -1586,7 +1586,7 @@ forall [R : realType] [y x : R],
 (y < x)%R -> exists k : nat, (y + k.+1%:R^-1 < x)%R
 
 ltr_add_invr is not universe polymorphic
-Arguments ltr_add_invr [R] [y x]%ring_scope _
+Arguments ltr_add_invr [R] [y x]%_ring_scope _
 ltr_add_invr is opaque
 Expands to: Constant mathcomp.reals.reals.ltr_add_invr
 Declared in library mathcomp.reals.reals, line 523, characters 6-18
@@ -1608,7 +1608,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="isint_Rceil" class="id"><a name="isint_Rceil" class="" title="isint_Rceil : forall [R : realType] (x : R), Rceil (R:=R) x \is a Rint
 
 isint_Rceil is not universe polymorphic
-Arguments isint_Rceil [R] x%ring_scope
+Arguments isint_Rceil [R] x%_ring_scope
 isint_Rceil is opaque
 Expands to: Constant mathcomp.reals.reals.isint_Rceil
 Declared in library mathcomp.reals.reals, line 536, characters 6-17
@@ -1634,7 +1634,7 @@ Declared in library mathcomp.reals.reals, line 539, characters 6-12
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Rceil_ge" class="id"><a name="Rceil_ge" class="" title="Rceil_ge : forall [R : realType] (x : R), (x <= Rceil (R:=R) x)%R
 
 Rceil_ge is not universe polymorphic
-Arguments Rceil_ge [R] x%ring_scope
+Arguments Rceil_ge [R] x%_ring_scope
 Rceil_ge is opaque
 Expands to: Constant mathcomp.reals.reals.Rceil_ge
 Declared in library mathcomp.reals.reals, line 542, characters 6-14
@@ -1667,7 +1667,7 @@ Declared in library mathcomp.reals.reals, line 545, characters 6-14
 forall [R : realType] [x : R], (0 <= x)%R -> (0 <= Rceil (R:=R) x)%R
 
 Rceil_ge0 is not universe polymorphic
-Arguments Rceil_ge0 [R] [x]%ring_scope _
+Arguments Rceil_ge0 [R] [x]%_ring_scope _
 Rceil_ge0 is opaque
 Expands to: Constant mathcomp.reals.reals.Rceil_ge0
 Declared in library mathcomp.reals.reals, line 548, characters 6-15
@@ -1680,7 +1680,7 @@ Declared in library mathcomp.reals.reals, line 548, characters 6-15
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RceilE" class="id"><a name="RceilE" class="" title="RceilE : forall [R : realType] (x : R), Rceil (R:=R) x = (ceil x)%:~R%R
 
 RceilE is not universe polymorphic
-Arguments RceilE [R] x%ring_scope
+Arguments RceilE [R] x%_ring_scope
 RceilE is opaque
 Expands to: Constant mathcomp.reals.reals.RceilE
 Declared in library mathcomp.reals.reals, line 551, characters 6-12
@@ -1704,7 +1704,7 @@ le_down :
 forall {R : realType} [A : set R] [t : R],
 A t -> exists y : R, A y /\ (t <= y)%R
 
-Arguments le_down {R} [A]%classical_set_scope [t] _
+Arguments le_down {R} [A]%_classical_set_scope [t] _
 le_down is opaque
 Expands to: Constant mathcomp.reals.reals.le_down
 Declared in library mathcomp.reals.reals, line 561, characters 6-13
@@ -1719,7 +1719,7 @@ forall {R : realType} (A : set R),
 down (T:=R) (down (T:=R) A) = down (T:=R) A
 
 downK is not universe polymorphic
-Arguments downK {R} A%classical_set_scope
+Arguments downK {R} A%_classical_set_scope
 downK is opaque
 Expands to: Constant mathcomp.reals.reals.downK
 Declared in library mathcomp.reals.reals, line 564, characters 6-11
@@ -1737,7 +1737,7 @@ forall {R : realType} (A : set R),
 has_sup (T:=R) (down (T:=R) A) <-> has_sup (T:=R) A
 
 has_sup_down is not universe polymorphic
-Arguments has_sup_down {R} A%classical_set_scope
+Arguments has_sup_down {R} A%_classical_set_scope
 has_sup_down is opaque
 Expands to: Constant mathcomp.reals.reals.has_sup_down
 Declared in library mathcomp.reals.reals, line 571, characters 6-18
@@ -1760,7 +1760,7 @@ forall {R : realType} [A B : set R],
 (A !=set0)%classic -> has_sup (T:=R) B -> (sup A <= sup B)%R
 
 sup_le is not universe polymorphic
-Arguments sup_le {R} [A B]%classical_set_scope _ _ _
+Arguments sup_le {R} [A B]%_classical_set_scope _ _ _
 sup_le is opaque
 Expands to: Constant mathcomp.reals.reals.sup_le
 Declared in library mathcomp.reals.reals, line 582, characters 6-12
@@ -1790,7 +1790,7 @@ forall {R : realType} [A B : set R],
 (B !=set0)%classic -> has_inf (T:=R) A -> (inf A <= inf B)%R
 
 inf_le is not universe polymorphic
-Arguments inf_le {R} [A B]%classical_set_scope _ _ _
+Arguments inf_le {R} [A B]%_classical_set_scope _ _ _
 inf_le is opaque
 Expands to: Constant mathcomp.reals.reals.inf_le
 Declared in library mathcomp.reals.reals, line 596, characters 6-12
@@ -1806,7 +1806,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sup_down" class="id"><a name="sup_down" class="" title="sup_down : forall {R : realType} (A : set R), sup (down (T:=R) A) = sup A
 
 sup_down is not universe polymorphic
-Arguments sup_down {R} A%classical_set_scope
+Arguments sup_down {R} A%_classical_set_scope
 sup_down is opaque
 Expands to: Constant mathcomp.reals.reals.sup_down
 Declared in library mathcomp.reals.reals, line 603, characters 6-14
@@ -1831,7 +1831,7 @@ exists2 x : T,
   (l < F x)%R & (F x <= sup [set y | (exists x0 : T, y = F x0)])%R
 
 lt_sup_imfset is not universe polymorphic
-Arguments lt_sup_imfset {R} {T}%type_scope [F]%function_scope [l] _ _
+Arguments lt_sup_imfset {R} {T}%_type_scope [F]%_function_scope [l] _ _
 lt_sup_imfset is opaque
 Expands to: Constant mathcomp.reals.reals.lt_sup_imfset
 Declared in library mathcomp.reals.reals, line 614, characters 6-19
@@ -1857,7 +1857,7 @@ exists2 x : T,
   (F x < l)%R & (inf [set y | (exists x0 : T, y = F x0)] <= F x)%R
 
 lt_inf_imfset is not universe polymorphic
-Arguments lt_inf_imfset {R} {T}%type_scope [F]%function_scope [l] _ _
+Arguments lt_inf_imfset {R} {T}%_type_scope [F]%_function_scope [l] _ _
 lt_inf_imfset is opaque
 Expands to: Constant mathcomp.reals.reals.lt_inf_imfset
 Declared in library mathcomp.reals.reals, line 624, characters 6-19
@@ -1886,7 +1886,7 @@ lbound (T:=ssrint_int__canonical__Order_POrder) B i ->
 exists j : int, B j /\ (forall k : int, B k -> (j <= k)%R)
 
 int_lbound_has_minimum is not universe polymorphic
-Arguments int_lbound_has_minimum [B]%classical_set_scope [i] _ _
+Arguments int_lbound_has_minimum [B]%_classical_set_scope [i] _ _
 int_lbound_has_minimum is opaque
 Expands to: Constant mathcomp.reals.reals.int_lbound_has_minimum
 Declared in library mathcomp.reals.reals, line 640, characters 6-28
@@ -1911,7 +1911,7 @@ forall [A : set nat],
 (A !=set0)%classic -> exists j : nat, A j /\ (forall k : nat, A k -> j <= k)
 
 nat_has_minimum is not universe polymorphic
-Arguments nat_has_minimum [A]%classical_set_scope _
+Arguments nat_has_minimum [A]%_classical_set_scope _
 nat_has_minimum is opaque
 Expands to: Constant mathcomp.reals.reals.nat_has_minimum
 Declared in library mathcomp.reals.reals, line 654, characters 6-21
@@ -1949,7 +1949,7 @@ forall [R : archiRealFieldType] [x y : R],
 (x < y)%R -> exists q : rat, ratr q \in `]x, y[%R
 
 rat_in_itvoo is not universe polymorphic
-Arguments rat_in_itvoo [R] [x y]%ring_scope _
+Arguments rat_in_itvoo [R] [x y]%_ring_scope _
 rat_in_itvoo is opaque
 Expands to: Constant mathcomp.reals.reals.rat_in_itvoo
 Declared in library mathcomp.reals.reals, line 679, characters 6-18
@@ -2017,7 +2017,7 @@ forall {R : realType} (r : R),
 rational r <-> (exists (a : int) (b : nat), r = (a%:~R / b%:R)%R)
 
 rationalP is not universe polymorphic
-Arguments rationalP {R} r%ring_scope
+Arguments rationalP {R} r%_ring_scope
 rationalP is opaque
 Expands to: Constant mathcomp.reals.reals.rationalP
 Declared in library mathcomp.reals.reals, line 729, characters 6-15

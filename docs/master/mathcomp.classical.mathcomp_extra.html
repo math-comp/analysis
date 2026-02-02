@@ -258,7 +258,7 @@ library mathcomp.classical.mathcomp_extra, line 31, characters 11-26
 forall {I : Type} {T : I -> Type} (i : I), (forall i0 : I, T i0) -> T i
 
 proj is not universe polymorphic
-Arguments proj {I}%type_scope {T}%function_scope i f%function_scope
+Arguments proj {I}%_type_scope {T}%_function_scope i f%_function_scope
 proj is transparent
 Expands to: Constant mathcomp.classical.mathcomp_extra.proj
 Declared in
@@ -273,7 +273,7 @@ forall {I : eqType} {T : I -> Type},
 (forall i : I, T i) -> forall [i : I], T i -> forall j : I, T j
 
 dfwith is not universe polymorphic
-Arguments dfwith {I} {T}%function_scope f%function_scope [i] x j
+Arguments dfwith {I} {T}%_function_scope f%_function_scope [i] x j
 dfwith is transparent
 Expands to: Constant mathcomp.boot.eqtype.dfwith
 Declared in library mathcomp.boot.eqtype, line 509, characters 11-17
@@ -285,7 +285,7 @@ forall [I : eqType] [T : I -> Type] (f : forall i : I, T i) [i : I] (x : T i),
 mathcomp_extra.dfwith f i x i = x
 
 dfwithin is not universe polymorphic
-Arguments dfwithin [I] [T]%function_scope f%function_scope [i] x
+Arguments dfwithin [I] [T]%_function_scope f%_function_scope [i] x
 dfwithin is opaque
 Expands to: Constant mathcomp.classical.mathcomp_extra.dfwithin
 Declared in
@@ -302,7 +302,7 @@ forall [I : eqType] [T : I -> Type] (f : forall i : I, T i)
 i != j -> mathcomp_extra.dfwith f i x j = f j
 
 dfwithout is not universe polymorphic
-Arguments dfwithout [I] [T]%function_scope f%function_scope [i] x [j] _
+Arguments dfwithout [I] [T]%_function_scope f%_function_scope [i] x [j] _
 dfwithout is opaque
 Expands to: Constant mathcomp.classical.mathcomp_extra.dfwithout
 Declared in
@@ -323,7 +323,7 @@ forall [I : eqType] [T : I -> Type] (f : forall i : I, T i)
 dfwith_spec (I:=I) (T:=T) f (i:=i) x (j:=j) (dfwith f x j)
 
 dfwithP is not universe polymorphic
-Arguments dfwithP [I] [T]%function_scope f%function_scope [i] x j
+Arguments dfwithP [I] [T]%_function_scope f%_function_scope [i] x j
 dfwithP is opaque
 Expands to: Constant mathcomp.boot.eqtype.dfwithP
 Declared in library mathcomp.boot.eqtype, line 522, characters 6-13
@@ -340,7 +340,7 @@ forall [I : eqType] [T : I -> Type] (f : forall i : I, T i) [i : I],
 T i -> cancel (mathcomp_extra.dfwith f i) (proj i)
 
 projK is not universe polymorphic
-Arguments projK [I] [T]%function_scope f%function_scope [i] x x
+Arguments projK [I] [T]%_function_scope f%_function_scope [i] x x
 projK is opaque
 Expands to: Constant mathcomp.classical.mathcomp_extra.projK
 Declared in
@@ -367,7 +367,7 @@ MathComp 2.5 additions
 forall [V : GRing.Zmodule.Exports.zmodType] (x y : V), (x + (y - x))%R = y
 
 subrKC is not universe polymorphic
-Arguments subrKC [V] (x y)%ring_scope
+Arguments subrKC [V] (x y)%_ring_scope
 subrKC is transparent
 Expands to: Constant mathcomp.algebra.ssralg.GRing.Theory.subrKC
 Declared in library mathcomp.algebra.ssralg, line 6484, characters 11-17
@@ -383,8 +383,8 @@ forall [R : numDomainType] [I : Type] (r : seq I) [P : pred I] [F : I -> R],
 (forall i : I, P i -> (F i <= 0)%R) -> (\sum_(i <- r | P i) F i <= 0)%R
 
 sumr_le0 is not universe polymorphic
-Arguments sumr_le0 [R] [I]%type_scope r%seq_scope 
-  [P] [F]%function_scope _%function_scope
+Arguments sumr_le0 [R] [I]%_type_scope r%_seq_scope 
+  [P] [F]%_function_scope _%_function_scope
 sumr_le0 is opaque
 Expands to: Constant
             mathcomp.algebra.num_theory.numdomain.Num.Theory.sumr_le0
@@ -419,7 +419,7 @@ MathComp 2.6 additions
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="intrD1" class="id"><a name="intrD1" class="" title="intrD1 : forall {R : pzRingType} (i : int), (i + 1)%:~R%R = (i%:~R + 1)%R
 
 intrD1 is not universe polymorphic
-Arguments intrD1 {R} i%ring_scope
+Arguments intrD1 {R} i%_ring_scope
 intrD1 is opaque
 Expands to: Constant mathcomp.classical.mathcomp_extra.intrD1
 Declared in
@@ -433,7 +433,7 @@ library mathcomp.classical.mathcomp_extra, line 92, characters 6-12
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="intr1D" class="id"><a name="intr1D" class="" title="intr1D : forall {R : pzRingType} (i : int), (1 + i)%:~R%R = (1 + i%:~R)%R
 
 intr1D is not universe polymorphic
-Arguments intr1D {R} i%ring_scope
+Arguments intr1D {R} i%_ring_scope
 intr1D is opaque
 Expands to: Constant mathcomp.classical.mathcomp_extra.intr1D
 Declared in

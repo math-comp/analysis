@@ -275,8 +275,8 @@ forall [d : measure_display] {T : semiRingOfSetsType d} {R : realType},
 (set T -> \bar R) -> set (set T)
 
 completed_algebra_gen is not universe polymorphic
-Arguments completed_algebra_gen [d]%measure_display_scope 
-  {T R} mu%function_scope _
+Arguments completed_algebra_gen [d]%_measure_display_scope 
+  {T R} mu%_function_scope _
 completed_algebra_gen is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.completed_algebra_gen
@@ -301,7 +301,7 @@ forall {T : Type} (A : set \bar T),
 ps_infty A <-> (A `<=` [set -oo%E; +oo%E])%classic
 
 ps_inftyP is not universe polymorphic
-Arguments ps_inftyP {T}%type_scope A%classical_set_scope
+Arguments ps_inftyP {T}%_type_scope A%_classical_set_scope
 ps_inftyP is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.ps_inftyP
 Declared in
@@ -321,8 +321,8 @@ ps_infty B ->
 ([set x%:E | x in ~` A] `|` [set -oo%E; +oo%E] `&` ~` B)%classic
 
 setCU_Efin is not universe polymorphic
-Arguments setCU_Efin {T}%type_scope A%classical_set_scope
-  [B]%classical_set_scope _
+Arguments setCU_Efin {T}%_type_scope A%_classical_set_scope
+  [B]%_classical_set_scope _
 setCU_Efin is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.setCU_Efin
 Declared in
@@ -348,7 +348,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="emeasurable" class="id"><a name="emeasurable" class="" title="emeasurable : forall [R : realType], set (set R) -> set (set \bar R)
 
 emeasurable is not universe polymorphic
-Arguments emeasurable [R] G%classical_set_scope _
+Arguments emeasurable [R] G%_classical_set_scope _
 emeasurable is transparent
 Expands to: Constant mathcomp.analysis.measurable_realfun.emeasurable
 Declared in
@@ -360,7 +360,7 @@ library mathcomp.analysis.measurable_realfun, line 97, characters 11-22
 forall [R : realType] (G : set (set R)), emeasurable (R:=R) G set0
 
 emeasurable0 is not universe polymorphic
-Arguments emeasurable0 [R] G%classical_set_scope
+Arguments emeasurable0 [R] G%_classical_set_scope
 emeasurable0 is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.emeasurable0
 Declared in
@@ -378,7 +378,7 @@ forall [R : realType] [G : set (set R)] [X : set \bar R],
 emeasurable (R:=R) G X -> emeasurable (R:=R) G (~` X)%classic
 
 emeasurableC is not universe polymorphic
-Arguments emeasurableC [R] [G X]%classical_set_scope _
+Arguments emeasurableC [R] [G X]%_classical_set_scope _
 emeasurableC is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.emeasurableC
 Declared in
@@ -406,8 +406,8 @@ forall [R : realType] [G : set (set R)] [F : (set \bar R) ^nat],
 emeasurable (R:=R) G (\bigcup_i F i)%classic
 
 bigcupT_emeasurable is not universe polymorphic
-Arguments bigcupT_emeasurable [R] [G]%classical_set_scope 
-  [F] _%function_scope
+Arguments bigcupT_emeasurable [R] [G]%_classical_set_scope 
+  [F] _%_function_scope
 bigcupT_emeasurable is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.bigcupT_emeasurable
 Declared in
@@ -472,7 +472,7 @@ isMeasurable.phant_axioms default_measure_display
   id_phant (m7:=constructive_ereal.HB_unnamed_factory_1 R) id_phant id_phant
 
 ereal_isMeasurable is not universe polymorphic
-Arguments ereal_isMeasurable [R] G%classical_set_scope
+Arguments ereal_isMeasurable [R] G%_classical_set_scope
 ereal_isMeasurable is transparent
 Expands to: Constant mathcomp.analysis.measurable_realfun.ereal_isMeasurable
 Declared in
@@ -494,7 +494,7 @@ forall [R : realDomainType] (b : bool) (y : R),
 ([set x%:E | x in [set` Interval (BSide b y) +oo%O]] `|` [set +oo%E])%classic
 
 punct_eitv_bndy is not universe polymorphic
-Arguments punct_eitv_bndy [R] b%bool_scope y%ring_scope
+Arguments punct_eitv_bndy [R] b%_bool_scope y%_ring_scope
 punct_eitv_bndy is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.punct_eitv_bndy
 Declared in
@@ -518,7 +518,7 @@ forall [R : realDomainType] (b : bool) (y : R),
 (-oo%E |` [set x%:E | x in [set` Interval -oo%O (BSide b y)]])%classic
 
 punct_eitv_Nybnd is not universe polymorphic
-Arguments punct_eitv_Nybnd [R] b%bool_scope y%ring_scope
+Arguments punct_eitv_Nybnd [R] b%_bool_scope y%_ring_scope
 punct_eitv_Nybnd is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.punct_eitv_Nybnd
 Declared in
@@ -587,7 +587,7 @@ measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
   [set` Interval a (BRight b)] f
 
 measurable_fun_itv_bndo_bndcP is not universe polymorphic
-Arguments measurable_fun_itv_bndo_bndcP [R] a b%ring_scope f%function_scope
+Arguments measurable_fun_itv_bndo_bndcP [R] a b%_ring_scope f%_function_scope
 measurable_fun_itv_bndo_bndcP is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_fun_itv_bndo_bndcP
@@ -617,7 +617,7 @@ measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
   [set` Interval (BLeft a) b] f
 
 measurable_fun_itv_obnd_cbndP is not universe polymorphic
-Arguments measurable_fun_itv_obnd_cbndP [R] a%ring_scope b f%function_scope
+Arguments measurable_fun_itv_obnd_cbndP [R] a%_ring_scope b f%_function_scope
 measurable_fun_itv_obnd_cbndP is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_fun_itv_obnd_cbndP
@@ -671,9 +671,9 @@ forall
   i ->
 i (`[x, y[ `&` f @^-1` Y)%classic
 
-Arguments measurable_fun_itv_co [R] [x y]%ring_scope 
-  [b0 b1]%bool_scope [f]%function_scope _ _ [Y] _ 
-  [i] _
+Arguments measurable_fun_itv_co [R] [x y]%_ring_scope 
+  [b0 b1]%_bool_scope [f]%_function_scope _ _ [Y] 
+  _ [i] _
 measurable_fun_itv_co is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_fun_itv_co
@@ -725,9 +725,9 @@ forall
   i ->
 i (`]x, y] `&` f @^-1` Y)%classic
 
-Arguments measurable_fun_itv_oc [R] [x y]%ring_scope 
-  [b0 b1]%bool_scope [f]%function_scope _ _ [Y] _ 
-  [i] _
+Arguments measurable_fun_itv_oc [R] [x y]%_ring_scope 
+  [b0 b1]%_bool_scope [f]%_function_scope _ _ [Y] 
+  _ [i] _
 measurable_fun_itv_oc is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_fun_itv_oc
@@ -778,9 +778,9 @@ forall
   i ->
 i (`[x, y] `&` f @^-1` Y)%classic
 
-Arguments measurable_fun_itv_cc [R] [x y]%ring_scope 
-  [b0 b1]%bool_scope [f]%function_scope _ _ [Y] _ 
-  [i] _
+Arguments measurable_fun_itv_cc [R] [x y]%_ring_scope 
+  [b0 b1]%_bool_scope [f]%_function_scope _ _ [Y] 
+  _ [i] _
 measurable_fun_itv_cc is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_fun_itv_cc
@@ -855,7 +855,7 @@ forall [R : realType] [A : set R],
 measurableR (R:=R) A -> 'measurable%classic [set x%:E | x in A]
 
 measurable_image_EFin is not universe polymorphic
-Arguments measurable_image_EFin [R] [A]%classical_set_scope _
+Arguments measurable_image_EFin [R] [A]%_classical_set_scope _
 measurable_image_EFin is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_image_EFin
@@ -873,7 +873,7 @@ Qed.</div></details>
 forall [R : realType] (x : \bar R), 'measurable%classic [set x]
 
 emeasurable_set1 is not universe polymorphic
-Arguments emeasurable_set1 [R] x%ereal_scope
+Arguments emeasurable_set1 [R] x%_ereal_scope
 emeasurable_set1 is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.emeasurable_set1
 Declared in
@@ -955,7 +955,7 @@ forall
   i ->
 i [set fine x | x in X `\` [set -oo%E; +oo%E]]%classic
 
-Arguments measurable_image_fine [R] [X]%classical_set_scope _ [i] _
+Arguments measurable_image_fine [R] [X]%_classical_set_scope _ [i] _
 measurable_image_fine is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_image_fine
@@ -1003,7 +1003,7 @@ forall [R : realType] (x e : R)
   i ->
 i (ball x e)
 
-Arguments measurable_ball [R] (x e)%ring_scope [i] _
+Arguments measurable_ball [R] (x e)%_ring_scope [i] _
 measurable_ball is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_ball
 Declared in
@@ -1042,7 +1042,7 @@ i
            R)
      x r)
 
-Arguments measurable_closed_ball [R] (x r)%ring_scope [i] _
+Arguments measurable_closed_ball [R] (x r)%_ring_scope [i] _
 measurable_closed_ball is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_closed_ball
@@ -1084,7 +1084,7 @@ exists2 x : set R,
     (fun A : set R => [eta setU [set x%:E | x in A]]) x y =
     (D `&` fine @^-1` Y)%classic
 
-Arguments fine_measurable [R] [D]%classical_set_scope _ _ [Y] _
+Arguments fine_measurable [R] [D]%_classical_set_scope _ _ [Y] _
 fine_measurable is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.fine_measurable
 Declared in
@@ -1127,9 +1127,9 @@ measurable_fun (T:=T)
 forall y : \bar R, d.-measurable%classic (D `&` [set x | (y <= f x)%E])
 
 emeasurable_fun_c_infty is not universe polymorphic
-Arguments emeasurable_fun_c_infty [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f]%function_scope 
-  mD mf y%ereal_scope
+Arguments emeasurable_fun_c_infty [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f]%_function_scope 
+  mD mf y%_ereal_scope
 emeasurable_fun_c_infty is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.emeasurable_fun_c_infty
@@ -1152,9 +1152,9 @@ measurable_fun (T:=T)
 forall y : \bar R, d.-measurable%classic (D `&` [set x | (y < f x)%E])
 
 emeasurable_fun_o_infty is not universe polymorphic
-Arguments emeasurable_fun_o_infty [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f]%function_scope 
-  mD mf y%ereal_scope
+Arguments emeasurable_fun_o_infty [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f]%_function_scope 
+  mD mf y%_ereal_scope
 emeasurable_fun_o_infty is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.emeasurable_fun_o_infty
@@ -1177,9 +1177,9 @@ measurable_fun (T:=T)
 forall y : \bar R, d.-measurable%classic (D `&` [set x | (f x < y)%E])
 
 emeasurable_fun_infty_o is not universe polymorphic
-Arguments emeasurable_fun_infty_o [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f]%function_scope 
-  mD mf y%ereal_scope
+Arguments emeasurable_fun_infty_o [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f]%_function_scope 
+  mD mf y%_ereal_scope
 emeasurable_fun_infty_o is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.emeasurable_fun_infty_o
@@ -1202,9 +1202,9 @@ measurable_fun (T:=T)
 forall y : \bar R, d.-measurable%classic (D `&` [set x | (f x <= y)%E])
 
 emeasurable_fun_infty_c is not universe polymorphic
-Arguments emeasurable_fun_infty_c [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f]%function_scope 
-  mD mf y%ereal_scope
+Arguments emeasurable_fun_infty_c [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f]%_function_scope 
+  mD mf y%_ereal_scope
 emeasurable_fun_infty_c is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.emeasurable_fun_infty_c
@@ -1227,8 +1227,8 @@ measurable_fun (T:=T)
 d.-measurable%classic (D `&` [set x | f x \is a fin_num])
 
 emeasurable_fin_num is not universe polymorphic
-Arguments emeasurable_fin_num [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f]%function_scope 
+Arguments emeasurable_fin_num [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f]%_function_scope 
   mD mf
 emeasurable_fin_num is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.emeasurable_fin_num
@@ -1263,9 +1263,9 @@ measurable_fun (T:=T)
 forall y : \bar R, d.-measurable%classic (D `&` [set x | f x != y])
 
 emeasurable_neq is not universe polymorphic
-Arguments emeasurable_neq [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f]%function_scope 
-  mD mf y%ereal_scope
+Arguments emeasurable_neq [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f]%_function_scope 
+  mD mf y%_ereal_scope
 emeasurable_neq is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.emeasurable_neq
 Declared in
@@ -1321,7 +1321,7 @@ forall [R : realType] (b : bool) (x : R)
 i [set` Interval (BSide b x) +oo%O]%classic
 
 Arguments RGenOInfty.measurable_itv_bnd_infty [R] 
-  b%bool_scope x%ring_scope [i] _
+  b%_bool_scope x%_ring_scope [i] _
 RGenOInfty.measurable_itv_bnd_infty is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.RGenOInfty.measurable_itv_bnd_infty
@@ -1368,7 +1368,7 @@ forall
 i [set` Interval a (BSide b x)]%classic
 
 Arguments RGenOInfty.measurable_itv_bounded [R a] 
-  b%bool_scope x%ring_scope _ [i] _
+  b%_bool_scope x%_ring_scope _ [i] _
 RGenOInfty.measurable_itv_bounded is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.RGenOInfty.measurable_itv_bounded
@@ -1449,7 +1449,7 @@ forall [R : realType] (b : bool) (x : R)
 i [set` Interval -oo%O (BSide b x)]%classic
 
 Arguments RGenInftyO.measurable_itv_bnd_infty [R] 
-  b%bool_scope x%ring_scope [i] _
+  b%_bool_scope x%_ring_scope [i] _
 RGenInftyO.measurable_itv_bnd_infty is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.RGenInftyO.measurable_itv_bnd_infty
@@ -1497,7 +1497,7 @@ forall
 i [set` Interval (BSide b x) a]%classic
 
 Arguments RGenInftyO.measurable_itv_bounded [R a] 
-  b%bool_scope x%ring_scope _ [i] _
+  b%_bool_scope x%_ring_scope _ [i] _
 RGenInftyO.measurable_itv_bounded is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.RGenInftyO.measurable_itv_bounded
@@ -1575,7 +1575,7 @@ forall [R : realType] (b : bool) (x : R)
 i [set` Interval (BSide b x) +oo%O]%classic
 
 Arguments RGenCInfty.measurable_itv_bnd_infty [R] 
-  b%bool_scope x%ring_scope [i] _
+  b%_bool_scope x%_ring_scope [i] _
 RGenCInfty.measurable_itv_bnd_infty is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.RGenCInfty.measurable_itv_bnd_infty
@@ -1619,7 +1619,7 @@ forall
 i [set` Interval a (BSide b y)]%classic
 
 Arguments RGenCInfty.measurable_itv_bounded [R a] 
-  b%bool_scope y%ring_scope _ [i] _
+  b%_bool_scope y%_ring_scope _ [i] _
 RGenCInfty.measurable_itv_bounded is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.RGenCInfty.measurable_itv_bounded
@@ -1715,8 +1715,8 @@ forall [R : realType] (b : bool) (x : R)
   i ->
 i [set` Interval (BSide b x) +oo%O]%classic
 
-Arguments RGenOpens.measurable_itv_bnd_infty [R] b%bool_scope 
-  x%ring_scope [i] _
+Arguments RGenOpens.measurable_itv_bnd_infty [R] b%_bool_scope 
+  x%_ring_scope [i] _
 RGenOpens.measurable_itv_bnd_infty is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.RGenOpens.measurable_itv_bnd_infty
@@ -1755,8 +1755,8 @@ forall [R : realType] (b : bool) (x : R)
   i ->
 i [set` Interval -oo%O (BSide b x)]%classic
 
-Arguments RGenOpens.measurable_itv_infty_bnd [R] b%bool_scope 
-  x%ring_scope [i] _
+Arguments RGenOpens.measurable_itv_infty_bnd [R] b%_bool_scope 
+  x%_ring_scope [i] _
 RGenOpens.measurable_itv_infty_bnd is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.RGenOpens.measurable_itv_infty_bnd
@@ -1794,8 +1794,8 @@ forall [R : realType] (a : bool) (x : R) (b : bool)
   i ->
 i [set` Interval (BSide a x) (BSide b y)]%classic
 
-Arguments RGenOpens.measurable_itv_bounded [R] a%bool_scope 
-  x%ring_scope b%bool_scope y%ring_scope [i] _
+Arguments RGenOpens.measurable_itv_bounded [R] a%_bool_scope 
+  x%_ring_scope b%_bool_scope y%_ring_scope [i] _
 RGenOpens.measurable_itv_bounded is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.RGenOpens.measurable_itv_bounded
@@ -1847,7 +1847,7 @@ forall [R : realType] (b : bool) (r : R),
 ([set` Interval (BSide b r%:E) +oo%O] `\ +oo%E)%classic
 
 EFin_itv_bnd_infty is not universe polymorphic
-Arguments EFin_itv_bnd_infty [R] b%bool_scope r%ring_scope
+Arguments EFin_itv_bnd_infty [R] b%_bool_scope r%_ring_scope
 EFin_itv_bnd_infty is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.EFin_itv_bnd_infty
 Declared in
@@ -1871,7 +1871,7 @@ forall [R : realType] (r : R),
 [set s | (r%:E < s%:E)%E]%classic = `]r, +oo[%classic
 
 EFin_itv is not universe polymorphic
-Arguments EFin_itv [R] r%ring_scope
+Arguments EFin_itv [R] r%_ring_scope
 EFin_itv is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.EFin_itv
 Declared in
@@ -1905,7 +1905,7 @@ forall [R : realType] (b : bool) (r : R),
 (\bigcap_k [set` Interval (BSide b (r - k.+1%:R^-1)%:E) +oo%O])%classic
 
 eitv_bnd_infty is not universe polymorphic
-Arguments eitv_bnd_infty [R] b%bool_scope r%ring_scope
+Arguments eitv_bnd_infty [R] b%_bool_scope r%_ring_scope
 eitv_bnd_infty is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.eitv_bnd_infty
 Declared in
@@ -1936,7 +1936,7 @@ forall [R : realType] (b : bool) (r : R),
 (\bigcap_k [set` Interval -oo%O (BSide b (r%:E + (k.+1%:R^-1)%:E)%R)])%classic
 
 eitv_infty_bnd is not universe polymorphic
-Arguments eitv_infty_bnd [R] b%bool_scope r%ring_scope
+Arguments eitv_infty_bnd [R] b%_bool_scope r%_ring_scope
 eitv_infty_bnd is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.eitv_infty_bnd
 Declared in
@@ -2335,7 +2335,7 @@ forall
   i ->
 i I
 
-Arguments is_interval_measurable [R] [I]%classical_set_scope _ [i] _
+Arguments is_interval_measurable [R] [I]%_classical_set_scope _ [i] _
 is_interval_measurable is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.is_interval_measurable
@@ -2373,7 +2373,7 @@ forall
   i ->
 i A
 
-Arguments open_measurable [R] [A]%classical_set_scope _ [i] _
+Arguments open_measurable [R] [A]%_classical_set_scope _ [i] _
 open_measurable is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.open_measurable
 Declared in
@@ -2411,7 +2411,7 @@ forall
   i ->
 i (D `&` U)%classic
 
-Arguments open_measurable_subspace [R] [D U]%classical_set_scope _ _ [i] _
+Arguments open_measurable_subspace [R] [D U]%_classical_set_scope _ _ [i] _
 open_measurable_subspace is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.open_measurable_subspace
@@ -2448,7 +2448,7 @@ forall
   i ->
 i A
 
-Arguments closed_measurable [R] [A]%classical_set_scope _ [i] _
+Arguments closed_measurable [R] [A]%_classical_set_scope _ [i] _
 closed_measurable is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.closed_measurable
 Declared in
@@ -2480,7 +2480,7 @@ forall
   i ->
 i A
 
-Arguments compact_measurable [R] [A]%classical_set_scope _ [i] _
+Arguments compact_measurable [R] [A]%_classical_set_scope _ [i] _
 compact_measurable is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.compact_measurable
 Declared in
@@ -2531,9 +2531,9 @@ forall
   i ->
 i (D `&` f @^-1` Y)%classic
 
-Arguments subspace_continuous_measurable_fun [R] [D]%classical_set_scope
-  [f]%function_scope _ _%function_scope _ [Y] _ [i] 
-  _
+Arguments subspace_continuous_measurable_fun [R] [D]%_classical_set_scope
+  [f]%_function_scope _ _%_function_scope _ [Y] _ 
+  [i] _
 subspace_continuous_measurable_fun is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.subspace_continuous_measurable_fun
@@ -2590,8 +2590,8 @@ forall
   i ->
 i (D `&` f @^-1` Y)%classic
 
-Arguments open_continuous_measurable_fun [R] [D]%classical_set_scope
-  [f]%function_scope _ _ _ [Y] _ [i] _
+Arguments open_continuous_measurable_fun [R] [D]%_classical_set_scope
+  [f]%_function_scope _ _ _ [Y] _ [i] _
 open_continuous_measurable_fun is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.open_continuous_measurable_fun
@@ -2647,8 +2647,8 @@ i
   ([set: Real_sort__canonical__measurable_structure_SigmaRing R]
    `&` f @^-1` Y)%classic
 
-Arguments continuous_measurable_fun [R] [f]%function_scope 
-  _%function_scope _ [Y] _ [i] _
+Arguments continuous_measurable_fun [R] [f]%_function_scope 
+  _%_function_scope _ [Y] _ [i] _
 continuous_measurable_fun is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.continuous_measurable_fun
@@ -2699,7 +2699,7 @@ i
   ([set: Real_sort__canonical__measurable_structure_SigmaRing R]
    `&` f @^-1` Y)%classic
 
-Arguments lower_semicontinuous_measurable {R} [f]%function_scope 
+Arguments lower_semicontinuous_measurable {R} [f]%_function_scope 
   _ _ [Y] _ [i] _
 lower_semicontinuous_measurable is opaque
 Expands to: Constant
@@ -2745,7 +2745,7 @@ forall
   i ->
 i (D `&` -%R%R @^-1` Y)%classic
 
-Arguments oppr_measurable [R] [D]%classical_set_scope _ [Y] _ [i] _
+Arguments oppr_measurable [R] [D]%_classical_set_scope _ [Y] _ [i] _
 oppr_measurable is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.oppr_measurable
 Declared in
@@ -2783,7 +2783,7 @@ forall
   i ->
 i (D `&` normr @^-1` Y)%classic
 
-Arguments normr_measurable [R] [D]%classical_set_scope _ [Y] _ [i] _
+Arguments normr_measurable [R] [D]%_classical_set_scope _ [Y] _ [i] _
 normr_measurable is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.normr_measurable
 Declared in
@@ -2835,8 +2835,8 @@ forall
   i ->
 i (D `&`  *%R k @^-1` Y)%classic
 
-Arguments mulrl_measurable [R] [D]%classical_set_scope 
-  k%ring_scope _ [Y] _ [i] _
+Arguments mulrl_measurable [R] [D]%_classical_set_scope 
+  k%_ring_scope _ [Y] _ [i] _
 mulrl_measurable is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.mulrl_measurable
 Declared in
@@ -2875,8 +2875,8 @@ forall
   i ->
 i (D `&`  *%R^~ k @^-1` Y)%classic
 
-Arguments mulrr_measurable [R] [D]%classical_set_scope 
-  k%ring_scope _ [Y] _ [i] _
+Arguments mulrr_measurable [R] [D]%_classical_set_scope 
+  k%_ring_scope _ [Y] _ [i] _
 mulrr_measurable is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.mulrr_measurable
 Declared in
@@ -2915,8 +2915,8 @@ forall
   i ->
 i (D `&` (GRing.exp (R:=R))^~ n @^-1` Y)%classic
 
-Arguments exprn_measurable [R] [D]%classical_set_scope 
-  n%nat_scope _ [Y] _ [i] _
+Arguments exprn_measurable [R] [D]%_classical_set_scope 
+  n%_nat_scope _ [Y] _ [i] _
 exprn_measurable is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.exprn_measurable
 Declared in
@@ -2965,9 +2965,9 @@ forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
       class) in
  measurable) (D `&` (fun x : T => (f x ^+ n)%R) @^-1` Y)%classic
 
-Arguments measurable_funX [d]%measure_display_scope 
-  [T] {R} [D]%classical_set_scope [f]%function_scope 
-  n%nat_scope _ _ [Y] _
+Arguments measurable_funX [d]%_measure_display_scope 
+  [T] {R} [D]%_classical_set_scope [f]%_function_scope 
+  n%_nat_scope _ _ [Y] _
 measurable_funX is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_funX
 Declared in
@@ -3015,8 +3015,8 @@ forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
       class) in
  measurable) (D `&` (f \+ g)%R @^-1` Y)%classic
 
-Arguments measurable_funD [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_funD [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_funD is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_funD
@@ -3072,8 +3072,8 @@ forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
       class) in
  measurable) (D `&` (f \- g)%R @^-1` Y)%classic
 
-Arguments measurable_funB [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_funB [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_funB is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_funB
@@ -3112,8 +3112,8 @@ forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
       class) in
  measurable) (D `&` (\- f)%R @^-1` Y)%classic
 
-Arguments measurable_funN [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f]%function_scope 
+Arguments measurable_funN [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f]%_function_scope 
   _ _ [Y] _
 measurable_funN is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_funN
@@ -3155,8 +3155,8 @@ forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
       class) in
  measurable) (D `&` (f \* g)%R @^-1` Y)%classic
 
-Arguments measurable_funM [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_funM [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_funM is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_funM
@@ -3209,8 +3209,8 @@ forall [Y : set Datatypes_bool__canonical__measurable_structure_SigmaRing],
       class) in
  measurable) (D `&` (fun x : T => (f x < g x)%R) @^-1` Y)%classic
 
-Arguments measurable_fun_ltr [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_fun_ltr [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_fun_ltr is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_fun_ltr
@@ -3256,8 +3256,8 @@ forall [Y : set Datatypes_bool__canonical__measurable_structure_SigmaRing],
       class) in
  measurable) (D `&` (fun x : T => (f x <= g x)%R) @^-1` Y)%classic
 
-Arguments measurable_fun_ler [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_fun_ler [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_fun_ler is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_fun_ler
@@ -3303,8 +3303,8 @@ forall [Y : set Datatypes_bool__canonical__measurable_structure_SigmaRing],
       class) in
  measurable) (D `&` (fun x : T => f x == g x) @^-1` Y)%classic
 
-Arguments measurable_fun_eqr [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_fun_eqr [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_fun_eqr is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_fun_eqr
@@ -3351,8 +3351,8 @@ forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
       class) in
  measurable) (D `&` (f \max g) @^-1` Y)%classic
 
-Arguments measurable_maxr [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_maxr [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_maxr is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_maxr
@@ -3397,8 +3397,8 @@ forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
       class) in
  measurable) (D `&` (f \min g) @^-1` Y)%classic
 
-Arguments measurable_minr [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_minr [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_minr is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_minr
@@ -3445,9 +3445,9 @@ forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
       class) in
  measurable) (D `&` (fun x : T => sups (R:=R) (h^~ x) n) @^-1` Y)%classic
 
-Arguments measurable_fun_sups [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [h] n%nat_scope (_ _)%function_scope 
-  _ [Y] _
+Arguments measurable_fun_sups [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [h] n%_nat_scope 
+  (_ _)%_function_scope _ [Y] _
 measurable_fun_sups is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_fun_sups
 Declared in
@@ -3496,9 +3496,9 @@ forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
       class) in
  measurable) (D `&` (fun x : T => infs (R:=R) (h^~ x) n) @^-1` Y)%classic
 
-Arguments measurable_fun_infs [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [h] n%nat_scope (_ _)%function_scope 
-  _ [Y] _
+Arguments measurable_fun_infs [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [h] n%_nat_scope 
+  (_ _)%_function_scope _ [Y] _
 measurable_fun_infs is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_fun_infs
 Declared in
@@ -3549,8 +3549,8 @@ forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
       class) in
  measurable) (D `&` (fun x : T => limn_sup (R:=R) (h^~ x)) @^-1` Y)%classic
 
-Arguments measurable_fun_limn_sup [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [h] (_ _ _)%function_scope 
+Arguments measurable_fun_limn_sup [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [h] (_ _ _)%_function_scope 
   _ [Y] _
 measurable_fun_limn_sup is opaque
 Expands to: Constant
@@ -3618,9 +3618,9 @@ forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
       class) in
  measurable) (D `&` f @^-1` Y)%classic
 
-Arguments measurable_fun_cvg [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [h] [f]%function_scope 
-  (_ _)%function_scope _ [Y] _
+Arguments measurable_fun_cvg [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [h] [f]%_function_scope
+  (_ _)%_function_scope _ [Y] _
 measurable_fun_cvg is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_fun_cvg
 Declared in
@@ -3664,8 +3664,8 @@ forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
       class) in
  measurable) (D `&` ((\1_U)%R : T -> R) @^-1` Y)%classic
 
-Arguments measurable_indic [d]%measure_display_scope 
-  [T R] [D U]%classical_set_scope _ _ [Y] _
+Arguments measurable_indic [d]%_measure_display_scope 
+  [T R] [D U]%_classical_set_scope _ _ [Y] _
 measurable_indic is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_indic
 Declared in
@@ -3701,8 +3701,8 @@ measurable_fun (T:=T)
   ((\1_D)%R : T -> R)
 
 measurable_indicP is not universe polymorphic
-Arguments measurable_indicP [d]%measure_display_scope 
-  [T] R D%classical_set_scope
+Arguments measurable_indicP [d]%_measure_display_scope 
+  [T] R D%_classical_set_scope
 measurable_indicP is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_indicP
 Declared in
@@ -3753,8 +3753,8 @@ forall
   i ->
 i (D `&` f @^-1` Y)%classic
 
-Arguments nondecreasing_measurable {R} [D]%classical_set_scope
-  [f]%function_scope _ _ _ [Y] _ [i] _
+Arguments nondecreasing_measurable {R} [D]%_classical_set_scope
+  [f]%_function_scope _ _ _ [Y] _ [i] _
 nondecreasing_measurable is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.nondecreasing_measurable
@@ -3802,8 +3802,8 @@ forall
   i ->
 i (D `&` f @^-1` Y)%classic
 
-Arguments nonincreasing_measurable {R} [D]%classical_set_scope
-  [f]%function_scope _ _ _ [Y] _ [i] _
+Arguments nonincreasing_measurable {R} [D]%_classical_set_scope
+  [f]%_function_scope _ _ _ [Y] _ [i] _
 nonincreasing_measurable is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.nonincreasing_measurable
@@ -4032,7 +4032,7 @@ forall [d : measure_display] (aT : measurableType d) (rT : realType),
 subring_closed (R:=prod__canonical__GRing_PzRing aT rT) mfun
 
 mfun_subring_closed is not universe polymorphic
-Arguments mfun_subring_closed [d]%measure_display_scope aT rT
+Arguments mfun_subring_closed [d]%_measure_display_scope aT rT
 mfun_subring_closed is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.mfun_subring_closed
 Declared in
@@ -4052,7 +4052,7 @@ subringClosed (prod__canonical__GRing_PzRing aT rT)
 
 measurable_function_mfun__canonical__GRing_SubringClosed is not universe polymorphic
 Arguments measurable_function_mfun__canonical__GRing_SubringClosed
-  [d]%measure_display_scope aT rT
+  [d]%_measure_display_scope aT rT
 measurable_function_mfun__canonical__GRing_SubringClosed is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_function_mfun__canonical__GRing_SubringClosed
@@ -4064,7 +4064,7 @@ subringClosed (prod__canonical__GRing_PzRing aT rT)
 
 measurable_function_mfun__canonical__GRing_SubringClosed is not universe polymorphic
 Arguments measurable_function_mfun__canonical__GRing_SubringClosed
-  [d]%measure_display_scope aT rT
+  [d]%_measure_display_scope aT rT
 measurable_function_mfun__canonical__GRing_SubringClosed is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_function_mfun__canonical__GRing_SubringClosed
@@ -4076,7 +4076,7 @@ subringClosed (prod__canonical__GRing_PzRing aT rT)
 
 measurable_function_mfun__canonical__GRing_SubringClosed is not universe polymorphic
 Arguments measurable_function_mfun__canonical__GRing_SubringClosed
-  [d]%measure_display_scope aT rT
+  [d]%_measure_display_scope aT rT
 measurable_function_mfun__canonical__GRing_SubringClosed is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_function_mfun__canonical__GRing_SubringClosed
@@ -4088,7 +4088,7 @@ subringClosed (prod__canonical__GRing_PzRing aT rT)
 
 measurable_function_mfun__canonical__GRing_SubringClosed is not universe polymorphic
 Arguments measurable_function_mfun__canonical__GRing_SubringClosed
-  [d]%measure_display_scope aT rT
+  [d]%_measure_display_scope aT rT
 measurable_function_mfun__canonical__GRing_SubringClosed is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_function_mfun__canonical__GRing_SubringClosed
@@ -4100,7 +4100,7 @@ subringClosed (prod__canonical__GRing_PzRing aT rT)
 
 measurable_function_mfun__canonical__GRing_SubringClosed is not universe polymorphic
 Arguments measurable_function_mfun__canonical__GRing_SubringClosed
-  [d]%measure_display_scope aT rT
+  [d]%_measure_display_scope aT rT
 measurable_function_mfun__canonical__GRing_SubringClosed is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_function_mfun__canonical__GRing_SubringClosed
@@ -4115,7 +4115,7 @@ GRing.SubComNzRing.Exports.subComNzRingType
 
 MeasurableFun_type__canonical__GRing_SubComNzRing is not universe polymorphic
 Arguments MeasurableFun_type__canonical__GRing_SubComNzRing
-  [d]%measure_display_scope aT rT
+  [d]%_measure_display_scope aT rT
 MeasurableFun_type__canonical__GRing_SubComNzRing is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.MeasurableFun_type__canonical__GRing_SubComNzRing
@@ -4128,7 +4128,7 @@ GRing.SubComNzRing.Exports.subComNzRingType
 
 MeasurableFun_type__canonical__GRing_SubComNzRing is not universe polymorphic
 Arguments MeasurableFun_type__canonical__GRing_SubComNzRing
-  [d]%measure_display_scope aT rT
+  [d]%_measure_display_scope aT rT
 MeasurableFun_type__canonical__GRing_SubComNzRing is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.MeasurableFun_type__canonical__GRing_SubComNzRing
@@ -4141,7 +4141,7 @@ GRing.SubComNzRing.Exports.subComNzRingType
 
 MeasurableFun_type__canonical__GRing_SubComNzRing is not universe polymorphic
 Arguments MeasurableFun_type__canonical__GRing_SubComNzRing
-  [d]%measure_display_scope aT rT
+  [d]%_measure_display_scope aT rT
 MeasurableFun_type__canonical__GRing_SubComNzRing is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.MeasurableFun_type__canonical__GRing_SubComNzRing
@@ -4154,7 +4154,7 @@ GRing.SubComNzRing.Exports.subComNzRingType
 
 MeasurableFun_type__canonical__GRing_SubComNzRing is not universe polymorphic
 Arguments MeasurableFun_type__canonical__GRing_SubComNzRing
-  [d]%measure_display_scope aT rT
+  [d]%_measure_display_scope aT rT
 MeasurableFun_type__canonical__GRing_SubComNzRing is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.MeasurableFun_type__canonical__GRing_SubComNzRing
@@ -4167,7 +4167,7 @@ GRing.SubComNzRing.Exports.subComNzRingType
 
 MeasurableFun_type__canonical__GRing_SubComNzRing is not universe polymorphic
 Arguments MeasurableFun_type__canonical__GRing_SubComNzRing
-  [d]%measure_display_scope aT rT
+  [d]%_measure_display_scope aT rT
 MeasurableFun_type__canonical__GRing_SubComNzRing is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.MeasurableFun_type__canonical__GRing_SubComNzRing
@@ -4182,7 +4182,7 @@ forall [d : measure_display] [aT : measurableType d] (rT : realType),
 (0%R : {mfun aT >-> rT}) =1 cst 0%R :> (aT -> rT)
 
 mfun0 is not universe polymorphic
-Arguments mfun0 [d]%measure_display_scope [aT] rT x
+Arguments mfun0 [d]%_measure_display_scope [aT] rT x
 mfun0 is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.mfun0
 Declared in
@@ -4197,7 +4197,7 @@ forall [d : measure_display] [aT : measurableType d] (rT : realType),
 (1%R : {mfun aT >-> rT}) =1 cst 1%R :> (aT -> rT)
 
 mfun1 is not universe polymorphic
-Arguments mfun1 [d]%measure_display_scope [aT] rT x
+Arguments mfun1 [d]%_measure_display_scope [aT] rT x
 mfun1 is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.mfun1
 Declared in
@@ -4213,7 +4213,7 @@ forall [d : measure_display] [aT : measurableType d]
 (- f)%R = (\- f)%R
 
 mfunN is not universe polymorphic
-Arguments mfunN [d]%measure_display_scope [aT rT] f
+Arguments mfunN [d]%_measure_display_scope [aT rT] f
 mfunN is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.mfunN
 Declared in
@@ -4229,7 +4229,7 @@ forall [d : measure_display] [aT : measurableType d]
 (f + g)%R = (f \+ g)%R
 
 mfunD is not universe polymorphic
-Arguments mfunD [d]%measure_display_scope [aT rT] f g
+Arguments mfunD [d]%_measure_display_scope [aT rT] f g
 mfunD is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.mfunD
 Declared in
@@ -4245,7 +4245,7 @@ forall [d : measure_display] [aT : measurableType d]
 (f - g)%R = (f \- g)%R
 
 mfunB is not universe polymorphic
-Arguments mfunB [d]%measure_display_scope [aT rT] f g
+Arguments mfunB [d]%_measure_display_scope [aT rT] f g
 mfunB is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.mfunB
 Declared in
@@ -4261,7 +4261,7 @@ forall [d : measure_display] [aT : measurableType d]
 (f * g)%R = (f \* g)%R
 
 mfunM is not universe polymorphic
-Arguments mfunM [d]%measure_display_scope [aT rT] f g
+Arguments mfunM [d]%_measure_display_scope [aT rT] f g
 mfunM is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.mfunM
 Declared in
@@ -4277,7 +4277,7 @@ forall [d : measure_display] [aT : measurableType d]
 (f *+ n)%R = (fun x : aT => (f x *+ n)%R)
 
 mfunMn is not universe polymorphic
-Arguments mfunMn [d]%measure_display_scope [aT rT] f n%nat_scope
+Arguments mfunMn [d]%_measure_display_scope [aT rT] f n%_nat_scope
 mfunMn is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.mfunMn
 Declared in
@@ -4294,8 +4294,9 @@ forall [d : measure_display] [aT : measurableType d]
 (\sum_(i <- r | P i) f i)%R x = (\sum_(i <- r | P i) f i x)%R
 
 mfun_sum is not universe polymorphic
-Arguments mfun_sum [d]%measure_display_scope [aT rT] 
-  [I]%type_scope r%seq_scope P f%function_scope x
+Arguments mfun_sum [d]%_measure_display_scope [aT rT] 
+  [I]%_type_scope r%_seq_scope P f%_function_scope 
+  x
 mfun_sum is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.mfun_sum
 Declared in
@@ -4313,8 +4314,9 @@ forall [d : measure_display] [aT : measurableType d]
 (\sum_(i <- r | P i) f i)%R x = (\sum_(i <- r | P i) f i x)%R
 
 mfun_prod is not universe polymorphic
-Arguments mfun_prod [d]%measure_display_scope [aT rT] 
-  [I]%type_scope r%seq_scope P f%function_scope x
+Arguments mfun_prod [d]%_measure_display_scope [aT rT] 
+  [I]%_type_scope r%_seq_scope P f%_function_scope 
+  x
 mfun_prod is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.mfun_prod
 Declared in
@@ -4331,7 +4333,7 @@ forall [d : measure_display] [aT : measurableType d]
 (f ^+ n)%R = (fun x : aT => (f x ^+ n)%R)
 
 mfunX is not universe polymorphic
-Arguments mfunX [d]%measure_display_scope [aT rT] f n%nat_scope
+Arguments mfunX [d]%_measure_display_scope [aT rT] f n%_nat_scope
 mfunX is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.mfunX
 Declared in
@@ -4350,7 +4352,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_add_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_add_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Algebra_add_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_add_fun__canonical__measurable_function_MeasurableFun
@@ -4364,7 +4366,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_add_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_add_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Algebra_add_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_add_fun__canonical__measurable_function_MeasurableFun
@@ -4378,7 +4380,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_add_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_add_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Algebra_add_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_add_fun__canonical__measurable_function_MeasurableFun
@@ -4392,7 +4394,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_add_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_add_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Algebra_add_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_add_fun__canonical__measurable_function_MeasurableFun
@@ -4406,7 +4408,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_add_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_add_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Algebra_add_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_add_fun__canonical__measurable_function_MeasurableFun
@@ -4420,7 +4422,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_add_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_add_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Algebra_add_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_add_fun__canonical__measurable_function_MeasurableFun
@@ -4434,7 +4436,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_add_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_add_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Algebra_add_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_add_fun__canonical__measurable_function_MeasurableFun
@@ -4448,7 +4450,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_opp_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_opp_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f
+  [d]%_measure_display_scope [aT rT] f
 Algebra_opp_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_opp_fun__canonical__measurable_function_MeasurableFun
@@ -4461,7 +4463,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_opp_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_opp_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f
+  [d]%_measure_display_scope [aT rT] f
 Algebra_opp_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_opp_fun__canonical__measurable_function_MeasurableFun
@@ -4474,7 +4476,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_opp_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_opp_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f
+  [d]%_measure_display_scope [aT rT] f
 Algebra_opp_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_opp_fun__canonical__measurable_function_MeasurableFun
@@ -4487,7 +4489,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_opp_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_opp_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f
+  [d]%_measure_display_scope [aT rT] f
 Algebra_opp_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_opp_fun__canonical__measurable_function_MeasurableFun
@@ -4500,7 +4502,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_opp_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_opp_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f
+  [d]%_measure_display_scope [aT rT] f
 Algebra_opp_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_opp_fun__canonical__measurable_function_MeasurableFun
@@ -4513,7 +4515,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_opp_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_opp_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f
+  [d]%_measure_display_scope [aT rT] f
 Algebra_opp_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_opp_fun__canonical__measurable_function_MeasurableFun
@@ -4526,7 +4528,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_opp_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_opp_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f
+  [d]%_measure_display_scope [aT rT] f
 Algebra_opp_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_opp_fun__canonical__measurable_function_MeasurableFun
@@ -4541,7 +4543,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_sub_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Algebra_sub_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_sub_fun__canonical__measurable_function_MeasurableFun
@@ -4555,7 +4557,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_sub_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Algebra_sub_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_sub_fun__canonical__measurable_function_MeasurableFun
@@ -4569,7 +4571,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_sub_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Algebra_sub_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_sub_fun__canonical__measurable_function_MeasurableFun
@@ -4583,7 +4585,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_sub_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Algebra_sub_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_sub_fun__canonical__measurable_function_MeasurableFun
@@ -4597,7 +4599,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_sub_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Algebra_sub_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_sub_fun__canonical__measurable_function_MeasurableFun
@@ -4611,7 +4613,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_sub_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Algebra_sub_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_sub_fun__canonical__measurable_function_MeasurableFun
@@ -4625,7 +4627,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Algebra_sub_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Algebra_sub_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Algebra_sub_fun__canonical__measurable_function_MeasurableFun
@@ -4640,7 +4642,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 GRing_mul_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments GRing_mul_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 GRing_mul_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.GRing_mul_fun__canonical__measurable_function_MeasurableFun
@@ -4654,7 +4656,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 GRing_mul_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments GRing_mul_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 GRing_mul_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.GRing_mul_fun__canonical__measurable_function_MeasurableFun
@@ -4668,7 +4670,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 GRing_mul_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments GRing_mul_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 GRing_mul_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.GRing_mul_fun__canonical__measurable_function_MeasurableFun
@@ -4682,7 +4684,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 GRing_mul_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments GRing_mul_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 GRing_mul_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.GRing_mul_fun__canonical__measurable_function_MeasurableFun
@@ -4696,7 +4698,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 GRing_mul_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments GRing_mul_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 GRing_mul_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.GRing_mul_fun__canonical__measurable_function_MeasurableFun
@@ -4710,7 +4712,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 GRing_mul_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments GRing_mul_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 GRing_mul_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.GRing_mul_fun__canonical__measurable_function_MeasurableFun
@@ -4724,7 +4726,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 GRing_mul_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments GRing_mul_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 GRing_mul_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.GRing_mul_fun__canonical__measurable_function_MeasurableFun
@@ -4738,8 +4740,8 @@ forall [d : measure_display] [aT : measurableType d]
 d.-measurable%classic D -> aT -> rT
 
 mindic is not universe polymorphic
-Arguments mindic [d]%measure_display_scope [aT] rT 
-  [D]%classical_set_scope _ _
+Arguments mindic [d]%_measure_display_scope [aT] rT 
+  [D]%_classical_set_scope _ _
 mindic is transparent
 Expands to: Constant mathcomp.analysis.measurable_realfun.mindic
 Declared in
@@ -4752,8 +4754,8 @@ forall [d : measure_display] [aT : measurableType d]
 mindic (aT:=aT) rT (D:=D) mD = (fun x : aT => (x \in D)%:R%R)
 
 mindicE is not universe polymorphic
-Arguments mindicE [d]%measure_display_scope [aT] rT 
-  [D]%classical_set_scope mD
+Arguments mindicE [d]%_measure_display_scope [aT] 
+  rT [D]%_classical_set_scope mD
 mindicE is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.mindicE
 Declared in
@@ -4774,7 +4776,7 @@ d.-measurable%classic D ->
 measurable_realfun_mindic__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments
   measurable_realfun_mindic__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT] rT [D]%classical_set_scope 
+  [d]%_measure_display_scope [aT] rT [D]%_classical_set_scope 
   mD
 measurable_realfun_mindic__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
@@ -4790,7 +4792,7 @@ d.-measurable%classic D ->
 measurable_realfun_mindic__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments
   measurable_realfun_mindic__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT] rT [D]%classical_set_scope 
+  [d]%_measure_display_scope [aT] rT [D]%_classical_set_scope 
   mD
 measurable_realfun_mindic__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
@@ -4806,7 +4808,7 @@ d.-measurable%classic D ->
 measurable_realfun_mindic__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments
   measurable_realfun_mindic__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT] rT [D]%classical_set_scope 
+  [d]%_measure_display_scope [aT] rT [D]%_classical_set_scope 
   mD
 measurable_realfun_mindic__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
@@ -4822,7 +4824,7 @@ d.-measurable%classic D ->
 measurable_realfun_mindic__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments
   measurable_realfun_mindic__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT] rT [D]%classical_set_scope 
+  [d]%_measure_display_scope [aT] rT [D]%_classical_set_scope 
   mD
 measurable_realfun_mindic__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
@@ -4838,7 +4840,7 @@ d.-measurable%classic D ->
 measurable_realfun_mindic__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments
   measurable_realfun_mindic__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT] rT [D]%classical_set_scope 
+  [d]%_measure_display_scope [aT] rT [D]%_classical_set_scope 
   mD
 measurable_realfun_mindic__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
@@ -4854,7 +4856,7 @@ d.-measurable%classic D ->
 measurable_realfun_mindic__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments
   measurable_realfun_mindic__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT] rT [D]%classical_set_scope 
+  [d]%_measure_display_scope [aT] rT [D]%_classical_set_scope 
   mD
 measurable_realfun_mindic__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
@@ -4870,7 +4872,7 @@ d.-measurable%classic D ->
 measurable_realfun_mindic__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments
   measurable_realfun_mindic__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT] rT [D]%classical_set_scope 
+  [d]%_measure_display_scope [aT] rT [D]%_classical_set_scope 
   mD
 measurable_realfun_mindic__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
@@ -4886,8 +4888,8 @@ forall {d : measure_display} {aT : measurableType d}
 d.-measurable%classic D -> {mfun aT >-> rT}
 
 indic_mfun is not universe polymorphic
-Arguments indic_mfun {d}%measure_display_scope {aT rT} 
-  D%classical_set_scope mD
+Arguments indic_mfun {d}%_measure_display_scope {aT rT}
+  D%_classical_set_scope mD
 indic_mfun is transparent
 Expands to: Constant mathcomp.analysis.measurable_realfun.indic_mfun
 Declared in
@@ -4903,7 +4905,8 @@ rT ->
 
 GRing_mulr_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments GRing_mulr_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] k%ring_scope f
+  [d]%_measure_display_scope [aT rT] k%_ring_scope 
+  f
 GRing_mulr_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.GRing_mulr_fun__canonical__measurable_function_MeasurableFun
@@ -4917,7 +4920,8 @@ rT ->
 
 GRing_mulr_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments GRing_mulr_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] k%ring_scope f
+  [d]%_measure_display_scope [aT rT] k%_ring_scope 
+  f
 GRing_mulr_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.GRing_mulr_fun__canonical__measurable_function_MeasurableFun
@@ -4931,7 +4935,8 @@ rT ->
 
 GRing_mulr_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments GRing_mulr_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] k%ring_scope f
+  [d]%_measure_display_scope [aT rT] k%_ring_scope 
+  f
 GRing_mulr_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.GRing_mulr_fun__canonical__measurable_function_MeasurableFun
@@ -4945,7 +4950,8 @@ rT ->
 
 GRing_mulr_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments GRing_mulr_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] k%ring_scope f
+  [d]%_measure_display_scope [aT rT] k%_ring_scope 
+  f
 GRing_mulr_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.GRing_mulr_fun__canonical__measurable_function_MeasurableFun
@@ -4959,7 +4965,8 @@ rT ->
 
 GRing_mulr_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments GRing_mulr_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] k%ring_scope f
+  [d]%_measure_display_scope [aT rT] k%_ring_scope 
+  f
 GRing_mulr_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.GRing_mulr_fun__canonical__measurable_function_MeasurableFun
@@ -4973,7 +4980,8 @@ rT ->
 
 GRing_mulr_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments GRing_mulr_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] k%ring_scope f
+  [d]%_measure_display_scope [aT rT] k%_ring_scope 
+  f
 GRing_mulr_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.GRing_mulr_fun__canonical__measurable_function_MeasurableFun
@@ -4987,7 +4995,8 @@ rT ->
 
 GRing_mulr_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments GRing_mulr_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] k%ring_scope f
+  [d]%_measure_display_scope [aT rT] k%_ring_scope 
+  f
 GRing_mulr_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.GRing_mulr_fun__canonical__measurable_function_MeasurableFun
@@ -4999,7 +5008,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 rT -> {mfun aT >-> rT} -> {mfun aT >-> rT}
 
 scale_mfun is not universe polymorphic
-Arguments scale_mfun [d]%measure_display_scope [aT rT] k%ring_scope f
+Arguments scale_mfun [d]%_measure_display_scope [aT rT] k%_ring_scope f
 scale_mfun is transparent
 Expands to: Constant mathcomp.analysis.measurable_realfun.scale_mfun
 Declared in
@@ -5012,7 +5021,7 @@ forall [d : measure_display] [aT : measurableType d]
 isMeasurableFun.phant_axioms (aT:=aT) (rT:=rT) (f \max g)
 
 max_mfun_subproof is not universe polymorphic
-Arguments max_mfun_subproof [d]%measure_display_scope [aT rT] f g
+Arguments max_mfun_subproof [d]%_measure_display_scope [aT rT] f g
 max_mfun_subproof is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.max_mfun_subproof
 Declared in
@@ -5031,7 +5040,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Order_max_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Order_max_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Order_max_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Order_max_fun__canonical__measurable_function_MeasurableFun
@@ -5045,7 +5054,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Order_max_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Order_max_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Order_max_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Order_max_fun__canonical__measurable_function_MeasurableFun
@@ -5059,7 +5068,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Order_max_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Order_max_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Order_max_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Order_max_fun__canonical__measurable_function_MeasurableFun
@@ -5073,7 +5082,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Order_max_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Order_max_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Order_max_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Order_max_fun__canonical__measurable_function_MeasurableFun
@@ -5087,7 +5096,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Order_max_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Order_max_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Order_max_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Order_max_fun__canonical__measurable_function_MeasurableFun
@@ -5101,7 +5110,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Order_max_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Order_max_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Order_max_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Order_max_fun__canonical__measurable_function_MeasurableFun
@@ -5115,7 +5124,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 
 Order_max_fun__canonical__measurable_function_MeasurableFun is not universe polymorphic
 Arguments Order_max_fun__canonical__measurable_function_MeasurableFun
-  [d]%measure_display_scope [aT rT] f g
+  [d]%_measure_display_scope [aT rT] f g
 Order_max_fun__canonical__measurable_function_MeasurableFun is transparent
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.Order_max_fun__canonical__measurable_function_MeasurableFun
@@ -5130,7 +5139,7 @@ forall [d : measure_display] [aT : measurableType d] [rT : realType],
 {mfun aT >-> Real_sort__canonical__measurable_structure_SigmaRing rT}
 
 max_mfun is not universe polymorphic
-Arguments max_mfun [d]%measure_display_scope [aT rT] f g
+Arguments max_mfun [d]%_measure_display_scope [aT rT] f g
 max_mfun is transparent
 Expands to: Constant mathcomp.analysis.measurable_realfun.max_mfun
 Declared in
@@ -5172,8 +5181,8 @@ forall
   i ->
 i (D `&` (Algebra.natmul (V:=R))^~ n @^-1` Y)%classic
 
-Arguments natmul_measurable {R} [D]%classical_set_scope 
-  n%nat_scope _ [Y] _ [i] _
+Arguments natmul_measurable {R} [D]%_classical_set_scope 
+  n%_nat_scope _ [Y] _ [i] _
 natmul_measurable is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.natmul_measurable
 Declared in
@@ -5213,7 +5222,7 @@ forall
   i ->
 i ([set: R] `&` (powR (R:=R))^~ p @^-1` Y)%classic
 
-Arguments measurable_powR [R] p%ring_scope _ [Y] _ [i] _
+Arguments measurable_powR [R] p%_ring_scope _ [Y] _ [i] _
 measurable_powR is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_powR
 Declared in
@@ -5257,7 +5266,7 @@ forall
   i ->
 i ([set: R] `&` powR (R:=R) b @^-1` Y)%classic
 
-Arguments measurable_powRr {R} b%ring_scope _ [Y] _ [i] _
+Arguments measurable_powRr {R} b%_ring_scope _ [Y] _ [i] _
 measurable_powRr is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_powRr
 Declared in
@@ -5304,7 +5313,8 @@ forall (b : bool) (x : nat)
   i ->
 i [set` Interval (BSide b x) +oo%O]%classic
 
-Arguments NGenCInfty.measurable_itv_bnd_infty b%bool_scope x%nat_scope [i] _
+Arguments NGenCInfty.measurable_itv_bnd_infty b%_bool_scope 
+  x%_nat_scope [i] _
 NGenCInfty.measurable_itv_bnd_infty is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.NGenCInfty.measurable_itv_bnd_infty
@@ -5350,8 +5360,8 @@ forall [i : set (set Datatypes_nat__canonical__classical_sets_Pointed)],
   i ->
 i [set` Interval a (BSide b y)]%classic
 
-Arguments NGenCInfty.measurable_itv_bounded [a] b%bool_scope 
-  y%nat_scope _ [i] _
+Arguments NGenCInfty.measurable_itv_bounded [a] b%_bool_scope 
+  y%_nat_scope _ [i] _
 NGenCInfty.measurable_itv_bounded is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.NGenCInfty.measurable_itv_bounded
@@ -5425,8 +5435,8 @@ forall [Y : set Datatypes_nat__canonical__measurable_structure_SigmaRing],
       class) in
  measurable) (D `&` (fun x : T => (f x + g x)%N) @^-1` Y)%classic
 
-Arguments measurable_fun_addn [d]%measure_display_scope 
-  [T] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_fun_addn [d]%_measure_display_scope 
+  [T] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_fun_addn is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_fun_addn
@@ -5483,8 +5493,8 @@ forall [Y : set Datatypes_nat__canonical__measurable_structure_SigmaRing],
       class) in
  measurable) (D `&` (fun x : T => maxn (f x) (g x)) @^-1` Y)%classic
 
-Arguments measurable_fun_maxn [d]%measure_display_scope 
-  [T] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_fun_maxn [d]%_measure_display_scope 
+  [T] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_fun_maxn is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_fun_maxn
@@ -5568,8 +5578,8 @@ forall [Y : set Datatypes_nat__canonical__measurable_structure_SigmaRing],
       class) in
  measurable) (D `&` (fun x : T => (f x - g x)%N) @^-1` Y)%classic
 
-Arguments measurable_fun_subn [d]%measure_display_scope 
-  [T] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_fun_subn [d]%_measure_display_scope 
+  [T] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_fun_subn is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_fun_subn
@@ -5618,8 +5628,8 @@ forall [Y : set Datatypes_bool__canonical__measurable_structure_SigmaRing],
       class) in
  measurable) (D `&` (fun x : T => f x < g x) @^-1` Y)%classic
 
-Arguments measurable_fun_ltn [d]%measure_display_scope 
-  [T] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_fun_ltn [d]%_measure_display_scope 
+  [T] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_fun_ltn is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_fun_ltn
@@ -5685,8 +5695,8 @@ forall [Y : set Datatypes_bool__canonical__measurable_structure_SigmaRing],
       class) in
  measurable) (D `&` (fun x : T => f x <= g x) @^-1` Y)%classic
 
-Arguments measurable_fun_leq [d]%measure_display_scope 
-  [T] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_fun_leq [d]%_measure_display_scope 
+  [T] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_fun_leq is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_fun_leq
@@ -5747,8 +5757,8 @@ forall [Y : set Datatypes_bool__canonical__measurable_structure_SigmaRing],
       class) in
  measurable) (D `&` (fun x : T => f x == g x) @^-1` Y)%classic
 
-Arguments measurable_fun_eqn [d]%measure_display_scope 
-  [T] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_fun_eqn [d]%_measure_display_scope 
+  [T] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_fun_eqn is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_fun_eqn
@@ -5800,7 +5810,7 @@ forall
   i ->
 i (D `&` EFin @^-1` Y)%classic
 
-Arguments EFin_measurable [R] [D]%classical_set_scope _ [Y] _ [i] _
+Arguments EFin_measurable [R] [D]%_classical_set_scope _ [Y] _ [i] _
 EFin_measurable is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.EFin_measurable
 Declared in
@@ -5840,7 +5850,7 @@ exists2 x : set R,
     (fun A : set R => [eta setU [set x%:E | x in A]]) x y =
     (D `&` abse @^-1` Y)%classic
 
-Arguments abse_measurable [R] [D]%classical_set_scope _ [Y] _
+Arguments abse_measurable [R] [D]%_classical_set_scope _ [Y] _
 abse_measurable is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.abse_measurable
 Declared in
@@ -5889,7 +5899,7 @@ exists2 x : set R,
     (fun A : set R => [eta setU [set x%:E | x in A]]) x y =
     (D `&` (-%E : \bar R -> \bar R) @^-1` Y)%classic
 
-Arguments oppe_measurable [R] [D]%classical_set_scope _ [Y] _
+Arguments oppe_measurable [R] [D]%_classical_set_scope _ [Y] _
 oppe_measurable is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.oppe_measurable
 Declared in
@@ -5924,8 +5934,8 @@ measurable_fun (T:=T)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R) D g
 
 measurable_EFinP is not universe polymorphic
-Arguments measurable_EFinP [d]%measure_display_scope 
-  [T R] D%classical_set_scope g%function_scope
+Arguments measurable_EFinP [d]%_measure_display_scope 
+  [T R] D%_classical_set_scope g%_function_scope
 measurable_EFinP is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_EFinP
 Declared in
@@ -5971,8 +5981,8 @@ forall
       class) in
  measurable) (D `&` (fun x : T => (\d_x)%R U : \bar R) @^-1` Y)%classic
 
-Arguments measurable_fun_dirac [d]%measure_display_scope 
-  {T R} [D U]%classical_set_scope _ _ [Y] _
+Arguments measurable_fun_dirac [d]%_measure_display_scope 
+  {T R} [D U]%_classical_set_scope _ _ [Y] _
 measurable_fun_dirac is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_fun_dirac
@@ -6022,8 +6032,8 @@ exists2 x : set R,
     (fun A : set R => [eta setU [set x%:E | x in A]]) x y =
     ([set: \bar R] `&` er_map f @^-1` Y)%classic
 
-Arguments measurable_er_map [d]%measure_display_scope 
-  T [R] [f]%function_scope _ _ [Y] _
+Arguments measurable_er_map [d]%_measure_display_scope 
+  T [R] [f]%_function_scope _ _ [Y] _
 measurable_er_map is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_er_map
 Declared in
@@ -6084,9 +6094,9 @@ forall
       class) in
  measurable) (D `&` (fun x : T => einfs (R:=R) (f^~ x) n) @^-1` Y)%classic
 
-Arguments measurable_fun_einfs [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f] _%function_scope 
-  n%nat_scope _ [Y] _
+Arguments measurable_fun_einfs [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f] _%_function_scope 
+  n%_nat_scope _ [Y] _
 measurable_fun_einfs is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_fun_einfs
@@ -6142,9 +6152,9 @@ forall
       class) in
  measurable) (D `&` (fun x : T => esups (R:=R) (f^~ x) n) @^-1` Y)%classic
 
-Arguments measurable_fun_esups [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f] _%function_scope 
-  n%nat_scope _ [Y] _
+Arguments measurable_fun_esups [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f] _%_function_scope 
+  n%_nat_scope _ [Y] _
 measurable_fun_esups is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.measurable_fun_esups
@@ -6203,8 +6213,8 @@ forall
       class) in
  measurable) (D `&` (fun x : T => Def.max (f x) (g x)) @^-1` Y)%classic
 
-Arguments measurable_maxe [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_maxe [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_maxe is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_maxe
@@ -6261,8 +6271,8 @@ forall
       class) in
  measurable) (D `&` f^\+%E @^-1` Y)%classic
 
-Arguments measurable_funepos [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f]%function_scope 
+Arguments measurable_funepos [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f]%_function_scope 
   _ _ [Y] _
 measurable_funepos is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_funepos
@@ -6309,8 +6319,8 @@ forall
       class) in
  measurable) (D `&` f^\-%E @^-1` Y)%classic
 
-Arguments measurable_funeneg [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f]%function_scope 
+Arguments measurable_funeneg [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f]%_function_scope 
   _ _ [Y] _
 measurable_funeneg is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_funeneg
@@ -6367,8 +6377,8 @@ forall
       class) in
  measurable) (D `&` (fun x : T => Def.min (f x) (g x)) @^-1` Y)%classic
 
-Arguments measurable_mine [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f g]%function_scope 
+Arguments measurable_mine [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f g]%_function_scope 
   _ _ _ [Y] _
 measurable_mine is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.measurable_mine
@@ -6422,8 +6432,8 @@ forall
       class) in
  measurable) (D `&` (fun x : T => limn_esup (f^~ x)) @^-1` Y)%classic
 
-Arguments measurable_fun_limn_esup [d]%measure_display_scope 
-  [T R] [D]%classical_set_scope [f] _%function_scope 
+Arguments measurable_fun_limn_esup [d]%_measure_display_scope 
+  [T R] [D]%_classical_set_scope [f] _%_function_scope 
   _ [Y] _
 measurable_fun_limn_esup is opaque
 Expands to: Constant
@@ -6465,8 +6475,8 @@ measurable_fun (T:=T)
   D f
 
 emeasurable_fun_cvg is not universe polymorphic
-Arguments emeasurable_fun_cvg {d}%measure_display_scope 
-  {T R} {D}%classical_set_scope f_ (f _ _)%function_scope 
+Arguments emeasurable_fun_cvg {d}%_measure_display_scope 
+  {T R} {D}%_classical_set_scope f_ (f _ _)%_function_scope 
   _ Y _
 emeasurable_fun_cvg is opaque
 Expands to: Constant mathcomp.analysis.measurable_realfun.emeasurable_fun_cvg
@@ -6503,7 +6513,7 @@ ereal.ereal_inf (R:=R)
      | F in open_itv_cover A]
 
 outer_measure_open_itv_cover is not universe polymorphic
-Arguments outer_measure_open_itv_cover {R} A%classical_set_scope
+Arguments outer_measure_open_itv_cover {R} A%_classical_set_scope
 outer_measure_open_itv_cover is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.outer_measure_open_itv_cover
@@ -6599,9 +6609,9 @@ exists B : set T,
     & {uniform A `\` B, filter.fmap f (filter.nbhs filter.eventually) --> g}%classic]
 
 pointwise_almost_uniform is not universe polymorphic
-Arguments pointwise_almost_uniform [d]%measure_display_scope 
-  {R T} [mu f] [g]%function_scope [A]%classical_set_scope 
-  [eps]%ring_scope _%function_scope _ _ _%function_scope 
+Arguments pointwise_almost_uniform [d]%_measure_display_scope 
+  {R T} [mu f] [g]%_function_scope [A]%_classical_set_scope 
+  [eps]%_ring_scope _%_function_scope _ _ _%_function_scope 
   _
 pointwise_almost_uniform is opaque
 Expands to: Constant
@@ -6697,9 +6707,9 @@ exists B : set T,
     & {uniform A `\` B, filter.fmap f (filter.nbhs filter.eventually) --> g}%classic]
 
 ae_pointwise_almost_uniform is not universe polymorphic
-Arguments ae_pointwise_almost_uniform [d]%measure_display_scope 
-  {R T} [mu f] [g]%function_scope [A]%classical_set_scope 
-  [eps]%ring_scope _%function_scope _ _ _ _ _
+Arguments ae_pointwise_almost_uniform [d]%_measure_display_scope 
+  {R T} [mu f] [g]%_function_scope [A]%_classical_set_scope 
+  [eps]%_ring_scope _%_function_scope _ _ _ _ _
 ae_pointwise_almost_uniform is opaque
 Expands to: Constant
             mathcomp.analysis.measurable_realfun.ae_pointwise_almost_uniform

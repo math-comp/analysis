@@ -299,7 +299,7 @@ completed_measure_extension mu == similar to measure_extension but returns
 forall {T : Type} {R : numFieldType}, (set T -> \bar R) -> Prop
 
 sigma_subadditive is not universe polymorphic
-Arguments sigma_subadditive {T}%type_scope {R} mu%function_scope
+Arguments sigma_subadditive {T}%_type_scope {R} mu%_function_scope
 sigma_subadditive is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.sigma_subadditive
@@ -354,8 +354,8 @@ isSubsetOuterMeasure.phant_axioms (R:=R) (T:=T) mu ->
 forall [x y : set T],
 (fun A : set T => [eta subset A]) x y -> (mu x <= mu y)%E = true
 
-Arguments Builders_1.le_outer_measure [R] [T]%type_scope 
-  [mu]%function_scope fresh_name_2 [x y] _
+Arguments Builders_1.le_outer_measure [R] [T]%_type_scope
+  [mu]%_function_scope fresh_name_2 [x y] _
 Builders_1.le_outer_measure is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.Builders_1.le_outer_measure
@@ -380,7 +380,7 @@ isSubsetOuterMeasure.phant_axioms (R:=R) (T:=T) mu -> sigma_subadditive mu
 
 Builders_1.outer_measure_sigma_subadditive is not universe polymorphic
 Arguments Builders_1.outer_measure_sigma_subadditive 
-  [R] [T]%type_scope [mu]%function_scope fresh_name_2 
+  [R] [T]%_type_scope [mu]%_function_scope fresh_name_2 
   F
 Builders_1.outer_measure_sigma_subadditive is opaque
 Expands to: Constant
@@ -400,7 +400,7 @@ isSubsetOuterMeasure.phant_axioms (R:=R) (T:=T) mu ->
 
 Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure is not universe polymorphic
 Arguments Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure
-  [R] [T]%type_scope [mu]%function_scope fresh_name_2
+  [R] [T]%_type_scope [mu]%_function_scope fresh_name_2
 Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure
@@ -413,7 +413,7 @@ isSubsetOuterMeasure.phant_axioms (R:=R) (T:=T) mu ->
 
 Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure is not universe polymorphic
 Arguments Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure
-  [R] [T]%type_scope [mu]%function_scope fresh_name_2
+  [R] [T]%_type_scope [mu]%_function_scope fresh_name_2
 Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure
@@ -426,7 +426,7 @@ isSubsetOuterMeasure.phant_axioms (R:=R) (T:=T) mu ->
 
 Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure is not universe polymorphic
 Arguments Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure
-  [R] [T]%type_scope [mu]%function_scope fresh_name_2
+  [R] [T]%_type_scope [mu]%_function_scope fresh_name_2
 Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure
@@ -439,7 +439,7 @@ isSubsetOuterMeasure.phant_axioms (R:=R) (T:=T) mu ->
 
 Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure is not universe polymorphic
 Arguments Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure
-  [R] [T]%type_scope [mu]%function_scope fresh_name_2
+  [R] [T]%_type_scope [mu]%_function_scope fresh_name_2
 Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure
@@ -452,7 +452,7 @@ isSubsetOuterMeasure.phant_axioms (R:=R) (T:=T) mu ->
 
 Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure is not universe polymorphic
 Arguments Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure
-  [R] [T]%type_scope [mu]%function_scope fresh_name_2
+  [R] [T]%_type_scope [mu]%_function_scope fresh_name_2
 Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.Builders_1.Builders_1_mu__canonical__measure_extension_OuterMeasure
@@ -470,8 +470,8 @@ forall [T : Type] [R : realType] (mu : {outer_measure set T -> \bar R}%R)
  \big[+%R/0%R]_(N <= i <oo) mu (F i))%E
 
 outer_measure_sigma_subadditive_tail is not universe polymorphic
-Arguments outer_measure_sigma_subadditive_tail [T]%type_scope 
-  [R] mu N%nat_scope F
+Arguments outer_measure_sigma_subadditive_tail [T]%_type_scope 
+  [R] mu N%_nat_scope F
 outer_measure_sigma_subadditive_tail is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.outer_measure_sigma_subadditive_tail
@@ -504,7 +504,7 @@ forall [T : Type] [R : realType] (mu : {outer_measure set T -> \bar R}%R)
 (mu (\big[setU/set0]_(i < n) F i) <= (\sum_(i < n) mu (F i))%R)%E
 
 outer_measure_subadditive is not universe polymorphic
-Arguments outer_measure_subadditive [T]%type_scope [R] mu F n%nat_scope
+Arguments outer_measure_subadditive [T]%_type_scope [R] mu F n%_nat_scope
 outer_measure_subadditive is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.outer_measure_subadditive
@@ -535,7 +535,7 @@ forall [T : Type] [R : realType] (mu : {outer_measure set T -> \bar R}%R)
 (mu (A `|` B)%classic <= (mu A + mu B)%R)%E
 
 outer_measureU2 is not universe polymorphic
-Arguments outer_measureU2 [T]%type_scope [R] mu (A B)%classical_set_scope
+Arguments outer_measureU2 [T]%_type_scope [R] mu (A B)%_classical_set_scope
 outer_measureU2 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.outer_measureU2
@@ -558,7 +558,8 @@ forall [R : realFieldType] [T : Type]
 (mu X <= (mu (X `&` A)%classic + mu (X `&` ~` A)%classic)%R)%E
 
 le_outer_measureIC is not universe polymorphic
-Arguments le_outer_measureIC [R] [T]%type_scope mu (A X)%classical_set_scope
+Arguments le_outer_measureIC [R] [T]%_type_scope mu
+  (A X)%_classical_set_scope
 le_outer_measureIC is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.le_outer_measureIC
@@ -591,8 +592,8 @@ library mathcomp.analysis.measure_theory.measure_extension, line 191, characters
 forall [R : realType] [T : Type], (set T -> \bar R) -> set T -> Prop
 
 caratheodory_measurable is not universe polymorphic
-Arguments caratheodory_measurable [R] [T]%type_scope 
-  mu%function_scope A%classical_set_scope
+Arguments caratheodory_measurable [R] [T]%_type_scope 
+  mu%_function_scope A%_classical_set_scope
 caratheodory_measurable is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.caratheodory_measurable
@@ -613,8 +614,9 @@ forall [R : realType] [T : Type] [mu : {outer_measure set T -> \bar R}%R]
 mu.-caratheodory%classic A
 
 le_caratheodory_measurable is not universe polymorphic
-Arguments le_caratheodory_measurable [R] [T]%type_scope 
-  [mu] [A]%classical_set_scope _%function_scope X
+Arguments le_caratheodory_measurable [R] [T]%_type_scope 
+  [mu] [A]%_classical_set_scope _%_function_scope 
+  X
 le_caratheodory_measurable is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.le_caratheodory_measurable
@@ -642,8 +644,8 @@ forall [R : realType] [T : Type] (mu : {outer_measure set T -> \bar R}%R)
  \big[+%R/0%R]_(0 <= k <oo) mu (X `&` A k)%classic)%E
 
 outer_measure_bigcup_lim is not universe polymorphic
-Arguments outer_measure_bigcup_lim [R] [T]%type_scope 
-  mu A X%classical_set_scope
+Arguments outer_measure_bigcup_lim [R] [T]%_type_scope 
+  mu A X%_classical_set_scope
 outer_measure_bigcup_lim is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.outer_measure_bigcup_lim
@@ -665,7 +667,7 @@ forall [R : realType] [T : Type] (mu : {outer_measure set T -> \bar R}%R),
 mu.-caratheodory%classic set0
 
 caratheodory_measurable_set0 is not universe polymorphic
-Arguments caratheodory_measurable_set0 [R] [T]%type_scope mu X
+Arguments caratheodory_measurable_set0 [R] [T]%_type_scope mu X
 caratheodory_measurable_set0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.caratheodory_measurable_set0
@@ -683,8 +685,8 @@ forall [R : realType] [T : Type] [mu : {outer_measure set T -> \bar R}%R]
 mu.-caratheodory%classic A -> mu.-caratheodory%classic (~` A)
 
 caratheodory_measurable_setC is not universe polymorphic
-Arguments caratheodory_measurable_setC [R] [T]%type_scope 
-  [mu] [A]%classical_set_scope _ X
+Arguments caratheodory_measurable_setC [R] [T]%_type_scope 
+  [mu] [A]%_classical_set_scope _ X
 caratheodory_measurable_setC is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.caratheodory_measurable_setC
@@ -704,8 +706,8 @@ mu.-caratheodory%classic B ->
 ((mu (X `&` (A `|` B))%classic + mu (X `&` ~` (A `|` B))%classic)%R <= mu X)%E
 
 caratheodory_measurable_setU_le is not universe polymorphic
-Arguments caratheodory_measurable_setU_le [R] [T]%type_scope 
-  [mu] X%classical_set_scope [A B]%classical_set_scope 
+Arguments caratheodory_measurable_setU_le [R] [T]%_type_scope 
+  [mu] X%_classical_set_scope [A B]%_classical_set_scope 
   _ _
 caratheodory_measurable_setU_le is opaque
 Expands to: Constant
@@ -748,8 +750,8 @@ mu.-caratheodory%classic A ->
 mu.-caratheodory%classic B -> mu.-caratheodory%classic (A `|` B)
 
 caratheodory_measurable_setU is not universe polymorphic
-Arguments caratheodory_measurable_setU [R] [T]%type_scope 
-  [mu] [A B]%classical_set_scope _ _ X
+Arguments caratheodory_measurable_setU [R] [T]%_type_scope 
+  [mu] [A B]%_classical_set_scope _ _ X
 caratheodory_measurable_setU is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.caratheodory_measurable_setU
@@ -770,8 +772,8 @@ forall [R : realType] [T : Type] [mu : {outer_measure set T -> \bar R}%R]
 forall n : nat, mu.-caratheodory%classic (\big[setU/set0]_(i < n) A i)
 
 caratheodory_measurable_bigsetU is not universe polymorphic
-Arguments caratheodory_measurable_bigsetU [R] [T]%type_scope 
-  [mu A] _%function_scope n%nat_scope X
+Arguments caratheodory_measurable_bigsetU [R] [T]%_type_scope 
+  [mu A] _%_function_scope n%_nat_scope X
 caratheodory_measurable_bigsetU is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.caratheodory_measurable_bigsetU
@@ -793,8 +795,8 @@ mu.-caratheodory%classic A ->
 mu.-caratheodory%classic B -> mu.-caratheodory%classic (A `&` B)
 
 caratheodory_measurable_setI is not universe polymorphic
-Arguments caratheodory_measurable_setI [R] [T]%type_scope 
-  [mu] [A B]%classical_set_scope _ _ X
+Arguments caratheodory_measurable_setI [R] [T]%_type_scope 
+  [mu] [A B]%_classical_set_scope _ _ X
 caratheodory_measurable_setI is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.caratheodory_measurable_setI
@@ -816,8 +818,8 @@ mu.-caratheodory%classic A ->
 mu.-caratheodory%classic B -> mu.-caratheodory%classic (A `\` B)
 
 caratheodory_measurable_setD is not universe polymorphic
-Arguments caratheodory_measurable_setD [R] [T]%type_scope 
-  [mu] [A B]%classical_set_scope _ _ X
+Arguments caratheodory_measurable_setD [R] [T]%_type_scope 
+  [mu] [A B]%_classical_set_scope _ _ X
 caratheodory_measurable_setD is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.caratheodory_measurable_setD
@@ -869,8 +871,8 @@ mu (X `&` (A `|` B))%classic =
 (mu (X `&` A)%classic + mu (X `&` B)%classic)%R
 
 disjoint_caratheodoryIU is not universe polymorphic
-Arguments disjoint_caratheodoryIU [R] [T]%type_scope 
-  [mu] [A B]%classical_set_scope mA mB X%classical_set_scope 
+Arguments disjoint_caratheodoryIU [R] [T]%_type_scope 
+  [mu] [A B]%_classical_set_scope mA mB X%_classical_set_scope 
   _
 disjoint_caratheodoryIU is opaque
 Expands to: Constant
@@ -903,8 +905,8 @@ mu (X `&` \big[setU/set0]_(i < n) A i)%classic =
 (\sum_(i < n) mu (X `&` A i)%classic)%R
 
 caratheodory_additive is not universe polymorphic
-Arguments caratheodory_additive [R] [T]%type_scope 
-  [mu A] _%function_scope _ n%nat_scope X%classical_set_scope
+Arguments caratheodory_additive [R] [T]%_type_scope 
+  [mu A] _%_function_scope _ n%_nat_scope X%_classical_set_scope
 caratheodory_additive is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.caratheodory_additive
@@ -933,8 +935,8 @@ forall X : set T,
  mu X)%E
 
 caratheodory_lime_le is not universe polymorphic
-Arguments caratheodory_lime_le [R] [T]%type_scope 
-  [mu A] _%function_scope _ X%classical_set_scope
+Arguments caratheodory_lime_le [R] [T]%_type_scope 
+  [mu A] _%_function_scope _ X%_classical_set_scope
 caratheodory_lime_le is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.caratheodory_lime_le
@@ -976,7 +978,7 @@ trivIset (T:=T) [set: nat] A -> mu.-caratheodory%classic (\bigcup_k A k)
 
 caratheodory_measurable_trivIset_bigcup is not universe polymorphic
 Arguments caratheodory_measurable_trivIset_bigcup 
-  [R] [T]%type_scope [mu A] _%function_scope _ X
+  [R] [T]%_type_scope [mu A] _%_function_scope _ X
 caratheodory_measurable_trivIset_bigcup is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.caratheodory_measurable_trivIset_bigcup
@@ -999,8 +1001,8 @@ forall [R : realType] [T : Type] [mu : {outer_measure set T -> \bar R}%R]
 mu.-caratheodory%classic (\bigcup_k A k)
 
 caratheodory_measurable_bigcup is not universe polymorphic
-Arguments caratheodory_measurable_bigcup [R] [T]%type_scope 
-  [mu A] _%function_scope X
+Arguments caratheodory_measurable_bigcup [R] [T]%_type_scope 
+  [mu A] _%_function_scope X
 caratheodory_measurable_bigcup is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.caratheodory_measurable_bigcup
@@ -1024,7 +1026,7 @@ Qed.</div></details>
 forall [R : realType] [T : Type], (set T -> \bar R) -> Type
 
 caratheodory_type is not universe polymorphic
-Arguments caratheodory_type [R] [T]%type_scope mu%function_scope
+Arguments caratheodory_type [R] [T]%_type_scope mu%_function_scope
 caratheodory_type is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.caratheodory_type
@@ -1040,7 +1042,7 @@ library mathcomp.analysis.measure_theory.measure_extension, line 393, characters
 forall [R T : Type], (set T -> \bar R) -> measure_display
 
 caratheodory_display is not universe polymorphic
-Arguments caratheodory_display [R T]%type_scope _%function_scope
+Arguments caratheodory_display [R T]%_type_scope _%_function_scope
 caratheodory_display is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.caratheodory_display
@@ -1232,7 +1234,7 @@ forall [R : realType] [T : pointedType]
 (0%R <= mu A)%E
 
 caratheodory_measure_ge0 is not universe polymorphic
-Arguments caratheodory_measure_ge0 [R T mu] A%classical_set_scope
+Arguments caratheodory_measure_ge0 [R T mu] A%_classical_set_scope
 caratheodory_measure_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.caratheodory_measure_ge0
@@ -1442,8 +1444,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d],
 set T -> set (set T) ^nat
 
 measurable_cover is not universe polymorphic
-Arguments measurable_cover [d]%measure_display_scope 
-  [T] X%classical_set_scope _
+Arguments measurable_cover [d]%_measure_display_scope 
+  [T] X%_classical_set_scope _
 measurable_cover is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measurable_cover
@@ -1458,8 +1460,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d]
 measurable_cover (T:=T) X F -> forall k : nat, d.-measurable%classic (F k)
 
 cover_measurable is not universe polymorphic
-Arguments cover_measurable [d]%measure_display_scope 
-  [T] [X]%classical_set_scope [F] _ k%nat_scope
+Arguments cover_measurable [d]%_measure_display_scope 
+  [T] [X]%_classical_set_scope [F] _ k%_nat_scope
 cover_measurable is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.cover_measurable
@@ -1484,8 +1486,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d]
 measurable_cover (T:=T) X F ->
 forall [t : T], X t -> exists2 i : nat, [set: nat]%classic i & [eta F] i t
 
-Arguments cover_subset [d]%measure_display_scope [T] 
-  [X]%classical_set_scope [F] _ [t] _
+Arguments cover_subset [d]%_measure_display_scope 
+  [T] [X]%_classical_set_scope [F] _ [t] _
 cover_subset is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.cover_subset
@@ -1511,8 +1513,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d] [R : realType],
 (set T -> \bar R) -> set T -> \bar R
 
 mu_ext is not universe polymorphic
-Arguments mu_ext [d]%measure_display_scope [T R] mu%function_scope
-  X%classical_set_scope
+Arguments mu_ext [d]%_measure_display_scope [T R] 
+  mu%_function_scope X%_classical_set_scope
 mu_ext is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.mu_ext
@@ -1534,7 +1536,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d]
   [R : realType] (mu : set T -> \bar R) [x y : set T],
 (fun A : set T => [eta subset A]) x y -> (mu^*%mu x <= mu^*%mu y)%E = true
 
-Arguments le_mu_ext [d]%measure_display_scope [T R] mu%function_scope [x y] _
+Arguments le_mu_ext [d]%_measure_display_scope [T R] 
+  mu%_function_scope [x y] _
 le_mu_ext is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.le_mu_ext
@@ -1554,8 +1557,9 @@ forall [d : measure_display] [T : semiRingOfSetsType d]
 (forall X : set T, (0%R <= mu X)%E) -> forall A : set T, (0%R <= mu^*%mu A)%E
 
 mu_ext_ge0 is not universe polymorphic
-Arguments mu_ext_ge0 [d]%measure_display_scope [T R] 
-  [mu]%function_scope measure_ge0%function_scope A%classical_set_scope
+Arguments mu_ext_ge0 [d]%_measure_display_scope [T R] 
+  [mu]%_function_scope measure_ge0%_function_scope 
+  A%_classical_set_scope
 mu_ext_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.mu_ext_ge0
@@ -1576,8 +1580,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d]
 mu set0 = 0%R -> (forall X : set T, (0%R <= mu X)%E) -> mu^*%mu set0 = 0%R
 
 mu_ext0 is not universe polymorphic
-Arguments mu_ext0 [d]%measure_display_scope [T R] 
-  [mu]%function_scope measure0 measure_ge0%function_scope
+Arguments mu_ext0 [d]%_measure_display_scope [T R] 
+  [mu]%_function_scope measure0 measure_ge0%_function_scope
 mu_ext0 is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.mu_ext0
@@ -1598,8 +1602,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d]
 (forall X : set T, (0%R <= mu X)%E) -> sigma_subadditive mu^*%mu
 
 mu_ext_sigma_subadditive is not universe polymorphic
-Arguments mu_ext_sigma_subadditive [d]%measure_display_scope 
-  [T R] [mu]%function_scope measure_ge0%function_scope 
+Arguments mu_ext_sigma_subadditive [d]%_measure_display_scope 
+  [T R] [mu]%_function_scope measure_ge0%_function_scope 
   F
 mu_ext_sigma_subadditive is opaque
 Expands to: Constant
@@ -1683,7 +1687,7 @@ forall [d : measure_display] [R : realType] [T : semiRingOfSetsType d],
 
 measure_extension_mu_ext__canonical__measure_extension_OuterMeasure is not universe polymorphic
 Arguments measure_extension_mu_ext__canonical__measure_extension_OuterMeasure
-  [d]%measure_display_scope [R T] mu
+  [d]%_measure_display_scope [R T] mu
 measure_extension_mu_ext__canonical__measure_extension_OuterMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_mu_ext__canonical__measure_extension_OuterMeasure
@@ -1695,7 +1699,7 @@ forall [d : measure_display] [R : realType] [T : semiRingOfSetsType d],
 
 measure_extension_mu_ext__canonical__measure_extension_OuterMeasure is not universe polymorphic
 Arguments measure_extension_mu_ext__canonical__measure_extension_OuterMeasure
-  [d]%measure_display_scope [R T] mu
+  [d]%_measure_display_scope [R T] mu
 measure_extension_mu_ext__canonical__measure_extension_OuterMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_mu_ext__canonical__measure_extension_OuterMeasure
@@ -1707,7 +1711,7 @@ forall [d : measure_display] [R : realType] [T : semiRingOfSetsType d],
 
 measure_extension_mu_ext__canonical__measure_extension_OuterMeasure is not universe polymorphic
 Arguments measure_extension_mu_ext__canonical__measure_extension_OuterMeasure
-  [d]%measure_display_scope [R T] mu
+  [d]%_measure_display_scope [R T] mu
 measure_extension_mu_ext__canonical__measure_extension_OuterMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_mu_ext__canonical__measure_extension_OuterMeasure
@@ -1719,7 +1723,7 @@ forall [d : measure_display] [R : realType] [T : semiRingOfSetsType d],
 
 measure_extension_mu_ext__canonical__measure_extension_OuterMeasure is not universe polymorphic
 Arguments measure_extension_mu_ext__canonical__measure_extension_OuterMeasure
-  [d]%measure_display_scope [R T] mu
+  [d]%_measure_display_scope [R T] mu
 measure_extension_mu_ext__canonical__measure_extension_OuterMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_mu_ext__canonical__measure_extension_OuterMeasure
@@ -1731,7 +1735,7 @@ forall [d : measure_display] [R : realType] [T : semiRingOfSetsType d],
 
 measure_extension_mu_ext__canonical__measure_extension_OuterMeasure is not universe polymorphic
 Arguments measure_extension_mu_ext__canonical__measure_extension_OuterMeasure
-  [d]%measure_display_scope [R T] mu
+  [d]%_measure_display_scope [R T] mu
 measure_extension_mu_ext__canonical__measure_extension_OuterMeasure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_mu_ext__canonical__measure_extension_OuterMeasure
@@ -1755,7 +1759,7 @@ forall [d : measure_display] [R : realType] [T : semiRingOfSetsType d]
 (measure (R:=R) mu)^*%mu = mu^*%mu
 
 Rmu_ext is not universe polymorphic
-Arguments Rmu_ext [d]%measure_display_scope [R T] mu
+Arguments Rmu_ext [d]%_measure_display_scope [R T] mu
 Rmu_ext is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.Rmu_ext
@@ -1798,8 +1802,8 @@ forall [d : measure_display] [R : realType] [T : semiRingOfSetsType d]
 d.-measurable%classic X -> mu^*%mu X = mu X
 
 measurable_mu_extE is not universe polymorphic
-Arguments measurable_mu_extE [d]%measure_display_scope 
-  [R T] mu [X]%classical_set_scope _
+Arguments measurable_mu_extE [d]%_measure_display_scope 
+  [R T] mu [X]%_classical_set_scope _
 measurable_mu_extE is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measurable_mu_extE
@@ -1833,8 +1837,8 @@ forall [d : measure_display] [R : realType] [T : semiRingOfSetsType d]
 d.-ring.-measurable%classic X -> mu^*%mu X = measure (R:=R) mu X
 
 measurable_Rmu_extE is not universe polymorphic
-Arguments measurable_Rmu_extE [d]%measure_display_scope 
-  [R T] mu [X]%classical_set_scope _
+Arguments measurable_Rmu_extE [d]%_measure_display_scope 
+  [R T] mu [X]%_classical_set_scope _
 measurable_Rmu_extE is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measurable_Rmu_extE
@@ -1877,7 +1881,7 @@ measure_extension_mu_ext__canonical__measure_extension_OuterMeasure (R:=R) mu
  measure_extension_mu_ext__canonical__measure_extension_OuterMeasure (R:=R)
    mu (X `&` ~` t)%classic)%R
 
-Arguments sub_caratheodory [d]%measure_display_scope [T R] mu [t] _ X
+Arguments sub_caratheodory [d]%_measure_display_scope [T R] mu [t] _ X
 sub_caratheodory is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.sub_caratheodory
@@ -1947,8 +1951,8 @@ Measure.Exports.measure T R ->
 set (g_sigma_algebraType d.-measurable) -> \bar R
 
 measure_extension is not universe polymorphic
-Arguments measure_extension [d]%measure_display_scope 
-  [T R] mu _%classical_set_scope
+Arguments measure_extension [d]%_measure_display_scope 
+  [T R] mu _%_classical_set_scope
 measure_extension is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension
@@ -1989,7 +1993,7 @@ Measure.Exports.measure (g_sigma_algebraType d.-measurable) R
 measure_extension_measure_extension__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   measure_extension_measure_extension__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu
+  [d]%_measure_display_scope [T R] mu
 measure_extension_measure_extension__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_measure_extension__canonical__measure_function_Measure
@@ -2003,7 +2007,7 @@ Measure.Exports.measure (g_sigma_algebraType d.-measurable) R
 measure_extension_measure_extension__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   measure_extension_measure_extension__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu
+  [d]%_measure_display_scope [T R] mu
 measure_extension_measure_extension__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_measure_extension__canonical__measure_function_Measure
@@ -2017,7 +2021,7 @@ Measure.Exports.measure (g_sigma_algebraType d.-measurable) R
 measure_extension_measure_extension__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   measure_extension_measure_extension__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu
+  [d]%_measure_display_scope [T R] mu
 measure_extension_measure_extension__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_measure_extension__canonical__measure_function_Measure
@@ -2031,7 +2035,7 @@ Measure.Exports.measure (g_sigma_algebraType d.-measurable) R
 measure_extension_measure_extension__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   measure_extension_measure_extension__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu
+  [d]%_measure_display_scope [T R] mu
 measure_extension_measure_extension__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_measure_extension__canonical__measure_function_Measure
@@ -2045,7 +2049,7 @@ Measure.Exports.measure (g_sigma_algebraType d.-measurable) R
 measure_extension_measure_extension__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   measure_extension_measure_extension__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu
+  [d]%_measure_display_scope [T R] mu
 measure_extension_measure_extension__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_measure_extension__canonical__measure_function_Measure
@@ -2063,7 +2067,8 @@ sigma_finite (T:=g_sigma_algebraType d.-measurable) (R:=R)
   [set: g_sigma_algebraType d.-measurable] (measure_extension (R:=R) mu)
 
 measure_extension_sigma_finite is not universe polymorphic
-Arguments measure_extension_sigma_finite [d]%measure_display_scope [T R mu] _
+Arguments measure_extension_sigma_finite [d]%_measure_display_scope 
+  [T R mu] _
 measure_extension_sigma_finite is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_sigma_finite
@@ -2091,8 +2096,8 @@ forall [X : set (g_sigma_algebraType d.-measurable)],
 measure_extension (R:=R) mu X = mu' X
 
 measure_extension_unique is not universe polymorphic
-Arguments measure_extension_unique [d]%measure_display_scope 
-  [T R mu] _ [mu'] _%function_scope [X]%classical_set_scope 
+Arguments measure_extension_unique [d]%_measure_display_scope 
+  [T R mu] _ [mu'] _%_function_scope [X]%_classical_set_scope 
   _
 measure_extension_unique is opaque
 Expands to: Constant
@@ -2123,8 +2128,8 @@ forall [d : measure_display] [R : realType] [T : semiRingOfSetsType d]
 d.-measurable%classic A -> (mu^*%mu).-cara.-measurable%classic A
 
 caratheodory_measurable_mu_ext is not universe polymorphic
-Arguments caratheodory_measurable_mu_ext [d]%measure_display_scope 
-  [R T] mu [A]%classical_set_scope _ X
+Arguments caratheodory_measurable_mu_ext [d]%_measure_display_scope 
+  [R T] mu [A]%_classical_set_scope _ X
 caratheodory_measurable_mu_ext is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.caratheodory_measurable_mu_ext
@@ -2155,8 +2160,8 @@ forall [d : measure_display] [T : semiRingOfSetsType d]
 set (caratheodory_type (R:=R) (T:=T) mu^*%mu) -> \bar R
 
 completed_measure_extension is not universe polymorphic
-Arguments completed_measure_extension [d]%measure_display_scope 
-  [T R mu] _%classical_set_scope
+Arguments completed_measure_extension [d]%_measure_display_scope 
+  [T R mu] _%_classical_set_scope
 completed_measure_extension is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.completed_measure_extension
@@ -2193,7 +2198,7 @@ Measure.Exports.measure (caratheodory_type (R:=R) (T:=T) mu^*%mu) R
 measure_extension_completed_measure_extension__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   measure_extension_completed_measure_extension__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu
+  [d]%_measure_display_scope [T R] mu
 measure_extension_completed_measure_extension__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_completed_measure_extension__canonical__measure_function_Measure
@@ -2207,7 +2212,7 @@ Measure.Exports.measure (caratheodory_type (R:=R) (T:=T) mu^*%mu) R
 measure_extension_completed_measure_extension__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   measure_extension_completed_measure_extension__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu
+  [d]%_measure_display_scope [T R] mu
 measure_extension_completed_measure_extension__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_completed_measure_extension__canonical__measure_function_Measure
@@ -2221,7 +2226,7 @@ Measure.Exports.measure (caratheodory_type (R:=R) (T:=T) mu^*%mu) R
 measure_extension_completed_measure_extension__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   measure_extension_completed_measure_extension__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu
+  [d]%_measure_display_scope [T R] mu
 measure_extension_completed_measure_extension__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_completed_measure_extension__canonical__measure_function_Measure
@@ -2235,7 +2240,7 @@ Measure.Exports.measure (caratheodory_type (R:=R) (T:=T) mu^*%mu) R
 measure_extension_completed_measure_extension__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   measure_extension_completed_measure_extension__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu
+  [d]%_measure_display_scope [T R] mu
 measure_extension_completed_measure_extension__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_completed_measure_extension__canonical__measure_function_Measure
@@ -2249,7 +2254,7 @@ Measure.Exports.measure (caratheodory_type (R:=R) (T:=T) mu^*%mu) R
 measure_extension_completed_measure_extension__canonical__measure_function_Measure is not universe polymorphic
 Arguments
   measure_extension_completed_measure_extension__canonical__measure_function_Measure
-  [d]%measure_display_scope [T R] mu
+  [d]%_measure_display_scope [T R] mu
 measure_extension_completed_measure_extension__canonical__measure_function_Measure is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.measure_extension_completed_measure_extension__canonical__measure_function_Measure
@@ -2268,7 +2273,7 @@ sigma_finite (T:=caratheodory_type (R:=R) (T:=T) mu^*%mu) (R:=R)
 
 completed_measure_extension_sigma_finite is not universe polymorphic
 Arguments completed_measure_extension_sigma_finite 
-  [d]%measure_display_scope [T R mu] _
+  [d]%_measure_display_scope [T R mu] _
 completed_measure_extension_sigma_finite is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_extension.completed_measure_extension_sigma_finite

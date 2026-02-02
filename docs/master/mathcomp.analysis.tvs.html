@@ -568,7 +568,7 @@ filter.nbhs ((-%R%R : M -> M) x) t ->
 (let (nbhs) := local_mixin_filter_isFiltered in nbhs) x
   ((-%R%R : M -> M) @^-1` t)%classic
 
-Arguments Builders_1.opp_continuous [M]%type_scope
+Arguments Builders_1.opp_continuous [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_topology_structure_Nbhs_isTopological
@@ -905,7 +905,7 @@ exists2
     P.1 `*` P.2) i
    `<=` (fst \+ snd)%E @^-1` t)%classic
 
-Arguments Builders_1.add_continuous [M]%type_scope
+Arguments Builders_1.add_continuous [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_topology_structure_Nbhs_isTopological
@@ -1050,7 +1050,7 @@ TopologicalNmodule.type
 
 Builders_1.Builders_1_M__canonical__tvs_TopologicalNmodule is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__tvs_TopologicalNmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_topology_structure_Nbhs_isTopological
@@ -1182,7 +1182,7 @@ TopologicalNmodule.type
 
 Builders_1.Builders_1_M__canonical__tvs_TopologicalNmodule is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__tvs_TopologicalNmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_topology_structure_Nbhs_isTopological
@@ -1314,7 +1314,7 @@ TopologicalNmodule.type
 
 Builders_1.Builders_1_M__canonical__tvs_TopologicalNmodule is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__tvs_TopologicalNmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_topology_structure_Nbhs_isTopological
@@ -1446,7 +1446,7 @@ TopologicalNmodule.type
 
 Builders_1.Builders_1_M__canonical__tvs_TopologicalNmodule is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__tvs_TopologicalNmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_topology_structure_Nbhs_isTopological
@@ -1581,7 +1581,7 @@ topologicalZmodType
 
 Builders_1.Builders_1_M__canonical__tvs_TopologicalZmodule is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__tvs_TopologicalZmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_topology_structure_Nbhs_isTopological
@@ -1713,7 +1713,7 @@ topologicalZmodType
 
 Builders_1.Builders_1_M__canonical__tvs_TopologicalZmodule is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__tvs_TopologicalZmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_topology_structure_Nbhs_isTopological
@@ -1845,7 +1845,7 @@ topologicalZmodType
 
 Builders_1.Builders_1_M__canonical__tvs_TopologicalZmodule is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__tvs_TopologicalZmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_topology_structure_Nbhs_isTopological
@@ -1977,7 +1977,7 @@ topologicalZmodType
 
 Builders_1.Builders_1_M__canonical__tvs_TopologicalZmodule is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__tvs_TopologicalZmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_topology_structure_Nbhs_isTopological
@@ -2301,7 +2301,7 @@ filter.nbhs ((-%R%R : M -> M) x) t ->
 (let (nbhs) := local_mixin_filter_isFiltered in nbhs) x
   ((-%R%R : M -> M) @^-1` t)%classic
 
-Arguments Builders_8.opp_continuous [R] [M]%type_scope
+Arguments Builders_8.opp_continuous [R] [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -2333,8 +2333,8 @@ forall [aT rT : Type] [A : set aT] [B : set rT] [f : aT -> rT],
 OCanV.phant_axioms A B f -> OInv.axioms_ aT rT f
 
 Builders_8.HB_unnamed_factory_10 is not universe polymorphic
-Arguments Builders_8.HB_unnamed_factory_10 [aT rT]%type_scope
-  [A B]%classical_set_scope [f]%function_scope fresh_name_9
+Arguments Builders_8.HB_unnamed_factory_10 [aT rT]%_type_scope
+  [A B]%_classical_set_scope [f]%_function_scope fresh_name_9
 Builders_8.HB_unnamed_factory_10 is transparent
 Expands to: Constant
             mathcomp.classical.functions.Builders_8.HB_unnamed_factory_10
@@ -2344,8 +2344,8 @@ forall [aT rT : Type] [A : set aT] [B : set rT] [f : aT -> rT],
 OCanV.phant_axioms A B f -> OInv.axioms_ aT rT f
 
 Builders_8.HB_unnamed_factory_10 is not universe polymorphic
-Arguments Builders_8.HB_unnamed_factory_10 [aT rT]%type_scope
-  [A B]%classical_set_scope [f]%function_scope fresh_name_9
+Arguments Builders_8.HB_unnamed_factory_10 [aT rT]%_type_scope
+  [A B]%_classical_set_scope [f]%_function_scope fresh_name_9
 Builders_8.HB_unnamed_factory_10 is transparent
 Expands to: Constant
             mathcomp.classical.functions.Builders_8.HB_unnamed_factory_10
@@ -2355,8 +2355,8 @@ forall [aT rT : Type] [A : set aT] [B : set rT] [f : aT -> rT],
 OCanV.phant_axioms A B f -> OInv.axioms_ aT rT f
 
 Builders_8.HB_unnamed_factory_10 is not universe polymorphic
-Arguments Builders_8.HB_unnamed_factory_10 [aT rT]%type_scope
-  [A B]%classical_set_scope [f]%function_scope fresh_name_9
+Arguments Builders_8.HB_unnamed_factory_10 [aT rT]%_type_scope
+  [A B]%_classical_set_scope [f]%_function_scope fresh_name_9
 Builders_8.HB_unnamed_factory_10 is transparent
 Expands to: Constant
             mathcomp.classical.functions.Builders_8.HB_unnamed_factory_10
@@ -2367,8 +2367,8 @@ forall [aT rT : Type] [A : set aT] [B : set rT] [f : aT -> rT],
 OCanV.phant_axioms A B f -> OInv.axioms_ aT rT f
 
 Builders_8.HB_unnamed_factory_10 is not universe polymorphic
-Arguments Builders_8.HB_unnamed_factory_10 [aT rT]%type_scope
-  [A B]%classical_set_scope [f]%function_scope fresh_name_9
+Arguments Builders_8.HB_unnamed_factory_10 [aT rT]%_type_scope
+  [A B]%_classical_set_scope [f]%_function_scope fresh_name_9
 Builders_8.HB_unnamed_factory_10 is transparent
 Expands to: Constant
             mathcomp.classical.functions.Builders_8.HB_unnamed_factory_10
@@ -2378,8 +2378,8 @@ forall [aT rT : Type] [A : set aT] [B : set rT] [f : aT -> rT],
 OCanV.phant_axioms A B f -> OInv.axioms_ aT rT f
 
 Builders_8.HB_unnamed_factory_10 is not universe polymorphic
-Arguments Builders_8.HB_unnamed_factory_10 [aT rT]%type_scope
-  [A B]%classical_set_scope [f]%function_scope fresh_name_9
+Arguments Builders_8.HB_unnamed_factory_10 [aT rT]%_type_scope
+  [A B]%_classical_set_scope [f]%_function_scope fresh_name_9
 Builders_8.HB_unnamed_factory_10 is transparent
 Expands to: Constant
             mathcomp.classical.functions.Builders_8.HB_unnamed_factory_10
@@ -2389,8 +2389,8 @@ forall [aT rT : Type] [A : set aT] [B : set rT] [f : aT -> rT],
 OCanV.phant_axioms A B f -> OInv.axioms_ aT rT f
 
 Builders_8.HB_unnamed_factory_10 is not universe polymorphic
-Arguments Builders_8.HB_unnamed_factory_10 [aT rT]%type_scope
-  [A B]%classical_set_scope [f]%function_scope fresh_name_9
+Arguments Builders_8.HB_unnamed_factory_10 [aT rT]%_type_scope
+  [A B]%_classical_set_scope [f]%_function_scope fresh_name_9
 Builders_8.HB_unnamed_factory_10 is transparent
 Expands to: Constant
             mathcomp.classical.functions.Builders_8.HB_unnamed_factory_10
@@ -2400,8 +2400,8 @@ forall [aT rT : Type] [A : set aT] [B : set rT] [f : aT -> rT],
 OCanV.phant_axioms A B f -> OInv.axioms_ aT rT f
 
 Builders_8.HB_unnamed_factory_10 is not universe polymorphic
-Arguments Builders_8.HB_unnamed_factory_10 [aT rT]%type_scope
-  [A B]%classical_set_scope [f]%function_scope fresh_name_9
+Arguments Builders_8.HB_unnamed_factory_10 [aT rT]%_type_scope
+  [A B]%_classical_set_scope [f]%_function_scope fresh_name_9
 Builders_8.HB_unnamed_factory_10 is transparent
 Expands to: Constant
             mathcomp.classical.functions.Builders_8.HB_unnamed_factory_10
@@ -2415,8 +2415,8 @@ OInv_CanV.axioms_ aT rT A B f
   (Builders_8.HB_unnamed_factory_10 (A:=A) (B:=B) (f:=f) fresh_name_9)
 
 Builders_8.HB_unnamed_factory_12 is not universe polymorphic
-Arguments Builders_8.HB_unnamed_factory_12 [aT rT]%type_scope
-  [A B]%classical_set_scope [f]%function_scope fresh_name_9
+Arguments Builders_8.HB_unnamed_factory_12 [aT rT]%_type_scope
+  [A B]%_classical_set_scope [f]%_function_scope fresh_name_9
 Builders_8.HB_unnamed_factory_12 is transparent
 Expands to: Constant
             mathcomp.classical.functions.Builders_8.HB_unnamed_factory_12
@@ -2428,8 +2428,8 @@ OInv_CanV.axioms_ aT rT A B f
   (Builders_8.HB_unnamed_factory_10 (A:=A) (B:=B) (f:=f) fresh_name_9)
 
 Builders_8.HB_unnamed_factory_12 is not universe polymorphic
-Arguments Builders_8.HB_unnamed_factory_12 [aT rT]%type_scope
-  [A B]%classical_set_scope [f]%function_scope fresh_name_9
+Arguments Builders_8.HB_unnamed_factory_12 [aT rT]%_type_scope
+  [A B]%_classical_set_scope [f]%_function_scope fresh_name_9
 Builders_8.HB_unnamed_factory_12 is transparent
 Expands to: Constant
             mathcomp.classical.functions.Builders_8.HB_unnamed_factory_12
@@ -2441,8 +2441,8 @@ OInv_CanV.axioms_ aT rT A B f
   (Builders_8.HB_unnamed_factory_10 (A:=A) (B:=B) (f:=f) fresh_name_9)
 
 Builders_8.HB_unnamed_factory_12 is not universe polymorphic
-Arguments Builders_8.HB_unnamed_factory_12 [aT rT]%type_scope
-  [A B]%classical_set_scope [f]%function_scope fresh_name_9
+Arguments Builders_8.HB_unnamed_factory_12 [aT rT]%_type_scope
+  [A B]%_classical_set_scope [f]%_function_scope fresh_name_9
 Builders_8.HB_unnamed_factory_12 is transparent
 Expands to: Constant
             mathcomp.classical.functions.Builders_8.HB_unnamed_factory_12
@@ -2454,8 +2454,8 @@ OInv_CanV.axioms_ aT rT A B f
   (Builders_8.HB_unnamed_factory_10 (A:=A) (B:=B) (f:=f) fresh_name_9)
 
 Builders_8.HB_unnamed_factory_12 is not universe polymorphic
-Arguments Builders_8.HB_unnamed_factory_12 [aT rT]%type_scope
-  [A B]%classical_set_scope [f]%function_scope fresh_name_9
+Arguments Builders_8.HB_unnamed_factory_12 [aT rT]%_type_scope
+  [A B]%_classical_set_scope [f]%_function_scope fresh_name_9
 Builders_8.HB_unnamed_factory_12 is transparent
 Expands to: Constant
             mathcomp.classical.functions.Builders_8.HB_unnamed_factory_12
@@ -2796,7 +2796,7 @@ filter.nbhs entourage t ->
     ((-%R%R : M -> M) xy.1, (-%R%R : M -> M) xy.2)) @^-1`
    t)%classic
 
-Arguments Builders_15.opp_unif_continuous [M]%type_scope
+Arguments Builders_15.opp_unif_continuous [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_uniform_structure_Nbhs_isUniform_mixin
@@ -3178,7 +3178,7 @@ exists2
                     ((fst \+ snd)%E xy.1, (fst \+ snd)%E xy.2)) @^-1`
                    t])%classic
 
-Arguments Builders_15.add_unif_continuous [M]%type_scope
+Arguments Builders_15.add_unif_continuous [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_uniform_structure_Nbhs_isUniform_mixin
@@ -3352,7 +3352,7 @@ UniformNmodule.type
 
 Builders_15.Builders_15_M__canonical__tvs_UniformNmodule is not universe polymorphic
 Arguments Builders_15.Builders_15_M__canonical__tvs_UniformNmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_uniform_structure_Nbhs_isUniform_mixin
@@ -3508,7 +3508,7 @@ UniformNmodule.type
 
 Builders_15.Builders_15_M__canonical__tvs_UniformNmodule is not universe polymorphic
 Arguments Builders_15.Builders_15_M__canonical__tvs_UniformNmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_uniform_structure_Nbhs_isUniform_mixin
@@ -3664,7 +3664,7 @@ UniformNmodule.type
 
 Builders_15.Builders_15_M__canonical__tvs_UniformNmodule is not universe polymorphic
 Arguments Builders_15.Builders_15_M__canonical__tvs_UniformNmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_uniform_structure_Nbhs_isUniform_mixin
@@ -3820,7 +3820,7 @@ UniformNmodule.type
 
 Builders_15.Builders_15_M__canonical__tvs_UniformNmodule is not universe polymorphic
 Arguments Builders_15.Builders_15_M__canonical__tvs_UniformNmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_uniform_structure_Nbhs_isUniform_mixin
@@ -3978,7 +3978,7 @@ UniformZmodule.type
 
 Builders_15.Builders_15_M__canonical__tvs_UniformZmodule is not universe polymorphic
 Arguments Builders_15.Builders_15_M__canonical__tvs_UniformZmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_uniform_structure_Nbhs_isUniform_mixin
@@ -4134,7 +4134,7 @@ UniformZmodule.type
 
 Builders_15.Builders_15_M__canonical__tvs_UniformZmodule is not universe polymorphic
 Arguments Builders_15.Builders_15_M__canonical__tvs_UniformZmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_uniform_structure_Nbhs_isUniform_mixin
@@ -4290,7 +4290,7 @@ UniformZmodule.type
 
 Builders_15.Builders_15_M__canonical__tvs_UniformZmodule is not universe polymorphic
 Arguments Builders_15.Builders_15_M__canonical__tvs_UniformZmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_uniform_structure_Nbhs_isUniform_mixin
@@ -4446,7 +4446,7 @@ UniformZmodule.type
 
 Builders_15.Builders_15_M__canonical__tvs_UniformZmodule is not universe polymorphic
 Arguments Builders_15.Builders_15_M__canonical__tvs_UniformZmodule
-  [M]%type_scope
+  [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
    local_mixin_uniform_structure_Nbhs_isUniform_mixin
@@ -4829,7 +4829,7 @@ filter.nbhs entourage t ->
     ((-%R%R : M -> M) xy.1, (-%R%R : M -> M) xy.2)) @^-1`
    t)%classic
 
-Arguments Builders_22.opp_unif_continuous [R] [M]%type_scope
+Arguments Builders_22.opp_unif_continuous [R] [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -5003,7 +5003,7 @@ UniformNmodule_isUniformZmodule.axioms_ M local_mixin_filter_selfFiltered
   local_mixin_Algebra_AddMagma_isAddSemigroup
 
 Builders_22.HB_unnamed_factory_24 is not universe polymorphic
-Arguments Builders_22.HB_unnamed_factory_24 [R] [M]%type_scope
+Arguments Builders_22.HB_unnamed_factory_24 [R] [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -5159,7 +5159,7 @@ UniformNmodule_isUniformZmodule.axioms_ M local_mixin_filter_selfFiltered
   local_mixin_Algebra_AddMagma_isAddSemigroup
 
 Builders_22.HB_unnamed_factory_24 is not universe polymorphic
-Arguments Builders_22.HB_unnamed_factory_24 [R] [M]%type_scope
+Arguments Builders_22.HB_unnamed_factory_24 [R] [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -5315,7 +5315,7 @@ UniformNmodule_isUniformZmodule.axioms_ M local_mixin_filter_selfFiltered
   local_mixin_Algebra_AddMagma_isAddSemigroup
 
 Builders_22.HB_unnamed_factory_24 is not universe polymorphic
-Arguments Builders_22.HB_unnamed_factory_24 [R] [M]%type_scope
+Arguments Builders_22.HB_unnamed_factory_24 [R] [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -5472,7 +5472,7 @@ UniformNmodule_isUniformZmodule.axioms_ M local_mixin_filter_selfFiltered
   local_mixin_Algebra_AddMagma_isAddSemigroup
 
 Builders_22.HB_unnamed_factory_24 is not universe polymorphic
-Arguments Builders_22.HB_unnamed_factory_24 [R] [M]%type_scope
+Arguments Builders_22.HB_unnamed_factory_24 [R] [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -5628,7 +5628,7 @@ UniformNmodule_isUniformZmodule.axioms_ M local_mixin_filter_selfFiltered
   local_mixin_Algebra_AddMagma_isAddSemigroup
 
 Builders_22.HB_unnamed_factory_24 is not universe polymorphic
-Arguments Builders_22.HB_unnamed_factory_24 [R] [M]%type_scope
+Arguments Builders_22.HB_unnamed_factory_24 [R] [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -5784,7 +5784,7 @@ UniformNmodule_isUniformZmodule.axioms_ M local_mixin_filter_selfFiltered
   local_mixin_Algebra_AddMagma_isAddSemigroup
 
 Builders_22.HB_unnamed_factory_24 is not universe polymorphic
-Arguments Builders_22.HB_unnamed_factory_24 [R] [M]%type_scope
+Arguments Builders_22.HB_unnamed_factory_24 [R] [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -5940,7 +5940,7 @@ UniformNmodule_isUniformZmodule.axioms_ M local_mixin_filter_selfFiltered
   local_mixin_Algebra_AddMagma_isAddSemigroup
 
 Builders_22.HB_unnamed_factory_24 is not universe polymorphic
-Arguments Builders_22.HB_unnamed_factory_24 [R] [M]%type_scope
+Arguments Builders_22.HB_unnamed_factory_24 [R] [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -6099,7 +6099,7 @@ PreUniformLmodule_isUniformLmodule.axioms_ R M
   local_mixin_GRing_Nmodule_isLSemiModule
 
 Builders_22.HB_unnamed_factory_26 is not universe polymorphic
-Arguments Builders_22.HB_unnamed_factory_26 [R] [M]%type_scope
+Arguments Builders_22.HB_unnamed_factory_26 [R] [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -6256,7 +6256,7 @@ PreUniformLmodule_isUniformLmodule.axioms_ R M
   local_mixin_GRing_Nmodule_isLSemiModule
 
 Builders_22.HB_unnamed_factory_26 is not universe polymorphic
-Arguments Builders_22.HB_unnamed_factory_26 [R] [M]%type_scope
+Arguments Builders_22.HB_unnamed_factory_26 [R] [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -6413,7 +6413,7 @@ PreUniformLmodule_isUniformLmodule.axioms_ R M
   local_mixin_GRing_Nmodule_isLSemiModule
 
 Builders_22.HB_unnamed_factory_26 is not universe polymorphic
-Arguments Builders_22.HB_unnamed_factory_26 [R] [M]%type_scope
+Arguments Builders_22.HB_unnamed_factory_26 [R] [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -6570,7 +6570,7 @@ PreUniformLmodule_isUniformLmodule.axioms_ R M
   local_mixin_GRing_Nmodule_isLSemiModule
 
 Builders_22.HB_unnamed_factory_26 is not universe polymorphic
-Arguments Builders_22.HB_unnamed_factory_26 [R] [M]%type_scope
+Arguments Builders_22.HB_unnamed_factory_26 [R] [M]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -6594,7 +6594,7 @@ Declared in library mathcomp.analysis.tvs, line 314, characters 0-97
 <span class="vernacular">Definition</span><span class="id"> </span><span id="convex" class="id"><a name="convex" class="" title="convex : forall [R : numDomainType] [M : lmodType R], set M -> Prop
 
 convex is not universe polymorphic
-Arguments convex [R M] A%classical_set_scope
+Arguments convex [R M] A%_classical_set_scope
 convex is transparent
 Expands to: Constant mathcomp.analysis.tvs.convex
 Declared in library mathcomp.analysis.tvs, line 319, characters 11-17
@@ -6630,7 +6630,8 @@ forall [x : E],
 filter.nbhs x U -> filter.nbhs (- x)%R [set (- x)%R | x in U]%classic
 
 nbhsN_subproof is not universe polymorphic
-Arguments nbhsN_subproof [R E] [U]%classical_set_scope f%function_scope [x] _
+Arguments nbhsN_subproof [R E] [U]%_classical_set_scope 
+  f%_function_scope [x] _
 nbhsN_subproof is opaque
 Expands to: Constant mathcomp.analysis.tvs.nbhsN_subproof
 Declared in library mathcomp.analysis.tvs, line 336, characters 6-20
@@ -6659,7 +6660,7 @@ forall [R : numDomainType] [E : preTopologicalLmodType R] [U : set E],
 filter.nbhs 0%R U -> filter.nbhs 0%R [set (- x)%R | x in U]%classic
 
 nbhs0N_subproof is not universe polymorphic
-Arguments nbhs0N_subproof [R E] [U]%classical_set_scope f%function_scope _
+Arguments nbhs0N_subproof [R E] [U]%_classical_set_scope f%_function_scope _
 nbhs0N_subproof is opaque
 Expands to: Constant mathcomp.analysis.tvs.nbhs0N_subproof
 Declared in library mathcomp.analysis.tvs, line 345, characters 6-21
@@ -6681,7 +6682,7 @@ forall x : E,
 filter.nbhs 0%R U -> filter.nbhs x [set (x + x0)%R | x0 in U]%classic
 
 nbhsT_subproof is not universe polymorphic
-Arguments nbhsT_subproof [R E] [U]%classical_set_scope f%function_scope x _
+Arguments nbhsT_subproof [R E] [U]%_classical_set_scope f%_function_scope x _
 nbhsT_subproof is opaque
 Expands to: Constant mathcomp.analysis.tvs.nbhsT_subproof
 Declared in library mathcomp.analysis.tvs, line 349, characters 6-20
@@ -6707,8 +6708,8 @@ forall [z : E] (x : E),
 filter.nbhs z U -> filter.nbhs (x + z)%R [set (x + x0)%R | x0 in U]%classic
 
 nbhsB_subproof is not universe polymorphic
-Arguments nbhsB_subproof [R E] [U]%classical_set_scope 
-  f%function_scope [z] x _
+Arguments nbhsB_subproof [R E] [U]%_classical_set_scope 
+  f%_function_scope [z] x _
 nbhsB_subproof is opaque
 Expands to: Constant mathcomp.analysis.tvs.nbhsB_subproof
 Declared in library mathcomp.analysis.tvs, line 358, characters 6-20
@@ -6744,7 +6745,7 @@ Algebra.hasAdd.axioms_ E ->
 hasChoice.axioms_ E -> Equality.mixin_of E -> filter.set_system (E * E)
 
 Builders_29.entourage is not universe polymorphic
-Arguments Builders_29.entourage [E]%type_scope local_mixin_filter_isFiltered
+Arguments Builders_29.entourage [E]%_type_scope local_mixin_filter_isFiltered
   local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
   local_mixin_Algebra_hasAdd local_mixin_choice_hasChoice
   local_mixin_eqtype_hasDecEq _
@@ -6870,7 +6871,7 @@ forall [U : set E] [x : E],
 filter.nbhs x U -> filter.nbhs (- x)%R [set (- x)%R | x in U]%classic
 
 Builders_29.nbhsN is not universe polymorphic
-Arguments Builders_29.nbhsN [R] [E]%type_scope
+Arguments Builders_29.nbhsN [R] [E]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -6881,7 +6882,7 @@ Arguments Builders_29.nbhsN [R] [E]%type_scope
    local_mixin_topology_structure_Nbhs_isTopological
    local_mixin_Algebra_AddMagma_isAddSemigroup
    local_mixin_GRing_Nmodule_isLSemiModule]
-  fresh_name_30 [U]%classical_set_scope [x] _
+  fresh_name_30 [U]%_classical_set_scope [x] _
 Builders_29.nbhsN is opaque
 Expands to: Constant mathcomp.analysis.tvs.Builders_29.nbhsN
 Declared in library mathcomp.analysis.tvs, line 386, characters 6-11
@@ -6922,7 +6923,7 @@ filter.Filter
      local_mixin_eqtype_hasDecEq)
 
 Builders_29.entourage_filter is not universe polymorphic
-Arguments Builders_29.entourage_filter [E]%type_scope
+Arguments Builders_29.entourage_filter [E]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
   local_mixin_Algebra_hasAdd
@@ -7119,7 +7120,7 @@ PreUniformLmodule.type R
 
 Builders_29.Builders_29_E__canonical__tvs_PreUniformLmodule is not universe polymorphic
 Arguments Builders_29.Builders_29_E__canonical__tvs_PreUniformLmodule 
-  [R] [E]%type_scope
+  [R] [E]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -7244,7 +7245,7 @@ PreUniformLmodule.type R
 
 Builders_29.Builders_29_E__canonical__tvs_PreUniformLmodule is not universe polymorphic
 Arguments Builders_29.Builders_29_E__canonical__tvs_PreUniformLmodule 
-  [R] [E]%type_scope
+  [R] [E]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -7369,7 +7370,7 @@ PreUniformLmodule.type R
 
 Builders_29.Builders_29_E__canonical__tvs_PreUniformLmodule is not universe polymorphic
 Arguments Builders_29.Builders_29_E__canonical__tvs_PreUniformLmodule 
-  [R] [E]%type_scope
+  [R] [E]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -7494,7 +7495,7 @@ PreUniformLmodule.type R
 
 Builders_29.Builders_29_E__canonical__tvs_PreUniformLmodule is not universe polymorphic
 Arguments Builders_29.Builders_29_E__canonical__tvs_PreUniformLmodule 
-  [R] [E]%type_scope
+  [R] [E]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -7619,7 +7620,7 @@ PreUniformLmodule.type R
 
 Builders_29.Builders_29_E__canonical__tvs_PreUniformLmodule is not universe polymorphic
 Arguments Builders_29.Builders_29_E__canonical__tvs_PreUniformLmodule 
-  [R] [E]%type_scope
+  [R] [E]%_type_scope
   [local_mixin_filter_selfFiltered local_mixin_filter_isFiltered
    local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
    local_mixin_Algebra_hasAdd
@@ -7649,7 +7650,7 @@ forall [R : numDomainType] [E : tvsType R] [U : set E],
 filter.nbhs 0%R U -> filter.nbhs 0%R [set (- x)%R | x in U]%classic
 
 nbhs0N is not universe polymorphic
-Arguments nbhs0N [R E] [U]%classical_set_scope _
+Arguments nbhs0N [R E] [U]%_classical_set_scope _
 nbhs0N is opaque
 Expands to: Constant mathcomp.analysis.tvs.nbhs0N
 Declared in library mathcomp.analysis.tvs, line 469, characters 6-12
@@ -7664,7 +7665,7 @@ forall [R : numDomainType] [E : tvsType R] [U : set E] (x : E),
 filter.nbhs 0%R U -> filter.nbhs x [set (x + x0)%R | x0 in U]%classic
 
 nbhsT is not universe polymorphic
-Arguments nbhsT [R E] [U]%classical_set_scope x _
+Arguments nbhsT [R E] [U]%_classical_set_scope x _
 nbhsT is opaque
 Expands to: Constant mathcomp.analysis.tvs.nbhsT
 Declared in library mathcomp.analysis.tvs, line 472, characters 6-11
@@ -7679,7 +7680,7 @@ forall [R : numDomainType] [E : tvsType R] [U : set E] [z : E] (x : E),
 filter.nbhs z U -> filter.nbhs (x + z)%R [set (x + x0)%R | x0 in U]%classic
 
 nbhsB is not universe polymorphic
-Arguments nbhsB [R E] [U]%classical_set_scope [z] x _
+Arguments nbhsB [R E] [U]%_classical_set_scope [z] x _
 nbhsB is opaque
 Expands to: Constant mathcomp.analysis.tvs.nbhsB
 Declared in library mathcomp.analysis.tvs, line 475, characters 6-11
@@ -7699,7 +7700,7 @@ r != 0%R ->
 filter.nbhs 0%R U -> filter.nbhs 0%R [set (r *: x)%R | x in U]%classic
 
 nbhs0Z is not universe polymorphic
-Arguments nbhs0Z [R E] [U]%classical_set_scope [r]%ring_scope _ _
+Arguments nbhs0Z [R E] [U]%_classical_set_scope [r]%_ring_scope _ _
 nbhs0Z is opaque
 Expands to: Constant mathcomp.analysis.tvs.nbhs0Z
 Declared in library mathcomp.analysis.tvs, line 482, characters 6-12
@@ -7720,7 +7721,7 @@ r != 0%R ->
 filter.nbhs x U -> filter.nbhs (r *: x)%R [set (r *: x)%R | x in U]%classic
 
 nbhsZ is not universe polymorphic
-Arguments nbhsZ [R E] [U]%classical_set_scope [r]%ring_scope [x] _ _
+Arguments nbhsZ [R E] [U]%_classical_set_scope [r]%_ring_scope [x] _ _
 nbhsZ is opaque
 Expands to: Constant mathcomp.analysis.tvs.nbhsZ
 Declared in library mathcomp.analysis.tvs, line 491, characters 6-11

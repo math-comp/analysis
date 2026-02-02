@@ -309,7 +309,7 @@ forall {R : realType} {X : pseudoMetricType R} [r : R] [xy : X * X],
 (edist xy < r%:E)%E -> ball xy.1 r xy.2
 
 edist_lt_ball is not universe polymorphic
-Arguments edist_lt_ball {R X} [r]%ring_scope [xy] _
+Arguments edist_lt_ball {R X} [r]%_ring_scope [xy] _
 edist_lt_ball is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.edist_lt_ball
@@ -328,7 +328,7 @@ forall {R : realType} {X : pseudoMetricType R} [r : R] [xy : X * X],
 (0 < r)%R -> ball xy.1 r xy.2 -> (edist xy <= r%:E)%E
 
 edist_fin is not universe polymorphic
-Arguments edist_fin {R X} [r]%ring_scope [xy] _ _
+Arguments edist_fin {R X} [r]%_ring_scope [xy] _ _
 edist_fin is opaque
 Expands to: Constant mathcomp.analysis.normedtype_theory.urysohn.edist_fin
 Declared in
@@ -701,7 +701,7 @@ Qed.</div></details>
 forall {R : realType} {T : pseudoMetricType R}, set T -> T -> \bar R
 
 edist_inf is not universe polymorphic
-Arguments edist_inf {R T} A%classical_set_scope z
+Arguments edist_inf {R T} A%_classical_set_scope z
 edist_inf is transparent
 Expands to: Constant mathcomp.analysis.normedtype_theory.urysohn.edist_inf
 Declared in
@@ -713,7 +713,7 @@ forall {R : realType} {T : pseudoMetricType R} (A : set T) (w : T),
 (0%R <= edist_inf A w)%E
 
 edist_inf_ge0 is not universe polymorphic
-Arguments edist_inf_ge0 {R T} A%classical_set_scope w
+Arguments edist_inf_ge0 {R T} A%_classical_set_scope w
 edist_inf_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.edist_inf_ge0
@@ -731,7 +731,7 @@ forall {R : realType} {T : pseudoMetricType R} (A : set T) (w : T),
 edist_inf A w != -oo%E
 
 edist_inf_neqNy is not universe polymorphic
-Arguments edist_inf_neqNy {R T} A%classical_set_scope w
+Arguments edist_inf_neqNy {R T} A%_classical_set_scope w
 edist_inf_neqNy is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.edist_inf_neqNy
@@ -749,7 +749,7 @@ forall {R : realType} {T : pseudoMetricType R} (A : set T) (x y : T),
 (edist_inf A x <= (edist (x, y) + edist_inf A y)%R)%E
 
 edist_inf_triangle is not universe polymorphic
-Arguments edist_inf_triangle {R T} A%classical_set_scope x y
+Arguments edist_inf_triangle {R T} A%_classical_set_scope x y
 edist_inf_triangle is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.edist_inf_triangle
@@ -796,7 +796,7 @@ filter.nbhs (edist_inf A x) t ->
       class) in
  nbhs) x (edist_inf A @^-1` t)%classic
 
-Arguments edist_inf_continuous {R T} [A]%classical_set_scope [x t] _
+Arguments edist_inf_continuous {R T} [A]%_classical_set_scope [x t] _
 edist_inf_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.edist_inf_continuous
@@ -850,7 +850,7 @@ forall {R : realType} {T : pseudoMetricType R} [A : set T] [a : T],
 A a -> edist_inf A a = 0%R
 
 edist_inf0 is not universe polymorphic
-Arguments edist_inf0 {R T} [A]%classical_set_scope [a] _
+Arguments edist_inf0 {R T} [A]%_classical_set_scope [a] _
 edist_inf0 is opaque
 Expands to: Constant mathcomp.analysis.normedtype_theory.urysohn.edist_inf0
 Declared in
@@ -932,7 +932,7 @@ set (topology_structure.Topological.sort T) ->
 set (topology_structure.Topological.sort T) -> Prop
 
 uniform_separator is not universe polymorphic
-Arguments uniform_separator {T} (A B)%classical_set_scope
+Arguments uniform_separator {T} (A B)%_classical_set_scope
 uniform_separator is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.uniform_separator
@@ -967,7 +967,7 @@ set (topology_structure.Topological.sort T) ->
 topology_structure.Topological.sort T -> R
 
 Urysohn is not universe polymorphic
-Arguments Urysohn {T R} (A B)%classical_set_scope _
+Arguments Urysohn {T R} (A B)%_classical_set_scope _
 Urysohn is transparent
 Expands to: Constant mathcomp.analysis.normedtype_theory.urysohn.Urysohn
 Declared in
@@ -1011,7 +1011,7 @@ filter.nbhs (Urysohn A B x) t ->
       class) in
  nbhs) x (Urysohn A B @^-1` t)%classic
 
-Arguments Urysohn_continuous {T R} [A B]%classical_set_scope [x t] _
+Arguments Urysohn_continuous {T R} [A B]%_classical_set_scope [x t] _
 Urysohn_continuous is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.Urysohn_continuous
@@ -1036,7 +1036,7 @@ forall {T : topology_structure.Topological.type} {R : realType}
   [t : R],
 range (Urysohn A B) t -> (t \in `[0, 1]%R) = true
 
-Arguments Urysohn_range {T R} [A B]%classical_set_scope [t] _
+Arguments Urysohn_range {T R} [A B]%_classical_set_scope [t] _
 Urysohn_range is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.Urysohn_range
@@ -1062,7 +1062,7 @@ forall {T : topology_structure.Topological.type} {R : realType}
 uniform_separator A B ->
 forall [t : R], [set Urysohn A B x | x in A]%classic t -> t = 0%R
 
-Arguments Urysohn_sub0 {T R} [A B]%classical_set_scope _ [t] _
+Arguments Urysohn_sub0 {T R} [A B]%_classical_set_scope _ [t] _
 Urysohn_sub0 is opaque
 Expands to: Constant mathcomp.analysis.normedtype_theory.urysohn.Urysohn_sub0
 Declared in
@@ -1088,7 +1088,7 @@ forall {T : topology_structure.Topological.type} {R : realType}
 uniform_separator A B ->
 forall [t : R], [set Urysohn A B x | x in B]%classic t -> t = 1%R
 
-Arguments Urysohn_sub1 {T R} [A B]%classical_set_scope _ [t] _
+Arguments Urysohn_sub1 {T R} [A B]%_classical_set_scope _ [t] _
 Urysohn_sub1 is opaque
 Expands to: Constant mathcomp.analysis.normedtype_theory.urysohn.Urysohn_sub1
 Declared in
@@ -1108,7 +1108,7 @@ uniform_separator A B ->
 [set Urysohn A B x | x in A]%classic = [set 0%R]%classic
 
 Urysohn_eq0 is not universe polymorphic
-Arguments Urysohn_eq0 {T R} [A B]%classical_set_scope _ _
+Arguments Urysohn_eq0 {T R} [A B]%_classical_set_scope _ _
 Urysohn_eq0 is opaque
 Expands to: Constant mathcomp.analysis.normedtype_theory.urysohn.Urysohn_eq0
 Declared in
@@ -1131,7 +1131,7 @@ uniform_separator A B ->
 [set Urysohn A B x | x in B]%classic = [set 1%R]%classic
 
 Urysohn_eq1 is not universe polymorphic
-Arguments Urysohn_eq1 {T R} [A B]%classical_set_scope _ _
+Arguments Urysohn_eq1 {T R} [A B]%_classical_set_scope _ _
 Urysohn_eq1 is opaque
 Expands to: Constant mathcomp.analysis.normedtype_theory.urysohn.Urysohn_eq1
 Declared in
@@ -1155,7 +1155,7 @@ forall {T : uniformType} [A B : set T],
 uniform_separator A B
 
 uniform_separatorW is not universe polymorphic
-Arguments uniform_separatorW {T} [A B]%classical_set_scope _
+Arguments uniform_separatorW {T} [A B]%_classical_set_scope _
 uniform_separatorW is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.uniform_separatorW
@@ -1366,7 +1366,7 @@ normal_space T -> set (topology_structure.Topological.sort T) -> uniformType
 
 urysohn_urysohnType__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_Uniform 
-  {T} normalT A%classical_set_scope
+  {T} normalT A%_classical_set_scope
 urysohn_urysohnType__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.urysohn_urysohnType__canonical__uniform_structure_Uniform
@@ -1378,7 +1378,7 @@ normal_space T -> set (topology_structure.Topological.sort T) -> uniformType
 
 urysohn_urysohnType__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_Uniform 
-  {T} normalT A%classical_set_scope
+  {T} normalT A%_classical_set_scope
 urysohn_urysohnType__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.urysohn_urysohnType__canonical__uniform_structure_Uniform
@@ -1390,7 +1390,7 @@ normal_space T -> set (topology_structure.Topological.sort T) -> uniformType
 
 urysohn_urysohnType__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_Uniform 
-  {T} normalT A%classical_set_scope
+  {T} normalT A%_classical_set_scope
 urysohn_urysohnType__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.urysohn_urysohnType__canonical__uniform_structure_Uniform
@@ -1402,7 +1402,7 @@ normal_space T -> set (topology_structure.Topological.sort T) -> uniformType
 
 urysohn_urysohnType__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_Uniform 
-  {T} normalT A%classical_set_scope
+  {T} normalT A%_classical_set_scope
 urysohn_urysohnType__canonical__uniform_structure_Uniform is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.urysohn_urysohnType__canonical__uniform_structure_Uniform
@@ -1419,7 +1419,7 @@ Pointed.axioms_ (topology_structure.Topological.sort T) -> puniformType
 
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_PointedUniform
-  {T} normalT A%classical_set_scope p
+  {T} normalT A%_classical_set_scope p
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.urysohn_urysohnType__canonical__uniform_structure_PointedUniform
@@ -1433,7 +1433,7 @@ Pointed.axioms_ (topology_structure.Topological.sort T) -> puniformType
 
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_PointedUniform
-  {T} normalT A%classical_set_scope p
+  {T} normalT A%_classical_set_scope p
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.urysohn_urysohnType__canonical__uniform_structure_PointedUniform
@@ -1447,7 +1447,7 @@ Pointed.axioms_ (topology_structure.Topological.sort T) -> puniformType
 
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_PointedUniform
-  {T} normalT A%classical_set_scope p
+  {T} normalT A%_classical_set_scope p
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.urysohn_urysohnType__canonical__uniform_structure_PointedUniform
@@ -1461,7 +1461,7 @@ Pointed.axioms_ (topology_structure.Topological.sort T) -> puniformType
 
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_PointedUniform
-  {T} normalT A%classical_set_scope p
+  {T} normalT A%_classical_set_scope p
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.urysohn_urysohnType__canonical__uniform_structure_PointedUniform
@@ -1475,7 +1475,7 @@ Pointed.axioms_ (topology_structure.Topological.sort T) -> puniformType
 
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_PointedUniform
-  {T} normalT A%classical_set_scope p
+  {T} normalT A%_classical_set_scope p
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.urysohn_urysohnType__canonical__uniform_structure_PointedUniform
@@ -1489,7 +1489,7 @@ Pointed.axioms_ (topology_structure.Topological.sort T) -> puniformType
 
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_PointedUniform
-  {T} normalT A%classical_set_scope p
+  {T} normalT A%_classical_set_scope p
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.urysohn_urysohnType__canonical__uniform_structure_PointedUniform
@@ -1506,7 +1506,7 @@ topology_structure.closed B ->
 (A `&` B)%classic = set0 -> uniform_separator A B
 
 normal_uniform_separator is not universe polymorphic
-Arguments normal_uniform_separator {T} normalT [A B]%classical_set_scope 
+Arguments normal_uniform_separator {T} normalT [A B]%_classical_set_scope 
   _ _ _
 normal_uniform_separator is opaque
 Expands to: Constant
@@ -1572,7 +1572,7 @@ uniform_separator A B <->
      & ([set f x | x in B] `<=` [set 1%R])%classic])
 
 uniform_separatorP is not universe polymorphic
-Arguments uniform_separatorP {T R} (A B)%classical_set_scope
+Arguments uniform_separatorP {T R} (A B)%_classical_set_scope
 uniform_separatorP is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.uniform_separatorP
@@ -1718,7 +1718,7 @@ forall {T : uniformType} [x : T] [B : set T],
 topology_structure.closed B -> ~ B x -> uniform_separator [set x] B
 
 point_uniform_separator is not universe polymorphic
-Arguments point_uniform_separator {R T} [x] [B]%classical_set_scope _ _
+Arguments point_uniform_separator {R T} [x] [B]%_classical_set_scope _ _
 point_uniform_separator is opaque
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.point_uniform_separator

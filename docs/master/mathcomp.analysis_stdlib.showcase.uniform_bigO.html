@@ -240,7 +240,7 @@ code is here: http://fost.saclay.inria.fr/coq_total/BigO.html.
 forall [A : Type], set (R * R) -> (A -> R * R -> R) -> (R * R -> R) -> Set
 
 OuP is not universe polymorphic
-Arguments OuP [A]%type_scope P%classical_set_scope (f g)%function_scope
+Arguments OuP [A]%_type_scope P%_classical_set_scope (f g)%_function_scope
 OuP is transparent
 Expands to: Constant mathcomp.analysis_stdlib.showcase.uniform_bigO.OuP
 Declared in
@@ -260,7 +260,7 @@ forall [A : Type],
 set (R * R) -> (A -> R * R -> R^o) -> (R * R -> R^o) -> Prop
 
 OuPex is not universe polymorphic
-Arguments OuPex [A]%type_scope P%classical_set_scope (f g)%function_scope
+Arguments OuPex [A]%_type_scope P%_classical_set_scope (f g)%_function_scope
 OuPex is transparent
 Expands to: Constant mathcomp.analysis_stdlib.showcase.uniform_bigO.OuPex
 Declared in
@@ -304,8 +304,8 @@ forall [A : Type] [P : set (R * R)] [f : A -> R * R -> R] [g : R * R -> R],
 OuP P f g -> OuPex P f g
 
 OuP_to_ex is not universe polymorphic
-Arguments OuP_to_ex [A]%type_scope [P]%classical_set_scope
-  [f g]%function_scope _
+Arguments OuP_to_ex [A]%_type_scope [P]%_classical_set_scope
+  [f g]%_function_scope _
 OuP_to_ex is opaque
 Expands to: Constant mathcomp.analysis_stdlib.showcase.uniform_bigO.OuP_to_ex
 Declared in
@@ -326,8 +326,8 @@ forall [A : Type] [P : set (R * R)] [f : A -> R * R -> R^o]
 OuPex P f g -> OuP P f g
 
 Ouex_to_P is not universe polymorphic
-Arguments Ouex_to_P [A]%type_scope [P]%classical_set_scope
-  [f g]%function_scope _
+Arguments Ouex_to_P [A]%_type_scope [P]%_classical_set_scope
+  [f g]%_function_scope _
 Ouex_to_P is opaque
 Expands to: Constant mathcomp.analysis_stdlib.showcase.uniform_bigO.Ouex_to_P
 Declared in
@@ -349,7 +349,7 @@ forall [A : Type],
 set (R * R) -> (A -> R * R -> R^o) -> (R * R -> R^o) -> Prop
 
 OuO is not universe polymorphic
-Arguments OuO [A]%type_scope P%classical_set_scope (f g)%function_scope
+Arguments OuO [A]%_type_scope P%_classical_set_scope (f g)%_function_scope
 OuO is transparent
 Expands to: Constant mathcomp.analysis_stdlib.showcase.uniform_bigO.OuO
 Declared in
@@ -363,8 +363,8 @@ forall [A : Type] [P : set (R * R)] [f : A -> R * R -> R] [g : R * R -> R],
 OuP P f g -> OuO P f g
 
 OuP_to_O is not universe polymorphic
-Arguments OuP_to_O [A]%type_scope [P]%classical_set_scope
-  [f g]%function_scope _
+Arguments OuP_to_O [A]%_type_scope [P]%_classical_set_scope
+  [f g]%_function_scope _
 OuP_to_O is opaque
 Expands to: Constant mathcomp.analysis_stdlib.showcase.uniform_bigO.OuP_to_O
 Declared in
@@ -389,8 +389,8 @@ forall [A : Type] [P : set (R * R)] [f : A -> R * R -> R^o]
 OuO P f g -> OuP P f g
 
 OuO_to_P is not universe polymorphic
-Arguments OuO_to_P [A]%type_scope [P]%classical_set_scope
-  [f g]%function_scope _
+Arguments OuO_to_P [A]%_type_scope [P]%_classical_set_scope
+  [f g]%_function_scope _
 OuO_to_P is opaque
 Expands to: Constant mathcomp.analysis_stdlib.showcase.uniform_bigO.OuO_to_P
 Declared in

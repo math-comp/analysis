@@ -622,7 +622,7 @@ instantiated during the proof process.
 <span class="vernacular">Definition</span><span class="id"> </span><span id="eventually" class="id"><a name="eventually" class="" title="eventually : (nat -> Prop) -> nat -> Prop
 
 eventually is not universe polymorphic
-Arguments eventually Q%function_scope n%nat_scope
+Arguments eventually Q%_function_scope n%_nat_scope
 eventually is transparent
 Expands to: Constant Stdlib.Arith.Between.eventually
 Declared in library Stdlib.Arith.Between, line 203, characters 13-23
@@ -1233,8 +1233,8 @@ forall [A : Type] (f : A -> bool) (l l' : seq A),
 List.filter f (l ++ l')%list = (List.filter f l ++ List.filter f l')%list
 
 filter_app is not universe polymorphic
-Arguments filter_app [A]%type_scope f%function_scope
-  (l l')%seq_scope%list_scope
+Arguments filter_app [A]%_type_scope f%_function_scope
+  (l l')%_seq_scope%_list_scope
 filter_app is opaque
 Expands to: Constant Stdlib.Lists.List.filter_app
 Declared in library Stdlib.Lists.List, line 1586, characters 10-20
@@ -1959,7 +1959,7 @@ forall {T : predArgType} [P : {pred T} -> Prop],
 forall A : {pred T}, P A : Prop
 
 withinT is not universe polymorphic
-Arguments withinT {T}%type_scope [P]%function_scope _ A
+Arguments withinT {T}%_type_scope [P]%_function_scope _ A
 withinT is opaque
 Expands to: Constant mathcomp.classical.wochoice.withinT
 Declared in library mathcomp.classical.wochoice, line 54, characters 6-13
@@ -2025,7 +2025,7 @@ forall [T : finType] (p : T -> bool) [s1 s2 : seq T],
 s1 \subset s2 -> [seq a <- s1 | p a] \subset [seq a <- s2 | p a]
 
 subset_filter is not universe polymorphic
-Arguments subset_filter [T] p%function_scope [s1 s2]%seq_scope _
+Arguments subset_filter [T] p%_function_scope [s1 s2]%_seq_scope _
 subset_filter is opaque
 Expands to: Constant mathcomp.boot.fintype.subset_filter
 Declared in library mathcomp.boot.fintype, line 692, characters 6-19

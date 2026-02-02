@@ -274,7 +274,7 @@ forall [T : Type] [R : numDomainType],
 (set T -> \bar R) -> (T -> R) -> GRing.BaseAddUMagma.sort \bar R
 
 sintegral is not universe polymorphic
-Arguments sintegral [T]%type_scope [R] (mu f)%function_scope
+Arguments sintegral [T]%_type_scope [R] (mu f)%_function_scope
 sintegral is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegral
@@ -288,7 +288,7 @@ sintegral (R:=R) mu f =
 (\sum_(x \in [set: R]) (x%:E * mu (f @^-1` [set x])%classic)%E)%R
 
 sintegralET is not universe polymorphic
-Arguments sintegralET [T]%type_scope [R] (mu f)%function_scope
+Arguments sintegralET [T]%_type_scope [R] (mu f)%_function_scope
 sintegralET is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegralET
@@ -317,7 +317,7 @@ sintegral (R:=R) mu f =
 (\sum_(x \in range f) (x%:E * mu (f @^-1` [set x])%classic)%E)%R
 
 sintegralE is not universe polymorphic
-Arguments sintegralE [d]%measure_display_scope [T R] mu f%function_scope
+Arguments sintegralE [d]%_measure_display_scope [T R] mu f%_function_scope
 sintegralE is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegralE
@@ -338,7 +338,7 @@ forall [d : measure_display] [T : sigmaRingType d]
 sintegral (R:=R) mu (cst 0%R) = 0%R
 
 sintegral0 is not universe polymorphic
-Arguments sintegral0 [d]%measure_display_scope [T R] mu
+Arguments sintegral0 [d]%_measure_display_scope [T R] mu
 sintegral0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegral0
@@ -360,7 +360,7 @@ forall [d : measure_display] [T : sigmaRingType d]
 (0%R <= sintegral (R:=R) mu f)%E
 
 sintegral_ge0 is not universe polymorphic
-Arguments sintegral_ge0 [d]%measure_display_scope [T R] mu f
+Arguments sintegral_ge0 [d]%_measure_display_scope [T R] mu f
 sintegral_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegral_ge0
@@ -378,8 +378,8 @@ forall [d : measure_display] [T : sigmaRingType d]
 sintegral (R:=R) mu (\1_A)%R = mu A
 
 sintegral_indic is not universe polymorphic
-Arguments sintegral_indic [d]%measure_display_scope 
-  [T R] mu A%classical_set_scope
+Arguments sintegral_indic [d]%_measure_display_scope 
+  [T R] mu A%_classical_set_scope
 sintegral_indic is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegral_indic
@@ -405,7 +405,7 @@ sintegral (R:=R) mu f =
 (\sum_(x \in [set r | 0 < r]) (x%:E * mu (f @^-1` [set x])%classic)%E)%R
 
 sintegralEnnsfun is not universe polymorphic
-Arguments sintegralEnnsfun [d]%measure_display_scope [T R] mu f
+Arguments sintegralEnnsfun [d]%_measure_display_scope [T R] mu f
 sintegralEnnsfun is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegralEnnsfun
@@ -430,8 +430,9 @@ forall {d : measure_display} {T : sigmaRingType d}
 f =1 g -> sintegral (R:=R) mu f = sintegral (R:=R) mu g
 
 eq_sintegral is not universe polymorphic
-Arguments eq_sintegral {d}%measure_display_scope {T R} 
-  {mu}%function_scope (g f)%function_scope _
+Arguments eq_sintegral {d}%_measure_display_scope 
+  {T R} {mu}%_function_scope (g f)%_function_scope 
+  _
 eq_sintegral is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.eq_sintegral
@@ -462,8 +463,8 @@ forall f : {nnsfun T >-> R},
 (sintegral (R:=R) m1 f <= sintegral (R:=R) m2 f)%E
 
 le_measure_sintegral is not universe polymorphic
-Arguments le_measure_sintegral {d}%measure_display_scope 
-  {T R} [m1 m2] m12%function_scope f
+Arguments le_measure_sintegral {d}%_measure_display_scope 
+  {T R} [m1 m2] m12%_function_scope f
 le_measure_sintegral is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.le_measure_sintegral
@@ -492,7 +493,7 @@ forall [d : measure_display] [T : sigmaRingType d]
 sintegral (R:=R) m (cst r \* f)%R = (r%:E * sintegral (R:=R) m f)%E
 
 sintegralrM is not universe polymorphic
-Arguments sintegralrM [d]%measure_display_scope [T R] m r%ring_scope f
+Arguments sintegralrM [d]%_measure_display_scope [T R] m r%_ring_scope f
 sintegralrM is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegralrM
@@ -527,7 +528,7 @@ sintegral (R:=R) m (f \+ g)%R =
 (sintegral (R:=R) m f + sintegral (R:=R) m g)%R
 
 sintegralD is not universe polymorphic
-Arguments sintegralD [d]%measure_display_scope [T R] m f g
+Arguments sintegralD [d]%_measure_display_scope [T R] m f g
 sintegralD is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.sintegralD
@@ -584,7 +585,7 @@ forall [d : measure_display] [T : measurableType d]
 
 Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
-  [d]%measure_display_scope [T R f g] fg%function_scope
+  [d]%_measure_display_scope [T R f g] fg%_function_scope
 Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
@@ -597,7 +598,7 @@ forall [d : measure_display] [T : measurableType d]
 
 Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
-  [d]%measure_display_scope [T R f g] fg%function_scope
+  [d]%_measure_display_scope [T R f g] fg%_function_scope
 Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
@@ -610,7 +611,7 @@ forall [d : measure_display] [T : measurableType d]
 
 Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
-  [d]%measure_display_scope [T R f g] fg%function_scope
+  [d]%_measure_display_scope [T R f g] fg%_function_scope
 Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
@@ -623,7 +624,7 @@ forall [d : measure_display] [T : measurableType d]
 
 Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
-  [d]%measure_display_scope [T R f g] fg%function_scope
+  [d]%_measure_display_scope [T R f g] fg%_function_scope
 Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
@@ -636,7 +637,7 @@ forall [d : measure_display] [T : measurableType d]
 
 Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
-  [d]%measure_display_scope [T R f g] fg%function_scope
+  [d]%_measure_display_scope [T R f g] fg%_function_scope
 Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
@@ -649,7 +650,7 @@ forall [d : measure_display] [T : measurableType d]
 
 Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is not universe polymorphic
 Arguments Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
-  [d]%measure_display_scope [T R f g] fg%function_scope
+  [d]%_measure_display_scope [T R f g] fg%_function_scope
 Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.Algebra_sub_fun__canonical__HBNNSimple_NonNegSimpleFun
@@ -664,8 +665,8 @@ forall [d : measure_display] [T : measurableType d]
 (sintegral (R:=R) m f <= sintegral (R:=R) m g)%E
 
 le_sintegral is not universe polymorphic
-Arguments le_sintegral [d]%measure_display_scope [T R] 
-  m [f g] fg%function_scope
+Arguments le_sintegral [d]%_measure_display_scope 
+  [T R] m [f g] fg%_function_scope
 le_sintegral is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.le_sintegral
@@ -718,8 +719,8 @@ exists2 i : nat,
   ((fun N : nat => [set n | N <= n]) i
    `<=` (sintegral (R:=R) m \o (fun x : nat => f x)) @^-1` t)%classic
 
-Arguments is_cvg_sintegral [d]%measure_display_scope 
-  [T R m f] _%function_scope [t] _
+Arguments is_cvg_sintegral [d]%_measure_display_scope 
+  [T R m f] _%_function_scope [t] _
 is_cvg_sintegral is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.is_cvg_sintegral
@@ -827,8 +828,8 @@ forall [d : measure_display] [T : measurableType d]
       (filter.nbhs filter.eventually)))%E
 
 nd_sintegral_lim_lemma is not universe polymorphic
-Arguments nd_sintegral_lim_lemma [d]%measure_display_scope 
-  [T R] mu [g f] (nd_g gf)%function_scope
+Arguments nd_sintegral_lim_lemma [d]%_measure_display_scope 
+  [T R] mu [g f] (nd_g gf)%_function_scope
 nd_sintegral_lim_lemma is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.nd_sintegral_lim_lemma
@@ -926,8 +927,8 @@ filter.lim
      (filter.nbhs filter.eventually))
 
 nd_sintegral_lim is not universe polymorphic
-Arguments nd_sintegral_lim [d]%measure_display_scope 
-  [T R] mu [g f] (nd_g gf)%function_scope
+Arguments nd_sintegral_lim [d]%_measure_display_scope 
+  [T R] mu [g f] (nd_g gf)%_function_scope
 nd_sintegral_lim is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.nd_sintegral_lim
@@ -968,8 +969,8 @@ GRing.BaseAddMagma.sort
   constructive_ereal_extended__canonical__Algebra_BaseAddMagma
 
 integral is not universe polymorphic
-Arguments integral [d]%measure_display_scope [T R] 
-  mu%function_scope D%classical_set_scope f%function_scope
+Arguments integral [d]%_measure_display_scope [T R] 
+  mu%_function_scope D%_classical_set_scope f%_function_scope
 integral is transparent
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral
@@ -1024,8 +1025,8 @@ forall {d : measure_display} {T : measurableType d}
 {in D, f =1 g} -> (\int[mu]_(x in D) f x)%E = (\int[mu]_(x in D) g x)%E
 
 eq_integral is not universe polymorphic
-Arguments eq_integral {d}%measure_display_scope {T R mu}
-  {D}%classical_set_scope (g f)%function_scope _
+Arguments eq_integral {d}%_measure_display_scope {T R mu}
+  {D}%_classical_set_scope (g f)%_function_scope _
 eq_integral is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.eq_integral
@@ -1050,9 +1051,9 @@ forall [d : measure_display] [T : measurableType d]
   mu (f \_ D)
 
 ge0_integralE is not universe polymorphic
-Arguments ge0_integralE [d]%measure_display_scope 
-  [T R] mu [D]%classical_set_scope [f]%function_scope 
-  _%function_scope
+Arguments ge0_integralE [d]%_measure_display_scope 
+  [T R] mu [D]%_classical_set_scope [f]%_function_scope 
+  _%_function_scope
 ge0_integralE is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.ge0_integralE
@@ -1081,8 +1082,8 @@ forall [d : measure_display] [T : measurableType d]
   mu f
 
 ge0_integralTE is not universe polymorphic
-Arguments ge0_integralTE [d]%measure_display_scope 
-  [T R] mu [f]%function_scope _%function_scope
+Arguments ge0_integralTE [d]%_measure_display_scope 
+  [T R] mu [f]%_function_scope _%_function_scope
 ge0_integralTE is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.ge0_integralTE
@@ -1102,8 +1103,8 @@ forall [d : measure_display] [T : measurableType d]
 (\int[mu]_(x in D) f^\+ x - \int[mu]_(x in D) f^\- x)%E
 
 integralE is not universe polymorphic
-Arguments integralE [d]%measure_display_scope [T R] 
-  mu D%classical_set_scope f%function_scope
+Arguments integralE [d]%_measure_display_scope [T R] 
+  mu D%_classical_set_scope f%_function_scope
 integralE is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integralE
@@ -1123,7 +1124,8 @@ forall [d : measure_display] [T : measurableType d]
 (\int[mu]_(x in D) cst 0%R x)%E = 0%R
 
 integral0 is not universe polymorphic
-Arguments integral0 [d]%measure_display_scope [T R] mu D%classical_set_scope
+Arguments integral0 [d]%_measure_display_scope [T R] 
+  mu D%_classical_set_scope
 integral0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral0
@@ -1141,8 +1143,9 @@ forall [d : measure_display] [T : measurableType d]
 (forall x : T, D x -> f x = 0%R) -> (\int[mu]_(x in D) f x)%E = 0%R
 
 integral0_eq is not universe polymorphic
-Arguments integral0_eq [d]%measure_display_scope [T R] 
-  mu [D]%classical_set_scope [f]%function_scope _%function_scope
+Arguments integral0_eq [d]%_measure_display_scope 
+  [T R] mu [D]%_classical_set_scope [f]%_function_scope 
+  _%_function_scope
 integral0_eq is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral0_eq
@@ -1163,8 +1166,9 @@ forall [d : measure_display] [T : measurableType d]
 (forall x : T, D x -> (0%R <= f x)%E) -> (0%R <= \int[mu]_(x in D) f x)%E
 
 integral_ge0 is not universe polymorphic
-Arguments integral_ge0 [d]%measure_display_scope [T R] 
-  mu [D]%classical_set_scope [f]%function_scope _%function_scope
+Arguments integral_ge0 [d]%_measure_display_scope 
+  [T R] mu [D]%_classical_set_scope [f]%_function_scope 
+  _%_function_scope
 integral_ge0 is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral_ge0
@@ -1186,8 +1190,8 @@ forall h : {nnsfun T >-> R},
 (\int[mu]_(x in D) (h x)%:E)%E = sintegral (R:=R) mu (h \_ D)
 
 integral_nnsfun is not universe polymorphic
-Arguments integral_nnsfun [d]%measure_display_scope 
-  [T R] mu [D]%classical_set_scope mD h
+Arguments integral_nnsfun [d]%_measure_display_scope 
+  [T R] mu [D]%_classical_set_scope mD h
 integral_nnsfun is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral_nnsfun
@@ -1232,9 +1236,9 @@ measurable_fun (T:=T)
 (\int[m1]_(x in S) f x <= \int[m2]_(x in S) f x)%E
 
 ge0_le_measure_integral is not universe polymorphic
-Arguments ge0_le_measure_integral {d}%measure_display_scope 
-  {T R} [m1 m2] m12%function_scope [f]%function_scope 
-  [S]%classical_set_scope _ _%function_scope _
+Arguments ge0_le_measure_integral {d}%_measure_display_scope 
+  {T R} [m1 m2] m12%_function_scope [f]%_function_scope
+  [S]%_classical_set_scope _ _%_function_scope _
 ge0_le_measure_integral is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.ge0_le_measure_integral
@@ -1270,8 +1274,8 @@ d.-measurable%classic A ->
 (\int[mu]_(x in D) (\1_A x)%:E)%E = mu (A `&` D)%classic
 
 integral_indic is not universe polymorphic
-Arguments integral_indic [d]%measure_display_scope 
-  [T R] mu [D]%classical_set_scope mD [A]%classical_set_scope 
+Arguments integral_indic [d]%_measure_display_scope 
+  [T R] mu [D]%_classical_set_scope mD [A]%_classical_set_scope 
   _
 integral_indic is opaque
 Expands to: Constant
@@ -1300,8 +1304,8 @@ forall {d : measure_display} {T : measurableType d}
 (\int[mu]_(x in D) f x)%E = (\int[mu]_x (f \_ D) x)%E
 
 integral_mkcond is not universe polymorphic
-Arguments integral_mkcond {d}%measure_display_scope 
-  {T R mu} D%classical_set_scope f%function_scope
+Arguments integral_mkcond {d}%_measure_display_scope 
+  {T R mu} D%_classical_set_scope f%_function_scope
 integral_mkcond is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral_mkcond
@@ -1321,7 +1325,7 @@ forall [d : measure_display] [T : measurableType d]
 (\int[mu]_x (h x)%:E)%E = sintegral (R:=R) mu h
 
 integralT_nnsfun is not universe polymorphic
-Arguments integralT_nnsfun [d]%measure_display_scope [T R] mu h
+Arguments integralT_nnsfun [d]%_measure_display_scope [T R] mu h
 integralT_nnsfun is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integralT_nnsfun
@@ -1341,8 +1345,8 @@ forall [d : measure_display] [T : measurableType d]
 (\int[mu]_(x in D `&` P) f x)%E = (\int[mu]_(x in D) (f \_ P) x)%E
 
 integral_mkcondr is not universe polymorphic
-Arguments integral_mkcondr [d]%measure_display_scope 
-  [T R] mu (D P)%classical_set_scope f%function_scope
+Arguments integral_mkcondr [d]%_measure_display_scope 
+  [T R] mu (D P)%_classical_set_scope f%_function_scope
 integral_mkcondr is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral_mkcondr
@@ -1362,8 +1366,8 @@ forall [d : measure_display] [T : measurableType d]
 (\int[mu]_(x in P `&` D) f x)%E = (\int[mu]_(x in D) (f \_ P) x)%E
 
 integral_mkcondl is not universe polymorphic
-Arguments integral_mkcondl [d]%measure_display_scope 
-  [T R] mu (D P)%classical_set_scope f%function_scope
+Arguments integral_mkcondl [d]%_measure_display_scope 
+  [T R] mu (D P)%_classical_set_scope f%_function_scope
 integral_mkcondl is opaque
 Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.integral_mkcondl
