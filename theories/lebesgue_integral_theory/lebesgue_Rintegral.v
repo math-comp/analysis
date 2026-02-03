@@ -146,7 +146,7 @@ Lemma Rintegral_set0 f : \int[mu]_(x in set0) f x = 0.
 Proof. by rewrite /Rintegral integral_set0. Qed.
 
 Lemma Rintegral_cst D : d.-measurable D ->
-  forall r, \int[mu]_(x in D) (cst r) x = r * fine (mu D).
+  forall r, \int[mu]_(_ in D) r = r * fine (mu D).
 Proof.
 move=> mD r; rewrite /Rintegral/= integral_cst//.
 have := leey (mu D); rewrite le_eqVlt => /predU1P[->/=|muy]; last first.
