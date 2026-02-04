@@ -1,8 +1,8 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
 From mathcomp Require Import reals topology_structure uniform_structure compact.
-From mathcomp Require Import pseudometric_structure connected weak_topology.
+From mathcomp Require Import pseudometric_structure connected initial_topology.
 From mathcomp Require Import product_topology subspace_topology.
 
 (**md**************************************************************************)
@@ -30,13 +30,13 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 HB.instance Definition _ {X : topologicalType} (A : set X) :=
-  Topological.copy (set_type A) (weak_topology set_val).
+  Topological.copy (set_type A) (initial_topology set_val).
 
 HB.instance Definition _ {X : uniformType} (A : set X) :=
-  Uniform.copy (A : Type) (@weak_topology (A : Type) X set_val).
+  Uniform.copy (A : Type) (@initial_topology (A : Type) X set_val).
 
 HB.instance Definition _ {R : realType} {X : pseudoMetricType R} (A : set X) :=
-  PseudoMetric.copy (A : Type) (@weak_topology (A : Type) X set_val).
+  PseudoMetric.copy (A : Type) (@initial_topology (A : Type) X set_val).
 
 Section subspace_sig.
 Context {X : topologicalType} (A : set X).
@@ -62,7 +62,7 @@ Lemma subspace_sigL_continuousP {Y : topologicalType} (f : X -> Y) :
 Proof.
 split.
   have /continuous_subspaceT/subspaceT_continuous :=
-    @weak_continuous A X set_val.
+    @initial_continuous A X set_val.
   move=> svf ctsf; apply/continuous_subspace_setT => x.
   apply: (@continuous_comp (subspace _) (subspace A)); last exact: ctsf.
   by move=> U nfU; exact: svf.
