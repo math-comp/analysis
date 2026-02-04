@@ -118,3 +118,6 @@ have [xle0|xgt0] := leP x 0.
 case: (Rlt_dec 0 x) => [/= ? | /RltP/[!xgt0]//].
 by case: ln_exists => y ->; rewrite RexpE exp.expRK.
 Qed.
+
+(* extend RealsE from Rstruct.v *)
+Definition RealsE := (RealsE, RexpE, RlnE).

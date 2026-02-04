@@ -12,7 +12,7 @@ From mathcomp Require Import all_ssreflect ssralg poly ssrnum archimedean.
 (* This essentially builds an instance of realType for the R type from the    *)
 (* Stdlib library. This enables specializing all proofs on realType (that is, *)
 (* many things in the Analysis library) to Stdlib's real numbers. To this     *)
-(* end, one can use tactics like `apply: RleP` or `rewrite !(RplusE, RmultE)` *)
+(* end, one can use tactics like `apply: RleP` or `rewrite !RealsE`           *)
 (* (see below for more compatibility lemmas).                                 *)
 (******************************************************************************)
 
@@ -549,6 +549,10 @@ Qed.
 
 Lemma factE n : fact n = n`!.
 Proof. by elim: n => //= n ih; rewrite factS mulSn ih. Qed.
+
+Definition RealsE := (RplusE, RminusE, RmultE, RoppE, RinvE, RdivE,
+  INRE, R0E, R1E, Pos_to_natE, IZRposE, RsqrtE, RpowE, RmaxE, RminE,
+  RabsE, RdistE, sum_f_R0E, factE).
 
 Section bigmaxr.
 Context {R : realDomainType}.

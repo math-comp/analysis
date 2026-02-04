@@ -11,6 +11,7 @@
 
 - in `Rstruct.v`:
   + lemmas `R0E` and `R1E`
+  + multirule `RealsE` to convert from Stdlib reals to Analysis ones
 
 - in `Rstruct_topology.v`:
   + lemma `RlnE`
