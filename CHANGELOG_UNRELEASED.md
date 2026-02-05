@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Added
+- in order_topology.v
+  + lemma `itv_closed_ends_closed`
+
 - in set_interval.v
   + definitions `itv_is_closed_unbounded`, `itv_is_cc`, `itv_closed_ends`
 
