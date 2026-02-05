@@ -1,3 +1,21 @@
+(* see below (after doc) for copyright notice *)
+From Coq Require Import ZArith Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
+From Coq Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
+From Coq Require Import Rtrigo1 Reals.
+From HB Require Import structures.
+From mathcomp Require Import all_ssreflect ssralg poly ssrnum archimedean.
+
+
+(**md**************************************************************************)
+(* # Compatibility with the real numbers of Rocq                              *)
+(*                                                                            *)
+(* This essentially builds an instance of realType for the R type from the    *)
+(* Stdlib library. This enables specializing all proofs on realType (that is  *)
+(* many things in the Analysis library) to Stdlib's real numbers. To this     *)
+(* end, one can use tactics like `apply: RleP` or `rewrite !(RplusE, RmultE)` *)
+(* (see below for more compatibility lemmas).                                 *)
+(******************************************************************************)
+
 (* This file is a modification of an eponymous file from the CoqApprox        *)
 (* library. The header of the original file is reproduced below. Changes are  *)
 (* part of the analysis library and enjoy the same licence as this library.   *)
@@ -20,16 +38,6 @@ only with a limited warranty and the library's author, the holder of
 the economic rights, and the successive licensors have only limited
 liability. See the COPYING file for more details.
 *)
-
-(**md**************************************************************************)
-(* # Compatibility with the real numbers of Coq                               *)
-(******************************************************************************)
-
-From Coq Require Import ZArith Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
-From Coq Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
-From Coq Require Import Rtrigo1 Reals.
-From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg poly ssrnum archimedean.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
