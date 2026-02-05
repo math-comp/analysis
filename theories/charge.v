@@ -7,7 +7,7 @@ From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets cardinality.
 From mathcomp Require Import functions fsbigop set_interval reals.
 From mathcomp Require Import interval_inference ereal topology numfun.
-From mathcomp Require Import normedtype sequences esum measure realfun.
+From mathcomp Require Import normedtype derive sequences esum measure realfun.
 From mathcomp Require Import lebesgue_measure lebesgue_integral.
 
 (**md**************************************************************************)
@@ -84,7 +84,7 @@ Reserved Notation "{ 'additive_charge' 'set' T '->' '\bar' R }"
 Reserved Notation "{ 'charge' 'set' T '->' '\bar' R }"
   (at level 36, T, R at next level,
     format "{ 'charge'  'set'  T  '->'  '\bar'  R }").
-Reserved Notation "'d nu '/d mu" (at level 10, nu, mu at next level,
+Reserved Notation "'d nu '/d mu" (mu at next level,
   format "''d'  nu  ''/d'  mu").
 Reserved Notation "nu .-negative_set" (at level 2, format "nu .-negative_set").
 Reserved Notation "nu .-positive_set" (at level 2, format "nu .-positive_set").
