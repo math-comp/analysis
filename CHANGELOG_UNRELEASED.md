@@ -9,6 +9,9 @@
 - in set_interval.v
   + definitions `itv_is_closed_unbounded`, `itv_is_cc`, `itv_closed_ends`
 
+- in `Rstruct.v`:
+  + lemmas `R0E` and `R1E`
+
 - in `Rstruct_topology.v`:
   + lemma `RlnE`
 

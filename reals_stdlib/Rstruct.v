@@ -491,6 +491,9 @@ by elim: p => //= p <-;
   rewrite ?(Pnat.Pos2Nat.inj_xI,Pnat.Pos2Nat.inj_xO) NatTrec.doubleE -mul2n.
 Qed.
 
+Lemma R0E : IZR 0 = 0%R. Proof. by []. Qed.
+Lemma R1E : IZR 1 = 1%R. Proof. by []. Qed.
+
 (**md Note that rewrites using the following lemma `IZRposE` are
   systematically followed by a rewrite using the lemma `INRE`. *)
 Lemma IZRposE (p : positive) : IZR (Z.pos p) = INR (nat_of_pos p).
