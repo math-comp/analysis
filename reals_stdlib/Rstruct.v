@@ -10,7 +10,7 @@ From mathcomp Require Import all_ssreflect ssralg poly ssrnum archimedean.
 (* # Compatibility with the real numbers of Rocq                              *)
 (*                                                                            *)
 (* This essentially builds an instance of realType for the R type from the    *)
-(* Stdlib library. This enable to specialize all proofs on realType (that is  *)
+(* Stdlib library. This enables specializing all proofs on realType (that is  *)
 (* many things in the Analysis library) to Stdlib's real numbers. To this     *)
 (* end, one can use tactics like `apply: RleP` or `rewrite !(RplusE, RmultE)` *)
 (* (see below for more compatibility lemmas).                                 *)
