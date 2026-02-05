@@ -104,7 +104,7 @@ endif
 
 DOCDIR=html
 
-GIT_HASH = $(shell git rev-parse --short HEAD)
+GIT_HASH := $(shell git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD)
 
 $(DOCDIR)/dependency_graph.pre:
 	mkdir -p $(DOCDIR)
