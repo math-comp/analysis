@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Added
+- in order_topology.v
+  + lemma `itv_closed_ends_closed`
+
 - in set_interval.v
   + definitions `itv_is_closed_unbounded`, `itv_is_cc`, `itv_closed_ends`
 
@@ -10,6 +13,9 @@
   + lemma `RlnE`
 
 ### Changed
+- in set_interval.v
+  + `itv_is_closed_unbounded` (fix the definition)
+
 - in set_interval.v
   + `itv_is_open_unbounded`, `itv_is_oo`, `itv_open_ends` (Prop to bool)
 
