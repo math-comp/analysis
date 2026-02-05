@@ -111,6 +111,10 @@ Lemma itv_closed x y : @closed T `[x, y].
 Proof. by rewrite set_itv_splitI; apply: closedI => /=. Qed.
 Hint Resolve itv_closed : core.
 
+Lemma itv_closed_ends_closed (i : interval T) :
+  itv_closed_ends i -> closed [set` i].
+Proof. by case: i => [[[]t1|[]]] [[]t2|[]]. Qed.
+
 Lemma itv_closure x y : closure `]x, y[ `<=` `[x, y].
 Proof.
 rewrite closureE => r; apply; split => //.

@@ -850,7 +850,7 @@ Implicit Types (i : interval T).
 
 Definition itv_is_closed_unbounded i : bool :=
   match i with
-  | `[_, +oo[ | `]-oo, _[ | `]-oo, +oo[ => true
+  | `[_, +oo[ | `]-oo, _] | `]-oo, +oo[ => true
   | _ => false
   end.
 
