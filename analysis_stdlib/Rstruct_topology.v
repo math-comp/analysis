@@ -1,7 +1,7 @@
 (**md**************************************************************************)
-(* # Compatibility with the real numbers of Coq                               *)
+(* # Compatibility with the real numbers of Stdlib                            *)
 (*                                                                            *)
-(* Lemmas about continuity                                                    *)
+(* Extension to Rstruct.v (lemmas about continuity)                           *)
 (******************************************************************************)
 
 Require Import Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
