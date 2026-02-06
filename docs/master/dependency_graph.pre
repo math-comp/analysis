@@ -1117,6 +1117,7 @@ subgraph cluster_analysis { "theories/charge"[label="charge",URL="mathcomp.analy
   "classical/set_interval" -> "theories/charge";
   "classical/unstable" -> "theories/charge";
   "reals/reals" -> "theories/charge";
+  "theories/derive" -> "theories/charge";
   "theories/ereal" -> "theories/charge";
   "theories/esum" -> "theories/charge";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/charge";
