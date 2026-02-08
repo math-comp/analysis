@@ -595,7 +595,7 @@ split; first do [move=> ?; exists (Urysohn A B); split].
 - exact: Urysohn_sub0.
 - exact: Urysohn_sub1.
 case=> f [ctsf f01 fA0 fB1].
-pose T' : uniformType := weak_topology f.
+pose T' : uniformType := initial_topology f.
 exists (Uniform.class T'), ([set xy | ball (f xy.1) 1 (f xy.2)]); split.
 - exists [set xy | ball xy.1 1 xy.2]; last by case.
   by rewrite -entourage_ballE; exists 1 => //=.
@@ -703,7 +703,7 @@ Context {R : realType} {X : topologicalType}.
 Hypothesis crs : completely_regular_space X.
 
 Let X' : uniformType := @sup_topology X {f : X -> R | continuous f}
-  (fun f => Uniform.class (weak_topology (projT1 f))).
+  (fun f => Uniform.class (initial_topology (projT1 f))).
 
 Let completely_regular_nbhsE : @nbhs X X = nbhs_ (@entourage X').
 Proof.
@@ -728,7 +728,7 @@ exists E; first last.
   by apply: fU1; exists z.
 move=> r /= [_]; apply => /=.
 pose f' : {classic {f : X -> R | continuous f}} := exist _ f ctsf.
-suff /asboolP entE : @entourage (weak_topology f) (f', E).2.
+suff /asboolP entE : @entourage (initial_topology f) (f', E).2.
   by exists (exist _ (f', E) entE).
 exists (fun pq => ball pq.1 1 pq.2) => //=.
 by rewrite /entourage /=; exists 1 => /=.
@@ -774,9 +774,11 @@ HB.instance Definition _ := Uniform.copy opc
   (@completely_regular_uniformity.type R _
     one_point_compactification_completely_reg).
 
-Let X' := @weak_topology X opc Some.
+Let X' := @initial_topology X opc Some.
 Lemma nbhs_one_point_compactification_weakE : @nbhs X X = nbhs_ (@entourage X').
-Proof. by rewrite nbhs_entourageE one_point_compactification_weak_topology. Qed.
+Proof.
+by rewrite nbhs_entourageE one_point_compactification_initial_topology.
+Qed.
 
 #[local, non_forgetful_inheritance]
 HB.instance Definition _ := @Nbhs_isUniform.Build

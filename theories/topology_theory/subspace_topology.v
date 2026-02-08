@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
-From mathcomp Require Import topology_structure uniform_structure compact .
-From mathcomp Require Import pseudometric_structure connected weak_topology.
+From mathcomp Require Import topology_structure uniform_structure compact.
+From mathcomp Require Import pseudometric_structure connected initial_topology.
 From mathcomp Require Import product_topology.
 
 (**md**************************************************************************)
@@ -564,11 +564,11 @@ Proof. by []. Qed.
 
 End SubspacePseudoMetric.
 
-Section SubspaceWeak.
+Section SubspaceInitial.
 Context {T : topologicalType} {U : choiceType}.
 Variables (f : U -> T).
 
-Lemma weak_subspace_open (A : set (weak_topology f)) :
+Lemma initial_subspace_open (A : set (initial_topology f)) :
   open A -> open (f @` A : set (subspace (range f))).
 Proof.
 case=> B oB <-; apply/open_subspaceP; exists B; split => //; rewrite eqEsubset.
@@ -576,7 +576,7 @@ split => z [] /[swap]; first by case=> w _ <- ?; split; exists w.
 by case=> w _ <- [v] ? <-.
 Qed.
 
-End SubspaceWeak.
+End SubspaceInitial.
 
 Lemma continuous_compact {T U : topologicalType} (f : T -> U) A :
   {within A, continuous f} -> compact A -> compact (f @` A).

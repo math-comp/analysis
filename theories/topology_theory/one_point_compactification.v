@@ -1,7 +1,8 @@
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
 From mathcomp Require Import topology_structure uniform_structure.
-From mathcomp Require Import pseudometric_structure compact weak_topology.
+From mathcomp Require Import pseudometric_structure compact initial_topology.
 
 (**md**************************************************************************)
 (* # One-Point Compactifications                                              *)
@@ -93,10 +94,10 @@ rewrite !openE/= => UU' opcX [x /UU' Ux <-].
 exact/one_point_compactification_some_nbhs.
 Qed.
 
-Lemma one_point_compactification_weak_topology :
-  @nbhs _ (@weak_topology X opc Some) = @nbhs _ X.
+Lemma one_point_compactification_initial_topology :
+  @nbhs _ (@initial_topology X opc Some) = @nbhs _ X.
 Proof.
-rewrite predeq2E => x U; split; rewrite /(@nbhs _ (weak_topology _))/=.
+rewrite predeq2E => x U; split; rewrite /(@nbhs _ (initial_topology _))/=.
   case=> _ [[/= W] oW <- /= WSs] /filterS; apply.
   exact/one_point_compactification_some_continuous/oW.
 rewrite nbhsE => -[V [oV Vx VU]]; exists V; split => //.

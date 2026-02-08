@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2024 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
@@ -60,7 +60,7 @@ HB.instance Definition _ {i : bpTopologicalType}
 HB.instance Definition _ {i : bpTopologicalType}
     {T : topologicalType} (x y : T) :=
   Topological.copy {path i from x to y}
-    (@weak_topology {path i from x to y} {compact-open, i -> T} id).
+    (@initial_topology {path i from x to y} {compact-open, i -> T} id).
 
 Section path_eq.
 Context {T : topologicalType} {i : bpTopologicalType} (x y : T).

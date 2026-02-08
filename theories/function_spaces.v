@@ -126,18 +126,18 @@ Variable I : Type.
 
 Definition product_topology_def (T : I -> topologicalType) :=
   sup_topology (fun i => Topological.class
-    (weak_topology (fun f : (forall i, T i) => f i))).
+    (initial_topology (fun f : (forall i, T i) => f i))).
 
 HB.instance Definition _ (T : I -> topologicalType) :=
   Topological.copy (prod_topology T) (product_topology_def T).
 
 HB.instance Definition _ (T : I -> uniformType) :=
   Uniform.copy (prod_topology T)
-    (sup_topology (fun i => Uniform.class (weak_topology (@proj _ T i)))).
+    (sup_topology (fun i => Uniform.class (initial_topology (@proj _ T i)))).
 
 HB.instance Definition _ (R : realType) (Ii : countType)
     (Tc : Ii -> pseudoMetricType R) := PseudoMetric.copy (prod_topology Tc)
-  (sup_pseudometric (fun i => PseudoMetric.class (weak_topology (@proj _ Tc i)))
+  (sup_pseudometric (fun i => PseudoMetric.class (initial_topology (@proj _ Tc i)))
     (countableP _)).
 
 End Product_Topology.
@@ -156,12 +156,12 @@ HB.instance Definition _ (U : Type) (T : U -> uniformType) :=
 HB.instance Definition _ (U T : topologicalType) :=
   Topological.copy
     (continuousType U T)
-    (weak_topology (id : continuousType U T -> (U -> T))).
+    (initial_topology (id : continuousType U T -> (U -> T))).
 
 HB.instance Definition _ (U : topologicalType) (T : uniformType) :=
   Uniform.copy
     (continuousType U T)
-    (weak_topology (id : continuousType U T -> (U -> T))).
+    (initial_topology (id : continuousType U T -> (U -> T))).
 
 End ArrowAsProduct.
 
@@ -328,58 +328,58 @@ Definition separate_points_from_closed := forall (U : set T) x,
 Hypothesis sepf : separate_points_from_closed.
 Hypothesis ctsf : forall i, continuous (f_ i).
 
-Let weakT : topologicalType :=
-  sup_topology (fun i => Topological.on (weak_topology (f_ i))).
+Let initialT : topologicalType :=
+  sup_topology (fun i => Topological.on (initial_topology (f_ i))).
 
 Let PU : topologicalType := prod_topology U_.
 
-Local Notation sup_open := (@open weakT).
-Local Notation "'weak_open' i" := (@open weakT) (at level 0).
+Local Notation sup_open := (@open initialT).
+Local Notation "'weak_open' i" := (@open initialT) (at level 0).
 Local Notation natural_open := (@open T).
 
-Lemma weak_sep_cvg (F : set_system T) (x : T) :
-  Filter F -> (F --> (x : T)) <-> (F --> (x : weakT)).
+Lemma initial_sep_cvg (F : set_system T) (x : T) :
+  Filter F -> (F --> (x : T)) <-> (F --> (x : initialT)).
 Proof.
 move=> FF; split.
   move=> FTx; apply/cvg_sup => i U.
-  have /= -> := @nbhsE (weak_topology (f_ i)) x.
+  have /= -> := @nbhsE (initial_topology (f_ i)) x.
   case=> B [[C oC <- ?]] /filterS; apply; apply: FTx; rewrite /= nbhsE.
   by exists (f_ i @^-1` C) => //; split => //; exact: open_comp.
 move/cvg_sup => wiFx U; rewrite /= nbhs_simpl nbhsE => [[B [oB ?]]].
 move/filterS; apply; have [//|i nclfix] := @sepf _ x (open_closedC oB).
-apply: (wiFx i); have /= -> := @nbhsE (weak_topology (f_ i)) x.
+apply: (wiFx i); have /= -> := @nbhsE (initial_topology (f_ i)) x.
 exists (f_ i @^-1` (~` closure [set f_ i x | x in ~` B])); [split=>//|].
   apply: open_comp; last by rewrite ?openC//; exact: closed_closure.
-  by move=> + _; exact: (@weak_continuous _ _ (f_ i)).
+  by move=> + _; exact: (@initial_continuous _ _ (f_ i)).
 rewrite -interiorC interiorEbigcup preimage_bigcup => z [V [oV]] VnB => /VnB.
 by move/forall2NP => /(_ z) [] // /contrapT.
 Qed.
 
-Lemma weak_sep_nbhsE x : @nbhs T T x = @nbhs T weakT x.
+Lemma initial_sep_nbhsE x : @nbhs T T x = @nbhs T initialT x.
 Proof.
 rewrite predeqE => U; split; move: U.
-  by have P := weak_sep_cvg x (nbhs_filter (x : weakT)); exact/P.
-by have P := weak_sep_cvg x (nbhs_filter (x : T)); exact/P.
+  by have P := initial_sep_cvg x (nbhs_filter (x : initialT)); exact/P.
+by have P := initial_sep_cvg x (nbhs_filter (x : T)); exact/P.
 Qed.
 
-Lemma weak_sep_openE : @open T = @open weakT.
+Lemma initial_sep_openE : @open T = @open initialT.
 Proof.
 rewrite predeqE => A; rewrite ?openE /interior.
-by split => + z => /(_ z); rewrite weak_sep_nbhsE.
+by split => + z => /(_ z); rewrite initial_sep_nbhsE.
 Qed.
 
 Definition join_product (x : T) : PU := f_ ^~ x.
 
 Lemma join_product_continuous : continuous join_product.
 Proof.
-suff : continuous (join_product : weakT -> PU).
-  by move=> cts x U => /cts; rewrite nbhs_simpl /= -weak_sep_nbhsE.
-move=> x; apply/cvg_sup; first exact/fmap_filter/(nbhs_filter (x : weakT)).
-move=> i; move: x; apply/(@continuousP _ (weak_topology (@^~ i))) => A [B ? E].
+suff : continuous (join_product : initialT -> PU).
+  by move=> cts x U => /cts; rewrite nbhs_simpl /= -initial_sep_nbhsE.
+move=> x; apply/cvg_sup; first exact/fmap_filter/(nbhs_filter (x : initialT)).
+move=> i; move: x; apply/(@continuousP _ (initial_topology (@^~ i))) => A [B ? E].
 rewrite -E (_ : @^~ i =  proj i) //.
 have -> : join_product @^-1` (proj i @^-1` B) = f_ i @^-1` B by [].
 apply: open_comp => // + _; rewrite /cvg_to => x U.
-by rewrite nbhs_simpl /= -weak_sep_nbhsE; move: x U; exact: ctsf.
+by rewrite nbhs_simpl /= -initial_sep_nbhsE; move: x U; exact: ctsf.
 Qed.
 
 Local Notation prod_open := (@open (subspace (range join_product))).
@@ -411,8 +411,8 @@ apply/negP; move: P; apply: contra_not => /eqP; rewrite /join_product => ->.
 by apply: subset_closure; exists y.
 Qed.
 
-Lemma join_product_weak : set_inj [set: T] join_product ->
-  @open T = @open (weak_topology join_product).
+Lemma join_product_initial : set_inj [set: T] join_product ->
+  @open T = @open (initial_topology join_product).
 Proof.
 move=> inj; rewrite predeqE => U; split; first last.
   by move=> [V ? <-]; apply: open_comp => // + _; exact: join_product_continuous.
@@ -559,12 +559,12 @@ HB.instance Definition _ (U : choiceType) (R : numFieldType)
 HB.instance Definition _ (U : topologicalType) (T : uniformType) :=
   Uniform.copy
     (continuousType U T)
-    (weak_topology (id : continuousType U T -> (U -> T))).
+    (initial_topology (id : continuousType U T -> (U -> T))).
 
 HB.instance Definition _ (U : topologicalType) (R : realType)
      (T : pseudoMetricType R) :=
   PseudoMetric.on
-    (weak_topology (id : continuousType U T -> (U -> T))).
+    (initial_topology (id : continuousType U T -> (U -> T))).
 
 End ArrowAsUniformType.
 
@@ -632,7 +632,7 @@ Definition sigL_arrow {U : choiceType} (A : set U) (V : uniformType) :
   (U -> V) -> arrow_uniform_type A V := @sigL _ V A.
 
 HB.instance Definition _ (U : choiceType) (A : set U) (V : uniformType) :=
-  Uniform.copy {uniform` A -> V} (weak_topology (@sigL_arrow _ A V)).
+  Uniform.copy {uniform` A -> V} (initial_topology (@sigL_arrow _ A V)).
 
 Section RestrictedUniformTopology.
 Context {U : choiceType} (A : set U) {V : uniformType} .
@@ -1068,8 +1068,8 @@ HB.instance Definition _ (U : topologicalType) (V : topologicalType) :=
   Topological.copy (U -> V) {compact-open, U -> V}.
 
 HB.instance Definition _ (U : topologicalType) (V : topologicalType) :=
-  Topological.copy (continuousType U V) 
-    (weak_topology (id : (continuousType U V) -> (U -> V)) ).
+  Topological.copy (continuousType U V)
+    (initial_topology (id : (continuousType U V) -> (U -> V)) ).
 End ArrowAsCompactOpen.
 
 Definition compactly_in {U : topologicalType} (A : set U) :=
@@ -1606,7 +1606,7 @@ Lemma eval_continuous {X Y : topologicalType} :
   locally_compact [set: X] -> regular_space X -> continuous (@eval X Y).
 Proof.
 move=> lcX rsX; apply: continuous_uncurry_regular => //.
-  exact: weak_continuous.
+  exact: initial_continuous.
 by move=> ?; exact: cts_fun.
 Qed.
 
@@ -1616,7 +1616,7 @@ Lemma compose_continuous {X Y Z : topologicalType} :
   continuous (uncurry
     (comp : continuousType Y Z -> continuousType X Y -> continuousType X Z)).
 Proof.
-move=> lX rX lY rY; apply: continuous_comp_weak.
+move=> lX rX lY rY; apply: continuous_comp_initial.
 set F := _ \o _.
 rewrite -[F]uncurryK; apply: continuous_curry_fun.
 pose g := uncurry F \o prodAr \o swap; rewrite /= in g *.
