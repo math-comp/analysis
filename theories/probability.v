@@ -1072,74 +1072,67 @@ Qed.
 
 End distribution_dRV.
 
-Definition pmf d (T : measurableType d) (R : realType) (P : probability T R)
-  (X : {RV P >-> R}) (r : R) : R := fine (P (X @^-1` [set r])).
+Section pmf_definition.
+Context {d} {T : measurableType d} {R : realType}.
+Variables (P : probability T R).
+
+Definition pmf (X : {RV P >-> R}) (r : R) : R := fine (P (X @^-1` [set r])).
+
+Lemma pmf_ge0 (X : {RV P >-> R}) (r : R) : 0 <= pmf X r.
+Proof. by rewrite fine_ge0. Qed.
+
+End pmf_definition.
 
 Section pmf_measurable.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType)
   (P : probability T R) (X : {RV P >-> R}).
 
-Lemma pmf_gt0_countable : countable [set r | (0 < pmf X r)%R].
+Lemma pmf_gt0_countable : countable [set r | 0 < pmf X r]%R.
 Proof.
-have ->: [set r | 0 < (pmf X r)%:E] =
-  \bigcup_n [set r | (n.+1%:R^-1 < pmf X r)%R].
-  apply/seteqP; split => [r /ltr_add_invr [l] | r [k] _]; last exact: lt_trans.
-  by rewrite add0r => lpmf; exists l.
-apply: bigcup_countable => // n _.
-apply: finite_set_countable; apply: contrapT => /infiniteP/pcard_leP/injfunPex.
-case=> q q_fun q_inj /=.
-have pre1 k : measurable (X @^-1` [set q k]).
-  by apply: measurable_funPTI; exact: measurable_set1.
-rewrite -falseE -(ltxx (1:R)%:E).
-apply: (@lt_le_trans _ _ (P (\bigcup_k X @^-1` [set q k])));
-  last by apply/probability_le1/bigcup_measurable => k _.
-have <-: \big[+%R/0%R]_(0 <= k <oo | k \in setT) P (X @^-1` [set q k]) =
-  P (\bigcup_k X @^-1` [set q k]).
-  rewrite measure_bigcup// (trivIset_comp (fun r => X@^-1` [set r]))//.
+rewrite [X in countable X](_ : _ =
+    \bigcup_n [set r | n.+1%:R^-1 < pmf X r]%R); last first.
+  by apply/seteqP; split=> [r/= /ltr_add_invr[k /[!add0r] kXr]|r/= [k _]];
+    [exists k|exact: lt_trans].
+apply: bigcup_countable => // n _; apply: finite_set_countable.
+apply: contrapT => /infiniteP/pcard_leP/injfunPex[/= q q_fun q_inj].
+have /(probability_le1 P) : measurable (\bigcup_k X @^-1` [set q k]).
+  by apply: bigcup_measurable => k _; exact: measurable_funPTI.
+rewrite leNgt => /negP; apply.
+rewrite [ltRHS](_ : _ = \sum_(0 <= k <oo) P (X @^-1` [set q k])); last first.
+  rewrite measure_bigcup//; first by apply: eq_eseriesl =>// i; rewrite in_setT.
+  rewrite (trivIset_comp (fun r => X@^-1` [set r]))//.
   exact: trivIset_preimage1.
-apply: (@lt_le_trans _ _
-  (\sum_(0 <= k < n.+1 | k \in setT) P (X @^-1` [set q k])));
-  last exact: nneseries_lim_ge.
-rewrite (eq_bigl xpredT) => [| ?]; last by rewrite in_setT.
-under eq_bigr => k _ do
-  rewrite -(@fineK _ (P _)) ?fin_num_measure// -/(pmf X (q k)).
-have ->: 1%R = (\sum_(0 <= k < n.+1) n.+1%:R^-1:R)%R
-  by rewrite sumr_const_nat subn0 -(mulr_natr _^-1) mulVf.
-by rewrite !sumEFin lte_fin; apply: ltr_sum => // k _; exact: q_fun.
+apply: (lt_le_trans _ (nneseries_lim_ge n.+1 _)) => //.
+rewrite -EFin_sum_fine//; last by move=> ? _; rewrite fin_num_measure.
+under eq_bigr do rewrite -/(pmf X (q _)).
+rewrite lte_fin (_ : 1%R = (\sum_(0 <= k < n.+1) n.+1%:R^-1:R)%R); last first.
+  by rewrite sumr_const_nat subn0 -[RHS]mulr_natr mulVf.
+by apply: ltr_sum => // k _; exact: q_fun.
 Qed.
 
-Lemma pmf_measurable : measurable_fun setT (pmf X).
+Lemma pmf_measurable : measurable_fun [set: R] (pmf X).
 Proof.
-have : countable [set r | (0 < pmf X r)%R] by exact pmf_gt0_countable.
-case/countable_bijP => S.
-rewrite card_eq_sym; case/pcard_eqP/bijPex => /= h h_bij.
-apply/measurable_EFinP.
-pose sfun r :=
-  \big[+%R/0%R]_(0 <= k <oo | in_set S k) (pmf X (h k) * \1_[set h k] r)%:E.
-have pmf_ge0 s : 0 <= (pmf X s)%:E by rewrite fineK ?fin_num_measure.
-have pmf1_ge0 k s : 0%R <= (pmf X (h k) * \1_[set h k] s)%:E.
-  by rewrite EFinM; apply: mule_ge0.
-apply: (eq_measurable_fun sfun) => [r _|].
-  case/asboolP: ([set h k | k in S] r) => [rS | nrS].
-  - pose kr := (pinv S h r).
-    have neqh k : (k \in S) && (k != kr) -> r != h k.
-      move/andP=>[Sk]; apply: contra_neq.
-      by rewrite /kr => ->; rewrite pinvKV//; exact: (set_bij_inj h_bij).
-    rewrite /sfun (@nneseriesD1 _ _ kr)//; last by rewrite in_setE; apply: invS.
-      rewrite eseries0 => [| k k_ge0 /(neqh _)/negPf].
-        by rewrite indicE in_set1_eq pinvK ?in_setE// eq_refl mulr1 addr0.
-      by rewrite indicE in_set1_eq => ->; rewrite mulr0.
-  - rewrite /sfun eseries0 => [|k k_ge0 Sk]/=.
-      apply: le_anti; rewrite pmf_ge0 lee_fin leNgt.
-      apply/negP/contra_not/nrS.
-      by rewrite (surj_image_eq _ (set_bij_surj h_bij))//; exact: set_bij_sub.
-    rewrite indicE in_set1_eq.
-    suff ->: (r == h k) = false by rewrite mulr0.
-    by apply/eqP/contra_not/nrS => ->; exists k => //; rewrite -(in_setE S k).
-apply: ge0_emeasurable_sum => //= k _.
-apply/measurable_EFinP/measurable_funM;
-  [exact: measurable_cst | exact/measurable_indicP].
+have /countable_bijP[S] := pmf_gt0_countable.
+rewrite card_eq_sym => /pcard_eqP/bijPex[/= h h_bij].
+have pmf1_ge0 k s : 0 <= (pmf X (h k) * \1_[set h k] s)%:E.
+  by rewrite EFinM mule_ge0// lee_fin pmf_ge0.
+pose sfun r := \sum_(0 <= k <oo | k \in S) (pmf X (h k) * \1_[set h k] r)%:E.
+apply/measurable_EFinP; apply: (eq_measurable_fun sfun) => [r _|]; last first.
+  by apply: ge0_emeasurable_sum => // *; exact/measurable_EFinP/measurable_funM.
+have [rS|nrS] := boolP (r \in [set h k | k in S]).
+- pose kr := pinv S h r.
+  have neqh k : k \in S /\ k != kr -> r != h k.
+    move=> [Sk]; apply: contra_neq.
+    by rewrite /kr => ->; rewrite pinvKV//; exact: (set_bij_inj h_bij).
+  rewrite /sfun (@nneseriesD1 _ _ kr)//; last by rewrite inE; exact/invS/set_mem.
+  by rewrite eseries0 => [| k k_ge0 /andP/neqh]; rewrite indicE in_set1_eq;
+    [rewrite pinvK// eqxx mulr1 addr0|move/negPf => ->; rewrite mulr0].
+- rewrite /sfun eseries0 => [|k k_ge0 Sk]/=.
+    apply: le_anti; rewrite !lee_fin pmf_ge0/= leNgt; apply: contraNN nrS.
+    by rewrite (surj_image_eq _ (set_bij_surj h_bij)) ?inE//; exact:set_bij_sub.
+  rewrite indicE in_set1_eq (_ : (r == h k) = false) ?mulr0//.
+  by apply: contraNF nrS => /eqP ->; exact/image_f.
 Qed.
 
 End pmf_measurable.
@@ -1197,7 +1190,7 @@ Qed.
 Lemma expectation_pmf (X : {dRV P >-> R}) :
   P.-integrable [set: T] (EFin \o X) ->
   'E_P[X] = \sum_(n <oo | n \in dRV_dom X)
-              (pmf(P:=P) X (dRV_enum X n))%:E * (dRV_enum X n)%:E.
+              (@pmf _ _ _ P X (dRV_enum X n))%:E * (dRV_enum X n)%:E.
 Proof.
 move=> iX; rewrite dRV_expectation// [in RHS]eseries_mkcond.
 apply: eq_eseriesr => k _.
