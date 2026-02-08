@@ -92,6 +92,7 @@
 <li><a href="mathcomp.analysis.topology_theory.compact.html">compact</a></li>
 <li><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></li>
 <li><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.initial_topology.html">initial_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.metric_structure.html">metric_structure</a></li>
 <li><a href="mathcomp.analysis.topology_theory.nat_topology.html">nat_topology</a></li>
@@ -213,8 +214,8 @@
       <h1 class="title">Module mathcomp.analysis.topology_theory.subspace_topology</h1>
 <span class="vernacular">From</span><span class="id"> HB</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for HB.structures">structures</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.all_algebra.html">all_algebra</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_classical.html">all_classical</a></span>.<br/>
-<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html">topology_structure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html">uniform_structure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html">compact</a></span> .<br/>
-<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html">pseudometric_structure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html">weak_topology</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html">topology_structure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html">uniform_structure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html">compact</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html">pseudometric_structure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html">initial_topology</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html">product_topology</a></span>.<br/>
 <br/>
 <div class="ssrdoc md">
@@ -2413,24 +2414,24 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 561, character
 <br/>
 <span class="vernacular">End</span><span class="id"> SubspacePseudoMetric</span>.<br/>
 <br/>
-<span class="vernacular">Section</span><span class="id"> SubspaceWeak</span>.<br/>
-<span class="vernacular">Context</span><span class="id"> {</span><span id="SubspaceWeak.T" class="id"><a name="SubspaceWeak.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span><span class="id"> {</span><span id="SubspaceWeak.U" class="id"><a name="SubspaceWeak.U" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span>.<br/>
-<span class="vernacular">Variables</span> (<span id="SubspaceWeak.f" class="id"><a name="SubspaceWeak.f" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#SubspaceWeak.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#SubspaceWeak.T">T</a></span>).<br/>
+<span class="vernacular">Section</span><span class="id"> SubspaceInitial</span>.<br/>
+<span class="vernacular">Context</span><span class="id"> {</span><span id="SubspaceInitial.T" class="id"><a name="SubspaceInitial.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span><span class="id"> {</span><span id="SubspaceInitial.U" class="id"><a name="SubspaceInitial.U" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span>.<br/>
+<span class="vernacular">Variables</span> (<span id="SubspaceInitial.f" class="id"><a name="SubspaceInitial.f" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#SubspaceInitial.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#SubspaceInitial.T">T</a></span>).<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="weak_subspace_open" class="id"><a name="weak_subspace_open" class="" title="weak_subspace_open :
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="initial_subspace_open" class="id"><a name="initial_subspace_open" class="" title="initial_subspace_open :
 forall {T : topology_structure.Topological.type} {U : choiceType}
   [f : U -> topology_structure.Topological.sort T]
-  [A : set (weak_topology f)],
+  [A : set (initial_topology f)],
 topology_structure.open A ->
 topology_structure.open
   ([set f x | x in A]%classic : set (subspace (range f)))
 
-weak_subspace_open is not universe polymorphic
+initial_subspace_open is not universe polymorphic
 Expanded type for implicit arguments
-weak_subspace_open :
+initial_subspace_open :
 forall {T : topology_structure.Topological.type} {U : choiceType}
   [f : U -> topology_structure.Topological.sort T]
-  [A : set (weak_topology f)],
+  [A : set (initial_topology f)],
 topology_structure.open A ->
 forall [t : subspace (range f)],
 ([set f x | x in A]%classic : set (subspace (range f))) t ->
@@ -2439,15 +2440,15 @@ forall [t : subspace (range f)],
  else filter.globally [set t])
   ([set f x | x in A]%classic : set (subspace (range f)))
 
-Arguments weak_subspace_open {T U} [f]%_function_scope
+Arguments initial_subspace_open {T U} [f]%_function_scope
   [A]%_classical_set_scope _ [t] _
-weak_subspace_open is opaque
+initial_subspace_open is opaque
 Expands to: Constant
-            mathcomp.analysis.topology_theory.subspace_topology.weak_subspace_open
+            mathcomp.analysis.topology_theory.subspace_topology.initial_subspace_open
 Declared in
-library mathcomp.analysis.topology_theory.subspace_topology, line 571, characters 6-24
-">weak_subspace_open</a></span> (<span id="A:152" class="id"><a name="A:152" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.weak_topology.html#weak_topology">weak_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#SubspaceWeak.f">f</a></span>))<span class="id"> :</span><br/>
-&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#A:152">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#SubspaceWeak.f">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#A:152">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#subspace">subspace</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#range">range</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#SubspaceWeak.f">f</a></span>))).<br/>
+library mathcomp.analysis.topology_theory.subspace_topology, line 571, characters 6-27
+">initial_subspace_open</a></span> (<span id="A:152" class="id"><a name="A:152" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_topology">initial_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#SubspaceInitial.f">f</a></span>))<span class="id"> :</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#A:152">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#SubspaceInitial.f">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#A:152">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#subspace">subspace</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#range">range</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#SubspaceInitial.f">f</a></span>))).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
@@ -2456,7 +2457,7 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 571, character
 <span class="gallina-kwd">by</span><span class="id"> case=&gt;</span><span class="id"> w</span><span class="id"> _</span><span class="id"> &lt;-</span><span class="id"> [v]</span><span class="id"> ?</span><span class="id"> &lt;-</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">End</span><span class="id"> SubspaceWeak</span>.<br/>
+<span class="vernacular">End</span><span class="id"> SubspaceInitial</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_compact" class="id"><a name="continuous_compact" class="" title="continuous_compact :
 forall {T U : topology_structure.Topological.type}

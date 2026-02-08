@@ -230,6 +230,10 @@ digraph depend {
 			fillcolor=4,
 			fontcolor=white,
 			label=discrete_topology];
+		"theories/topology_theory/initial_topology"	[URL="mathcomp.analysis.topology_theory.initial_topology.html",
+			fillcolor=4,
+			fontcolor=white,
+			label=initial_topology];
 		"theories/topology_theory/matrix_topology"	[URL="mathcomp.analysis.topology_theory.matrix_topology.html",
 			fillcolor=4,
 			fontcolor=white,
@@ -465,12 +469,15 @@ digraph depend {
 	"theories/topology_theory/discrete_topology" -> "theories/topology_theory/bool_topology";
 	"theories/topology_theory/discrete_topology" -> "theories/topology_theory/nat_topology";
 	"theories/topology_theory/discrete_topology" -> "theories/topology_theory/separation_axioms";
+	"theories/topology_theory/initial_topology" -> "theories/topology_theory/one_point_compactification";
+	"theories/topology_theory/initial_topology" -> "theories/topology_theory/subspace_topology";
 	"theories/topology_theory/matrix_topology" -> "theories/topology_theory/num_topology";
 	"theories/topology_theory/metric_structure" -> "theories/topology_theory/topology";
 	"theories/topology_theory/nat_topology" -> "theories/topology_theory/topology";
 	"theories/topology_theory/num_topology" -> "theories/topology_theory/separation_axioms";
 	"theories/topology_theory/one_point_compactification" -> "theories/topology_theory/separation_axioms";
 	"theories/topology_theory/order_topology" -> "theories/topology_theory/discrete_topology";
+	"theories/topology_theory/order_topology" -> "theories/topology_theory/initial_topology";
 	"theories/topology_theory/order_topology" -> "theories/topology_theory/num_topology";
 	"theories/topology_theory/order_topology" -> "theories/topology_theory/weak_topology";
 	"theories/topology_theory/product_topology" -> "theories/topology_theory/order_topology";
@@ -488,8 +495,6 @@ digraph depend {
 	"theories/topology_theory/topology_structure" -> "theories/topology_theory/uniform_structure";
 	"theories/topology_theory/uniform_structure" -> "theories/topology_theory/pseudometric_structure";
 	"theories/topology_theory/uniform_structure" -> "theories/topology_theory/supremum_topology";
-	"theories/topology_theory/weak_topology" -> "theories/topology_theory/one_point_compactification";
-	"theories/topology_theory/weak_topology" -> "theories/topology_theory/subspace_topology";
 	"theories/homotopy_theory/continuous_path" -> "theories/homotopy_theory/homotopy";
 	"theories/homotopy_theory/wedge_sigT" -> "theories/homotopy_theory/continuous_path";
 	"theories/function_spaces" -> "theories/homotopy_theory/wedge_sigT";
