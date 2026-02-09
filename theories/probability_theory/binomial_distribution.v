@@ -4,6 +4,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean finmap interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
+From mathcomp Require Import mathcomp_extra.
 From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
 From mathcomp Require Import reals ereal topology normedtype sequences esum.
 From mathcomp Require Import measure lebesgue_measure lebesgue_integral.
