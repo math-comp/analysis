@@ -92,7 +92,17 @@ lebesgue_integral_theory/giry.v
 
 ftc.v
 hoelder.v
-probability.v
+
+probability_theory/random_variable.v
+probability_theory/bernoulli_distribution.v
+probability_theory/binomial_distribution.v
+probability_theory/uniform_distribution.v
+probability_theory/normal_distribution.v
+probability_theory/exponential_distribution.v
+probability_theory/poisson_distribution.v
+probability_theory/beta_distribution.v
+probability_theory/probability.v
+
 convex.v
 charge.v
 kernel.v

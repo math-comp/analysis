@@ -125,7 +125,17 @@ theories/lebesgue_integral_theory/giry.v
 
 theories/ftc.v
 theories/hoelder.v
-theories/probability.v
+
+theories/probability_theory/random_variable.v
+theories/probability_theory/bernoulli_distribution.v
+theories/probability_theory/binomial_distribution.v
+theories/probability_theory/uniform_distribution.v
+theories/probability_theory/normal_distribution.v
+theories/probability_theory/exponential_distribution.v
+theories/probability_theory/poisson_distribution.v
+theories/probability_theory/beta_distribution.v
+theories/probability_theory/probability.v
+
 theories/convex.v
 theories/charge.v
 theories/kernel.v
