@@ -1,0 +1,1033 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Module mathcomp.analysis.probability_theory.normal_distribution</title>
+<meta name="description" content="Documentation of Coq module mathcomp.analysis.probability_theory.normal_distribution" />
+<link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+<link href="rocqnavi.css" rel="stylesheet" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="rocqnavi.js"> </script>
+</head>
+
+<body onload="init()">
+
+  <main>
+    <div class="sidebar">
+      <h2>Files</h2>
+      <li><details id="mathcomp"><summary>mathcomp</summary>
+          <ul>
+          <li><details id="mathcomp.analysis"><summary>analysis</summary>
+          <ul>
+          <li><details id="mathcomp.analysis.homotopy_theory"><summary>homotopy_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.homotopy_theory.continuous_path.html">continuous_path</a></li>
+<li><a href="mathcomp.analysis.homotopy_theory.homotopy.html">homotopy</a></li>
+<li><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html">wedge_sigT</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.lebesgue_integral_theory"><summary>lebesgue_integral_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.lebesgue_integral_theory.giry.html">giry</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html">lebesgue_Rintegral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html">lebesgue_integrable</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral.html">lebesgue_integral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html">lebesgue_integral_definition</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.html">lebesgue_integral_differentiation</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_dominated_convergence.html">lebesgue_integral_dominated_convergence</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.html">lebesgue_integral_fubini</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_monotone_convergence.html">lebesgue_integral_monotone_convergence</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html">lebesgue_integral_nonneg</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html">lebesgue_integral_under</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.html">measurable_fun_approximation</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html">simple_functions</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.measure_theory"><summary>measure_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.measure_theory.counting_measure.html">counting_measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.dirac_measure.html">dirac_measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measurable_function.html">measurable_function</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measurable_structure.html">measurable_structure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure.html">measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_extension.html">measure_extension</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_function.html">measure_function</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_negligible.html">measure_negligible</a></li>
+<li><a href="mathcomp.analysis.measure_theory.probability_measure.html">probability_measure</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.normedtype_theory"><summary>normedtype_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.normedtype_theory.complete_normed_module.html">complete_normed_module</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.ereal_normedtype.html">ereal_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.matrix_normedtype.html">matrix_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.normed_module.html">normed_module</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.normedtype.html">normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html">num_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html">pseudometric_normed_Zmodule</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.urysohn.html">urysohn</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.vitali_lemma.html">vitali_lemma</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.probability_theory"><summary>probability_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html">bernoulli_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.beta_distribution.html">beta_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.binomial_distribution.html">binomial_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.exponential_distribution.html">exponential_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.normal_distribution.html">normal_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.poisson_distribution.html">poisson_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.probability.html">probability</a></li>
+<li><a href="mathcomp.analysis.probability_theory.random_variable.html">random_variable</a></li>
+<li><a href="mathcomp.analysis.probability_theory.uniform_distribution.html">uniform_distribution</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.showcase"><summary>showcase</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.showcase.pnt.html">pnt</a></li>
+<li><a href="mathcomp.analysis.showcase.summability.html">summability</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.topology_theory"><summary>topology_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.topology_theory.bool_topology.html">bool_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.compact.html">compact</a></li>
+<li><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></li>
+<li><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.initial_topology.html">initial_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.metric_structure.html">metric_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.nat_topology.html">nat_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.num_topology.html">num_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.one_point_compactification.html">one_point_compactification</a></li>
+<li><a href="mathcomp.analysis.topology_theory.order_topology.html">order_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.product_topology.html">product_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html">pseudometric_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.quotient_topology.html">quotient_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.separation_axioms.html">separation_axioms</a></li>
+<li><a href="mathcomp.analysis.topology_theory.sigT_topology.html">sigT_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.subspace_topology.html">subspace_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.subtype_topology.html">subtype_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.supremum_topology.html">supremum_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.topology.html">topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.topology_structure.html">topology_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.uniform_structure.html">uniform_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.weak_topology.html">weak_topology</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.analysis.all_analysis.html">all_analysis</a></li>
+<li><a href="mathcomp.analysis.borel_hierarchy.html">borel_hierarchy</a></li>
+<li><a href="mathcomp.analysis.cantor.html">cantor</a></li>
+<li><a href="mathcomp.analysis.charge.html">charge</a></li>
+<li><a href="mathcomp.analysis.convex.html">convex</a></li>
+<li><a href="mathcomp.analysis.derive.html">derive</a></li>
+<li><a href="mathcomp.analysis.ereal.html">ereal</a></li>
+<li><a href="mathcomp.analysis.ess_sup_inf.html">ess_sup_inf</a></li>
+<li><a href="mathcomp.analysis.esum.html">esum</a></li>
+<li><a href="mathcomp.analysis.exp.html">exp</a></li>
+<li><a href="mathcomp.analysis.ftc.html">ftc</a></li>
+<li><a href="mathcomp.analysis.function_spaces.html">function_spaces</a></li>
+<li><a href="mathcomp.analysis.gauss_integral.html">gauss_integral</a></li>
+<li><a href="mathcomp.analysis.hoelder.html">hoelder</a></li>
+<li><a href="mathcomp.analysis.kernel.html">kernel</a></li>
+<li><a href="mathcomp.analysis.landau.html">landau</a></li>
+<li><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></li>
+<li><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html">lebesgue_stieltjes_measure</a></li>
+<li><a href="mathcomp.analysis.measurable_realfun.html">measurable_realfun</a></li>
+<li><a href="mathcomp.analysis.numfun.html">numfun</a></li>
+<li><a href="mathcomp.analysis.pi_irrational.html">pi_irrational</a></li>
+<li><a href="mathcomp.analysis.realfun.html">realfun</a></li>
+<li><a href="mathcomp.analysis.sequences.html">sequences</a></li>
+<li><a href="mathcomp.analysis.trigo.html">trigo</a></li>
+<li><a href="mathcomp.analysis.tvs.html">tvs</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis_stdlib"><summary>analysis_stdlib</summary>
+          <ul>
+          <li><details id="mathcomp.analysis_stdlib.showcase"><summary>showcase</summary>
+          <ul>
+          <li><a href="mathcomp.analysis_stdlib.showcase.uniform_bigO.html">uniform_bigO</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.analysis_stdlib.Rstruct_topology.html">Rstruct_topology</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.classical"><summary>classical</summary>
+          <ul>
+          <li><a href="mathcomp.classical.all_classical.html">all_classical</a></li>
+<li><a href="mathcomp.classical.boolp.html">boolp</a></li>
+<li><a href="mathcomp.classical.cardinality.html">cardinality</a></li>
+<li><a href="mathcomp.classical.classical_orders.html">classical_orders</a></li>
+<li><a href="mathcomp.classical.classical_sets.html">classical_sets</a></li>
+<li><a href="mathcomp.classical.contra.html">contra</a></li>
+<li><a href="mathcomp.classical.filter.html">filter</a></li>
+<li><a href="mathcomp.classical.fsbigop.html">fsbigop</a></li>
+<li><a href="mathcomp.classical.functions.html">functions</a></li>
+<li><a href="mathcomp.classical.internal_Eqdep_dec.html">internal_Eqdep_dec</a></li>
+<li><a href="mathcomp.classical.mathcomp_extra.html">mathcomp_extra</a></li>
+<li><a href="mathcomp.classical.set_interval.html">set_interval</a></li>
+<li><a href="mathcomp.classical.unstable.html">unstable</a></li>
+<li><a href="mathcomp.classical.wochoice.html">wochoice</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.experimental_reals"><summary>experimental_reals</summary>
+          <ul>
+          <li><a href="mathcomp.experimental_reals.discrete.html">discrete</a></li>
+<li><a href="mathcomp.experimental_reals.distr.html">distr</a></li>
+<li><a href="mathcomp.experimental_reals.realseq.html">realseq</a></li>
+<li><a href="mathcomp.experimental_reals.realsum.html">realsum</a></li>
+<li><a href="mathcomp.experimental_reals.xfinmap.html">xfinmap</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.reals"><summary>reals</summary>
+          <ul>
+          <li><a href="mathcomp.reals.all_reals.html">all_reals</a></li>
+<li><a href="mathcomp.reals.constructive_ereal.html">constructive_ereal</a></li>
+<li><a href="mathcomp.reals.prodnormedzmodule.html">prodnormedzmodule</a></li>
+<li><a href="mathcomp.reals.real_interval.html">real_interval</a></li>
+<li><a href="mathcomp.reals.reals.html">reals</a></li>
+<li><a href="mathcomp.reals.signed.html">signed</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.reals_stdlib"><summary>reals_stdlib</summary>
+          <ul>
+          <li><a href="mathcomp.reals_stdlib.Rstruct.html">Rstruct</a></li>
+<li><a href="mathcomp.reals_stdlib.nsatz_realtype.html">nsatz_realtype</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+    </div>
+
+  <div class="coq">
+
+    <div class="content">
+      <p><a href="./index.html">Top</a></p>
+      <h1 class="title">Module mathcomp.analysis.probability_theory.normal_distribution</h1>
+<span class="vernacular">From</span><span class="id"> HB</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for HB.structures">structures</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html">ssralg</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.ssrnum.html">ssrnum</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssrint.html">ssrint</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html">interval</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html">archimedean</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap">finmap</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html">interval_inference</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html">boolp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html">classical_sets</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.functions.html">functions</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html">cardinality</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html">fsbigop</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html">reals</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.ereal.html">ereal</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology.html">topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.normedtype.html">normedtype</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html">sequences</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html">derive</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure.html">measure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.exp.html">exp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html">trigo</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html">numfun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.realfun.html">realfun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral.html">lebesgue_integral</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.ftc.html">ftc</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.gauss_integral.html">gauss_integral</a></span>.<br/>
+<br/>
+<div class="ssrdoc md">
+# Normal distribution
+
+```
+       normal_peak s := (sqrtr (s ^+ 2 * pi *+ 2))^-1
+    normal_fun m s x := expR (- (x - m) ^+ 2 / (s ^+ 2 *+ 2))
+      normal_pdf m s == pdf of the normal distribution with mean m and
+                        standard deviation s
+                        Using normal_peak and normal_pdf.
+     normal_prob m s == normal probability measure
+```
+
+</div>
+<br/>
+<span class="gallina-kwd">Set</span><span class="vernacular"> Implicit</span><span class="vernacular"> Arguments</span>.<br/>
+<span class="vernacular">Unset</span><span class="vernacular"> Strict</span><span class="vernacular"> Implicit</span>.<br/>
+<span class="vernacular">Unset</span><span class="vernacular"> Printing</span><span class="vernacular"> Implicit</span><span class="vernacular"> Defensive</span>.<br/>
+<br/>
+<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">TTheory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">Theory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Def">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Def">Def</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Theory">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Theory">Theory</a></span>.<br/>
+<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#numFieldTopology.Exports">numFieldTopology</a></span>.<span class="vernacular">Exports</span>.<br/>
+<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
+<br/>
+<span class="vernacular">Section</span><span class="id"> normal_density</span>.<br/>
+<span class="vernacular">Context</span><span class="id"> {</span><span id="normal_density.R" class="id"><a name="normal_density.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.ssrnum.html#Num.ExtraDef">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.ssrnum.html#Num.ExtraDef">ExtraDef</a></span>.<br/>
+<span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> m</span><span class="id"> s</span><span class="id"> x</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.R">R</a></span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="normal_fun" class="id"><a name="normal_fun" class="" title="normal_fun : forall {R : realType}, R -> R -> R -> R
+
+normal_fun is not universe polymorphic
+Arguments normal_fun {R} (m s x)%_ring_scope
+normal_fun is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_fun
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 40, characters 11-21
+">normal_fun</a></span><span class="id"> </span><span id="m:2" class="id"><a name="m:2" class="">m</a></span><span class="id"> </span><span id="s:3" class="id"><a name="s:3" class="">s</a></span><span class="id"> </span><span id="x:4" class="id"><a name="x:4" class="">x</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#expR">expR</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x">-</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:4">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:2">m</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id">2</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:3">s</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id">2</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id">2</span>)).<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="measurable_normal_fun" class="id"><a name="measurable_normal_fun" class="" title="measurable_normal_fun :
+forall {R : realType} (m s : R),
+measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
+  (U:=Real_sort__canonical__measurable_structure_SigmaRing R) [set: R]
+  (normal_fun m s)
+
+measurable_normal_fun is not universe polymorphic
+Expanded type for implicit arguments
+measurable_normal_fun :
+forall {R : realType} (m s : R),
+'measurable%classic [set: R] ->
+forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
+'measurable%classic Y ->
+forall
+  [i : set
+         (set
+            (lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+               R))],
+[set M | sigma_algebra
+           [set: lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+                   R]
+           M /\
+         (R.-ocitv).-measurable `<=` M]%classic
+  i ->
+i ([set: R] `&` normal_fun m s @^-1` Y)%classic
+
+Arguments measurable_normal_fun {R} (m s)%_ring_scope _ [Y] _ [i] _
+measurable_normal_fun is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.measurable_normal_fun
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 42, characters 6-27
+">measurable_normal_fun</a></span><span class="id"> </span><span id="m:5" class="id"><a name="m:5" class="">m</a></span><span class="id"> </span><span id="s:6" class="id"><a name="s:6" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_fun">measurable_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> :</a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.R">R</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_fun">normal_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:5">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:6">s</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurableT_comp">measurableT_comp</a></span><span class="id"> =&gt;</span><span class="id"> //=;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_funM">measurable_funM</a></span><span class="id"> =&gt;</span><span class="id"> //=</span>.<br/>
+<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurableT_comp">measurableT_comp</a></span><span class="id"> =&gt;</span><span class="id"> //=;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_funX">measurable_funX</a></span><span class="id"> =&gt;</span><span class="id"> //=</span>.<br/>
+<span class="id">exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_funB">measurable_funB</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="normal_fun_ge0" class="id"><a name="normal_fun_ge0" class="" title="normal_fun_ge0 : forall {R : realType} (m s x : R), (0 <= normal_fun m s x)%R
+
+normal_fun_ge0 is not universe polymorphic
+Arguments normal_fun_ge0 {R} (m s x)%_ring_scope
+normal_fun_ge0 is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_fun_ge0
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 49, characters 6-20
+">normal_fun_ge0</a></span><span class="id"> </span><span id="m:7" class="id"><a name="m:7" class="">m</a></span><span class="id"> </span><span id="s:8" class="id"><a name="s:8" class="">s</a></span><span class="id"> </span><span id="x:9" class="id"><a name="x:9" class="">x</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_fun">normal_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:7">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:8">s</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:9">x</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.exp.html#expR_ge0">expR_ge0</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="normal_fun_center" class="id"><a name="normal_fun_center" class="" title="normal_fun_center :
+forall {R : realType} (m s : R), normal_fun m s = normal_fun 0 s \o center m
+
+normal_fun_center is not universe polymorphic
+Arguments normal_fun_center {R} (m s)%_ring_scope
+normal_fun_center is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_fun_center
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 52, characters 6-23
+">normal_fun_center</a></span><span class="id"> </span><span id="m:10" class="id"><a name="m:10" class="">m</a></span><span class="id"> </span><span id="s:11" class="id"><a name="s:11" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_fun">normal_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:10">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:11">s</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_fun">normal_fun</a></span><span class="id"> 0</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:11">s</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#center">center</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:10">m</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#funext">funext</a></span><span class="id"> =&gt;</span><span class="id"> x/=;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_fun">normal_fun</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.subr0">subr0</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="normal_peak" class="id"><a name="normal_peak" class="" title="normal_peak :
+forall {R : realType},
+R -> join_Num_NumDomain_between_Order_Preorder_and_GRing_UnitRing R
+
+normal_peak is not universe polymorphic
+Arguments normal_peak {R} s%_ring_scope
+normal_peak is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_peak
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 55, characters 11-22
+">normal_peak</a></span><span class="id"> </span><span id="s:12" class="id"><a name="s:12" class="">s</a></span><span class="id"> :=</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.Def.sqrtr">sqrtr</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:12">s</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id">2</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#pi">pi</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id">2</span>))<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#4e5a4c91ec0aa12de06dfe1cc07ea126">^-1</a></span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="normal_peak_ge0" class="id"><a name="normal_peak_ge0" class="" title="normal_peak_ge0 : forall {R : realType} (s : R), (0 <= normal_peak s)%R
+
+normal_peak_ge0 is not universe polymorphic
+Arguments normal_peak_ge0 {R} s%_ring_scope
+normal_peak_ge0 is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_peak_ge0
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 57, characters 6-21
+">normal_peak_ge0</a></span><span class="id"> </span><span id="s:13" class="id"><a name="s:13" class="">s</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak">normal_peak</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:13">s</a></span><br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.invr_ge0">invr_ge0</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="normal_peak_gt0" class="id"><a name="normal_peak_gt0" class="" title="normal_peak_gt0 :
+forall {R : realType} [s : R], s != 0%R -> (0 < normal_peak s)%R
+
+normal_peak_gt0 is not universe polymorphic
+Arguments normal_peak_gt0 {R} [s]%_ring_scope _
+normal_peak_gt0 is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_peak_gt0
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 59, characters 6-21
+">normal_peak_gt0</a></span><span class="id"> </span><span id="s:14" class="id"><a name="s:14" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:14">s</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak">normal_peak</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:14">s</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> s0;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.invr_gt0">invr_gt0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.Theory.sqrtr_gt0">sqrtr_gt0</a></span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulrn_wgt0">mulrn_wgt0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulr_gt0">mulr_gt0</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.trigo.html#pi_gt0">pi_gt0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.exprn_even_gt0">exprn_even_gt0</a></span><span class="id">/=</span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_density.normal_pdf0" class="id"><a name="normal_density.normal_pdf0" class="">normal_pdf0</a></span><span class="id"> </span><span id="m:15" class="id"><a name="m:15" class="">m</a></span><span class="id"> </span><span id="s:16" class="id"><a name="s:16" class="">s</a></span><span class="id"> </span><span id="x:17" class="id"><a name="x:17" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.R">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak">normal_peak</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:16">s</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_fun">normal_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:15">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:16">s</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:17">x</a></span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="normal_pdf" class="id"><a name="normal_pdf" class="" title="normal_pdf : forall {R : realType}, R -> R -> R -> R
+
+normal_pdf is not universe polymorphic
+Arguments normal_pdf {R} (m s x)%_ring_scope
+normal_pdf is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_pdf
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 67, characters 11-21
+">normal_pdf</a></span><span class="id"> </span><span id="m:18" class="id"><a name="m:18" class="">m</a></span><span class="id"> </span><span id="s:19" class="id"><a name="s:19" class="">s</a></span><span class="id"> </span><span id="x:20" class="id"><a name="x:20" class="">x</a></span><span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="gallina-kwd">if</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:19">s</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> ==</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> </a></span><span class="id">0</span><span class="gallina-kwd"> then</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#e353122e03268a6eab33cb5af81dd3c6">\1_</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">`[</a></span><span class="id">0</span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">,</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b"> </a></span><span class="id">1</span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">]</a></span><span class="id"><a href="mathcomp.analysis.numfun.html#e353122e03268a6eab33cb5af81dd3c6"> x</a></span><span class="gallina-kwd"> else</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.normal_pdf0">normal_pdf0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:18">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:19">s</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:20">x</a></span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="normal_pdfE" class="id"><a name="normal_pdfE" class="" title="normal_pdfE :
+forall {R : realType} (m : R) [s : R],
+s != 0%R ->
+normal_pdf m s =
+(fun m0 s0 x : R => (normal_peak s0 * normal_fun m0 s0 x)%R) m s
+
+normal_pdfE is not universe polymorphic
+Arguments normal_pdfE {R} m%_ring_scope [s]%_ring_scope _
+normal_pdfE is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_pdfE
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 70, characters 6-17
+">normal_pdfE</a></span><span class="id"> </span><span id="m:21" class="id"><a name="m:21" class="">m</a></span><span class="id"> </span><span id="s:22" class="id"><a name="s:22" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:22">s</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:21">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:22">s</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.normal_pdf0">normal_pdf0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:21">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:22">s</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id">;</span><span class="id"> have</span><span class="id"> [_|s0]</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqVneq">eqVneq</a></span><span class="id"> s</span><span class="id"> 0</span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_density.normal_pdf0_center" class="id"><a name="normal_density.normal_pdf0_center" class="">normal_pdf0_center</a></span><span class="id"> </span><span id="m:23" class="id"><a name="m:23" class="">m</a></span><span class="id"> </span><span id="s:24" class="id"><a name="s:24" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.normal_pdf0">normal_pdf0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:23">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:24">s</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.normal_pdf0">normal_pdf0</a></span><span class="id"> 0</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:24">s</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#center">center</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:23">m</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.normal_pdf0">normal_pdf0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_fun_center">normal_fun_center</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_density.normal_pdf0_ge0" class="id"><a name="normal_density.normal_pdf0_ge0" class="">normal_pdf0_ge0</a></span><span class="id"> </span><span id="m:25" class="id"><a name="m:25" class="">m</a></span><span class="id"> </span><span id="s:26" class="id"><a name="s:26" class="">s</a></span><span class="id"> </span><span id="x:27" class="id"><a name="x:27" class="">x</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.normal_pdf0">normal_pdf0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:25">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:26">s</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:27">x</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulr_ge0">mulr_ge0</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak_ge0">normal_peak_ge0</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.exp.html#expR_ge0">expR_ge0</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_density.normal_pdf0_gt0" class="id"><a name="normal_density.normal_pdf0_gt0" class="">normal_pdf0_gt0</a></span><span class="id"> </span><span id="m:28" class="id"><a name="m:28" class="">m</a></span><span class="id"> </span><span id="s:29" class="id"><a name="s:29" class="">s</a></span><span class="id"> </span><span id="x:30" class="id"><a name="x:30" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:29">s</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.normal_pdf0">normal_pdf0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:28">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:29">s</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:30">x</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> s0;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulr_gt0">mulr_gt0</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.exp.html#expR_gt0">expR_gt0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak_gt0">normal_peak_gt0</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_density.measurable_normal_pdf0" class="id"><a name="normal_density.measurable_normal_pdf0" class="">measurable_normal_pdf0</a></span><span class="id"> </span><span id="m:31" class="id"><a name="m:31" class="">m</a></span><span class="id"> </span><span id="s:32" class="id"><a name="s:32" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_fun">measurable_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT">setT</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.normal_pdf0">normal_pdf0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:31">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:32">s</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_funM">measurable_funM</a></span><span class="id"> =&gt;</span><span class="id"> //=;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#measurable_normal_fun">measurable_normal_fun</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="measurable_normal_pdf" class="id"><a name="measurable_normal_pdf" class="" title="measurable_normal_pdf :
+forall {R : realType} (m s : R),
+measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
+  (U:=Real_sort__canonical__measurable_structure_SigmaRing R)
+  [set: Real_sort__canonical__measurable_structure_SigmaRing R]
+  (normal_pdf m s)
+
+measurable_normal_pdf is not universe polymorphic
+Expanded type for implicit arguments
+measurable_normal_pdf :
+forall {R : realType} (m s : R),
+'measurable%classic
+  [set: Real_sort__canonical__measurable_structure_SigmaRing R] ->
+forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
+'measurable%classic Y ->
+forall
+  [i : set
+         (set
+            (lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+               R))],
+[set M | sigma_algebra
+           [set: lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+                   R]
+           M /\
+         (R.-ocitv).-measurable `<=` M]%classic
+  i ->
+i
+  ([set: Real_sort__canonical__measurable_structure_SigmaRing R]
+   `&` normal_pdf m s @^-1` Y)%classic
+
+Arguments measurable_normal_pdf {R} (m s)%_ring_scope _ [Y] _ [i] _
+measurable_normal_pdf is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.measurable_normal_pdf
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 85, characters 6-27
+">measurable_normal_pdf</a></span><span class="id"> </span><span id="m:33" class="id"><a name="m:33" class="">m</a></span><span class="id"> </span><span id="s:34" class="id"><a name="s:34" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_fun">measurable_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT">setT</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:33">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:34">s</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id">;</span><span class="id"> have</span><span class="id"> [_|]</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqVneq">eqVneq</a></span><span class="id"> s</span><span class="id"> 0;</span><span class="id"> first</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_indic">measurable_indic</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_density.continuous_normal_pdf0" class="id"><a name="normal_density.continuous_normal_pdf0" class="">continuous_normal_pdf0</a></span><span class="id"> </span><span id="m:35" class="id"><a name="m:35" class="">m</a></span><span class="id"> </span><span id="s:36" class="id"><a name="s:36" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.normal_pdf0">normal_pdf0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:35">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:36">s</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> x;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.normed_module.html#cvgM">cvgM</a></span><span class="id">;</span><span class="id"> first</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#cvg_cst">cvg_cst</a></span>.<br/>
+<span class="id">apply:</span> (<span class="id"><a href="mathcomp.classical.filter.html#cvg_comp">cvg_comp</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#expR">expR</a></span>)<span class="id">;</span><span class="id"> last</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.exp.html#continuous_expR">continuous_expR</a></span>.<br/>
+<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.normed_module.html#cvgM">cvgM</a></span><span class="id">;</span><span class="id"> last</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#cvg_cst">cvg_cst</a></span>.<br/>
+<span class="id">apply:</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#cvgN">cvgN</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.R">R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#32d8c90f413029fb5c0e82f0559cd7ef">^o</a></span>).<br/>
+<span class="id">apply:</span> (<span class="id"><a href="mathcomp.classical.filter.html#cvg_comp">cvg_comp</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:40" class="id"><span id="x:38" class="id"><a name="x:40" class="">x</a></span></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:38">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id">m</span>) (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:39" class="id"><span id="x:37" class="id"><a name="x:39" class="">x</a></span></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:37">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id">2</span>)).<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> apply:</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#cvgB">cvgB</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.R">R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#32d8c90f413029fb5c0e82f0559cd7ef">^o</a></span>)<span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> [exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#cvg_id">cvg_id</a></span><span class="id">|exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#cvg_cst">cvg_cst</a></span><span class="id">]</span>.<br/>
+<span class="id">exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.realfun.html#sqr_continuous">sqr_continuous</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_density.normal_pdf0_ub" class="id"><a name="normal_density.normal_pdf0_ub" class="">normal_pdf0_ub</a></span><span class="id"> </span><span id="m:41" class="id"><a name="m:41" class="">m</a></span><span class="id"> </span><span id="s:42" class="id"><a name="s:42" class="">s</a></span><span class="id"> </span><span id="x:43" class="id"><a name="x:43" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.normal_pdf0">normal_pdf0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:41">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:42">s</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:43">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak">normal_peak</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:42">s</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_density.normal_pdf0">normal_pdf0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ler_piMr">ler_piMr</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak_ge0">normal_peak_ge0</a></span><span class="id">//</span>.<br/>
+<span class="id">rewrite</span><span class="id"> -[</span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.PreOSyntax.leRHS">leRHS</a></span><span class="id">]</span><span class="id"><a href="mathcomp.analysis.exp.html#expR0">expR0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.exp.html#ler_expR">ler_expR</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulNr">mulNr</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.oppr_le0">oppr_le0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulr_ge0">mulr_ge0</a></span><span class="id">//</span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.sqr_ge0">sqr_ge0</a></span><span class="id">//</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.invr_ge0">invr_ge0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulrn_wge0">mulrn_wge0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.sqr_ge0">sqr_ge0</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="normal_pdf_ge0" class="id"><a name="normal_pdf_ge0" class="" title="normal_pdf_ge0 : forall {R : realType} (m s x : R), (0 <= normal_pdf m s x)%R
+
+normal_pdf_ge0 is not universe polymorphic
+Arguments normal_pdf_ge0 {R} (m s x)%_ring_scope
+normal_pdf_ge0 is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_pdf_ge0
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 108, characters 6-20
+">normal_pdf_ge0</a></span><span class="id"> </span><span id="m:44" class="id"><a name="m:44" class="">m</a></span><span class="id"> </span><span id="s:45" class="id"><a name="s:45" class="">s</a></span><span class="id"> </span><span id="x:46" class="id"><a name="x:46" class="">x</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:44">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:45">s</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:46">x</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifP">ifP</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_normal_pdf" class="id"><a name="continuous_normal_pdf" class="" title="continuous_normal_pdf :
+forall {R : realType} [m s : R],
+s != 0%R ->
+forall
+  [x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+filter.continuous_at
+  (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+  (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x
+  (normal_pdf m s)
+
+continuous_normal_pdf is not universe polymorphic
+Expanded type for implicit arguments
+continuous_normal_pdf :
+forall {R : realType} [m s : R],
+s != 0%R ->
+forall
+  [x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)]
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs (normal_pdf m s x) t ->
+exists2 i : R,
+  [set e | (0 < e)%R]%classic i &
+  (ball_ [eta normr] x i `<=` normal_pdf m s @^-1` t)%classic
+
+Arguments continuous_normal_pdf {R} [m s]%_ring_scope _ [x t] _
+continuous_normal_pdf is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.continuous_normal_pdf
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 111, characters 6-27
+">continuous_normal_pdf</a></span><span class="id"> </span><span id="m:47" class="id"><a name="m:47" class="">m</a></span><span class="id"> </span><span id="s:48" class="id"><a name="s:48" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:48">s</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:47">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:48">s</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id">;</span><span class="id"> have</span><span class="id"> [|]</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqVneq">eqVneq</a></span><span class="id"> s</span><span class="id"> 0</span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="normal_pdf_ub" class="id"><a name="normal_pdf_ub" class="" title="normal_pdf_ub :
+forall {R : realType} (m : R) [s : R] (x : R),
+s != 0%R -> (normal_pdf m s x <= normal_peak s)%R
+
+normal_pdf_ub is not universe polymorphic
+Arguments normal_pdf_ub {R} m%_ring_scope [s]%_ring_scope x%_ring_scope _
+normal_pdf_ub is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_pdf_ub
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 114, characters 6-19
+">normal_pdf_ub</a></span><span class="id"> </span><span id="m:49" class="id"><a name="m:49" class="">m</a></span><span class="id"> </span><span id="s:50" class="id"><a name="s:50" class="">s</a></span><span class="id"> </span><span id="x:51" class="id"><a name="x:51" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:50">s</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:49">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:50">s</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:51">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak">normal_peak</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:50">s</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id">;</span><span class="id"> have</span><span class="id"> [|]</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqVneq">eqVneq</a></span><span class="id"> s</span><span class="id"> 0</span>. Qed.</div></details>
+<br/>
+<span class="vernacular">End</span><span class="id"> normal_density</span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="normal_prob" class="id"><a name="normal_prob" class="" title="normal_prob :
+forall {R : realType},
+R ->
+R ->
+set
+  (measurable_structure_g_sigma_algebraType__canonical__measurable_structure_Measurable
+     (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+           R)
+     (R.-ocitv).-measurable) ->
+\bar R
+
+normal_prob is not universe polymorphic
+Arguments normal_prob {R} (m s)%_ring_scope _%_classical_set_scope
+normal_prob is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_prob
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 119, characters 11-22
+">normal_prob</a></span><span class="id"> {</span><span id="R:52" class="id"><a name="R:52" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="m:53" class="id"><a name="m:53" class="">m</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#R:52">R</a></span>) (<span id="s:54" class="id"><a name="s:54" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#R:52">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> _</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#R:52">R</a></span><span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="V:55" class="id"><a name="V:55" class="">V</a></span><span class="id"> =&gt;</span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#lebesgue_measure">lebesgue_measure</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">]_</a></span>(<span id="x:56" class="id"><a name="x:56" class="">x</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#V:55">V</a></span>) (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:53">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:54">s</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:56">x</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>)<span class="id">%E</span>.<br/>
+<br/>
+<span class="vernacular">Section</span><span class="id"> normal_probability</span>.<br/>
+<span class="vernacular">Variables</span> (<span id="normal_probability.R" class="id"><a name="normal_probability.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>) (<span id="normal_probability.m" class="id"><a name="normal_probability.m" class="">m</a></span><span class="id"> </span><span id="normal_probability.sigma" class="id"><a name="normal_probability.sigma" class="">sigma</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#R:58">R</a></span>).<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
+<span class="vernacular">Notation</span><span class="id"> </span><span id="mu" class="id"><a name="mu" class="">mu</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#lebesgue_measure">lebesgue_measure</a></span>.<br/>
+<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="normal_peak" class="id"><a name="normal_peak" class="">normal_peak</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak">normal_peak</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.sigma">sigma</a></span>).<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="normal_fun" class="id"><a name="normal_fun" class="">normal_fun</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_fun">normal_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.m">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.sigma">sigma</a></span>).<br/>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_probability.F" class="id"><a name="normal_probability.F" class="">F</a></span> (<span id="x:63" class="id"><a name="x:63" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.R">R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#32d8c90f413029fb5c0e82f0559cd7ef">^o</a></span>)<span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:63">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.m">m</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.sqrt">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.sqrt">sqrt</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.sigma">sigma</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id">2</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id">2</span>)).<br/>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_probability.normal_gauss_fun" class="id"><a name="normal_probability.normal_gauss_fun" class="">normal_gauss_fun</a></span><span class="id"> </span><span id="x:64" class="id"><a name="x:64" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_fun">normal_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:64">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.gauss_integral.html#gauss_fun">gauss_fun</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.F">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:64">x</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">congr</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#expR">expR</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulNr">mulNr</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.exprMn">exprMn</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.exprVn">exprVn</a></span><span class="id">;</span><span class="id"> congr</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x">-</a></span> (_<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id">_</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#4e5a4c91ec0aa12de06dfe1cc07ea126">^-1</a></span>)<span class="id">%R</span>).<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.Theory.sqr_sqrtr">sqr_sqrtr</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.pmulrn_lge0">pmulrn_lge0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.sqr_ge0">sqr_ge0</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_probability.F'E" class="id"><a name="normal_probability.F'E" class="">F'E</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.F">F</a></span><span class="id"><a href="mathcomp.analysis.derive.html#09404cd9a88c3cc9bb8278711d82576f">^`</a></span>()<span class="id">%classic</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.functions.html#cst">cst</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.sqrt">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.sqrt">sqrt</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.sigma">sigma</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id">2</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id">2</span>))<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#4e5a4c91ec0aa12de06dfe1cc07ea126">^-1</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#funext">funext</a></span><span class="id"> =&gt;</span><span class="id"> x;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.F">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html#derive1E">derive1E</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html#deriveM">deriveM</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html#deriveD">deriveD</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html#derive_cst">derive_cst</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.scaler0">scaler0</a></span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.add0r">add0r</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html#derive_id">derive_id</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html#derive_cst">derive_cst</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.addr0">addr0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.normed_module.html#scaler1">scaler1</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_probability.integral_gaussFF'" class="id"><a name="normal_probability.integral_gaussFF'" class="">integral_gaussFF'</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.sigma">sigma</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
+&nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">\int[</a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">]_</a></span><span id="x:65" class="id"><a name="x:65" class="">x</a></span> ((((<span class="id"><a href="mathcomp.analysis.gauss_integral.html#gauss_fun">gauss_fun</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.F">F</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.F">F</a></span><span class="id"><a href="mathcomp.analysis.derive.html#09404cd9a88c3cc9bb8278711d82576f">^`</a></span>())<span class="id">%classic</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> x</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> *</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.sqrt">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.sqrt">sqrt</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.sigma">sigma</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id">2</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id">2</span>))<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>))<span class="id">%E</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak">normal_peak</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#4e5a4c91ec0aa12de06dfe1cc07ea126">^-1</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> s0;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak">normal_peak</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.invrK">invrK</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> -</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulrnAr">mulrnAr</a></span><span class="id"> -[in</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssrmatching.ssrmatching.html#SsrMatchingSyntax.RHS">RHS</a></span><span class="id">]</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr_natr">mulr_natr</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.Theory.sqrtrM">sqrtrM</a></span><span class="id"> ?</span>(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.Theory.sqrtrM">sqrtrM</a></span><span class="id"> 2</span>)<span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.sqr_ge0">sqr_ge0</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.trigo.html#pi_ge0">pi_ge0</a></span><span class="id">//</span><span class="id"> !</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#EFinM">EFinM</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#muleCA">muleCA</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html#ge0_integralZr">ge0_integralZr</a></span><span class="id">//=;</span><span class="id"> first</span><span class="id"> last</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> _;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulr_ge0">mulr_ge0</a></span><span class="id">//=</span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.gauss_integral.html#gauss_fun_ge0">gauss_fun_ge0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.F'E">F'E</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.invr_ge0">invr_ge0</a></span>.<br/>
+&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.F'E">F'E</a></span><span class="id">;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_EFinP">measurable_EFinP</a></span><span class="id">/</span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_funM">measurable_funM</a></span><span class="id"> =&gt;</span><span class="id"> //</span>.<br/>
+&nbsp;&nbsp;<span class="id">apply/</span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurableT_comp">measurableT_comp</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> first</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.gauss_integral.html#measurable_gauss_fun">measurable_gauss_fun</a></span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_funM">measurable_funM</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_funD">measurable_funD</a></span>.<br/>
+<span class="id">congr</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#76b5f4c325a4d0716da4bce1239a53f4">*%E</a></span><span class="id">;</span><span class="id"> last</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> -</span>(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr_natr">mulr_natr</a></span> (_<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id">2</span>))<span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.Theory.sqrtrM">sqrtrM</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.sqr_ge0">sqr_ge0</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.ftc.html#increasing_ge0_integration_by_substitutionT">increasing_ge0_integration_by_substitutionT</a></span><span class="id">//</span>.<br/>
+<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.gauss_integral.html#integralT_gauss">integralT_gauss</a></span>.<br/>
+<span class="id">-</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> y</span><span class="id"> xy;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.F">F</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ltr_pM2r">ltr_pM2r</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ltr_leB">ltr_leB</a></span><span class="id"> ?</span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.gt_eqF">gt_eqF</a></span><span class="id">//</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.invr_gt0">invr_gt0</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.Theory.sqrtr_gt0">sqrtr_gt0</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.pmulrn_lgt0">pmulrn_lgt0</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.exprn_even_gt0">exprn_even_gt0</a></span>.<br/>
+<span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.F'E">F'E</a></span><span class="id"> =&gt;</span><span class="id"> ?;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#cvg_cst">cvg_cst</a></span>.<br/>
+<span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.F'E">F'E</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#is_cvg_cst">is_cvg_cst</a></span>.<br/>
+<span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.F'E">F'E</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#is_cvg_cst">is_cvg_cst</a></span>.<br/>
+<span class="id">-</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html#gt0_cvgMlNy">gt0_cvgMlNy</a></span><span class="id">;</span><span class="id"> last</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.realfun.html#cvg_addrr_Ny">cvg_addrr_Ny</a></span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.invr_gt0">invr_gt0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.Theory.sqrtr_gt0">sqrtr_gt0</a></span><span class="id"> -</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr_natr">mulr_natr</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulr_gt0">mulr_gt0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.exprn_even_gt0">exprn_even_gt0</a></span>.<br/>
+<span class="id">-</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html#gt0_cvgMly">gt0_cvgMly</a></span><span class="id">;</span><span class="id"> last</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.realfun.html#cvg_addrr">cvg_addrr</a></span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.invr_gt0">invr_gt0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.Theory.sqrtr_gt0">sqrtr_gt0</a></span><span class="id"> -</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr_natr">mulr_natr</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulr_gt0">mulr_gt0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.exprn_even_gt0">exprn_even_gt0</a></span>.<br/>
+<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.gauss_integral.html#continuous_gauss_fun">continuous_gauss_fun</a></span>.<br/>
+<span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.gauss_integral.html#gauss_fun_ge0">gauss_fun_ge0</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_probability.integral_normal_fun" class="id"><a name="normal_probability.integral_normal_fun" class="">integral_normal_fun</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.sigma">sigma</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
+&nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">\int[</a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">]_</a></span><span id="x:66" class="id"><a name="x:66" class="">x</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_fun">normal_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:66">x</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>)<span class="id">%E</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak">normal_peak</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#4e5a4c91ec0aa12de06dfe1cc07ea126">^-1</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> s0;</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.integral_gaussFF'">integral_gaussFF'</a></span><span class="id">//;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#eq_integral">eq_integral</a></span><span class="id"> =&gt;</span><span class="id"> /=</span><span class="id"> x</span><span class="id"> _</span>.<br/>
+<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.F'E">F'E</a></span><span class="id"> !</span><span class="id"><a href="mathcomp.classical.functions.html#fctE">fctE</a></span><span class="id">/=</span><span class="id"> -</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#EFinM">EFinM</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.divfK">divfK</a></span><span class="id">//</span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.normal_gauss_fun">normal_gauss_fun</a></span><span class="id">//</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.gt_eqF">gt_eqF</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.Theory.sqrtr_gt0">sqrtr_gt0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.pmulrn_lgt0">pmulrn_lgt0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.exprn_even_gt0">exprn_even_gt0</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_probability.integrable_normal_fun" class="id"><a name="normal_probability.integrable_normal_fun" class="">integrable_normal_fun</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.sigma">sigma</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#mu">mu</a></span>.<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html#::type_scope:x_'.-integrable'">-integrable</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html#::type_scope:x_'.-integrable'"> [set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.R">R</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#EFin">EFin</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_fun">normal_fun</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> s0;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html#integrableP">integrableP</a></span><span class="id">;</span><span class="id"> split</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_EFinP">measurable_EFinP</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#measurable_normal_fun">measurable_normal_fun</a></span>.<br/>
+<span class="id">under</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#eq_integral">eq_integral</a></span><span class="id"> do</span><span class="id"> rewrite</span><span class="id"> /=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ger0_norm">ger0_norm</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.exp.html#expR_ge0">expR_ge0</a></span><span class="id">//</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> /=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.integral_normal_fun">integral_normal_fun</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ltry">ltry</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_normal_pdf" class="id"><a name="integral_normal_pdf" class="" title="integral_normal_pdf :
+forall [R : realType] (m sigma : R),
+(\int[lebesgue_measure]_x (normal_pdf m sigma x)%:E)%E = 1%E
+
+integral_normal_pdf is not universe polymorphic
+Arguments integral_normal_pdf [R] (m sigma)%_ring_scope
+integral_normal_pdf is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.integral_normal_pdf
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 189, characters 6-25
+">integral_normal_pdf</a></span><span class="id"> :</span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">\int[</a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">]_</a></span><span id="x:67" class="id"><a name="x:67" class="">x</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.m">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.sigma">sigma</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:67">x</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">1%E</span>)<span class="id">%E</span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id">;</span><span class="id"> have</span><span class="id"> [_|s0]</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqVneq">eqVneq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.sigma">sigma</a></span><span class="id"> 0</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral_indic">integral_indic</a></span><span class="id">//=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setIT">setIT</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#lebesgue_measure_itv">lebesgue_measure_itv</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lte01">lte01</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.oppr0">oppr0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#adde0">adde0</a></span>.<br/>
+<span class="id">under</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#eq_integral">eq_integral</a></span><span class="id"> do</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#EFinM">EFinM</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html#integralZl">integralZl</a></span><span class="id">//=;</span><span class="id"> last</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.integrable_normal_fun">integrable_normal_fun</a></span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.integral_normal_fun">integral_normal_fun</a></span><span class="id">//</span><span class="id"> -</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#EFinM">EFinM</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.divff">divff</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.gt_eqF">gt_eqF</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak_gt0">normal_peak_gt0</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="integrable_normal_pdf" class="id"><a name="integrable_normal_pdf" class="" title="integrable_normal_pdf :
+forall [R : realType] (m sigma : R),
+lebesgue_measure.-integrable [set: R]
+  (fun
+     x : measurable_structure_g_sigma_algebraType__canonical__measurable_structure_Measurable
+           (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+                 R)
+           (R.-ocitv).-measurable =>
+   (normal_pdf m sigma x)%:E)
+
+integrable_normal_pdf is not universe polymorphic
+Arguments integrable_normal_pdf [R] (m sigma)%_ring_scope
+integrable_normal_pdf is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.integrable_normal_pdf
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 198, characters 6-27
+">integrable_normal_pdf</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#mu">mu</a></span>.<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html#::type_scope:x_'.-integrable'">-integrable</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html#::type_scope:x_'.-integrable'"> [set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.R">R</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><br/>
+&nbsp;&nbsp;(<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:68" class="id"><a name="x:68" class="">x</a></span><span class="id"> =&gt;</span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.m">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.sigma">sigma</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:68">x</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">apply/</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html#integrableP">integrableP</a></span><span class="id">;</span><span class="id"> split</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_EFinP">measurable_EFinP</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#measurable_normal_pdf">measurable_normal_pdf</a></span>.<br/>
+<span class="id">apply/</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html#abse_integralP">abse_integralP</a></span><span class="id"> =&gt;</span><span class="id"> //=;</span><span class="id"> last</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#integral_normal_pdf">integral_normal_pdf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#abse1">abse1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ltry">ltry</a></span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_EFinP">measurable_EFinP</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#measurable_normal_pdf">measurable_normal_pdf</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="normal_pdf" class="id"><a name="normal_pdf" class="">normal_pdf</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.m">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.sigma">sigma</a></span>).<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="normal_prob" class="id"><a name="normal_prob" class="">normal_prob</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_prob">normal_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.m">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.sigma">sigma</a></span>).<br/>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_probability.normal0" class="id"><a name="normal_probability.normal0" class="">normal0</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_prob">normal_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0%E</span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_prob">normal_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html#integral_set0">integral_set0</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_probability.normal_ge0" class="id"><a name="normal_probability.normal_ge0" class="">normal_ge0</a></span><span class="id"> </span><span id="A:69" class="id"><a name="A:69" class="">A</a></span><span class="id"> :</span> (<span class="id">0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_prob">normal_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#A:69">A</a></span>)<span class="id">%E</span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_prob">normal_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral_ge0">integral_ge0</a></span><span class="id">//=</span><span class="id"> =&gt;</span><span class="id"> x</span><span class="id"> _</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf_ge0">normal_pdf_ge0</a></span><span class="id"> ?</span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.ltW">ltW</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_probability.normal_sigma_additive" class="id"><a name="normal_probability.normal_sigma_additive" class="">normal_sigma_additive</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#semi_sigma_additive">semi_sigma_additive</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_prob">normal_prob</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> /=</span><span class="id"> A</span><span class="id"> mA</span><span class="id"> tA</span><span class="id"> mUA</span>.<br/>
+<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_prob">normal_prob</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html#integral_bigcup">integral_bigcup</a></span><span class="id">//=;</span><span class="id"> last</span><span class="id"> first</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> apply:</span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html#integrableS">integrableS</a></span><span class="id"> _</span><span class="id"> _</span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#subsetT">subsetT</a></span><span class="id"> _</span>))<span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#integrable_normal_pdf">integrable_normal_pdf</a></span>.<br/>
+<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#is_cvg_ereal_nneg_natsum_cond">is_cvg_ereal_nneg_natsum_cond</a></span><span class="id"> =&gt;</span><span class="id"> n</span><span class="id"> _</span><span class="id"> _</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral_ge0">integral_ge0</a></span><span class="id"> =&gt;</span><span class="id"> /=</span><span class="id"> x</span><span class="id"> ?;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf_ge0">normal_pdf_ge0</a></span><span class="id"> ?</span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.ltW">ltW</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span id="normal_distribution_normal_prob__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="normal_distribution_normal_prob__canonical__measure_function_Measure" class="" title="normal_distribution_normal_prob__canonical__measure_function_Measure :
+forall [R : realType],
+R ->
+R ->
+measure
+  (measurable_structure_g_sigma_algebraType__canonical__measurable_structure_Measurable
+     (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+           R)
+     (R.-ocitv).-measurable)
+  R
+
+normal_distribution_normal_prob__canonical__measure_function_Measure is not universe polymorphic
+Arguments
+  normal_distribution_normal_prob__canonical__measure_function_Measure 
+  [R] (m sigma)%_ring_scope
+normal_distribution_normal_prob__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_distribution_normal_prob__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 228, characters 0-105
+">HB</a></span></span></span></span></span></span></span>.<span id="normal_distribution_normal_prob__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="normal_distribution_normal_prob__canonical__measure_function_Measure" class="" title="normal_distribution_normal_prob__canonical__measure_function_Measure :
+forall [R : realType],
+R ->
+R ->
+measure
+  (measurable_structure_g_sigma_algebraType__canonical__measurable_structure_Measurable
+     (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+           R)
+     (R.-ocitv).-measurable)
+  R
+
+normal_distribution_normal_prob__canonical__measure_function_Measure is not universe polymorphic
+Arguments
+  normal_distribution_normal_prob__canonical__measure_function_Measure 
+  [R] (m sigma)%_ring_scope
+normal_distribution_normal_prob__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_distribution_normal_prob__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 228, characters 0-105
+">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="normal_distribution_normal_prob__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="normal_distribution_normal_prob__canonical__measure_function_Measure" class="" title="normal_distribution_normal_prob__canonical__measure_function_Measure :
+forall [R : realType],
+R ->
+R ->
+measure
+  (measurable_structure_g_sigma_algebraType__canonical__measurable_structure_Measurable
+     (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+           R)
+     (R.-ocitv).-measurable)
+  R
+
+normal_distribution_normal_prob__canonical__measure_function_Measure is not universe polymorphic
+Arguments
+  normal_distribution_normal_prob__canonical__measure_function_Measure 
+  [R] (m sigma)%_ring_scope
+normal_distribution_normal_prob__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_distribution_normal_prob__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 228, characters 0-105
+"> _</a></span></span></span></span></span></span></span><span id="normal_distribution_normal_prob__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="normal_distribution_normal_prob__canonical__measure_function_Measure" class="" title="normal_distribution_normal_prob__canonical__measure_function_Measure :
+forall [R : realType],
+R ->
+R ->
+measure
+  (measurable_structure_g_sigma_algebraType__canonical__measurable_structure_Measurable
+     (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+           R)
+     (R.-ocitv).-measurable)
+  R
+
+normal_distribution_normal_prob__canonical__measure_function_Measure is not universe polymorphic
+Arguments
+  normal_distribution_normal_prob__canonical__measure_function_Measure 
+  [R] (m sigma)%_ring_scope
+normal_distribution_normal_prob__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_distribution_normal_prob__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 228, characters 0-105
+"> :=</a></span></span></span></span></span></span></span><span id="normal_distribution_normal_prob__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="normal_distribution_normal_prob__canonical__measure_function_Measure" class="" title="normal_distribution_normal_prob__canonical__measure_function_Measure :
+forall [R : realType],
+R ->
+R ->
+measure
+  (measurable_structure_g_sigma_algebraType__canonical__measurable_structure_Measurable
+     (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+           R)
+     (R.-ocitv).-measurable)
+  R
+
+normal_distribution_normal_prob__canonical__measure_function_Measure is not universe polymorphic
+Arguments
+  normal_distribution_normal_prob__canonical__measure_function_Measure 
+  [R] (m sigma)%_ring_scope
+normal_distribution_normal_prob__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_distribution_normal_prob__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 228, characters 0-105
+"> isMeasure</a></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#isMeasure.Build">Build</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_prob">normal_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.normal0">normal0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.normal_ge0">normal_ge0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.normal_sigma_additive">normal_sigma_additive</a></span>.<br/>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="normal_probability.normal_setT" class="id"><a name="normal_probability.normal_setT" class="">normal_setT</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_prob">normal_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id">_</span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">1%E</span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_prob">normal_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#integral_normal_pdf">integral_normal_pdf</a></span>. Qed.</div></details>
+<br/>
+<span id="normal_distribution_normal_prob__canonical__probability_measure_Probability" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="normal_distribution_normal_prob__canonical__probability_measure_SubProbability" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_FiniteMeasure" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_FinNumFun" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_SigmaFiniteMeasure" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_SFiniteMeasure" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isFinite" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isSubProbability" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSigmaFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isProbability" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="normal_distribution_normal_prob__canonical__probability_measure_Probability" class="" title="normal_distribution_normal_prob__canonical__probability_measure_Probability :
+forall [R : realType],
+R ->
+R ->
+probability
+  (measurable_structure_g_sigma_algebraType__canonical__measurable_structure_Measurable
+     (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+           R)
+     (R.-ocitv).-measurable)
+  R
+
+normal_distribution_normal_prob__canonical__probability_measure_Probability is not universe polymorphic
+Arguments
+  normal_distribution_normal_prob__canonical__probability_measure_Probability
+  [R] (m sigma)%_ring_scope
+normal_distribution_normal_prob__canonical__probability_measure_Probability is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_distribution_normal_prob__canonical__probability_measure_Probability
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 234, characters 0-89
+">HB</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="normal_distribution_normal_prob__canonical__probability_measure_Probability" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="normal_distribution_normal_prob__canonical__probability_measure_SubProbability" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_FiniteMeasure" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_FinNumFun" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_SigmaFiniteMeasure" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_SFiniteMeasure" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isFinite" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isSubProbability" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSigmaFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isProbability" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="normal_distribution_normal_prob__canonical__probability_measure_Probability" class="" title="normal_distribution_normal_prob__canonical__probability_measure_Probability :
+forall [R : realType],
+R ->
+R ->
+probability
+  (measurable_structure_g_sigma_algebraType__canonical__measurable_structure_Measurable
+     (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+           R)
+     (R.-ocitv).-measurable)
+  R
+
+normal_distribution_normal_prob__canonical__probability_measure_Probability is not universe polymorphic
+Arguments
+  normal_distribution_normal_prob__canonical__probability_measure_Probability
+  [R] (m sigma)%_ring_scope
+normal_distribution_normal_prob__canonical__probability_measure_Probability is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_distribution_normal_prob__canonical__probability_measure_Probability
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 234, characters 0-89
+">instance</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="normal_distribution_normal_prob__canonical__probability_measure_Probability" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="normal_distribution_normal_prob__canonical__probability_measure_SubProbability" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_FiniteMeasure" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_FinNumFun" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_SigmaFiniteMeasure" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_SFiniteMeasure" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isFinite" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isSubProbability" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSigmaFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isProbability" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="normal_distribution_normal_prob__canonical__probability_measure_Probability" class="" title="normal_distribution_normal_prob__canonical__probability_measure_Probability :
+forall [R : realType],
+R ->
+R ->
+probability
+  (measurable_structure_g_sigma_algebraType__canonical__measurable_structure_Measurable
+     (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+           R)
+     (R.-ocitv).-measurable)
+  R
+
+normal_distribution_normal_prob__canonical__probability_measure_Probability is not universe polymorphic
+Arguments
+  normal_distribution_normal_prob__canonical__probability_measure_Probability
+  [R] (m sigma)%_ring_scope
+normal_distribution_normal_prob__canonical__probability_measure_Probability is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_distribution_normal_prob__canonical__probability_measure_Probability
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 234, characters 0-89
+"> _</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="normal_distribution_normal_prob__canonical__probability_measure_Probability" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="normal_distribution_normal_prob__canonical__probability_measure_SubProbability" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_FiniteMeasure" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_FinNumFun" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_SigmaFiniteMeasure" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_SFiniteMeasure" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isFinite" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isSubProbability" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSigmaFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isProbability" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="normal_distribution_normal_prob__canonical__probability_measure_Probability" class="" title="normal_distribution_normal_prob__canonical__probability_measure_Probability :
+forall [R : realType],
+R ->
+R ->
+probability
+  (measurable_structure_g_sigma_algebraType__canonical__measurable_structure_Measurable
+     (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+           R)
+     (R.-ocitv).-measurable)
+  R
+
+normal_distribution_normal_prob__canonical__probability_measure_Probability is not universe polymorphic
+Arguments
+  normal_distribution_normal_prob__canonical__probability_measure_Probability
+  [R] (m sigma)%_ring_scope
+normal_distribution_normal_prob__canonical__probability_measure_Probability is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_distribution_normal_prob__canonical__probability_measure_Probability
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 234, characters 0-89
+"> :=</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><br/>
+&nbsp;&nbsp;<span id="normal_distribution_normal_prob__canonical__probability_measure_Probability" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="normal_distribution_normal_prob__canonical__probability_measure_SubProbability" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_FiniteMeasure" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_FinNumFun" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_SigmaFiniteMeasure" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_SFiniteMeasure" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="normal_distribution_normal_prob__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isFinite" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isSubProbability" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSigmaFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isProbability" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="normal_distribution_normal_prob__canonical__probability_measure_Probability" class="" title="normal_distribution_normal_prob__canonical__probability_measure_Probability :
+forall [R : realType],
+R ->
+R ->
+probability
+  (measurable_structure_g_sigma_algebraType__canonical__measurable_structure_Measurable
+     (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+           R)
+     (R.-ocitv).-measurable)
+  R
+
+normal_distribution_normal_prob__canonical__probability_measure_Probability is not universe polymorphic
+Arguments
+  normal_distribution_normal_prob__canonical__probability_measure_Probability
+  [R] (m sigma)%_ring_scope
+normal_distribution_normal_prob__canonical__probability_measure_Probability is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_distribution_normal_prob__canonical__probability_measure_Probability
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 234, characters 0-89
+">@Measure_isProbability</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#Measure_isProbability.Build">Build</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_prob">normal_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.normal_setT">normal_setT</a></span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="normal_prob_dominates" class="id"><a name="normal_prob_dominates" class="" title="normal_prob_dominates :
+forall [R : realType] (m sigma : R), normal_prob m sigma `<< lebesgue_measure
+
+normal_prob_dominates is not universe polymorphic
+Expanded type for implicit arguments
+normal_prob_dominates :
+forall [R : realType] (m sigma : R)
+  [t : set
+         (measurable_structure_g_sigma_algebraType__canonical__measurable_structure_SemiRingOfSets
+            (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+                  R)
+            (R.-ocitv).-measurable)],
+lebesgue_measure.-null_set t ->
+forall
+  [A : set
+         (measurable_structure_g_sigma_algebraType__canonical__measurable_structure_SemiRingOfSets
+            (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+                  R)
+            (R.-ocitv).-measurable)],
+(((R.-ocitv).-measurable).-sigma).-measurable%classic A ->
+(A `<=` t)%classic -> normal_prob m sigma A = 0%R
+
+Arguments normal_prob_dominates [R] (m sigma)%_ring_scope [t] _ [A] _ _
+normal_prob_dominates is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.normal_distribution.normal_prob_dominates
+Declared in
+library mathcomp.analysis.probability_theory.normal_distribution, line 237, characters 6-27
+">normal_prob_dominates</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_prob">normal_prob</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#2d7ffffaaa230b2304e22e4907064098"> `&lt;&lt;</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#2d7ffffaaa230b2304e22e4907064098"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#mu">mu</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">apply/</span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#null_content_dominatesP">null_content_dominatesP</a></span><span class="id">=&gt;</span><span class="id"> A</span><span class="id"> mA</span><span class="id"> muA0;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_prob">normal_prob</a></span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span>.<br/>
+<span class="id">have</span><span class="id"> [s0|s0]</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqVneq">eqVneq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.sigma">sigma</a></span><span class="id"> 0</span>.<br/>
+&nbsp;&nbsp;<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html#null_set_integral">null_set_integral</a></span><span class="id"> =&gt;</span><span class="id"> //=;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_funTS">measurable_funTS</a></span><span class="id"> =&gt;</span><span class="id"> /=</span>.<br/>
+&nbsp;&nbsp;<span class="id">exact/</span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_EFinP">measurable_EFinP</a></span><span class="id">/</span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_indic">measurable_indic</a></span>.<br/>
+<span class="id">apply/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.eq_le">eq_le</a></span><span class="id">;</span><span class="id"> apply/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#andP">andP</a></span><span class="id">;</span><span class="id"> split;</span><span class="id"> last</span><span class="id"> first</span>.<br/>
+&nbsp;&nbsp;<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#integral_ge0">integral_ge0</a></span><span class="id"> =&gt;</span><span class="id"> x</span><span class="id"> _</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulr_ge0">mulr_ge0</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak_ge0">normal_peak_ge0</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_fun_ge0">normal_fun_ge0</a></span>.<br/>
+<span class="id">apply:</span> (<span class="id">@</span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.le_trans">le_trans</a></span><span class="id"> _</span><span class="id"> _</span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">\int[</a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">]_</a></span>(<span id="x:71" class="id"><span id="x:70" class="id"><a name="x:71" class="">x</a></span></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id">A</span>) (<span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak">normal_peak</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>))<span class="id">%E;</span><span class="id"> last</span><span class="id"> first</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html#integral_cst">integral_cst</a></span><span class="id">//=</span><span class="id"> muA0</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mule0">mule0</a></span>.<br/>
+<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_monotone_convergence.html#ge0_le_integral">ge0_le_integral</a></span><span class="id"> =&gt;</span><span class="id"> //=</span>.<br/>
+<span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> _;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulr_ge0">mulr_ge0</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_peak_ge0">normal_peak_ge0</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_fun_ge0">normal_fun_ge0</a></span>.<br/>
+<span class="id">-</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_funTS">measurable_funTS</a></span><span class="id">/</span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurableT_comp">measurableT_comp</a></span><span class="id"> =&gt;</span><span class="id"> //=</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_funM">measurable_funM</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#measurable_normal_fun">measurable_normal_fun</a></span>.<br/>
+<span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> _;</span><span class="id"> have</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf_ub">normal_pdf_ub</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_probability.m">m</a></span><span class="id"> x</span><span class="id"> s0;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#negbTE">negbTE</a></span><span class="id"> s0</span>).<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">End</span><span class="id"> normal_probability</span>.<br/>
+
+      <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>
+    </div>
+  </div>
+    </main>
+</body>
+</html>

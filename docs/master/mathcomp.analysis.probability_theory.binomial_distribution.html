@@ -1,0 +1,824 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Module mathcomp.analysis.probability_theory.binomial_distribution</title>
+<meta name="description" content="Documentation of Coq module mathcomp.analysis.probability_theory.binomial_distribution" />
+<link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+<link href="rocqnavi.css" rel="stylesheet" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="rocqnavi.js"> </script>
+</head>
+
+<body onload="init()">
+
+  <main>
+    <div class="sidebar">
+      <h2>Files</h2>
+      <li><details id="mathcomp"><summary>mathcomp</summary>
+          <ul>
+          <li><details id="mathcomp.analysis"><summary>analysis</summary>
+          <ul>
+          <li><details id="mathcomp.analysis.homotopy_theory"><summary>homotopy_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.homotopy_theory.continuous_path.html">continuous_path</a></li>
+<li><a href="mathcomp.analysis.homotopy_theory.homotopy.html">homotopy</a></li>
+<li><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html">wedge_sigT</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.lebesgue_integral_theory"><summary>lebesgue_integral_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.lebesgue_integral_theory.giry.html">giry</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html">lebesgue_Rintegral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html">lebesgue_integrable</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral.html">lebesgue_integral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html">lebesgue_integral_definition</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.html">lebesgue_integral_differentiation</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_dominated_convergence.html">lebesgue_integral_dominated_convergence</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.html">lebesgue_integral_fubini</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_monotone_convergence.html">lebesgue_integral_monotone_convergence</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html">lebesgue_integral_nonneg</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html">lebesgue_integral_under</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.html">measurable_fun_approximation</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html">simple_functions</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.measure_theory"><summary>measure_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.measure_theory.counting_measure.html">counting_measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.dirac_measure.html">dirac_measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measurable_function.html">measurable_function</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measurable_structure.html">measurable_structure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure.html">measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_extension.html">measure_extension</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_function.html">measure_function</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_negligible.html">measure_negligible</a></li>
+<li><a href="mathcomp.analysis.measure_theory.probability_measure.html">probability_measure</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.normedtype_theory"><summary>normedtype_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.normedtype_theory.complete_normed_module.html">complete_normed_module</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.ereal_normedtype.html">ereal_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.matrix_normedtype.html">matrix_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.normed_module.html">normed_module</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.normedtype.html">normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html">num_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html">pseudometric_normed_Zmodule</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.urysohn.html">urysohn</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.vitali_lemma.html">vitali_lemma</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.probability_theory"><summary>probability_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html">bernoulli_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.beta_distribution.html">beta_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.binomial_distribution.html">binomial_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.exponential_distribution.html">exponential_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.normal_distribution.html">normal_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.poisson_distribution.html">poisson_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.probability.html">probability</a></li>
+<li><a href="mathcomp.analysis.probability_theory.random_variable.html">random_variable</a></li>
+<li><a href="mathcomp.analysis.probability_theory.uniform_distribution.html">uniform_distribution</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.showcase"><summary>showcase</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.showcase.pnt.html">pnt</a></li>
+<li><a href="mathcomp.analysis.showcase.summability.html">summability</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.topology_theory"><summary>topology_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.topology_theory.bool_topology.html">bool_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.compact.html">compact</a></li>
+<li><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></li>
+<li><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.initial_topology.html">initial_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.metric_structure.html">metric_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.nat_topology.html">nat_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.num_topology.html">num_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.one_point_compactification.html">one_point_compactification</a></li>
+<li><a href="mathcomp.analysis.topology_theory.order_topology.html">order_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.product_topology.html">product_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html">pseudometric_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.quotient_topology.html">quotient_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.separation_axioms.html">separation_axioms</a></li>
+<li><a href="mathcomp.analysis.topology_theory.sigT_topology.html">sigT_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.subspace_topology.html">subspace_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.subtype_topology.html">subtype_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.supremum_topology.html">supremum_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.topology.html">topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.topology_structure.html">topology_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.uniform_structure.html">uniform_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.weak_topology.html">weak_topology</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.analysis.all_analysis.html">all_analysis</a></li>
+<li><a href="mathcomp.analysis.borel_hierarchy.html">borel_hierarchy</a></li>
+<li><a href="mathcomp.analysis.cantor.html">cantor</a></li>
+<li><a href="mathcomp.analysis.charge.html">charge</a></li>
+<li><a href="mathcomp.analysis.convex.html">convex</a></li>
+<li><a href="mathcomp.analysis.derive.html">derive</a></li>
+<li><a href="mathcomp.analysis.ereal.html">ereal</a></li>
+<li><a href="mathcomp.analysis.ess_sup_inf.html">ess_sup_inf</a></li>
+<li><a href="mathcomp.analysis.esum.html">esum</a></li>
+<li><a href="mathcomp.analysis.exp.html">exp</a></li>
+<li><a href="mathcomp.analysis.ftc.html">ftc</a></li>
+<li><a href="mathcomp.analysis.function_spaces.html">function_spaces</a></li>
+<li><a href="mathcomp.analysis.gauss_integral.html">gauss_integral</a></li>
+<li><a href="mathcomp.analysis.hoelder.html">hoelder</a></li>
+<li><a href="mathcomp.analysis.kernel.html">kernel</a></li>
+<li><a href="mathcomp.analysis.landau.html">landau</a></li>
+<li><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></li>
+<li><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html">lebesgue_stieltjes_measure</a></li>
+<li><a href="mathcomp.analysis.measurable_realfun.html">measurable_realfun</a></li>
+<li><a href="mathcomp.analysis.numfun.html">numfun</a></li>
+<li><a href="mathcomp.analysis.pi_irrational.html">pi_irrational</a></li>
+<li><a href="mathcomp.analysis.realfun.html">realfun</a></li>
+<li><a href="mathcomp.analysis.sequences.html">sequences</a></li>
+<li><a href="mathcomp.analysis.trigo.html">trigo</a></li>
+<li><a href="mathcomp.analysis.tvs.html">tvs</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis_stdlib"><summary>analysis_stdlib</summary>
+          <ul>
+          <li><details id="mathcomp.analysis_stdlib.showcase"><summary>showcase</summary>
+          <ul>
+          <li><a href="mathcomp.analysis_stdlib.showcase.uniform_bigO.html">uniform_bigO</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.analysis_stdlib.Rstruct_topology.html">Rstruct_topology</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.classical"><summary>classical</summary>
+          <ul>
+          <li><a href="mathcomp.classical.all_classical.html">all_classical</a></li>
+<li><a href="mathcomp.classical.boolp.html">boolp</a></li>
+<li><a href="mathcomp.classical.cardinality.html">cardinality</a></li>
+<li><a href="mathcomp.classical.classical_orders.html">classical_orders</a></li>
+<li><a href="mathcomp.classical.classical_sets.html">classical_sets</a></li>
+<li><a href="mathcomp.classical.contra.html">contra</a></li>
+<li><a href="mathcomp.classical.filter.html">filter</a></li>
+<li><a href="mathcomp.classical.fsbigop.html">fsbigop</a></li>
+<li><a href="mathcomp.classical.functions.html">functions</a></li>
+<li><a href="mathcomp.classical.internal_Eqdep_dec.html">internal_Eqdep_dec</a></li>
+<li><a href="mathcomp.classical.mathcomp_extra.html">mathcomp_extra</a></li>
+<li><a href="mathcomp.classical.set_interval.html">set_interval</a></li>
+<li><a href="mathcomp.classical.unstable.html">unstable</a></li>
+<li><a href="mathcomp.classical.wochoice.html">wochoice</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.experimental_reals"><summary>experimental_reals</summary>
+          <ul>
+          <li><a href="mathcomp.experimental_reals.discrete.html">discrete</a></li>
+<li><a href="mathcomp.experimental_reals.distr.html">distr</a></li>
+<li><a href="mathcomp.experimental_reals.realseq.html">realseq</a></li>
+<li><a href="mathcomp.experimental_reals.realsum.html">realsum</a></li>
+<li><a href="mathcomp.experimental_reals.xfinmap.html">xfinmap</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.reals"><summary>reals</summary>
+          <ul>
+          <li><a href="mathcomp.reals.all_reals.html">all_reals</a></li>
+<li><a href="mathcomp.reals.constructive_ereal.html">constructive_ereal</a></li>
+<li><a href="mathcomp.reals.prodnormedzmodule.html">prodnormedzmodule</a></li>
+<li><a href="mathcomp.reals.real_interval.html">real_interval</a></li>
+<li><a href="mathcomp.reals.reals.html">reals</a></li>
+<li><a href="mathcomp.reals.signed.html">signed</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.reals_stdlib"><summary>reals_stdlib</summary>
+          <ul>
+          <li><a href="mathcomp.reals_stdlib.Rstruct.html">Rstruct</a></li>
+<li><a href="mathcomp.reals_stdlib.nsatz_realtype.html">nsatz_realtype</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+    </div>
+
+  <div class="coq">
+
+    <div class="content">
+      <p><a href="./index.html">Top</a></p>
+      <h1 class="title">Module mathcomp.analysis.probability_theory.binomial_distribution</h1>
+<span class="vernacular">From</span><span class="id"> HB</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for HB.structures">structures</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html">ssralg</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.ssrnum.html">ssrnum</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssrint.html">ssrint</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html">interval</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html">archimedean</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap">finmap</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html">interval_inference</a></span>.<br/>
+<span class="id">#[warning=</span><span class="id">&quot;-warn-library-file-internal-analysis&quot;</span><span class="id">]</span><br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html">unstable</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html">mathcomp_extra</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html">boolp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html">classical_sets</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.functions.html">functions</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html">cardinality</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html">fsbigop</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html">reals</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.ereal.html">ereal</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology.html">topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.normedtype.html">normedtype</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html">sequences</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.esum.html">esum</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure.html">measure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral.html">lebesgue_integral</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html">bernoulli_distribution</a></span>.<br/>
+<br/>
+<div class="ssrdoc md">
+# Binomial distribution
+
+```
+    binomial_pmf n p == binomial pmf with parameters n : nat and p : R
+   binomial_prob n p == binomial probability measure when 0 &lt;= p &lt;= 1
+                        and \d_0%N otherwise
+      bin_prob n k p == $\binom{n}{k}p^k (1-p)^(n-k)$
+                        Computes a binomial distribution term for
+                        k successes in n trials with success rate p
+```
+
+</div>
+<br/>
+<span class="gallina-kwd">Set</span><span class="vernacular"> Implicit</span><span class="vernacular"> Arguments</span>.<br/>
+<span class="vernacular">Unset</span><span class="vernacular"> Strict</span><span class="vernacular"> Implicit</span>.<br/>
+<span class="vernacular">Unset</span><span class="vernacular"> Printing</span><span class="vernacular"> Implicit</span><span class="vernacular"> Defensive</span>.<br/>
+<br/>
+<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">TTheory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">Theory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Def">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Def">Def</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Theory">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Theory">Theory</a></span>.<br/>
+<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#numFieldTopology.Exports">numFieldTopology</a></span>.<span class="vernacular">Exports</span>.<br/>
+<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
+<br/>
+<span class="vernacular">Section</span><span class="id"> binomial_pmf</span>.<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
+<span class="vernacular">Context</span><span class="id"> {</span><span id="binomial_pmf.R" class="id"><a name="binomial_pmf.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="binomial_pmf.n" class="id"><a name="binomial_pmf.n" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>) (<span id="binomial_pmf.p" class="id"><a name="binomial_pmf.p" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#R:1">R</a></span>).<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="binomial_pmf" class="id"><a name="binomial_pmf" class="" title="binomial_pmf : forall {R : realType}, nat -> R -> nat -> R
+
+binomial_pmf is not universe polymorphic
+Arguments binomial_pmf {R} n%_nat_scope p%_ring_scope k%_nat_scope
+binomial_pmf is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.binomial_pmf
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 41, characters 11-23
+">binomial_pmf</a></span><span class="id"> </span><span id="k:4" class="id"><a name="k:4" class="">k</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf.p">p</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:4">k</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf.p">p</a></span>.<span class="id"><a href="mathcomp.classical.unstable.html#70aac91c746ed85ee92b0d5040f01853">~</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf.n">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'-'_x"> -</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:4">k</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc">'C</a></span>(<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf.n">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc">,</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:4">k</a></span>).<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="binomial_pmf_ge0" class="id"><a name="binomial_pmf_ge0" class="" title="binomial_pmf_ge0 :
+forall {R : realType} (n : nat) [p : R] (k : nat),
+(0 <= p <= 1)%R -> (0 <= binomial_pmf n p k)%R
+
+binomial_pmf_ge0 is not universe polymorphic
+Arguments binomial_pmf_ge0 {R} n%_nat_scope [p]%_ring_scope k%_nat_scope _
+binomial_pmf_ge0 is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.binomial_pmf_ge0
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 43, characters 6-22
+">binomial_pmf_ge0</a></span><span class="id"> </span><span id="k:5" class="id"><a name="k:5" class="">k</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf.p">p</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id">1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf">binomial_pmf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:5">k</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#andP">andP</a></span><span class="id">[p0</span><span class="id"> p1];</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulrn_wge0">mulrn_wge0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulr_ge0">mulr_ge0</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.exprn_ge0">exprn_ge0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html#onem_ge0">onem_ge0</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">End</span><span class="id"> binomial_pmf</span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="measurable_binomial_pmf" class="id"><a name="measurable_binomial_pmf" class="" title="measurable_binomial_pmf :
+forall {R : realType}
+  [D : set (Real_sort__canonical__measurable_structure_SigmaRing R)]
+  (n k : nat),
+measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
+  (U:=Real_sort__canonical__measurable_structure_SigmaRing R) D
+  ((binomial_pmf n)^~ k)
+
+measurable_binomial_pmf is not universe polymorphic
+Expanded type for implicit arguments
+measurable_binomial_pmf :
+forall {R : realType}
+  [D : set (Real_sort__canonical__measurable_structure_SigmaRing R)]
+  (n k : nat),
+'measurable%classic D ->
+forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
+'measurable%classic Y ->
+forall
+  [i : set
+         (set
+            (lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+               R))],
+[set M | sigma_algebra
+           [set: lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+                   R]
+           M /\
+         (R.-ocitv).-measurable `<=` M]%classic
+  i ->
+i (D `&` (binomial_pmf n)^~ k @^-1` Y)%classic
+
+Arguments measurable_binomial_pmf {R} [D]%_classical_set_scope
+  (n k)%_nat_scope _ [Y] _ [i] _
+measurable_binomial_pmf is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.measurable_binomial_pmf
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 50, characters 6-29
+">measurable_binomial_pmf</a></span><span class="id"> {</span><span id="R:6" class="id"><a name="R:6" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> </span><span id="D:7" class="id"><a name="D:7" class="">D</a></span><span class="id"> </span><span id="n:8" class="id"><a name="n:8" class="">n</a></span><span class="id"> </span><span id="k:9" class="id"><a name="k:9" class="">k</a></span><span class="id"> :</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_fun">measurable_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#D:7">D</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf">binomial_pmf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#R:6">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#n:8">n</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> ^~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:9">k</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">apply:</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurableT_comp">measurableT_comp</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:11" class="id"><span id="x:10" class="id"><a name="x:11" class="">x</a></span></span><span class="id"> :</span><span class="id"> R</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#x:10">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc">'C</a></span>(<span class="id">n</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc">,</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc"> </a></span><span class="id">k</span>))<span class="id">%R</span>)<span class="id"> =&gt;</span><span class="id"> /=</span>.<br/>
+&nbsp;&nbsp;<span class="id">exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#natmul_measurable">natmul_measurable</a></span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_funM">measurable_funM</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_funX">measurable_funX</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_funB">measurable_funB</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="binomial_prob" class="id"><a name="binomial_prob" class="" title="binomial_prob : forall {R : realType}, nat -> R -> set nat -> \bar R
+
+binomial_prob is not universe polymorphic
+Arguments binomial_prob {R} n%_nat_scope p%_ring_scope _%_classical_set_scope
+binomial_prob is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.binomial_prob
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 58, characters 11-24
+">binomial_prob</a></span><span class="id"> {</span><span id="R:12" class="id"><a name="R:12" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="n:13" class="id"><a name="n:13" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>) (<span id="p:14" class="id"><a name="p:14" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#R:12">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#R:12">R</a></span><span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="U:15" class="id"><a name="U:15" class="">U</a></span><span class="id"> =&gt;</span><span class="gallina-kwd"> if</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#p:14">p</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id">1</span><span class="gallina-kwd"> then</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.esum.html#bfafafade7d3e202dbbc3dbf50606eb1">\esum_</a></span>(<span id="k:16" class="id"><a name="k:16" class="">k</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.esum.html#bfafafade7d3e202dbbc3dbf50606eb1"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#U:15">U</a></span>) (<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf">binomial_pmf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#n:13">n</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#p:14">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:16">k</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="gallina-kwd"> else</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318">\d_</a></span><span class="id">0%N</span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318"> U</a></span>.<br/>
+<br/>
+<span class="vernacular">Section</span><span class="id"> binomial</span>.<br/>
+<span class="vernacular">Context</span><span class="id"> {</span><span id="binomial.R" class="id"><a name="binomial.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="binomial.n" class="id"><a name="binomial.n" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>) (<span id="binomial.p" class="id"><a name="binomial.p" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#R:17">R</a></span>).<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
+<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="binomial" class="id"><a name="binomial" class="">binomial</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_prob">binomial_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial.n">n</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial.p">p</a></span>).<br/>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="binomial.binomial0" class="id"><a name="binomial.binomial0" class="">binomial0</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial">binomial</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial">binomial</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#measure0">measure0</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifPn">ifPn</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.esum.html#esum_set0">esum_set0</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="binomial.binomial_ge0" class="id"><a name="binomial.binomial_ge0" class="">binomial_ge0</a></span><span class="id"> </span><span id="U:20" class="id"><a name="U:20" class="">U</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial">binomial</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#U:20">U</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial">binomial</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifPn">ifPn</a></span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> p01;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.esum.html#esum_ge0">esum_ge0</a></span><span class="id"> =&gt;</span><span class="id"> /=</span><span class="id"> k</span><span class="id"> Uk</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf_ge0">binomial_pmf_ge0</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="binomial.binomial_sigma_additive" class="id"><a name="binomial.binomial_sigma_additive" class="">binomial_sigma_additive</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#semi_sigma_additive">semi_sigma_additive</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial">binomial</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> F</span><span class="id"> mF</span><span class="id"> tF</span><span class="id"> mUF;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial">binomial</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifPn">ifPn</a></span><span class="id"> =&gt;</span><span class="id"> p01;</span><span class="id"> last</span><span class="id"> first</span>.<br/>
+&nbsp;&nbsp;<span class="id">exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#measure_semi_sigma_additive">measure_semi_sigma_additive</a></span>.<br/>
+<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#cvg_toP">cvg_toP</a></span>.<br/>
+&nbsp;&nbsp;<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#ereal_nondecreasing_is_cvgn">ereal_nondecreasing_is_cvgn</a></span><span class="id"> =&gt;</span><span class="id"> a</span><span class="id"> b</span><span class="id"> ab</span>.<br/>
+&nbsp;&nbsp;<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_sum_nneg_natr">lee_sum_nneg_natr</a></span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> k</span><span class="id"> _</span><span class="id"> _</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.esum.html#esum_ge0">esum_ge0</a></span><span class="id"> =&gt;</span><span class="id"> /=</span><span class="id"> ?</span><span class="id"> _;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf_ge0">binomial_pmf_ge0</a></span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.esum.html#nneseries_sum_bigcup">nneseries_sum_bigcup</a></span><span class="id">//</span><span class="id"> =&gt;</span><span class="id"> i;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf_ge0">binomial_pmf_ge0</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span id="binomial_distribution_binomial_prob__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="binomial_distribution_binomial_prob__canonical__measure_function_Measure" class="" title="binomial_distribution_binomial_prob__canonical__measure_function_Measure :
+forall {R : realType},
+nat ->
+R -> measure Datatypes_nat__canonical__measurable_structure_SemiRingOfSets R
+
+binomial_distribution_binomial_prob__canonical__measure_function_Measure is not universe polymorphic
+Arguments
+  binomial_distribution_binomial_prob__canonical__measure_function_Measure
+  {R} n%_nat_scope p%_ring_scope
+binomial_distribution_binomial_prob__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.binomial_distribution_binomial_prob__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 88, characters 0-108
+">HB</a></span></span></span></span></span></span></span>.<span id="binomial_distribution_binomial_prob__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="binomial_distribution_binomial_prob__canonical__measure_function_Measure" class="" title="binomial_distribution_binomial_prob__canonical__measure_function_Measure :
+forall {R : realType},
+nat ->
+R -> measure Datatypes_nat__canonical__measurable_structure_SemiRingOfSets R
+
+binomial_distribution_binomial_prob__canonical__measure_function_Measure is not universe polymorphic
+Arguments
+  binomial_distribution_binomial_prob__canonical__measure_function_Measure
+  {R} n%_nat_scope p%_ring_scope
+binomial_distribution_binomial_prob__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.binomial_distribution_binomial_prob__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 88, characters 0-108
+">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="binomial_distribution_binomial_prob__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="binomial_distribution_binomial_prob__canonical__measure_function_Measure" class="" title="binomial_distribution_binomial_prob__canonical__measure_function_Measure :
+forall {R : realType},
+nat ->
+R -> measure Datatypes_nat__canonical__measurable_structure_SemiRingOfSets R
+
+binomial_distribution_binomial_prob__canonical__measure_function_Measure is not universe polymorphic
+Arguments
+  binomial_distribution_binomial_prob__canonical__measure_function_Measure
+  {R} n%_nat_scope p%_ring_scope
+binomial_distribution_binomial_prob__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.binomial_distribution_binomial_prob__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 88, characters 0-108
+"> _</a></span></span></span></span></span></span></span><span id="binomial_distribution_binomial_prob__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="binomial_distribution_binomial_prob__canonical__measure_function_Measure" class="" title="binomial_distribution_binomial_prob__canonical__measure_function_Measure :
+forall {R : realType},
+nat ->
+R -> measure Datatypes_nat__canonical__measurable_structure_SemiRingOfSets R
+
+binomial_distribution_binomial_prob__canonical__measure_function_Measure is not universe polymorphic
+Arguments
+  binomial_distribution_binomial_prob__canonical__measure_function_Measure
+  {R} n%_nat_scope p%_ring_scope
+binomial_distribution_binomial_prob__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.binomial_distribution_binomial_prob__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 88, characters 0-108
+"> :=</a></span></span></span></span></span></span></span><span id="binomial_distribution_binomial_prob__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="binomial_distribution_binomial_prob__canonical__measure_function_Measure" class="" title="binomial_distribution_binomial_prob__canonical__measure_function_Measure :
+forall {R : realType},
+nat ->
+R -> measure Datatypes_nat__canonical__measurable_structure_SemiRingOfSets R
+
+binomial_distribution_binomial_prob__canonical__measure_function_Measure is not universe polymorphic
+Arguments
+  binomial_distribution_binomial_prob__canonical__measure_function_Measure
+  {R} n%_nat_scope p%_ring_scope
+binomial_distribution_binomial_prob__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.binomial_distribution_binomial_prob__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 88, characters 0-108
+"> isMeasure</a></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#isMeasure.Build">Build</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial">binomial</a></span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial.binomial0">binomial0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial.binomial_ge0">binomial_ge0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial.binomial_sigma_additive">binomial_sigma_additive</a></span>.<br/>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="binomial.binomial_setT" class="id"><a name="binomial.binomial_setT" class="">binomial_setT</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial">binomial</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id">_</span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">1</span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial">binomial</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifPn">ifPn</a></span><span class="id">;</span><span class="id"> last</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> _;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#probability_setT">probability_setT</a></span>.<br/>
+<span class="id">move=&gt;</span><span class="id"> p01;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf">binomial_pmf</a></span>.<br/>
+<span class="id">have</span><span class="id"> pkn</span><span class="id"> k</span><span class="id"> :</span><span class="id"> 0%R</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial.p">p</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:21">k</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial.p">p</a></span>.<span class="id"><a href="mathcomp.classical.unstable.html#70aac91c746ed85ee92b0d5040f01853">~</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial.n">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'-'_x"> -</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:21">k</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc">'C</a></span>(<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial.n">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc">,</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:21">k</a></span>))<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>.<br/>
+&nbsp;&nbsp;<span class="id">case/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#andP">andP</a></span><span class="id"> :</span><span class="id"> p01</span><span class="id"> =&gt;</span><span class="id"> p0</span><span class="id"> p1</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulrn_wge0">mulrn_wge0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulr_ge0">mulr_ge0</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.exprn_ge0">exprn_ge0</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.subr_ge0">subr_ge0</a></span>.<br/>
+<span class="id">rewrite</span> (<span class="id"><a href="mathcomp.analysis.esum.html#esumID">esumID</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#ab8d1100462fb578182d90787a3ffaeb">`I_</a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial.n">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span>)<span class="id">//</span><span class="id"> [X</span><span class="gallina-kwd"> in</span><span class="id"> _</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d4965da372b2485934ec33867ee5fbe7"> +</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d4965da372b2485934ec33867ee5fbe7"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#X:22">X</a></span><span class="id">]</span><span class="id"><a href="mathcomp.analysis.esum.html#esum1">esum1</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#adde0">adde0</a></span><span class="id">;</span><span class="id"> last</span><span class="id"> first</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> /=</span><span class="id"> k</span><span class="id"> [_</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#negP">negP</a></span><span class="id">];</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#leqNgt">leqNgt</a></span><span class="id"> =&gt;</span><span class="id"> nk;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#bin_small">bin_small</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setTI">setTI</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.esum.html#esum_fset">esum_fset</a></span><span class="id">//</span><span class="id"> -</span><span class="id"><a href="mathcomp.classical.fsbigop.html#fsbig_ord">fsbig_ord</a></span><span class="id">//=</span>.<br/>
+<span class="id">under</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#eq_bigr">eq_bigr</a></span><span class="id"> do</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulrC">mulrC</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#sumEFin">sumEFin</a></span><span class="id"> -</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.exprDn_comm">exprDn_comm</a></span><span class="id">;</span><span class="id"> last</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulrC">mulrC</a></span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.addrC">addrC</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html#add_onemK">add_onemK</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.expr1n">expr1n</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span id="binomial_distribution_binomial_prob__canonical__probability_measure_Probability" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="binomial_distribution_binomial_prob__canonical__probability_measure_SubProbability" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_FiniteMeasure" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_FinNumFun" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_SigmaFiniteMeasure" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_SFiniteMeasure" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isFinite" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isSubProbability" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSigmaFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isProbability" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="binomial_distribution_binomial_prob__canonical__probability_measure_Probability" class="" title="binomial_distribution_binomial_prob__canonical__probability_measure_Probability :
+forall {R : realType},
+nat ->
+R -> probability Datatypes_nat__canonical__measurable_structure_Measurable R
+
+binomial_distribution_binomial_prob__canonical__probability_measure_Probability is not universe polymorphic
+Arguments
+  binomial_distribution_binomial_prob__canonical__probability_measure_Probability
+  {R} n%_nat_scope p%_ring_scope
+binomial_distribution_binomial_prob__canonical__probability_measure_Probability is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.binomial_distribution_binomial_prob__canonical__probability_measure_Probability
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 106, characters 0-88
+">HB</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="binomial_distribution_binomial_prob__canonical__probability_measure_Probability" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="binomial_distribution_binomial_prob__canonical__probability_measure_SubProbability" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_FiniteMeasure" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_FinNumFun" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_SigmaFiniteMeasure" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_SFiniteMeasure" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isFinite" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isSubProbability" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSigmaFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isProbability" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="binomial_distribution_binomial_prob__canonical__probability_measure_Probability" class="" title="binomial_distribution_binomial_prob__canonical__probability_measure_Probability :
+forall {R : realType},
+nat ->
+R -> probability Datatypes_nat__canonical__measurable_structure_Measurable R
+
+binomial_distribution_binomial_prob__canonical__probability_measure_Probability is not universe polymorphic
+Arguments
+  binomial_distribution_binomial_prob__canonical__probability_measure_Probability
+  {R} n%_nat_scope p%_ring_scope
+binomial_distribution_binomial_prob__canonical__probability_measure_Probability is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.binomial_distribution_binomial_prob__canonical__probability_measure_Probability
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 106, characters 0-88
+">instance</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="binomial_distribution_binomial_prob__canonical__probability_measure_Probability" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="binomial_distribution_binomial_prob__canonical__probability_measure_SubProbability" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_FiniteMeasure" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_FinNumFun" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_SigmaFiniteMeasure" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_SFiniteMeasure" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isFinite" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isSubProbability" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSigmaFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isProbability" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="binomial_distribution_binomial_prob__canonical__probability_measure_Probability" class="" title="binomial_distribution_binomial_prob__canonical__probability_measure_Probability :
+forall {R : realType},
+nat ->
+R -> probability Datatypes_nat__canonical__measurable_structure_Measurable R
+
+binomial_distribution_binomial_prob__canonical__probability_measure_Probability is not universe polymorphic
+Arguments
+  binomial_distribution_binomial_prob__canonical__probability_measure_Probability
+  {R} n%_nat_scope p%_ring_scope
+binomial_distribution_binomial_prob__canonical__probability_measure_Probability is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.binomial_distribution_binomial_prob__canonical__probability_measure_Probability
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 106, characters 0-88
+"> _</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="binomial_distribution_binomial_prob__canonical__probability_measure_Probability" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="binomial_distribution_binomial_prob__canonical__probability_measure_SubProbability" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_FiniteMeasure" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_FinNumFun" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_SigmaFiniteMeasure" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_SFiniteMeasure" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isFinite" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isSubProbability" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSigmaFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isProbability" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="binomial_distribution_binomial_prob__canonical__probability_measure_Probability" class="" title="binomial_distribution_binomial_prob__canonical__probability_measure_Probability :
+forall {R : realType},
+nat ->
+R -> probability Datatypes_nat__canonical__measurable_structure_Measurable R
+
+binomial_distribution_binomial_prob__canonical__probability_measure_Probability is not universe polymorphic
+Arguments
+  binomial_distribution_binomial_prob__canonical__probability_measure_Probability
+  {R} n%_nat_scope p%_ring_scope
+binomial_distribution_binomial_prob__canonical__probability_measure_Probability is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.binomial_distribution_binomial_prob__canonical__probability_measure_Probability
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 106, characters 0-88
+"> :=</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><br/>
+&nbsp;&nbsp;<span id="binomial_distribution_binomial_prob__canonical__probability_measure_Probability" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="binomial_distribution_binomial_prob__canonical__probability_measure_SubProbability" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_FiniteMeasure" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_FinNumFun" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_SigmaFiniteMeasure" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_SFiniteMeasure" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="binomial_distribution_binomial_prob__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isFinite" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isSubProbability" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSigmaFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isProbability" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="binomial_distribution_binomial_prob__canonical__probability_measure_Probability" class="" title="binomial_distribution_binomial_prob__canonical__probability_measure_Probability :
+forall {R : realType},
+nat ->
+R -> probability Datatypes_nat__canonical__measurable_structure_Measurable R
+
+binomial_distribution_binomial_prob__canonical__probability_measure_Probability is not universe polymorphic
+Arguments
+  binomial_distribution_binomial_prob__canonical__probability_measure_Probability
+  {R} n%_nat_scope p%_ring_scope
+binomial_distribution_binomial_prob__canonical__probability_measure_Probability is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.binomial_distribution_binomial_prob__canonical__probability_measure_Probability
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 106, characters 0-88
+">@Measure_isProbability</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#Measure_isProbability.Build">Build</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial">binomial</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial.binomial_setT">binomial_setT</a></span>.<br/>
+<br/>
+<span class="vernacular">End</span><span class="id"> binomial</span>.<br/>
+<br/>
+<span class="vernacular">Section</span><span class="id"> binomial_probability</span>.<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
+<span class="vernacular">Context</span><span class="id"> {</span><span id="binomial_probability.R" class="id"><a name="binomial_probability.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="binomial_probability.n" class="id"><a name="binomial_probability.n" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>) (<span id="binomial_probability.p" class="id"><a name="binomial_probability.p" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#R:23">R</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span id="binomial_probability.p0" class="id"><a name="binomial_probability.p0" class="">p0</a></span><span class="id"> :</span> (<span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#p:25">p</a></span>)<span class="id">%R</span>) (<span id="binomial_probability.p1" class="id"><a name="binomial_probability.p1" class="">p1</a></span><span class="id"> :</span> ((<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#NngNum">NngNum</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#p0:26">p0</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id">1</span>)<span class="id">%R</span>).<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="bin_prob" class="id"><a name="bin_prob" class="" title="bin_prob :
+forall {R : realType},
+nat ->
+forall [p : R] [p0 : (0 <= p)%R],
+((NngNum (R:=R) (x:=p) p0)%:num <= 1)%R -> nat -> {nonneg R}%R
+
+bin_prob is not universe polymorphic
+Arguments bin_prob {R} n%_nat_scope [p]%_ring_scope [p0] p1 k%_nat_scope
+bin_prob is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.bin_prob
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 116, characters 11-19
+">bin_prob</a></span> (<span id="k:28" class="id"><a name="k:28" class="">k</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#6b57a954db0efd6b7fe2f37c706d0c82">{nonneg</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#6b57a954db0efd6b7fe2f37c706d0c82"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.R">R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#6b57a954db0efd6b7fe2f37c706d0c82">}</a></span><span class="id"> :=</span><br/>
+&nbsp;&nbsp;((<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#NngNum">NngNum</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.p0">p0</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:28">k</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#NngNum">NngNum</a></span> (<span class="id"><a href="mathcomp.classical.unstable.html#onem_ge0">onem_ge0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.p1">p1</a></span>))<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.n">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'-'_x"> -</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:28">k</a></span>)<span class="id">%N</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc">'C</a></span>(<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.n">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc">,</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:28">k</a></span>))<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#47ac4d6dece4689d4a3505486f61da27">%:nng</a></span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="bin_prob0" class="id"><a name="bin_prob0" class="" title="bin_prob0 :
+forall {R : realType} (n : nat) [p : R] [p0 : (0 <= p)%R]
+  (p1 : ((NngNum (R:=R) (x:=p) p0)%:num <= 1)%R),
+bin_prob n (p:=p) (p0:=p0) p1 0 =
+(widen_itv
+   ((NngNum (R:=R) (x:=((NngNum (R:=R) (x:=p) p0)%:num).~)
+       (onem_ge0 (R:=R) (r:=(NngNum (R:=R) (x:=p) p0)%:num) p1))%:num
+    ^+ n)%:itv%R
+ :
+ {nonneg R}%R)
+
+bin_prob0 is not universe polymorphic
+Arguments bin_prob0 {R} n%_nat_scope [p]%_ring_scope [p0] p1
+bin_prob0 is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.bin_prob0
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 119, characters 6-15
+">bin_prob0</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#bin_prob">bin_prob</a></span><span class="id"> 0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span> ((<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#NngNum">NngNum</a></span> (<span class="id"><a href="mathcomp.classical.unstable.html#onem_ge0">onem_ge0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.p1">p1</a></span>))<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513">^+</a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.n">n</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#47ac4d6dece4689d4a3505486f61da27">%:nng</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#bin_prob">bin_prob</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#bin0">bin0</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#subn0">subn0</a></span><span class="id">/=;</span><span class="id"> apply/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#val_inj">val_inj</a></span><span class="id"> =&gt;</span><span class="id"> /=</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.expr0">expr0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mul1r">mul1r</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr1n">mulr1n</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="bin_prob1" class="id"><a name="bin_prob1" class="" title="bin_prob1 :
+forall {R : realType} (n : nat) [p : R] [p0 : (0 <= p)%R]
+  (p1 : ((NngNum (R:=R) (x:=p) p0)%:num <= 1)%R),
+bin_prob n (p:=p) (p0:=p0) p1 1 =
+(widen_itv
+   ((NngNum (R:=R) (x:=p) p0)%:num *
+    (NngNum (R:=R) (x:=((NngNum (R:=R) (x:=p) p0)%:num).~)
+       (onem_ge0 (R:=R) (r:=(NngNum (R:=R) (x:=p) p0)%:num) p1))%:num
+    ^+ n.-1 *+ n)%:itv%R
+ :
+ {nonneg R}%R)
+
+bin_prob1 is not universe polymorphic
+Arguments bin_prob1 {R} n%_nat_scope [p]%_ring_scope [p0] p1
+bin_prob1 is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.bin_prob1
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 125, characters 6-15
+">bin_prob1</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#bin_prob">bin_prob</a></span><span class="id"> 1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><br/>
+&nbsp;&nbsp;((<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#NngNum">NngNum</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.p0">p0</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#NngNum">NngNum</a></span> (<span class="id"><a href="mathcomp.classical.unstable.html#onem_ge0">onem_ge0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.p1">p1</a></span>))<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.n">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'.-1'">-1</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.n">n</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#47ac4d6dece4689d4a3505486f61da27">%:nng</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#bin_prob">bin_prob</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#bin1">bin1</a></span><span class="id">/=;</span><span class="id"> apply/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#val_inj">val_inj</a></span><span class="id"> =&gt;</span><span class="id"> /=;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.expr1">expr1</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#subn1">subn1</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="binomial_msum" class="id"><a name="binomial_msum" class="" title="binomial_msum :
+forall {R : realType} (n : nat) [p : R] [p0 : (0 <= p)%R]
+  (p1 : ((NngNum (R:=R) (x:=p) p0)%:num <= 1)%R),
+binomial_prob n p =
+msum (fun k : nat => mscale (bin_prob n (p:=p) (p0:=p0) p1 k) (\d_k)%R) n.+1
+
+binomial_msum is not universe polymorphic
+Arguments binomial_msum {R} n%_nat_scope [p]%_ring_scope [p0] p1
+binomial_msum is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.binomial_msum
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 131, characters 6-19
+">binomial_msum</a></span><span class="id"> :</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_prob">binomial_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.n">n</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.p">p</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#msum">msum</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="k:29" class="id"><a name="k:29" class="">k</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#mscale">mscale</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#bin_prob">bin_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:29">k</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318">\d_</a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:29">k</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.n">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#funext">funext</a></span><span class="id"> =&gt;</span><span class="id"> U</span>.<br/>
+<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_prob">binomial_prob</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifPn">ifPn</a></span><span class="id"> =&gt;</span><span class="id"> [_|];</span><span class="id"> last</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.p1">p1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.p0">p0</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#msum">msum</a></span><span class="id">/=</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#mscale">mscale</a></span><span class="id">/=</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf">binomial_pmf</a></span>.<br/>
+<span class="id">have</span><span class="id"> pkn</span><span class="id"> k</span><span class="id"> :</span> (<span class="id">0%R</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.p">p</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:30">k</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.p">p</a></span>.<span class="id"><a href="mathcomp.classical.unstable.html#70aac91c746ed85ee92b0d5040f01853">~</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.n">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'-'_x"> -</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:30">k</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc">'C</a></span>(<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.n">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc">,</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:30">k</a></span>))<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>)<span class="id">%E</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulrn_wge0">mulrn_wge0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulr_ge0">mulr_ge0</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.exprn_ge0">exprn_ge0</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.subr_ge0">subr_ge0</a></span>.<br/>
+<span class="id">rewrite</span> (<span class="id"><a href="mathcomp.analysis.esum.html#esumID">esumID</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#ab8d1100462fb578182d90787a3ffaeb">`I_</a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.n">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span>)<span class="id">//=</span><span class="id"> [X</span><span class="gallina-kwd"> in</span><span class="id"> _</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#X:31">X</a></span><span class="id">]</span><span class="id"><a href="mathcomp.analysis.esum.html#esum1">esum1</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#adde0">adde0</a></span><span class="id">;</span><span class="id"> last</span><span class="id"> first</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> /=</span><span class="id"> k</span><span class="id"> [_</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#negP">negP</a></span><span class="id">];</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#leqNgt">leqNgt</a></span><span class="id"> =&gt;</span><span class="id"> nk;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#bin_small">bin_small</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.esum.html#esum_mkcondl">esum_mkcondl</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.esum.html#esum_fset">esum_fset</a></span><span class="id">//;</span><span class="id"> last</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> i</span><span class="id"> /=</span><span class="id"> _;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifPn">ifPn</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.classical.fsbigop.html#fsbig_ord">fsbig_ord</a></span><span class="id">//=;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#eq_bigr">eq_bigr</a></span><span class="id"> =&gt;</span><span class="id"> i</span><span class="id"> _</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#diracE">diracE</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifPn">ifPn</a></span><span class="id"> =&gt;</span><span class="id"> /=</span><span class="id"> iU;</span><span class="id"> [rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mule1">mule1</a></span><span class="id">|rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mule0">mule0</a></span><span class="id">]</span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="binomial_probE" class="id"><a name="binomial_probE" class="" title="binomial_probE :
+forall {R : realType} (n : nat) [p : R] [p0 : (0 <= p)%R]
+  (p1 : ((NngNum (R:=R) (x:=p) p0)%:num <= 1)%R) (U : set nat),
+binomial_prob n p U =
+(\sum_(k < n.+1) (((bin_prob n (p:=p) (p0:=p0) p1 k)%:num)%:E * \d_k U)%E)%R
+
+binomial_probE is not universe polymorphic
+Arguments binomial_probE {R} n%_nat_scope [p]%_ring_scope 
+  [p0] p1 U%_classical_set_scope
+binomial_probE is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.binomial_probE
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 146, characters 6-20
+">binomial_probE</a></span><span class="id"> </span><span id="U:32" class="id"><a name="U:32" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_prob">binomial_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.n">n</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.p">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#U:32">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><br/>
+&nbsp;&nbsp;(<span class="id"><a href="mathcomp.reals.constructive_ereal.html#70c6c347670b7d7a821347ad84e9446b">\sum_</a></span>(<span id="k:35" class="id"><span id="k:34" class="id"><span id="k:33" class="id"><a name="k:35" class="">k</a></span></span></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#70c6c347670b7d7a821347ad84e9446b"> &lt;</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#70c6c347670b7d7a821347ad84e9446b"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.n">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span>) (<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#bin_prob">bin_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:33">k</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> *</a></span> (<span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318">\d_</a></span>(<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#nat_of_ord">nat_of_ord</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:33">k</a></span>)<span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318"> U</a></span>))<span class="id">%E</span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_msum">binomial_msum</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_binomial" class="id"><a name="integral_binomial" class="" title="integral_binomial :
+forall {R : realType} (n : nat) [p : R] [p0 : (0 <= p)%R]
+  (p1 : ((NngNum (R:=R) (x:=p) p0)%:num <= 1)%R) [f : nat -> \bar R],
+(forall x : nat, (0%R <= f x)%E) ->
+(\int[binomial_prob n p]_y f y)%E =
+(\sum_(k < n.+1) (((bin_prob n (p:=p) (p0:=p0) p1 k)%:num)%:E * f k)%E)%R
+
+integral_binomial is not universe polymorphic
+Arguments integral_binomial {R} n%_nat_scope [p]%_ring_scope 
+  [p0] p1 [f]%_function_scope _%_function_scope
+integral_binomial is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.integral_binomial
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 150, characters 6-23
+">integral_binomial</a></span> (<span id="f:36" class="id"><a name="f:36" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.R">R</a></span>)<span class="id"> :</span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:37" class="id"><a name="x:37" class="">x</a></span><span class="id">,</span><span class="id"> 0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#f:36">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#x:37">x</a></span>)<span class="id">%E</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
+&nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">\int[</a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_prob">binomial_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.n">n</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.p">p</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">]_</a></span><span id="y:38" class="id"><a name="y:38" class="">y</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#f:36">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#y:38">y</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><br/>
+&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.constructive_ereal.html#70c6c347670b7d7a821347ad84e9446b">\sum_</a></span>(<span id="k:41" class="id"><span id="k:40" class="id"><span id="k:39" class="id"><a name="k:41" class="">k</a></span></span></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#70c6c347670b7d7a821347ad84e9446b"> &lt;</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#70c6c347670b7d7a821347ad84e9446b"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_probability.n">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span>) (<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#bin_prob">bin_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:39">k</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> *</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#f:36">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:39">k</a></span>)<span class="id">%E</span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> f0;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_msum">binomial_msum</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html#ge0_integral_measure_sum">ge0_integral_measure_sum</a></span><span class="id">//=</span>.<br/>
+<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#eq_bigr">eq_bigr</a></span><span class="id"> =&gt;</span><span class="id"> i</span><span class="id"> _</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html#ge0_integral_mscale">ge0_integral_mscale</a></span><span class="id">//=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html#integral_dirac">integral_dirac</a></span><span class="id">//=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#diracT">diracT</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mul1e">mul1e</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">End</span><span class="id"> binomial_probability</span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_binomial_prob" class="id"><a name="integral_binomial_prob" class="" title="integral_binomial_prob :
+forall [R : realType] (n : nat)
+  [p : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
+         R]
+  (U : set Datatypes_bool__canonical__measurable_structure_SigmaRing),
+(0 <= p <= 1)%R ->
+(\int[binomial_prob n p]_y (\d_(0 < y)%N)%R U)%E =
+bernoulli_prob (1 - p.~ ^+ n) U
+
+integral_binomial_prob is not universe polymorphic
+Arguments integral_binomial_prob [R] n%_nat_scope 
+  [p] U%_classical_set_scope _
+integral_binomial_prob is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.integral_binomial_prob
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 161, characters 6-28
+">integral_binomial_prob</a></span> (<span id="R:42" class="id"><a name="R:42" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>)<span class="id"> </span><span id="n:43" class="id"><a name="n:43" class="">n</a></span><span class="id"> </span><span id="p:44" class="id"><a name="p:44" class="">p</a></span><span class="id"> </span><span id="U:45" class="id"><a name="U:45" class="">U</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#p:44">p</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id">1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
+&nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">\int[</a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_prob">binomial_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#n:43">n</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#p:44">p</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">]_</a></span><span id="y:46" class="id"><a name="y:46" class="">y</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318">\d_</a></span>(<span class="id">0</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#y:46">y</a></span>)<span class="id">%N</span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318"> U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> =</a></span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_prob">bernoulli_prob</a></span> (<span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#p:44">p</a></span>.<span class="id"><a href="mathcomp.classical.unstable.html#70aac91c746ed85ee92b0d5040f01853">~</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#n:43">n</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#U:45">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> :&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#R:42">R</a></span>)<span class="id">%E</span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#andP">andP</a></span><span class="id">[p0</span><span class="id"> p1];</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_probE">bernoulli_probE</a></span><span class="id">//=;</span><span class="id"> last</span><span class="id"> first</span>.<br/>
+&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.subr_ge0">subr_ge0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.exprn_ile1">exprn_ile1</a></span><span class="id">//=;</span><span class="id"> [|exact/</span><span class="id"><a href="mathcomp.classical.unstable.html#onem_ge0">onem_ge0</a></span><span class="id">|exact/</span><span class="id"><a href="mathcomp.classical.unstable.html#onem_le1">onem_le1</a></span><span class="id">]</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.subr_ge0">subr_ge0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.opprB">opprB</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.subrKC">subrKC</a></span><span class="id">;</span><span class="id"> exact/</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.exprn_ge0">exprn_ge0</a></span><span class="id">/</span><span class="id"><a href="mathcomp.classical.unstable.html#onem_ge0">onem_ge0</a></span>.<br/>
+<span class="id">rewrite</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#integral_binomial">integral_binomial</a></span><span class="id"> _</span><span class="id"> n</span><span class="id"> p</span><span class="id"> _</span><span class="id"> _</span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="y:49" class="id"><span id="y:48" class="id"><span id="y:47" class="id"><a name="y:49" class="">y</a></span></span></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318">\d_</a></span>(<span class="id">1</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#cb53cf0ee22c036a03b4a9281c68b5a3"> &lt;=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#cb53cf0ee22c036a03b4a9281c68b5a3"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#y:47">y</a></span>)<span class="id">%N</span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318"> U</a></span>))<span class="id">//</span>.<br/>
+<span class="id">rewrite</span><span class="id"> !</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#big_ord_recl">big_ord_recl</a></span><span class="id">/=</span>.<br/>
+<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.expr0">expr0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mul1r">mul1r</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#subn0">subn0</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#bin0">bin0</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#ltnn">ltnn</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr1n">mulr1n</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.addrC">addrC</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html#onemD">onemD</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.opprK">opprK</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html#onem1">onem1</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.add0r">add0r</a></span><span class="id">;</span><span class="id"> congr</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#08a2d651b18eb62ef52cb69005b28285">+%E</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bump">bump</a></span><span class="id">;</span><span class="id"> under</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#eq_bigr">eq_bigr</a></span><span class="id"> do</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#leq0n">leq0n</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#add1n">add1n</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#ltnS">ltnS</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#leq0n">leq0n</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ge0_sume_distrl">ge0_sume_distrl</a></span><span class="id">;</span><span class="id"> last</span><span class="id"> first</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> i</span><span class="id"> _;</span><span class="id"> apply/</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulrn_wge0">mulrn_wge0</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulr_ge0">mulr_ge0</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.exprn_ge0">exprn_ge0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html#onem_ge0">onem_ge0</a></span>.<br/>
+<span class="id">congr</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#76b5f4c325a4d0716da4bce1239a53f4">*%E</a></span>.<br/>
+<span class="id">transitivity</span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#70c6c347670b7d7a821347ad84e9446b">\sum_</a></span>(<span id="i:55" class="id"><span id="i:54" class="id"><span id="i:53" class="id"><span id="i:52" class="id"><span id="i:51" class="id"><span id="i:50" class="id"><a name="i:55" class="">i</a></span></span></span></span></span></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#70c6c347670b7d7a821347ad84e9446b"> &lt;</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#70c6c347670b7d7a821347ad84e9446b"> </a></span><span class="id">n</span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span>) (<span class="id">p</span>.<span class="id"><a href="mathcomp.classical.unstable.html#70aac91c746ed85ee92b0d5040f01853">~</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span> (<span class="id">n</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'-'_x"> -</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#i:50">i</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id">p</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#i:50">i</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc">'C</a></span>(<span class="id">n</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc">,</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#95129fba25b300adee91ca933fa2fcdc"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#i:50">i</a></span>))<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'-'_x"> -</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id">p</span>.<span class="id"><a href="mathcomp.classical.unstable.html#70aac91c746ed85ee92b0d5040f01853">~</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id">n</span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>)<span class="id">%E</span>.<br/>
+&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#big_ord_recl">big_ord_recl</a></span><span class="id">/=</span>.<br/>
+&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.expr0">expr0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr1">mulr1</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#subn0">subn0</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.binomial#bin0">bin0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr1n">mulr1n</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.addrAC">addrAC</a></span><span class="id"> -</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#EFinD">EFinD</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.subrr">subrr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#add0e">add0e</a></span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bump">bump</a></span><span class="id">;</span><span class="id"> under</span><span class="id"> [</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssrmatching.ssrmatching.html#SsrMatchingSyntax.RHS">RHS</a></span><span class="id">]</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#eq_bigr">eq_bigr</a></span><span class="id"> do</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#leq0n">leq0n</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#add1n">add1n</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulrC">mulrC</a></span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#sumEFin">sumEFin</a></span><span class="id"> -</span>(<span class="id">@</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.exprDn">exprDn</a></span><span class="id"> _</span><span class="id"> p</span>.<span class="id"><a href="mathcomp.classical.unstable.html#70aac91c746ed85ee92b0d5040f01853">~</a></span><span class="id"> p</span><span class="id"> n</span>)<span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.subrK">subrK</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.expr1n">expr1n</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="measurable_binomial_prob" class="id"><a name="measurable_binomial_prob" class="" title="measurable_binomial_prob :
+forall [R : realType] (n : nat),
+measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
+  (U:=pprobability Datatypes_nat__canonical__measurable_structure_Measurable
+        R)
+  [set: Real_sort__canonical__measurable_structure_SigmaRing R]
+  ((fun p : R => binomial_prob n p)
+   :
+   R ->
+   pprobability Datatypes_nat__canonical__measurable_structure_Measurable R)
+
+measurable_binomial_prob is not universe polymorphic
+Expanded type for implicit arguments
+measurable_binomial_prob :
+forall [R : realType] (n : nat),
+'measurable%classic
+  [set: Real_sort__canonical__measurable_structure_SigmaRing R] ->
+forall
+  [Y : set
+         (pprobability
+            Datatypes_nat__canonical__measurable_structure_Measurable R)],
+((pset (T:=Datatypes_nat__canonical__measurable_structure_Measurable) (R:=R)).-sigma).-measurable%classic
+  Y ->
+forall
+  [i : set
+         (set
+            (lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+               R))],
+[set M | sigma_algebra
+           [set: lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+                   R]
+           M /\
+         (R.-ocitv).-measurable `<=` M]%classic
+  i ->
+i
+  ([set: Real_sort__canonical__measurable_structure_SigmaRing R]
+   `&` ((fun p : R => binomial_prob n p)
+        :
+        R ->
+        pprobability
+          Datatypes_nat__canonical__measurable_structure_Measurable R) @^-1`
+       Y)%classic
+
+Arguments measurable_binomial_prob [R] n%_nat_scope _ [Y] _ [i] _
+measurable_binomial_prob is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.binomial_distribution.measurable_binomial_prob
+Declared in
+library mathcomp.analysis.probability_theory.binomial_distribution, line 184, characters 6-30
+">measurable_binomial_prob</a></span> (<span id="R:56" class="id"><a name="R:56" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>) (<span id="n:57" class="id"><a name="n:57" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>)<span class="id"> :</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_fun">measurable_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT">setT</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_prob">binomial_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#n:57">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#R:56">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#pprobability">pprobability</a></span><span class="id"> _</span><span class="id"> _</span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">apply:</span> (<span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurability">measurability</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#pset">pset</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#pprobability">pprobability</a></span><span class="id"> _</span><span class="id"> R</span>))))<span class="id"> =&gt;</span><span class="id"> //</span>.<br/>
+<span class="id">move=&gt;</span><span class="id"> _</span><span class="id"> -[_</span><span class="id"> [r</span><span class="id"> r01]</span><span class="id"> [Ys</span><span class="id"> mYs</span><span class="id"> &lt;-]]</span><span class="id"> &lt;-;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#emeasurable_fun_infty_o">emeasurable_fun_infty_o</a></span><span class="id"> =&gt;</span><span class="id"> //=</span>.<br/>
+<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_fun_if">measurable_fun_if</a></span><span class="id"> =&gt;</span><span class="id"> //=</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_and">measurable_and</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_fun_ler">measurable_fun_ler</a></span>.<br/>
+<span class="id">apply:</span> (<span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#eq_measurable_fun">eq_measurable_fun</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="t:62" class="id"><span id="t:58" class="id"><a name="t:62" class="">t</a></span></span><span class="id"> =&gt;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.sequences.html#ffadba069702e9e7be8bc2674b4cdf45">\sum_</a></span>(<span id="k:65" class="id"><span id="k:64" class="id"><span id="k:63" class="id"><span id="k:61" class="id"><span id="k:60" class="id"><span id="k:59" class="id"><a name="k:65" class="">k</a></span></span></span></span></span></span><span class="id"><a href="mathcomp.analysis.sequences.html#ffadba069702e9e7be8bc2674b4cdf45"> &lt;oo</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#ffadba069702e9e7be8bc2674b4cdf45"> |</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#ffadba069702e9e7be8bc2674b4cdf45"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:59">k</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id">Ys</span>) (<span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf">binomial_pmf</a></span><span class="id"> n</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#t:58">t</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#k:59">k</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>))<span class="id">%E</span>.<br/>
+&nbsp;&nbsp;<span class="id">move=&gt;</span><span class="id"> x</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.classical_sets.html#set_mem">set_mem</a></span><span class="id">[_/=</span><span class="id"> x01]</span>.<br/>
+&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.esum.html#nneseries_esum">nneseries_esum</a></span><span class="id">//;</span><span class="id"> last</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> *;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf_ge0">binomial_pmf_ge0</a></span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set_mem_set">set_mem_set</a></span>.<br/>
+<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.html#ge0_emeasurable_sum">ge0_emeasurable_sum</a></span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> k</span><span class="id"> x/=</span><span class="id"> [_</span><span class="id"> x01]</span><span class="id"> _;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#binomial_pmf_ge0">binomial_pmf_ge0</a></span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> k</span><span class="id"> Ysk;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurableT_comp">measurableT_comp</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.binomial_distribution.html#measurable_binomial_pmf">measurable_binomial_pmf</a></span>.<br/>
+Qed.</div></details>
+
+      <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>
+    </div>
+  </div>
+    </main>
+</body>
+</html>

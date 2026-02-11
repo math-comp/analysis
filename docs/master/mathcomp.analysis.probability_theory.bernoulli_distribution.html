@@ -1,0 +1,807 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Module mathcomp.analysis.probability_theory.bernoulli_distribution</title>
+<meta name="description" content="Documentation of Coq module mathcomp.analysis.probability_theory.bernoulli_distribution" />
+<link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+<link href="rocqnavi.css" rel="stylesheet" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="rocqnavi.js"> </script>
+</head>
+
+<body onload="init()">
+
+  <main>
+    <div class="sidebar">
+      <h2>Files</h2>
+      <li><details id="mathcomp"><summary>mathcomp</summary>
+          <ul>
+          <li><details id="mathcomp.analysis"><summary>analysis</summary>
+          <ul>
+          <li><details id="mathcomp.analysis.homotopy_theory"><summary>homotopy_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.homotopy_theory.continuous_path.html">continuous_path</a></li>
+<li><a href="mathcomp.analysis.homotopy_theory.homotopy.html">homotopy</a></li>
+<li><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html">wedge_sigT</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.lebesgue_integral_theory"><summary>lebesgue_integral_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.lebesgue_integral_theory.giry.html">giry</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html">lebesgue_Rintegral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html">lebesgue_integrable</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral.html">lebesgue_integral</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html">lebesgue_integral_definition</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.html">lebesgue_integral_differentiation</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_dominated_convergence.html">lebesgue_integral_dominated_convergence</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.html">lebesgue_integral_fubini</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_monotone_convergence.html">lebesgue_integral_monotone_convergence</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html">lebesgue_integral_nonneg</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html">lebesgue_integral_under</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.html">measurable_fun_approximation</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html">simple_functions</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.measure_theory"><summary>measure_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.measure_theory.counting_measure.html">counting_measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.dirac_measure.html">dirac_measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measurable_function.html">measurable_function</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measurable_structure.html">measurable_structure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure.html">measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_extension.html">measure_extension</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_function.html">measure_function</a></li>
+<li><a href="mathcomp.analysis.measure_theory.measure_negligible.html">measure_negligible</a></li>
+<li><a href="mathcomp.analysis.measure_theory.probability_measure.html">probability_measure</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.normedtype_theory"><summary>normedtype_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.normedtype_theory.complete_normed_module.html">complete_normed_module</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.ereal_normedtype.html">ereal_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.matrix_normedtype.html">matrix_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.normed_module.html">normed_module</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.normedtype.html">normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html">num_normedtype</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html">pseudometric_normed_Zmodule</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.urysohn.html">urysohn</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.vitali_lemma.html">vitali_lemma</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.probability_theory"><summary>probability_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html">bernoulli_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.beta_distribution.html">beta_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.binomial_distribution.html">binomial_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.exponential_distribution.html">exponential_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.normal_distribution.html">normal_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.poisson_distribution.html">poisson_distribution</a></li>
+<li><a href="mathcomp.analysis.probability_theory.probability.html">probability</a></li>
+<li><a href="mathcomp.analysis.probability_theory.random_variable.html">random_variable</a></li>
+<li><a href="mathcomp.analysis.probability_theory.uniform_distribution.html">uniform_distribution</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.showcase"><summary>showcase</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.showcase.pnt.html">pnt</a></li>
+<li><a href="mathcomp.analysis.showcase.summability.html">summability</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.topology_theory"><summary>topology_theory</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.topology_theory.bool_topology.html">bool_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.compact.html">compact</a></li>
+<li><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></li>
+<li><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.initial_topology.html">initial_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.metric_structure.html">metric_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.nat_topology.html">nat_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.num_topology.html">num_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.one_point_compactification.html">one_point_compactification</a></li>
+<li><a href="mathcomp.analysis.topology_theory.order_topology.html">order_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.product_topology.html">product_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html">pseudometric_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.quotient_topology.html">quotient_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.separation_axioms.html">separation_axioms</a></li>
+<li><a href="mathcomp.analysis.topology_theory.sigT_topology.html">sigT_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.subspace_topology.html">subspace_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.subtype_topology.html">subtype_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.supremum_topology.html">supremum_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.topology.html">topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.topology_structure.html">topology_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.uniform_structure.html">uniform_structure</a></li>
+<li><a href="mathcomp.analysis.topology_theory.weak_topology.html">weak_topology</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.analysis.all_analysis.html">all_analysis</a></li>
+<li><a href="mathcomp.analysis.borel_hierarchy.html">borel_hierarchy</a></li>
+<li><a href="mathcomp.analysis.cantor.html">cantor</a></li>
+<li><a href="mathcomp.analysis.charge.html">charge</a></li>
+<li><a href="mathcomp.analysis.convex.html">convex</a></li>
+<li><a href="mathcomp.analysis.derive.html">derive</a></li>
+<li><a href="mathcomp.analysis.ereal.html">ereal</a></li>
+<li><a href="mathcomp.analysis.ess_sup_inf.html">ess_sup_inf</a></li>
+<li><a href="mathcomp.analysis.esum.html">esum</a></li>
+<li><a href="mathcomp.analysis.exp.html">exp</a></li>
+<li><a href="mathcomp.analysis.ftc.html">ftc</a></li>
+<li><a href="mathcomp.analysis.function_spaces.html">function_spaces</a></li>
+<li><a href="mathcomp.analysis.gauss_integral.html">gauss_integral</a></li>
+<li><a href="mathcomp.analysis.hoelder.html">hoelder</a></li>
+<li><a href="mathcomp.analysis.kernel.html">kernel</a></li>
+<li><a href="mathcomp.analysis.landau.html">landau</a></li>
+<li><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></li>
+<li><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html">lebesgue_stieltjes_measure</a></li>
+<li><a href="mathcomp.analysis.measurable_realfun.html">measurable_realfun</a></li>
+<li><a href="mathcomp.analysis.numfun.html">numfun</a></li>
+<li><a href="mathcomp.analysis.pi_irrational.html">pi_irrational</a></li>
+<li><a href="mathcomp.analysis.realfun.html">realfun</a></li>
+<li><a href="mathcomp.analysis.sequences.html">sequences</a></li>
+<li><a href="mathcomp.analysis.trigo.html">trigo</a></li>
+<li><a href="mathcomp.analysis.tvs.html">tvs</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis_stdlib"><summary>analysis_stdlib</summary>
+          <ul>
+          <li><details id="mathcomp.analysis_stdlib.showcase"><summary>showcase</summary>
+          <ul>
+          <li><a href="mathcomp.analysis_stdlib.showcase.uniform_bigO.html">uniform_bigO</a></li>
+          </ul>
+          </details>
+          </li>
+<li><a href="mathcomp.analysis_stdlib.Rstruct_topology.html">Rstruct_topology</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.classical"><summary>classical</summary>
+          <ul>
+          <li><a href="mathcomp.classical.all_classical.html">all_classical</a></li>
+<li><a href="mathcomp.classical.boolp.html">boolp</a></li>
+<li><a href="mathcomp.classical.cardinality.html">cardinality</a></li>
+<li><a href="mathcomp.classical.classical_orders.html">classical_orders</a></li>
+<li><a href="mathcomp.classical.classical_sets.html">classical_sets</a></li>
+<li><a href="mathcomp.classical.contra.html">contra</a></li>
+<li><a href="mathcomp.classical.filter.html">filter</a></li>
+<li><a href="mathcomp.classical.fsbigop.html">fsbigop</a></li>
+<li><a href="mathcomp.classical.functions.html">functions</a></li>
+<li><a href="mathcomp.classical.internal_Eqdep_dec.html">internal_Eqdep_dec</a></li>
+<li><a href="mathcomp.classical.mathcomp_extra.html">mathcomp_extra</a></li>
+<li><a href="mathcomp.classical.set_interval.html">set_interval</a></li>
+<li><a href="mathcomp.classical.unstable.html">unstable</a></li>
+<li><a href="mathcomp.classical.wochoice.html">wochoice</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.experimental_reals"><summary>experimental_reals</summary>
+          <ul>
+          <li><a href="mathcomp.experimental_reals.discrete.html">discrete</a></li>
+<li><a href="mathcomp.experimental_reals.distr.html">distr</a></li>
+<li><a href="mathcomp.experimental_reals.realseq.html">realseq</a></li>
+<li><a href="mathcomp.experimental_reals.realsum.html">realsum</a></li>
+<li><a href="mathcomp.experimental_reals.xfinmap.html">xfinmap</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.reals"><summary>reals</summary>
+          <ul>
+          <li><a href="mathcomp.reals.all_reals.html">all_reals</a></li>
+<li><a href="mathcomp.reals.constructive_ereal.html">constructive_ereal</a></li>
+<li><a href="mathcomp.reals.prodnormedzmodule.html">prodnormedzmodule</a></li>
+<li><a href="mathcomp.reals.real_interval.html">real_interval</a></li>
+<li><a href="mathcomp.reals.reals.html">reals</a></li>
+<li><a href="mathcomp.reals.signed.html">signed</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.reals_stdlib"><summary>reals_stdlib</summary>
+          <ul>
+          <li><a href="mathcomp.reals_stdlib.Rstruct.html">Rstruct</a></li>
+<li><a href="mathcomp.reals_stdlib.nsatz_realtype.html">nsatz_realtype</a></li>
+          </ul>
+          </details>
+          </li>
+          </ul>
+          </details>
+          </li>
+    </div>
+
+  <div class="coq">
+
+    <div class="content">
+      <p><a href="./index.html">Top</a></p>
+      <h1 class="title">Module mathcomp.analysis.probability_theory.bernoulli_distribution</h1>
+<span class="vernacular">From</span><span class="id"> HB</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for HB.structures">structures</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.ssreflect.all_ssreflect.html">all_ssreflect</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html">ssralg</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.ssrnum.html">ssrnum</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssrint.html">ssrint</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html">interval</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html">archimedean</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap">finmap</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html">interval_inference</a></span>.<br/>
+<span class="id">#[warning=</span><span class="id">&quot;-warn-library-file-internal-analysis&quot;</span><span class="id">]</span><br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html">unstable</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html">mathcomp_extra</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html">boolp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html">classical_sets</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.functions.html">functions</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html">cardinality</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html">fsbigop</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html">reals</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.ereal.html">ereal</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology.html">topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.normedtype.html">normedtype</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html">sequences</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.esum.html">esum</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure.html">measure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html">numfun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral.html">lebesgue_integral</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.kernel.html">kernel</a></span>.<br/>
+<br/>
+<div class="ssrdoc md">
+# Bernoulli distribution
+
+```
+     bernoulli_pmf p == Bernoulli pmf with parameter p : R
+    bernoulli_prob p == Bernoulli probability measure when 0 &lt;= p &lt;= 1
+                        and \d_false otherwise
+```
+
+</div>
+<br/>
+<span class="gallina-kwd">Set</span><span class="vernacular"> Implicit</span><span class="vernacular"> Arguments</span>.<br/>
+<span class="vernacular">Unset</span><span class="vernacular"> Strict</span><span class="vernacular"> Implicit</span>.<br/>
+<span class="vernacular">Unset</span><span class="vernacular"> Printing</span><span class="vernacular"> Implicit</span><span class="vernacular"> Defensive</span>.<br/>
+<br/>
+<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">TTheory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">Theory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Def">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Def">Def</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Theory">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Theory">Theory</a></span>.<br/>
+<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#numFieldTopology.Exports">numFieldTopology</a></span>.<span class="vernacular">Exports</span>.<br/>
+<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
+<br/>
+<span class="vernacular">Section</span><span class="id"> bernoulli_pmf</span>.<br/>
+<span class="vernacular">Context</span><span class="id"> {</span><span id="bernoulli_pmf.R" class="id"><a name="bernoulli_pmf.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span><span class="id">}</span> (<span id="bernoulli_pmf.p" class="id"><a name="bernoulli_pmf.p" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#R:1">R</a></span>).<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="bernoulli_pmf" class="id"><a name="bernoulli_pmf" class="" title="bernoulli_pmf : forall {R : numDomainType}, R -> bool -> R
+
+bernoulli_pmf is not universe polymorphic
+Arguments bernoulli_pmf {R} p%_ring_scope b%_bool_scope
+bernoulli_pmf is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_pmf
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 38, characters 11-24
+">bernoulli_pmf</a></span><span class="id"> </span><span id="b:3" class="id"><a name="b:3" class="">b</a></span><span class="id"> :=</span><span class="gallina-kwd"> if</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#b:3">b</a></span><span class="gallina-kwd"> then</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf.p">p</a></span><span class="gallina-kwd"> else</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf.p">p</a></span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="bernoulli_pmf_ge0" class="id"><a name="bernoulli_pmf_ge0" class="" title="bernoulli_pmf_ge0 :
+forall {R : numDomainType} [p : R] (b : bool),
+(0 <= p <= 1)%R -> (0 <= bernoulli_pmf p b)%R
+
+bernoulli_pmf_ge0 is not universe polymorphic
+Arguments bernoulli_pmf_ge0 {R} [p]%_ring_scope b%_bool_scope _
+bernoulli_pmf_ge0 is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_pmf_ge0
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 40, characters 6-23
+">bernoulli_pmf_ge0</a></span><span class="id"> </span><span id="b:4" class="id"><a name="b:4" class="">b</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf.p">p</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id">1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf">bernoulli_pmf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#b:4">b</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf">bernoulli_pmf</a></span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#andP">andP</a></span><span class="id">[p0</span><span class="id"> p1];</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifPn">ifPn</a></span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> _;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.subr_ge0">subr_ge0</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="bernoulli_pmf1" class="id"><a name="bernoulli_pmf1" class="" title="bernoulli_pmf1 :
+forall {R : numDomainType} (p : R),
+(\sum_(i \in [set: bool]) (bernoulli_pmf p i)%:E)%R = 1%E
+
+bernoulli_pmf1 is not universe polymorphic
+Arguments bernoulli_pmf1 {R} p%_ring_scope
+bernoulli_pmf1 is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_pmf1
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 46, characters 6-20
+">bernoulli_pmf1</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#66bb639f4673920039e1c5f4f74ee386">\sum_</a></span>(<span id="i:8" class="id"><span id="i:7" class="id"><span id="i:6" class="id"><span id="i:5" class="id"><a name="i:8" class="">i</a></span></span></span></span><span class="id"><a href="mathcomp.classical.fsbigop.html#66bb639f4673920039e1c5f4f74ee386"> \in</a></span><span class="id"><a href="mathcomp.classical.fsbigop.html#66bb639f4673920039e1c5f4f74ee386"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>) (<span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf">bernoulli_pmf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#i:5">i</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">1%E</span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT_bool">setT_bool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#fsbigU">fsbigU</a></span><span class="id">//=;</span><span class="id"> last</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> [/=</span><span class="id"> -&gt;]</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> !</span><span class="id"><a href="mathcomp.classical.fsbigop.html#fsbig_set1">fsbig_set1</a></span><span class="id">/=</span><span class="id"> -</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#EFinD">EFinD</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.subrKC">subrKC</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">End</span><span class="id"> bernoulli_pmf</span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="measurable_bernoulli_pmf" class="id"><a name="measurable_bernoulli_pmf" class="" title="measurable_bernoulli_pmf :
+forall {R : realType}
+  [D : set (Real_sort__canonical__measurable_structure_SigmaRing R)]
+  (n : bool),
+measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
+  (U:=Real_sort__canonical__measurable_structure_SigmaRing R) D
+  (bernoulli_pmf^~ n)
+
+measurable_bernoulli_pmf is not universe polymorphic
+Expanded type for implicit arguments
+measurable_bernoulli_pmf :
+forall {R : realType}
+  [D : set (Real_sort__canonical__measurable_structure_SigmaRing R)]
+  (n : bool),
+'measurable%classic D ->
+forall [Y : set (Real_sort__canonical__measurable_structure_SigmaRing R)],
+'measurable%classic Y ->
+forall
+  [i : set
+         (set
+            (lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+               R))],
+[set M | sigma_algebra
+           [set: lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+                   R]
+           M /\
+         (R.-ocitv).-measurable `<=` M]%classic
+  i ->
+i (D `&` bernoulli_pmf^~ n @^-1` Y)%classic
+
+Arguments measurable_bernoulli_pmf {R} [D]%_classical_set_scope 
+  n%_bool_scope _ [Y] _ [i] _
+measurable_bernoulli_pmf is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.measurable_bernoulli_pmf
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 54, characters 6-30
+">measurable_bernoulli_pmf</a></span><span class="id"> {</span><span id="R:9" class="id"><a name="R:9" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> </span><span id="D:10" class="id"><a name="D:10" class="">D</a></span><span class="id"> </span><span id="n:11" class="id"><a name="n:11" class="">n</a></span><span class="id"> :</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_fun">measurable_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#D:10">D</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf">bernoulli_pmf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#R:9">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> ^~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#n:11">n</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd">by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_funTS">measurable_funTS</a></span><span class="id">/</span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_fun_if">measurable_fun_if</a></span><span class="id"> =&gt;</span><span class="id"> //=;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_funB">measurable_funB</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="bernoulli_prob" class="id"><a name="bernoulli_prob" class="" title="bernoulli_prob : forall {R : realFieldType}, R -> set bool -> \bar R
+
+bernoulli_prob is not universe polymorphic
+Arguments bernoulli_prob {R} p%_ring_scope _%_classical_set_scope
+bernoulli_prob is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_prob
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 60, characters 11-25
+">bernoulli_prob</a></span><span class="id"> {</span><span id="R:12" class="id"><a name="R:12" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.RealField.Exports.realFieldType">realFieldType</a></span><span class="id">}</span> (<span id="p:13" class="id"><a name="p:13" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#R:12">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#R:12">R</a></span><span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="A:14" class="id"><a name="A:14" class="">A</a></span><span class="id"> =&gt;</span><span class="gallina-kwd"> if</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#p:13">p</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id">1</span><span class="gallina-kwd"> then</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.fsbigop.html#66bb639f4673920039e1c5f4f74ee386">\sum_</a></span>(<span id="b:18" class="id"><span id="b:17" class="id"><span id="b:16" class="id"><span id="b:15" class="id"><a name="b:18" class="">b</a></span></span></span></span><span class="id"><a href="mathcomp.classical.fsbigop.html#66bb639f4673920039e1c5f4f74ee386"> \in</a></span><span class="id"><a href="mathcomp.classical.fsbigop.html#66bb639f4673920039e1c5f4f74ee386"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#A:14">A</a></span>) (<span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf">bernoulli_pmf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#p:13">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#b:15">b</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><br/>
+&nbsp;&nbsp;<span class="gallina-kwd">else</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318">\d_</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318"> A</a></span>.<br/>
+<br/>
+<span class="vernacular">Section</span><span class="id"> bernoulli</span>.<br/>
+<span class="vernacular">Context</span><span class="id"> {</span><span id="bernoulli.R" class="id"><a name="bernoulli.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="bernoulli.p" class="id"><a name="bernoulli.p" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#R:19">R</a></span>).<br/>
+<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="bernoulli" class="id"><a name="bernoulli" class="">bernoulli</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_prob">bernoulli_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli.p">p</a></span>).<br/>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="bernoulli.bernoulli0" class="id"><a name="bernoulli.bernoulli0" class="">bernoulli0</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli">bernoulli</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli">bernoulli</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifPn">ifPn</a></span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> p01;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#fsbig_set0">fsbig_set0</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="bernoulli.bernoulli_ge0" class="id"><a name="bernoulli.bernoulli_ge0" class="">bernoulli_ge0</a></span><span class="id"> </span><span id="U:21" class="id"><a name="U:21" class="">U</a></span><span class="id"> :</span> (<span class="id">0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli">bernoulli</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#U:21">U</a></span>)<span class="id">%E</span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli">bernoulli</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifPn">ifPn</a></span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> p01</span>.<br/>
+<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#fsbig_finite">fsbig_finite</a></span><span class="id">//=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#sumEFin">sumEFin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.sumr_ge0">sumr_ge0</a></span><span class="id"> =&gt;</span><span class="id"> /=</span><span class="id"> b</span><span class="id"> _;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf_ge0">bernoulli_pmf_ge0</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="bernoulli.bernoulli_sigma_additive" class="id"><a name="bernoulli.bernoulli_sigma_additive" class="">bernoulli_sigma_additive</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#semi_sigma_additive">semi_sigma_additive</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli">bernoulli</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> F</span><span class="id"> mF</span><span class="id"> tF</span><span class="id"> mUF;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli">bernoulli</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifPn">ifPn</a></span><span class="id"> =&gt;</span><span class="id"> p01;</span><span class="id"> last</span><span class="id"> first</span>.<br/>
+&nbsp;&nbsp;<span class="id">exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#measure_semi_sigma_additive">measure_semi_sigma_additive</a></span>.<br/>
+<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#cvg_toP">cvg_toP</a></span>.<br/>
+&nbsp;&nbsp;<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#ereal_nondecreasing_is_cvgn">ereal_nondecreasing_is_cvgn</a></span><span class="id"> =&gt;</span><span class="id"> m</span><span class="id"> n</span><span class="id"> mn</span>.<br/>
+&nbsp;&nbsp;<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_sum_nneg_natr">lee_sum_nneg_natr</a></span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> k</span><span class="id"> _</span><span class="id"> _</span>.<br/>
+&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#fsbig_finite">fsbig_finite</a></span><span class="id">//=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#sumEFin">sumEFin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.sumr_ge0">sumr_ge0</a></span><span class="id"> =&gt;</span><span class="id"> /=</span><span class="id"> b</span><span class="id"> _;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf_ge0">bernoulli_pmf_ge0</a></span>.<br/>
+<span class="id">transitivity</span> (<span class="id"><a href="mathcomp.analysis.sequences.html#1fb3ae4179bc3e70682d81db7993c1d4">\sum_</a></span>(<span class="id">0</span><span class="id"><a href="mathcomp.analysis.sequences.html#1fb3ae4179bc3e70682d81db7993c1d4"> &lt;=</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#1fb3ae4179bc3e70682d81db7993c1d4"> </a></span><span id="i:28" class="id"><span id="i:27" class="id"><span id="i:26" class="id"><span id="i:24" class="id"><span id="i:23" class="id"><span id="i:22" class="id"><a name="i:28" class="">i</a></span></span></span></span></span></span><span class="id"><a href="mathcomp.analysis.sequences.html#1fb3ae4179bc3e70682d81db7993c1d4"> &lt;oo</a></span>) (<span class="id"><a href="mathcomp.analysis.esum.html#bfafafade7d3e202dbbc3dbf50606eb1">\esum_</a></span>(<span id="j:29" class="id"><span id="j:25" class="id"><a name="j:29" class="">j</a></span></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.analysis.esum.html#bfafafade7d3e202dbbc3dbf50606eb1"> </a></span><span class="id">F</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#i:22">i</a></span>) (<span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf">bernoulli_pmf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli.p">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#j:25">j</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>))<span class="id">%E</span>.<br/>
+<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#eq_eseriesr">eq_eseriesr</a></span><span class="id"> =&gt;</span><span class="id"> k</span><span class="id"> _;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.esum.html#esum_fset">esum_fset</a></span><span class="id">//=</span><span class="id"> =&gt;</span><span class="id"> b</span><span class="id"> _</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf_ge0">bernoulli_pmf_ge0</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.esum.html#nneseries_sum_bigcup">nneseries_sum_bigcup</a></span><span class="id">//=;</span><span class="id"> last</span><span class="id"> first</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> b;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf_ge0">bernoulli_pmf_ge0</a></span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.esum.html#esum_fset">esum_fset</a></span><span class="id">//=</span><span class="id"> =&gt;</span><span class="id"> b</span><span class="id"> _;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf_ge0">bernoulli_pmf_ge0</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure" class="" title="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure :
+forall {R : realType},
+R -> measure Datatypes_bool__canonical__measurable_structure_SemiRingOfSets R
+
+bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure is not universe polymorphic
+Arguments
+  bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure
+  {R} p%_ring_scope
+bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 98, characters 0-112
+">HB</a></span></span></span></span></span></span></span>.<span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure" class="" title="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure :
+forall {R : realType},
+R -> measure Datatypes_bool__canonical__measurable_structure_SemiRingOfSets R
+
+bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure is not universe polymorphic
+Arguments
+  bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure
+  {R} p%_ring_scope
+bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 98, characters 0-112
+">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure" class="" title="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure :
+forall {R : realType},
+R -> measure Datatypes_bool__canonical__measurable_structure_SemiRingOfSets R
+
+bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure is not universe polymorphic
+Arguments
+  bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure
+  {R} p%_ring_scope
+bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 98, characters 0-112
+"> _</a></span></span></span></span></span></span></span><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure" class="" title="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure :
+forall {R : realType},
+R -> measure Datatypes_bool__canonical__measurable_structure_SemiRingOfSets R
+
+bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure is not universe polymorphic
+Arguments
+  bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure
+  {R} p%_ring_scope
+bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 98, characters 0-112
+"> :=</a></span></span></span></span></span></span></span><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Content" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="measure_function_isMeasure__to__measure_function_isContent" class="id"><span id="measure_function_isMeasure__to__measure_function_Content_isMeasure" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure" class="" title="bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure :
+forall {R : realType},
+R -> measure Datatypes_bool__canonical__measurable_structure_SemiRingOfSets R
+
+bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure is not universe polymorphic
+Arguments
+  bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure
+  {R} p%_ring_scope
+bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_distribution_bernoulli_prob__canonical__measure_function_Measure
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 98, characters 0-112
+"> isMeasure</a></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#isMeasure.Build">Build</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli">bernoulli</a></span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli.bernoulli0">bernoulli0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli.bernoulli_ge0">bernoulli_ge0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli.bernoulli_sigma_additive">bernoulli_sigma_additive</a></span>.<br/>
+<br/>
+<span class="vernacular">Let</span><span class="id"> </span><span id="bernoulli.bernoulli_setT" class="id"><a name="bernoulli.bernoulli_setT" class="">bernoulli_setT</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli">bernoulli</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id">_</span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">1%E</span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli">bernoulli</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#probability_setT">probability_setT</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf1">bernoulli_pmf1</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#if_same">if_same</a></span>. Qed.</div></details>
+<br/>
+<span id="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_SubProbability" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_FiniteMeasure" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_FinNumFun" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_SigmaFiniteMeasure" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_SFiniteMeasure" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isFinite" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isSubProbability" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSigmaFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isProbability" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability" class="" title="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability :
+forall {R : realType},
+R -> probability Datatypes_bool__canonical__measurable_structure_Measurable R
+
+bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability is not universe polymorphic
+Arguments
+  bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability
+  {R} p%_ring_scope
+bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 104, characters 0-90
+">HB</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_SubProbability" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_FiniteMeasure" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_FinNumFun" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_SigmaFiniteMeasure" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_SFiniteMeasure" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isFinite" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isSubProbability" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSigmaFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isProbability" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability" class="" title="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability :
+forall {R : realType},
+R -> probability Datatypes_bool__canonical__measurable_structure_Measurable R
+
+bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability is not universe polymorphic
+Arguments
+  bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability
+  {R} p%_ring_scope
+bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 104, characters 0-90
+">instance</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_SubProbability" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_FiniteMeasure" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_FinNumFun" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_SigmaFiniteMeasure" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_SFiniteMeasure" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isFinite" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isSubProbability" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSigmaFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isProbability" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability" class="" title="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability :
+forall {R : realType},
+R -> probability Datatypes_bool__canonical__measurable_structure_Measurable R
+
+bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability is not universe polymorphic
+Arguments
+  bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability
+  {R} p%_ring_scope
+bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 104, characters 0-90
+"> _</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_SubProbability" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_FiniteMeasure" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_FinNumFun" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_SigmaFiniteMeasure" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_SFiniteMeasure" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isFinite" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isSubProbability" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSigmaFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isProbability" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability" class="" title="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability :
+forall {R : realType},
+R -> probability Datatypes_bool__canonical__measurable_structure_Measurable R
+
+bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability is not universe polymorphic
+Arguments
+  bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability
+  {R} p%_ring_scope
+bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 104, characters 0-90
+"> :=</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><br/>
+&nbsp;&nbsp;<span id="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_SubProbability" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_FiniteMeasure" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_FinNumFun" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_SigmaFiniteMeasure" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_SFiniteMeasure" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="bernoulli_distribution_bernoulli_prob__canonical__measure_function_SigmaFiniteContent" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isFinite" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isSubProbability" class="id"><span id="probability_measure_Measure_isProbability__to__measure_function_isSigmaFinite" class="id"><span id="probability_measure_Measure_isProbability__to__probability_measure_isProbability" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability" class="" title="bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability :
+forall {R : realType},
+R -> probability Datatypes_bool__canonical__measurable_structure_Measurable R
+
+bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability is not universe polymorphic
+Arguments
+  bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability
+  {R} p%_ring_scope
+bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability is transparent
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_distribution_bernoulli_prob__canonical__probability_measure_Probability
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 104, characters 0-90
+">@Measure_isProbability</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#Measure_isProbability.Build">Build</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli">bernoulli</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli.bernoulli_setT">bernoulli_setT</a></span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_bernoulli" class="id"><a name="eq_bernoulli" class="" title="eq_bernoulli :
+forall {R : realType} [p : R] [P : probability bool R],
+P [set true]%classic = p%:E -> P =1 bernoulli_prob p
+
+eq_bernoulli is not universe polymorphic
+Arguments eq_bernoulli {R} [p]%_ring_scope [P] _ x
+eq_bernoulli is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.eq_bernoulli
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 107, characters 6-18
+">eq_bernoulli</a></span> (<span id="P:30" class="id"><a name="P:30" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#Probability.Exports.probability">probability</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli.R">R</a></span>)<span class="id"> :</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#P:30">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli.p">p</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#P:30">P</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> =1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli">bernoulli</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> Ptrue</span><span class="id"> sb;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli">bernoulli</a></span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf">bernoulli_pmf</a></span>.<br/>
+<span class="id">have</span><span class="id"> Pfalse</span><span class="id"> :</span><span class="id"> P</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span> (<span class="id">1</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'-'_x"> -</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli.p">p</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>)<span class="id">%E</span>.<br/>
+&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> -Ptrue</span><span class="id"> -</span>(<span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#probability_setT">probability_setT</a></span><span class="id"> P</span>)<span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT_bool">setT_bool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#measureU">measureU</a></span><span class="id">//;</span><span class="id"> last</span><span class="id"> first</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#disjoints_subset">disjoints_subset</a></span><span class="id"> =&gt;</span><span class="id"> -[]</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#addeAC">addeAC</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#subee">subee</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#add0e">add0e</a></span><span class="id">//=</span><span class="id"> Ptrue</span>.<br/>
+<span class="id">have</span><span class="id"> :</span> (<span class="id">0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#22a004aef08384828d8c3e3f6ac9fe2e"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#22a004aef08384828d8c3e3f6ac9fe2e"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli.p">p</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#22a004aef08384828d8c3e3f6ac9fe2e"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#22a004aef08384828d8c3e3f6ac9fe2e"> </a></span><span class="id">1</span>)<span class="id">%E</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> -Ptrue</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#measure_ge0">measure_ge0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#probability_le1">probability_le1</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> !</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> =&gt;</span><span class="id"> -&gt;</span>.<br/>
+<span class="id">have</span><span class="id"> eq_sb</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#etrans">etrans</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#bigcup_imset1">bigcup_imset1</a></span> (_<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span>)<span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#id">id</a></span>) (<span class="id"><a href="mathcomp.classical.classical_sets.html#image_id">image_id</a></span><span class="id"> _</span>).<br/>
+<span class="id">rewrite</span><span class="id"> -[in</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssrmatching.ssrmatching.html#SsrMatchingSyntax.LHS">LHS</a></span><span class="id">]</span>(<span class="id">eq_sb</span><span class="id"> sb</span>)<span class="id">/=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#measure_fin_bigcup">measure_fin_bigcup</a></span><span class="id">//</span>.<br/>
+<span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#eq_fsbigr">eq_fsbigr</a></span><span class="id"> =&gt;</span><span class="id"> /=</span><span class="id"> -[]</span>.<br/>
+<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html#finite_finset">finite_finset</a></span>.<br/>
+<span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> []</span><span class="id"> []</span><span class="id"> _</span><span class="id"> _</span><span class="id"> [[]]//=</span><span class="id"> []</span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">End</span><span class="id"> bernoulli</span>.<br/>
+<br/>
+<span class="vernacular">Section</span><span class="id"> bernoulli_measure</span>.<br/>
+<span class="vernacular">Context</span><span class="id"> {</span><span id="bernoulli_measure.R" class="id"><a name="bernoulli_measure.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
+<span class="vernacular">Variables</span> (<span id="bernoulli_measure.p" class="id"><a name="bernoulli_measure.p" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_measure.R">R</a></span>) (<span id="bernoulli_measure.p0" class="id"><a name="bernoulli_measure.p0" class="">p0</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#p:33">p</a></span>) (<span id="bernoulli_measure.p1" class="id"><a name="bernoulli_measure.p1" class="">p1</a></span><span class="id"> :</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#NngNum">NngNum</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#p0:35">p0</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id">1</span>).<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="bernoulli_dirac" class="id"><a name="bernoulli_dirac" class="" title="bernoulli_dirac :
+forall {R : realType} [p : R] [p0 : (0 <= p)%R]
+  (p1 : ((NngNum (R:=R) (x:=p) p0)%:num <= 1)%R),
+bernoulli_prob p =
+measure_add (T:=Datatypes_bool__canonical__measurable_structure_SigmaRing)
+  (R:=R) (mscale (NngNum (R:=R) (x:=p) p0) (\d_true)%R)
+  (mscale
+     (widen_itv (1 - (Itv01 (R:=R) (x:=p) p0 p1)%:num)%:itv%R : {nonneg R}%R)
+     (\d_false)%R)
+
+bernoulli_dirac is not universe polymorphic
+Arguments bernoulli_dirac {R} [p]%_ring_scope [p0] p1
+bernoulli_dirac is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_dirac
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 130, characters 6-21
+">bernoulli_dirac</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_prob">bernoulli_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_measure.p">p</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#measure_add">measure_add</a></span><br/>
+&nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#mscale">mscale</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#NngNum">NngNum</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_measure.p0">p0</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318">\d_</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span>) (<span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#mscale">mscale</a></span> (<span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#Itv01">Itv01</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_measure.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_measure.p1">p1</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#47ac4d6dece4689d4a3505486f61da27">%:nng</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318">\d_</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#funext">funext</a></span><span class="id"> =&gt;</span><span class="id"> U;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_prob">bernoulli_prob</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifPn">ifPn</a></span><span class="id"> =&gt;</span><span class="id"> [p01|];</span><span class="id"> last</span><span class="id"> first</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_measure.p0">p0</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_measure.p1">p1</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#measure_addE">measure_addE</a></span><span class="id">/=</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#mscale">mscale</a></span><span class="id">/=</span>.<br/>
+<span class="id">have</span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.classical.classical_sets.html#subsetT">subsetT</a></span><span class="id"> _</span><span class="id"> U;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT_bool">setT_bool</a></span><span class="id"> =&gt;</span><span class="id"> UT</span>.<br/>
+<span class="id">have</span><span class="id"> [-&gt;|-&gt;|-&gt;|-&gt;]</span><span class="id"> /=</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#subset_set2">subset_set2</a></span><span class="id"> UT</span>.<br/>
+<span class="id">-</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.esum.html#esum_fset">esum_fset</a></span><span class="id">//=;</span><span class="id"> last</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> b;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf_ge0">bernoulli_pmf_ge0</a></span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.esum.html#esum_set0">esum_set0</a></span><span class="id"> 2!</span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#measure0">measure0</a></span><span class="id"> 2!</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mule0">mule0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#adde0">adde0</a></span>.<br/>
+<span class="id">-</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.esum.html#esum_fset">esum_fset</a></span><span class="id">//=;</span><span class="id"> last</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> b;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf_ge0">bernoulli_pmf_ge0</a></span>.<br/>
+&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.esum.html#esum_set1">esum_set1</a></span><span class="id">/=</span><span class="id"> ?</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id">//</span><span class="id"> 2!</span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#diracE">diracE</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#mem_set">mem_set</a></span><span class="id">//=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#memNset">memNset</a></span><span class="id">//=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mule0">mule0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#adde0">adde0</a></span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mule1">mule1</a></span>.<br/>
+<span class="id">-</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.esum.html#esum_fset">esum_fset</a></span><span class="id">//=;</span><span class="id"> last</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> b;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf_ge0">bernoulli_pmf_ge0</a></span>.<br/>
+&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.esum.html#esum_set1">esum_set1</a></span><span class="id">/=</span><span class="id"> ?</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.subr_ge0">subr_ge0</a></span><span class="id">//</span><span class="id"> 2!</span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#diracE">diracE</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#memNset">memNset</a></span><span class="id">//=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#mem_set">mem_set</a></span><span class="id">//=</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mule0">mule0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#add0e">add0e</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mule1">mule1</a></span>.<br/>
+<span class="id">-</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#fsbigU">fsbigU</a></span><span class="id">//=;</span><span class="id"> last</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> [-&gt;]</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> 2!</span><span class="id"><a href="mathcomp.classical.fsbigop.html#fsbig_set1">fsbig_set1</a></span><span class="id">/=</span><span class="id"> -</span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT_bool">setT_bool</a></span><span class="id"> 2!</span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#diracT">diracT</a></span><span class="id"> !</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mule1">mule1</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">End</span><span class="id"> bernoulli_measure</span>.<br/>
+<span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_prob">bernoulli_prob</a></span><span class="id"> {R}</span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_bernoulliV2" class="id"><a name="eq_bernoulliV2" class="" title="eq_bernoulliV2 :
+forall {R : realType} [P : probability bool R],
+P [set true]%classic = P [set false]%classic -> P =1 bernoulli_prob 2^-1
+
+eq_bernoulliV2 is not universe polymorphic
+Arguments eq_bernoulliV2 {R} [P] _ x
+eq_bernoulliV2 is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.eq_bernoulliV2
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 153, characters 6-20
+">eq_bernoulliV2</a></span><span class="id"> {</span><span id="R:38" class="id"><a name="R:38" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="P:39" class="id"><a name="P:39" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#Probability.Exports.probability">probability</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#R:38">R</a></span>)<span class="id"> :</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#P:39">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#P:39">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#P:39">P</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> =1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_prob">bernoulli_prob</a></span><span class="id"> 2</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#4e5a4c91ec0aa12de06dfe1cc07ea126">^-1</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> Ptrue_eq_false;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#eq_bernoulli">eq_bernoulli</a></span>.<br/>
+<span class="id">have</span><span class="id"> :</span><span class="id"> P</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">1%E</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#probability_setT">probability_setT</a></span><span class="id"> P</span>.<br/>
+<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT_bool">setT_bool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#measureU">measureU</a></span><span class="id">//=;</span><span class="id"> last</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#disjoints_subset">disjoints_subset</a></span><span class="id"> =&gt;</span><span class="id"> -[]</span>.<br/>
+<span class="id">rewrite</span><span class="id"> Ptrue_eq_false</span><span class="id"> -</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mule2n">mule2n</a></span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#esym">esym</a></span><span class="id">/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mule_natl">mule_natl</a></span><span class="id"> -</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#eqe_pdivrMl">eqe_pdivrMl</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mule1">mule1</a></span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id">&lt;-</span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Section</span><span class="id"> integral_bernoulli</span>.<br/>
+<span class="vernacular">Context</span><span class="id"> {</span><span id="integral_bernoulli.R" class="id"><a name="integral_bernoulli.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
+<span class="vernacular">Variables</span> (<span id="integral_bernoulli.p" class="id"><a name="integral_bernoulli.p" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#integral_bernoulli.R">R</a></span>) (<span id="integral_bernoulli.p01" class="id"><a name="integral_bernoulli.p01" class="">p01</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#p:42">p</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id">1</span>).<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="bernoulli_probE" class="id"><a name="bernoulli_probE" class="" title="bernoulli_probE :
+forall {R : realType} [p : R],
+(0 <= p <= 1)%R ->
+forall A : set bool,
+bernoulli_prob p A = ((p%:E * \d_true A)%E + ((p.~)%:E * \d_false A)%E)%R
+
+bernoulli_probE is not universe polymorphic
+Arguments bernoulli_probE {R} [p]%_ring_scope p01 A%_classical_set_scope
+bernoulli_probE is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.bernoulli_probE
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 168, characters 6-21
+">bernoulli_probE</a></span><span class="id"> </span><span id="A:45" class="id"><a name="A:45" class="">A</a></span><span class="id"> :</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_prob">bernoulli_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#integral_bernoulli.p">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#A:45">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#integral_bernoulli.p">p</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> *</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318">\d_</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318"> A</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d4965da372b2485934ec33867ee5fbe7"> +</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d4965da372b2485934ec33867ee5fbe7"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#integral_bernoulli.p">p</a></span>.<span class="id"><a href="mathcomp.classical.unstable.html#70aac91c746ed85ee92b0d5040f01853">~</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> *</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318">\d_</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#beb404b4c6e52afbdfec2979598a2318"> A</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> case/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#andP">andP</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#integral_bernoulli.p01">p01</a></span><span class="id"> =&gt;</span><span class="id"> p0</span><span class="id"> p1;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_dirac">bernoulli_dirac</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#measure_addE">measure_addE</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_bernoulli_prob" class="id"><a name="integral_bernoulli_prob" class="" title="integral_bernoulli_prob :
+forall {R : realType} [p : R],
+(0 <= p <= 1)%R ->
+forall [f : bool -> \bar R],
+(forall x : bool, (0%R <= f x)%E) ->
+(\int[bernoulli_prob p]_y f y)%E =
+((p%:E * f true)%E + ((p.~)%:E * f false)%E)%R
+
+integral_bernoulli_prob is not universe polymorphic
+Arguments integral_bernoulli_prob {R} [p]%_ring_scope 
+  p01 [f]%_function_scope _%_function_scope
+integral_bernoulli_prob is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.integral_bernoulli_prob
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 172, characters 6-29
+">integral_bernoulli_prob</a></span> (<span id="f:46" class="id"><a name="f:46" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#integral_bernoulli.R">R</a></span>)<span class="id"> :</span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:47" class="id"><a name="x:47" class="">x</a></span><span class="id">,</span><span class="id"> 0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#f:46">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#x:47">x</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">\int[</a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_prob">bernoulli_prob</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#integral_bernoulli.p">p</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#3e4826d90e3d691004f544dc3de2d121">]_</a></span><span id="y:48" class="id"><a name="y:48" class="">y</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#f:46">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#y:48">y</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#integral_bernoulli.p">p</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> *</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#f:46">f</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d4965da372b2485934ec33867ee5fbe7"> +</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d4965da372b2485934ec33867ee5fbe7"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#integral_bernoulli.p">p</a></span>.<span class="id"><a href="mathcomp.classical.unstable.html#70aac91c746ed85ee92b0d5040f01853">~</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> *</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#f1c2ddfea282f8f8d7539f61e14c08e4"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#f:46">f</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> f0;</span><span class="id"> case/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#andP">andP</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#integral_bernoulli.p01">p01</a></span><span class="id"> =&gt;</span><span class="id"> p0</span><span class="id"> p1;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_dirac">bernoulli_dirac</a></span><span class="id">/=</span>.<br/>
+<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html#ge0_integral_measure_sum">ge0_integral_measure_sum</a></span><span class="id">//</span><span class="id"> 2!</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#big_ord_recl">big_ord_recl</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#big_ord0">big_ord0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#adde0">adde0</a></span><span class="id">/=</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> !</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html#ge0_integral_mscale">ge0_integral_mscale</a></span><span class="id">//=</span><span class="id"> !</span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html#integral_dirac">integral_dirac</a></span><span class="id">//=</span><span class="id"> !</span><span class="id"><a href="mathcomp.analysis.measure_theory.dirac_measure.html#diracT">diracT</a></span><span class="id"> !</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mul1e">mul1e</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">End</span><span class="id"> integral_bernoulli</span>.<br/>
+<br/>
+<span class="vernacular">Section</span><span class="id"> measurable_bernoulli</span>.<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
+<span class="vernacular">Variable</span><span class="id"> </span><span id="measurable_bernoulli.R" class="id"><a name="measurable_bernoulli.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>.<br/>
+<span class="vernacular">Implicit</span><span class="gallina-kwd"> Type</span><span class="id"> p</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#measurable_bernoulli.R">R</a></span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="measurable_bernoulli_prob" class="id"><a name="measurable_bernoulli_prob" class="" title="measurable_bernoulli_prob :
+forall {R : realType},
+measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
+  (U:=pprobability bool R)
+  [set: Real_sort__canonical__measurable_structure_SigmaRing R]
+  ((fun p : R => bernoulli_prob p) : R -> pprobability bool R)
+
+measurable_bernoulli_prob is not universe polymorphic
+Arguments measurable_bernoulli_prob {R} _ Y _ i _
+measurable_bernoulli_prob is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.measurable_bernoulli_prob
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 187, characters 6-31
+">measurable_bernoulli_prob</a></span><span class="id"> :</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_fun">measurable_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT">setT</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_prob">bernoulli_prob</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#measurable_bernoulli.R">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#pprobability">pprobability</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#measurable_bernoulli.R">R</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">apply:</span> (<span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurability">measurability</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#pset">pset</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#pprobability">pprobability</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#measurable_bernoulli.R">R</a></span>))))<span class="id"> =&gt;</span><span class="id"> //</span>.<br/>
+<span class="id">move=&gt;</span><span class="id"> _</span><span class="id"> -[_</span><span class="id"> [r</span><span class="id"> r01]</span><span class="id"> [Ys</span><span class="id"> mYs</span><span class="id"> &lt;-]]</span><span class="id"> &lt;-;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#emeasurable_fun_infty_o">emeasurable_fun_infty_o</a></span><span class="id"> =&gt;</span><span class="id"> //=</span>.<br/>
+<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_fun_ifT">measurable_fun_ifT</a></span><span class="id"> =&gt;</span><span class="id"> //=</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_and">measurable_and</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measurable_realfun.html#measurable_fun_ler">measurable_fun_ler</a></span>.<br/>
+<span class="id">apply:</span> (<span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#eq_measurable_fun">eq_measurable_fun</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="t:55" class="id"><span id="t:51" class="id"><a name="t:55" class="">t</a></span></span><span class="id"> =&gt;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#706f4f0208bba5d79e26d335c76ea034">\sum_</a></span>(<span id="b:58" class="id"><span id="b:57" class="id"><span id="b:56" class="id"><span id="b:54" class="id"><span id="b:53" class="id"><span id="b:52" class="id"><a name="b:58" class="">b</a></span></span></span></span></span></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#706f4f0208bba5d79e26d335c76ea034"> &lt;-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#706f4f0208bba5d79e26d335c76ea034"> </a></span><span class="id"><a href="mathcomp.classical.cardinality.html#fset_set">fset_set</a></span><span class="id"> Ys</span>) (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_pmf">bernoulli_pmf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#measurable_bernoulli.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#t:51">t</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#b:52">b</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>)).<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> _;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#fsbig_finite">fsbig_finite</a></span><span class="id">/=</span>.<br/>
+<span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.html#emeasurable_sum">emeasurable_sum</a></span><span class="id"> =&gt;</span><span class="id"> n;</span><span class="id"> move=&gt;</span><span class="id"> k</span><span class="id"> Ysk;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurableT_comp">measurableT_comp</a></span><span class="id"> =&gt;</span><span class="id"> //</span>.<br/>
+<span class="id">exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#measurable_bernoulli_pmf">measurable_bernoulli_pmf</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="measurable_bernoulli_prob2" class="id"><a name="measurable_bernoulli_prob2" class="" title="measurable_bernoulli_prob2 :
+forall [R : realType]
+  [U : set Datatypes_bool__canonical__measurable_structure_SemiRingOfSets],
+'measurable%classic U ->
+measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
+  (U:=constructive_ereal_extended__canonical__measurable_structure_SigmaRing
+        R)
+  [set: Real_sort__canonical__measurable_structure_SigmaRing R]
+  (bernoulli_prob^~ U : R -> \bar R)
+
+measurable_bernoulli_prob2 is not universe polymorphic
+Expanded type for implicit arguments
+measurable_bernoulli_prob2 :
+forall [R : realType]
+  [U : set Datatypes_bool__canonical__measurable_structure_SemiRingOfSets],
+'measurable%classic U ->
+'measurable%classic
+  [set: Real_sort__canonical__measurable_structure_SigmaRing R] ->
+forall
+  [Y : set
+         (constructive_ereal_extended__canonical__measurable_structure_SigmaRing
+            R)],
+'measurable%classic Y ->
+forall
+  [i : set
+         (set
+            (lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+               R))],
+[set M | sigma_algebra
+           [set: lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
+                   R]
+           M /\
+         (R.-ocitv).-measurable `<=` M]%classic
+  i ->
+i
+  ([set: Real_sort__canonical__measurable_structure_SigmaRing R]
+   `&` (bernoulli_prob^~ U : R -> \bar R) @^-1` Y)%classic
+
+Arguments measurable_bernoulli_prob2 [R] [U]%_classical_set_scope 
+  _ _ [Y] _ [i] _
+measurable_bernoulli_prob2 is opaque
+Expands to: Constant
+            mathcomp.analysis.probability_theory.bernoulli_distribution.measurable_bernoulli_prob2
+Declared in
+library mathcomp.analysis.probability_theory.bernoulli_distribution, line 201, characters 6-32
+">measurable_bernoulli_prob2</a></span><span class="id"> </span><span id="U:59" class="id"><a name="U:59" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#measurable">measurable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#U:59">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_fun">measurable_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT">setT</a></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#bernoulli_prob">bernoulli_prob</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> ^~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#U:59">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#measurable_bernoulli.R">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#measurable_bernoulli.R">R</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">move=&gt;</span><span class="id"> mU</span>.<br/>
+<span class="id">exact:</span> (<span class="id"><a href="mathcomp.analysis.kernel.html#measurable_kernel">measurable_kernel</a></span> (<span class="id"><a href="mathcomp.analysis.kernel.html#kprobability">kprobability</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#measurable_bernoulli_prob">measurable_bernoulli_prob</a></span>)).<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">End</span><span class="id"> measurable_bernoulli</span>.<br/>
+<span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.bernoulli_distribution.html#measurable_bernoulli_prob">measurable_bernoulli_prob</a></span><span class="id"> {R}</span>.<br/>
+
+      <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>
+    </div>
+  </div>
+    </main>
+</body>
+</html>
