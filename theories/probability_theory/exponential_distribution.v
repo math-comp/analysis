@@ -34,12 +34,10 @@ Variable rate : R.
 Hypothesis rate_ge0 : 0 <= rate.
 
 Let exponential_pdfT x := rate * expR (- rate * x).
-Definition exponential_pdf := exponential_pdfT \_ `[0%R, +oo[.
+Definition exponential_pdf := exponential_pdfT \_ `[0, +oo[.
 
 Lemma exponential_pdf_ge0 x : 0 <= exponential_pdf x.
-Proof.
-by apply: restrict_ge0 => {}x _; apply: mulr_ge0 => //; exact: expR_ge0.
-Qed.
+Proof. by apply: restrict_ge0 => {}x _; rewrite  mulr_ge0 ?expR_ge0. Qed.
 
 Lemma lt0_exponential_pdf x : x < 0 -> exponential_pdf x = 0.
 Proof.
@@ -78,7 +76,7 @@ by apply: continuous_comp => //; exact: continuous_exponential_pdfT.
 Unshelve. end_near. Qed.
 
 Lemma within_continuous_exponential_pdf :
-  {within [set` `[0, +oo[%R], continuous exponential_pdf}.
+  {within `[0, +oo[%classic, continuous exponential_pdf}.
 Proof.
 apply/continuous_within_itvcyP; split.
   exact: in_continuous_exponential_pdf.
@@ -100,12 +98,12 @@ Notation mu := lebesgue_measure.
 Variable rate : R.
 
 Lemma derive1_exponential_pdf :
-  {in `]0, +oo[%R, (fun x => - (expR : R^o -> R^o) (- rate * x))^`()%classic
+  {in `]0, +oo[%R, (fun x => - expR (- rate * x))^`()%classic
                    =1 exponential_pdf rate}.
 Proof.
 move=> z; rewrite in_itv/= andbT => z0.
 rewrite derive1_comp// derive1N// derive1_id mulN1r derive1_comp// derive1E.
-have/funeqP -> := @derive_expR R.
+have /funeqP -> := @derive_expR R.
 by rewrite derive1Ml// derive1_id mulr1 mulrN opprK mulrC exponential_pdfE ?ltW.
 Qed.
 
@@ -119,7 +117,7 @@ Lemma exponential_prob_itv0c (x : R) : 0 < x ->
   exponential_prob rate `[0, x] = (1 - (expR (- rate * x))%:E)%E.
 Proof.
 move=> x0.
-rewrite (_: 1 = - (- expR (- rate * 0))%:E)%E; last first.
+rewrite (_ : 1 = - (- expR (- rate * 0))%:E)%E; last first.
   by rewrite mulr0 expR0 EFinN oppeK.
 rewrite addeC.
 apply: (@continuous_FTC2 _ _ (fun x => - expR (- rate * x))) => //.
@@ -134,9 +132,10 @@ apply: (@continuous_FTC2 _ _ (fun x => - expR (- rate * x))) => //.
   by apply: derive1_exponential_pdf; rewrite in_itv/= andbT.
 Qed.
 
-Lemma integral_exponential_pdf (rate_gt0 : 0 < rate) :
+Lemma integral_exponential_pdf : 0 < rate ->
   (\int[mu]_x (exponential_pdf rate x)%:E = 1)%E.
 Proof.
+move=> rate0.
 have mEex : measurable_fun setT (EFin \o exponential_pdf rate).
   by apply/measurable_EFinP; exact: measurable_exponential_pdf.
 rewrite -(setUv `[0, +oo[%classic) ge0_integral_setU//=; last 4 first.
@@ -151,19 +150,20 @@ rewrite (@ge0_continuous_FTC2y _ _
 - by rewrite mulr0 expR0 EFinN oppeK add0e.
 - by move=> x _; apply: exponential_pdf_ge0; exact: ltW.
 - exact: within_continuous_exponential_pdf.
-- rewrite -oppr0; apply: (@cvgN _ R^o).
+- rewrite -oppr0; apply: cvgN.
   rewrite (_ : (fun x => expR (- rate * x)) =
                (fun z => expR (- z)) \o (fun z => rate * z)); last first.
     by apply: eq_fun => x; rewrite mulNr.
-  apply: (@cvg_comp _ R^o _ _ _ _ (pinfty_nbhs R)); last exact: cvgr_expR.
+  apply: (@cvg_comp _ _ _ _ _ _ (pinfty_nbhs R)); last exact: cvgr_expR.
   exact: gt0_cvgMry.
-- by apply: (@cvgN _ R^o); apply: cvg_at_right_filter; exact: cexpNM.
+- by apply: cvgN; apply/cvg_at_right_filter; exact: cexpNM.
 - exact: derive1_exponential_pdf.
 Qed.
 
-Lemma integrable_exponential_pdf (rate_gt0 : 0 < rate) :
+Lemma integrable_exponential_pdf : 0 < rate ->
   mu.-integrable setT (EFin \o (exponential_pdf rate)).
 Proof.
+move=> rate0.
 have mEex : measurable_fun setT (EFin \o exponential_pdf rate).
   by apply/measurable_EFinP; exact: measurable_exponential_pdf.
 apply/integrableP; split => //.

@@ -32,19 +32,18 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section bernoulli_pmf.
-Context {R : realType} (p : R).
+Context {R : numDomainType} (p : R).
 Local Open Scope ring_scope.
 
 Definition bernoulli_pmf b := if b then p else 1 - p.
 
-Lemma bernoulli_pmf_ge0 (p01 : 0 <= p <= 1) b : 0 <= bernoulli_pmf b.
+Lemma bernoulli_pmf_ge0 b : 0 <= p <= 1 -> 0 <= bernoulli_pmf b.
 Proof.
 rewrite /bernoulli_pmf.
-by move: p01 => /andP[p0 p1]; case: ifPn => // _; rewrite subr_ge0.
+by move=> /andP[p0 p1]; case: ifPn => // _; rewrite subr_ge0.
 Qed.
 
-Lemma bernoulli_pmf1 (p01 : 0 <= p <= 1) :
-  \sum_(i \in [set: bool]) (bernoulli_pmf i)%:E = 1%E.
+Lemma bernoulli_pmf1 : \sum_(i \in [set: bool]) (bernoulli_pmf i)%:E = 1%E.
 Proof.
 rewrite setT_bool fsbigU//=; last by move=> x [/= ->].
 by rewrite !fsbig_set1/= -EFinD subrKC.
@@ -58,8 +57,8 @@ Proof.
 by apply/measurable_funTS/measurable_fun_if => //=; exact: measurable_funB.
 Qed.
 
-Definition bernoulli_prob {R : realType} (p : R) : set bool -> \bar R :=
-  fun A => if (0 <= p <= 1)%R then
+Definition bernoulli_prob {R : realFieldType} (p : R) : set bool -> \bar R :=
+  fun A => if 0 <= p <= 1 then
     \sum_(b \in A) (bernoulli_pmf p b)%:E
   else
     \d_false A.
@@ -70,9 +69,7 @@ Context {R : realType} (p : R).
 Local Notation bernoulli := (bernoulli_prob p).
 
 Let bernoulli0 : bernoulli set0 = 0.
-Proof.
-by rewrite /bernoulli; case: ifPn => // p01; rewrite fsbig_set0.
-Qed.
+Proof. by rewrite /bernoulli; case: ifPn => // p01; rewrite fsbig_set0. Qed.
 
 Let bernoulli_ge0 U : (0 <= bernoulli U)%E.
 Proof.
@@ -90,7 +87,7 @@ apply: cvg_toP.
   apply: lee_sum_nneg_natr => // k _ _.
   rewrite fsbig_finite//= sumEFin lee_fin.
   by apply: sumr_ge0 => /= b _; exact: bernoulli_pmf_ge0.
-transitivity (\sum_(0 <= i <oo) (\esum_(j in F i) (bernoulli_pmf p j)%:E)%R)%E.
+transitivity (\sum_(0 <= i <oo) (\esum_(j in F i) (bernoulli_pmf p j)%:E))%E.
 apply: eq_eseriesr => k _; rewrite esum_fset//= => b _.
   by rewrite lee_fin bernoulli_pmf_ge0.
 rewrite -nneseries_sum_bigcup//=; last first.
@@ -102,10 +99,7 @@ HB.instance Definition _ := isMeasure.Build _ _ _ bernoulli
   bernoulli0 bernoulli_ge0 bernoulli_sigma_additive.
 
 Let bernoulli_setT : bernoulli [set: _] = 1%E.
-Proof.
-rewrite /bernoulli/=; case: ifPn => p01; last by rewrite probability_setT.
-by rewrite bernoulli_pmf1.
-Qed.
+Proof. by rewrite /bernoulli/= probability_setT bernoulli_pmf1 if_same. Qed.
 
 HB.instance Definition _ :=
   @Measure_isProbability.Build _ _ R bernoulli bernoulli_setT.
@@ -114,24 +108,24 @@ Lemma eq_bernoulli (P : probability bool R) :
   P [set true] = p%:E -> P =1 bernoulli.
 Proof.
 move=> Ptrue sb; rewrite /bernoulli /bernoulli_pmf.
-have Pfalse: P [set false] = (1 - p%:E)%E.
+have Pfalse : P [set false] = (1 - p%:E)%E.
   rewrite -Ptrue -(probability_setT P) setT_bool measureU//; last first.
-    by rewrite disjoints_subset => -[]//.
+    by rewrite disjoints_subset => -[].
   by rewrite addeAC subee ?add0e//= Ptrue.
-have: (0 <= p%:E <= 1)%E by rewrite -Ptrue measure_ge0 probability_le1.
+have : (0 <= p%:E <= 1)%E by rewrite -Ptrue measure_ge0 probability_le1.
 rewrite !lee_fin => ->.
 have eq_sb := etrans (bigcup_imset1 (_ : set bool) id) (image_id _).
-rewrite -[in LHS](eq_sb sb)/= measure_fin_bigcup//; last 2 first.
+rewrite -[in LHS](eq_sb sb)/= measure_fin_bigcup//.
+- by apply: eq_fsbigr => /= -[].
 - exact: finite_finset.
 - by move=> [] [] _ _ [[]]//= [].
-- by apply: eq_fsbigr => /= -[].
 Qed.
 
 End bernoulli.
 
 Section bernoulli_measure.
 Context {R : realType}.
-Variables (p : R) (p0 : (0 <= p)%R) (p1 : ((NngNum p0)%:num <= 1)%R).
+Variables (p : R) (p0 : 0 <= p) (p1 : (NngNum p0)%:num <= 1).
 
 Lemma bernoulli_dirac : bernoulli_prob p = measure_add
   (mscale (NngNum p0) \d_true) (mscale (1 - (Itv01 p0 p1)%:num)%:nng \d_false).
@@ -161,15 +155,14 @@ Lemma eq_bernoulliV2 {R : realType} (P : probability bool R) :
 Proof.
 move=> Ptrue_eq_false; apply/eq_bernoulli.
 have : P [set: bool] = 1%E := probability_setT P.
-rewrite setT_bool measureU//=; last first.
-  by rewrite disjoints_subset => -[]//.
-rewrite Ptrue_eq_false -mule2n; move/esym/eqP.
+rewrite setT_bool measureU//=; last by rewrite disjoints_subset => -[].
+rewrite Ptrue_eq_false -mule2n => /esym/eqP.
 by rewrite -mule_natl -eqe_pdivrMl// mule1 => /eqP<-.
 Qed.
 
 Section integral_bernoulli.
 Context {R : realType}.
-Variables (p : R) (p01 : (0 <= p <= 1)%R).
+Variables (p : R) (p01 : 0 <= p <= 1).
 Local Open Scope ereal_scope.
 
 Lemma bernoulli_probE A :
@@ -196,12 +189,11 @@ Lemma measurable_bernoulli_prob :
 Proof.
 apply: (measurability (@pset _ _ _ : set (set (pprobability _ R)))) => //.
 move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
-apply: measurable_fun_if => //=.
+apply: measurable_fun_ifT => //=.
   by apply: measurable_and => //; exact: measurable_fun_ler.
 apply: (eq_measurable_fun (fun t =>
-    \sum_(b <- fset_set Ys) (bernoulli_pmf t b)%:E)).
-  move=> x /set_mem[_/= x01].
-  by rewrite fsbig_finite//=.
+    \sum_(b <- fset_set Ys) (@bernoulli_pmf R t b)%:E)).
+  by move=> x _; rewrite fsbig_finite/=.
 apply: emeasurable_sum => n; move=> k Ysk; apply/measurableT_comp => //.
 exact: measurable_bernoulli_pmf.
 Qed.

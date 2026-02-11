@@ -40,10 +40,9 @@ Context {R : realType} (n : nat) (p : R).
 
 Definition binomial_pmf k := p ^+ k * p.~ ^+ (n - k) *+ 'C(n, k).
 
-Lemma binomial_pmf_ge0 k (p01 : (0 <= p <= 1)%R) : 0 <= binomial_pmf k.
+Lemma binomial_pmf_ge0 k : 0 <= p <= 1 -> 0 <= binomial_pmf k.
 Proof.
-move: p01 => /andP[p0 p1]; rewrite mulrn_wge0// mulr_ge0// ?exprn_ge0//.
-exact: onem_ge0.
+by move=> /andP[p0 p1]; rewrite mulrn_wge0// mulr_ge0 ?exprn_ge0// onem_ge0.
 Qed.
 
 End binomial_pmf.
@@ -57,7 +56,7 @@ by apply: measurable_funM => //; apply: measurable_funX; exact: measurable_funB.
 Qed.
 
 Definition binomial_prob {R : realType} (n : nat) (p : R) : set nat -> \bar R :=
-  fun U => if (0 <= p <= 1)%R then
+  fun U => if 0 <= p <= 1 then
     \esum_(k in U) (binomial_pmf n p k)%:E else \d_0%N U.
 
 Section binomial.
@@ -159,7 +158,7 @@ Qed.
 
 End binomial_probability.
 
-Lemma integral_binomial_prob (R : realType) n p U : (0 <= p <= 1)%R ->
+Lemma integral_binomial_prob (R : realType) n p U : 0 <= p <= 1 ->
   (\int[binomial_prob n p]_y \d_(0 < y)%N U =
   bernoulli_prob (1 - p.~ ^+ n) U :> \bar R)%E.
 Proof.
@@ -172,17 +171,14 @@ rewrite expr0 mul1r subn0 bin0 ltnn mulr1n addrC.
 rewrite onemD opprK onem1 add0r; congr +%E.
 rewrite /bump; under eq_bigr do rewrite leq0n add1n ltnS leq0n.
 rewrite -ge0_sume_distrl; last first.
-  move=> i _.
-  by apply/mulrn_wge0/mulr_ge0; apply/exprn_ge0 => //; exact/onem_ge0.
+  by move=> i _; apply/mulrn_wge0; rewrite mulr_ge0 ?exprn_ge0// onem_ge0.
 congr *%E.
 transitivity (\sum_(i < n.+1) (p.~ ^+ (n - i) * p ^+ i *+ 'C(n, i))%:E -
               (p.~ ^+ n)%:E)%E.
   rewrite big_ord_recl/=.
   rewrite expr0 mulr1 subn0 bin0 mulr1n addrAC -EFinD subrr add0e.
   by rewrite /bump; under [RHS]eq_bigr do rewrite leq0n add1n mulrC.
-rewrite sumEFin -(@exprDn_comm _ p.~ p n)//.
-  by rewrite subrK expr1n.
-by rewrite /GRing.comm/onem mulrC.
+by rewrite sumEFin -(@exprDn _ p.~ p n)// subrK expr1n.
 Qed.
 
 Lemma measurable_binomial_prob (R : realType) (n : nat) :

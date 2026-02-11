@@ -253,4 +253,3 @@ apply: ge0_le_integral => //=.
 Qed.
 
 End normal_probability.
-

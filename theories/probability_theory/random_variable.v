@@ -390,11 +390,11 @@ Proof. by rewrite unlock/= integral_cst//= probability_setT mule1. Qed.
 Lemma expectation_indic (A : set T) (mA : measurable A) : 'E_P[\1_A] = P A.
 Proof. by rewrite unlock integral_indic// setIT. Qed.
 
-Lemma integrable_expectation (X : {RV P >-> R})
-  (iX : P.-integrable [set: T] (EFin \o X)) : `| 'E_P[X] | < +oo.
+Lemma integrable_expectation (X : {RV P >-> R}) :
+  (X : T -> R) \in Lfun P 1 -> `| 'E_P[X] | < +oo.
 Proof.
-move: iX => /integrableP[? Xoo]; rewrite (le_lt_trans _ Xoo)// unlock.
-exact: le_trans (le_abse_integral _ _ _).
+move/Lfun1_integrable => /integrableP[? Xoo]; rewrite (le_lt_trans _ Xoo)//.
+by rewrite expectation_def (le_trans (le_abse_integral _ _ _)).
 Qed.
 
 Lemma expectationZl (X : T -> R) (k : R) : X \in Lfun P 1 ->
@@ -859,8 +859,7 @@ have h (Y : {RV P >-> R}) :
   apply: (@le_trans _ _ ('E_P[(@GRing.exp R ^~ 2%N \o normr) \o Y])).
     apply: (@markov Y (@GRing.exp R ^~ 2%N)) => //.
     - by move=> r _; exact: sqr_ge0.
-    - move=> x y; rewrite !nnegrE => x0 y0.
-      by rewrite ler_sqr.
+    - by move=> x y; rewrite !nnegrE => x0 y0; rewrite ler_sqr.
   apply: expectation_le.
     - by apply: measurableT_comp => //; exact: measurableT_comp.
   - by [].

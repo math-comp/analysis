@@ -28,7 +28,6 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-
 Section uniform_probability.
 Local Open Scope ring_scope.
 Context (R : realType) (a b : R).
