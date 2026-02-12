@@ -674,7 +674,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="convRE" class="id"><a name="convRE" class="" title="convRE :
 forall {R : numDomainType} (a b : R^o) (t : {i01 R}),
-conv t a b = (t%:num * a + (t%:num).~ * b)%R
+conv t a b = ((t%:num * a)%R + (unstable.onem t%:num * b)%R)%E
 
 convRE is not universe polymorphic
 Arguments convRE {R} a b t
@@ -815,10 +815,8 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="second_derivative_convex" class="id"><a name="second_derivative_convex" class="" title="second_derivative_convex :
 forall {R : realType} [f : R -> R^o] [a b : R^o],
 (forall x : R, (a < x < b)%R -> (0 <= ('D_1 ('D_1 f)) x)%R) ->
-filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs (b^'-)%classic)))
-  (filter.nbhs (f b)) ->
-filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs (f a)) ->
+(f x @[x --> b^'-] --> f b)%classic ->
+(f x @[x --> a^'+] --> f a)%classic ->
 {in `]a, b[%R,
   forall
     x : numFieldNormedType.Real_sort__canonical__normed_module_NormedModule R,

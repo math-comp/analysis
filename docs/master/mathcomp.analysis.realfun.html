@@ -287,14 +287,13 @@ Discontinuities:
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_addrl" class="id"><a name="cvg_addrl" class="" title="cvg_addrl :
 forall {R : realFieldType} (M : R),
-filter.cvg_to (filter.nbhs (filter.fmap [eta +%R M] (filter.nbhs +oo%R)))
-  (filter.nbhs +oo%R)
+((M + r)%E @[r --> +oo%R] --> +oo%R)%classic
 
 cvg_addrl is not universe polymorphic
 Expanded type for implicit arguments
 cvg_addrl :
 forall {R : realFieldType} (M : R) [t : set R],
-filter.nbhs +oo%R t ->
+nbhs +oo%R t ->
 exists M0 : R,
   M0 \is Num.real /\
   (forall x : R, (M0 < x)%R -> ([eta +%R M] @^-1` t)%classic x)
@@ -314,14 +313,13 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_addrr" class="id"><a name="cvg_addrr" class="" title="cvg_addrr :
 forall {R : realFieldType} (M : R),
-filter.cvg_to (filter.nbhs (filter.fmap (+%R^~ M) (filter.nbhs +oo%R)))
-  (filter.nbhs +oo%R)
+((r + M)%E @[r --> +oo%R] --> +oo%R)%classic
 
 cvg_addrr is not universe polymorphic
 Expanded type for implicit arguments
 cvg_addrr :
 forall {R : realFieldType} (M : R) [t : set R],
-filter.nbhs +oo%R t ->
+nbhs +oo%R t ->
 exists M0 : R,
   M0 \is Num.real /\
   (forall x : R, (M0 < x)%R -> (+%R^~ M @^-1` t)%classic x)
@@ -338,14 +336,13 @@ Declared in library mathcomp.analysis.realfun, line 71, characters 6-15
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_addrr_Ny" class="id"><a name="cvg_addrr_Ny" class="" title="cvg_addrr_Ny :
 forall {R : realFieldType} (M : R),
-filter.cvg_to (filter.nbhs (filter.fmap (+%R^~ M) (filter.nbhs -oo%R)))
-  (filter.nbhs -oo%R)
+((r + M)%E @[r --> -oo%R] --> -oo%R)%classic
 
 cvg_addrr_Ny is not universe polymorphic
 Expanded type for implicit arguments
 cvg_addrr_Ny :
 forall {R : realFieldType} (M : R) [t : set R],
-filter.nbhs -oo%R t ->
+nbhs -oo%R t ->
 exists M0 : R,
   M0 \is Num.real /\
   (forall x : R, (x < M0)%R -> (+%R^~ M @^-1` t)%classic x)
@@ -365,14 +362,13 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_addrl_Ny" class="id"><a name="cvg_addrl_Ny" class="" title="cvg_addrl_Ny :
 forall {R : realFieldType} (M : R),
-filter.cvg_to (filter.nbhs (filter.fmap [eta +%R M] (filter.nbhs -oo%R)))
-  (filter.nbhs -oo%R)
+((M + r)%E @[r --> -oo%R] --> -oo%R)%classic
 
 cvg_addrl_Ny is not universe polymorphic
 Expanded type for implicit arguments
 cvg_addrl_Ny :
 forall {R : realFieldType} (M : R) [t : set R],
-filter.nbhs -oo%R t ->
+nbhs -oo%R t ->
 exists M0 : R,
   M0 \is Num.real /\
   (forall x : R, (x < M0)%R -> ([eta +%R M] @^-1` t)%classic x)
@@ -388,14 +384,9 @@ Declared in library mathcomp.analysis.realfun, line 81, characters 6-18
 <span class="gallina-kwd"> by</span><span class="id"> under</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#eq_fun">eq_fun</a></span><span class="id"> do</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.addrC">addrC</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.realfun.html#cvg_addrr_Ny">cvg_addrr_Ny</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_centerr" class="id"><a name="cvg_centerr" class="" title="cvg_centerr :
-forall {R : realFieldType} (M : R) [T : topology_structure.Topological.type]
-  (f : R -> topology_structure.Topological.sort T)
-  (l : topology_structure.Topological.sort T),
-filter.cvg_to
-  (filter.nbhs (filter.fmap (fun n : R => f (n - M)%R) (filter.nbhs +oo%R)))
-  (filter.nbhs l) =
-filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs +oo%R)))
-  (filter.nbhs l)
+forall {R : realFieldType} (M : R) [T : topologicalType] (f : R -> T) (l : T),
+(f (n - M)%R @[n --> +oo%R] --> l)%classic =
+(f r @[r --> +oo%R] --> l)%classic
 
 cvg_centerr is not universe polymorphic
 Arguments cvg_centerr {R} M%_ring_scope [T] f%_function_scope l
@@ -415,14 +406,9 @@ Declared in library mathcomp.analysis.realfun, line 85, characters 6-17
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_shiftr" class="id"><a name="cvg_shiftr" class="" title="cvg_shiftr :
-forall {R : realFieldType} (M : R) [T : topology_structure.Topological.type]
-  (f : R -> topology_structure.Topological.sort T)
-  (l : topology_structure.Topological.sort T),
-filter.cvg_to
-  (filter.nbhs (filter.fmap (fun n : R => f (n + M)%R) (filter.nbhs +oo%R)))
-  (filter.nbhs l) =
-filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs +oo%R)))
-  (filter.nbhs l)
+forall {R : realFieldType} (M : R) [T : topologicalType] (f : R -> T) (l : T),
+(f (n + M)%E @[n --> +oo%R] --> l)%classic =
+(f r @[r --> +oo%R] --> l)%classic
 
 cvg_shiftr is not universe polymorphic
 Arguments cvg_shiftr {R} M%_ring_scope [T] f%_function_scope l
@@ -441,15 +427,9 @@ Declared in library mathcomp.analysis.realfun, line 96, characters 6-16
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="left_right_continuousP" class="id"><a name="left_right_continuousP" class="" title="left_right_continuousP :
-forall {R : realFieldType} {T : topology_structure.Topological.type}
-  (f : R -> topology_structure.Topological.sort T) 
-  (x : R),
-filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs (x^'-)%classic)))
-  (filter.nbhs (f x)) /\
-filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs (x^'+)%classic)))
-  (filter.nbhs (f x)) <->
-filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs x)))
-  (filter.nbhs (f x))
+forall {R : realFieldType} {T : topologicalType} (f : R -> T) (x : R),
+(f x @[x --> x^'-] --> f x)%classic /\ (f x @[x --> x^'+] --> f x)%classic <->
+(f x @[x --> x] --> f x)%classic
 
 left_right_continuousP is not universe polymorphic
 Arguments left_right_continuousP {R T} f%_function_scope x%_ring_scope
@@ -472,40 +452,26 @@ Declared in library mathcomp.analysis.realfun, line 105, characters 6-28
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_at_right_left_dnbhs" class="id"><a name="cvg_at_right_left_dnbhs" class="" title="cvg_at_right_left_dnbhs :
 forall {R : realFieldType} [f : R -> R] [p l : R],
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (p^'+)%classic)))
-  (filter.nbhs l) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (p^'-)%classic)))
-  (filter.nbhs l) ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap [eta f] (filter.nbhs (topology_structure.dnbhs p))))
-  (filter.nbhs l)
+(f x @[x --> p^'+] --> l)%classic ->
+(f x @[x --> p^'-] --> l)%classic -> (f x @[x --> p^'] --> l)%classic
 
 cvg_at_right_left_dnbhs is not universe polymorphic
 Expanded type for implicit arguments
 cvg_at_right_left_dnbhs :
 forall {R : realFieldType} [f : R -> R] [p l : R],
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (p^'+)%classic)))
-  (filter.nbhs l) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (p^'-)%classic)))
-  (filter.nbhs l) ->
+(f x @[x --> p^'+] --> l)%classic ->
+(f x @[x --> p^'-] --> l)%classic ->
 forall [t : set R],
-filter.nbhs l t ->
+nbhs l t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] p i
    `<=` (fun
-           t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
-                  (numFieldTopology.RealField_sort__canonical__topology_structure_Topological
-                     R) =>
+           t0 : numFieldTopology.RealField_sort__canonical__topology_structure_Topological
+                  R =>
          (fun
-            y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
-                  (numFieldTopology.RealField_sort__canonical__topology_structure_Topological
-                     R) =>
+            y : numFieldTopology.RealField_sort__canonical__topology_structure_Topological
+                  R =>
           is_true (y != p)) t0 ->
          ([eta f] @^-1` t) t0))%classic
 
@@ -543,18 +509,10 @@ Declared in library mathcomp.analysis.realfun, line 117, characters 6-29
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_at_rightP" class="id"><a name="cvg_at_rightP" class="" title="cvg_at_rightP :
 forall {R : realType} (f : R -> R) (p l : R),
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (p^'+)%classic)))
-  (filter.nbhs l) <->
+(f x @[x --> p^'+] --> l)%classic <->
 (forall u : R ^nat,
- (forall n : nat, (p < u n)%R) /\
- filter.cvg_to
-   (filter.nbhs (filter.fmap [eta u] (filter.nbhs filter.eventually)))
-   (filter.nbhs p) ->
- filter.cvg_to
-   (filter.nbhs
-      (filter.fmap (fun n : nat => f (u n)) (filter.nbhs filter.eventually)))
-   (filter.nbhs l))
+ (forall n : nat, (p < u n)%R) /\ (u n @[n --> \oo] --> p)%classic ->
+ (f (u n) @[n --> \oo] --> l)%classic)
 
 cvg_at_rightP is not universe polymorphic
 Arguments cvg_at_rightP {R} f%_function_scope (p l)%_ring_scope
@@ -601,18 +559,10 @@ Declared in library mathcomp.analysis.realfun, line 142, characters 6-19
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_at_leftP" class="id"><a name="cvg_at_leftP" class="" title="cvg_at_leftP :
 forall {R : realType} (f : R -> R) (p l : R),
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (p^'-)%classic)))
-  (filter.nbhs l) <->
+(f x @[x --> p^'-] --> l)%classic <->
 (forall u : R ^nat,
- (forall n : nat, (u n < p)%R) /\
- filter.cvg_to
-   (filter.nbhs (filter.fmap [eta u] (filter.nbhs filter.eventually)))
-   (filter.nbhs p) ->
- filter.cvg_to
-   (filter.nbhs
-      (filter.fmap (fun n : nat => f (u n)) (filter.nbhs filter.eventually)))
-   (filter.nbhs l))
+ (forall n : nat, (u n < p)%R) /\ (u n @[n --> \oo] --> p)%classic ->
+ (f (u n) @[n --> \oo] --> l)%classic)
 
 cvg_at_leftP is not universe polymorphic
 Arguments cvg_at_leftP {R} f%_function_scope (p l)%_ring_scope
@@ -636,19 +586,10 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_dnbhsP" class="id"><a name="cvgr_dnbhsP" class="" title="cvgr_dnbhsP :
 forall {R : realType} (f : R -> R) (p l : R),
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap [eta f] (filter.nbhs (topology_structure.dnbhs p))))
-  (filter.nbhs l) <->
+(f x @[x --> p^'] --> l)%classic <->
 (forall u : R ^nat,
- (forall n : nat, u n != p) /\
- filter.cvg_to
-   (filter.nbhs (filter.fmap [eta u] (filter.nbhs filter.eventually)))
-   (filter.nbhs p) ->
- filter.cvg_to
-   (filter.nbhs
-      (filter.fmap (fun n : nat => f (u n)) (filter.nbhs filter.eventually)))
-   (filter.nbhs l))
+ (forall n : nat, u n != p) /\ (u n @[n --> \oo] --> p)%classic ->
+ (f (u n) @[n --> \oo] --> l)%classic)
 
 cvgr_dnbhsP is not universe polymorphic
 Arguments cvgr_dnbhsP {R} f%_function_scope (p l)%_ring_scope
@@ -677,18 +618,10 @@ Declared in library mathcomp.analysis.realfun, line 191, characters 6-17
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvge_at_rightP" class="id"><a name="cvge_at_rightP" class="" title="cvge_at_rightP :
 forall {R : realType} (f : R -> \bar R) (p l : R),
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (p^'+)%classic)))
-  (filter.nbhs l%:E) <->
+(f x @[x --> p^'+] --> l%:E)%classic <->
 (forall u : R ^nat,
- (forall n : nat, (p < u n)%R) /\
- filter.cvg_to
-   (filter.nbhs (filter.fmap [eta u] (filter.nbhs filter.eventually)))
-   (filter.nbhs p) ->
- filter.cvg_to
-   (filter.nbhs
-      (filter.fmap (fun n : nat => f (u n)) (filter.nbhs filter.eventually)))
-   (filter.nbhs l%:E))
+ (forall n : nat, (p < u n)%R) /\ (u n @[n --> \oo] --> p)%classic ->
+ (f (u n) @[n --> \oo] --> l%:E)%classic)
 
 cvge_at_rightP is not universe polymorphic
 Arguments cvge_at_rightP {R} f%_function_scope (p l)%_ring_scope
@@ -730,18 +663,10 @@ Declared in library mathcomp.analysis.realfun, line 209, characters 6-20
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvge_at_leftP" class="id"><a name="cvge_at_leftP" class="" title="cvge_at_leftP :
 forall {R : realType} (f : R -> \bar R) (p l : R),
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (p^'-)%classic)))
-  (filter.nbhs l%:E) <->
+(f x @[x --> p^'-] --> l%:E)%classic <->
 (forall u : R ^nat,
- (forall n : nat, (u n < p)%R) /\
- filter.cvg_to
-   (filter.nbhs (filter.fmap [eta u] (filter.nbhs filter.eventually)))
-   (filter.nbhs p) ->
- filter.cvg_to
-   (filter.nbhs
-      (filter.fmap (fun n : nat => f (u n)) (filter.nbhs filter.eventually)))
-   (filter.nbhs l%:E))
+ (forall n : nat, (u n < p)%R) /\ (u n @[n --> \oo] --> p)%classic ->
+ (f (u n) @[n --> \oo] --> l%:E)%classic)
 
 cvge_at_leftP is not universe polymorphic
 Arguments cvge_at_leftP {R} f%_function_scope (p l)%_ring_scope
@@ -769,16 +694,9 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_pinftyP" class="id"><a name="cvg_pinftyP" class="" title="cvg_pinftyP :
 forall {R : realType} (f : R -> R) (l : R),
-filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs +oo%R)))
-  (filter.nbhs l) <->
+(f x @[x --> +oo%R] --> l)%classic <->
 (forall u : R ^nat,
- filter.cvg_to
-   (filter.nbhs (filter.fmap [eta u] (filter.nbhs filter.eventually)))
-   (filter.nbhs +oo%R) ->
- filter.cvg_to
-   (filter.nbhs
-      (filter.fmap (fun n : nat => f (u n)) (filter.nbhs filter.eventually)))
-   (filter.nbhs l))
+ (u n @[n --> \oo] --> +oo%R)%classic -> (f (u n) @[n --> \oo] --> l)%classic)
 
 cvg_pinftyP is not universe polymorphic
 Arguments cvg_pinftyP {R} f%_function_scope l%_ring_scope
@@ -809,16 +727,9 @@ Declared in library mathcomp.analysis.realfun, line 257, characters 6-17
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_ninftyP" class="id"><a name="cvg_ninftyP" class="" title="cvg_ninftyP :
 forall {R : realType} (f : R -> R) (l : R),
-filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs -oo%R)))
-  (filter.nbhs l) <->
+(f x @[x --> -oo%R] --> l)%classic <->
 (forall u : R ^nat,
- filter.cvg_to
-   (filter.nbhs (filter.fmap [eta u] (filter.nbhs filter.eventually)))
-   (filter.nbhs -oo%R) ->
- filter.cvg_to
-   (filter.nbhs
-      (filter.fmap (fun n : nat => f (u n)) (filter.nbhs filter.eventually)))
-   (filter.nbhs l))
+ (u n @[n --> \oo] --> -oo%R)%classic -> (f (u n) @[n --> \oo] --> l)%classic)
 
 cvg_ninftyP is not universe polymorphic
 Arguments cvg_ninftyP {R} f%_function_scope l%_ring_scope
@@ -846,16 +757,9 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvge_pinftyP" class="id"><a name="cvge_pinftyP" class="" title="cvge_pinftyP :
 forall {R : realType} (f : R -> \bar R) (l : \bar R),
-filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs +oo%R)))
-  (filter.nbhs l) <->
+(f x @[x --> +oo%R] --> l)%classic <->
 (forall u : R ^nat,
- filter.cvg_to
-   (filter.nbhs (filter.fmap [eta u] (filter.nbhs filter.eventually)))
-   (filter.nbhs +oo%R) ->
- filter.cvg_to
-   (filter.nbhs
-      (filter.fmap (fun n : nat => f (u n)) (filter.nbhs filter.eventually)))
-   (filter.nbhs l))
+ (u n @[n --> \oo] --> +oo%R)%classic -> (f (u n) @[n --> \oo] --> l)%classic)
 
 cvge_pinftyP is not universe polymorphic
 Arguments cvge_pinftyP {R} f%_function_scope l%_ereal_scope
@@ -885,16 +789,9 @@ Declared in library mathcomp.analysis.realfun, line 295, characters 6-18
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvge_ninftyP" class="id"><a name="cvge_ninftyP" class="" title="cvge_ninftyP :
 forall {R : realType} (f : R -> \bar R) (l : \bar R),
-filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs -oo%R)))
-  (filter.nbhs l) <->
+(f x @[x --> -oo%R] --> l)%classic <->
 (forall u : R ^nat,
- filter.cvg_to
-   (filter.nbhs (filter.fmap [eta u] (filter.nbhs filter.eventually)))
-   (filter.nbhs -oo%R) ->
- filter.cvg_to
-   (filter.nbhs
-      (filter.fmap (fun n : nat => f (u n)) (filter.nbhs filter.eventually)))
-   (filter.nbhs l))
+ (u n @[n --> \oo] --> -oo%R)%classic -> (f (u n) @[n --> \oo] --> l)%classic)
 
 cvge_ninftyP is not universe polymorphic
 Arguments cvge_ninftyP {R} f%_function_scope l%_ereal_scope
@@ -924,9 +821,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nondecreasing_cvgr" class="id"><a name="nondecreasing_cvgr" class="" title="nondecreasing_cvgr :
 forall {R : realType} [f : R -> R],
 {homo f : n m / (n <= m)%R} ->
-has_ubound (T:=R) (range f) ->
-filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs +oo%R)))
-  (filter.nbhs (sup (range f)))
+has_ubound (T:=R) (range f) -> (f r @[r --> +oo%R] --> sup (range f))%classic
 
 nondecreasing_cvgr is not universe polymorphic
 Expanded type for implicit arguments
@@ -935,7 +830,7 @@ forall {R : realType} [f : R -> R],
 {homo f : n m / (n <= m)%R} ->
 has_ubound (T:=R) (range f) ->
 forall [t : set R],
-filter.nbhs (sup (range f)) t ->
+nbhs (sup (range f)) t ->
 exists M : R,
   M \is Num.real /\ (forall x : R, (M < x)%R -> ([eta f] @^-1` t)%classic x)
 
@@ -964,9 +859,7 @@ forall {R : realType} [f : R -> R] [a : R] [b : itv_bound R],
 (BRight a < b)%O ->
 {in Interval (BRight a) b &, {homo f : m n /~ (n <= m)%R}} ->
 has_ubound (T:=R) [set f x | x in [set` Interval (BRight a) b]] ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs (sup [set f x | x in [set` Interval (BRight a) b]]))
+(f x @[x --> a^'+] --> sup [set f x | x in [set` Interval (BRight a) b]])%classic
 
 nonincreasing_at_right_cvgr is not universe polymorphic
 Expanded type for implicit arguments
@@ -976,7 +869,7 @@ forall {R : realType} [f : R -> R] [a : R] [b : itv_bound R],
 {in Interval (BRight a) b &, {homo f : m n /~ (n <= m)%R}} ->
 has_ubound (T:=R) [set f x | x in [set` Interval (BRight a) b]] ->
 forall [t : set R],
-filter.nbhs (sup [set f x | x in [set` Interval (BRight a) b]]) t ->
+nbhs (sup [set f x | x in [set` Interval (BRight a) b]]) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] a i
@@ -1039,29 +932,22 @@ Declared in library mathcomp.analysis.realfun, line 350, characters 6-33
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nonincreasing_at_right_is_cvgr" class="id"><a name="nonincreasing_at_right_is_cvgr" class="" title="nonincreasing_at_right_is_cvgr :
 forall {R : realType} [f : R -> R] [a : R],
-filter.prop_near1 (a^'+)%classic
-  (P:=fun x : R => {in `]a, x[%R &, {homo f : m n /~ (n <= m)%R}})
-  (inPhantom (forall x : R, {in `]a, x[%R &, {homo f : m n /~ (n <= m)%R}})) ->
-filter.prop_near1 (a^'+)%classic
-  (P:=fun x : R => has_ubound (T:=R) [set f x | x in `]a, x[])
-  (inPhantom (forall x : R, has_ubound (T:=R) [set f x | x in `]a, x[])) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs
-     (filter.lim (filter.fmap [eta f] (filter.nbhs (a^'+)%classic))))
+(\forall x \near (a^'+)%classic, {in `]a, x[%R &,
+                                   {homo f : m n /~ 
+                                 (n <= m)%R}}) ->
+(\forall x \near (a^'+)%classic, has_ubound (T:=R) [set f x | x in `]a, x[]) ->
+cvg (f x @[x --> a^'+])%classic
 
 nonincreasing_at_right_is_cvgr is not universe polymorphic
 Expanded type for implicit arguments
 nonincreasing_at_right_is_cvgr :
 forall {R : realType} [f : R -> R] [a : R],
-filter.prop_near1 (a^'+)%classic
-  (P:=fun x : R => {in `]a, x[%R &, {homo f : m n /~ (n <= m)%R}})
-  (inPhantom (forall x : R, {in `]a, x[%R &, {homo f : m n /~ (n <= m)%R}})) ->
-filter.prop_near1 (a^'+)%classic
-  (P:=fun x : R => has_ubound (T:=R) [set f x | x in `]a, x[])
-  (inPhantom (forall x : R, has_ubound (T:=R) [set f x | x in `]a, x[])) ->
+(\forall x \near (a^'+)%classic, {in `]a, x[%R &,
+                                   {homo f : m n /~ 
+                                 (n <= m)%R}}) ->
+(\forall x \near (a^'+)%classic, has_ubound (T:=R) [set f x | x in `]a, x[]) ->
 forall [t : set R],
-filter.nbhs (filter.lim (filter.fmap [eta f] (filter.nbhs (a^'+)%classic))) t ->
+nbhs (lim (f x @[x --> a^'+])%classic) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] a i
@@ -1090,9 +976,7 @@ forall {R : realType} [f : R -> R] [a : R] [b : itv_bound R],
 (BRight a < b)%O ->
 {in Interval (BRight a) b &, {homo f : n m / (n <= m)%R}} ->
 has_lbound (T:=R) [set f x | x in [set` Interval (BRight a) b]] ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs (inf [set f x | x in [set` Interval (BRight a) b]]))
+(f x @[x --> a^'+] --> inf [set f x | x in [set` Interval (BRight a) b]])%classic
 
 nondecreasing_at_right_cvgr is not universe polymorphic
 Expanded type for implicit arguments
@@ -1102,7 +986,7 @@ forall {R : realType} [f : R -> R] [a : R] [b : itv_bound R],
 {in Interval (BRight a) b &, {homo f : n m / (n <= m)%R}} ->
 has_lbound (T:=R) [set f x | x in [set` Interval (BRight a) b]] ->
 forall [t : set R],
-filter.nbhs (inf [set f x | x in [set` Interval (BRight a) b]]) t ->
+nbhs (inf [set f x | x in [set` Interval (BRight a) b]]) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] a i
@@ -1136,29 +1020,22 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nondecreasing_at_right_is_cvgr" class="id"><a name="nondecreasing_at_right_is_cvgr" class="" title="nondecreasing_at_right_is_cvgr :
 forall {R : realType} [f : R -> R] [a : R],
-filter.prop_near1 (a^'+)%classic
-  (P:=fun x : R => {in `]a, x[%R &, {homo f : n m / (n <= m)%R}})
-  (inPhantom (forall x : R, {in `]a, x[%R &, {homo f : n m / (n <= m)%R}})) ->
-filter.prop_near1 (a^'+)%classic
-  (P:=fun x : R => has_lbound (T:=R) [set f x | x in `]a, x[])
-  (inPhantom (forall x : R, has_lbound (T:=R) [set f x | x in `]a, x[])) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs
-     (filter.lim (filter.fmap [eta f] (filter.nbhs (a^'+)%classic))))
+(\forall x \near (a^'+)%classic, {in `]a, x[%R &,
+                                   {homo f : n m / 
+                                 (n <= m)%R}}) ->
+(\forall x \near (a^'+)%classic, has_lbound (T:=R) [set f x | x in `]a, x[]) ->
+cvg (f x @[x --> a^'+])%classic
 
 nondecreasing_at_right_is_cvgr is not universe polymorphic
 Expanded type for implicit arguments
 nondecreasing_at_right_is_cvgr :
 forall {R : realType} [f : R -> R] [a : R],
-filter.prop_near1 (a^'+)%classic
-  (P:=fun x : R => {in `]a, x[%R &, {homo f : n m / (n <= m)%R}})
-  (inPhantom (forall x : R, {in `]a, x[%R &, {homo f : n m / (n <= m)%R}})) ->
-filter.prop_near1 (a^'+)%classic
-  (P:=fun x : R => has_lbound (T:=R) [set f x | x in `]a, x[])
-  (inPhantom (forall x : R, has_lbound (T:=R) [set f x | x in `]a, x[])) ->
+(\forall x \near (a^'+)%classic, {in `]a, x[%R &,
+                                   {homo f : n m / 
+                                 (n <= m)%R}}) ->
+(\forall x \near (a^'+)%classic, has_lbound (T:=R) [set f x | x in `]a, x[]) ->
 forall [t : set R],
-filter.nbhs (filter.lim (filter.fmap [eta f] (filter.nbhs (a^'+)%classic))) t ->
+nbhs (lim (f x @[x --> a^'+])%classic) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] a i
@@ -1184,29 +1061,22 @@ Declared in library mathcomp.analysis.realfun, line 425, characters 6-36
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nondecreasing_at_left_is_cvgr" class="id"><a name="nondecreasing_at_left_is_cvgr" class="" title="nondecreasing_at_left_is_cvgr :
 forall {R : realType} [f : R -> R] [a : R],
-filter.prop_near1 (a^'-)%classic
-  (P:=fun x : R => {in `]x, a[%R &, {homo f : n m / (n <= m)%R}})
-  (inPhantom (forall x : R, {in `]x, a[%R &, {homo f : n m / (n <= m)%R}})) ->
-filter.prop_near1 (a^'-)%classic
-  (P:=fun x : R => has_ubound (T:=R) [set f y | y in `]x, a[])
-  (inPhantom (forall x : R, has_ubound (T:=R) [set f y | y in `]x, a[])) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (a^'-)%classic)))
-  (filter.nbhs
-     (filter.lim (filter.fmap [eta f] (filter.nbhs (a^'-)%classic))))
+(\forall x \near (a^'-)%classic, {in `]x, a[%R &,
+                                   {homo f : n m / 
+                                 (n <= m)%R}}) ->
+(\forall x \near (a^'-)%classic, has_ubound (T:=R) [set f y | y in `]x, a[]) ->
+cvg (f x @[x --> a^'-])%classic
 
 nondecreasing_at_left_is_cvgr is not universe polymorphic
 Expanded type for implicit arguments
 nondecreasing_at_left_is_cvgr :
 forall {R : realType} [f : R -> R] [a : R],
-filter.prop_near1 (a^'-)%classic
-  (P:=fun x : R => {in `]x, a[%R &, {homo f : n m / (n <= m)%R}})
-  (inPhantom (forall x : R, {in `]x, a[%R &, {homo f : n m / (n <= m)%R}})) ->
-filter.prop_near1 (a^'-)%classic
-  (P:=fun x : R => has_ubound (T:=R) [set f y | y in `]x, a[])
-  (inPhantom (forall x : R, has_ubound (T:=R) [set f y | y in `]x, a[])) ->
+(\forall x \near (a^'-)%classic, {in `]x, a[%R &,
+                                   {homo f : n m / 
+                                 (n <= m)%R}}) ->
+(\forall x \near (a^'-)%classic, has_ubound (T:=R) [set f y | y in `]x, a[]) ->
 forall [t : set R],
-filter.nbhs (filter.lim (filter.fmap [eta f] (filter.nbhs (a^'-)%classic))) t ->
+nbhs (lim (f x @[x --> a^'-])%classic) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] a i
@@ -1271,8 +1141,7 @@ forall {R : realType} [f : R -> R] [a b : R],
 {in `[a, b]%R &, {homo f : n m / (n <= m)%R}} ->
 {in `]a, b[%R,
   forall r : R,
-  (filter.lim (filter.fmap [eta f] (filter.nbhs (r^'-)%classic)) <=
-   filter.lim (filter.fmap [eta f] (filter.nbhs (r^'+)%classic)))%R}
+  (lim (f x @[x --> r^'-])%classic <= lim (f x @[x --> r^'+])%classic)%R}
 
 nondecreasing_at_left_at_right is not universe polymorphic
 Expanded type for implicit arguments
@@ -1281,8 +1150,7 @@ forall {R : realType} [f : R -> R] [a b : R],
 {in `[a, b]%R &, {homo f : n m / (n <= m)%R}} ->
 forall [x : R],
 x \in `]a, b[%R ->
-(filter.lim (filter.fmap [eta f] (filter.nbhs (x^'-)%classic)) <=
- filter.lim (filter.fmap [eta f] (filter.nbhs (x^'+)%classic)))%R =
+(lim (f x0 @[x0 --> x^'-])%classic <= lim (f x0 @[x0 --> x^'+])%classic)%R =
 true
 
 Arguments nondecreasing_at_left_at_right {R} [f]%_function_scope 
@@ -1311,8 +1179,7 @@ forall {R : realType} [f : R -> R] [a b : R],
 {in `[a, b]%R &, {homo f : m n /~ (n <= m)%R}} ->
 {in `]a, b[%R,
   forall r : R,
-  (filter.lim (filter.fmap [eta f] (filter.nbhs (r^'+)%classic)) <=
-   filter.lim (filter.fmap [eta f] (filter.nbhs (r^'-)%classic)))%R}
+  (lim (f x @[x --> r^'+])%classic <= lim (f x @[x --> r^'-])%classic)%R}
 
 nonincreasing_at_left_at_right is not universe polymorphic
 Expanded type for implicit arguments
@@ -1321,8 +1188,7 @@ forall {R : realType} [f : R -> R] [a b : R],
 {in `[a, b]%R &, {homo f : m n /~ (n <= m)%R}} ->
 forall [x : R],
 x \in `]a, b[%R ->
-(filter.lim (filter.fmap [eta f] (filter.nbhs (x^'+)%classic)) <=
- filter.lim (filter.fmap [eta f] (filter.nbhs (x^'-)%classic)))%R =
+(lim (f x0 @[x0 --> x^'+])%classic <= lim (f x0 @[x0 --> x^'-])%classic)%R =
 true
 
 Arguments nonincreasing_at_left_at_right {R} [f]%_function_scope 
@@ -1357,8 +1223,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nondecreasing_cvge" class="id"><a name="nondecreasing_cvge" class="" title="nondecreasing_cvge :
 forall {R : realType} [f : R -> \bar R],
 {homo f : n m / (n <= m)%R >-> (n <= m)%E} ->
-filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs +oo%R)))
-  (filter.nbhs (ereal.ereal_sup (R:=R) (range f)))
+(f r @[r --> +oo%R] --> ereal_sup (R:=R) (range f))%classic
 
 nondecreasing_cvge is not universe polymorphic
 Expanded type for implicit arguments
@@ -1366,7 +1231,7 @@ nondecreasing_cvge :
 forall {R : realType} [f : R -> \bar R],
 {homo f : n m / (n <= m)%R >-> (n <= m)%E} ->
 forall [t : set \bar R],
-filter.nbhs (ereal.ereal_sup (R:=R) (range f)) t ->
+nbhs (ereal_sup (R:=R) (range f)) t ->
 exists M : R,
   M \is Num.real /\ (forall x : R, (M < x)%R -> ([eta f] @^-1` t)%classic x)
 
@@ -1459,8 +1324,7 @@ Declared in library mathcomp.analysis.realfun, line 514, characters 6-24
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nondecreasing_is_cvge" class="id"><a name="nondecreasing_is_cvge" class="" title="nondecreasing_is_cvge :
 forall {R : realType} [f : R -> \bar R],
 {homo f : n m / (n <= m)%R >-> (n <= m)%E} ->
-filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs +oo%R)))
-  (filter.nbhs (filter.lim (filter.fmap [eta f] (filter.nbhs +oo%R))))
+cvg (f r @[r --> +oo%R])%classic
 
 nondecreasing_is_cvge is not universe polymorphic
 Expanded type for implicit arguments
@@ -1468,7 +1332,7 @@ nondecreasing_is_cvge :
 forall {R : realType} [f : R -> \bar R],
 {homo f : n m / (n <= m)%R >-> (n <= m)%E} ->
 forall [t : set \bar R],
-filter.nbhs (filter.lim (filter.fmap [eta f] (filter.nbhs +oo%R))) t ->
+nbhs (lim (f r @[r --> +oo%R])%classic) t ->
 exists M : R,
   M \is Num.real /\ (forall x : R, (M < x)%R -> ([eta f] @^-1` t)%classic x)
 
@@ -1487,10 +1351,8 @@ Declared in library mathcomp.analysis.realfun, line 595, characters 6-27
 forall {R : realType} {f : R -> \bar R} {a : R} (b : itv_bound R),
 (BRight a < b)%O ->
 {in Interval (BRight a) b &, {homo f : n m / (n <= m)%R >-> (n <= m)%E}} ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs
-     (ereal.ereal_inf (R:=R) [set f x | x in [set` Interval (BRight a) b]]))
+(f x @[x --> a^'+] --> ereal_inf (R:=R)
+                         [set f x | x in [set` Interval (BRight a) b]])%classic
 
 nondecreasing_at_right_cvge is not universe polymorphic
 Arguments nondecreasing_at_right_cvge {R} {f}%_function_scope {a} b _ _ t _
@@ -1665,16 +1527,10 @@ Declared in library mathcomp.analysis.realfun, line 599, characters 6-33
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nondecreasing_at_right_is_cvge" class="id"><a name="nondecreasing_at_right_is_cvge" class="" title="nondecreasing_at_right_is_cvge :
 forall {R : realType} {f : R -> \bar R} {a : R},
-filter.prop_near1 (a^'+)%classic
-  (P:=fun x : R =>
-      {in `]a, x[%R &, {homo f : n m / (n <= m)%R >-> (n <= m)%E}})
-  (inPhantom
-     (forall x : R,
-      {in `]a, x[%R &, {homo f : n m / (n <= m)%R >-> (n <= m)%E}})) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs
-     (filter.lim (filter.fmap [eta f] (filter.nbhs (a^'+)%classic))))
+(\forall x \near (a^'+)%classic, {in `]a, x[%R &,
+                                   {homo f : n m / 
+                                 (n <= m)%R >-> (n <= m)%E}}) ->
+cvg (f x @[x --> a^'+])%classic
 
 nondecreasing_at_right_is_cvge is not universe polymorphic
 Arguments nondecreasing_at_right_is_cvge {R} {f}%_function_scope
@@ -1696,8 +1552,7 @@ Declared in library mathcomp.analysis.realfun, line 763, characters 6-36
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nonincreasing_cvge" class="id"><a name="nonincreasing_cvge" class="" title="nonincreasing_cvge :
 forall {R : realType} [f : R -> \bar R],
 {homo f : n m / (n <= m)%R >-> (m <= n)%E} ->
-filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs +oo%R)))
-  (filter.nbhs (ereal.ereal_inf (R:=R) (range f)))
+(f r @[r --> +oo%R] --> ereal_inf (R:=R) (range f))%classic
 
 nonincreasing_cvge is not universe polymorphic
 Expanded type for implicit arguments
@@ -1705,7 +1560,7 @@ nonincreasing_cvge :
 forall {R : realType} [f : R -> \bar R],
 {homo f : n m / (n <= m)%R >-> (m <= n)%E} ->
 forall [t : set \bar R],
-filter.nbhs (ereal.ereal_inf (R:=R) (range f)) t ->
+nbhs (ereal_inf (R:=R) (range f)) t ->
 exists M : R,
   M \is Num.real /\ (forall x : R, (M < x)%R -> ([eta f] @^-1` t)%classic x)
 
@@ -1726,10 +1581,8 @@ Qed.</div></details>
 forall {R : realType} {f : R -> \bar R} {a : R} (b : itv_bound R),
 (BRight a < b)%O ->
 {in Interval (BRight a) b &, {homo f : n m / (n <= m)%R >-> (m <= n)%E}} ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs
-     (ereal.ereal_sup (R:=R) [set f x | x in [set` Interval (BRight a) b]]))
+(f x @[x --> a^'+] --> ereal_sup (R:=R)
+                         [set f x | x in [set` Interval (BRight a) b]])%classic
 
 nonincreasing_at_right_cvge is not universe polymorphic
 Arguments nonincreasing_at_right_cvge {R} {f}%_function_scope {a} b _ _ t _
@@ -1755,16 +1608,10 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nonincreasing_at_right_is_cvge" class="id"><a name="nonincreasing_at_right_is_cvge" class="" title="nonincreasing_at_right_is_cvge :
 forall {R : realType} {f : R -> \bar R} {a : R},
-filter.prop_near1 (a^'+)%classic
-  (P:=fun x : R =>
-      {in `]a, x[%R &, {homo f : n m / (n <= m)%R >-> (m <= n)%E}})
-  (inPhantom
-     (forall x : R,
-      {in `]a, x[%R &, {homo f : n m / (n <= m)%R >-> (m <= n)%E}})) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs
-     (filter.lim (filter.fmap [eta f] (filter.nbhs (a^'+)%classic))))
+(\forall x \near (a^'+)%classic, {in `]a, x[%R &,
+                                   {homo f : n m / 
+                                 (n <= m)%R >-> (m <= n)%E}}) ->
+cvg (f x @[x --> a^'+])%classic
 
 nonincreasing_at_right_is_cvge is not universe polymorphic
 Arguments nonincreasing_at_right_is_cvge {R} {f}%_function_scope
@@ -1871,11 +1718,9 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lime_sup_lim" class="id"><a name="lime_sup_lim" class="" title="lime_sup_lim :
 forall [R : realType] (f : R -> \bar R) (a : R),
 lime_sup (R:=R) f a =
-filter.lim
-  (filter.fmap
-     [eta (fun (f0 : R -> \bar R) (a0 r : R) =>
-           ereal.ereal_sup (R:=R) [set f0 x | x in ball a0 r `\ a0]) f a]
-     (filter.nbhs (0^'+)%classic))
+lim
+  ((fun (f0 : R -> \bar R) (a0 r : R) =>
+    ereal_sup (R:=R) [set f0 x | x in ball a0 r `\ a0]) f a e @[e --> 0^'+])%classic
 
 lime_sup_lim is not universe polymorphic
 Arguments lime_sup_lim [R] f%_function_scope a%_ring_scope
@@ -1899,15 +1744,13 @@ Declared in library mathcomp.analysis.realfun, line 861, characters 6-18
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lime_inf_lim" class="id"><a name="lime_inf_lim" class="" title="lime_inf_lim :
 forall [R : realType] (f : R -> \bar R) (a : R),
 lime_inf (R:=R) f a =
-filter.lim
-  (filter.fmap
-     [eta (fun (f0 : R -> \bar R) (a0 : R) =>
-           (\-
-            (fun (f1 : R -> \bar R) (a1 r0 : R) =>
-             ereal.ereal_sup (R:=R) [set f1 x | x in ball a1 r0 `\ a1])
-              (\- f0) a0)%E)
-            f a]
-     (filter.nbhs (0^'+)%classic))
+lim
+  ((fun (f0 : R -> \bar R) (a0 : R) =>
+    (\-
+     (fun (f1 : R -> \bar R) (a1 r0 : R) =>
+      ereal_sup (R:=R) [set f1 x | x in ball a1 r0 `\ a1]) 
+       (\- f0) a0)%E)
+     f a e @[e --> 0^'+])%classic
 
 lime_inf_lim is not universe polymorphic
 Arguments lime_inf_lim [R] f%_function_scope a%_ring_scope
@@ -1925,9 +1768,9 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lime_supE" class="id"><a name="lime_supE" class="" title="lime_supE :
 forall [R : realType] (f : R -> \bar R) (a : R),
 lime_sup (R:=R) f a =
-ereal.ereal_inf (R:=R)
+ereal_inf (R:=R)
   [set (fun (f0 : R -> \bar R) (a0 r : R) =>
-        ereal.ereal_sup (R:=R) [set f0 x | x in ball a0 r `\ a0]) f a e
+        ereal_sup (R:=R) [set f0 x | x in ball a0 r `\ a0]) f a e
      | e in `]0%R, +oo[]
 
 lime_supE is not universe polymorphic
@@ -1948,11 +1791,11 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lime_infE" class="id"><a name="lime_infE" class="" title="lime_infE :
 forall [R : realType] (f : R -> \bar R) (a : R),
 lime_inf (R:=R) f a =
-ereal.ereal_sup (R:=R)
+ereal_sup (R:=R)
   [set (fun (f0 : R -> \bar R) (a0 : R) =>
         (\-
          (fun (f1 : R -> \bar R) (a1 r0 : R) =>
-          ereal.ereal_sup (R:=R) [set f1 x | x in ball a1 r0 `\ a1]) 
+          ereal_sup (R:=R) [set f1 x | x in ball a1 r0 `\ a1]) 
            (\- f0) a0)%E)
          f a e
      | e in `]0%R, +oo[]
@@ -2037,7 +1880,7 @@ Declared in library mathcomp.analysis.realfun, line 900, characters 6-18
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lime_supD" class="id"><a name="lime_supD" class="" title="lime_supD :
 forall [R : realType] [f g : R -> \bar R] [a : R],
 (lime_sup (R:=R) f a +? lime_sup (R:=R) g a)%E ->
-(lime_sup (R:=R) (f \+ g) a <= (lime_sup (R:=R) f a + lime_sup (R:=R) g a)%R)%E
+(lime_sup (R:=R) (f \+ g) a <= lime_sup (R:=R) f a + lime_sup (R:=R) g a)%E
 
 lime_supD is not universe polymorphic
 Arguments lime_supD [R] [f g]%_function_scope [a]%_ring_scope _
@@ -2060,9 +1903,8 @@ Declared in library mathcomp.analysis.realfun, line 907, characters 6-15
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lime_sup_le" class="id"><a name="lime_sup_le" class="" title="lime_sup_le :
 forall [R : realType] [f g : R -> \bar R] [a : R],
-filter.prop_near1 (0^'+)%classic
-  (P:=fun r : R => forall y : R, y != a -> ball a r y -> (f y <= g y)%E)
-  (inPhantom (forall r y : R, y != a -> ball a r y -> (f y <= g y)%E)) ->
+(\forall r \near (0^'+)%classic, forall y : R,
+                                 y != a -> ball a r y -> (f y <= g y)%E) ->
 (lime_sup (R:=R) f a <= lime_sup (R:=R) g a)%E
 
 lime_sup_le is not universe polymorphic
@@ -2158,9 +2000,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_lime_inf" class="id"><a name="lim_lime_inf" class="" title="lim_lime_inf :
 forall [R : realType] [f : R -> \bar R] [a l : R],
-filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs a)))
-  (filter.nbhs l%:E) ->
-lime_inf (R:=R) f a = l%:E
+(f r @[r --> a] --> l%:E)%classic -> lime_inf (R:=R) f a = l%:E
 
 lim_lime_inf is not universe polymorphic
 Arguments lim_lime_inf [R] [f]%_function_scope [a l]%_ring_scope _
@@ -2178,9 +2018,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_lime_sup" class="id"><a name="lim_lime_sup" class="" title="lim_lime_sup :
 forall [R : realType] [f : R -> \bar R] [a l : R],
-filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs a)))
-  (filter.nbhs l%:E) ->
-lime_sup (R:=R) f a = l%:E
+(f r @[r --> a] --> l%:E)%classic -> lime_sup (R:=R) f a = l%:E
 
 lim_lime_sup is not universe polymorphic
 Arguments lim_lime_sup [R] [f]%_function_scope [a l]%_ring_scope _
@@ -2240,10 +2078,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lime_sup_inf_at_right" class="id"><a name="lime_sup_inf_at_right" class="" title="lime_sup_inf_at_right :
 forall [R : realType] [f : R -> \bar R] [a l : R],
 lime_sup (R:=R) f a = l%:E ->
-lime_inf (R:=R) f a = l%:E ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs l%:E)
+lime_inf (R:=R) f a = l%:E -> (f x @[x --> a^'+] --> l%:E)%classic
 
 lime_sup_inf_at_right is not universe polymorphic
 Expanded type for implicit arguments
@@ -2252,7 +2087,7 @@ forall [R : realType] [f : R -> \bar R] [a l : R],
 lime_sup (R:=R) f a = l%:E ->
 lime_inf (R:=R) f a = l%:E ->
 forall [t : set \bar R],
-filter.nbhs l%:E t ->
+nbhs l%:E t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] a i
@@ -2322,10 +2157,7 @@ Declared in library mathcomp.analysis.realfun, line 1035, characters 6-27
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lime_sup_inf_at_left" class="id"><a name="lime_sup_inf_at_left" class="" title="lime_sup_inf_at_left :
 forall [R : realType] [f : R -> \bar R] [a l : R],
 lime_sup (R:=R) f a = l%:E ->
-lime_inf (R:=R) f a = l%:E ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (a^'-)%classic)))
-  (filter.nbhs l%:E)
+lime_inf (R:=R) f a = l%:E -> (f x @[x --> a^'-] --> l%:E)%classic
 
 lime_sup_inf_at_left is not universe polymorphic
 Expanded type for implicit arguments
@@ -2334,7 +2166,7 @@ forall [R : realType] [f : R -> \bar R] [a l : R],
 lime_sup (R:=R) f a = l%:E ->
 lime_inf (R:=R) f a = l%:E ->
 forall [t : set \bar R],
-filter.nbhs l%:E t ->
+nbhs l%:E t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] a i
@@ -2382,17 +2214,15 @@ Expanded type for implicit arguments
 derivable_oo_LRcontinuous_within :
 forall {R : numFieldType} {V : normedModType R} [f : R -> V] [x y : R],
 derivable_oo_LRcontinuous f x y ->
-forall
-  [x0 : filter.Nbhs.sort
-          (subspace_topology_subspace__canonical__filter_Nbhs `[x, y])]
-  [t : set (filter.Nbhs.sort V)],
-filter.nbhs (from_subspace `[x, y] f x0) t ->
+forall [x0 : subspace_topology_subspace__canonical__filter_Nbhs `[x, y]]
+  [t : set V],
+nbhs (from_subspace `[x, y] f x0) t ->
 (if
   if if pselect (`[x, y]%classic x0) then true else false
   then true
   else false
- then filter.within `[x, y] (filter.nbhs x0)
- else filter.globally [set x0]) (from_subspace `[x, y] f @^-1` t)%classic
+ then within `[x, y] (nbhs x0)
+ else globally [set x0]) (from_subspace `[x, y] f @^-1` t)%classic
 
 Arguments derivable_oo_LRcontinuous_within {R V} [f]%_function_scope
   [x y]%_ring_scope _ [x0 t] _
@@ -2449,17 +2279,15 @@ Expanded type for implicit arguments
 derivable_oy_Rcontinuous_within_itvcy :
 forall {R : numFieldType} {V : normedModType R} [f : R -> V] [x : R],
 derivable_oy_Rcontinuous f x ->
-forall
-  [x0 : filter.Nbhs.sort
-          (subspace_topology_subspace__canonical__filter_Nbhs `[x, +oo[)]
-  [t : set (filter.Nbhs.sort V)],
-filter.nbhs (from_subspace `[x, +oo[ f x0) t ->
+forall [x0 : subspace_topology_subspace__canonical__filter_Nbhs `[x, +oo[]
+  [t : set V],
+nbhs (from_subspace `[x, +oo[ f x0) t ->
 (if
   if if pselect (`[x, +oo[%classic x0) then true else false
   then true
   else false
- then filter.within `[x, +oo[ (filter.nbhs x0)
- else filter.globally [set x0]) (from_subspace `[x, +oo[ f @^-1` t)%classic
+ then within `[x, +oo[ (nbhs x0)
+ else globally [set x0]) (from_subspace `[x, +oo[ f @^-1` t)%classic
 
 Arguments derivable_oy_Rcontinuous_within_itvcy {R V} 
   [f]%_function_scope [x]%_ring_scope _ [x0 t] _
@@ -2490,17 +2318,15 @@ Expanded type for implicit arguments
 derivable_Noy_Lcontinuous_within_itvNyc :
 forall {R : numFieldType} {V : normedModType R} [f : R -> V] [x : R],
 derivable_Nyo_Lcontinuous f x ->
-forall
-  [x0 : filter.Nbhs.sort
-          (subspace_topology_subspace__canonical__filter_Nbhs `]-oo, x])]
-  [t : set (filter.Nbhs.sort V)],
-filter.nbhs (from_subspace `]-oo, x] f x0) t ->
+forall [x0 : subspace_topology_subspace__canonical__filter_Nbhs `]-oo, x]]
+  [t : set V],
+nbhs (from_subspace `]-oo, x] f x0) t ->
 (if
   if if pselect (`]-oo, x]%classic x0) then true else false
   then true
   else false
- then filter.within `]-oo, x] (filter.nbhs x0)
- else filter.globally [set x0]) (from_subspace `]-oo, x] f @^-1` t)%classic
+ then within `]-oo, x] (nbhs x0)
+ else globally [set x0]) (from_subspace `]-oo, x] f @^-1` t)%classic
 
 Arguments derivable_Noy_Lcontinuous_within_itvNyc 
   {R V} [f]%_function_scope [x]%_ring_scope _ [x0 t] 
@@ -2705,39 +2531,22 @@ Qed.</div></details>
    may indicate potential issues at the endpoints of the interval. </div>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_subspace_itv" class="id"><a name="continuous_subspace_itv" class="" title="continuous_subspace_itv :
 forall [R : realType] [I : interval R] [f : R -> R],
-{in I,
-  forall
-    x : filter.Nbhs.sort
-          (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
-  filter.continuous_at
-    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x f} ->
-{within [set` I], continuous f}%classic
+{in I, continuous f} -> {within [set` I], continuous f}%classic
 
 continuous_subspace_itv is not universe polymorphic
 Expanded type for implicit arguments
 continuous_subspace_itv :
 forall [R : realType] [I : interval R] [f : R -> R],
-{in I,
-  forall
-    x : filter.Nbhs.sort
-          (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
-  filter.continuous_at
-    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x f} ->
-forall
-  [x : filter.Nbhs.sort
-         (subspace_topology_subspace__canonical__filter_Nbhs [set` I])]
-  [t : set
-         (filter.Nbhs.sort
-            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs (from_subspace [set` I] f x) t ->
+{in I, continuous f} ->
+forall [x : subspace_topology_subspace__canonical__filter_Nbhs [set` I]]
+  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+nbhs (from_subspace [set` I] f x) t ->
 (if
   if if pselect ([set` I]%classic x) then true else false
   then true
   else false
- then filter.within [set` I] (filter.nbhs x)
- else filter.globally [set x]) (from_subspace [set` I] f @^-1` t)%classic
+ then within [set` I] (nbhs x)
+ else globally [set x]) (from_subspace [set` I] f @^-1` t)%classic
 
 Arguments continuous_subspace_itv [R I] [f]%_function_scope _ [x t] _
 continuous_subspace_itv is opaque
@@ -2904,7 +2713,7 @@ Qed.</div></details>
 forall [R : realType] [f : R -> R] [I : interval R],
 {within [set` I], continuous f}%classic ->
 {in I &, injective f} ->
-strict_monotonic (T:=R) (T':=R) (pT:=itvPredType R) I f
+unstable.strict_monotonic (T:=R) (T':=R) (pT:=itvPredType R) I f
 
 itv_continuous_inj_mono is not universe polymorphic
 Arguments itv_continuous_inj_mono [R] [f]%_function_scope 
@@ -3177,7 +2986,7 @@ forall [R : realType] [a b : R] [f g : R -> R],
 (a <= b)%R ->
 {within `[a, b], continuous f}%classic ->
 {in `[a, b]%R, cancel f g} ->
-strict_monotonic (T:=R) (T':=R) (pT:=itvPredType R) (f @`[a, b])%R g
+unstable.strict_monotonic (T:=R) (T':=R) (pT:=itvPredType R) (f @`[a, b])%R g
 
 segment_can_mono is not universe polymorphic
 Arguments segment_can_mono [R] [a b]%_ring_scope [f g]%_function_scope 
@@ -3447,17 +3256,13 @@ segment_inc_surj_continuous :
 forall [R : realType] [a b : R] [f : R -> R],
 {in `[a, b]%R &, increasing_fun f} ->
 set_surj `[a, b] `[f a, f b] f ->
-forall
-  [x : filter.Nbhs.sort
-         (subspace_topology_subspace__canonical__filter_Nbhs `[a, b])]
-  [t : set
-         (filter.Nbhs.sort
-            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs (from_subspace `[a, b] f x) t ->
+forall [x : subspace_topology_subspace__canonical__filter_Nbhs `[a, b]]
+  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+nbhs (from_subspace `[a, b] f x) t ->
 (if
   if if pselect (`[a, b]%classic x) then true else false then true else false
- then filter.within `[a, b] (filter.nbhs x)
- else filter.globally [set x]) (from_subspace `[a, b] f @^-1` t)%classic
+ then within `[a, b] (nbhs x)
+ else globally [set x]) (from_subspace `[a, b] f @^-1` t)%classic
 
 Arguments segment_inc_surj_continuous [R] [a b]%_ring_scope
   [f]%_function_scope _ _ [x t] _
@@ -3553,17 +3358,13 @@ segment_dec_surj_continuous :
 forall [R : realType] [a b : R] [f : R -> R],
 {in `[a, b]%R &, {mono f : x y /~ (x <= y)%R}} ->
 set_surj `[a, b] `[f b, f a] f ->
-forall
-  [x : filter.Nbhs.sort
-         (subspace_topology_subspace__canonical__filter_Nbhs `[a, b])]
-  [t : set
-         (filter.Nbhs.sort
-            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs (from_subspace `[a, b] f x) t ->
+forall [x : subspace_topology_subspace__canonical__filter_Nbhs `[a, b]]
+  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+nbhs (from_subspace `[a, b] f x) t ->
 (if
   if if pselect (`[a, b]%classic x) then true else false then true else false
- then filter.within `[a, b] (filter.nbhs x)
- else filter.globally [set x]) (from_subspace `[a, b] f @^-1` t)%classic
+ then within `[a, b] (nbhs x)
+ else globally [set x]) (from_subspace `[a, b] f @^-1` t)%classic
 
 Arguments segment_dec_surj_continuous [R] [a b]%_ring_scope
   [f]%_function_scope _ _ [x t] _
@@ -3587,26 +3388,22 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="segment_mono_surj_continuous" class="id"><a name="segment_mono_surj_continuous" class="" title="segment_mono_surj_continuous :
 forall [R : realType] [a b : R] [f : R -> R],
-strict_monotonic (T:=R) (T':=R) (pT:=itvPredType R) `[a, b]%R f ->
+unstable.strict_monotonic (T:=R) (T':=R) (pT:=itvPredType R) `[a, b]%R f ->
 set_surj `[a, b] (f @`[a, b]) f -> {within `[a, b], continuous f}%classic
 
 segment_mono_surj_continuous is not universe polymorphic
 Expanded type for implicit arguments
 segment_mono_surj_continuous :
 forall [R : realType] [a b : R] [f : R -> R],
-strict_monotonic (T:=R) (T':=R) (pT:=itvPredType R) `[a, b]%R f ->
+unstable.strict_monotonic (T:=R) (T':=R) (pT:=itvPredType R) `[a, b]%R f ->
 set_surj `[a, b] (f @`[a, b]) f ->
-forall
-  [x : filter.Nbhs.sort
-         (subspace_topology_subspace__canonical__filter_Nbhs `[a, b])]
-  [t : set
-         (filter.Nbhs.sort
-            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs (from_subspace `[a, b] f x) t ->
+forall [x : subspace_topology_subspace__canonical__filter_Nbhs `[a, b]]
+  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+nbhs (from_subspace `[a, b] f x) t ->
 (if
   if if pselect (`[a, b]%classic x) then true else false then true else false
- then filter.within `[a, b] (filter.nbhs x)
- else filter.globally [set x]) (from_subspace `[a, b] f @^-1` t)%classic
+ then within `[a, b] (nbhs x)
+ else globally [set x]) (from_subspace `[a, b] f @^-1` t)%classic
 
 Arguments segment_mono_surj_continuous [R] [a b]%_ring_scope
   [f]%_function_scope _ _ [x t] _
@@ -3645,19 +3442,15 @@ forall [R : realType] [a b : R] [f g : R -> R],
 (a <= b)%R ->
 {within `[a, b], continuous f}%classic ->
 {in `[a, b]%R, cancel f g} ->
-forall
-  [x : filter.Nbhs.sort
-         (subspace_topology_subspace__canonical__filter_Nbhs `[f a, f b])]
-  [t : set
-         (filter.Nbhs.sort
-            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs (from_subspace `[f a, f b] g x) t ->
+forall [x : subspace_topology_subspace__canonical__filter_Nbhs `[f a, f b]]
+  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+nbhs (from_subspace `[f a, f b] g x) t ->
 (if
   if if pselect (`[f a, f b]%classic x) then true else false
   then true
   else false
- then filter.within `[f a, f b] (filter.nbhs x)
- else filter.globally [set x]) (from_subspace `[f a, f b] g @^-1` t)%classic
+ then within `[f a, f b] (nbhs x)
+ else globally [set x]) (from_subspace `[f a, f b] g @^-1` t)%classic
 
 Arguments segment_can_le_continuous [R] [a b]%_ring_scope
   [f g]%_function_scope _ _%_function_scope _ [x t] 
@@ -3692,19 +3485,15 @@ forall [R : realType] [a b : R] [f g : R -> R],
 (a <= b)%R ->
 {within `[a, b], continuous f}%classic ->
 {in `[a, b]%R, cancel f g} ->
-forall
-  [x : filter.Nbhs.sort
-         (subspace_topology_subspace__canonical__filter_Nbhs `[f b, f a])]
-  [t : set
-         (filter.Nbhs.sort
-            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs (from_subspace `[f b, f a] g x) t ->
+forall [x : subspace_topology_subspace__canonical__filter_Nbhs `[f b, f a]]
+  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+nbhs (from_subspace `[f b, f a] g x) t ->
 (if
   if if pselect (`[f b, f a]%classic x) then true else false
   then true
   else false
- then filter.within `[f b, f a] (filter.nbhs x)
- else filter.globally [set x]) (from_subspace `[f b, f a] g @^-1` t)%classic
+ then within `[f b, f a] (nbhs x)
+ else globally [set x]) (from_subspace `[f b, f a] g @^-1` t)%classic
 
 Arguments segment_can_ge_continuous [R] [a b]%_ring_scope
   [f g]%_function_scope _ _%_function_scope _ [x t] 
@@ -3739,19 +3528,15 @@ forall [R : realType] [a b : R] [f g : R -> R],
 (a <= b)%R ->
 {within `[a, b], continuous f}%classic ->
 {in `[a, b]%R, cancel f g} ->
-forall
-  [x : filter.Nbhs.sort
-         (subspace_topology_subspace__canonical__filter_Nbhs (f @`[a, b]))]
-  [t : set
-         (filter.Nbhs.sort
-            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs (from_subspace (f @`[a, b]) g x) t ->
+forall [x : subspace_topology_subspace__canonical__filter_Nbhs (f @`[a, b])]
+  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+nbhs (from_subspace (f @`[a, b]) g x) t ->
 (if
   if if pselect ((f @`[a, b])%classic x) then true else false
   then true
   else false
- then filter.within (f @`[a, b]) (filter.nbhs x)
- else filter.globally [set x]) (from_subspace (f @`[a, b]) g @^-1` t)%classic
+ then within (f @`[a, b]) (nbhs x)
+ else globally [set x]) (from_subspace (f @`[a, b]) g @^-1` t)%classic
 
 Arguments segment_can_continuous [R] [a b]%_ring_scope 
   [f g]%_function_scope _ _%_function_scope _ [x t] 
@@ -3772,31 +3557,17 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="near_can_continuousAcan_sym" class="id"><a name="near_can_continuousAcan_sym" class="" title="near_can_continuousAcan_sym :
 forall [R : realType] [f g : R -> R] [x : R],
-filter.prop_near1 x (P:=fun x0 : R => g (f x0) = x0) (inPhantom (cancel f g)) ->
-filter.prop_near1 x
-  (P:=(filter.continuous_at
-         (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-         (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R))^~ f)
-  (inPhantom
-     (forall
-        x0 : filter.Nbhs.sort
-               (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
-      filter.continuous_at
-        (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-        (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 f)) ->
-filter.prop_near1 (f x)
-  (P:=(filter.continuous_at
-         (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-         (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R))^~ g)
-  (inPhantom
-     (forall
-        x0 : filter.Nbhs.sort
-               (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
-      filter.continuous_at
-        (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-        (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 g)) /\
-filter.prop_near1 (f x) (P:=fun x0 : R => f (g x0) = x0)
-  (inPhantom (cancel g f))
+{near x, cancel f g} ->
+(\near x, continuous_at
+            (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+            (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x f) ->
+(\forall x0 \near f x, continuous_at
+                         (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs
+                               R)
+                         (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs
+                               R)
+                         x0 g) /\
+{near f x, cancel g f}
 
 near_can_continuousAcan_sym is not universe polymorphic
 Arguments near_can_continuousAcan_sym [R] [f g]%_function_scope
@@ -3838,29 +3609,16 @@ Declared in library mathcomp.analysis.realfun, line 1672, characters 6-33
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="near_can_continuous" class="id"><a name="near_can_continuous" class="" title="near_can_continuous :
 forall [R : realType] [f g : R -> R] [x : R],
-filter.prop_near1 x (P:=fun x0 : R => g (f x0) = x0) (inPhantom (cancel f g)) ->
-filter.prop_near1 x
-  (P:=(filter.continuous_at
-         (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-         (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R))^~ f)
-  (inPhantom
-     (forall
-        x0 : filter.Nbhs.sort
-               (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
-      filter.continuous_at
-        (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-        (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 f)) ->
-filter.prop_near1 (f x)
-  (P:=(filter.continuous_at
-         (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-         (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R))^~ g)
-  (inPhantom
-     (forall
-        x0 : filter.Nbhs.sort
-               (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
-      filter.continuous_at
-        (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-        (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 g))
+{near x, cancel f g} ->
+(\near x, continuous_at
+            (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+            (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x f) ->
+\forall x0 \near f x, continuous_at
+                        (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs
+                              R)
+                        (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs
+                              R)
+                        x0 g
 
 near_can_continuous is not universe polymorphic
 Arguments near_can_continuous [R] [f g]%_function_scope [x]%_ring_scope _ _
@@ -3876,20 +3634,10 @@ Declared in library mathcomp.analysis.realfun, line 1702, characters 6-25
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="near_continuous_can_sym" class="id"><a name="near_continuous_can_sym" class="" title="near_continuous_can_sym :
 forall [R : realType] [f g : R -> R] [x : R],
-filter.prop_near1 x
-  (P:=(filter.continuous_at
-         (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-         (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R))^~ f)
-  (inPhantom
-     (forall
-        x0 : filter.Nbhs.sort
-               (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
-      filter.continuous_at
-        (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-        (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 f)) ->
-filter.prop_near1 x (P:=fun x0 : R => g (f x0) = x0) (inPhantom (cancel f g)) ->
-filter.prop_near1 (f x) (P:=fun x0 : R => f (g x0) = x0)
-  (inPhantom (cancel g f))
+(\near x, continuous_at
+            (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+            (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x f) ->
+{near x, cancel f g} -> {near f x, cancel g f}
 
 near_continuous_can_sym is not universe polymorphic
 Arguments near_continuous_can_sym [R] [f g]%_function_scope 
@@ -3910,24 +3658,15 @@ Declared in library mathcomp.analysis.realfun, line 1706, characters 6-29
 <span class="vernacular">Variable</span><span class="id"> </span><span id="real_inverse_function_instances.R" class="id"><a name="real_inverse_function_instances.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="exprn_continuous" class="id"><a name="exprn_continuous" class="" title="exprn_continuous :
-forall [R : realType] [n : nat]
-  [x : filter.Nbhs.sort
-         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-filter.continuous_at
-  (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-  (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x
-  ((GRing.exp (R:=R))^~ n)
+forall [R : realType] [n : nat], continuous ((GRing.exp (R:=R))^~ n)
 
 exprn_continuous is not universe polymorphic
 Expanded type for implicit arguments
 exprn_continuous :
 forall [R : realType] [n : nat]
-  [x : filter.Nbhs.sort
-         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)]
-  [t : set
-         (filter.Nbhs.sort
-            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs (((GRing.exp (R:=R))^~ n) x) t ->
+  [x : numFieldTopology.Real_sort__canonical__filter_Nbhs R]
+  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+nbhs (((GRing.exp (R:=R))^~ n) x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` (GRing.exp (R:=R))^~ n @^-1` t)%classic
@@ -3944,25 +3683,15 @@ Declared in library mathcomp.analysis.realfun, line 1715, characters 6-22
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.filter.html#continuous_at">continuous_at</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.exprS">exprS</a></span><span class="id">;</span><span class="id"> under</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#eq_fun">eq_fun</a></span><span class="id"> do</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.exprS">exprS</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> ih</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sqr_continuous" class="id"><a name="sqr_continuous" class="" title="sqr_continuous :
-forall [R : realType]
-  [x : filter.Nbhs.sort
-         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-filter.continuous_at
-  (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-  (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x
-  ((exprz (R:=R))^~ 2%R)
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sqr_continuous" class="id"><a name="sqr_continuous" class="" title="sqr_continuous : forall [R : realType], continuous ((exprz (R:=R))^~ 2%R)
 
 sqr_continuous is not universe polymorphic
 Expanded type for implicit arguments
 sqr_continuous :
 forall [R : realType]
-  [x : filter.Nbhs.sort
-         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)]
-  [t : set
-         (filter.Nbhs.sort
-            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs (((exprz (R:=R))^~ 2%R) x) t ->
+  [x : numFieldTopology.Real_sort__canonical__filter_Nbhs R]
+  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+nbhs (((exprz (R:=R))^~ 2%R) x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` (exprz (R:=R))^~ 2%R @^-1` t)%classic
@@ -3977,29 +3706,18 @@ Declared in library mathcomp.analysis.realfun, line 1721, characters 6-20
 <div class="proofscript">
 <span class="id"> exact:</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.realfun.html#exprn_continuous">exprn_continuous</a></span><span class="id"> 2%N</span>). Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sqrt_continuous" class="id"><a name="sqrt_continuous" class="" title="sqrt_continuous :
-forall [R : realType]
-  [x : filter.Nbhs.sort
-         (numFieldTopology.RealClosedField_sort__canonical__filter_Nbhs R)],
-filter.continuous_at
-  (T:=numFieldTopology.RealClosedField_sort__canonical__filter_Nbhs R)
-  (U:=join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
-        (numFieldNormedType.RealClosedField_sort__canonical__tvs_NbhsNmodule
-           R))
-  x Num.ExtraDef.sqrtr
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sqrt_continuous" class="id"><a name="sqrt_continuous" class="" title="sqrt_continuous : forall [R : realType], continuous Num.ExtraDef.sqrtr
 
 sqrt_continuous is not universe polymorphic
 Expanded type for implicit arguments
 sqrt_continuous :
 forall [R : realType]
-  [x : filter.Nbhs.sort
-         (numFieldTopology.RealClosedField_sort__canonical__filter_Nbhs R)]
+  [x : numFieldTopology.RealClosedField_sort__canonical__filter_Nbhs R]
   [t : set
-         (filter.Nbhs.sort
-            (join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
-               (numFieldNormedType.RealClosedField_sort__canonical__tvs_NbhsNmodule
-                  R)))],
-filter.nbhs (Num.ExtraDef.sqrtr x) t ->
+         (join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
+            (numFieldNormedType.RealClosedField_sort__canonical__tvs_NbhsNmodule
+               R))],
+nbhs (Num.ExtraDef.sqrtr x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` Num.ExtraDef.sqrtr @^-1` t)%classic
@@ -4039,14 +3757,7 @@ Declared in library mathcomp.analysis.realfun, line 1724, characters 6-21
 forall [R : realType] (f : R -> R) (x a : R),
 is_derive x 1%R f a <->
 (exists g : R -> R,
-   [/\ forall z : R, (f z - f x)%R = (g z * (z - x))%R,
-       {for x,
-         forall
-           x0 : filter.Nbhs.sort
-                  (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
-         filter.continuous_at
-           (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-           (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 g}
+   [/\ forall z : R, (f z - f x)%R = (g z * (z - x))%R, {for x, continuous g}
      & g x = a])
 
 is_derive1_caratheodory is not universe polymorphic
@@ -4154,22 +3865,12 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_derive_inverse" class="id"><a name="is_derive_inverse" class="" title="is_derive_inverse :
 forall [R : realType] [f g : R -> R]
-  [l : numFieldNormedType.Real_sort__canonical__normed_module_NormedModule R]
-  [x : filter.Filtered.sort
-         (numFieldNormedType.Real_sort__canonical__normed_module_NormedModule
-            R)],
-filter.prop_near1 x (P:=fun x0 : R => g (f x0) = x0) (inPhantom (cancel f g)) ->
-filter.prop_near1 x
-  (P:=(filter.continuous_at
-         (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-         (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R))^~ f)
-  (inPhantom
-     (forall
-        x0 : filter.Nbhs.sort
-               (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
-      filter.continuous_at
-        (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-        (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 f)) ->
+  [l
+   x : numFieldNormedType.Real_sort__canonical__normed_module_NormedModule R],
+{near x, cancel f g} ->
+(\near x, continuous_at
+            (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+            (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x f) ->
 is_derive x 1%R f l -> l != 0%R -> is_derive (f x) 1%R g l^-1%R
 
 is_derive_inverse is not universe polymorphic
@@ -4398,7 +4099,7 @@ forall {R : realType} [a b : R] (f : R -> R)
   (g : R -> GRing.BaseAddMagma.sort R),
 (a <= b)%R ->
 (total_variation a b (f \+ g) <=
- (total_variation a b f + total_variation a b g)%R)%E
+ total_variation a b f + total_variation a b g)%E
 
 total_variation_le is not universe polymorphic
 Arguments total_variation_le {R} [a b]%_ring_scope (f g)%_function_scope _
@@ -4513,7 +4214,7 @@ Qed.</div></details>
 forall {R : realType} [a b c : R] (f : R -> R),
 (a <= c)%R ->
 (c <= b)%R ->
-total_variation a b f = (total_variation a c f + total_variation c b f)%R
+total_variation a b f = (total_variation a c f + total_variation c b f)%E
 
 total_variationD is not universe polymorphic
 Arguments total_variationD {R} [a b]%_ring_scope [c] f%_function_scope _ _
@@ -4740,14 +4441,10 @@ Qed.</div></details>
 forall {R : realType} [a b x : R] [f : R -> R],
 (a <= x)%R ->
 (x < b)%R ->
-filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs (x^'+)%classic)))
-  (filter.nbhs (f x)) ->
+(f x @[x --> x^'+] --> f x)%classic ->
 bounded_variation a b f ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap (fine \o (total_variation a)^~ f)
-        (filter.nbhs (x^'+)%classic)))
-  (filter.nbhs (fine (total_variation a x f)))
+((fine \o (total_variation a)^~ f) x @[x --> x^'+] --> 
+ fine (total_variation a x f))%classic
 
 total_variation_right_continuous is not universe polymorphic
 Expanded type for implicit arguments
@@ -4755,11 +4452,10 @@ total_variation_right_continuous :
 forall {R : realType} [a b x : R] [f : R -> R],
 (a <= x)%R ->
 (x < b)%R ->
-filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs (x^'+)%classic)))
-  (filter.nbhs (f x)) ->
+(f x @[x --> x^'+] --> f x)%classic ->
 bounded_variation a b f ->
 forall [t : set R],
-filter.nbhs (fine (total_variation a x f)) t ->
+nbhs (fine (total_variation a x f)) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i
@@ -4838,12 +4534,8 @@ forall {R : realType} [a x b : R] [f : R -> R],
 (a <= x)%R ->
 (x < b)%R ->
 bounded_variation a b f ->
-filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs (x^'+)%classic)))
-  (filter.nbhs (f x)) ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap (fine \o neg_tv a f) (filter.nbhs (x^'+)%classic)))
-  (filter.nbhs (fine (neg_tv a f x)))
+(f x @[x --> x^'+] --> f x)%classic ->
+((fine \o neg_tv a f) x @[x --> x^'+] --> fine (neg_tv a f x))%classic
 
 neg_tv_right_continuous is not universe polymorphic
 Expanded type for implicit arguments
@@ -4852,10 +4544,9 @@ forall {R : realType} [a x b : R] [f : R -> R],
 (a <= x)%R ->
 (x < b)%R ->
 bounded_variation a b f ->
-filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs (x^'+)%classic)))
-  (filter.nbhs (f x)) ->
+(f x @[x --> x^'+] --> f x)%classic ->
 forall [t : set R],
-filter.nbhs (fine (neg_tv a f x)) t ->
+nbhs (fine (neg_tv a f x)) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i
@@ -4918,14 +4609,10 @@ Declared in library mathcomp.analysis.realfun, line 2206, characters 6-25
 forall {R : realType} [a b x : R] [f : R -> R],
 (a < x)%R ->
 (x <= b)%R ->
-filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs (x^'-)%classic)))
-  (filter.nbhs (f x)) ->
+(f x @[x --> x^'-] --> f x)%classic ->
 bounded_variation a b f ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap (fine \o (total_variation a)^~ f)
-        (filter.nbhs (x^'-)%classic)))
-  (filter.nbhs (fine (total_variation a x f)))
+((fine \o (total_variation a)^~ f) x @[x --> x^'-] --> 
+ fine (total_variation a x f))%classic
 
 total_variation_left_continuous is not universe polymorphic
 Expanded type for implicit arguments
@@ -4933,11 +4620,10 @@ total_variation_left_continuous :
 forall {R : realType} [a b x : R] [f : R -> R],
 (a < x)%R ->
 (x <= b)%R ->
-filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs (x^'-)%classic)))
-  (filter.nbhs (f x)) ->
+(f x @[x --> x^'-] --> f x)%classic ->
 bounded_variation a b f ->
 forall [t : set R],
-filter.nbhs (fine (total_variation a x f)) t ->
+nbhs (fine (total_variation a x f)) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i
@@ -5007,17 +4693,13 @@ forall {R : realType} [a b : R] [f : R -> R],
 (a < b)%R ->
 {within `[a, b], continuous f}%classic ->
 bounded_variation a b f ->
-forall
-  [x : filter.Nbhs.sort
-         (subspace_topology_subspace__canonical__filter_Nbhs `[a, b])]
-  [t : set
-         (filter.Nbhs.sort
-            (numFieldTopology.RealField_sort__canonical__filter_Nbhs R))],
-filter.nbhs (from_subspace `[a, b] (fine \o (total_variation a)^~ f) x) t ->
+forall [x : subspace_topology_subspace__canonical__filter_Nbhs `[a, b]]
+  [t : set (numFieldTopology.RealField_sort__canonical__filter_Nbhs R)],
+nbhs (from_subspace `[a, b] (fine \o (total_variation a)^~ f) x) t ->
 (if
   if if pselect (`[a, b]%classic x) then true else false then true else false
- then filter.within `[a, b] (filter.nbhs x)
- else filter.globally [set x])
+ then within `[a, b] (nbhs x)
+ else globally [set x])
   (from_subspace `[a, b] (fine \o (total_variation a)^~ f) @^-1` t)%classic
 
 Arguments total_variation_continuous {R} [a b] [f]%_function_scope 
@@ -5072,12 +4754,8 @@ forall {R : realType} [a b : R] [F : R -> R],
 forall [s : seq R],
 itv_partition a b s ->
 (\sum_(1 <= i < size s)
-    ((fun z : R =>
-      filter.lim (filter.fmap [eta F] (filter.nbhs (z^'+)%classic)))
-       (nth b (a :: s) i) -
-     (fun z : R =>
-      filter.lim (filter.fmap [eta F] (filter.nbhs (z^'-)%classic)))
-       (nth b (a :: s) i)) <=
+    ((fun z : R => lim (F x @[x --> z^'+])%classic) (nth b (a :: s) i) -
+     (fun z : R => lim (F x @[x --> z^'-])%classic) (nth b (a :: s) i)) <=
  F b - F a)%R
 
 nondecreasing_fun_sum_le is not universe polymorphic
@@ -5528,21 +5206,11 @@ forall {R : realType} [f df g dg : R -> R] [a b l : R],
 (a < b)%R ->
 (forall x : R, x \in `]a, b[%R -> is_derive x 1%R f (df x)) ->
 (forall x : R, x \in `]a, b[%R -> is_derive x 1%R g (dg x)) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs 0%R) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta g] (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs 0%R) ->
+(f x @[x --> a^'+] --> 0%R)%classic ->
+(g x @[x --> a^'+] --> 0%R)%classic ->
 (forall x : R, x \in `]a, b[%R -> dg x != 0%R) ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap (fun x : R => (df x / dg x)%R) (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs l) ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap (fun x : R => (f x / g x)%R) (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs l)
+((df x / dg x)%R @[x --> a^'+] --> l)%classic ->
+((f x / g x)%R @[x --> a^'+] --> l)%classic
 
 lhopital_at_right is not universe polymorphic
 Expanded type for implicit arguments
@@ -5551,19 +5219,12 @@ forall {R : realType} [f df g dg : R -> R] [a b l : R],
 (a < b)%R ->
 (forall x : R, x \in `]a, b[%R -> is_derive x 1%R f (df x)) ->
 (forall x : R, x \in `]a, b[%R -> is_derive x 1%R g (dg x)) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs 0%R) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta g] (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs 0%R) ->
+(f x @[x --> a^'+] --> 0%R)%classic ->
+(g x @[x --> a^'+] --> 0%R)%classic ->
 (forall x : R, x \in `]a, b[%R -> dg x != 0%R) ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap (fun x : R => (df x / dg x)%R) (filter.nbhs (a^'+)%classic)))
-  (filter.nbhs l) ->
+((df x / dg x)%R @[x --> a^'+] --> l)%classic ->
 forall [t : set R],
-filter.nbhs l t ->
+nbhs l t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] a i
@@ -5728,21 +5389,11 @@ forall {R : realType} [f df g dg : R -> R] [a b l : R],
 (a < b)%R ->
 (forall x : R, x \in `]a, b[%R -> is_derive x 1%R f (df x)) ->
 (forall x : R, x \in `]a, b[%R -> is_derive x 1%R g (dg x)) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (b^'-)%classic)))
-  (filter.nbhs 0%R) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta g] (filter.nbhs (b^'-)%classic)))
-  (filter.nbhs 0%R) ->
+(f x @[x --> b^'-] --> 0%R)%classic ->
+(g x @[x --> b^'-] --> 0%R)%classic ->
 (forall x : R, x \in `]a, b[%R -> dg x != 0%R) ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap (fun x : R => (df x / dg x)%R) (filter.nbhs (b^'-)%classic)))
-  (filter.nbhs l) ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap (fun x : R => (f x / g x)%R) (filter.nbhs (b^'-)%classic)))
-  (filter.nbhs l)
+((df x / dg x)%R @[x --> b^'-] --> l)%classic ->
+((f x / g x)%R @[x --> b^'-] --> l)%classic
 
 lhopital_at_left is not universe polymorphic
 Expanded type for implicit arguments
@@ -5751,19 +5402,12 @@ forall {R : realType} [f df g dg : R -> R] [a b l : R],
 (a < b)%R ->
 (forall x : R, x \in `]a, b[%R -> is_derive x 1%R f (df x)) ->
 (forall x : R, x \in `]a, b[%R -> is_derive x 1%R g (dg x)) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (b^'-)%classic)))
-  (filter.nbhs 0%R) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap [eta g] (filter.nbhs (b^'-)%classic)))
-  (filter.nbhs 0%R) ->
+(f x @[x --> b^'-] --> 0%R)%classic ->
+(g x @[x --> b^'-] --> 0%R)%classic ->
 (forall x : R, x \in `]a, b[%R -> dg x != 0%R) ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap (fun x : R => (df x / dg x)%R) (filter.nbhs (b^'-)%classic)))
-  (filter.nbhs l) ->
+((df x / dg x)%R @[x --> b^'-] --> l)%classic ->
 forall [t : set R],
-filter.nbhs l t ->
+nbhs l t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] b i
@@ -5817,19 +5461,11 @@ forall {R : realType} [f df g dg : R -> R] [a b c l : R],
 c \in `]a, b[%R ->
 (forall x : R, x \in (`]a, b[ `\ c)%classic -> is_derive x 1%R f (df x)) ->
 (forall x : R, x \in (`]a, b[ `\ c)%classic -> is_derive x 1%R g (dg x)) ->
-filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs c)))
-  (filter.nbhs 0%R) ->
-filter.cvg_to (filter.nbhs (filter.fmap [eta g] (filter.nbhs c)))
-  (filter.nbhs 0%R) ->
+(f x @[x --> c] --> 0%R)%classic ->
+(g x @[x --> c] --> 0%R)%classic ->
 (forall x : R, x \in (`]a, b[ `\ c)%classic -> dg x != 0%R) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap (fun x : R => (df x / dg x)%R) (filter.nbhs c)))
-  (filter.nbhs l) ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap (fun x : R => (f x / g x)%R)
-        (filter.nbhs (topology_structure.dnbhs c))))
-  (filter.nbhs l)
+((df x / dg x)%R @[x --> c] --> l)%classic ->
+((f x / g x)%R @[x --> c^'] --> l)%classic
 
 lhopital is not universe polymorphic
 Expanded type for implicit arguments
@@ -5838,27 +5474,21 @@ forall {R : realType} [f df g dg : R -> R] [a b c l : R],
 c \in `]a, b[%R ->
 (forall x : R, x \in (`]a, b[ `\ c)%classic -> is_derive x 1%R f (df x)) ->
 (forall x : R, x \in (`]a, b[ `\ c)%classic -> is_derive x 1%R g (dg x)) ->
-filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs c)))
-  (filter.nbhs 0%R) ->
-filter.cvg_to (filter.nbhs (filter.fmap [eta g] (filter.nbhs c)))
-  (filter.nbhs 0%R) ->
+(f x @[x --> c] --> 0%R)%classic ->
+(g x @[x --> c] --> 0%R)%classic ->
 (forall x : R, x \in (`]a, b[ `\ c)%classic -> dg x != 0%R) ->
-filter.cvg_to
-  (filter.nbhs (filter.fmap (fun x : R => (df x / dg x)%R) (filter.nbhs c)))
-  (filter.nbhs l) ->
+((df x / dg x)%R @[x --> c] --> l)%classic ->
 forall [t : set R],
-filter.nbhs l t ->
+nbhs l t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] c i
    `<=` (fun
-           t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
-                  (numFieldTopology.Real_sort__canonical__topology_structure_Topological
-                     R) =>
+           t0 : numFieldTopology.Real_sort__canonical__topology_structure_Topological
+                  R =>
          (fun
-            y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
-                  (numFieldTopology.Real_sort__canonical__topology_structure_Topological
-                     R) =>
+            y : numFieldTopology.Real_sort__canonical__topology_structure_Topological
+                  R =>
           is_true (y != c)) t0 ->
          ((fun x : R => (f x / g x)%R) @^-1` t) t0))%classic
 

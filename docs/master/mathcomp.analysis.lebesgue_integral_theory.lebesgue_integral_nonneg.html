@@ -478,8 +478,8 @@ measurable_fun (T:=T)
   (U:=constructive_ereal_extended__canonical__measurable_structure_SigmaRing
         R)
   D f2 ->
-(\int[mu]_(x in D) (f1 x + f2 x)%R)%E =
-((\int[mu]_(x in D) f1 x)%E + (\int[mu]_(x in D) f2 x)%E)%R
+(\int[mu]_(x in D) (f1 x + f2 x))%E =
+(\int[mu]_(x in D) f1 x + \int[mu]_(x in D) f2 x)%E
 
 ge0_integralD is not universe polymorphic
 Arguments ge0_integralD [d]%_measure_display_scope 
@@ -1360,7 +1360,7 @@ forall [d : measure_display] [T : measurableType d]
 d.-measurable%classic D ->
 forall f : {nnsfun T >-> R},
 (\int[measure_add (T:=T) (R:=R) m1 m2]_(x in D) (f x)%:E)%E =
-((\int[m1]_(x in D) (f x)%:E)%E + (\int[m2]_(x in D) (f x)%:E)%E)%R
+(\int[m1]_(x in D) (f x)%:E + \int[m2]_(x in D) (f x)%:E)%E
 
 integral_measure_add_nnsfun is not universe polymorphic
 Arguments integral_measure_add_nnsfun [d]%_measure_display_scope 
@@ -1463,7 +1463,7 @@ measurable_fun (T:=T)
         R)
   D f ->
 (\int[measure_add (T:=T) (R:=R) m1 m2]_(x in D) f x)%E =
-((\int[m1]_(x in D) f x)%E + (\int[m2]_(x in D) f x)%E)%R
+(\int[m1]_(x in D) f x + \int[m2]_(x in D) f x)%E
 
 ge0_integral_measure_add is not universe polymorphic
 Arguments ge0_integral_measure_add [d]%_measure_display_scope 
@@ -1630,7 +1630,7 @@ measurable_fun (T:=T)
 (forall x : T, (A `|` B)%classic x -> (0%R <= f x)%E) ->
 [disjoint A & B]%classic ->
 (\int[mu]_(x in A `|` B) f x)%E =
-((\int[mu]_(x in A) f x)%E + (\int[mu]_(x in B) f x)%E)%R
+(\int[mu]_(x in A) f x + \int[mu]_(x in B) f x)%E
 
 ge0_integral_setU is not universe polymorphic
 Arguments ge0_integral_setU [d]%_measure_display_scope 
@@ -1814,7 +1814,7 @@ measurable_fun (T:=T)
   (A `|` B) f ->
 [disjoint A & B]%classic ->
 (\int[mu]_(x in A `|` B) (f x)%:E)%E =
-((\int[mu]_(x in A) (f x)%:E)%E + (\int[mu]_(x in B) (f x)%:E)%E)%R
+(\int[mu]_(x in A) (f x)%:E + \int[mu]_(x in B) (f x)%:E)%E
 
 integral_setU_EFin is not universe polymorphic
 Arguments integral_setU_EFin [d]%_measure_display_scope 
@@ -2071,7 +2071,7 @@ measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R)
   [set: Real_sort__canonical__measurable_structure_SigmaRing R] f ->
 (\int[mu]_(x in `[0%R, +oo[) (f x)%:E)%E =
-ereal.ereal_sup (R:=R)
+ereal_sup (R:=R)
   [set (\int[mu]_(x in `[0%R, i.+1%:R%R]) (f x)%:E)%E | i in [set: nat]]
 
 ge0_integral_ereal_sup is not universe polymorphic
@@ -2137,12 +2137,8 @@ forall {R : realType} [mu : measure (measurableTypeR R) R] [f : R -> R],
 measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R)
   [set: Real_sort__canonical__measurable_structure_SigmaRing R] f ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap
-        (fun n : nat => (\int[mu]_(x in `[0%R, n%:R%R]) (f x)%:E)%E)
-        (filter.nbhs filter.eventually)))
-  (filter.nbhs (\int[mu]_(x in `[0%R, +oo[) (f x)%:E)%E)
+((\int[mu]_(x in `[0%R, n%:R%R]) (f x)%:E)%E @[n --> \oo] --> 
+ (\int[mu]_(x in `[0%R, +oo[) (f x)%:E)%E)%classic
 
 ge0_cvgn_integral is not universe polymorphic
 Expanded type for implicit arguments
@@ -2156,7 +2152,7 @@ forall
   [t : set
          (GRing.BaseAddMagma.sort
             constructive_ereal_extended__canonical__Algebra_BaseAddMagma)],
-filter.nbhs (\int[mu]_(x in `[0%R, +oo[) (f x)%:E)%E t ->
+nbhs (\int[mu]_(x in `[0%R, +oo[) (f x)%:E)%E t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -2966,9 +2962,8 @@ measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
    set R)
   f ->
 (forall
-   x : topology_structure.Topological.sort
-         (numFieldTopology.Real_sort__canonical__pseudometric_structure_PseudoMetric
-            R),
+   x : numFieldTopology.Real_sort__canonical__pseudometric_structure_PseudoMetric
+         R,
  x
    \in closed_ball
          (V:=numFieldTopology.Real_sort__canonical__pseudometric_structure_PseudoMetric
@@ -3244,11 +3239,9 @@ forall {d : measure_display} {T : measurableType d}
          R)
    (F i) f) ->
 (forall (i : nat) (x : T), F i x -> (0%R <= f x)%E) ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap (fun i : nat => (\int[mu]_(x in F i) f x)%E)
-        (filter.nbhs filter.eventually)))
-  (filter.nbhs (\int[mu]_(x in \bigcup_i F i) f x)%E)
+((\int[mu]_(x in F i) f x)%E @[i --> \oo] --> (\int[mu]_(x in 
+                                               \bigcup_i F i) 
+                                               f x)%E)%classic
 
 ge0_nondecreasing_set_cvg_integral is not universe polymorphic
 Expanded type for implicit arguments
@@ -3268,7 +3261,7 @@ forall
   [t : set
          (GRing.BaseAddMagma.sort
             constructive_ereal_extended__canonical__Algebra_BaseAddMagma)],
-filter.nbhs (\int[mu]_(x in \bigcup_i F i) f x)%E t ->
+nbhs (\int[mu]_(x in \bigcup_i F i) f x)%E t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -3411,11 +3404,9 @@ forall {d : measure_display} {T : measurableType d}
          R)
    (F i) f) ->
 (forall (i : nat) (x : T), F i x -> (f x <= 0%R)%E) ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap (fun i : nat => (\int[mu]_(x in F i) f x)%E)
-        (filter.nbhs filter.eventually)))
-  (filter.nbhs (\int[mu]_(x in \bigcup_i F i) f x)%E)
+((\int[mu]_(x in F i) f x)%E @[i --> \oo] --> (\int[mu]_(x in 
+                                               \bigcup_i F i) 
+                                               f x)%E)%classic
 
 le0_nondecreasing_set_cvg_integral is not universe polymorphic
 Expanded type for implicit arguments
@@ -3435,7 +3426,7 @@ forall
   [t : set
          (GRing.BaseAddMagma.sort
             constructive_ereal_extended__canonical__Algebra_BaseAddMagma)],
-filter.nbhs (\int[mu]_(x in \bigcup_i F i) f x)%E t ->
+nbhs (\int[mu]_(x in \bigcup_i F i) f x)%E t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i

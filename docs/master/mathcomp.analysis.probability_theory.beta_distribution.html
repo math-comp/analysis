@@ -272,26 +272,17 @@ the type probability T R (a measure that sums to 1).
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_onemXn" class="id"><a name="continuous_onemXn" class="" title="continuous_onemXn :
 forall {R : realType} [n : nat] [x : R],
-{for x,
-  forall
-    x0 : filter.Nbhs.sort
-           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
-  filter.continuous_at
-    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0
-    (fun y : R => (y.~ ^+ n)%R)}
+{for x, continuous (fun y : R => (unstable.onem y ^+ n)%R)}
 
 continuous_onemXn is not universe polymorphic
 Expanded type for implicit arguments
 continuous_onemXn :
 forall {R : realType} [n : nat] [x : R]
-  [t : set
-         (filter.Nbhs.sort
-            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs ((fun y : R => (y.~ ^+ n)%R) x) t ->
+  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+nbhs ((fun y : R => (unstable.onem y ^+ n)%R) x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
-  (ball_ [eta normr] x i `<=` (fun y : R => (y.~ ^+ n)%R) @^-1` t)%classic
+  (ball_ [eta normr] x i `<=` (fun y : R => (unstable.onem y ^+ n)%R) @^-1` t)%classic
 
 Arguments continuous_onemXn {R} [n]%_nat_scope [x]%_ring_scope [t] _
 continuous_onemXn is opaque
@@ -310,40 +301,36 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="onemXn_derivable" class="id"><a name="onemXn_derivable" class="" title="onemXn_derivable :
 forall {R : realType} [n : nat] [x : R],
-derivable (fun y : R => (y.~ ^+ n)%R) x 1
+derivable (fun y : R => (unstable.onem y ^+ n)%R) x 1
 
 onemXn_derivable is not universe polymorphic
 Expanded type for implicit arguments
 onemXn_derivable :
 forall {R : realType} [n : nat] [x : R]
   [t : set (Real_sort__canonical__normed_module_NormedModule R)],
-filter.nbhs
-  (filter.lim
-     (filter.fmap
-        (fun h : R =>
-         (h^-1 *:
-          (((fun y : R => y.~ ^+ n) \o shift x) h%:A -
-           (fun y : R => y.~ ^+ n) x))%R)
-        (filter.nbhs (topology_structure.dnbhs 0%R))))
+nbhs
+  (lim
+     ((h^-1 *:
+       (((fun y : R => unstable.onem y ^+ n) \o shift x) h%:A -
+        (fun y : R => unstable.onem y ^+ n) x))%R @[h --> 
+      (0%R)^'])%classic)
   t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] 0%R i
    `<=` (fun
-           t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
-                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                        R)) =>
+           t0 : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                     R) =>
          (fun
-            y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
-                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                        R)) =>
+            y : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                     R) =>
           is_true (y != 0%R)) t0 ->
          ((fun h : R =>
            (h^-1 *:
-            (((fun y : R => y.~ ^+ n) \o shift x) h%:A -
-             (fun y : R => y.~ ^+ n) x))%R) @^-1`
+            (((fun y : R => unstable.onem y ^+ n) \o shift x) h%:A -
+             (fun y : R => unstable.onem y ^+ n) x))%R) @^-1`
           t) t0))%classic
 
 Arguments onemXn_derivable {R} [n]%_nat_scope [x]%_ring_scope [t] _
@@ -362,7 +349,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="derivable_oo_LRcontinuous_onemXnMr" class="id"><a name="derivable_oo_LRcontinuous_onemXnMr" class="" title="derivable_oo_LRcontinuous_onemXnMr :
 forall {R : realType} (n : nat) (x : R),
-derivable_oo_LRcontinuous (fun y : R => (y.~ ^+ n * x)%R) 0 1
+derivable_oo_LRcontinuous (fun y : R => (unstable.onem y ^+ n * x)%R) 0 1
 
 derivable_oo_LRcontinuous_onemXnMr is not universe polymorphic
 Arguments derivable_oo_LRcontinuous_onemXnMr {R} n%_nat_scope x%_ring_scope
@@ -390,7 +377,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="derive_onemXn" class="id"><a name="derive_onemXn" class="" title="derive_onemXn :
 forall {R : realType} (n : nat) (x : R),
-(fun y : R => (y.~ ^+ n)%R)^`()%classic x = (1 *- n * x.~ ^+ n.-1)%R
+(fun y : R => (unstable.onem y ^+ n)%R)^`()%classic x =
+(1 *- n * unstable.onem x ^+ n.-1)%R
 
 derive_onemXn is not universe polymorphic
 Arguments derive_onemXn {R} n%_nat_scope x%_ring_scope
@@ -412,7 +400,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Rintegral_onemXn" class="id"><a name="Rintegral_onemXn" class="" title="Rintegral_onemXn :
 forall {R : realType} (n : nat),
-(\int[lebesgue_measure]_(x in `[0, 1]) x.~ ^+ n)%R = n.+1%:R^-1%R
+(\int[lebesgue_measure]_(x in `[0, 1]) unstable.onem x ^+ n)%R = n.+1%:R^-1%R
 
 Rintegral_onemXn is not universe polymorphic
 Arguments Rintegral_onemXn {R} n%_nat_scope
@@ -494,7 +482,8 @@ library mathcomp.analysis.probability_theory.beta_distribution, line 113, charac
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="XMonemX0n" class="id"><a name="XMonemX0n" class="" title="XMonemX0n :
-forall {R : numDomainType} (n : nat) (x : R), XMonemX 0 n x = (x.~ ^+ n)%R
+forall {R : numDomainType} (n : nat) (x : R),
+XMonemX 0 n x = (unstable.onem x ^+ n)%R
 
 XMonemX0n is not universe polymorphic
 Arguments XMonemX0n {R} n%_nat_scope x%_ring_scope
@@ -582,24 +571,15 @@ library mathcomp.analysis.probability_theory.beta_distribution, line 131, charac
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="XMonemX" class="id"><a name="XMonemX" class="">XMonemX</a></span><span class="id"> :=</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.probability_theory.beta_distribution.html#XMonemX">XMonemX</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.beta_distribution.html#XMonemX_realType.R">R</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_XMonemX" class="id"><a name="continuous_XMonemX" class="" title="continuous_XMonemX :
-forall {R : realType} [a b : nat]
-  [x : filter.Nbhs.sort
-         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-filter.continuous_at
-  (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-  (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x 
-  (XMonemX a b)
+forall {R : realType} [a b : nat], continuous (XMonemX a b)
 
 continuous_XMonemX is not universe polymorphic
 Expanded type for implicit arguments
 continuous_XMonemX :
 forall {R : realType} [a b : nat]
-  [x : filter.Nbhs.sort
-         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)]
-  [t : set
-         (filter.Nbhs.sort
-            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs (XMonemX a b x) t ->
+  [x : numFieldTopology.Real_sort__canonical__filter_Nbhs R]
+  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+nbhs (XMonemX a b x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` XMonemX a b @^-1` t)%classic
@@ -625,16 +605,12 @@ within_continuous_XMonemX is not universe polymorphic
 Expanded type for implicit arguments
 within_continuous_XMonemX :
 forall {R : realType} [A : set R] [a b : nat]
-  [x : filter.Nbhs.sort
-         (subspace_topology_subspace__canonical__filter_Nbhs A)]
-  [t : set
-         (filter.Nbhs.sort
-            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
-filter.nbhs (from_subspace A (XMonemX a b) x) t ->
+  [x : subspace_topology_subspace__canonical__filter_Nbhs A]
+  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+nbhs (from_subspace A (XMonemX a b) x) t ->
 (if if if pselect (A x) then true else false then true else false
- then filter.within A (filter.nbhs x)
- else filter.globally [set x])
-  (from_subspace A (XMonemX a b) @^-1` t)%classic
+ then within A (nbhs x)
+ else globally [set x]) (from_subspace A (XMonemX a b) @^-1` t)%classic
 
 Arguments within_continuous_XMonemX {R} [A]%_classical_set_scope
   [a b]%_nat_scope [x t] _
@@ -1025,10 +1001,10 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="beta_funE" class="id"><a name="beta_funE" class="" title="beta_funE :
 forall {R : realType} (a b : nat),
 beta_fun a b =
-(if (a == 0%N) && (0 < b)
+(if (a == 0) && (0 < b)
  then b%:R^-1%R
  else
-  if (b == 0%N) && (0 < a)
+  if (b == 0) && (0 < a)
   then a%:R^-1%R
   else ((a.-1)`!%:R * (b.-1)`!%:R / ((a + b).-1)`!%:R)%R)
 
@@ -1868,7 +1844,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_beta_prob_bernoulli_prob_onemX_lty" class="id"><a name="integral_beta_prob_bernoulli_prob_onemX_lty" class="" title="integral_beta_prob_bernoulli_prob_onemX_lty :
 forall {R : realType} (n a b : nat) (U : set bool),
-((\int[beta_prob a b]_x `|bernoulli_prob (x.~ ^+ n) U| : \bar R) <
+((\int[beta_prob a b]_x `|bernoulli_prob (unstable.onem x ^+ n) U| : \bar R) <
  (+oo : \bar R))%E
 
 integral_beta_prob_bernoulli_prob_onemX_lty is not universe polymorphic
@@ -1893,7 +1869,9 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="integral_beta_prob_bernoulli_prob_onem_lty" class="id"><a name="integral_beta_prob_bernoulli_prob_onem_lty" class="" title="integral_beta_prob_bernoulli_prob_onem_lty :
 forall {R : realType} (n a b : nat) (U : set bool),
-((\int[beta_prob a b]_x `|bernoulli_prob (1 - x.~ ^+ n) U| : \bar R) <
+((\int[beta_prob a b]_x `|bernoulli_prob (1 - unstable.onem x ^+ n) U|
+  :
+  \bar R) <
  (+oo : \bar R))%E
 
 integral_beta_prob_bernoulli_prob_onem_lty is not universe polymorphic
@@ -1950,7 +1928,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="beta_prob_integrable_onem" class="id"><a name="beta_prob_integrable_onem" class="" title="beta_prob_integrable_onem :
 forall {R : realType} (a b a' b' : nat),
 (beta_prob a b).-integrable `[0%R, 1%R]
-  (fun x : measurableTypeR R => ((XMonemX a' b' x).~)%:E)
+  (fun x : measurableTypeR R => (unstable.onem (XMonemX a' b' x))%:E)
 
 beta_prob_integrable_onem is not universe polymorphic
 Arguments beta_prob_integrable_onem {R} (a b a' b')%_nat_scope
@@ -2017,7 +1995,8 @@ Qed.</div></details>
 forall {R : realType} (a b a' b' : nat) (c : bool)
   (U : set Datatypes_bool__canonical__measurable_structure_SigmaRing),
 (beta_prob a b).-integrable `[0%R, 1%R]
-  (fun x : measurableTypeR R => (((XMonemX a' b' x).~)%:E * (\d_c)%R U)%E)
+  (fun x : measurableTypeR R =>
+   ((unstable.onem (XMonemX a' b' x))%:E * (\d_c)%R U)%E)
 
 beta_prob_integrable_onem_dirac is not universe polymorphic
 Arguments beta_prob_integrable_onem_dirac {R} (a b a' b')%_nat_scope

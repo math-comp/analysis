@@ -401,19 +401,11 @@ forall [f_ : (T -> \bar R) ^nat] [f g : T -> \bar R],
    (U:=constructive_ereal_extended__canonical__measurable_structure_SigmaRing
          R)
    D (f_ n)) ->
-(forall x : T,
- D x ->
- filter.cvg_to
-   (filter.nbhs (filter.fmap (f_^~ x) (filter.nbhs filter.eventually)))
-   (filter.nbhs (f x))) ->
+(forall x : T, D x -> (f_ x0 x @[x0 --> \oo] --> f x)%classic) ->
 (forall x : T, D x -> g x \is a fin_num) ->
 mu.-integrable D g ->
 (forall (n : nat) (x : T), D x -> (`|f_ n x| <= g x)%E) ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap (fun n : nat => (\int[mu]_(x in D) f_ n x)%E)
-        filter.eventually))
-  (filter.nbhs (\int[mu]_(x in D) f x)%E)
+((\int[mu]_(x in D) f_ n x)%E @[n \oo] --> (\int[mu]_(x in D) f x)%E)%classic
 
 dominated_cvg is not universe polymorphic
 Expanded type for implicit arguments
@@ -427,11 +419,7 @@ forall [f_ : (T -> \bar R) ^nat] [f g : T -> \bar R],
    (U:=constructive_ereal_extended__canonical__measurable_structure_SigmaRing
          R)
    D (f_ n)) ->
-(forall x : T,
- D x ->
- filter.cvg_to
-   (filter.nbhs (filter.fmap (f_^~ x) (filter.nbhs filter.eventually)))
-   (filter.nbhs (f x))) ->
+(forall x : T, D x -> (f_ x0 x @[x0 --> \oo] --> f x)%classic) ->
 (forall x : T, D x -> g x \is a fin_num) ->
 mu.-integrable D g ->
 (forall (n : nat) (x : T), D x -> (`|f_ n x| <= g x)%E) ->
@@ -439,7 +427,7 @@ forall
   [t : set
          (GRing.BaseAddMagma.sort
             constructive_ereal_extended__canonical__Algebra_BaseAddMagma)],
-filter.nbhs (\int[mu]_(x in D) f x)%E t ->
+nbhs (\int[mu]_(x in D) f x)%E t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -505,26 +493,15 @@ measurable_fun (T:=T)
   (U:=constructive_ereal_extended__canonical__measurable_structure_SigmaRing
         R)
   D f ->
-(\forall x \ae mu, D x ->
-                   filter.cvg_to
-                     (filter.nbhs
-                        (filter.fmap (f_^~ x) (filter.nbhs filter.eventually)))
-                     (filter.nbhs (f x))) ->
+(\forall x \ae mu, D x -> (f_ x0 x @[x0 --> \oo] --> f x)%classic) ->
 mu.-integrable D g ->
 (\forall x \ae mu, forall n : nat, D x -> (`|f_ n x| <= g x)%E) ->
 [/\ mu.-integrable D f,
-    filter.cvg_to
-      (filter.nbhs
-         (filter.fmap
-            [sequence (\int[mu]_(x in D)
-                          (fun (n0 : nat) (x0 : T) => `|f_ n0 x0 - f x0|) n x)%E]_n%R
-            (filter.nbhs filter.eventually)))
-      (filter.nbhs 0%R)
-  & filter.cvg_to
-      (filter.nbhs
-         (filter.fmap [sequence (\int[mu]_(x in D) f_ n x)%E]_n%R
-            (filter.nbhs filter.eventually)))
-      (filter.nbhs (\int[mu]_(x in D) f x)%E)]
+    ([sequence (\int[mu]_(x in D)
+                   (fun (n0 : nat) (x0 : T) => `|f_ n0 x0 - f x0|) n x)%E]_n%R
+       x @[x --> \oo] --> 0%R)%classic
+  & ([sequence (\int[mu]_(x in D) f_ n x)%E]_n%R x @[x --> \oo] --> 
+     (\int[mu]_(x in D) f x)%E)%classic]
 
 dominated_convergence is not universe polymorphic
 Arguments dominated_convergence [d]%_measure_display_scope 
@@ -653,17 +630,8 @@ exists g_ : {sfun T >-> R} ^nat,
   [/\ forall n : nat, mu.-integrable E (EFin \o g_ n),
       forall x : T,
       E x ->
-      filter.cvg_to
-        (filter.nbhs
-           (filter.fmap (EFin \o (fun x0 : nat => g_ x0 x))
-              (filter.nbhs filter.eventually)))
-        (filter.nbhs (f x))
-    & filter.cvg_to
-        (filter.nbhs
-           (filter.fmap
-              (fun n : nat => (\int[mu]_(z in E) `|f z - (g_ n z)%:E|)%E)
-              (filter.nbhs filter.eventually)))
-        (filter.nbhs 0%R)]
+      ((EFin \o (fun x0 : nat => g_ x0 x)) x0 @[x0 --> \oo] --> f x)%classic
+    & ((\int[mu]_(z in E) `|f z - (g_ n z)%:E|)%E @[n --> \oo] --> 0%R)%classic]
 
 approximation_sfun_integrable is not universe polymorphic
 Arguments approximation_sfun_integrable [d]%_measure_display_scope 
