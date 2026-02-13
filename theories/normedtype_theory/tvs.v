@@ -1,7 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat ssralg ssrnum vector.
-From mathcomp Require Import interval_inference.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum vector interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality.
@@ -332,6 +331,8 @@ HB.instance Definition _ :=
 
 HB.end.
 
+Local Open Scope convex_scope.
+
 HB.mixin Record Uniform_isConvexTvs (R : numDomainType) E
     & Uniform E & GRing.Lmodule R E := {
   locally_convex : exists2 B : set_system E,
@@ -632,11 +633,14 @@ HB.structure Definition LinearContinuous (K : numDomainType) (E : NbhsLmodule.ty
   (F : NbhsZmodule.type) (s : K -> F -> F) :=
   {f of @GRing.Linear K E F s f &  @Continuous E F f }.
 
-HB.factory Structure isLinearContinuous  (K : numDomainType) (E : NbhsLmodule.type K)
+(* https://github.com/math-comp/math-comp/issues/1536
+   we use GRing.Scale.law even though it is claimed to be internal *)
+HB.factory Structure isLinearContinuous (K : numDomainType) (E : NbhsLmodule.type K)
   (F : NbhsZmodule.type) (s : GRing.Scale.law K F) (f : E -> F) := {
+    (* NB: why not (f : {linear E -> F | s} instead of linearP ? ) *)
     linearP : linear_for s f ;
     continuousP : continuous f
-    }.
+  }.
 
 HB.builders Context K E F s f of @isLinearContinuous K E F s f.
 

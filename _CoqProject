@@ -143,6 +143,8 @@ theories/kernel.v
 theories/pi_irrational.v
 theories/gauss_integral.v
 
+theories/hahn_banach_theorem.v
+
 theories/all_analysis.v
 
 theories/showcase/summability.v

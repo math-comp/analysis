@@ -104,6 +104,9 @@ probability_theory/beta_distribution.v
 probability_theory/probability.v
 
 convex.v
+
+hahn_banach_theorem.v
+
 charge.v
 kernel.v
 pi_irrational.v
