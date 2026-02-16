@@ -1009,3 +1009,38 @@ Lemma itv_setI {d} {T : orderType d} (i j : interval T) :
 Proof.
 by rewrite eqEsubset; split => z; rewrite /in_mem/= /pred_of_itv/= lexI=> /andP.
 Qed.
+
+Lemma itv_open_endsPn {d} {T : porderType d} (l r : itv_bound T) :
+  (l < r)%O ->
+  reflect
+    (exists x : T , l = BLeft x \/ r = BRight x)
+    (~~ itv_open_ends (Interval l r)).
+Proof.
+move=> lr.
+apply: (iffP idP); last first.
+  by clear lr; case=> x [] -> //; case: l => [[] ?|[]].
+move: lr; case: l => [[] L|[]] //; case: r => [[] R|[]]//= ? ?.
+all: try (by exists L; left); by exists R; right.
+Qed.
+
+Lemma itv_closed_endsPn {d} {T : porderType d} (l r : itv_bound T) :
+  (l < r)%O ->
+  reflect
+    (exists x : T , l = BRight x \/ r = BLeft x)
+    (~~ itv_closed_ends (Interval l r)).
+Proof.
+move=> lr.
+apply: (iffP idP); last first.
+  by clear lr; case=> x [] -> //; case: l => [[] ?|[]].
+move: lr; case: l => [[] L|[]] //; case: r => [[] R|[]]//= ? ?.
+all: try (by exists L; left); by exists R; right.
+Qed.
+
+Lemma itv_open_ends_boundlr {d} {T : porderType d} (bl br : itv_bound T) (x : T) :
+  itv_open_ends (Interval bl br) ->
+  (x \in Interval bl br) = (bl < BLeft x)%O && (BRight x < br)%O.
+Proof.
+rewrite itv_boundlr !le_eqVlt.
+have [->|_] := eqVneq bl (BLeft x); first by move/itv_open_ends_lside.
+by have [->|_] := eqVneq br (BRight x); first by move/itv_open_ends_rside.
+Qed.
