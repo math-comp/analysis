@@ -923,6 +923,46 @@ apply: eq_bigcapl; split => X /=.
 by case=> Y + <-; rewrite closedC setCS.
 Qed.
 
+Lemma closureEbigcap_itvcy A :
+  closure A = \bigcap_(x in closed `&` `[A, +oo[) x.
+Proof.
+rewrite closureEbigcap; apply: eq_bigcapl.
+by split => ? /=; rewrite in_itv/= -subsetEset andbT.
+Qed.
+
+Lemma interiorEbigcup_itvNyc A :
+  A° = \bigcup_(x in open `&` `]-oo, A]) x.
+Proof.
+apply: setC_inj; rewrite -closure_setC closureEbigcap_itvcy setC_bigcup.
+rewrite -[RHS](bigcap_image _ setC); apply: eq_bigcapl.
+apply/seteqP/funext => X.
+rewrite -(setCK X) image_inj; last exact: setC_inj.
+by rewrite /= !in_itv/= andbT !subsetEset setCS setCK openC.
+Qed.
+
+Lemma closureEbigcap_itvcc A B :
+  closed B -> A `<=` B -> closure A = \bigcap_(x in closed `&` `[A, B]) x.
+Proof.
+move=> cB; rewrite -subsetEset => AB.
+rewrite closureEbigcap_itvcy /bigcap; apply/seteqP.
+split => x /= H Y [] cY; rewrite in_itv/= => /andP[] AY YB.
+  by have:= H Y; apply; split => //; rewrite in_itv/= AY.
+apply/(@subIsetl _ _ B)/(H (Y `&` B)); split; first exact: closedI.
+rewrite in_itv/=; apply/andP.
+by rewrite Order.MeetTheory.lexI Order.MeetTheory.leIr AY AB.
+Qed.
+
+Lemma interiorEbigcup_itvcc A B :
+  open B -> B `<=` A -> A° = \bigcup_(x in open `&` `[B, A]) x.
+Proof.
+rewrite -closedC -subsetCP => cB AB.
+apply: setC_inj; rewrite -closure_setC (closureEbigcap_itvcc cB AB) setC_bigcup.
+rewrite -[RHS](bigcap_image _ setC); apply: eq_bigcapl.
+apply/seteqP/funext => X.
+rewrite -(setCK X) image_inj; last exact: setC_inj.
+by rewrite /= !in_itv/= !Order.CTBDistrLatticeTheory.leC setCK openC andbC.
+Qed.
+
 Lemma interior_closed_regopen A : closed A -> regopen A°.
 Proof.
 move=> cA; rewrite /regopen eqEsubset; split=> x.
@@ -951,6 +991,9 @@ Lemma closure_interior_idem : @idempotent_fun (set T) (closure \o interior).
 Proof. move=> ?; exact/closure_open_regclosed/open_interior. Qed.
 
 End closure_interior_lemmas.
+
+Arguments closureEbigcap_itvcc {T A}.
+Arguments interiorEbigcup_itvcc {T A}.
 
 Lemma closureC_deprecated (T : topologicalType) (E : set T) :
   ~` closure E = \bigcup_(x in [set U | open U /\ U `<=` ~` E]) x.
