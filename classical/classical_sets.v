@@ -2482,7 +2482,7 @@ Proof. by apply/eqP => /seteqP[] /(_ point) /(_ Logic.I). Qed.
 
 End PointedTheory.
 
-HB.mixin Record isBiPointed (X : Type) of Equality X := {
+HB.mixin Record isBiPointed (X : Type) & Equality X := {
   zero : X;
   one : X;
   zero_one_neq : zero != one;
@@ -2511,10 +2511,10 @@ HB.mixin Record isEmpty T := {
 #[short(type="emptyType")]
 HB.structure Definition Empty := {T of isEmpty T & Finite T}.
 
-HB.factory Record Choice_isEmpty T of Choice T := {
+HB.factory Record Choice_isEmpty T & Choice T := {
   axiom : T -> False
 }.
-HB.builders Context T of Choice_isEmpty T.
+HB.builders Context T & Choice_isEmpty T.
 
 Definition pickle : T -> nat := fun=> 0%N.
 Definition unpickle : nat -> option T := fun=> None.
@@ -2532,12 +2532,12 @@ HB.end.
 HB.factory Record Type_isEmpty T := {
   axiom : T -> False
 }.
-HB.builders Context T of Type_isEmpty T.
+HB.builders Context T & Type_isEmpty T.
 Definition eq_op (x y : T) := true.
 Lemma eq_opP : Equality.axiom eq_op. Proof. by move=> ? /[dup]/axiom. Qed.
 HB.instance Definition _ := hasDecEq.Build T eq_opP.
 
-Definition find of pred T & nat : option T := None.
+Definition find & pred T & nat : option T := None.
 Lemma findP (P : pred T) (n : nat) (x : T) :  find P n = Some x -> P x.
 Proof. by []. Qed.
 Lemma ex_find (P : pred T) : (exists x : T, P x) -> exists n : nat, find P n.

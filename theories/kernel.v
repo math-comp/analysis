@@ -319,11 +319,11 @@ Arguments measure_uub {_ _ _ _ _} _.
 
 HB.factory Record Kernel_isFinite d d'
     (X : measurableType d) (Y : measurableType d') (R : realType)
-    (k : X -> {measure set Y -> \bar R}) of isKernel _ _ _ _ _ k := {
+    (k : X -> {measure set Y -> \bar R}) & isKernel _ _ _ _ _ k := {
   measure_uub : measure_fam_uub k }.
 
 HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
-  (R : realType) k of Kernel_isFinite d d' X Y R k.
+  (R : realType) k & Kernel_isFinite d d' X Y R k.
 
 Let sfinite_finite :
   exists2 k_ : (R.-ker _ ~> _)^nat, forall n, measure_fam_uub (k_ n) &
@@ -411,12 +411,12 @@ HB.instance Definition _
 
 HB.factory Record Kernel_isSFinite d d'
     (X : measurableType d) (Y : measurableType d') (R : realType)
-    (k : X -> {measure set Y -> \bar R}) of isKernel _ _ _ _ _ k := {
+    (k : X -> {measure set Y -> \bar R}) & isKernel _ _ _ _ _ k := {
   sfinite : exists s : (R.-fker X ~> Y)^nat,
     forall x U, measurable U -> k x U = kseries s x U }.
 
 HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
-  (R : realType) k of Kernel_isSFinite d d' X Y R k.
+  (R : realType) k & Kernel_isSFinite d d' X Y R k.
 
 Lemma sfinite_subdef : isSFiniteKernel_subdef d d' X Y R k.
 Proof.
@@ -500,11 +500,11 @@ Proof. by apply: (sprob_kernelP (fun x A => k x A)).1; exact: sprob_kernel. Qed.
 
 HB.factory Record Kernel_isSubProbability d d'
     (X : measurableType d) (Y : measurableType d') (R : realType)
-    (k : X -> {measure set Y -> \bar R}) of isKernel _ _ X Y R k := {
+    (k : X -> {measure set Y -> \bar R}) & isKernel _ _ X Y R k := {
   sprob_kernel : ereal_sup [set k x [set: Y] | x in [set: X]] <= 1 }.
 
 HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
-  (R : realType) k of Kernel_isSubProbability d d' X Y R k.
+  (R : realType) k & Kernel_isSubProbability d d' X Y R k.
 
 Let finite : @Kernel_isFinite d d' X Y R k.
 Proof.
@@ -545,11 +545,11 @@ Notation "R .-pker X ~> Y" := (probability_kernel X%type Y R).
 
 HB.factory Record Kernel_isProbability d d'
     (X : measurableType d) (Y : measurableType d') (R : realType)
-    (k : X -> {measure set Y -> \bar R}) of isKernel _ _ X Y R k := {
+    (k : X -> {measure set Y -> \bar R}) & isKernel _ _ X Y R k := {
   prob_kernel : forall x, k x [set: Y] = 1 }.
 
 HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
-  (R : realType) k of Kernel_isProbability d d' X Y R k.
+  (R : realType) k & Kernel_isProbability d d' X Y R k.
 
 Let sprob_kernel : @Kernel_isSubProbability d d' X Y R k.
 Proof.

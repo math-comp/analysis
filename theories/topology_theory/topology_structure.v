@@ -90,7 +90,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 (** Topological spaces *)
-HB.mixin Record Nbhs_isTopological (T : Type) of Nbhs T := {
+HB.mixin Record Nbhs_isTopological (T : Type) & Nbhs T := {
   open : set_system T;
   nbhs_pfilter_subproof : forall p : T, ProperFilter (nbhs p) ;
   nbhsE_subproof : forall p : T, nbhs p =
@@ -373,7 +373,7 @@ Unshelve. all: by end_near. Qed.
 
 (* [locally P] replaces a (globally A) in P by a within A (nbhs x)      *)
 (* Can be combined with a notation taking a filter as its last argument *)
-Definition locally_of (P : set_system T -> Prop) of phantom Prop (P (globally A))
+Definition locally_of (P : set_system T -> Prop) & phantom Prop (P (globally A))
   := forall x, A x -> P (within A (nbhs x)).
 Local Notation "[ 'locally' P ]" := (@locally_of _ _ _ (Phantom _ P)).
 (* e.g. [locally [bounded f x | x in A]]                  *)
@@ -419,13 +419,13 @@ Notation "[ 'locally' P ]" := (@locally_of _ _ _ (Phantom _ P)).
 
 (** Topology defined by a filter *)
 
-HB.factory Record Nbhs_isNbhsTopological T of Nbhs T := {
+HB.factory Record Nbhs_isNbhsTopological T & Nbhs T := {
   nbhs_filter : forall p : T, ProperFilter (nbhs p);
   nbhs_singleton : forall (p : T) (A : set T), nbhs p A -> A p;
   nbhs_nbhs : forall (p : T) (A : set T), nbhs p A -> nbhs p (nbhs^~ A);
 }.
 
-HB.builders Context T of Nbhs_isNbhsTopological T.
+HB.builders Context T & Nbhs_isNbhsTopological T.
 
 Definition open_of_nbhs := [set A : set T | A `<=` nbhs^~ A].
 
@@ -452,7 +452,7 @@ HB.end.
 Definition nbhs_of_open (T : Type) (op : set_system T) (p : T) (A : set T) :=
   exists B, [/\ op B, B p & B `<=` A].
 
-HB.factory Record isOpenTopological T of Choice T := {
+HB.factory Record isOpenTopological T & Choice T := {
   op : set_system T ;
   opT : op setT ;
   opI : forall (A B : set T), op A -> op B -> op (A `&` B) ;
@@ -460,7 +460,7 @@ HB.factory Record isOpenTopological T of Choice T := {
     op (\bigcup_i f i)
 }.
 
-HB.builders Context T of isOpenTopological T.
+HB.builders Context T & isOpenTopological T.
 
 HB.instance Definition _ := hasNbhs.Build T (nbhs_of_open op).
 
@@ -497,7 +497,7 @@ HB.end.
 
 (** Topology defined by a base of open sets *)
 
-HB.factory Record isBaseTopological T of Choice T := {
+HB.factory Record isBaseTopological T & Choice T := {
   I : pointedType;
   D : set I;
   b : I -> (set T);
@@ -506,7 +506,7 @@ HB.factory Record isBaseTopological T of Choice T := {
     exists k, [/\ D k, b k t & b k `<=` b i `&` b j];
 }.
 
-HB.builders Context T of isBaseTopological T.
+HB.builders Context T & isBaseTopological T.
 
 Definition open_from := [set \bigcup_(i in D') b i | D' in subset^~ D].
 
@@ -556,13 +556,13 @@ HB.instance Definition _ := isOpenTopological.Build T
 
 HB.end.
 
-HB.factory Record isSubBaseTopological T of Choice T := {
+HB.factory Record isSubBaseTopological T & Choice T := {
   I : pointedType;
   D : set I;
   b : I -> (set T);
 }.
 
-HB.builders Context T of isSubBaseTopological T.
+HB.builders Context T & isSubBaseTopological T.
 
 Local Notation finI_from := (finI_from D b).
 

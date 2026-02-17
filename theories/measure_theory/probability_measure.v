@@ -54,11 +54,11 @@ HB.structure Definition SubProbability d (T : measurableType d) (R : realType)
   := {mu of @FiniteMeasure d T R mu & isSubProbability d T R mu }.
 
 HB.factory Record Measure_isSubProbability d (T : measurableType d)
-    (R : realType) (P : set T -> \bar R) of isMeasure _ _ _ P :=
+    (R : realType) (P : set T -> \bar R) & isMeasure _ _ _ P :=
   { sprobability_setT : (P setT <= 1)%E }.
 
 HB.builders Context d (T : measurableType d) (R : realType)
-  P of Measure_isSubProbability d T R P.
+  P & Measure_isSubProbability d T R P.
 
 Let finite : @Measure_isFinite d T R P.
 Proof.
@@ -114,11 +114,11 @@ Qed.
 End probability_lemmas.
 
 HB.factory Record Measure_isProbability d (T : measurableType d)
-    (R : realType) (P : set T -> \bar R) of isMeasure _ _ _ P :=
+    (R : realType) (P : set T -> \bar R) & isMeasure _ _ _ P :=
   { probability_setT : P setT = 1%E }.
 
 HB.builders Context d (T : measurableType d) (R : realType)
-  P of Measure_isProbability d T R P.
+  P & Measure_isProbability d T R P.
 
 Let subprobability : @Measure_isSubProbability d T R P.
 Proof. by split; rewrite probability_setT. Qed.

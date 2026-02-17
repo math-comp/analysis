@@ -320,10 +320,10 @@ Notation "x %:sgn" := (from (Phantom _ x)) : ring_scope.
 Notation "[ 'sgn' 'of' x ]" := (fromP (Phantom _ x)) : ring_scope.
 Notation num := r.
 Notation "x %:num" := (r x) : ring_scope.
-Definition posnum (R : numDomainType) of phant R := {> 0%R : R}.
+Definition posnum (R : numDomainType) & phant R := {> 0%R : R}.
 Notation "{ 'posnum' R }" := (@posnum _ (Phant R))  : ring_scope.
 Notation "x %:posnum" := (@num _ _ 0%R !=0 >=0 x) : ring_scope.
-Definition nonneg (R : numDomainType) of phant R := {>= 0%R : R}.
+Definition nonneg (R : numDomainType) & phant R := {>= 0%R : R}.
 Notation "{ 'nonneg' R }" := (@nonneg _ (Phant R))  : ring_scope.
 Notation "x %:nngnum" := (@num _ _ 0%R ?=0 >=0 x) : ring_scope.
 Arguments r {disp T x0 nz cond}.

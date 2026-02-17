@@ -422,7 +422,7 @@ End content_on_ring_of_sets.
 Hint Resolve measureU measure_bigsetU : core.
 
 HB.mixin Record Content_isMeasure d (T : semiRingOfSetsType d)
-    (R : numFieldType) (mu : set T -> \bar R) of Content d mu := {
+    (R : numFieldType) (mu : set T -> \bar R) & Content d mu := {
   measure_semi_sigma_additive : semi_sigma_additive mu }.
 
 #[short(type=measure)]
@@ -458,7 +458,7 @@ HB.factory Record isMeasure d (T : semiRingOfSetsType d) (R : realFieldType)
   measure_semi_sigma_additive : semi_sigma_additive mu }.
 
 HB.builders Context d (T : semiRingOfSetsType d) (R : realFieldType)
-  (mu : set T -> \bar R) of isMeasure _ T R mu.
+  (mu : set T -> \bar R) & isMeasure _ T R mu.
 
 Let semi_additive_mu : semi_additive mu.
 Proof.
@@ -1121,11 +1121,11 @@ End ring_sigma_subadditive_content.
 
 #[key="mu"]
 HB.factory Record Content_SigmaSubAdditive_isMeasure d (R : realType)
-    (T : semiRingOfSetsType d) (mu : set T -> \bar R) of Content d mu := {
+    (T : semiRingOfSetsType d) (mu : set T -> \bar R) & Content d mu := {
   measure_sigma_subadditive : measurable_subset_sigma_subadditive mu }.
 
 HB.builders Context d (R : realType) (T : semiRingOfSetsType d)
-  (mu : set T -> \bar R) of Content_SigmaSubAdditive_isMeasure d R T mu.
+  (mu : set T -> \bar R) & Content_SigmaSubAdditive_isMeasure d R T mu.
 
 HB.instance Definition _ := Content_isMeasure.Build d T R mu
   (semiring_sigma_additive (measure_sigma_subadditive)).
@@ -1369,11 +1369,11 @@ Notation "{ 'sigma_finite_measure' 'set' T '->' '\bar' R }" :=
   (sigma_finite_measure T R) : ring_scope.
 
 HB.factory Record Measure_isSigmaFinite d (T : measurableType d)
-    (R : realType) (mu : set T -> \bar R) of isMeasure _ _ _ mu :=
+    (R : realType) (mu : set T -> \bar R) & isMeasure _ _ _ mu :=
   { sigma_finiteT : sigma_finite setT mu }.
 
 HB.builders Context d (T : measurableType d) (R : realType)
-  mu of @Measure_isSigmaFinite d T R mu.
+  mu & @Measure_isSigmaFinite d T R mu.
 
 Lemma sfinite : sfinite_measure mu.
 Proof. exact/sfinite_measure_sigma_finite/sigma_finiteT. Qed.
@@ -1413,10 +1413,10 @@ Notation "{ 'finite_measure' 'set' T '->' '\bar' R }" :=
 
 HB.factory Record Measure_isFinite d (T : measurableType d)
     (R : realType) (k : set T -> \bar R)
-  of isMeasure _ _ _ k := { fin_num_measure : fin_num_fun k }.
+  & isMeasure _ _ _ k := { fin_num_measure : fin_num_fun k }.
 
 HB.builders Context d (T : measurableType d) (R : realType) k
-  of Measure_isFinite d T R k.
+  & Measure_isFinite d T R k.
 
 Let sfinite : sfinite_measure k.
 Proof.
@@ -1473,12 +1473,12 @@ HB.instance Definition _ := @Measure_isFinite.Build _ T _ scale fin_num_scale.
 End finite_mscale.
 
 HB.factory Record Measure_isSFinite d (T : sigmaRingType d)
-    (R : realType) (k : set T -> \bar R) of isMeasure _ _ _ k := {
+    (R : realType) (k : set T -> \bar R) & isMeasure _ _ _ k := {
   s_finite : exists s : {finite_measure set T -> \bar R}^nat,
     forall U, measurable U -> k U = mseries s 0 U }.
 
 HB.builders Context d (T : sigmaRingType d) (R : realType)
-  k of Measure_isSFinite d T R k.
+  k & Measure_isSFinite d T R k.
 
 Let sfinite : sfinite_measure k.
 Proof.
@@ -1527,7 +1527,7 @@ Qed.
 End sfinite_measure.
 
 Definition mfrestr d (T : measurableType d) (R : realFieldType) (D : set T)
-    (f : set T -> \bar R) (mD : measurable D) of (f D < +oo)%E :=
+    (f : set T -> \bar R) (mD : measurable D) & (f D < +oo)%E :=
   mrestr f mD.
 
 Section measure_frestr.

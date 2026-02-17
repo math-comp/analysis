@@ -866,7 +866,7 @@ Notation "d .-measurable" := (@measurable d%mdisp) : classical_set_scope.
 Notation "'measurable" :=
   (@measurable default_measure_display) : classical_set_scope.
 
-HB.mixin Record SemiRingOfSets_isRingOfSets d T of SemiRingOfSets d T := {
+HB.mixin Record SemiRingOfSets_isRingOfSets d T & SemiRingOfSets d T := {
   measurableU : @setU_closed T measurable
 }.
 
@@ -874,7 +874,7 @@ HB.mixin Record SemiRingOfSets_isRingOfSets d T of SemiRingOfSets d T := {
 HB.structure Definition RingOfSets d :=
   {T of SemiRingOfSets d T & SemiRingOfSets_isRingOfSets d T }.
 
-HB.mixin Record RingOfSets_isAlgebraOfSets d T of RingOfSets d T := {
+HB.mixin Record RingOfSets_isAlgebraOfSets d T & RingOfSets d T := {
   measurableT : measurable [set: T]
 }.
 
@@ -882,12 +882,12 @@ HB.mixin Record RingOfSets_isAlgebraOfSets d T of RingOfSets d T := {
 HB.structure Definition AlgebraOfSets d :=
   {T of RingOfSets d T & RingOfSets_isAlgebraOfSets d T }.
 
-HB.mixin Record hasMeasurableCountableUnion d T of SemiRingOfSets d T := {
+HB.mixin Record hasMeasurableCountableUnion d T & SemiRingOfSets d T := {
   bigcupT_measurable : forall F : (set T)^nat, (forall i, measurable (F i)) ->
     measurable (\bigcup_i (F i))
 }.
 
-HB.builders Context d T of hasMeasurableCountableUnion d T.
+HB.builders Context d T & hasMeasurableCountableUnion d T.
 
 Let mU : @setU_closed T measurable.
 Proof.
@@ -903,7 +903,7 @@ HB.end.
 HB.structure Definition SigmaRing d :=
   {T of SemiRingOfSets d T & hasMeasurableCountableUnion d T}.
 
-HB.factory Record isSigmaRing (d : measure_display) T of Pointed T := {
+HB.factory Record isSigmaRing (d : measure_display) T & Pointed T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableD : setD_closed measurable ;
@@ -911,7 +911,7 @@ HB.factory Record isSigmaRing (d : measure_display) T of Pointed T := {
     measurable (\bigcup_i (F i))
 }.
 
-HB.builders Context d T of isSigmaRing d T.
+HB.builders Context d T & isSigmaRing d T.
 
 Let m0 : measurable set0. Proof. exact: measurable0. Qed.
 
@@ -931,14 +931,14 @@ HB.end.
 HB.structure Definition Measurable d :=
   {T of AlgebraOfSets d T & hasMeasurableCountableUnion d T }.
 
-HB.factory Record isRingOfSets (d : measure_display) T of Pointed T := {
+HB.factory Record isRingOfSets (d : measure_display) T & Pointed T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableU : setU_closed measurable;
   measurableD : setD_closed measurable;
 }.
 
-HB.builders Context d T of isRingOfSets d T.
+HB.builders Context d T & isRingOfSets d T.
 Implicit Types (A B C D : set T).
 
 Lemma mI : setI_closed measurable.
@@ -955,13 +955,13 @@ HB.instance Definition _ := SemiRingOfSets_isRingOfSets.Build d T measurableU.
 HB.end.
 
 HB.factory Record isRingOfSets_setY (d : measure_display) T
-    of Pointed T := {
+    & Pointed T := {
   measurable : set (set T) ;
   measurable_nonempty : measurable !=set0 ;
   measurable_setY : setY_closed measurable ;
   measurable_setI : setI_closed measurable }.
 
-HB.builders Context d T of isRingOfSets_setY d T.
+HB.builders Context d T & isRingOfSets_setY d T.
 
 Let m0 : measurable set0.
 Proof.
@@ -986,14 +986,14 @@ HB.instance Definition _ := isRingOfSets.Build d T m0 mU mD.
 
 HB.end.
 
-HB.factory Record isAlgebraOfSets (d : measure_display) T of Pointed T := {
+HB.factory Record isAlgebraOfSets (d : measure_display) T & Pointed T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableU : setU_closed measurable;
   measurableC : setC_closed measurable
 }.
 
-HB.builders Context d T of isAlgebraOfSets d T.
+HB.builders Context d T & isAlgebraOfSets d T.
 
 Lemma mD : setD_closed measurable.
 Proof.
@@ -1011,13 +1011,13 @@ HB.instance Definition _ := RingOfSets_isAlgebraOfSets.Build d T measurableT.
 
 HB.end.
 
-HB.factory Record isAlgebraOfSets_setD (d : measure_display) T of Pointed T := {
+HB.factory Record isAlgebraOfSets_setD (d : measure_display) T & Pointed T := {
   measurable : set (set T) ;
   measurableT : measurable [set: T] ;
   measurableD : setD_closed measurable
 }.
 
-HB.builders Context d T of isAlgebraOfSets_setD d T.
+HB.builders Context d T & isAlgebraOfSets_setD d T.
 
 Let m0 : measurable set0.
 Proof. by rewrite -(setDT setT); apply: measurableD; exact: measurableT. Qed.
@@ -1035,7 +1035,7 @@ HB.instance Definition _ := RingOfSets_isAlgebraOfSets.Build d T measurableT.
 
 HB.end.
 
-HB.factory Record isMeasurable (d : measure_display) T of Pointed T := {
+HB.factory Record isMeasurable (d : measure_display) T & Pointed T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableC : forall A, measurable A -> measurable (~` A) ;
@@ -1043,7 +1043,7 @@ HB.factory Record isMeasurable (d : measure_display) T of Pointed T := {
     measurable (\bigcup_i (F i))
 }.
 
-HB.builders Context d T of isMeasurable d T.
+HB.builders Context d T & isMeasurable d T.
 
 Obligation Tactic := idtac.
 

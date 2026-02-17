@@ -125,7 +125,7 @@ Unshelve. all: by end_near. Qed.
 End at_left_right_topologicalType.
 
 HB.mixin Record NormedZmod_PseudoMetric_eq (R : numDomainType) T
-    of Num.NormedZmodule R T & PseudoPointedMetric R T := {
+    & Num.NormedZmodule R T & PseudoPointedMetric R T := {
   pseudo_metric_ball_norm : ball = ball_ (fun x : T => `| x |)
 }.
 
@@ -136,11 +136,11 @@ HB.structure Definition PseudoMetricNormedZmod (R : numDomainType) :=
 
 (* alternative definition of a PseudoMetricNormedZmod *)
 HB.factory Record NormedZmoduleMetric (R : numDomainType) T
-    of Num.NormedZmodule R T & Metric R T & isPointed T := {
+    & Num.NormedZmodule R T & Metric R T & isPointed T := {
   mdist_norm : forall x y : T, mdist x y = `|y - x|
 }.
 
-HB.builders Context (R : numDomainType) T of NormedZmoduleMetric R T.
+HB.builders Context (R : numDomainType) T & NormedZmoduleMetric R T.
 
 Let pseudo_metric_ball_norm : ball = ball_ (fun x : T => `| x |).
 Proof.

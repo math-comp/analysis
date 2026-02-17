@@ -77,7 +77,7 @@ Local Open Scope ring_scope.
 (** Modules with a norm depending on a numDomain *)
 
 HB.mixin Record PseudoMetricNormedZmod_Tvs_isNormedModule K V
-    of PseudoMetricNormedZmod K V & Tvs K V := {
+    & PseudoMetricNormedZmod K V & Tvs K V := {
   normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
 
@@ -87,11 +87,11 @@ HB.structure Definition NormedModule (K : numDomainType) :=
    & PseudoMetricNormedZmod_Tvs_isNormedModule K T}.
 
 HB.factory Record PseudoMetricNormedZmod_Lmodule_isNormedModule (K : numFieldType) V
-    of PseudoMetricNormedZmod K V & GRing.Lmodule K V := {
+    & PseudoMetricNormedZmod K V & GRing.Lmodule K V := {
  normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
 
-HB.builders Context K V of PseudoMetricNormedZmod_Lmodule_isNormedModule K V.
+HB.builders Context K V & PseudoMetricNormedZmod_Lmodule_isNormedModule K V.
 
 (* NB: These lemmas are done later with more machinery. They should
    be simplified once normedtype is split, and the present section can
@@ -279,14 +279,14 @@ End pseudoMetric_from_normedZmodType.
 Export pseudoMetric_from_normedZmodType.Exports.
 
 HB.factory Record Lmodule_isNormed (R : numFieldType) M
-    of GRing.Lmodule R M := {
+    & GRing.Lmodule R M := {
  norm : M -> R;
  ler_normD : forall x y, norm (x + y) <= norm x + norm y ;
  normrZ : forall (l : R) (x : M), norm (l *: x) = `|l| * norm x ;
  normr0_eq0 : forall x : M, norm x = 0 -> x = 0
 }.
 
-HB.builders Context R M of Lmodule_isNormed R M.
+HB.builders Context R M & Lmodule_isNormed R M.
 
 Lemma normrMn x n : norm (x *+ n) = norm x *+ n.
 Proof.

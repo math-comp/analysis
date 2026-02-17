@@ -236,7 +236,7 @@ HB.instance Definition _ T := isFiltered.Build T (set_system T) id.
 HB.mixin Record selfFiltered T := {}.
 
 HB.factory Record hasNbhs T := { nbhs : T -> set_system T }.
-HB.builders Context T of hasNbhs T.
+HB.builders Context T & hasNbhs T.
   HB.instance Definition _ := isFiltered.Build T T nbhs.
   HB.instance Definition _ := selfFiltered.Build T.
 HB.end.
@@ -274,7 +274,7 @@ Definition prop_near1 {X} {fX : filteredType X} (x : fX)
    P (phP : ph {all1 P}) := nbhs x P.
 
 Definition prop_near2 {X X'} {fX : filteredType X} {fX' : filteredType X'}
-  (x : fX) (x' : fX') := fun P of ph {all2 P} =>
+  (x : fX) (x' : fX') := fun P & ph {all2 P} =>
   filter_prod (nbhs x) (nbhs x') (fun x => P x.1 x.2).
 
 End Near.

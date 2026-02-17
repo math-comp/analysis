@@ -939,7 +939,7 @@ Qed.
 End markov_chebyshev_cantelli.
 
 HB.mixin Record MeasurableFun_isDiscrete d d' (T : measurableType d)
-    (T' : measurableType d') (X : T -> T') of @MeasurableFun d d' T T' X := {
+    (T' : measurableType d') (X : T -> T') & @MeasurableFun d d' T T' X := {
   countable_range : countable (range X)
 }.
 
