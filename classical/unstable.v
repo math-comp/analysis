@@ -571,7 +571,6 @@ Module EndlessDenseOrderTheory.
 
 Section theory.
 Local Open Scope order_scope.
-(*Local Open Scope classical_set_scope.*)
 
 Definition is_endless_porderType {d} (T : porderType d) :=
   forall x : T, (exists y, y < x) /\ (exists y, x < y).

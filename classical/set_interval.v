@@ -55,10 +55,7 @@ Implicit Types (i j : interval T) (x y : T) (a : itv_bound T).
 Definition neitv i := [set` i] != set0.
 
 Lemma neitv_lt_bnd i : neitv i -> (i.1 < i.2)%O.
-Proof.
-case: i => a b; apply: contraNT => /= /itv_ge ab0.
-by apply/eqP; rewrite predeqE => t; split => //=; rewrite ab0.
-Qed.
+Proof. case: i => a b /set0P[] ?; exact: itv_boundlr_lt. Qed.
 
 Lemma set_itvP i j : [set` i] = [set` j] :> set _ <-> i =i j.
 Proof.
@@ -343,11 +340,11 @@ move=> cab; apply/seteqP; split => [x /= [xab /eqP]|x[|]]/=.
 Qed.
 
 Lemma setDitvoo (x y : T) (b1 b2 : bool) :
-  [set` Interval (BSide b1 x) (BSide b2 y)] != set0 ->
+  neitv (Interval (BSide b1 x) (BSide b2 y)) ->
   [set` Interval (BSide b1 x) (BSide b2 y)] `\` `]x, y[ =
   (if b1 then [set x] else set0) `|` (if b2 then set0 else [set y]).
 Proof.
-case/set0P => u /= /itv_boundlr_lt xy.
+move=> /neitv_lt_bnd/= xy.
 apply/seteqP; split => z/=; rewrite !in_itv/=; last first.
   move: b1 b2 xy.
   case=> -[]; rewrite !bnd_simp/= => + []// -> => ->; rewrite ?lexx ?ltxx//.
@@ -362,11 +359,11 @@ case=> -[]/= + /andP[]; rewrite ?ltNge !negbK => /orP[]; try move=> -> //.
 Qed.
 
 Lemma setDccitv (x y : T) (b1 b2 : bool) :
-  `[x, y]%classic != set0 ->
+  neitv `[x, y] ->
   `[x, y] `\` [set` Interval (BSide b1 x) (BSide b2 y)] =
   (if b1 then set0 else [set x]) `|` (if b2 then [set y] else set0).
 Proof.
-case/set0P => u /= /itv_boundlr_lt xy.
+move=> /neitv_lt_bnd/= xy.
 apply/seteqP; split => z/=; rewrite !in_itv/=; last first.
   move: b1 b2 xy.
   case=> -[]; rewrite !bnd_simp/= => + []// -> => ->; rewrite ?lexx ?ltxx//.
@@ -381,7 +378,7 @@ case=> -[]/= /orP[] + /andP[]; rewrite -?leNgt; try move=> /negPf -> //.
 Qed.
 
 Lemma setDitvoy a (x : T) (b : bool) :
-  [set` Interval (BSide b x) a] != set0 ->
+  neitv (Interval (BSide b x) a) ->
   [set` Interval (BSide b x) a] `\` `]x, +oo[ =
   (if b then [set x] else set0).
 Proof.
@@ -394,7 +391,7 @@ by case=> /andP[] ? _ /negP; rewrite -leNgt => ?; apply/le_anti/andP; split.
 Qed.
 
 Lemma setDitvNyo a (x : T) (b : bool) :
-  [set` Interval a (BSide b x)] != set0 ->
+  neitv (Interval a (BSide b x)) ->
   [set` Interval a (BSide b x)] `\` `]-oo, x[ =
   (if b then set0 else [set x]).
 Proof.
@@ -407,7 +404,7 @@ by case=> /andP[] _ ? /negP; rewrite -leNgt => ?; apply/le_anti/andP; split.
 Qed.
 
 Lemma setDcitvy a (x : T) (b : bool) :
-  [set` Interval (BLeft x) a] != set0 ->
+  neitv (Interval (BLeft x) a) ->
   [set` Interval (BLeft x) a] `\` [set` Interval (BSide b x) +oo%O] =
   (if b then set0 else [set x]).
 Proof.
@@ -420,9 +417,10 @@ by case=> /andP[] ? _ /negP; rewrite -leNgt => ?; apply/le_anti/andP; split.
 Qed.
 
 Lemma setDcitvNy a (x : T) (b : bool) :
-  [set` Interval a (BRight x)] != set0 ->
+  neitv (Interval a (BRight x)) ->
   [set` Interval a (BRight x)] `\` [set` Interval -oo%O (BSide b x)] =
   (if b then [set x] else set0).
+Proof.
 case/set0P => u xau.
 apply/seteqP; split => z/=; rewrite !in_itv/=; last first.
   move: xau; case: b; rewrite //= => /[swap] <-.
