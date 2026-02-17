@@ -71,10 +71,7 @@ Implicit Types (i j : interval T) (x y : T) (a : itv_bound T).
 Definition neitv i := [set` i] != set0.
 
 Lemma neitv_lt_bnd i : neitv i -> (i.1 < i.2)%O.
-Proof.
-case: i => a b; apply: contraNT => /= /itv_ge ab0.
-by apply/eqP; rewrite predeqE => t; split => //=; rewrite ab0.
-Qed.
+Proof. case: i => a b /set0P[] ?; exact: itv_boundlr_lt. Qed.
 
 Lemma set_itvP i j : [set` i] = [set` j] :> set _ <-> i =i j.
 Proof.
