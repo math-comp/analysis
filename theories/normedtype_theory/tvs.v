@@ -779,7 +779,7 @@ Lemma lcfun0 : (\0 : {linear_continuous E -> F}) =1 cst 0 :> (_ -> _). Proof. by
 
 (* NB TODO: move section cvg_composition_pseudometric in normedtype.v here, to
 generalize it on tvstype *)
-(* Next lemmas are duplicates *)
+(* Next lemmas are duplicates  - do it more properly with appropriate conte*)
 (* TODO once PR1544 is merged *)
 
 Lemma lcfun_cvgD (U : set_system E) {FF : Filter U} f g a b :
