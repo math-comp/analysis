@@ -1,11 +1,11 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
-From mathcomp Require Import archimedean interval.
+From mathcomp Require Import archimedean interval interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality contra ereal reals interval_inference.
+From mathcomp Require Import cardinality contra reals convex ereal.
 From mathcomp Require Import topology prodnormedzmodule tvs normedtype derive.
 From mathcomp Require Import sequences real_interval numfun.
 
@@ -1255,6 +1255,119 @@ move=> db [df fa]; split.
 Qed.
 
 End derivable_oo_continuousW.
+
+(* ref: http://www.math.wisc.edu/~nagel/convexity.pdf *)
+Section twice_derivable_convex.
+Local Open Scope convex_scope.
+Context {R : realType}.
+Variables (f : R -> R^o) (a b : R^o).
+
+Let Df := 'D_1 f.
+Let DDf := 'D_1 Df.
+
+Hypothesis DDf_ge0 : forall x, a < x < b -> 0 <= DDf x.
+Hypothesis cvg_left : (f @ b^'-) --> f b.
+Hypothesis cvg_right : (f @ a^'+) --> f a.
+
+Let L x := f a + factor a b x * (f b - f a).
+
+Let LE x : a < b -> L x = factor b a x * f a + factor a b x * f b.
+Proof.
+move=> ab; rewrite /L -(@onem_factor _ a) ?lt_eqF//.
+by rewrite mulrBl mul1r mulrBr addrA addrAC.
+Qed.
+
+Let convexf_ptP : a < b -> (forall x, a <= x <= b -> 0 <= L x - f x) ->
+  forall t, f (a <| t |> b) <= f a <| t |> f b.
+Proof.
+move=> ba h t; set x := a <| t |> b; have /h : a <= x <= b.
+  by have:= convR_itv t (ltW ba); rewrite in_itv/=.
+rewrite subr_ge0 => /le_trans; apply.
+by rewrite LE// /x {2}convC 2!convR_line_path !line_pathK//= ?(eq_sym b) lt_eqF.
+Qed.
+
+Hypothesis HDf : {in `]a, b[, forall x, derivable f x 1}.
+Hypothesis HDDf : {in `]a, b[, forall x, derivable Df x 1}.
+
+Let cDf : {within `]a, b[, continuous Df}.
+Proof. by apply: derivable_within_continuous => z zab; exact: HDDf. Qed.
+
+Lemma second_derivative_convex (t : {i01 R}) : a <= b ->
+  f (a <| t |> b) <= f a <| t |> f b.
+Proof.
+rewrite le_eqVlt => /predU1P[<-|/[dup] ab]; first by rewrite !convmm.
+move/convexf_ptP; apply => x /andP[].
+rewrite le_eqVlt => /predU1P[<-|ax].
+  by rewrite /L factorl mul0r addr0 subrr.
+rewrite le_eqVlt => /predU1P[->|xb].
+  by rewrite /L factorr ?lt_eqF// mul1r subrKC subrr.
+have [c2 Ic2 Hc2] : exists2 c2, x < c2 < b & (f b - f x) / (b - x) = 'D_1 f c2.
+  have xbf : {in `]x, b[, forall z, derivable f z 1} :=
+    in1_subset_itv (subset_itvW _ _ (ltW ax) (lexx b)) HDf.
+  have derivef z : z \in `]x, b[ -> is_derive z 1 f ('D_1 f z).
+    by move=> zxb; apply/derivableP/xbf; exact: zxb.
+  have [|z zxb fbfx] := MVT xb derivef.
+    apply/(derivable_oo_LRcontinuous_within (And3 xbf _ cvg_left)).
+    apply/cvg_at_right_filter.
+    have := derivable_within_continuous HDf.
+    rewrite continuous_open_subspace//.
+    by apply; rewrite inE/= in_itv/= ax.
+  by exists z => //; rewrite fbfx mulfK// subr_eq0 gt_eqF.
+have [c1 Ic1 Hc1] : exists2 c1, a < c1 < x & (f x - f a) / (x - a) = 'D_1 f c1.
+  have axf : {in `]a, x[, forall z, derivable f z 1} :=
+    in1_subset_itv (subset_itvW _ _ (lexx a) (ltW xb)) HDf.
+  have derivef z : z \in `]a, x[ -> is_derive z 1 f ('D_1 f z).
+    by move=> zax; apply /derivableP/axf.
+  have [|z zax fxfa] := MVT ax derivef.
+    apply/(derivable_oo_LRcontinuous_within (And3 axf cvg_right _)).
+    apply/cvg_at_left_filter.
+    have := derivable_within_continuous HDf.
+    rewrite continuous_open_subspace//.
+    by apply; rewrite inE/= in_itv/= ax.
+  by exists z; last rewrite fxfa mulfK// subr_eq0 gt_eqF.
+have c1c2 : c1 < c2.
+  by move: Ic2 Ic1 => /andP[+ _] => /[swap] /andP[_] /lt_trans; apply.
+have [d Id h] :
+    exists2 d, c1 < d < c2 & ('D_1 f c2 - 'D_1 f c1) / (c2 - c1) = DDf d.
+  have h : {in `]c1, c2[, forall z, derivable Df z 1}.
+    apply: (in1_subset_itv (subset_itvW _ _ (ltW (andP Ic1).1) (lexx _))).
+    apply: (in1_subset_itv (subset_itvW _ _ (lexx _) (ltW (andP Ic2).2))).
+    exact: HDDf.
+  have derivef z : z \in `]c1, c2[ -> is_derive z 1 Df ('D_1 Df z).
+    by move=> zc1c2; apply/derivableP/h.
+  have [|z zc1c2 {}h] := MVT c1c2 derivef.
+    apply: (derivable_oo_LRcontinuous_within (And3 h _ _)).
+    + apply: cvg_at_right_filter.
+      move: cDf; rewrite continuous_open_subspace//.
+      by apply; rewrite inE/= in_itv/= (andP Ic1).1 (lt_trans _ (andP Ic2).2).
+    + apply: cvg_at_left_filter.
+      move: cDf; rewrite continuous_open_subspace//.
+      by apply; rewrite inE/= in_itv/= (andP Ic2).2 (lt_trans (andP Ic1).1).
+  exists z; first by [].
+  rewrite h -mulrA divff; first exact: mulr1.
+  by rewrite subr_eq0 gt_eqF.
+have LfE : L x - f x =
+    ((x - a) * (b - x)) / (b - a) * ((f b - f x) / (b - x)) -
+    ((b - x) * factor a b x) * ((f x - f a) / (x - a)).
+  rewrite !mulrA 2!(mulrAC _ (b - x)) 2!(mulrAC _ (x - a)).
+  rewrite 2?mulfK ?subr_eq0 ?gt_eqF// 2!mulrBr opprB addrACA -opprD.
+  rewrite -2!mulrDl (addrC (x - a)) subrKA divff ?subr_eq0 ?gt_eqF// mul1r.
+  rewrite -(opprB x b) mulNr -mulrN -invrN opprB -2!/(factor _ _ _).
+  by rewrite -(@onem_factor _ a) ?lt_eqF// /onem mulrBl mul1r addrCA -mulrBr.
+have {Hc1 Hc2} -> : L x - f x = (b - x) * (x - a) * (c2 - c1) / (b - a) *
+                                (('D_1 f c2 - 'D_1 f c1) / (c2 - c1)).
+  rewrite LfE Hc2 Hc1 -(mulrC (b - x)) [in LHS]mulrA -mulrBr.
+  by rewrite mulrA 2![_ * (c2 - c1) * _]mulrAC mulfK// subr_eq0 gt_eqF.
+rewrite {}h mulr_ge0//; last first.
+  rewrite DDf_ge0//; apply/andP; split.
+    by rewrite (lt_trans (andP Ic1).1)//; case/andP : Id.
+  by rewrite (lt_trans (andP Id).2)//; case/andP : Ic2.
+rewrite mulr_ge0// ?invr_ge0 ?subr_ge0 ?(ltW ab)//.
+rewrite mulr_ge0// ?subr_ge0 ?(ltW c1c2)//.
+by rewrite mulr_ge0// subr_ge0 ltW.
+Qed.
+
+End twice_derivable_convex.
 
 Section real_inverse_functions.
 Variable R : realType.

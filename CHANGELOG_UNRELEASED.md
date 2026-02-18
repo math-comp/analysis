@@ -136,6 +136,9 @@
     * lemmas `pmf_ge0`, `pmf_gt0_countable`, `pmf_measurable`, `dRV_expectation`,
       `expectation_pmf`
 
+- moved from `convex.v` to `realfun.v`
+  + lemma `second_derivative_convex`
+
 ### Renamed
 - in `set_interval.v`:
   + `itv_is_ray` -> `itv_is_open_unbounded`
