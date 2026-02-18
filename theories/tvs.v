@@ -81,7 +81,7 @@ HB.structure Definition PreTopologicalNmodule :=
   {M of Topological M & GRing.Nmodule M}.
 
 HB.mixin Record PreTopologicalNmodule_isTopologicalNmodule M
-    of PreTopologicalNmodule M := {
+    & PreTopologicalNmodule M := {
   add_continuous : continuous (fun x : M * M => x.1 + x.2) ;
 }.
 
@@ -92,7 +92,7 @@ HB.structure Definition PreTopologicalZmodule :=
   {M of Topological M & GRing.Zmodule M}.
 
 HB.mixin Record TopologicalNmodule_isTopologicalZmodule M
-    of Topological M & GRing.Zmodule M := {
+    & Topological M & GRing.Zmodule M := {
   opp_continuous : continuous (-%R : M -> M) ;
 }.
 
@@ -102,11 +102,11 @@ HB.structure Definition TopologicalZmodule :=
         & TopologicalNmodule_isTopologicalZmodule M}.
 
 HB.factory Record PreTopologicalNmodule_isTopologicalZmodule M
-    of Topological M & GRing.Zmodule M := {
+    & Topological M & GRing.Zmodule M := {
   sub_continuous : continuous (fun x : M * M => x.1 - x.2) ;
 }.
 
-HB.builders Context M of PreTopologicalNmodule_isTopologicalZmodule M.
+HB.builders Context M & PreTopologicalNmodule_isTopologicalZmodule M.
 
 Lemma opp_continuous : continuous (-%R : M -> M).
 Proof.
@@ -156,7 +156,7 @@ HB.structure Definition PreTopologicalLmodule (K : numDomainType) :=
   {M of Topological M & GRing.Lmodule K M}.
 
 HB.mixin Record TopologicalZmodule_isTopologicalLmodule (R : numDomainType) M
-    of Topological M & GRing.Lmodule R M := {
+    & Topological M & GRing.Lmodule R M := {
   scale_continuous : continuous (fun z : R^o * M => z.1 *: z.2) ;
 }.
 
@@ -166,11 +166,11 @@ HB.structure Definition TopologicalLmodule (K : numDomainType) :=
         & TopologicalZmodule_isTopologicalLmodule K M}.
 
 HB.factory Record TopologicalNmodule_isTopologicalLmodule (R : numDomainType) M
-    of Topological M & GRing.Lmodule R M := {
+    & Topological M & GRing.Lmodule R M := {
   scale_continuous : continuous (fun z : R^o * M => z.1 *: z.2) ;
 }.
 
-HB.builders Context R M of TopologicalNmodule_isTopologicalLmodule R M.
+HB.builders Context R M & TopologicalNmodule_isTopologicalLmodule R M.
 
 Lemma opp_continuous : continuous (-%R : M -> M).
 Proof.
@@ -192,7 +192,7 @@ HB.end.
 
 HB.structure Definition PreUniformNmodule := {M of Uniform M & GRing.Nmodule M}.
 
-HB.mixin Record PreUniformNmodule_isUniformNmodule M of PreUniformNmodule M := {
+HB.mixin Record PreUniformNmodule_isUniformNmodule M & PreUniformNmodule M := {
   add_unif_continuous : unif_continuous (fun x : M * M => x.1 + x.2)
 }.
 
@@ -202,7 +202,7 @@ HB.structure Definition UniformNmodule :=
 HB.structure Definition PreUniformZmodule := {M of Uniform M & GRing.Zmodule M}.
 
 HB.mixin Record UniformNmodule_isUniformZmodule M
-    of Uniform M & GRing.Zmodule M := {
+    & Uniform M & GRing.Zmodule M := {
   opp_unif_continuous : unif_continuous (-%R : M -> M)
 }.
 
@@ -210,11 +210,11 @@ HB.structure Definition UniformZmodule :=
   {M of UniformNmodule M & GRing.Zmodule M & UniformNmodule_isUniformZmodule M}.
 
 HB.factory Record PreUniformNmodule_isUniformZmodule M
-    of Uniform M & GRing.Zmodule M := {
+    & Uniform M & GRing.Zmodule M := {
   sub_unif_continuous : unif_continuous (fun x : M * M => x.1 - x.2)
 }.
 
-HB.builders Context M of PreUniformNmodule_isUniformZmodule M.
+HB.builders Context M & PreUniformNmodule_isUniformZmodule M.
 
 Lemma opp_unif_continuous : unif_continuous (-%R : M -> M).
 Proof.
@@ -277,7 +277,7 @@ HB.structure Definition PreUniformLmodule (K : numDomainType) :=
   {M of Uniform M & GRing.Lmodule K M}.
 
 HB.mixin Record PreUniformLmodule_isUniformLmodule (R : numFieldType) M
-    of PreUniformLmodule R M := {
+    & PreUniformLmodule R M := {
   scale_unif_continuous : unif_continuous (fun z : R^o * M => z.1 *: z.2) ;
 }.
 
@@ -286,11 +286,11 @@ HB.structure Definition UniformLmodule (R : numFieldType) :=
         & PreUniformLmodule_isUniformLmodule R M}.
 
 HB.factory Record UniformNmodule_isUniformLmodule (R : numFieldType) M
-    of PreUniformLmodule R M := {
+    & PreUniformLmodule R M := {
   scale_unif_continuous : unif_continuous (fun z : R^o * M => z.1 *: z.2) ;
 }.
 
-HB.builders Context R M of UniformNmodule_isUniformLmodule R M.
+HB.builders Context R M & UniformNmodule_isUniformLmodule R M.
 
 Lemma opp_unif_continuous : unif_continuous (-%R : M -> M).
 Proof.
@@ -321,7 +321,7 @@ Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
   0 < lambda -> lambda < 1 -> lambda *: x + (1 - lambda) *: y \in A.
 
 HB.mixin Record Uniform_isTvs (R : numDomainType) E
-    of Uniform E & GRing.Lmodule R E := {
+    & Uniform E & GRing.Lmodule R E := {
   locally_convex : exists2 B : set (set E),
     (forall b, b \in B -> convex b) & basis B
 }.
@@ -367,14 +367,14 @@ Unshelve. all: by end_near. Qed.
 End properties_of_topologicalLmodule.
 
 HB.factory Record PreTopologicalLmod_isTvs (R : numDomainType) E
-    of Topological E & GRing.Lmodule R E := {
+    & Topological E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
   scale_continuous : continuous (fun z : R^o * E => z.1 *: z.2) ;
   locally_convex : exists2 B : set (set E),
     (forall b, b \in B -> convex b) & basis B
   }.
 
-HB.builders Context R E of PreTopologicalLmod_isTvs R E.
+HB.builders Context R E & PreTopologicalLmod_isTvs R E.
 
 Definition entourage : set_system (E * E) :=
   fun P => exists (U : set E), nbhs (0 : E) U  /\

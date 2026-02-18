@@ -29,7 +29,7 @@ Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-HB.mixin Record Discrete_ofNbhs T of Nbhs T := {
+HB.mixin Record Discrete_ofNbhs T & Nbhs T := {
   nbhs_principalE : (@nbhs T _) = principal_filter;
 }.
 
@@ -41,14 +41,14 @@ Definition discrete_ent {T} : set (set (T * T)) :=
 
 (** Note: having the discrete topology does not guarantee the discrete
     uniformity. Likewise for the discrete metric. Consider [set 1/n | n in R] *)
-HB.mixin Record Discrete_ofUniform T of Uniform T := {
+HB.mixin Record Discrete_ofUniform T & Uniform T := {
   uniform_discrete : @entourage T = discrete_ent
 }.
 
 Definition discrete_ball {R : numDomainType} {T} (x : T) (eps : R) y : Prop :=
   x = y.
 
-HB.mixin Record Discrete_ofPseudometric {R : numDomainType} T of
+HB.mixin Record Discrete_ofPseudometric {R : numDomainType} T &
     PseudoMetric R T := {
   metric_discrete : @ball R T = @discrete_ball R T
 }.
@@ -77,7 +77,7 @@ HB.structure Definition DiscreteUniform :=
 HB.structure Definition DiscretePseudoMetric {R : numDomainType} :=
   { T of Discrete_ofPseudometric R T & PseudoMetric R T & DiscreteUniform T}.
 
-HB.builders Context T of Discrete_ofNbhs T.
+HB.builders Context T & Discrete_ofNbhs T.
 
 Local Lemma principal_nbhs_filter (p : T) : ProperFilter (nbhs p).
 Proof. rewrite nbhs_principalE; exact: principal_filter_proper. Qed.
@@ -94,8 +94,8 @@ HB.instance Definition _ := @Nbhs_isNbhsTopological.Build T
 
 HB.end.
 
-HB.factory Record DiscreteUniform_ofNbhs T of Discrete_ofNbhs T & Nbhs T := {}.
-HB.builders Context T of DiscreteUniform_ofNbhs T.
+HB.factory Record DiscreteUniform_ofNbhs T & Discrete_ofNbhs T & Nbhs T := {}.
+HB.builders Context T & DiscreteUniform_ofNbhs T.
 
 Local Open Scope relation_scope.
 
@@ -140,10 +140,10 @@ HB.instance Definition _ := @Discrete_ofUniform.Build T erefl.
 
 HB.end.
 
-HB.factory Record DiscretePseudoMetric_ofUniform (R : numDomainType) T of
+HB.factory Record DiscretePseudoMetric_ofUniform (R : numDomainType) T &
   DiscreteUniform T := {}.
 
-HB.builders Context R T of DiscretePseudoMetric_ofUniform R T.
+HB.builders Context R T & DiscretePseudoMetric_ofUniform R T.
 
 Local Lemma discrete_ball_center x (eps : R) : 0 < eps ->
   @discrete_ball R T x eps x.

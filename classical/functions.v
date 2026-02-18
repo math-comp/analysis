@@ -253,7 +253,7 @@ Notation "{ 'oinv' aT >-> rT }" := (@OInversible.type aT rT) : type_scope.
 Notation "[ 'oinv'  'of'  f ]" := [the {oinv _ >-> _} of f : _ -> _] :
   form_scope.
 Definition phant_oinv aT rT (f : {oinv aT >-> rT})
-  of phantom (_ -> _) f := @oinv _ _ f.
+  & phantom (_ -> _) f := @oinv _ _ f.
 Notation "''oinv_' f" := (@phant_oinv _ _ _ (Phantom (_ -> _) f%FUN)).
 
 HB.structure Definition OInvFun aT rT A B :=
@@ -262,13 +262,13 @@ Notation "{ 'oinvfun' A >-> B }" := (@OInvFun.type _ _ A B) : type_scope.
 Notation "[ 'oinvfun'  'of'  f ]" :=
   [the {oinvfun _ >-> _} of f : _ -> _] : form_scope.
 
-HB.mixin Record OInv_Inv {aT rT} (f : aT -> rT) of OInv _ _ f := {
+HB.mixin Record OInv_Inv {aT rT} (f : aT -> rT) & OInv _ _ f := {
   inv : rT -> aT;
   oliftV : olift inv = 'oinv_f
 }.
 
 HB.factory Record Inv {aT rT} (f : aT -> rT) := { inv : rT -> aT  }.
-HB.builders Context {aT rT} (f : aT -> rT) of Inv _ _ f.
+HB.builders Context {aT rT} (f : aT -> rT) & Inv _ _ f.
   HB.instance Definition _ := OInv.Build _ _ f (olift inv).
   HB.instance Definition _ := OInv_Inv.Build _ _ f erefl.
 HB.end.
@@ -276,7 +276,7 @@ HB.end.
 HB.structure Definition Inversible aT rT := {f of Inv aT rT f}.
 Notation "{ 'inv' aT >->  rT }" := (@Inversible.type aT rT) : type_scope.
 Notation "[ 'inv'  'of'  f ]" := [the {inv _ >-> _} of f : _ -> _] : form_scope.
-Definition phant_inv aT rT (f : {inv aT >-> rT}) of phantom (_ -> _) f :=
+Definition phant_inv aT rT (f : {inv aT >-> rT}) & phantom (_ -> _) f :=
   @inv _ _ f.
 Notation "f ^-1" := (@inv _ _ f%function) (only printing) : function_scope.
 Notation "f ^-1" :=
@@ -292,7 +292,7 @@ Notation "[ 'invfun'  'of'  f ]" :=
   [the {invfun _ >-> _} of f : _ -> _] : form_scope.
 
 HB.mixin Record OInv_CanV {aT rT} {A : set aT} {B : set rT}
-  (f : aT -> rT) of OInv _ _ f := {
+  (f : aT -> rT) & OInv _ _ f := {
     oinvS : {homo 'oinv_f : x / B x >-> (some @` A) x};
     oinvK : {in B, ocancel 'oinv_f f};
   }.
@@ -302,7 +302,7 @@ HB.factory Record OCanV {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) := {
           oinvK : {in B, ocancel oinv f};
   }.
 HB.builders Context {aT rT} {A : set aT} {B : set rT} (f : aT -> rT)
-   of OCanV _ _ A B f.
+   & OCanV _ _ A B f.
  HB.instance Definition _ := OInv.Build _ _ f oinv.
  HB.instance Definition _ := OInv_CanV.Build _ _ A B f oinvS oinvK.
 HB.end.
@@ -331,7 +331,7 @@ Notation "{ 'splitsurjfun' A >-> B }" :=
 Notation "[ 'splitsurjfun'  'of'  f ]" :=
   [the {splitsurjfun _ >-> _} of f : _ -> _] : form_scope.
 
-HB.mixin Record OInv_Can aT rT (A : set aT) (f : aT -> rT) of OInv _ _ f :=
+HB.mixin Record OInv_Can aT rT (A : set aT) (f : aT -> rT) & OInv _ _ f :=
   { funoK : {in A, pcancel f 'oinv_f} }.
 
 HB.structure Definition Inject aT rT A :=
@@ -393,7 +393,7 @@ End ShortFunSyntax.
 (******************************************************************************)
 
 Definition phant_funS aT rT (A : set aT) (B : set rT)
-  (f : {fun A >-> B}) of phantom (_ -> _) f := @funS _ _ _ _ f.
+  (f : {fun A >-> B}) & phantom (_ -> _) f := @funS _ _ _ _ f.
 Notation "'funS_  f" := (phant_funS (Phantom (_ -> _) f))
   (at level 8, f at level 2) : form_scope.
 #[global] Hint Extern 0 (set_fun _ _ _) => solve [apply: funS] : core.
@@ -409,7 +409,7 @@ Definition mem_fun aT rT (A : set aT) (B : set rT) (f : {fun A >-> B}) :=
 #[global] Hint Extern 0 (prop_in1 _ _) => solve [apply: mem_fun] : core.
 
 Definition phant_mem_fun aT rT (A : set aT) (B : set rT)
-  (f : {fun A >-> B}) of phantom (_ -> _) f := homo_setP.2 (@funS _ _ _ _ f).
+  (f : {fun A >-> B}) & phantom (_ -> _) f := homo_setP.2 (@funS _ _ _ _ f).
 Notation "'mem_fun_  f" := (phant_mem_fun (Phantom (_ -> _) f))
   (at level 8, f at level 2) : form_scope.
 
@@ -417,12 +417,12 @@ Lemma some_inv {aT rT} (f : {inv aT >-> rT}) x : Some (f^-1 x) = 'oinv_f x.
 Proof. by rewrite -oliftV. Qed.
 
 Definition phant_oinvK aT rT (A : set aT) (B : set rT)
-   (f : {surj A >-> B}) of phantom (_ -> _) f := @oinvK _ _ _ _ f.
+   (f : {surj A >-> B}) & phantom (_ -> _) f := @oinvK _ _ _ _ f.
 Notation "'oinvK_ f" := (phant_oinvK (Phantom (_ -> _) f)) : form_scope.
 #[global] Hint Resolve oinvK : core.
 
 Definition phant_oinvS aT rT (A : set aT) (B : set rT)
-   (f : {surj A >-> B}) of phantom (_ -> _) f := @oinvS _ _ _ _ f.
+   (f : {surj A >-> B}) & phantom (_ -> _) f := @oinvS _ _ _ _ f.
 Notation "'oinvS_ f" := (phant_oinvS (Phantom (_ -> _) f)) : form_scope.
 #[global] Hint Resolve oinvS : core.
 
@@ -438,7 +438,7 @@ by have /cid2 [x Ax <-] := 'oinvS_f By => <-; constructor.
 Qed.
 
 Definition phant_oinvP aT rT (A : set aT) (B : set rT)
-   (f : {surj A >-> B}) of phantom (_ -> _) f := @oinvP _ _ _ _ f.
+   (f : {surj A >-> B}) & phantom (_ -> _) f := @oinvP _ _ _ _ f.
 Notation "'oinvP_ f" := (phant_oinvP (Phantom (_ -> _) f)) : form_scope.
 #[global] Hint Resolve oinvP : core.
 
@@ -446,7 +446,7 @@ Lemma oinvT {aT rT} {A : set aT} {B : set rT} {f : {surj A >-> B}} x :
   B x -> 'oinv_f x.
 Proof. by move=> /'oinvS_f [a Aa <-]. Qed.
 Definition phant_oinvT aT rT (A : set aT) (B : set rT)
-   (f : {surj A >-> B}) of phantom (_ -> _) f := @oinvT _ _ _ _ f.
+   (f : {surj A >-> B}) & phantom (_ -> _) f := @oinvT _ _ _ _ f.
 Notation "'oinvT_ f" := (phant_oinvT (Phantom (_ -> _) f)) : form_scope.
 #[global] Hint Resolve oinvT : core.
 
@@ -454,7 +454,7 @@ Lemma invK {aT rT} {A : set aT} {B : set rT} {f : {splitsurj A >-> B}} :
    {in B, cancel f^-1 f}.
 Proof. by move=> x Bx; rewrite -[x in RHS]'oinvK_f// -some_inv/=. Qed.
 Definition phant_invK aT rT (A : set aT) (B : set rT)
-   (f : {splitsurj A >-> B}) of phantom (_ -> _) f := @invK _ _ _ _ f.
+   (f : {splitsurj A >-> B}) & phantom (_ -> _) f := @invK _ _ _ _ f.
 Notation "'invK_ f" := (phant_invK (Phantom (_ -> _) f)) : form_scope.
 #[global] Hint Resolve invK : core.
 
@@ -462,18 +462,18 @@ Lemma invS {aT rT} {A : set aT} {B : set rT} {f : {splitsurj A >-> B}} :
   {homo f^-1 : x / B x >-> A x}.
 Proof. by move=> x /'oinvS_f/= [a Aa]; rewrite -some_inv => -[<-]. Qed.
 Definition phant_invS aT rT (A : set aT) (B : set rT)
-   {f : {splitsurjfun A >-> B}} of phantom (_ -> _) f := @invS _ _ _ _ f.
+   {f : {splitsurjfun A >-> B}} & phantom (_ -> _) f := @invS _ _ _ _ f.
 Notation "'invS_ f" := (phant_invS (Phantom (_ -> _) f)) : form_scope.
 #[global] Hint Resolve invS : core.
 
 Definition phant_funoK aT rT (A : set aT) (f : {inj A >-> rT})
-  of phantom (_ -> _) f := @funoK _ _ _ f.
+  & phantom (_ -> _) f := @funoK _ _ _ f.
 Notation "'funoK_ f" := (phant_funoK (Phantom (_ -> _) f)) : form_scope.
 #[global] Hint Resolve funoK : core.
 
 Definition inj {aT rT : nonPropType} {A : set aT} {f : {inj A >-> rT}} :
    {in A &, injective f} := pcan_in_inj funoK.
-Definition phant_inj aT rT (A : set aT) (f : {inj A >-> rT}) of
+Definition phant_inj aT rT (A : set aT) (f : {inj A >-> rT}) &
    phantom (_ -> _) f := @inj _ _ _ f.
 Notation "'inj_ f" := (phant_inj (Phantom (_ -> _) f)) : form_scope.
 
@@ -491,7 +491,7 @@ Lemma funK {aT rT : Type} {A : set aT} {s : {splitinj A >-> rT}} :
 Proof. by move=> x Ax; apply: Some_inj; rewrite some_inv funoK. Qed.
 
 Definition phant_funK aT rT (A : set aT) (f : {splitinj A >-> rT})
-  of phantom (_ -> _) f := @funK _ _ _ f.
+  & phantom (_ -> _) f := @funK _ _ _ f.
 Notation "'funK_  f" := (phant_funK (Phantom (_ -> _) f)) : form_scope.
 #[global] Hint Resolve funK : core.
 
@@ -508,21 +508,21 @@ Qed.
 
 (** Preliminary Builders *)
 
-HB.factory Record Inv_Can {aT rT} {A : set aT} (f : aT -> rT) of Inv _ _ f :=
+HB.factory Record Inv_Can {aT rT} {A : set aT} (f : aT -> rT) & Inv _ _ f :=
   { funK : {in A, cancel f f^-1} }.
-HB.builders Context {aT rT} A (f : aT -> rT) of @Inv_Can _ _ A f.
+HB.builders Context {aT rT} A (f : aT -> rT) & @Inv_Can _ _ A f.
   Local Lemma funoK: {in A, pcancel f 'oinv_f}.
   Proof. by rewrite -oliftV/=; apply: can_in_pcan; apply: funK. Qed.
   HB.instance Definition _ := OInv_Can.Build _ _ A f funoK.
 HB.end.
 
 HB.factory Record Inv_CanV {aT rT} {A : set aT} {B : set rT} (f : aT -> rT)
-     of Inv aT rT f := {
+     & Inv aT rT f := {
   invS : {homo f^-1 : x / B x >-> A x};
   invK : {in B, cancel f^-1 f};
 }.
 HB.builders Context {aT rT} {A : set aT} {B : set rT} (f : aT -> rT)
-    of Inv_CanV _ _ A B f.
+    & Inv_CanV _ _ A B f.
   #[local] Lemma oinvK : {in B, ocancel 'oinv_f f}.
   Proof. by move=> x Bx; rewrite -some_inv/= invK. Qed.
   #[local] Lemma oinvS : {homo 'oinv_f : x / B x >-> (some @` A) x}.
@@ -787,12 +787,12 @@ End Map.
 
 HB.factory Record CanV {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) :=
   { inv; invS : {homo inv : x / B x >-> A x}; invK : {in B, cancel inv f}; }.
-HB.builders Context {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) of CanV _ _ A B f.
+HB.builders Context {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) & CanV _ _ A B f.
  HB.instance Definition _ := Inv.Build _ _ f inv.
  HB.instance Definition _ := Inv_CanV.Build _ _ _ _ f invS invK.
 HB.end.
 
-HB.factory Record OInv_Can2 {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) of
+HB.factory Record OInv_Can2 {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) &
   @OInv _ _ f :=
   {
     funS :  {homo f : x / A x >-> B x};
@@ -800,7 +800,7 @@ HB.factory Record OInv_Can2 {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) of
     funoK : {in A, pcancel f 'oinv_f};
     oinvK : {in B, ocancel 'oinv_f f};
   }.
-HB.builders Context {aT rT} A B (f : aT -> rT) of OInv_Can2 _ _ A B f.
+HB.builders Context {aT rT} A B (f : aT -> rT) & OInv_Can2 _ _ A B f.
   HB.instance Definition _ := isFun.Build aT rT _ _ f funS.
   HB.instance Definition _ := OInv_Can.Build aT rT _ f funoK.
   HB.instance Definition _ := OInv_CanV.Build aT rT _ _ f oinvS oinvK.
@@ -812,7 +812,7 @@ HB.factory Record OCan2 {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) :=
            funoK : {in A, pcancel f oinv};
            oinvK : {in B, ocancel oinv f};
    }.
-HB.builders Context {aT rT} A B (f : aT -> rT) of OCan2 _ _ A B f.
+HB.builders Context {aT rT} A B (f : aT -> rT) & OCan2 _ _ A B f.
   HB.instance Definition _ := OInv.Build aT rT f oinv.
   HB.instance Definition _ := OInv_Can2.Build aT rT _ _ f funS oinvS funoK oinvK.
 HB.end.
@@ -820,19 +820,19 @@ HB.end.
 
 HB.factory Record Can {aT rT} {A : set aT} (f : aT -> rT) :=
   { inv; funK : {in A, cancel f inv} }.
-HB.builders Context {aT rT} A (f : aT -> rT) of @Can _ _ A f. (* bug if swap f and A *)
+HB.builders Context {aT rT} A (f : aT -> rT) & @Can _ _ A f. (* bug if swap f and A *)
  HB.instance Definition _ := Inv.Build _ _ f inv.
  HB.instance Definition _ := Inv_Can.Build _ _ _ f funK.
 HB.end.
 
-HB.factory Record Inv_Can2 {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) of
+HB.factory Record Inv_Can2 {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) &
    Inv _ _ f :=
    { funS : {homo f : x / A x >-> B x};
      invS : {homo f^-1 : x / B x >-> A x};
      funK : {in A, cancel f f^-1};
      invK : {in B, cancel f^-1 f};
    }.
-HB.builders Context {aT rT} A B (f : aT -> rT) of Inv_Can2 _ _ A B f.
+HB.builders Context {aT rT} A B (f : aT -> rT) & Inv_Can2 _ _ A B f.
   HB.instance Definition _ := isFun.Build aT rT A B f funS.
   HB.instance Definition _ := Inv_Can.Build aT rT A f funK.
   HB.instance Definition _ := @Inv_CanV.Build aT rT A B f invS invK.
@@ -844,15 +844,15 @@ HB.factory Record Can2 {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) :=
          funK : {in A, cancel f inv};
          invK : {in B, cancel inv f};
    }.
-HB.builders Context {aT rT} A B (f : aT -> rT) of Can2 _ _ A B f.
+HB.builders Context {aT rT} A B (f : aT -> rT) & Can2 _ _ A B f.
   HB.instance Definition _ := Inv.Build aT rT f inv.
   HB.instance Definition _ := Inv_Can2.Build aT rT A B f funS invS funK invK.
 HB.end.
 
-HB.factory Record SplitInjFun_CanV {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) of
+HB.factory Record SplitInjFun_CanV {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) &
      @SplitInjFun _ _ A B f :=
   { invS : {homo f^-1 : x / B x >-> A x}; injV : {in B &, injective f^-1} }.
-HB.builders Context {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) of SplitInjFun_CanV _ _ A B f.
+HB.builders Context {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) & SplitInjFun_CanV _ _ A B f.
   Let mem_inv := homo_setP.2 invS.
   Local Lemma invK : {in B, cancel f^-1 f}.
   Proof. by move=> x Bx; apply: injV; rewrite ?funK ?(mem_fun, mem_inv). Qed.
@@ -860,7 +860,7 @@ HB.builders Context {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) of SplitInj
 HB.end.
 
 HB.factory Record BijTT {aT rT} (f : aT -> rT) := { bij : bijective f }.
-HB.builders Context {aT rT} f of BijTT aT rT f.
+HB.builders Context {aT rT} f & BijTT aT rT f.
   Local Lemma exg : {g | cancel f g /\ cancel g f}.
   Proof. by apply: cid; case: bij => g; exists g. Qed.
   HB.instance Definition _ := Can2.Build aT rT setT setT f
@@ -910,7 +910,7 @@ Lemma surj {aT rT} {A : set aT} {B : set rT} {f : {surj A >-> B}} : set_surj A B
 Proof. by move=> b /'oinvP_f[x Ax _]; exists x. Qed.
 
 Definition phant_surj aT rT (A : set aT) (B : set rT) (f : {surj A >-> B})
-  of phantom (_ -> _) f := @surj _ _ _ _ f.
+  & phantom (_ -> _) f := @surj _ _ _ _ f.
 Notation "'surj_  f" := (phant_surj (Phantom (_ -> _) f)) : form_scope.
 #[global] Hint Extern 0 (set_surj _ _ _) => solve [apply: surj] : core.
 
@@ -976,7 +976,7 @@ Notation split := 'split_(fun=> point).
 
 HB.factory Record Inj {aT rT} (A : set aT) (f : aT -> rT) :=
    { inj : {in A &, injective f} }.
-HB.builders Context {aT rT} A (f : aT -> rT) of Inj _ _ A f.
+HB.builders Context {aT rT} A (f : aT -> rT) & Inj _ _ A f.
   HB.instance Definition _ := OInversible.copy f [fun f in A].
   Lemma funoK : {in A, pcancel f 'oinv_f}.
   Proof.
@@ -987,9 +987,9 @@ HB.builders Context {aT rT} A (f : aT -> rT) of Inj _ _ A f.
   HB.instance Definition _ := OInv_Can.Build _ _ _ f funoK.
 HB.end.
 
-HB.factory Record SurjFun_Inj {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) of
+HB.factory Record SurjFun_Inj {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) &
    @SurjFun _ _ A B f := { inj : {in A &, injective f} }.
-HB.builders Context {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) of
+HB.builders Context {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) &
     @SurjFun_Inj _ _ A B f.
   Let g := f.
   HB.instance Definition _ := Inj.Build _ _ A g inj.
@@ -1001,10 +1001,10 @@ HB.builders Context {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) of
  HB.instance Definition _ := fcan.
 HB.end.
 
-HB.factory Record SplitSurjFun_Inj {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) of
+HB.factory Record SplitSurjFun_Inj {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) &
      @SplitSurjFun _ _ A B f :=
    { inj : {in A &, injective f} }.
-HB.builders Context {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) of
+HB.builders Context {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) &
     @SplitSurjFun_Inj _ _ A B f.
   Local Lemma funK : {in A, cancel f f^-1%FUN}.
   Proof.  by move=> x Ax; apply: inj; rewrite ?invK ?mem_fun. Qed.
@@ -1477,7 +1477,7 @@ HB.instance Definition _ n := SplitBij.copy (@IIord n) (ordII^-1).
 (******************************************************************************)
 
 Definition glue {T T'} {X Y : set T} {A B : set T'}
-  of [disjoint X & Y] & [disjoint A & B] :=
+  & [disjoint X & Y] & [disjoint A & B] :=
   fun (f g : T -> T') (u : T) => if u \in X then f u else g u.
 
 Section Glue12.
@@ -1774,7 +1774,7 @@ Qed.
 
 Section set_bij_lemmas.
 Context {aT rT : Type} {A : set aT} {B : set rT} {f : aT -> rT}.
-Definition fun_set_bij of set_bij A B f := f.
+Definition fun_set_bij & set_bij A B f := f.
 Context (fbij : set_bij A B f).
 Local Notation g := (fun_set_bij fbij).
 
@@ -1806,7 +1806,7 @@ Coercion bij_of_set_bijection : set_bij >-> Bij.type.
 
 Lemma bij {aT rT} {A : set aT} {B : set rT} {f : {bij A >-> B}} : set_bij A B f.
 Proof. split=> //. Qed.
-Definition phant_bij aT rT (A : set aT) (B : set rT) (f : {bij A >-> B}) of
+Definition phant_bij aT rT (A : set aT) (B : set rT) (f : {bij A >-> B}) &
   phantom (_ -> _) f := @bij _ _ _ _ f.
 Notation "''bij_' f" := (phant_bij (Phantom (_ -> _) f)) : form_scope.
 #[global] Hint Extern 0 (set_bij _ _ _) => solve [apply: bij] : core.
@@ -1831,7 +1831,7 @@ Qed.
 Lemma bijTT {aT rT}  {f : {bij [set: aT] >-> [set: rT]}} : bijective f.
 Proof. by rewrite -setTT_bijective. Qed.
 Definition phant_bijTT aT rT (f : {bij [set: aT] >-> [set: rT]})
-   of phantom (_ -> _) f := @bijTT _ _ f.
+   & phantom (_ -> _) f := @bijTT _ _ f.
 Notation "''bijTT_'  f" := (phant_bijTT (Phantom (_ -> _) f)) : form_scope.
 #[global] Hint Extern 0 (bijective _) => solve [apply: bijTT] : core.
 

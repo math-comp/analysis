@@ -64,7 +64,7 @@ Lemma entourage_E {R : numDomainType} {T T'} (ball : T -> R -> set T') :
   @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
 Proof. by []. Qed.
 
-HB.mixin Record Uniform_isPseudoMetric (R : numDomainType) M of Uniform M := {
+HB.mixin Record Uniform_isPseudoMetric (R : numDomainType) M & Uniform M := {
   ball : M -> R -> M -> Prop ;
   ball_center_subproof : forall x (e : R), 0 < e -> ball x e x ;
   ball_sym_subproof : forall x y (e : R), ball x e y -> ball y e x ;
@@ -82,7 +82,7 @@ HB.structure Definition PseudoPointedMetric (R : numDomainType) :=
   {T of Pointed T & Uniform T & Uniform_isPseudoMetric R T}.
 
 (* was uniformityOfBallMixin *)
-HB.factory Record Nbhs_isPseudoMetric (R : numFieldType) M of Nbhs M := {
+HB.factory Record Nbhs_isPseudoMetric (R : numFieldType) M & Nbhs M := {
   ent : set_system (M * M);
   nbhsE : nbhs = nbhs_ ent;
   ball : M -> R -> M -> Prop ;
@@ -93,7 +93,7 @@ HB.factory Record Nbhs_isPseudoMetric (R : numFieldType) M of Nbhs M := {
   entourageE : ent = entourage_ ball
 }.
 
-HB.builders Context R M of Nbhs_isPseudoMetric R M.
+HB.builders Context R M & Nbhs_isPseudoMetric R M.
 Local Open Scope relation_scope.
 
 Let ball_le x : {homo ball x : e1 e2 / e1 <= e2 >-> e1 `<=` e2}.

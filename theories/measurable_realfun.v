@@ -1160,7 +1160,7 @@ HB.instance Definition _ f g := MeasurableFun.copy (\- f) (- f).
 HB.instance Definition _ f g := MeasurableFun.copy (f \- g) (f - g).
 HB.instance Definition _ f g := MeasurableFun.copy (f \* g) (f * g).
 
-Definition mindic (D : set aT) of measurable D : aT -> rT := \1_D.
+Definition mindic (D : set aT) & measurable D : aT -> rT := \1_D.
 
 Lemma mindicE (D : set aT) (mD : measurable D) :
   mindic mD = (fun x => (x \in D)%:R).

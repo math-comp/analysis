@@ -133,7 +133,7 @@ HB.factory Record isCharge d (T : semiRingOfSetsType d) (R : realFieldType)
 }.
 
 HB.builders Context d (T : semiRingOfSetsType d) (R : realFieldType)
-  mu of isCharge d T R mu.
+  mu & isCharge d T R mu.
 
 Let finite : fin_num_fun mu. Proof. exact: charge_finite. Qed.
 
@@ -224,7 +224,7 @@ End charge_lemmas.
 #[export] Hint Resolve charge_semi_additive2 : core.
 
 Definition measure_of_charge d (T : semiRingOfSetsType d) (R : numFieldType)
-  (nu : set T -> \bar R) of (forall E, 0 <= nu E) := nu.
+  (nu : set T -> \bar R) & (forall E, 0 <= nu E) := nu.
 
 Section measure_of_charge.
 Context d (T : ringOfSetsType d) (R : realFieldType).
@@ -283,7 +283,7 @@ Qed.
 End charge_lemmas_realFieldType.
 
 Definition crestr d (T : semiRingOfSetsType d) (R : numDomainType) (D : set T)
-  (f : set T -> \bar R) of measurable D := fun X => f (X `&` D).
+  (f : set T -> \bar R) & measurable D := fun X => f (X `&` D).
 
 Section charge_restriction.
 Context d (T : measurableType d) (R : numFieldType).
@@ -556,7 +556,7 @@ HB.instance Definition _ := isCharge.Build _ _ _ (pushforward nu f)
 End pushforward_charge.
 
 HB.builders Context d (T : measurableType d) (R : realType)
-  (mu : set T -> \bar R) of Measure_isFinite d T R mu.
+  (mu : set T -> \bar R) & Measure_isFinite d T R mu.
 
 Let mu0 : mu set0 = 0.
 Proof. by apply: measure0. Qed.

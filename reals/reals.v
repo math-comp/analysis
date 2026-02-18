@@ -118,7 +118,7 @@ End has_bound_lemmas.
 
 (* -------------------------------------------------------------------- *)
 
-HB.mixin Record ArchimedeanField_isReal R of Num.ArchiRealField R := {
+HB.mixin Record ArchimedeanField_isReal R & Num.ArchiRealField R := {
   sup_upper_bound_subdef : forall E : set R,
     has_sup E -> ubound E (supremum 0 E) ;
   sup_adherent_subdef : forall (E : set R) (eps : R),

@@ -1013,7 +1013,7 @@ Lemma is_cvg_geometric_series (R : archiRealFieldType) (a z : R) : `|z| < 1 ->
 Proof. by move=> /cvg_geometric_series/cvgP; apply. Qed.
 
 Definition normed_series_of (K : numDomainType) (V : normedModType K)
-    (u_ : V ^nat) of phantom V^nat (series u_) : K ^nat :=
+    (u_ : V ^nat) & phantom V^nat (series u_) : K ^nat :=
   [series `|u_ n|]_n.
 Notation "[ 'normed' s_ ]" := (@normed_series_of _ _ _ (Phantom _ s_)) : ring_scope.
 Arguments normed_series_of {K V} u_ _ n /.

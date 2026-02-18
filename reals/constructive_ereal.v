@@ -3859,10 +3859,10 @@ Arguments cmp0e {R i} _ {_}.
 Arguments neqe0 {R i} _ {_}.
 Arguments ext_widen_itv {R i} _ {_ _}.
 
-Definition posnume (R : numDomainType) of phant R :=
+Definition posnume (R : numDomainType) & phant R :=
   Itv.def (@ext_num_sem R) (Itv.Real `]0%Z, +oo[).
 Notation "{ 'posnum' '\bar' R }" := (@posnume _ (Phant R)) : type_scope.
-Definition nonnege (R : numDomainType) of phant R :=
+Definition nonnege (R : numDomainType) & phant R :=
   Itv.def (@ext_num_sem R) (Itv.Real `[0%Z, +oo[).
 Notation "{ 'nonneg' '\bar' R }" := (@nonnege _ (Phant R)) : type_scope.
 Notation "x %:pos" := (ext_widen_itv x%:itv : {posnum \bar _}) (only parsing)

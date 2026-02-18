@@ -32,7 +32,7 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-HB.mixin Record PseudoMetric_isMetric (K : numDomainType) M of PseudoMetric K M := {
+HB.mixin Record PseudoMetric_isMetric (K : numDomainType) M & PseudoMetric K M := {
   mdist : M -> M -> K ;
   mdist_ge0 : forall x y, 0 <= mdist x y ;
   mdist_positivity : forall x y, mdist x y = 0 -> x = y;
@@ -92,7 +92,7 @@ Qed.
 
 End metric_lemmas.
 
-HB.factory Record isMetric (K : numFieldType) (M : Type) of Choice M := {
+HB.factory Record isMetric (K : numFieldType) (M : Type) & Choice M := {
   mdist : M -> M -> K ;
   mdistxx : forall x, mdist x x = 0 ;
   mdist_positivity : forall x y, mdist x y = 0 -> x = y ;
@@ -100,7 +100,7 @@ HB.factory Record isMetric (K : numFieldType) (M : Type) of Choice M := {
   mdist_triangle : forall y x z, mdist x z <= mdist x y + mdist y z
 }.
 
-HB.builders Context K M of isMetric K M.
+HB.builders Context K M & isMetric K M.
 
 Let ball (x : M) e : set M := [set y | mdist x y < e].
 

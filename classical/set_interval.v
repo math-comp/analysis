@@ -609,7 +609,7 @@ Proof. by apply/funext => x; rewrite /factor subrr invr0 mulr0. Qed.
 Lemma factorl a b : factor a b a = 0.
 Proof. by rewrite /factor subrr mul0r. Qed.
 
-Definition ndline_path a b of a < b := line_path a b.
+Definition ndline_path a b & a < b := line_path a b.
 
 Lemma ndline_pathE a b (ab : a < b) : ndline_path ab = line_path a b.
 Proof. by []. Qed.

@@ -40,7 +40,7 @@ Local Open Scope ring_scope.
 Local Open Scope quotient_scope.
 
 HB.mixin Record isPath {i : bpTopologicalType} {T : topologicalType} (x y : T)
-    (f : i -> T) of isContinuous i T f := {
+    (f : i -> T) & isContinuous i T f := {
   path_zero : f zero = x;
   path_one : f one = y;
 }.

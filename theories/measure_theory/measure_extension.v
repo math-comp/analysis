@@ -122,7 +122,7 @@ HB.factory Record isSubsetOuterMeasure
   subset_outer_measure_sigma_subadditive :
     forall A F, subset_sigma_subadditive mu A F}.
 
-HB.builders Context {R : realType} T mu of isSubsetOuterMeasure R T mu.
+HB.builders Context {R : realType} T mu & isSubsetOuterMeasure R T mu.
 
 Lemma le_outer_measure : {homo mu : A B / A `<=` B >-> A <= B}.
 Proof.

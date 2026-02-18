@@ -787,7 +787,7 @@ Definition finite_norm d (T : measurableType d) (R : realType)
 
 HB.mixin Record isLfunction d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E) (f : T -> R)
-  of @MeasurableFun d _ T R f := {
+  & @MeasurableFun d _ T R f := {
   Lfunction_finite : finite_norm mu p f
 }.
 

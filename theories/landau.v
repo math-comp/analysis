@@ -319,7 +319,7 @@ Proof. by case: f => ?. Qed.
 Hint Resolve littleo_class : core.
 
 Definition littleo_clone (F : set_system T) (g : T -> W) (f : T -> V) (fT : {o_F g}) c
-  of phant_id (littleo_class fT) c := @Littleo F g f c.
+  & phant_id (littleo_class fT) c := @Littleo F g f c.
 Notation "[littleo 'of' f 'for' fT ]" := (@littleo_clone _ _ f fT _ idfun).
 Notation "[littleo 'of' f ]" := (@littleo_clone _ _ f _ _ idfun).
 
@@ -505,7 +505,7 @@ Proof. by case: f => ?. Qed.
 Hint Resolve bigO_class : core.
 
 Definition bigO_clone (F : set_system T) (g : T -> W) (f : T -> V) (fT : {O_F g}) c
-  of phant_id (bigO_class fT) c := @BigO F g f c.
+  & phant_id (bigO_class fT) c := @BigO F g f c.
 Notation "[bigO 'of' f 'for' fT ]" := (@bigO_clone _ _ f fT _ idfun).
 Notation "[bigO 'of' f ]" := (@bigO_clone _ _ f _ _ idfun).
 
@@ -1232,7 +1232,7 @@ Proof. by case: f => ?. Qed.
 Hint Resolve bigOmega_class : core.
 
 Definition bigOmega_clone {W} (F : set_system T) (g : T -> W) (f : T -> V)
-  (fT : {Omega_F g}) c of phant_id (bigOmega_class fT) c := @BigOmega W F g f c.
+  (fT : {Omega_F g}) c & phant_id (bigOmega_class fT) c := @BigOmega W F g f c.
 Notation "[bigOmega 'of' f 'for' fT ]" := (@bigOmega_clone _ _ _ f fT _ idfun).
 Notation "[bigOmega 'of' f ]" := (@bigOmega_clone _ _ _ f _ _ idfun).
 
@@ -1372,7 +1372,7 @@ Proof. by case: f => ?. Qed.
 Hint Resolve bigTheta_class : core.
 
 Definition bigTheta_clone {W} (F : set_system T) (g : T -> W) (f : T -> V)
-  (fT : {Theta_F g}) c of phant_id (bigTheta_class fT) c := @BigTheta W F g f c.
+  (fT : {Theta_F g}) c & phant_id (bigTheta_class fT) c := @BigTheta W F g f c.
 Notation "[bigTheta 'of' f 'for' fT ]" := (@bigTheta_clone _ _ _ f fT _ idfun).
 Notation "[bigTheta 'of' f ]" := (@bigTheta_clone _ _ _ f _ _ idfun).
 

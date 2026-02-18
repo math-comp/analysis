@@ -58,7 +58,7 @@ Proof. by []. Qed.
 
 Local Open Scope relation_scope.
 
-HB.mixin Record Nbhs_isUniform_mixin M of Nbhs M := {
+HB.mixin Record Nbhs_isUniform_mixin M & Nbhs M := {
   entourage : set_system (M * M);
   entourage_filter : Filter entourage;
   entourage_diagonal_subproof :
@@ -78,7 +78,7 @@ HB.structure Definition PointedUniform :=
   {T of PointedTopological T & Nbhs_isUniform_mixin T}.
 
 
-HB.factory Record Nbhs_isUniform M of Nbhs M := {
+HB.factory Record Nbhs_isUniform M & Nbhs M := {
   entourage : set_system (M * M);
   entourage_filter : Filter entourage;
   entourage_diagonal : forall A, entourage A -> diagonal `<=` A;
@@ -90,7 +90,7 @@ HB.factory Record Nbhs_isUniform M of Nbhs M := {
 
 Local Close Scope relation_scope.
 
-HB.builders Context M of Nbhs_isUniform M.
+HB.builders Context M & Nbhs_isUniform M.
 
 Let nbhs_filter (p : M) : ProperFilter (nbhs p).
 Proof.
@@ -126,7 +126,7 @@ HB.end.
 
 Local Open Scope relation_scope.
 
-HB.factory Record isUniform M of Choice M := {
+HB.factory Record isUniform M & Choice M := {
   entourage : set_system (M * M);
   entourage_filter : Filter entourage;
   entourage_diagonal : forall A, entourage A -> diagonal `<=` A;
@@ -137,7 +137,7 @@ HB.factory Record isUniform M of Choice M := {
 
 Local Close Scope relation_scope.
 
-HB.builders Context M of isUniform M.
+HB.builders Context M & isUniform M.
 
 HB.instance Definition _ := @hasNbhs.Build M (nbhs_ entourage).
 
@@ -346,7 +346,7 @@ move=> ab [/= /xsectionP Balima /xsectionP Blimb]; apply: sB2A.
 by exists (lim F).
 Qed.
 
-HB.mixin Record Uniform_isComplete T of PointedUniform T := {
+HB.mixin Record Uniform_isComplete T & PointedUniform T := {
   cauchy_cvg :
     forall (F : set_system T), ProperFilter F -> cauchy F -> cvg F
 }.

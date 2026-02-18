@@ -45,7 +45,7 @@ HB.structure Definition POrderedPointedTopological d :=
   {T of PointedTopological T & Order.isPOrder d T}.
 
 (** TODO: generalize this to a preOrder once that's available *)
-HB.mixin Record Order_isNbhs d (T : Type) of Nbhs T & Order.Total d T := {
+HB.mixin Record Order_isNbhs d (T : Type) & Nbhs T & Order.Total d T := {
   (** Note that just the intervals `]a, b[ doesn't work when the order has a
       top or bottom element, so we also need the rays `]-oo, b[ and ]a, +oo[ *)
   itv_nbhsE : forall x : T, nbhs x = filter_from

@@ -49,7 +49,7 @@ Structure distr := Distr {
   _  :  psum mu <= 1
 }.
 
-Definition distr_of of phant R & phant T := distr.
+Definition distr_of & phant R & phant T := distr.
 End Distribution.
 
 Notation "{ 'distr' T / R }" := (distr_of (Phant R) (Phant T))
