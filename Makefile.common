@@ -28,16 +28,6 @@ COQMAKE = $(MAKE) -f Makefile.coq $(COQMAKEOPTIONS)
 BRANCH_coq:= $(shell $(COQBIN)coqtop -v | head -1 | grep -E '(trunk|master)' \
 	      | wc -l | sed 's/ *//g')
 
-# coq version:
-ifneq "$(BRANCH_coq)" "0"
-COQVVV:= dev
-else
-COQVVV:=$(shell $(COQBIN)coqtop --print-version | cut -d" " -f1)
-endif
-
-COQV:= $(shell echo $(COQVVV) | cut -d"." -f1)
-COQVV:= $(shell echo $(COQVVV) | cut -d"." -f1-2)
-
 # all: ---------------------------------------------------------------
 all: config build
 
