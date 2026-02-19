@@ -41,6 +41,9 @@ digraph depend {
 		"theories/realfun"	[URL="mathcomp.analysis.realfun.html",
 			fillcolor=5,
 			label=realfun];
+		"theories/convex"	[URL="mathcomp.analysis.convex.html",
+			fillcolor=5,
+			label=convex];
 		"theories/derive"	[URL="mathcomp.analysis.derive.html",
 			fillcolor=5,
 			label=derive];
@@ -50,9 +53,6 @@ digraph depend {
 		"theories/exp"	[URL="mathcomp.analysis.exp.html",
 			fillcolor=5,
 			label=exp];
-		"theories/convex"	[URL="mathcomp.analysis.convex.html",
-			fillcolor=5,
-			label=convex];
 		"theories/trigo"	[URL="mathcomp.analysis.trigo.html",
 			fillcolor=5,
 			label=trigo];
@@ -483,6 +483,7 @@ digraph depend {
 	"theories/ereal" -> "theories/normedtype_theory/ereal_normedtype";
 	"theories/topology_theory/topology" -> "theories/ereal";
 	"theories/topology_theory/topology" -> "theories/function_spaces";
+	"theories/topology_theory/topology" -> "theories/convex";
 	"theories/landau" -> "theories/sequences";
 	"theories/landau" -> "theories/derive";
 	"theories/normedtype_theory/normedtype" -> "theories/landau";
@@ -546,14 +547,14 @@ digraph depend {
 	"theories/normedtype_theory/complete_normed_module" -> "theories/normedtype_theory/normedtype";
 	"theories/normedtype_theory/urysohn" -> "theories/normedtype_theory/normedtype";
 	"theories/normedtype_theory/vitali_lemma" -> "theories/normedtype_theory/normedtype";
-	"theories/realfun" -> "theories/convex";
+	"theories/realfun" -> "theories/exp";
 	"theories/realfun" -> "theories/lebesgue_stieltjes_measure";
+	"theories/convex" -> "theories/realfun";
 	"theories/derive" -> "theories/realfun";
 	"theories/numfun" -> "theories/realfun";
 	"theories/numfun" -> "theories/esum";
 	"theories/exp" -> "theories/measurable_realfun";
 	"theories/exp" -> "analysis_stdlib/Rstruct_topology";
-	"theories/convex" -> "theories/exp";
 	"theories/trigo" -> "theories/gauss_integral";
 	"theories/trigo" -> "theories/pi_irrational";
 	"theories/ftc" -> "theories/trigo";

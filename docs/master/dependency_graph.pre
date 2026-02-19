@@ -494,6 +494,7 @@ subgraph cluster_analysis { "theories/realfun"[label="realfun",URL="mathcomp.ana
   "reals/prodnormedzmodule" -> "theories/realfun";
   "reals/real_interval" -> "theories/realfun";
   "reals/reals" -> "theories/realfun";
+  "theories/convex" -> "theories/realfun";
   "theories/derive" -> "theories/realfun";
   "theories/ereal" -> "theories/realfun";
   "theories/normedtype_theory/normedtype" -> "theories/realfun";
@@ -1224,18 +1225,11 @@ subgraph cluster_analysis { "theories/probability_theory/probability"[label="pro
   "theories/probability_theory/random_variable" -> "theories/probability_theory/probability";
   "theories/probability_theory/uniform_distribution" -> "theories/probability_theory/probability";
 subgraph cluster_analysis { "theories/convex"[label="convex",URL="mathcomp.analysis.convex.html",fillcolor=5]}  "classical/boolp" -> "theories/convex";
-  "classical/cardinality" -> "theories/convex";
   "classical/classical_sets" -> "theories/convex";
-  "classical/functions" -> "theories/convex";
   "classical/mathcomp_extra" -> "theories/convex";
   "classical/set_interval" -> "theories/convex";
   "classical/unstable" -> "theories/convex";
-  "reals/prodnormedzmodule" -> "theories/convex";
   "reals/reals" -> "theories/convex";
-  "theories/derive" -> "theories/convex";
-  "theories/ereal" -> "theories/convex";
-  "theories/normedtype_theory/normedtype" -> "theories/convex";
-  "theories/realfun" -> "theories/convex";
   "theories/topology_theory/topology" -> "theories/convex";
 subgraph cluster_analysis { "theories/charge"[label="charge",URL="mathcomp.analysis.charge.html",fillcolor=5]}  "classical/boolp" -> "theories/charge";
   "classical/cardinality" -> "theories/charge";
