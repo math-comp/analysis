@@ -669,7 +669,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_ball_closureP" class="id"><a name="is_ball_closureP" class="" title="is_ball_closureP :
 forall {R : realFieldType} [A : set R] [x : R],
-is_ball A -> closure A x -> (`|cpoint A - x| <= (radius A)%:num)%R
+is_ball A ->
+topology_structure.closure A x -> (`|cpoint A - x| <= (radius A)%:num)%R
 
 is_ball_closureP is not universe polymorphic
 Arguments is_ball_closureP {R} [A]%_classical_set_scope [x]%_ring_scope _ _
@@ -692,7 +693,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_ball_closure" class="id"><a name="is_ball_closure" class="" title="is_ball_closure :
 forall {R : realFieldType} [A : set R],
 is_ball A ->
-closure A =
+topology_structure.closure A =
 closed_ball
   (V:=join_pseudometric_structure_PseudoPointedMetric_between_classical_sets_Pointed_and_pseudometric_structure_PseudoMetric
         (numFieldTopology.RealField_sort__canonical__pseudometric_structure_PseudoPointedMetric
@@ -1086,9 +1087,10 @@ Qed.</div></details>
 forall {R : realType} [I : Type] [B : I -> set R] [D : set I],
 (forall i : I, (0 < (radius (B i))%:num)%R) ->
 trivIset
-  (T:=join_pseudometric_structure_PseudoPointedMetric_between_classical_sets_Pointed_and_pseudometric_structure_PseudoMetric
-        (numFieldTopology.Real_sort__canonical__pseudometric_structure_PseudoPointedMetric
-           R))
+  (T:=topology_structure.Topological.sort
+        (join_pseudometric_structure_PseudoPointedMetric_between_classical_sets_Pointed_and_pseudometric_structure_PseudoMetric
+           (numFieldTopology.Real_sort__canonical__pseudometric_structure_PseudoPointedMetric
+              R)))
   D
   (fun i : I =>
    closed_ball
@@ -1151,15 +1153,19 @@ forall {R : realType} {I : eqType} [B : I -> set R] [V : set I] [r : R],
 {D : set I
 | [/\ countable (T:=I) D, (D `<=` V)%classic,
       trivIset
-        (T:=numFieldTopology.Real_sort__canonical__topology_structure_Topological
-              R)
-        D (closure \o B)
+        (T:=topology_structure.Topological.sort
+              (numFieldTopology.Real_sort__canonical__topology_structure_Topological
+                 R))
+        D (topology_structure.closure \o B)
     & forall i : I,
       V i ->
       exists j : I,
-        [/\ D j, (closure (B i) `&` closure (B j) !=set0)%classic,
+        [/\ D j,
+            (topology_structure.closure (B i)
+             `&` topology_structure.closure (B j) !=set0)%classic,
             ((radius (B i))%:num / 2 <= (radius (B j))%:num)%R
-          & (closure (B i) `<=` closure (5 *` B j))%classic]]}
+          & (topology_structure.closure (B i)
+             `<=` topology_structure.closure (5 *` B j))%classic]]}
 
 vitali_lemma_infinite is not universe polymorphic
 Arguments vitali_lemma_infinite {R I} [B]%_function_scope
@@ -1312,10 +1318,12 @@ forall {R : realType} {I : eqType} [B : I -> set R] [V : set I] [r : R],
 {D : set I
 | [/\ countable (T:=I) D, (D `<=` V)%classic,
       trivIset
-        (T:=numFieldTopology.Real_sort__canonical__topology_structure_Topological
-              R)
-        D (closure \o B)
-    & (cover V (closure \o B) `<=` cover D ((closure \o scale_ball 5) \o B))%classic]}
+        (T:=topology_structure.Topological.sort
+              (numFieldTopology.Real_sort__canonical__topology_structure_Topological
+                 R))
+        D (topology_structure.closure \o B)
+    & (cover V (topology_structure.closure \o B)
+       `<=` cover D ((topology_structure.closure \o scale_ball 5) \o B))%classic]}
 
 vitali_lemma_infinite_cover is not universe polymorphic
 Arguments vitali_lemma_infinite_cover {R I} [B]%_function_scope

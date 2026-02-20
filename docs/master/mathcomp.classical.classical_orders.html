@@ -357,7 +357,7 @@ library mathcomp.classical.classical_orders, line 29, characters 0-92
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="same_prefix" class="id"><a name="same_prefix" class="" title="same_prefix :
 forall {K : nat -> eqType},
-NatOrder.Datatypes_nat__canonical__Order_Preorder ->
+Order.NatOrder.Datatypes_nat__canonical__Order_Preorder ->
 (forall n : nat, K n) -> (forall n : nat, K n) -> Prop
 
 same_prefix is not universe polymorphic
@@ -370,14 +370,15 @@ library mathcomp.classical.classical_orders, line 35, characters 11-22
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="m:11" class="id"><a name="m:11" class="">m</a></span><span class="id">,</span> (<span class="id"><a href="mathcomp.classical.classical_orders.html#m:11">m</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.PreOSyntax.::order_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.PreOSyntax.::order_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_orders.html#n:7">n</a></span>)<span class="id">%O</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_orders.html#t1:9">t1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_orders.html#m:11">m</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_orders.html#t2:10">t2</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_orders.html#m:11">m</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="same_prefix0" class="id"><a name="same_prefix0" class="" title="same_prefix0 :
-forall {K : nat -> eqType} (t1 t2 : forall n : nat, K n), same_prefix 0 t1 t2
+forall {K : nat -> eqType} (t1 t2 : forall n : nat, K n),
+same_prefix 0%N t1 t2
 
 same_prefix0 is not universe polymorphic
 Expanded type for implicit arguments
 same_prefix0 :
 forall {K : nat -> eqType} (t1 t2 : forall n : nat, K n)
-  [m : NatOrder.Datatypes_nat__canonical__Order_Preorder],
-(m < 0)%O -> t1 m = t2 m
+  [m : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder],
+(m < 0%N)%O -> t1 m = t2 m
 
 Arguments same_prefix0 {K}%_function_scope (t1 t2)%_function_scope [m] _
 same_prefix0 is opaque
@@ -393,7 +394,7 @@ library mathcomp.classical.classical_orders, line 38, characters 6-18
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="same_prefix_sym" class="id"><a name="same_prefix_sym" class="" title="same_prefix_sym :
 forall {K : nat -> eqType}
-  (n : NatOrder.Datatypes_nat__canonical__Order_Preorder)
+  (n : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder)
   (t1 t2 : forall n0 : nat, K n0),
 same_prefix n t1 t2 <-> same_prefix n t2 t1
 
@@ -419,7 +420,7 @@ same_prefix_leq :
 forall {K : nat -> eqType} [n m : nat] [t1 t2 : forall n0 : nat, K n0],
 n <= m ->
 same_prefix m t1 t2 ->
-forall [m0 : NatOrder.Datatypes_nat__canonical__Order_Preorder],
+forall [m0 : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder],
 (m0 < n)%O -> t1 m0 = t2 m0
 
 Arguments same_prefix_leq {K}%_function_scope [n m]%_nat_scope
@@ -439,7 +440,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="same_prefix_refl" class="id"><a name="same_prefix_refl" class="" title="same_prefix_refl :
 forall {K : nat -> eqType}
-  [n : NatOrder.Datatypes_nat__canonical__Order_Preorder]
+  [n : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder]
   (x : forall n0 : nat, K n0),
 same_prefix n x x
 
@@ -447,9 +448,9 @@ same_prefix_refl is not universe polymorphic
 Expanded type for implicit arguments
 same_prefix_refl :
 forall {K : nat -> eqType}
-  [n : NatOrder.Datatypes_nat__canonical__Order_Preorder]
+  [n : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder]
   (x : forall n0 : nat, K n0)
-  [m : NatOrder.Datatypes_nat__canonical__Order_Preorder],
+  [m : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder],
 (m < n)%O -> x m = x m
 
 Arguments same_prefix_refl {K}%_function_scope [n] x%_function_scope [m] _
@@ -465,7 +466,7 @@ library mathcomp.classical.classical_orders, line 51, characters 6-22
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="same_prefix_trans" class="id"><a name="same_prefix_trans" class="" title="same_prefix_trans :
 forall {K : nat -> eqType}
-  [n : NatOrder.Datatypes_nat__canonical__Order_Preorder]
+  [n : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder]
   [x y z : forall n0 : nat, K n0],
 same_prefix n x y -> same_prefix n y z -> same_prefix n x z
 
@@ -473,11 +474,11 @@ same_prefix_trans is not universe polymorphic
 Expanded type for implicit arguments
 same_prefix_trans :
 forall {K : nat -> eqType}
-  [n : NatOrder.Datatypes_nat__canonical__Order_Preorder]
+  [n : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder]
   [x y z : forall n0 : nat, K n0],
 same_prefix n x y ->
 same_prefix n y z ->
-forall [m : NatOrder.Datatypes_nat__canonical__Order_Preorder],
+forall [m : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder],
 (m < n)%O -> x m = z m
 
 Arguments same_prefix_trans {K}%_function_scope [n] 
@@ -529,7 +530,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="first_diff_unique" class="id"><a name="first_diff_unique" class="" title="first_diff_unique :
 forall {K : nat -> eqType} [x y : forall n : nat, K n]
-  [n m : NatOrder.Datatypes_nat__canonical__Order_Preorder],
+  [n m : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder],
 same_prefix n x y -> x n != y n -> same_prefix m x y -> x m != y m -> n = m
 
 first_diff_unique is not universe polymorphic
@@ -805,7 +806,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="start_with" class="id"><a name="start_with" class="" title="start_with :
 forall {K : nat -> eqType},
-NatOrder.Datatypes_nat__canonical__Order_Preorder ->
+Order.NatOrder.Datatypes_nat__canonical__Order_Preorder ->
 (forall n : nat, K n) -> (forall n : nat, K n) -> forall i : nat, K i
 
 start_with is not universe polymorphic
@@ -820,7 +821,7 @@ library mathcomp.classical.classical_orders, line 183, characters 11-21
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="start_with_prefix" class="id"><a name="start_with_prefix" class="" title="start_with_prefix :
 forall {K : nat -> eqType}
-  [n : NatOrder.Datatypes_nat__canonical__Order_Preorder]
+  [n : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder]
   (x y : forall n0 : nat, K n0),
 same_prefix n x (start_with n x y)
 
@@ -828,9 +829,9 @@ start_with_prefix is not universe polymorphic
 Expanded type for implicit arguments
 start_with_prefix :
 forall {K : nat -> eqType}
-  [n : NatOrder.Datatypes_nat__canonical__Order_Preorder]
+  [n : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder]
   (x y : forall n0 : nat, K n0)
-  [m : NatOrder.Datatypes_nat__canonical__Order_Preorder],
+  [m : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder],
 (m < n)%O -> x m = start_with n x y m
 
 Arguments start_with_prefix {K}%_function_scope [n] 
@@ -874,7 +875,7 @@ library mathcomp.classical.classical_orders, line 186, characters 6-23
 <span class="gallina-kwd"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_orders.html#big_lexi_le_trans">big_lexi_le_trans</a></span><span class="id"> =&gt;</span><span class="id"> n;</span><span class="id"> [exact:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.le_trans">le_trans</a></span><span class="id">|exact:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.le_anti">le_anti</a></span><span class="id">]</span>. Qed.</div></details>
 <br/>
 <span id="classical_orders_big_lexi_order__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="Order_Le_isPOrder__to__Order_isDuallyPreorder" class="id"><span id="Order_Le_isPOrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="HB_unnamed_factory_7" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_POrder" class="" title="classical_orders_big_lexi_order__canonical__Order_POrder :
-forall {d : disp_t}, (nat -> porderType d) -> porderType d
+forall {d : Order.disp_t}, (nat -> porderType d) -> porderType d
 
 classical_orders_big_lexi_order__canonical__Order_POrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_POrder 
@@ -885,7 +886,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 205, characters 0-135
 ">HB</a></span></span></span></span></span></span></span>.<span id="classical_orders_big_lexi_order__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="Order_Le_isPOrder__to__Order_isDuallyPreorder" class="id"><span id="Order_Le_isPOrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="HB_unnamed_factory_7" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_POrder" class="" title="classical_orders_big_lexi_order__canonical__Order_POrder :
-forall {d : disp_t}, (nat -> porderType d) -> porderType d
+forall {d : Order.disp_t}, (nat -> porderType d) -> porderType d
 
 classical_orders_big_lexi_order__canonical__Order_POrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_POrder 
@@ -896,7 +897,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 205, characters 0-135
 ">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="classical_orders_big_lexi_order__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="Order_Le_isPOrder__to__Order_isDuallyPreorder" class="id"><span id="Order_Le_isPOrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="HB_unnamed_factory_7" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_POrder" class="" title="classical_orders_big_lexi_order__canonical__Order_POrder :
-forall {d : disp_t}, (nat -> porderType d) -> porderType d
+forall {d : Order.disp_t}, (nat -> porderType d) -> porderType d
 
 classical_orders_big_lexi_order__canonical__Order_POrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_POrder 
@@ -907,7 +908,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 205, characters 0-135
 "> _</a></span></span></span></span></span></span></span><span id="classical_orders_big_lexi_order__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="Order_Le_isPOrder__to__Order_isDuallyPreorder" class="id"><span id="Order_Le_isPOrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="HB_unnamed_factory_7" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_POrder" class="" title="classical_orders_big_lexi_order__canonical__Order_POrder :
-forall {d : disp_t}, (nat -> porderType d) -> porderType d
+forall {d : Order.disp_t}, (nat -> porderType d) -> porderType d
 
 classical_orders_big_lexi_order__canonical__Order_POrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_POrder 
@@ -918,7 +919,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 205, characters 0-135
 "> :=</a></span></span></span></span></span></span></span><span id="classical_orders_big_lexi_order__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="Order_Le_isPOrder__to__Order_isDuallyPreorder" class="id"><span id="Order_Le_isPOrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="HB_unnamed_factory_7" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_POrder" class="" title="classical_orders_big_lexi_order__canonical__Order_POrder :
-forall {d : disp_t}, (nat -> porderType d) -> porderType d
+forall {d : Order.disp_t}, (nat -> porderType d) -> porderType d
 
 classical_orders_big_lexi_order__canonical__Order_POrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_POrder 
@@ -932,7 +933,7 @@ library mathcomp.classical.classical_orders, line 205, characters 0-135
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_orders.html#big_lexi_ord_reflexive">big_lexi_ord_reflexive</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_orders.html#big_lexi_ord_anti">big_lexi_ord_anti</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_orders.html#big_lexi_ord_trans">big_lexi_ord_trans</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="leEbig_lexi_order" class="id"><a name="leEbig_lexi_order" class="" title="leEbig_lexi_order :
-forall {d : disp_t} {K : nat -> porderType d}
+forall {d : Order.disp_t} {K : nat -> porderType d}
   (a b : big_lexi_order (fun x : nat => K x)),
 (a <= b)%O =
 match first_diff a b with
@@ -967,7 +968,7 @@ library mathcomp.classical.classical_orders, line 208, characters 6-23
 <span class="gallina-kwd"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_orders.html#big_lexi_le_total">big_lexi_le_total</a></span><span class="id"> =&gt;</span><span class="id"> ?;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TotalTheory.le_total">le_total</a></span>. Qed.</div></details>
 <br/>
 <span id="classical_orders_big_lexi_order__canonical__Order_Total" class="id"><span id="HB_unnamed_mixin_20" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_DistrLattice" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_Lattice" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_MeetSemilattice" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_JoinSemilattice" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="Order_POrder_isTotal__to__Order_POrder_isMeetSemilattice" class="id"><span id="Order_POrder_isTotal__to__Order_POrder_isJoinSemilattice" class="id"><span id="Order_POrder_isTotal__to__Order_DistrLattice_isTotal" class="id"><span id="Order_POrder_isTotal__to__Order_Lattice_isDistributive" class="id"><span id="HB_unnamed_factory_12" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_Total" class="" title="classical_orders_big_lexi_order__canonical__Order_Total :
-forall {d : disp_t}, (nat -> orderType d) -> orderType d
+forall {d : Order.disp_t}, (nat -> orderType d) -> orderType d
 
 classical_orders_big_lexi_order__canonical__Order_Total is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_Total 
@@ -978,7 +979,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 221, characters 0-97
 ">HB</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="classical_orders_big_lexi_order__canonical__Order_Total" class="id"><span id="HB_unnamed_mixin_20" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_DistrLattice" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_Lattice" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_MeetSemilattice" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_JoinSemilattice" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="Order_POrder_isTotal__to__Order_POrder_isMeetSemilattice" class="id"><span id="Order_POrder_isTotal__to__Order_POrder_isJoinSemilattice" class="id"><span id="Order_POrder_isTotal__to__Order_DistrLattice_isTotal" class="id"><span id="Order_POrder_isTotal__to__Order_Lattice_isDistributive" class="id"><span id="HB_unnamed_factory_12" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_Total" class="" title="classical_orders_big_lexi_order__canonical__Order_Total :
-forall {d : disp_t}, (nat -> orderType d) -> orderType d
+forall {d : Order.disp_t}, (nat -> orderType d) -> orderType d
 
 classical_orders_big_lexi_order__canonical__Order_Total is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_Total 
@@ -989,7 +990,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 221, characters 0-97
 ">instance</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="classical_orders_big_lexi_order__canonical__Order_Total" class="id"><span id="HB_unnamed_mixin_20" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_DistrLattice" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_Lattice" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_MeetSemilattice" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_JoinSemilattice" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="Order_POrder_isTotal__to__Order_POrder_isMeetSemilattice" class="id"><span id="Order_POrder_isTotal__to__Order_POrder_isJoinSemilattice" class="id"><span id="Order_POrder_isTotal__to__Order_DistrLattice_isTotal" class="id"><span id="Order_POrder_isTotal__to__Order_Lattice_isDistributive" class="id"><span id="HB_unnamed_factory_12" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_Total" class="" title="classical_orders_big_lexi_order__canonical__Order_Total :
-forall {d : disp_t}, (nat -> orderType d) -> orderType d
+forall {d : Order.disp_t}, (nat -> orderType d) -> orderType d
 
 classical_orders_big_lexi_order__canonical__Order_Total is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_Total 
@@ -1000,7 +1001,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 221, characters 0-97
 "> _</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="classical_orders_big_lexi_order__canonical__Order_Total" class="id"><span id="HB_unnamed_mixin_20" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_DistrLattice" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_Lattice" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_MeetSemilattice" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_JoinSemilattice" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="Order_POrder_isTotal__to__Order_POrder_isMeetSemilattice" class="id"><span id="Order_POrder_isTotal__to__Order_POrder_isJoinSemilattice" class="id"><span id="Order_POrder_isTotal__to__Order_DistrLattice_isTotal" class="id"><span id="Order_POrder_isTotal__to__Order_Lattice_isDistributive" class="id"><span id="HB_unnamed_factory_12" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_Total" class="" title="classical_orders_big_lexi_order__canonical__Order_Total :
-forall {d : disp_t}, (nat -> orderType d) -> orderType d
+forall {d : Order.disp_t}, (nat -> orderType d) -> orderType d
 
 classical_orders_big_lexi_order__canonical__Order_Total is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_Total 
@@ -1011,7 +1012,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 221, characters 0-97
 "> :=</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="classical_orders_big_lexi_order__canonical__Order_Total" class="id"><span id="HB_unnamed_mixin_20" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_DistrLattice" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_Lattice" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_MeetSemilattice" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_JoinSemilattice" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="Order_POrder_isTotal__to__Order_POrder_isMeetSemilattice" class="id"><span id="Order_POrder_isTotal__to__Order_POrder_isJoinSemilattice" class="id"><span id="Order_POrder_isTotal__to__Order_DistrLattice_isTotal" class="id"><span id="Order_POrder_isTotal__to__Order_Lattice_isDistributive" class="id"><span id="HB_unnamed_factory_12" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_Total" class="" title="classical_orders_big_lexi_order__canonical__Order_Total :
-forall {d : disp_t}, (nat -> orderType d) -> orderType d
+forall {d : Order.disp_t}, (nat -> orderType d) -> orderType d
 
 classical_orders_big_lexi_order__canonical__Order_Total is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_Total 
@@ -1039,7 +1040,7 @@ library mathcomp.classical.classical_orders, line 221, characters 0-97
 Qed.</div></details>
 <br/>
 <span id="classical_orders_big_lexi_order__canonical__Order_BPOrder" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_BPreorder" class="id"><span id="HB_unnamed_factory_21" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_BPOrder" class="" title="classical_orders_big_lexi_order__canonical__Order_BPOrder :
-forall {d : disp_t}, (nat -> bPOrderType d) -> bPOrderType d
+forall {d : Order.disp_t}, (nat -> bPOrderType d) -> bPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_BPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_BPOrder 
@@ -1050,7 +1051,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 235, characters 0-88
 ">HB</a></span></span></span>.<span id="classical_orders_big_lexi_order__canonical__Order_BPOrder" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_BPreorder" class="id"><span id="HB_unnamed_factory_21" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_BPOrder" class="" title="classical_orders_big_lexi_order__canonical__Order_BPOrder :
-forall {d : disp_t}, (nat -> bPOrderType d) -> bPOrderType d
+forall {d : Order.disp_t}, (nat -> bPOrderType d) -> bPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_BPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_BPOrder 
@@ -1061,7 +1062,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 235, characters 0-88
 ">instance</a></span></span></span><span class="vernacular"> Definition</span><span id="classical_orders_big_lexi_order__canonical__Order_BPOrder" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_BPreorder" class="id"><span id="HB_unnamed_factory_21" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_BPOrder" class="" title="classical_orders_big_lexi_order__canonical__Order_BPOrder :
-forall {d : disp_t}, (nat -> bPOrderType d) -> bPOrderType d
+forall {d : Order.disp_t}, (nat -> bPOrderType d) -> bPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_BPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_BPOrder 
@@ -1072,7 +1073,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 235, characters 0-88
 "> _</a></span></span></span><span id="classical_orders_big_lexi_order__canonical__Order_BPOrder" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_BPreorder" class="id"><span id="HB_unnamed_factory_21" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_BPOrder" class="" title="classical_orders_big_lexi_order__canonical__Order_BPOrder :
-forall {d : disp_t}, (nat -> bPOrderType d) -> bPOrderType d
+forall {d : Order.disp_t}, (nat -> bPOrderType d) -> bPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_BPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_BPOrder 
@@ -1083,7 +1084,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 235, characters 0-88
 "> :=</a></span></span></span><span id="classical_orders_big_lexi_order__canonical__Order_BPOrder" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_BPreorder" class="id"><span id="HB_unnamed_factory_21" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_BPOrder" class="" title="classical_orders_big_lexi_order__canonical__Order_BPOrder :
-forall {d : disp_t}, (nat -> bPOrderType d) -> bPOrderType d
+forall {d : Order.disp_t}, (nat -> bPOrderType d) -> bPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_BPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_BPOrder 
@@ -1111,7 +1112,7 @@ library mathcomp.classical.classical_orders, line 235, characters 0-88
 Qed.</div></details>
 <br/>
 <span id="classical_orders_big_lexi_order__canonical__Order_TPOrder" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_TPreorder" class="id"><span id="HB_unnamed_factory_23" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_TPOrder" class="" title="classical_orders_big_lexi_order__canonical__Order_TPOrder :
-forall {d : disp_t}, (nat -> tPOrderType d) -> tPOrderType d
+forall {d : Order.disp_t}, (nat -> tPOrderType d) -> tPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_TPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_TPOrder 
@@ -1122,7 +1123,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 249, characters 0-85
 ">HB</a></span></span></span>.<span id="classical_orders_big_lexi_order__canonical__Order_TPOrder" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_TPreorder" class="id"><span id="HB_unnamed_factory_23" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_TPOrder" class="" title="classical_orders_big_lexi_order__canonical__Order_TPOrder :
-forall {d : disp_t}, (nat -> tPOrderType d) -> tPOrderType d
+forall {d : Order.disp_t}, (nat -> tPOrderType d) -> tPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_TPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_TPOrder 
@@ -1133,7 +1134,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 249, characters 0-85
 ">instance</a></span></span></span><span class="vernacular"> Definition</span><span id="classical_orders_big_lexi_order__canonical__Order_TPOrder" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_TPreorder" class="id"><span id="HB_unnamed_factory_23" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_TPOrder" class="" title="classical_orders_big_lexi_order__canonical__Order_TPOrder :
-forall {d : disp_t}, (nat -> tPOrderType d) -> tPOrderType d
+forall {d : Order.disp_t}, (nat -> tPOrderType d) -> tPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_TPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_TPOrder 
@@ -1144,7 +1145,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 249, characters 0-85
 "> _</a></span></span></span><span id="classical_orders_big_lexi_order__canonical__Order_TPOrder" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_TPreorder" class="id"><span id="HB_unnamed_factory_23" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_TPOrder" class="" title="classical_orders_big_lexi_order__canonical__Order_TPOrder :
-forall {d : disp_t}, (nat -> tPOrderType d) -> tPOrderType d
+forall {d : Order.disp_t}, (nat -> tPOrderType d) -> tPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_TPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_TPOrder 
@@ -1155,7 +1156,7 @@ Expands to: Constant
 Declared in
 library mathcomp.classical.classical_orders, line 249, characters 0-85
 "> :=</a></span></span></span><span id="classical_orders_big_lexi_order__canonical__Order_TPOrder" class="id"><span id="classical_orders_big_lexi_order__canonical__Order_TPreorder" class="id"><span id="HB_unnamed_factory_23" class="id"><a name="classical_orders_big_lexi_order__canonical__Order_TPOrder" class="" title="classical_orders_big_lexi_order__canonical__Order_TPOrder :
-forall {d : disp_t}, (nat -> tPOrderType d) -> tPOrderType d
+forall {d : Order.disp_t}, (nat -> tPOrderType d) -> tPOrderType d
 
 classical_orders_big_lexi_order__canonical__Order_TPOrder is not universe polymorphic
 Arguments classical_orders_big_lexi_order__canonical__Order_TPOrder 
@@ -1174,7 +1175,7 @@ library mathcomp.classical.classical_orders, line 249, characters 0-85
 <span class="vernacular">Context</span><span class="id"> {</span><span id="big_lexi_intervals.d" class="id"><a name="big_lexi_intervals.d" class="">d</a></span><span class="id">}</span><span class="id"> {</span><span id="big_lexi_intervals.K" class="id"><a name="big_lexi_intervals.K" class="">K</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.Total.Exports.orderType">orderType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_orders.html#d:95">d</a></span><span class="id">}</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="big_lexi_order_prefix_lt" class="id"><a name="big_lexi_order_prefix_lt" class="" title="big_lexi_order_prefix_lt :
-forall {d : disp_t} {K : nat -> orderType d}
+forall {d : Order.disp_t} {K : nat -> orderType d}
   [b a x : big_lexi_order (fun x : nat => K x)] [n : nat],
 (a < b)%O -> first_diff a b = Some n -> same_prefix n.+1 x b -> (a < x)%O
 
@@ -1208,7 +1209,7 @@ library mathcomp.classical.classical_orders, line 257, characters 6-30
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="big_lexi_order_prefix_gt" class="id"><a name="big_lexi_order_prefix_gt" class="" title="big_lexi_order_prefix_gt :
-forall {d : disp_t} {K : nat -> orderType d}
+forall {d : Order.disp_t} {K : nat -> orderType d}
   [b a x : big_lexi_order (fun x : nat => K x)] [n : nat],
 (b < a)%O -> first_diff a b = Some n -> same_prefix n.+1 x b -> (x < a)%O
 
@@ -1243,22 +1244,22 @@ library mathcomp.classical.classical_orders, line 276, characters 6-30
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="big_lexi_order_between" class="id"><a name="big_lexi_order_between" class="" title="big_lexi_order_between :
-forall {d : disp_t} {K : nat -> orderType d}
+forall {d : Order.disp_t} {K : nat -> orderType d}
   [a x : big_lexi_order (fun x : nat => K x)]
   [b : big_lexi_order (fun x0 : nat => K x0)]
-  [n : NatOrder.Datatypes_nat__canonical__Order_Preorder],
+  [n : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder],
 (a <= x <= b)%O -> same_prefix n a b -> same_prefix n x a
 
 big_lexi_order_between is not universe polymorphic
 Expanded type for implicit arguments
 big_lexi_order_between :
-forall {d : disp_t} {K : nat -> orderType d}
+forall {d : Order.disp_t} {K : nat -> orderType d}
   [a x : big_lexi_order (fun x : nat => K x)]
   [b : big_lexi_order (fun x0 : nat => K x0)]
-  [n : NatOrder.Datatypes_nat__canonical__Order_Preorder],
+  [n : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder],
 (a <= x <= b)%O ->
 same_prefix n a b ->
-forall [m : NatOrder.Datatypes_nat__canonical__Order_Preorder],
+forall [m : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder],
 (m < n)%O -> x m = a m
 
 Arguments big_lexi_order_between {d} {K}%_function_scope [a x b n] _ _ [m] _
@@ -1301,12 +1302,12 @@ library mathcomp.classical.classical_orders, line 296, characters 6-28
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="big_lexi_order_interval_prefix" class="id"><a name="big_lexi_order_interval_prefix" class="" title="big_lexi_order_interval_prefix :
-forall {d : disp_t} {K : nat -> orderType d}
+forall {d : Order.disp_t} {K : nat -> orderType d}
   [i : interval (big_lexi_order (fun x : nat => K x))]
   [x : big_lexi_order (fun x : nat => K x)],
 itv_open_ends i ->
 x \in i ->
-exists n : NatOrder.Datatypes_nat__canonical__Order_Preorder,
+exists n : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder,
   (same_prefix n x `<=` [set` i])%classic
 
 big_lexi_order_interval_prefix is not universe polymorphic
@@ -1353,8 +1354,8 @@ Qed.</div></details>
 <span class="vernacular">End</span><span class="id"> big_lexi_intervals</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="big_lexi_order_prefix_closed_itv" class="id"><a name="big_lexi_order_prefix_closed_itv" class="" title="big_lexi_order_prefix_closed_itv :
-forall {d : disp_t} {K : nat -> tbOrderType d}
-  (n : NatOrder.Datatypes_nat__canonical__Order_Preorder)
+forall {d : Order.disp_t} {K : nat -> tbOrderType d}
+  (n : Order.NatOrder.Datatypes_nat__canonical__Order_Preorder)
   (x : big_lexi_order (fun x : nat => K x)),
 same_prefix n x =
 `[start_with n x (fun n0 : nat => \bot%O)

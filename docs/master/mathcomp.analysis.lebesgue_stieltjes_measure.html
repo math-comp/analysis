@@ -285,18 +285,25 @@ completed_lebesgue_stieltjes_measure f == the completed Lebesgue-Stieltjes
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:1" class="id"><a name="x:1" class="">x</a></span><span class="id">,</span><span class="id"> f%function</span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#at_right">at_right</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#x:1">x</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id">f%function</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#x:1">x</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="right_continuousW" class="id"><a name="right_continuousW" class="" title="right_continuousW :
-forall [R : numFieldType] {d : Order.disp_t} [U : orderNbhsType d]
-  [f : R -> U],
-continuous f -> right_continuous f
+forall [R : numFieldType] {d : disp_t} [U : orderNbhsType d] [f : R -> U],
+(forall
+   x : filter.Nbhs.sort
+         (numFieldTopology.NumField_sort__canonical__filter_Nbhs R),
+ filter.continuous_at
+   (T:=numFieldTopology.NumField_sort__canonical__filter_Nbhs R) (U:=U) x f) ->
+right_continuous f
 
 right_continuousW is not universe polymorphic
 Expanded type for implicit arguments
 right_continuousW :
-forall [R : numFieldType] {d : Order.disp_t} [U : orderNbhsType d]
-  [f : R -> U],
-continuous f ->
+forall [R : numFieldType] {d : disp_t} [U : orderNbhsType d] [f : R -> U],
+(forall
+   x : filter.Nbhs.sort
+         (numFieldTopology.NumField_sort__canonical__filter_Nbhs R),
+ filter.continuous_at
+   (T:=numFieldTopology.NumField_sort__canonical__filter_Nbhs R) (U:=U) x f) ->
 forall [x : R] [t : set U],
-nbhs (f x) t ->
+filter.nbhs (f x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i
@@ -330,7 +337,7 @@ library mathcomp.analysis.lebesgue_stieltjes_measure, line 62, characters 6-23
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nondecreasing_right_continuousP" class="id"><a name="nondecreasing_right_continuousP" class="" title="nondecreasing_right_continuousP :
 forall [R : realFieldType] (a : R) [e : R] (f : cumulative R R),
-(0 < e)%R -> exists d : {posnum R}%R, (f (a + d%:num)%E <= (f a + e)%E)%R
+(0 < e)%R -> exists d : {posnum R}%R, (f (a + d%:num) <= f a + e)%R
 
 nondecreasing_right_continuousP is not universe polymorphic
 Arguments nondecreasing_right_continuousP [R] a%_ring_scope 

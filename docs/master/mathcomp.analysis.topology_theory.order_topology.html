@@ -302,8 +302,8 @@
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> x</span><span class="id"> y</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_topologies.T">T</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="rray_open" class="id"><a name="rray_open" class="" title="rray_open :
-forall {d : Order.disp_t} {T : orderTopologicalType d} (x : T),
-open `]x, +oo[%classic
+forall {d : disp_t} {T : orderTopologicalType d} (x : T),
+topology_structure.open `]x, +oo[%classic
 
 rray_open is not universe polymorphic
 Arguments rray_open {d T} x
@@ -322,8 +322,8 @@ Qed.</div></details>
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> rray_open</span><span class="id"> :</span><span class="id"> core</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lray_open" class="id"><a name="lray_open" class="" title="lray_open :
-forall {d : Order.disp_t} {T : orderTopologicalType d} (x : T),
-open `]-oo, x[%classic
+forall {d : disp_t} {T : orderTopologicalType d} (x : T),
+topology_structure.open `]-oo, x[%classic
 
 lray_open is not universe polymorphic
 Arguments lray_open {d T} x
@@ -342,8 +342,8 @@ Qed.</div></details>
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> lray_open</span><span class="id"> :</span><span class="id"> core</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_open" class="id"><a name="itv_open" class="" title="itv_open :
-forall {d : Order.disp_t} {T : orderTopologicalType d} (x y : T),
-open `]x, y[%classic
+forall {d : disp_t} {T : orderTopologicalType d} (x y : T),
+topology_structure.open `]x, y[%classic
 
 itv_open is not universe polymorphic
 Arguments itv_open {d T} x y
@@ -360,8 +360,8 @@ library mathcomp.analysis.topology_theory.order_topology, line 92, characters 6-
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> itv_open</span><span class="id"> :</span><span class="id"> core</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_open_ends_open" class="id"><a name="itv_open_ends_open" class="" title="itv_open_ends_open :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [i : interval T],
-itv_open_ends i -> open [set` i]%classic
+forall {d : disp_t} {T : orderTopologicalType d} [i : interval T],
+itv_open_ends i -> topology_structure.open [set` i]%classic
 
 itv_open_ends_open is not universe polymorphic
 Arguments itv_open_ends_open {d T} [i] _
@@ -379,14 +379,15 @@ library mathcomp.analysis.topology_theory.order_topology, line 96, characters 6-
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="rray_closed" class="id"><a name="rray_closed" class="" title="rray_closed :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [x : T],
-closed `[x, +oo[
+forall {d : disp_t} {T : orderTopologicalType d} [x : T],
+topology_structure.closed `[x, +oo[
 
 rray_closed is not universe polymorphic
 Expanded type for implicit arguments
 rray_closed :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [x t : T],
-closure `[x, +oo[ t -> (t \in `[x, +oo[%R) = true
+forall {d : disp_t} {T : orderTopologicalType d} [x : T]
+  [t : topology_structure.Topological.sort T],
+topology_structure.closure `[x, +oo[ t -> (t \in `[x, +oo[%R) = true
 
 Arguments rray_closed {d T} [x t] _
 rray_closed is opaque
@@ -402,14 +403,15 @@ library mathcomp.analysis.topology_theory.order_topology, line 102, characters 6
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> rray_closed</span><span class="id"> :</span><span class="id"> core</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lray_closed" class="id"><a name="lray_closed" class="" title="lray_closed :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [x : T],
-closed `]-oo, x]
+forall {d : disp_t} {T : orderTopologicalType d} [x : T],
+topology_structure.closed `]-oo, x]
 
 lray_closed is not universe polymorphic
 Expanded type for implicit arguments
 lray_closed :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [x t : T],
-closure `]-oo, x] t -> (t \in `]-oo, x]%R) = true
+forall {d : disp_t} {T : orderTopologicalType d} [x : T]
+  [t : topology_structure.Topological.sort T],
+topology_structure.closure `]-oo, x] t -> (t \in `]-oo, x]%R) = true
 
 Arguments lray_closed {d T} [x t] _
 lray_closed is opaque
@@ -425,14 +427,15 @@ library mathcomp.analysis.topology_theory.order_topology, line 106, characters 6
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> lray_closed</span><span class="id"> :</span><span class="id"> core</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_closed" class="id"><a name="itv_closed" class="" title="itv_closed :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [x y : T],
-closed `[x, y]
+forall {d : disp_t} {T : orderTopologicalType d} [x y : T],
+topology_structure.closed `[x, y]
 
 itv_closed is not universe polymorphic
 Expanded type for implicit arguments
 itv_closed :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [x y t : T],
-closure `[x, y] t -> (t \in `[x, y]%R) = true
+forall {d : disp_t} {T : orderTopologicalType d} [x y : T]
+  [t : topology_structure.Topological.sort T],
+topology_structure.closure `[x, y] t -> (t \in `[x, y]%R) = true
 
 Arguments itv_closed {d T} [x y t] _
 itv_closed is opaque
@@ -448,18 +451,19 @@ library mathcomp.analysis.topology_theory.order_topology, line 110, characters 6
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> itv_closed</span><span class="id"> :</span><span class="id"> core</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_closed_ends_closed" class="id"><a name="itv_closed_ends_closed" class="" title="itv_closed_ends_closed :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [i : interval T],
-itv_closed_ends i -> closed [set` i]
+forall {d : disp_t} {T : orderTopologicalType d} [i : interval T],
+itv_closed_ends i -> topology_structure.closed [set` i]
 
 itv_closed_ends_closed is not universe polymorphic
 Expanded type for implicit arguments
 itv_closed_ends_closed :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [i : interval T],
+forall {d : disp_t} {T : orderTopologicalType d} [i : interval T],
 itv_closed_ends i ->
 forall
-  [t : join_order_topology_POrderedTopological_between_Order_POrder_and_topology_structure_Topological
-         T],
-closure [set` i] t -> (t \in i) = true
+  [t : topology_structure.Topological.sort
+         (join_order_topology_POrderedTopological_between_Order_POrder_and_topology_structure_Topological
+            T)],
+topology_structure.closure [set` i] t -> (t \in i) = true
 
 Arguments itv_closed_ends_closed {d T} [i] _ [t] _
 itv_closed_ends_closed is opaque
@@ -475,17 +479,17 @@ library mathcomp.analysis.topology_theory.order_topology, line 114, characters 6
 <span class="gallina-kwd"> by</span><span class="id"> case:</span><span class="id"> i</span><span class="id"> =&gt;</span><span class="id"> [[[]t1|[]]]</span><span class="id"> [[]t2|[]]</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_closure" class="id"><a name="itv_closure" class="" title="itv_closure :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [x y : T],
-(closure `]x, y[ `<=` `[x, y])%classic
+forall {d : disp_t} {T : orderTopologicalType d} [x y : T],
+(topology_structure.closure `]x, y[ `<=` `[x, y])%classic
 
 itv_closure is not universe polymorphic
 Expanded type for implicit arguments
 itv_closure :
-forall {d : Order.disp_t} {T : orderTopologicalType d} 
-  [x y : T]
-  [t : join_order_topology_POrderedTopological_between_Order_POrder_and_topology_structure_Topological
-         T],
-closure `]x, y[ t -> (t \in `[x, y]%R) = true
+forall {d : disp_t} {T : orderTopologicalType d} [x y : T]
+  [t : topology_structure.Topological.sort
+         (join_order_topology_POrderedTopological_between_Order_POrder_and_topology_structure_Topological
+            T)],
+topology_structure.closure `]x, y[ t -> (t \in `[x, y]%R) = true
 
 Arguments itv_closure {d T} [x y t] _
 itv_closure is opaque
@@ -502,14 +506,16 @@ library mathcomp.analysis.topology_theory.order_topology, line 118, characters 6
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_closed_infimums" class="id"><a name="itv_closed_infimums" class="" title="itv_closed_infimums :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [A : set T],
-(A !=set0)%classic -> closed A -> (infimums (T:=T) A `<=` A)%classic
+forall {d : disp_t} {T : orderTopologicalType d} [A : set T],
+(A !=set0)%classic ->
+topology_structure.closed A -> (infimums (T:=T) A `<=` A)%classic
 
 itv_closed_infimums is not universe polymorphic
 Expanded type for implicit arguments
 itv_closed_infimums :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [A : set T],
-(A !=set0)%classic -> closed A -> forall [t : T], infimums (T:=T) A t -> A t
+forall {d : disp_t} {T : orderTopologicalType d} [A : set T],
+(A !=set0)%classic ->
+topology_structure.closed A -> forall [t : T], infimums (T:=T) A t -> A t
 
 Arguments itv_closed_infimums {d T} [A]%_classical_set_scope _ _ [t] _
 itv_closed_infimums is opaque
@@ -541,14 +547,16 @@ library mathcomp.analysis.topology_theory.order_topology, line 124, characters 6
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_closed_supremums" class="id"><a name="itv_closed_supremums" class="" title="itv_closed_supremums :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [A : set T],
-(A !=set0)%classic -> closed A -> (supremums (T:=T) A `<=` A)%classic
+forall {d : disp_t} {T : orderTopologicalType d} [A : set T],
+(A !=set0)%classic ->
+topology_structure.closed A -> (supremums (T:=T) A `<=` A)%classic
 
 itv_closed_supremums is not universe polymorphic
 Expanded type for implicit arguments
 itv_closed_supremums :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [A : set T],
-(A !=set0)%classic -> closed A -> forall [t : T], supremums (T:=T) A t -> A t
+forall {d : disp_t} {T : orderTopologicalType d} [A : set T],
+(A !=set0)%classic ->
+topology_structure.closed A -> forall [t : T], supremums (T:=T) A t -> A t
 
 Arguments itv_closed_supremums {d T} [A]%_classical_set_scope _ _ [t] _
 itv_closed_supremums is opaque
@@ -583,12 +591,13 @@ Qed.</div></details>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">[/\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">[set`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#i:56">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">]</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#U:55">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">[set`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#i:56">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#x:54">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#i:56">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">]</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="clopen_bigcup_clopen" class="id"><a name="clopen_bigcup_clopen" class="" title="clopen_bigcup_clopen :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [x : T] [U : set T],
-clopen U ->
+forall {d : disp_t} {T : orderTopologicalType d} [x : T] [U : set T],
+topology_structure.clopen U ->
 U x ->
-clopen
+topology_structure.clopen
   (\bigcup_(i in (fun (x0 : T) (U0 : set T) (i : interval T) =>
-                  [/\ ([set` i] `<=` U0)%classic, open [set` i]%classic
+                  [/\ ([set` i] `<=` U0)%classic,
+                      topology_structure.open [set` i]%classic
                     & x0 \in i]) x U)
       [set` i]%classic)
 
@@ -647,7 +656,7 @@ library mathcomp.analysis.topology_theory.order_topology, line 197, characters 1
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="oT" class="id"><a name="oT" class="">oT</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_topology">order_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#induced_order_topology.T">T</a></span>).<br/>
 <br/>
 <span id="interval_interval__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="interval_interval__canonical__classical_sets_Pointed" class="" title="interval_interval__canonical__classical_sets_Pointed :
-forall {d : Order.disp_t}, orderType d -> pointedType
+forall {d : disp_t}, orderType d -> pointedType
 
 interval_interval__canonical__classical_sets_Pointed is not universe polymorphic
 Arguments interval_interval__canonical__classical_sets_Pointed {d T}
@@ -657,7 +666,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 205, characters 0-70
 ">HB</a></span></span>.<span id="interval_interval__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="interval_interval__canonical__classical_sets_Pointed" class="" title="interval_interval__canonical__classical_sets_Pointed :
-forall {d : Order.disp_t}, orderType d -> pointedType
+forall {d : disp_t}, orderType d -> pointedType
 
 interval_interval__canonical__classical_sets_Pointed is not universe polymorphic
 Arguments interval_interval__canonical__classical_sets_Pointed {d T}
@@ -667,7 +676,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 205, characters 0-70
 ">instance</a></span></span><span class="vernacular"> Definition</span><span id="interval_interval__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="interval_interval__canonical__classical_sets_Pointed" class="" title="interval_interval__canonical__classical_sets_Pointed :
-forall {d : Order.disp_t}, orderType d -> pointedType
+forall {d : disp_t}, orderType d -> pointedType
 
 interval_interval__canonical__classical_sets_Pointed is not universe polymorphic
 Arguments interval_interval__canonical__classical_sets_Pointed {d T}
@@ -677,7 +686,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 205, characters 0-70
 "> _</a></span></span><span id="interval_interval__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="interval_interval__canonical__classical_sets_Pointed" class="" title="interval_interval__canonical__classical_sets_Pointed :
-forall {d : Order.disp_t}, orderType d -> pointedType
+forall {d : disp_t}, orderType d -> pointedType
 
 interval_interval__canonical__classical_sets_Pointed is not universe polymorphic
 Arguments interval_interval__canonical__classical_sets_Pointed {d T}
@@ -687,7 +696,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 205, characters 0-70
 "> :=</a></span></span><span id="interval_interval__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="interval_interval__canonical__classical_sets_Pointed" class="" title="interval_interval__canonical__classical_sets_Pointed :
-forall {d : Order.disp_t}, orderType d -> pointedType
+forall {d : disp_t}, orderType d -> pointedType
 
 interval_interval__canonical__classical_sets_Pointed is not universe polymorphic
 Arguments interval_interval__canonical__classical_sets_Pointed {d T}
@@ -699,7 +708,7 @@ library mathcomp.analysis.topology_theory.order_topology, line 205, characters 0
 "> isPointed</a></span></span>.<span class="id"><a href="mathcomp.classical.classical_sets.html#isPointed.Build">Build</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html#interval">interval</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#induced_order_topology.T">T</a></span>) (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html#2d0f4f3a8486d97a7c68fd4d2f96ccac">`]-oo,+oo[</a></span>).<br/>
 <br/>
 <span id="order_topology_order_topology__canonical__Order_Total" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="order_topology_order_topology__canonical__Order_DistrLattice" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="order_topology_order_topology__canonical__Order_Lattice" class="id"><span id="order_topology_order_topology__canonical__Order_JoinSemilattice" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="order_topology_order_topology__canonical__Order_MeetSemilattice" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="order_topology_order_topology__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="order_topology_order_topology__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="order_topology_order_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="order_topology_order_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="Order_Total__to__Order_DistrLattice_isTotal" class="id"><span id="Order_Total__to__Order_Lattice_isDistributive" class="id"><span id="Order_Total__to__Order_POrder_isJoinSemilattice" class="id"><span id="Order_Total__to__Order_POrder_isMeetSemilattice" class="id"><span id="Order_Total__to__Order_Preorder_isDuallyPOrder" class="id"><span id="Order_Total__to__Order_isDuallyPreorder" class="id"><span id="Order_Total__to__eqtype_hasDecEq" class="id"><span id="Order_Total__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="order_topology_order_topology__canonical__Order_Total" class="" title="order_topology_order_topology__canonical__Order_Total :
-forall {d : Order.disp_t}, orderType d -> orderType d
+forall {d : disp_t}, orderType d -> orderType d
 
 order_topology_order_topology__canonical__Order_Total is not universe polymorphic
 Arguments order_topology_order_topology__canonical__Order_Total {d T}
@@ -709,7 +718,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 207, characters 0-46
 ">HB</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="order_topology_order_topology__canonical__Order_Total" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="order_topology_order_topology__canonical__Order_DistrLattice" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="order_topology_order_topology__canonical__Order_Lattice" class="id"><span id="order_topology_order_topology__canonical__Order_JoinSemilattice" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="order_topology_order_topology__canonical__Order_MeetSemilattice" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="order_topology_order_topology__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="order_topology_order_topology__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="order_topology_order_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="order_topology_order_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="Order_Total__to__Order_DistrLattice_isTotal" class="id"><span id="Order_Total__to__Order_Lattice_isDistributive" class="id"><span id="Order_Total__to__Order_POrder_isJoinSemilattice" class="id"><span id="Order_Total__to__Order_POrder_isMeetSemilattice" class="id"><span id="Order_Total__to__Order_Preorder_isDuallyPOrder" class="id"><span id="Order_Total__to__Order_isDuallyPreorder" class="id"><span id="Order_Total__to__eqtype_hasDecEq" class="id"><span id="Order_Total__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="order_topology_order_topology__canonical__Order_Total" class="" title="order_topology_order_topology__canonical__Order_Total :
-forall {d : Order.disp_t}, orderType d -> orderType d
+forall {d : disp_t}, orderType d -> orderType d
 
 order_topology_order_topology__canonical__Order_Total is not universe polymorphic
 Arguments order_topology_order_topology__canonical__Order_Total {d T}
@@ -719,7 +728,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 207, characters 0-46
 ">instance</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="order_topology_order_topology__canonical__Order_Total" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="order_topology_order_topology__canonical__Order_DistrLattice" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="order_topology_order_topology__canonical__Order_Lattice" class="id"><span id="order_topology_order_topology__canonical__Order_JoinSemilattice" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="order_topology_order_topology__canonical__Order_MeetSemilattice" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="order_topology_order_topology__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="order_topology_order_topology__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="order_topology_order_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="order_topology_order_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="Order_Total__to__Order_DistrLattice_isTotal" class="id"><span id="Order_Total__to__Order_Lattice_isDistributive" class="id"><span id="Order_Total__to__Order_POrder_isJoinSemilattice" class="id"><span id="Order_Total__to__Order_POrder_isMeetSemilattice" class="id"><span id="Order_Total__to__Order_Preorder_isDuallyPOrder" class="id"><span id="Order_Total__to__Order_isDuallyPreorder" class="id"><span id="Order_Total__to__eqtype_hasDecEq" class="id"><span id="Order_Total__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="order_topology_order_topology__canonical__Order_Total" class="" title="order_topology_order_topology__canonical__Order_Total :
-forall {d : Order.disp_t}, orderType d -> orderType d
+forall {d : disp_t}, orderType d -> orderType d
 
 order_topology_order_topology__canonical__Order_Total is not universe polymorphic
 Arguments order_topology_order_topology__canonical__Order_Total {d T}
@@ -729,7 +738,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 207, characters 0-46
 "> _</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="order_topology_order_topology__canonical__Order_Total" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="order_topology_order_topology__canonical__Order_DistrLattice" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="order_topology_order_topology__canonical__Order_Lattice" class="id"><span id="order_topology_order_topology__canonical__Order_JoinSemilattice" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="order_topology_order_topology__canonical__Order_MeetSemilattice" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="order_topology_order_topology__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="order_topology_order_topology__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="order_topology_order_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="order_topology_order_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="Order_Total__to__Order_DistrLattice_isTotal" class="id"><span id="Order_Total__to__Order_Lattice_isDistributive" class="id"><span id="Order_Total__to__Order_POrder_isJoinSemilattice" class="id"><span id="Order_Total__to__Order_POrder_isMeetSemilattice" class="id"><span id="Order_Total__to__Order_Preorder_isDuallyPOrder" class="id"><span id="Order_Total__to__Order_isDuallyPreorder" class="id"><span id="Order_Total__to__eqtype_hasDecEq" class="id"><span id="Order_Total__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="order_topology_order_topology__canonical__Order_Total" class="" title="order_topology_order_topology__canonical__Order_Total :
-forall {d : Order.disp_t}, orderType d -> orderType d
+forall {d : disp_t}, orderType d -> orderType d
 
 order_topology_order_topology__canonical__Order_Total is not universe polymorphic
 Arguments order_topology_order_topology__canonical__Order_Total {d T}
@@ -739,7 +748,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 207, characters 0-46
 "> :=</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="order_topology_order_topology__canonical__Order_Total" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="order_topology_order_topology__canonical__Order_DistrLattice" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="order_topology_order_topology__canonical__Order_Lattice" class="id"><span id="order_topology_order_topology__canonical__Order_JoinSemilattice" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="order_topology_order_topology__canonical__Order_MeetSemilattice" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="order_topology_order_topology__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="order_topology_order_topology__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="order_topology_order_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="order_topology_order_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="Order_Total__to__Order_DistrLattice_isTotal" class="id"><span id="Order_Total__to__Order_Lattice_isDistributive" class="id"><span id="Order_Total__to__Order_POrder_isJoinSemilattice" class="id"><span id="Order_Total__to__Order_POrder_isMeetSemilattice" class="id"><span id="Order_Total__to__Order_Preorder_isDuallyPOrder" class="id"><span id="Order_Total__to__Order_isDuallyPreorder" class="id"><span id="Order_Total__to__eqtype_hasDecEq" class="id"><span id="Order_Total__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="order_topology_order_topology__canonical__Order_Total" class="" title="order_topology_order_topology__canonical__Order_Total :
-forall {d : Order.disp_t}, orderType d -> orderType d
+forall {d : disp_t}, orderType d -> orderType d
 
 order_topology_order_topology__canonical__Order_Total is not universe polymorphic
 Arguments order_topology_order_topology__canonical__Order_Total {d T}
@@ -750,7 +759,7 @@ Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 207, characters 0-46
 "> Order</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.Total.on">Total</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.Total.on">on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#oT">oT</a></span>.<br/>
 <span id="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="id"><span id="order_topology_order_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_26" class="id"><span id="order_topology_order_topology__canonical__order_topology_POrderedNbhs" class="id"><span id="order_topology_order_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_25" class="id"><span id="order_topology_order_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_24" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_20" class="id"><a name="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="" title="order_topology_order_topology__canonical__order_topology_POrderedTopological :
-forall {d : Order.disp_t}, orderType d -> POrderedTopological.type d
+forall {d : disp_t}, orderType d -> POrderedTopological.type d
 
 order_topology_order_topology__canonical__order_topology_POrderedTopological is not universe polymorphic
 Arguments
@@ -762,7 +771,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 208, characters 0-118
 ">HB</a></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="id"><span id="order_topology_order_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_26" class="id"><span id="order_topology_order_topology__canonical__order_topology_POrderedNbhs" class="id"><span id="order_topology_order_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_25" class="id"><span id="order_topology_order_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_24" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_20" class="id"><a name="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="" title="order_topology_order_topology__canonical__order_topology_POrderedTopological :
-forall {d : Order.disp_t}, orderType d -> POrderedTopological.type d
+forall {d : disp_t}, orderType d -> POrderedTopological.type d
 
 order_topology_order_topology__canonical__order_topology_POrderedTopological is not universe polymorphic
 Arguments
@@ -774,7 +783,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 208, characters 0-118
 ">instance</a></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="id"><span id="order_topology_order_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_26" class="id"><span id="order_topology_order_topology__canonical__order_topology_POrderedNbhs" class="id"><span id="order_topology_order_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_25" class="id"><span id="order_topology_order_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_24" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_20" class="id"><a name="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="" title="order_topology_order_topology__canonical__order_topology_POrderedTopological :
-forall {d : Order.disp_t}, orderType d -> POrderedTopological.type d
+forall {d : disp_t}, orderType d -> POrderedTopological.type d
 
 order_topology_order_topology__canonical__order_topology_POrderedTopological is not universe polymorphic
 Arguments
@@ -786,7 +795,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 208, characters 0-118
 "> _</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="id"><span id="order_topology_order_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_26" class="id"><span id="order_topology_order_topology__canonical__order_topology_POrderedNbhs" class="id"><span id="order_topology_order_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_25" class="id"><span id="order_topology_order_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_24" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_20" class="id"><a name="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="" title="order_topology_order_topology__canonical__order_topology_POrderedTopological :
-forall {d : Order.disp_t}, orderType d -> POrderedTopological.type d
+forall {d : disp_t}, orderType d -> POrderedTopological.type d
 
 order_topology_order_topology__canonical__order_topology_POrderedTopological is not universe polymorphic
 Arguments
@@ -798,7 +807,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 208, characters 0-118
 "> :=</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="id"><span id="order_topology_order_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_26" class="id"><span id="order_topology_order_topology__canonical__order_topology_POrderedNbhs" class="id"><span id="order_topology_order_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_25" class="id"><span id="order_topology_order_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_24" class="id"><span id="topology_structure_isSubBaseTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isSubBaseTopological__to__filter_isFiltered" class="id"><span id="HB_unnamed_factory_20" class="id"><a name="order_topology_order_topology__canonical__order_topology_POrderedTopological" class="" title="order_topology_order_topology__canonical__order_topology_POrderedTopological :
-forall {d : Order.disp_t}, orderType d -> POrderedTopological.type d
+forall {d : disp_t}, orderType d -> POrderedTopological.type d
 
 order_topology_order_topology__canonical__order_topology_POrderedTopological is not universe polymorphic
 Arguments
@@ -813,9 +822,9 @@ library mathcomp.analysis.topology_theory.order_topology, line 208, characters 0
 &nbsp;&nbsp;(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html#interval">interval</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#induced_order_topology.T">T</a></span>) (<span class="id"><a href="mathcomp.classical.set_interval.html#itv_is_open_unbounded">itv_is_open_unbounded</a></span>) (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="i:64" class="id"><a name="i:64" class="">i</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">[set`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#i:64">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#fd1315670760bbd104fd4b87ca2730c7">]</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="order_nbhs_itv" class="id"><a name="order_nbhs_itv" class="" title="order_nbhs_itv :
-forall {d : Order.disp_t} {T : orderType d} (x : order_topology T),
-nbhs x =
-filter_from
+forall {d : disp_t} {T : orderType d} (x : order_topology T),
+filter.nbhs x =
+filter.filter_from
   (fun i : interval order_topology_order_topology__canonical__Order_POrder =>
    itv_open_ends i /\ x \in i)
   pred_set
@@ -866,7 +875,7 @@ library mathcomp.analysis.topology_theory.order_topology, line 211, characters 6
 Qed.</div></details>
 <br/>
 <span id="order_topology_order_topology__canonical__order_topology_OrderTopological" class="id"><span id="order_topology_order_topology__canonical__order_topology_OrderNbhs" class="id"><span id="HB_unnamed_factory_27" class="id"><a name="order_topology_order_topology__canonical__order_topology_OrderTopological" class="" title="order_topology_order_topology__canonical__order_topology_OrderTopological :
-forall {d : Order.disp_t}, orderType d -> orderTopologicalType d
+forall {d : disp_t}, orderType d -> orderTopologicalType d
 
 order_topology_order_topology__canonical__order_topology_OrderTopological is not universe polymorphic
 Arguments
@@ -878,7 +887,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 247, characters 0-67
 ">HB</a></span></span></span>.<span id="order_topology_order_topology__canonical__order_topology_OrderTopological" class="id"><span id="order_topology_order_topology__canonical__order_topology_OrderNbhs" class="id"><span id="HB_unnamed_factory_27" class="id"><a name="order_topology_order_topology__canonical__order_topology_OrderTopological" class="" title="order_topology_order_topology__canonical__order_topology_OrderTopological :
-forall {d : Order.disp_t}, orderType d -> orderTopologicalType d
+forall {d : disp_t}, orderType d -> orderTopologicalType d
 
 order_topology_order_topology__canonical__order_topology_OrderTopological is not universe polymorphic
 Arguments
@@ -890,7 +899,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 247, characters 0-67
 ">instance</a></span></span></span><span class="vernacular"> Definition</span><span id="order_topology_order_topology__canonical__order_topology_OrderTopological" class="id"><span id="order_topology_order_topology__canonical__order_topology_OrderNbhs" class="id"><span id="HB_unnamed_factory_27" class="id"><a name="order_topology_order_topology__canonical__order_topology_OrderTopological" class="" title="order_topology_order_topology__canonical__order_topology_OrderTopological :
-forall {d : Order.disp_t}, orderType d -> orderTopologicalType d
+forall {d : disp_t}, orderType d -> orderTopologicalType d
 
 order_topology_order_topology__canonical__order_topology_OrderTopological is not universe polymorphic
 Arguments
@@ -902,7 +911,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 247, characters 0-67
 "> _</a></span></span></span><span id="order_topology_order_topology__canonical__order_topology_OrderTopological" class="id"><span id="order_topology_order_topology__canonical__order_topology_OrderNbhs" class="id"><span id="HB_unnamed_factory_27" class="id"><a name="order_topology_order_topology__canonical__order_topology_OrderTopological" class="" title="order_topology_order_topology__canonical__order_topology_OrderTopological :
-forall {d : Order.disp_t}, orderType d -> orderTopologicalType d
+forall {d : disp_t}, orderType d -> orderTopologicalType d
 
 order_topology_order_topology__canonical__order_topology_OrderTopological is not universe polymorphic
 Arguments
@@ -914,7 +923,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.order_topology, line 247, characters 0-67
 "> :=</a></span></span></span><span id="order_topology_order_topology__canonical__order_topology_OrderTopological" class="id"><span id="order_topology_order_topology__canonical__order_topology_OrderNbhs" class="id"><span id="HB_unnamed_factory_27" class="id"><a name="order_topology_order_topology__canonical__order_topology_OrderTopological" class="" title="order_topology_order_topology__canonical__order_topology_OrderTopological :
-forall {d : Order.disp_t}, orderType d -> orderTopologicalType d
+forall {d : disp_t}, orderType d -> orderTopologicalType d
 
 order_topology_order_topology__canonical__order_topology_OrderTopological is not universe polymorphic
 Arguments
@@ -929,20 +938,24 @@ library mathcomp.analysis.topology_theory.order_topology, line 247, characters 0
 <span class="vernacular">End</span><span class="id"> induced_order_topology</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="min_continuous" class="id"><a name="min_continuous" class="" title="min_continuous :
-forall {d : Order.disp_t} {T : orderTopologicalType d},
-continuous (fun xy : T * T => Order.Def.min xy.1 xy.2)
+forall {d : disp_t} {T : orderTopologicalType d}
+  [x : filter.Nbhs.sort (filter.Datatypes_prod__canonical__filter_Nbhs T T)],
+filter.continuous_at (T:=filter.Datatypes_prod__canonical__filter_Nbhs T T)
+  (U:=T) x (fun xy : T * T => Def.min xy.1 xy.2)
 
 min_continuous is not universe polymorphic
 Expanded type for implicit arguments
 min_continuous :
-forall {d : Order.disp_t} {T : orderTopologicalType d}
-  [x : Datatypes_prod__canonical__filter_Nbhs T T] 
-  [t : set T],
-nbhs ((fun xy : T * T => Order.Def.min xy.1 xy.2) x) t ->
-exists2 i : set T * set T,
-  (fun P : set T * set T => nbhs x.1 P.1 /\ nbhs x.2 P.2) i &
-  ((fun P : set T * set T => P.1 `*` P.2) i
-   `<=` (fun xy : T * T => Order.Def.min xy.1 xy.2) @^-1` t)%classic
+forall {d : disp_t} {T : orderTopologicalType d}
+  [x : filter.Nbhs.sort (filter.Datatypes_prod__canonical__filter_Nbhs T T)]
+  [t : set (filter.Nbhs.sort T)],
+filter.nbhs ((fun xy : T * T => Def.min xy.1 xy.2) x) t ->
+exists2 i : set (filter.Nbhs.sort T) * set (filter.Nbhs.sort T),
+  (fun P : set (filter.Nbhs.sort T) * set (filter.Nbhs.sort T) =>
+   filter.nbhs x.1 P.1 /\ filter.nbhs x.2 P.2) i &
+  ((fun P : set (filter.Nbhs.sort T) * set (filter.Nbhs.sort T) =>
+    P.1 `*` P.2) i
+   `<=` (fun xy : T * T => Def.min xy.1 xy.2) @^-1` t)%classic
 
 Arguments min_continuous {d T} [x t] _
 min_continuous is opaque
@@ -983,22 +996,70 @@ library mathcomp.analysis.topology_theory.order_topology, line 250, characters 6
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="min_fun_continuous" class="id"><a name="min_fun_continuous" class="" title="min_fun_continuous :
-forall {d : Order.disp_t} {X : topologicalType} {T : orderTopologicalType d}
-  [f g : X -> T],
-continuous f -> continuous g -> continuous (f \min g)
+forall {d : disp_t} {X : topology_structure.Topological.type}
+  {T : orderTopologicalType d}
+  [f g : topology_structure.Topological.sort X -> T],
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         X)
+   (U:=T) x f) ->
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         X)
+   (U:=T) x g) ->
+forall
+  [x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X)],
+filter.continuous_at
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        X)
+  (U:=T) x (f \min g)
 
 min_fun_continuous is not universe polymorphic
 Expanded type for implicit arguments
 min_fun_continuous :
-forall {d : Order.disp_t} {X : topologicalType} {T : orderTopologicalType d}
-  [f g : X -> T],
-continuous f ->
-continuous g ->
-forall [x : X] [t : set T],
-nbhs ((f \min g) x) t ->
+forall {d : disp_t} {X : topology_structure.Topological.type}
+  {T : orderTopologicalType d}
+  [f g : topology_structure.Topological.sort X -> T],
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         X)
+   (U:=T) x f) ->
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         X)
+   (U:=T) x g) ->
+forall
+  [x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X)]
+  [t : set (filter.Nbhs.sort T)],
+filter.nbhs ((f \min g) x) t ->
 (let (nbhs) :=
-   Topological.filter_isFiltered_mixin
-     (let (sort, class) as record return (Topological.axioms_ record) := X in
+   topology_structure.Topological.filter_isFiltered_mixin
+     (let
+        (sort, class) as record
+         return
+           (topology_structure.Topological.axioms_
+              (topology_structure.Topological.sort record)) :=
+        X in
       class) in
  nbhs) x ((f \min g) @^-1` t)%classic
 
@@ -1020,20 +1081,24 @@ library mathcomp.analysis.topology_theory.order_topology, line 280, characters 6
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="max_continuous" class="id"><a name="max_continuous" class="" title="max_continuous :
-forall {d : Order.disp_t} {T : orderTopologicalType d},
-continuous (fun xy : T * T => Order.Def.max xy.1 xy.2)
+forall {d : disp_t} {T : orderTopologicalType d}
+  [x : filter.Nbhs.sort (filter.Datatypes_prod__canonical__filter_Nbhs T T)],
+filter.continuous_at (T:=filter.Datatypes_prod__canonical__filter_Nbhs T T)
+  (U:=T) x (fun xy : T * T => Def.max xy.1 xy.2)
 
 max_continuous is not universe polymorphic
 Expanded type for implicit arguments
 max_continuous :
-forall {d : Order.disp_t} {T : orderTopologicalType d}
-  [x : Datatypes_prod__canonical__filter_Nbhs T T] 
-  [t : set T],
-nbhs ((fun xy : T * T => Order.Def.max xy.1 xy.2) x) t ->
-exists2 i : set T * set T,
-  (fun P : set T * set T => nbhs x.1 P.1 /\ nbhs x.2 P.2) i &
-  ((fun P : set T * set T => P.1 `*` P.2) i
-   `<=` (fun xy : T * T => Order.Def.max xy.1 xy.2) @^-1` t)%classic
+forall {d : disp_t} {T : orderTopologicalType d}
+  [x : filter.Nbhs.sort (filter.Datatypes_prod__canonical__filter_Nbhs T T)]
+  [t : set (filter.Nbhs.sort T)],
+filter.nbhs ((fun xy : T * T => Def.max xy.1 xy.2) x) t ->
+exists2 i : set (filter.Nbhs.sort T) * set (filter.Nbhs.sort T),
+  (fun P : set (filter.Nbhs.sort T) * set (filter.Nbhs.sort T) =>
+   filter.nbhs x.1 P.1 /\ filter.nbhs x.2 P.2) i &
+  ((fun P : set (filter.Nbhs.sort T) * set (filter.Nbhs.sort T) =>
+    P.1 `*` P.2) i
+   `<=` (fun xy : T * T => Def.max xy.1 xy.2) @^-1` t)%classic
 
 Arguments max_continuous {d T} [x t] _
 max_continuous is opaque
@@ -1074,22 +1139,70 @@ library mathcomp.analysis.topology_theory.order_topology, line 288, characters 6
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="max_fun_continuous" class="id"><a name="max_fun_continuous" class="" title="max_fun_continuous :
-forall {d : Order.disp_t} {X : topologicalType} {T : orderTopologicalType d}
-  [f g : X -> T],
-continuous f -> continuous g -> continuous (f \max g)
+forall {d : disp_t} {X : topology_structure.Topological.type}
+  {T : orderTopologicalType d}
+  [f g : topology_structure.Topological.sort X -> T],
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         X)
+   (U:=T) x f) ->
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         X)
+   (U:=T) x g) ->
+forall
+  [x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X)],
+filter.continuous_at
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        X)
+  (U:=T) x (f \max g)
 
 max_fun_continuous is not universe polymorphic
 Expanded type for implicit arguments
 max_fun_continuous :
-forall {d : Order.disp_t} {X : topologicalType} {T : orderTopologicalType d}
-  [f g : X -> T],
-continuous f ->
-continuous g ->
-forall [x : X] [t : set T],
-nbhs ((f \max g) x) t ->
+forall {d : disp_t} {X : topology_structure.Topological.type}
+  {T : orderTopologicalType d}
+  [f g : topology_structure.Topological.sort X -> T],
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         X)
+   (U:=T) x f) ->
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         X)
+   (U:=T) x g) ->
+forall
+  [x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X)]
+  [t : set (filter.Nbhs.sort T)],
+filter.nbhs ((f \max g) x) t ->
 (let (nbhs) :=
-   Topological.filter_isFiltered_mixin
-     (let (sort, class) as record return (Topological.axioms_ record) := X in
+   topology_structure.Topological.filter_isFiltered_mixin
+     (let
+        (sort, class) as record
+         return
+           (topology_structure.Topological.axioms_
+              (topology_structure.Topological.sort record)) :=
+        X in
       class) in
  nbhs) x ((f \max g) @^-1` t)%classic
 

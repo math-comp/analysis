@@ -275,7 +275,8 @@ complete spaces, which extends uniform in the hierarchy.
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="nbhs_" class="id"><a name="nbhs_" class="" title="nbhs_ : forall {T T' : Type}, set_system (T * T') -> T -> set_system T'
+<span class="vernacular">Definition</span><span class="id"> </span><span id="nbhs_" class="id"><a name="nbhs_" class="" title="nbhs_ :
+forall {T T' : Type}, filter.set_system (T * T') -> T -> filter.set_system T'
 
 nbhs_ is not universe polymorphic
 Arguments nbhs_ {T T'}%_type_scope ent x _
@@ -288,8 +289,8 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 52, characters
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#filter_from">filter_from</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#ent:3">ent</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="A:5" class="id"><a name="A:5" class="">A</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#xsection">xsection</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#A:5">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#x:4">x</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_E" class="id"><a name="nbhs_E" class="" title="nbhs_E :
-forall {T T' : Type} (ent : set_system (T * T')) (x : T),
-nbhs_ ent x = filter_from ent ((xsection (T2:=T'))^~ x)
+forall {T T' : Type} (ent : filter.set_system (T * T')) (x : T),
+nbhs_ ent x = filter.filter_from ent ((xsection (T2:=T'))^~ x)
 
 nbhs_E is not universe polymorphic
 Arguments nbhs_E {T T'}%_type_scope ent x
@@ -374,8 +375,8 @@ Qed.</div></details>
 <span id="Builders_1.Builders_1_M__canonical__topology_structure_Topological" class="id"><span id="Builders_1.uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="Builders_1.HB_unnamed_factory_3" class="id"><a name="Builders_1.Builders_1_M__canonical__topology_structure_Topological" class="" title="Builders_1.Builders_1_M__canonical__topology_structure_Topological :
 forall [M : Type] [local_mixin_choice_hasChoice : hasChoice.axioms_ M]
   [local_mixin_eqtype_hasDecEq : Equality.mixin_of M]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ M]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ M M],
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ M]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ M M],
 Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
   (m0:=local_mixin_eqtype_hasDecEq) (m1:=local_mixin_filter_selfFiltered)
   (m2:=local_mixin_filter_isFiltered) id_phant
@@ -384,10 +385,11 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
         local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
   id_phant
   (c:={|
-        Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-        Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-        Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
-        Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+        filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+        filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+        filter.Nbhs.filter_selfFiltered_mixin :=
+          local_mixin_filter_selfFiltered;
+        filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
       |})
   id_phant (m3:=local_mixin_choice_hasChoice) id_phant
   (m4:=local_mixin_eqtype_hasDecEq) id_phant
@@ -398,14 +400,16 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
          local_mixin_filter_isFiltered)
   id_phant
   (c0:={|
-         Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-         Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-         Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+         filter.Filtered.choice_hasChoice_mixin :=
+           local_mixin_choice_hasChoice;
+         filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+         filter.Filtered.filter_isFiltered_mixin :=
+           local_mixin_filter_isFiltered
        |})
   id_phant (m7:=local_mixin_choice_hasChoice) id_phant
   (m8:=local_mixin_eqtype_hasDecEq) id_phant
   (m9:=local_mixin_filter_isFiltered) id_phant id_phant ->
-topologicalType
+topology_structure.Topological.type
 
 Builders_1.Builders_1_M__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__topology_structure_Topological
@@ -421,8 +425,8 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 119, character
 ">HB</a></span></span></span>.<span id="Builders_1.Builders_1_M__canonical__topology_structure_Topological" class="id"><span id="Builders_1.uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="Builders_1.HB_unnamed_factory_3" class="id"><a name="Builders_1.Builders_1_M__canonical__topology_structure_Topological" class="" title="Builders_1.Builders_1_M__canonical__topology_structure_Topological :
 forall [M : Type] [local_mixin_choice_hasChoice : hasChoice.axioms_ M]
   [local_mixin_eqtype_hasDecEq : Equality.mixin_of M]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ M]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ M M],
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ M]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ M M],
 Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
   (m0:=local_mixin_eqtype_hasDecEq) (m1:=local_mixin_filter_selfFiltered)
   (m2:=local_mixin_filter_isFiltered) id_phant
@@ -431,10 +435,11 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
         local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
   id_phant
   (c:={|
-        Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-        Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-        Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
-        Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+        filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+        filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+        filter.Nbhs.filter_selfFiltered_mixin :=
+          local_mixin_filter_selfFiltered;
+        filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
       |})
   id_phant (m3:=local_mixin_choice_hasChoice) id_phant
   (m4:=local_mixin_eqtype_hasDecEq) id_phant
@@ -445,14 +450,16 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
          local_mixin_filter_isFiltered)
   id_phant
   (c0:={|
-         Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-         Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-         Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+         filter.Filtered.choice_hasChoice_mixin :=
+           local_mixin_choice_hasChoice;
+         filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+         filter.Filtered.filter_isFiltered_mixin :=
+           local_mixin_filter_isFiltered
        |})
   id_phant (m7:=local_mixin_choice_hasChoice) id_phant
   (m8:=local_mixin_eqtype_hasDecEq) id_phant
   (m9:=local_mixin_filter_isFiltered) id_phant id_phant ->
-topologicalType
+topology_structure.Topological.type
 
 Builders_1.Builders_1_M__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__topology_structure_Topological
@@ -468,8 +475,8 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 119, character
 ">instance</a></span></span></span><span class="vernacular"> Definition</span><span id="Builders_1.Builders_1_M__canonical__topology_structure_Topological" class="id"><span id="Builders_1.uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="Builders_1.HB_unnamed_factory_3" class="id"><a name="Builders_1.Builders_1_M__canonical__topology_structure_Topological" class="" title="Builders_1.Builders_1_M__canonical__topology_structure_Topological :
 forall [M : Type] [local_mixin_choice_hasChoice : hasChoice.axioms_ M]
   [local_mixin_eqtype_hasDecEq : Equality.mixin_of M]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ M]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ M M],
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ M]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ M M],
 Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
   (m0:=local_mixin_eqtype_hasDecEq) (m1:=local_mixin_filter_selfFiltered)
   (m2:=local_mixin_filter_isFiltered) id_phant
@@ -478,10 +485,11 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
         local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
   id_phant
   (c:={|
-        Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-        Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-        Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
-        Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+        filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+        filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+        filter.Nbhs.filter_selfFiltered_mixin :=
+          local_mixin_filter_selfFiltered;
+        filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
       |})
   id_phant (m3:=local_mixin_choice_hasChoice) id_phant
   (m4:=local_mixin_eqtype_hasDecEq) id_phant
@@ -492,14 +500,16 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
          local_mixin_filter_isFiltered)
   id_phant
   (c0:={|
-         Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-         Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-         Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+         filter.Filtered.choice_hasChoice_mixin :=
+           local_mixin_choice_hasChoice;
+         filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+         filter.Filtered.filter_isFiltered_mixin :=
+           local_mixin_filter_isFiltered
        |})
   id_phant (m7:=local_mixin_choice_hasChoice) id_phant
   (m8:=local_mixin_eqtype_hasDecEq) id_phant
   (m9:=local_mixin_filter_isFiltered) id_phant id_phant ->
-topologicalType
+topology_structure.Topological.type
 
 Builders_1.Builders_1_M__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__topology_structure_Topological
@@ -515,8 +525,8 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 119, character
 "> _</a></span></span></span><span id="Builders_1.Builders_1_M__canonical__topology_structure_Topological" class="id"><span id="Builders_1.uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="Builders_1.HB_unnamed_factory_3" class="id"><a name="Builders_1.Builders_1_M__canonical__topology_structure_Topological" class="" title="Builders_1.Builders_1_M__canonical__topology_structure_Topological :
 forall [M : Type] [local_mixin_choice_hasChoice : hasChoice.axioms_ M]
   [local_mixin_eqtype_hasDecEq : Equality.mixin_of M]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ M]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ M M],
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ M]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ M M],
 Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
   (m0:=local_mixin_eqtype_hasDecEq) (m1:=local_mixin_filter_selfFiltered)
   (m2:=local_mixin_filter_isFiltered) id_phant
@@ -525,10 +535,11 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
         local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
   id_phant
   (c:={|
-        Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-        Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-        Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
-        Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+        filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+        filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+        filter.Nbhs.filter_selfFiltered_mixin :=
+          local_mixin_filter_selfFiltered;
+        filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
       |})
   id_phant (m3:=local_mixin_choice_hasChoice) id_phant
   (m4:=local_mixin_eqtype_hasDecEq) id_phant
@@ -539,14 +550,16 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
          local_mixin_filter_isFiltered)
   id_phant
   (c0:={|
-         Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-         Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-         Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+         filter.Filtered.choice_hasChoice_mixin :=
+           local_mixin_choice_hasChoice;
+         filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+         filter.Filtered.filter_isFiltered_mixin :=
+           local_mixin_filter_isFiltered
        |})
   id_phant (m7:=local_mixin_choice_hasChoice) id_phant
   (m8:=local_mixin_eqtype_hasDecEq) id_phant
   (m9:=local_mixin_filter_isFiltered) id_phant id_phant ->
-topologicalType
+topology_structure.Topological.type
 
 Builders_1.Builders_1_M__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__topology_structure_Topological
@@ -562,8 +575,8 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 119, character
 "> :=</a></span></span></span><span id="Builders_1.Builders_1_M__canonical__topology_structure_Topological" class="id"><span id="Builders_1.uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="Builders_1.HB_unnamed_factory_3" class="id"><a name="Builders_1.Builders_1_M__canonical__topology_structure_Topological" class="" title="Builders_1.Builders_1_M__canonical__topology_structure_Topological :
 forall [M : Type] [local_mixin_choice_hasChoice : hasChoice.axioms_ M]
   [local_mixin_eqtype_hasDecEq : Equality.mixin_of M]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ M]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ M M],
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ M]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ M M],
 Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
   (m0:=local_mixin_eqtype_hasDecEq) (m1:=local_mixin_filter_selfFiltered)
   (m2:=local_mixin_filter_isFiltered) id_phant
@@ -572,10 +585,11 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
         local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
   id_phant
   (c:={|
-        Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-        Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-        Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
-        Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+        filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+        filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+        filter.Nbhs.filter_selfFiltered_mixin :=
+          local_mixin_filter_selfFiltered;
+        filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
       |})
   id_phant (m3:=local_mixin_choice_hasChoice) id_phant
   (m4:=local_mixin_eqtype_hasDecEq) id_phant
@@ -586,14 +600,16 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
          local_mixin_filter_isFiltered)
   id_phant
   (c0:={|
-         Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-         Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-         Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+         filter.Filtered.choice_hasChoice_mixin :=
+           local_mixin_choice_hasChoice;
+         filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+         filter.Filtered.filter_isFiltered_mixin :=
+           local_mixin_filter_isFiltered
        |})
   id_phant (m7:=local_mixin_choice_hasChoice) id_phant
   (m8:=local_mixin_eqtype_hasDecEq) id_phant
   (m9:=local_mixin_filter_isFiltered) id_phant id_phant ->
-topologicalType
+topology_structure.Topological.type
 
 Builders_1.Builders_1_M__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__topology_structure_Topological
@@ -612,8 +628,8 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 119, character
 <span id="Builders_1.Builders_1_M__canonical__uniform_structure_Uniform" class="id"><span id="Builders_1.HB_unnamed_factory_5" class="id"><a name="Builders_1.Builders_1_M__canonical__uniform_structure_Uniform" class="" title="Builders_1.Builders_1_M__canonical__uniform_structure_Uniform :
 forall [M : Type] [local_mixin_choice_hasChoice : hasChoice.axioms_ M]
   [local_mixin_eqtype_hasDecEq : Equality.mixin_of M]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ M]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ M M],
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ M]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ M M],
 Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
   (m0:=local_mixin_eqtype_hasDecEq) (m1:=local_mixin_filter_selfFiltered)
   (m2:=local_mixin_filter_isFiltered) id_phant
@@ -622,10 +638,11 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
         local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
   id_phant
   (c:={|
-        Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-        Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-        Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
-        Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+        filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+        filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+        filter.Nbhs.filter_selfFiltered_mixin :=
+          local_mixin_filter_selfFiltered;
+        filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
       |})
   id_phant (m3:=local_mixin_choice_hasChoice) id_phant
   (m4:=local_mixin_eqtype_hasDecEq) id_phant
@@ -636,9 +653,11 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
          local_mixin_filter_isFiltered)
   id_phant
   (c0:={|
-         Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-         Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-         Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+         filter.Filtered.choice_hasChoice_mixin :=
+           local_mixin_choice_hasChoice;
+         filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+         filter.Filtered.filter_isFiltered_mixin :=
+           local_mixin_filter_isFiltered
        |})
   id_phant (m7:=local_mixin_choice_hasChoice) id_phant
   (m8:=local_mixin_eqtype_hasDecEq) id_phant
@@ -659,8 +678,8 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 122, character
 ">HB</a></span></span>.<span id="Builders_1.Builders_1_M__canonical__uniform_structure_Uniform" class="id"><span id="Builders_1.HB_unnamed_factory_5" class="id"><a name="Builders_1.Builders_1_M__canonical__uniform_structure_Uniform" class="" title="Builders_1.Builders_1_M__canonical__uniform_structure_Uniform :
 forall [M : Type] [local_mixin_choice_hasChoice : hasChoice.axioms_ M]
   [local_mixin_eqtype_hasDecEq : Equality.mixin_of M]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ M]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ M M],
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ M]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ M M],
 Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
   (m0:=local_mixin_eqtype_hasDecEq) (m1:=local_mixin_filter_selfFiltered)
   (m2:=local_mixin_filter_isFiltered) id_phant
@@ -669,10 +688,11 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
         local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
   id_phant
   (c:={|
-        Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-        Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-        Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
-        Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+        filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+        filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+        filter.Nbhs.filter_selfFiltered_mixin :=
+          local_mixin_filter_selfFiltered;
+        filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
       |})
   id_phant (m3:=local_mixin_choice_hasChoice) id_phant
   (m4:=local_mixin_eqtype_hasDecEq) id_phant
@@ -683,9 +703,11 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
          local_mixin_filter_isFiltered)
   id_phant
   (c0:={|
-         Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-         Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-         Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+         filter.Filtered.choice_hasChoice_mixin :=
+           local_mixin_choice_hasChoice;
+         filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+         filter.Filtered.filter_isFiltered_mixin :=
+           local_mixin_filter_isFiltered
        |})
   id_phant (m7:=local_mixin_choice_hasChoice) id_phant
   (m8:=local_mixin_eqtype_hasDecEq) id_phant
@@ -706,8 +728,8 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 122, character
 ">instance</a></span></span><span class="vernacular"> Definition</span><span id="Builders_1.Builders_1_M__canonical__uniform_structure_Uniform" class="id"><span id="Builders_1.HB_unnamed_factory_5" class="id"><a name="Builders_1.Builders_1_M__canonical__uniform_structure_Uniform" class="" title="Builders_1.Builders_1_M__canonical__uniform_structure_Uniform :
 forall [M : Type] [local_mixin_choice_hasChoice : hasChoice.axioms_ M]
   [local_mixin_eqtype_hasDecEq : Equality.mixin_of M]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ M]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ M M],
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ M]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ M M],
 Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
   (m0:=local_mixin_eqtype_hasDecEq) (m1:=local_mixin_filter_selfFiltered)
   (m2:=local_mixin_filter_isFiltered) id_phant
@@ -716,10 +738,11 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
         local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
   id_phant
   (c:={|
-        Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-        Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-        Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
-        Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+        filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+        filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+        filter.Nbhs.filter_selfFiltered_mixin :=
+          local_mixin_filter_selfFiltered;
+        filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
       |})
   id_phant (m3:=local_mixin_choice_hasChoice) id_phant
   (m4:=local_mixin_eqtype_hasDecEq) id_phant
@@ -730,9 +753,11 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
          local_mixin_filter_isFiltered)
   id_phant
   (c0:={|
-         Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-         Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-         Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+         filter.Filtered.choice_hasChoice_mixin :=
+           local_mixin_choice_hasChoice;
+         filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+         filter.Filtered.filter_isFiltered_mixin :=
+           local_mixin_filter_isFiltered
        |})
   id_phant (m7:=local_mixin_choice_hasChoice) id_phant
   (m8:=local_mixin_eqtype_hasDecEq) id_phant
@@ -753,8 +778,8 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 122, character
 "> _</a></span></span><span id="Builders_1.Builders_1_M__canonical__uniform_structure_Uniform" class="id"><span id="Builders_1.HB_unnamed_factory_5" class="id"><a name="Builders_1.Builders_1_M__canonical__uniform_structure_Uniform" class="" title="Builders_1.Builders_1_M__canonical__uniform_structure_Uniform :
 forall [M : Type] [local_mixin_choice_hasChoice : hasChoice.axioms_ M]
   [local_mixin_eqtype_hasDecEq : Equality.mixin_of M]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ M]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ M M],
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ M]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ M M],
 Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
   (m0:=local_mixin_eqtype_hasDecEq) (m1:=local_mixin_filter_selfFiltered)
   (m2:=local_mixin_filter_isFiltered) id_phant
@@ -763,10 +788,11 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
         local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
   id_phant
   (c:={|
-        Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-        Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-        Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
-        Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+        filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+        filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+        filter.Nbhs.filter_selfFiltered_mixin :=
+          local_mixin_filter_selfFiltered;
+        filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
       |})
   id_phant (m3:=local_mixin_choice_hasChoice) id_phant
   (m4:=local_mixin_eqtype_hasDecEq) id_phant
@@ -777,9 +803,11 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
          local_mixin_filter_isFiltered)
   id_phant
   (c0:={|
-         Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-         Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-         Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+         filter.Filtered.choice_hasChoice_mixin :=
+           local_mixin_choice_hasChoice;
+         filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+         filter.Filtered.filter_isFiltered_mixin :=
+           local_mixin_filter_isFiltered
        |})
   id_phant (m7:=local_mixin_choice_hasChoice) id_phant
   (m8:=local_mixin_eqtype_hasDecEq) id_phant
@@ -800,8 +828,8 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 122, character
 "> :=</a></span></span><span id="Builders_1.Builders_1_M__canonical__uniform_structure_Uniform" class="id"><span id="Builders_1.HB_unnamed_factory_5" class="id"><a name="Builders_1.Builders_1_M__canonical__uniform_structure_Uniform" class="" title="Builders_1.Builders_1_M__canonical__uniform_structure_Uniform :
 forall [M : Type] [local_mixin_choice_hasChoice : hasChoice.axioms_ M]
   [local_mixin_eqtype_hasDecEq : Equality.mixin_of M]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ M]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ M M],
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ M]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ M M],
 Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
   (m0:=local_mixin_eqtype_hasDecEq) (m1:=local_mixin_filter_selfFiltered)
   (m2:=local_mixin_filter_isFiltered) id_phant
@@ -810,10 +838,11 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
         local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
   id_phant
   (c:={|
-        Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-        Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-        Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
-        Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+        filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+        filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+        filter.Nbhs.filter_selfFiltered_mixin :=
+          local_mixin_filter_selfFiltered;
+        filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
       |})
   id_phant (m3:=local_mixin_choice_hasChoice) id_phant
   (m4:=local_mixin_eqtype_hasDecEq) id_phant
@@ -824,9 +853,11 @@ Nbhs_isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
          local_mixin_filter_isFiltered)
   id_phant
   (c0:={|
-         Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-         Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-         Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+         filter.Filtered.choice_hasChoice_mixin :=
+           local_mixin_choice_hasChoice;
+         filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+         filter.Filtered.filter_isFiltered_mixin :=
+           local_mixin_filter_isFiltered
        |})
   id_phant (m7:=local_mixin_choice_hasChoice) id_phant
   (m8:=local_mixin_eqtype_hasDecEq) id_phant
@@ -883,7 +914,7 @@ isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
   id_phant
   (c0:={| Equality.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq |})
   id_phant (m3:=local_mixin_eqtype_hasDecEq) id_phant id_phant ->
-nbhsType
+filter.Nbhs.type
 
 Builders_8.Builders_8_M__canonical__filter_Nbhs is not universe polymorphic
 Arguments Builders_8.Builders_8_M__canonical__filter_Nbhs 
@@ -913,7 +944,7 @@ isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
   id_phant
   (c0:={| Equality.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq |})
   id_phant (m3:=local_mixin_eqtype_hasDecEq) id_phant id_phant ->
-nbhsType
+filter.Nbhs.type
 
 Builders_8.Builders_8_M__canonical__filter_Nbhs is not universe polymorphic
 Arguments Builders_8.Builders_8_M__canonical__filter_Nbhs 
@@ -943,7 +974,7 @@ isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
   id_phant
   (c0:={| Equality.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq |})
   id_phant (m3:=local_mixin_eqtype_hasDecEq) id_phant id_phant ->
-nbhsType
+filter.Nbhs.type
 
 Builders_8.Builders_8_M__canonical__filter_Nbhs is not universe polymorphic
 Arguments Builders_8.Builders_8_M__canonical__filter_Nbhs 
@@ -973,7 +1004,7 @@ isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
   id_phant
   (c0:={| Equality.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq |})
   id_phant (m3:=local_mixin_eqtype_hasDecEq) id_phant id_phant ->
-nbhsType
+filter.Nbhs.type
 
 Builders_8.Builders_8_M__canonical__filter_Nbhs is not universe polymorphic
 Arguments Builders_8.Builders_8_M__canonical__filter_Nbhs 
@@ -1003,7 +1034,7 @@ isUniform.phant_axioms (m:=local_mixin_choice_hasChoice)
   id_phant
   (c0:={| Equality.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq |})
   id_phant (m3:=local_mixin_eqtype_hasDecEq) id_phant id_phant ->
-nbhsType
+filter.Nbhs.type
 
 Builders_8.Builders_8_M__canonical__filter_Nbhs is not universe polymorphic
 Arguments Builders_8.Builders_8_M__canonical__filter_Nbhs 
@@ -1171,7 +1202,7 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 144, character
 <br/>
 <span id="Builders_8.Builders_Export_16" class="id"><a name="Builders_8.Builders_Export_16" class="">HB</a></span>.<span class="gallina-kwd">end</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_entourageE" class="id"><a name="nbhs_entourageE" class="" title="nbhs_entourageE : forall {M : uniformType}, nbhs_ entourage = nbhs
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_entourageE" class="id"><a name="nbhs_entourageE" class="" title="nbhs_entourageE : forall {M : uniformType}, nbhs_ entourage = filter.nbhs
 
 nbhs_entourageE is not universe polymorphic
 Arguments nbhs_entourageE {M}
@@ -1206,7 +1237,7 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 152, character
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="filter_from_entourageE" class="id"><a name="filter_from_entourageE" class="" title="filter_from_entourageE :
 forall {M : uniformType} (x : M),
-filter_from entourage ((xsection (T2:=M))^~ x) = nbhs x
+filter.filter_from entourage ((xsection (T2:=M))^~ x) = filter.nbhs x
 
 filter_from_entourageE is not universe polymorphic
 Arguments filter_from_entourageE {M} x
@@ -1223,15 +1254,16 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 156, character
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#nbhs_entourageE">nbhs_entourageE</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Module</span><span class="vernacular"> Export</span><span class="id"> </span><span id="NbhsEntourage" class="id"><a name="NbhsEntourage" class="">NbhsEntourage</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="NbhsEntourage.nbhs_simpl" class="id"><a name="NbhsEntourage.nbhs_simpl" class="" title="NbhsEntourage.nbhs_simpl :
-(forall (T : Type) (F : set_system T), nbhs F = F) *
-(forall (T : Type) (F : filter_on T), nbhs F = nbhs F) *
+<span class="vernacular">Definition</span><span class="id"> </span><span id="NbhsEntourage.nbhs_simpl" class="id"><a name="NbhsEntourage.nbhs_simpl" class="" title="nbhs_simpl :
+(forall (T : Type) (F : filter.set_system T), filter.nbhs F = F) *
+(forall (T : Type) (F : filter.filter_on T),
+ filter.nbhs F = filter.nbhs (filter.filter F)) *
 (forall (M : uniformType) (x : M),
- filter_from entourage ((xsection (T2:=M))^~ x) = nbhs x) *
-(forall M : uniformType, nbhs_ entourage = nbhs)
+ filter.filter_from entourage ((xsection (T2:=M))^~ x) = filter.nbhs x) *
+(forall M : uniformType, nbhs_ entourage = filter.nbhs)
 
-NbhsEntourage.nbhs_simpl is not universe polymorphic
-NbhsEntourage.nbhs_simpl is transparent
+nbhs_simpl is not universe polymorphic
+nbhs_simpl is transparent
 Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.NbhsEntourage.nbhs_simpl
 Declared in
@@ -1242,7 +1274,7 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 161, character
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhsP" class="id"><a name="nbhsP" class="" title="nbhsP :
 forall {M : uniformType} (x : M) (P : set M),
-nbhs x P <-> nbhs_ entourage x P
+filter.nbhs x P <-> nbhs_ entourage x P
 
 nbhsP is not universe polymorphic
 Arguments nbhsP {M} x P%_classical_set_scope
@@ -1259,7 +1291,7 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 165, character
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="filter_inv" class="id"><a name="filter_inv" class="" title="filter_inv :
 forall {T : Type} [F : set (set (T * T))],
-Filter F -> Filter [set V^-1%relation | V in F]%classic
+filter.Filter F -> filter.Filter [set V^-1%relation | V in F]%classic
 
 filter_inv is not universe polymorphic
 Arguments filter_inv {T}%_type_scope [F]%_classical_set_scope _
@@ -1457,7 +1489,7 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 216, character
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_entourage" class="id"><a name="nbhs_entourage" class="" title="nbhs_entourage :
 forall {M : uniformType} (x : M) [A : set (M * M)],
-entourage A -> nbhs x (xsection A x)
+entourage A -> filter.nbhs x (xsection A x)
 
 nbhs_entourage is not universe polymorphic
 Arguments nbhs_entourage {M} x [A]%_classical_set_scope _
@@ -1473,11 +1505,14 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 220, character
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> ?;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#nbhsP">nbhsP</a></span><span class="id">;</span><span class="gallina-kwd"> exists</span><span class="id"> A</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_entourageP" class="id"><a name="cvg_entourageP" class="" title="cvg_entourageP :
-forall {M : uniformType} [F : set_system M],
-Filter F ->
+forall {M : uniformType} [F : filter.set_system M],
+filter.Filter F ->
 forall p : M,
-(F --> p)%classic <->
-(forall A : set (M * M), entourage A -> \near F, A (p, F))
+filter.cvg_to (filter.nbhs F) (filter.nbhs p) <->
+(forall A : set (M * M),
+ entourage A ->
+ filter.prop_near1 F (P:=fun q : M => A (p, q))
+   (inPhantom (forall q : M, A (p, q))))
 
 cvg_entourageP is not universe polymorphic
 Arguments cvg_entourageP {M} [F] FF p
@@ -1497,11 +1532,14 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 223, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_entourage" class="id"><a name="cvg_entourage" class="" title="cvg_entourage :
-forall {M : uniformType} {F : set_system M},
-Filter F ->
+forall {M : uniformType} {F : filter.set_system M},
+filter.Filter F ->
 forall [x : M],
-(F --> x)%classic ->
-forall [A : set (M * M)], entourage A -> \near F, A (x, F)
+filter.cvg_to (filter.nbhs F) (filter.nbhs x) ->
+forall [A : set (M * M)],
+entourage A ->
+filter.prop_near1 F (P:=fun y : M => A (x, y))
+  (inPhantom (forall y : M, A (x, y)))
 
 cvg_entourage is not universe polymorphic
 Arguments cvg_entourage {M F FF} [x] _ [A]%_classical_set_scope _
@@ -1518,11 +1556,14 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 231, character
 <span class="gallina-kwd"> by</span><span class="id"> move/</span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#cvg_entourageP">cvg_entourageP</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_app_entourageP" class="id"><a name="cvg_app_entourageP" class="" title="cvg_app_entourageP :
-forall {M : uniformType} [T : Type] (f : T -> M) [F : set_system T],
-Filter F ->
-forall p : M,
-(f x @[x --> F] --> p)%classic <->
-(forall A : set (M * M), entourage A -> \near F, A (p, f F))
+forall {M : uniformType} [T : Type] (f : T -> M) [F : filter.set_system T],
+filter.Filter F ->
+forall p : filter.Filtered.sort M,
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs p) <->
+(forall A : set (M * M),
+ entourage A ->
+ filter.prop_near1 F (P:=fun t : T => A (p, f t))
+   (inPhantom (forall t : T, A (p, f t))))
 
 cvg_app_entourageP is not universe polymorphic
 Arguments cvg_app_entourageP {M} [T]%_type_scope f%_function_scope [F] FF p
@@ -1602,14 +1643,17 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ent_closure" class="id"><a name="ent_closure" class="" title="ent_closure :
 forall {M : uniformType} [x : M] [E : set (M * M)],
-entourage E -> (closure (xsection (split_ent E) x) `<=` xsection E x)%classic
+entourage E ->
+(topology_structure.closure (xsection (split_ent E) x) `<=` xsection E x)%classic
 
 ent_closure is not universe polymorphic
 Expanded type for implicit arguments
 ent_closure :
 forall {M : uniformType} [x : M] [E : set (M * M)],
 entourage E ->
-forall [t : M], closure (xsection (split_ent E) x) t -> ((x, t) \in E) = true
+forall [t : topology_structure.Topological.sort M],
+topology_structure.closure (xsection (split_ent E) x) t ->
+((x, t) \in E) = true
 
 Arguments ent_closure {M} [x] [E]%_classical_set_scope _ [t] _
 ent_closure is opaque
@@ -1630,8 +1674,12 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 267, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_withinNx" class="id"><a name="continuous_withinNx" class="" title="continuous_withinNx :
-forall {U V : uniformType} (f : U -> V) (x : U),
-{for x, continuous f} <-> (f x @[x --> x^'] --> f x)%classic
+forall {U V : uniformType} (f : U -> V) (x : filter.Nbhs.sort U),
+{for x,
+  forall x0 : filter.Nbhs.sort U, filter.continuous_at (T:=U) (U:=V) x0 f} <->
+filter.cvg_to
+  (filter.nbhs (filter.fmap f (filter.nbhs (topology_structure.dnbhs x))))
+  (filter.nbhs (f x))
 
 continuous_withinNx is not universe polymorphic
 Arguments continuous_withinNx {U V} f%_function_scope x
@@ -1653,24 +1701,65 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 277, character
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_injective_withinNx" class="id"><a name="continuous_injective_withinNx" class="" title="continuous_injective_withinNx :
-forall [T U : topologicalType] [f : T -> U] [x : T],
-{for x, continuous f} ->
-(forall y : T, f y = f x -> y = x) -> (f x @[x --> x^'] --> (f x)^')%classic
+forall [T U : topology_structure.Topological.type]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U]
+  [x : topology_structure.Topological.sort T],
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              T),
+  filter.continuous_at
+    (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          T)
+    (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          U)
+    x0 f} ->
+(forall y : topology_structure.Topological.sort T, f y = f x -> y = x) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap f (filter.nbhs (topology_structure.dnbhs x))))
+  (filter.nbhs (topology_structure.dnbhs (f x)))
 
 continuous_injective_withinNx is not universe polymorphic
 Expanded type for implicit arguments
 continuous_injective_withinNx :
-forall [T U : topologicalType] [f : T -> U] [x : T],
-{for x, continuous f} ->
-(forall y : T, f y = f x -> y = x) ->
-forall [t : set U],
-nbhs (f x)^'%classic t ->
+forall [T U : topology_structure.Topological.type]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U]
+  [x : topology_structure.Topological.sort T],
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              T),
+  filter.continuous_at
+    (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          T)
+    (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          U)
+    x0 f} ->
+(forall y : topology_structure.Topological.sort T, f y = f x -> y = x) ->
+forall [t : set (topology_structure.Topological.sort U)],
+filter.nbhs (topology_structure.dnbhs (f x)) t ->
 (let (nbhs) :=
-   Topological.filter_isFiltered_mixin
-     (let (sort, class) as record return (Topological.axioms_ record) := T in
+   topology_structure.Topological.filter_isFiltered_mixin
+     (let
+        (sort, class) as record
+         return
+           (topology_structure.Topological.axioms_
+              (topology_structure.Topological.sort record)) :=
+        T in
       class) in
  nbhs) x
-  (fun t0 : T => (fun y : T => is_true (y != x)) t0 -> (f @^-1` t)%classic t0)
+  (fun
+     t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+            T =>
+   (fun
+      y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+            T =>
+    is_true (y != x)) t0 ->
+   (f @^-1` t)%classic t0)
 
 Arguments continuous_injective_withinNx [T U] [f]%_function_scope 
   [x] _ _%_function_scope [t] _
@@ -1741,7 +1830,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="open_nbhs_entourage" class="id"><a name="open_nbhs_entourage" class="" title="open_nbhs_entourage :
 forall [U : uniformType] (x : U) [A : set (U * U)],
-entourage A -> open_nbhs x (xsection A x)°
+entourage A ->
+topology_structure.open_nbhs x (topology_structure.interior (xsection A x))
 
 open_nbhs_entourage is not universe polymorphic
 Arguments open_nbhs_entourage [U] x [A]%_classical_set_scope _
@@ -1786,7 +1876,7 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 330, character
 <br/>
 <div class="doc">Complete uniform spaces </div>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="cauchy" class="id"><a name="cauchy" class="" title="cauchy : forall {T : uniformType}, set_system T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="cauchy" class="id"><a name="cauchy" class="" title="cauchy : forall {T : uniformType}, filter.set_system T -> Prop
 
 cauchy is not universe polymorphic
 Arguments cauchy {T} F
@@ -1798,19 +1888,22 @@ library mathcomp.analysis.topology_theory.uniform_structure, line 336, character
 ">cauchy</a></span><span class="id"> {</span><span id="T:153" class="id"><a name="T:153" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#uniformType">uniformType</a></span><span class="id">}</span> (<span id="F:154" class="id"><a name="F:154" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#T:153">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#F:154">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#F:154">F</a></span>)<span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_cauchy" class="id"><a name="cvg_cauchy" class="" title="cvg_cauchy :
-forall {T : puniformType} [F : set_system T],
-Filter F -> [cvg F in T]%classic -> cauchy F
+forall {T : puniformType} [F : filter.set_system T],
+filter.Filter F ->
+filter.cvg_to (filter.nbhs F) (filter.nbhs (filter.lim_in T (filter.nbhs F))) ->
+cauchy F
 
 cvg_cauchy is not universe polymorphic
 Expanded type for implicit arguments
 cvg_cauchy :
-forall {T : puniformType} [F : set_system T],
-Filter F ->
-[cvg F in T]%classic ->
+forall {T : puniformType} [F : filter.set_system T],
+filter.Filter F ->
+filter.cvg_to (filter.nbhs F) (filter.nbhs (filter.lim_in T (filter.nbhs F))) ->
 forall [t : set (T * T)],
-nbhs entourage t ->
+filter.nbhs entourage t ->
 exists2 i : set T * set T,
-  (fun P : set T * set T => nbhs (F, F).1 P.1 /\ nbhs (F, F).2 P.2) i &
+  (fun P : set T * set T =>
+   filter.nbhs (F, F).1 P.1 /\ filter.nbhs (F, F).2 P.2) i &
   ((fun P : set T * set T => P.1 `*` P.2) i `<=` t)%classic
 
 Arguments cvg_cauchy {T} [F] _ _ [t] _
@@ -1849,8 +1942,9 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="completeType1.T" class="id"><a name="completeType1.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#completeType">completeType</a></span><span class="id">}</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cauchy_cvgP" class="id"><a name="cauchy_cvgP" class="" title="cauchy_cvgP :
-forall {T : completeType} (F : set_system T),
-ProperFilter F -> cauchy F <-> cvg F
+forall {T : completeType} (F : filter.set_system T),
+filter.ProperFilter F ->
+cauchy F <-> filter.cvg_to (filter.nbhs F) (filter.nbhs (filter.lim F))
 
 cauchy_cvgP is not universe polymorphic
 Arguments cauchy_cvgP {T} F {FF}

@@ -989,7 +989,7 @@ library mathcomp.classical.classical_sets, line 425, characters 6-16
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_sub_in2" class="id"><a name="itv_sub_in2" class="" title="itv_sub_in2 :
-forall [d : disp_t] [T : porderType d] [P : T -> T -> Prop]
+forall [d : Order.disp_t] [T : porderType d] [P : T -> T -> Prop]
   [i j : interval T],
 ([set` j] `<=` [set` i])%classic ->
 {in i &, forall x y : T, P x y} -> {in j &, forall x y : T, P x y}
@@ -997,7 +997,7 @@ forall [d : disp_t] [T : porderType d] [P : T -> T -> Prop]
 itv_sub_in2 is not universe polymorphic
 Expanded type for implicit arguments
 itv_sub_in2 :
-forall [d : disp_t] [T : porderType d] [P : T -> T -> Prop]
+forall [d : Order.disp_t] [T : porderType d] [P : T -> T -> Prop]
   [i j : interval T],
 ([set` j] `<=` [set` i])%classic ->
 {in i &, forall x y : T, P x y} ->
@@ -1017,7 +1017,7 @@ library mathcomp.classical.classical_sets, line 430, characters 6-17
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> ji</span><span class="id"> +</span><span class="id"> x</span><span class="id"> y</span><span class="id"> xj</span><span class="id"> yj;</span><span class="id"> apply;</span><span class="id"> exact:</span><span class="id"> ji</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="preimage_itv" class="id"><a name="preimage_itv" class="" title="preimage_itv :
-forall [T : Type] [d : disp_t] [rT : porderType d] 
+forall [T : Type] [d : Order.disp_t] [rT : porderType d] 
   (f : T -> rT) (i : interval rT) (x : T),
 (f @^-1` [set` i])%classic x = (f x \in i)
 
@@ -1035,7 +1035,8 @@ library mathcomp.classical.classical_sets, line 435, characters 6-18
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#inE">inE</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="preimage_itvoy" class="id"><a name="preimage_itvoy" class="" title="preimage_itvoy :
-forall [T : Type] [d : disp_t] [rT : porderType d] (f : T -> rT) (y : rT),
+forall [T : Type] [d : Order.disp_t] [rT : porderType d] 
+  (f : T -> rT) (y : rT),
 (f @^-1` `]y, +oo[)%classic = [set x | (y < f x)%O]%classic
 
 preimage_itvoy is not universe polymorphic
@@ -1055,7 +1056,8 @@ Qed.</div></details>
 <span class="vernacular">Notation</span><span class="id"> </span><span id="preimage_itv_o_infty" class="id"><a name="preimage_itv_o_infty" class="">preimage_itv_o_infty</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#preimage_itvoy">preimage_itvoy</a></span> (<span class="id">only</span><span class="id"> parsing</span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="preimage_itvcy" class="id"><a name="preimage_itvcy" class="" title="preimage_itvcy :
-forall [T : Type] [d : disp_t] [rT : porderType d] (f : T -> rT) (y : rT),
+forall [T : Type] [d : Order.disp_t] [rT : porderType d] 
+  (f : T -> rT) (y : rT),
 (f @^-1` `[y, +oo[)%classic = [set x | (y <= f x)%O]%classic
 
 preimage_itvcy is not universe polymorphic
@@ -1075,7 +1077,8 @@ Qed.</div></details>
 <span class="vernacular">Notation</span><span class="id"> </span><span id="preimage_itv_c_infty" class="id"><a name="preimage_itv_c_infty" class="">preimage_itv_c_infty</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#preimage_itvcy">preimage_itvcy</a></span> (<span class="id">only</span><span class="id"> parsing</span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="preimage_itvNyo" class="id"><a name="preimage_itvNyo" class="" title="preimage_itvNyo :
-forall [T : Type] [d : disp_t] [rT : orderType d] (f : T -> rT) (y : rT),
+forall [T : Type] [d : Order.disp_t] [rT : orderType d] 
+  (f : T -> rT) (y : rT),
 (f @^-1` `]-oo, y[)%classic = [set x | (f x < y)%O]%classic
 
 preimage_itvNyo is not universe polymorphic
@@ -1094,7 +1097,8 @@ library mathcomp.classical.classical_sets, line 455, characters 6-21
 <span class="vernacular">Notation</span><span class="id"> </span><span id="preimage_itv_infty_o" class="id"><a name="preimage_itv_infty_o" class="">preimage_itv_infty_o</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#preimage_itvNyo">preimage_itvNyo</a></span> (<span class="id">only</span><span class="id"> parsing</span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="preimage_itvNyc" class="id"><a name="preimage_itvNyc" class="" title="preimage_itvNyc :
-forall [T : Type] [d : disp_t] [rT : orderType d] (f : T -> rT) (y : rT),
+forall [T : Type] [d : Order.disp_t] [rT : orderType d] 
+  (f : T -> rT) (y : rT),
 (f @^-1` `]-oo, y])%classic = [set x | (f x <= y)%O]%classic
 
 preimage_itvNyc is not universe polymorphic
@@ -4324,7 +4328,7 @@ Qed.</div></details>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">TTheory</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="set_eq_le" class="id"><a name="set_eq_le" class="" title="set_eq_le :
-forall [d : disp_t] [rT : porderType d] [T : Type] (f g : T -> rT),
+forall [d : Order.disp_t] [rT : porderType d] [T : Type] (f g : T -> rT),
 [set x | f x = g x]%classic =
 ([set x | (f x <= g x)%O] `&` [set x | (g x <= f x)%O])%classic
 
@@ -4342,7 +4346,7 @@ library mathcomp.classical.classical_sets, line 1203, characters 6-15
 <span class="gallina-kwd"> by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.classical_sets.html#seteqP">seteqP</a></span><span class="id">;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> [x/=</span><span class="id"> -&gt;//|x</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#andP">andP</a></span><span class="id">];</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.eq_le">eq_le</a></span><span class="id"> =&gt;/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="set_neq_lt" class="id"><a name="set_neq_lt" class="" title="set_neq_lt :
-forall [d : disp_t] [rT : orderType d] [T : Type] (f g : T -> rT),
+forall [d : Order.disp_t] [rT : orderType d] [T : Type] (f g : T -> rT),
 [set x | f x != g x]%classic =
 ([set x | (f x < g x)%O] `|` [set x | (g x < f x)%O])%classic
 
@@ -4460,7 +4464,7 @@ library mathcomp.classical.classical_sets, line 1238, characters 6-9
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#predeqE">predeqE</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="II1" class="id"><a name="II1" class="" title="II1 : `I_1 = [set 0]%classic
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="II1" class="id"><a name="II1" class="" title="II1 : `I_1 = [set 0%N]%classic
 
 II1 is not universe polymorphic
 II1 is opaque
@@ -4473,7 +4477,7 @@ library mathcomp.classical.classical_sets, line 1240, characters 6-9
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#predeqE">predeqE</a></span><span class="id">;</span><span class="id"> case</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="IIn_eq0" class="id"><a name="IIn_eq0" class="" title="IIn_eq0 : forall [n : nat], `I_n = classical_sets.set0 -> n = 0
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="IIn_eq0" class="id"><a name="IIn_eq0" class="" title="IIn_eq0 : forall [n : nat], `I_n = classical_sets.set0 -> n = 0%N
 
 IIn_eq0 is not universe polymorphic
 Arguments IIn_eq0 [n]%_nat_scope _
@@ -8154,7 +8158,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigcup_recl" class="id"><a name="bigcup_recl" class="" title="bigcup_recl :
 forall [T : Type] (F : nat -> set T),
-(\bigcup_n F n)%classic = (F 0 `|` \bigcup_(n in ~` `I_1) F n)%classic
+(\bigcup_n F n)%classic = (F 0%N `|` \bigcup_(n in ~` `I_1) F n)%classic
 
 bigcup_recl is not universe polymorphic
 Arguments bigcup_recl [T]%_type_scope F%_function_scope
@@ -8783,7 +8787,7 @@ library mathcomp.classical.classical_sets, line 2277, characters 6-21
 forall {T : Type} (n : nat) (F : nat -> set T),
 (\bigcup_i F i)%classic =
 (\big[classical_sets.setU/classical_sets.set0]_(i < n) F i
- `|` \bigcup_i F (n + i))%classic
+ `|` \bigcup_i F (n + i)%N)%classic
 
 bigcup_splitn is not universe polymorphic
 Arguments bigcup_splitn {T}%_type_scope n%_nat_scope F%_function_scope
@@ -8805,7 +8809,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigcap_splitn" class="id"><a name="bigcap_splitn" class="" title="bigcap_splitn :
 forall {T : Type} (n : nat) (F : nat -> set T),
 (\bigcap_i F i)%classic =
-(\big[classical_sets.setI/[set: T]]_(i < n) F i `&` \bigcap_i F (n + i))%classic
+(\big[classical_sets.setI/[set: T]]_(i < n) F i `&` \bigcap_i F (n + i)%N)%classic
 
 bigcap_splitn is not universe polymorphic
 Arguments bigcap_splitn {T}%_type_scope n%_nat_scope F%_function_scope
@@ -8945,7 +8949,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigcup_addn" class="id"><a name="bigcup_addn" class="" title="bigcup_addn :
 forall {T : Type} (F : nat -> set T) (n : nat),
-(\bigcup_i F (n + i))%classic = (\bigcup_(i in [set i | n <= i]) F i)%classic
+(\bigcup_i F (n + i)%N)%classic =
+(\bigcup_(i in [set i | n <= i]) F i)%classic
 
 bigcup_addn is not universe polymorphic
 Arguments bigcup_addn {T}%_type_scope F%_function_scope n%_nat_scope
@@ -8964,7 +8969,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigcap_addn" class="id"><a name="bigcap_addn" class="" title="bigcap_addn :
 forall {T : Type} (F : nat -> set T) (n : nat),
-(\bigcap_i F (n + i))%classic = (\bigcap_(i in [set i | n <= i]) F i)%classic
+(\bigcap_i F (n + i)%N)%classic =
+(\bigcap_(i in [set i | n <= i]) F i)%classic
 
 bigcap_addn is not universe polymorphic
 Arguments bigcap_addn {T}%_type_scope F%_function_scope n%_nat_scope
@@ -12034,7 +12040,7 @@ Qed.</div></details>
 <span class="vernacular">Variables</span> (<span id="UpperLowerTheory.d" class="id"><a name="UpperLowerTheory.d" class="">d</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.disp_t">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.disp_t">disp_t</a></span>) (<span id="UpperLowerTheory.T" class="id"><a name="UpperLowerTheory.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrder.Exports.porderType">porderType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#d:1965">d</a></span>).<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">A</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#UpperLowerTheory.T">T</a></span>) (<span class="id">x</span><span class="id"> y</span><span class="id"> z</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#UpperLowerTheory.T">T</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="ubound" class="id"><a name="ubound" class="" title="ubound : forall [d : disp_t] [T : porderType d], set T -> set T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ubound" class="id"><a name="ubound" class="" title="ubound : forall [d : Order.disp_t] [T : porderType d], set T -> set T
 
 ubound is not universe polymorphic
 Arguments ubound [d T] A%_classical_set_scope _
@@ -12043,7 +12049,7 @@ Expands to: Constant mathcomp.classical.classical_sets.ubound
 Declared in
 library mathcomp.classical.classical_sets, line 2917, characters 11-17
 ">ubound</a></span><span class="id"> </span><span id="A:1968" class="id"><a name="A:1968" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#UpperLowerTheory.T">T</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="y:1969" class="id"><a name="y:1969" class="">y</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="x:1970" class="id"><a name="x:1970" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:1968">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#x:1970">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#x:1970">x</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#4a718365fe6d60a4322f996a7adbd575"> &lt;=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#4a718365fe6d60a4322f996a7adbd575"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#y:1969">y</a></span>)<span class="id">%O</span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="lbound" class="id"><a name="lbound" class="" title="lbound : forall [d : disp_t] [T : porderType d], set T -> set T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="lbound" class="id"><a name="lbound" class="" title="lbound : forall [d : Order.disp_t] [T : porderType d], set T -> set T
 
 lbound is not universe polymorphic
 Arguments lbound [d T] A%_classical_set_scope _
@@ -12054,7 +12060,7 @@ library mathcomp.classical.classical_sets, line 2918, characters 11-17
 ">lbound</a></span><span class="id"> </span><span id="A:1971" class="id"><a name="A:1971" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#UpperLowerTheory.T">T</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="y:1972" class="id"><a name="y:1972" class="">y</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="x:1973" class="id"><a name="x:1973" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:1971">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#x:1973">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#y:1972">y</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#4a718365fe6d60a4322f996a7adbd575"> &lt;=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#4a718365fe6d60a4322f996a7adbd575"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#x:1973">x</a></span>)<span class="id">%O</span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ubP" class="id"><a name="ubP" class="" title="ubP :
-forall [d : disp_t] [T : porderType d] (A : set T) (x : T),
+forall [d : Order.disp_t] [T : porderType d] (A : set T) (x : T),
 (forall y : T, A y -> (y <= x)%O) <-> ubound (T:=T) A x
 
 ubP is not universe polymorphic
@@ -12070,7 +12076,7 @@ library mathcomp.classical.classical_sets, line 2920, characters 6-9
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lbP" class="id"><a name="lbP" class="" title="lbP :
-forall [d : disp_t] [T : porderType d] (A : set T) (x : T),
+forall [d : Order.disp_t] [T : porderType d] (A : set T) (x : T),
 (forall y : T, A y -> (x <= y)%O) <-> lbound (T:=T) A x
 
 lbP is not universe polymorphic
@@ -12086,7 +12092,7 @@ library mathcomp.classical.classical_sets, line 2923, characters 6-9
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ub_set1" class="id"><a name="ub_set1" class="" title="ub_set1 :
-forall [d : disp_t] [T : porderType d] (x y : T),
+forall [d : Order.disp_t] [T : porderType d] (x y : T),
 ubound (T:=T) [set x] y = (x <= y)%O
 
 ub_set1 is not universe polymorphic
@@ -12102,7 +12108,7 @@ library mathcomp.classical.classical_sets, line 2926, characters 6-13
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#propeqE">propeqE</a></span><span class="id">;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> [/</span>(_<span class="id"> x</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#erefl">erefl</a></span>)<span class="id">//|xy</span><span class="id"> z</span><span class="id"> -&gt;]</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lb_set1" class="id"><a name="lb_set1" class="" title="lb_set1 :
-forall [d : disp_t] [T : porderType d] (x y : T),
+forall [d : Order.disp_t] [T : porderType d] (x y : T),
 lbound (T:=T) [set x] y = (y <= x)%O
 
 lb_set1 is not universe polymorphic
@@ -12118,7 +12124,7 @@ library mathcomp.classical.classical_sets, line 2929, characters 6-13
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#propeqE">propeqE</a></span><span class="id">;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> [/</span>(_<span class="id"> x</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#erefl">erefl</a></span>)<span class="id">//|xy</span><span class="id"> z</span><span class="id"> -&gt;]</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lb_ub_set1" class="id"><a name="lb_ub_set1" class="" title="lb_ub_set1 :
-forall [d : disp_t] [T : porderType d] [x y : T],
+forall [d : Order.disp_t] [T : porderType d] [x y : T],
 lbound (T:=T) (ubound (T:=T) [set x]) y -> (y <= x)%O
 
 lb_ub_set1 is not universe polymorphic
@@ -12134,7 +12140,7 @@ library mathcomp.classical.classical_sets, line 2932, characters 6-16
 <span class="gallina-kwd"> by</span><span class="id"> move/</span>(_<span class="id"> x</span>)<span class="id">;</span><span class="id"> apply;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#ub_set1">ub_set1</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ub_lb_set1" class="id"><a name="ub_lb_set1" class="" title="ub_lb_set1 :
-forall [d : disp_t] [T : porderType d] [x y : T],
+forall [d : Order.disp_t] [T : porderType d] [x y : T],
 ubound (T:=T) (lbound (T:=T) [set x]) y -> (x <= y)%O
 
 ub_lb_set1 is not universe polymorphic
@@ -12150,13 +12156,13 @@ library mathcomp.classical.classical_sets, line 2935, characters 6-16
 <span class="gallina-kwd"> by</span><span class="id"> move/</span>(_<span class="id"> x</span>)<span class="id">;</span><span class="id"> apply;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#lb_set1">lb_set1</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lb_ub_refl" class="id"><a name="lb_ub_refl" class="" title="lb_ub_refl :
-forall [d : disp_t] [T : porderType d] [x : T],
+forall [d : Order.disp_t] [T : porderType d] [x : T],
 lbound (T:=T) (ubound (T:=T) [set x]) x
 
 lb_ub_refl is not universe polymorphic
 Expanded type for implicit arguments
 lb_ub_refl :
-forall [d : disp_t] [T : porderType d] [x x0 : T],
+forall [d : Order.disp_t] [T : porderType d] [x x0 : T],
 ubound (T:=T) [set x] x0 -> (x <= x0)%O = true
 
 Arguments lb_ub_refl [d T x x] _
@@ -12171,13 +12177,13 @@ library mathcomp.classical.classical_sets, line 2938, characters 6-16
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> y;</span><span class="id"> apply</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ub_lb_refl" class="id"><a name="ub_lb_refl" class="" title="ub_lb_refl :
-forall [d : disp_t] [T : porderType d] [x : T],
+forall [d : Order.disp_t] [T : porderType d] [x : T],
 ubound (T:=T) (lbound (T:=T) [set x]) x
 
 ub_lb_refl is not universe polymorphic
 Expanded type for implicit arguments
 ub_lb_refl :
-forall [d : disp_t] [T : porderType d] [x x0 : T],
+forall [d : Order.disp_t] [T : porderType d] [x x0 : T],
 lbound (T:=T) [set x] x0 -> (x0 <= x)%O = true
 
 Arguments ub_lb_refl [d T x x] _
@@ -12192,7 +12198,7 @@ library mathcomp.classical.classical_sets, line 2941, characters 6-16
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> y;</span><span class="id"> apply</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ub_lb_ub" class="id"><a name="ub_lb_ub" class="" title="ub_lb_ub :
-forall [d : disp_t] [T : porderType d] [A : set T] [x y : T],
+forall [d : Order.disp_t] [T : porderType d] [A : set T] [x y : T],
 ubound (T:=T) A y -> lbound (T:=T) (ubound (T:=T) A) x -> (x <= y)%O
 
 ub_lb_ub is not universe polymorphic
@@ -12208,7 +12214,7 @@ library mathcomp.classical.classical_sets, line 2944, characters 6-14
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> Ay;</span><span class="id"> apply</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lb_ub_lb" class="id"><a name="lb_ub_lb" class="" title="lb_ub_lb :
-forall [d : disp_t] [T : porderType d] [A : set T] [x y : T],
+forall [d : Order.disp_t] [T : porderType d] [A : set T] [x y : T],
 lbound (T:=T) A y -> ubound (T:=T) (lbound (T:=T) A) x -> (y <= x)%O
 
 lb_ub_lb is not universe polymorphic
@@ -12223,7 +12229,7 @@ library mathcomp.classical.classical_sets, line 2947, characters 6-14
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> Ey;</span><span class="id"> apply</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="down" class="id"><a name="down" class="" title="down : forall [d : disp_t] [T : porderType d], set T -> set T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="down" class="id"><a name="down" class="" title="down : forall [d : Order.disp_t] [T : porderType d], set T -> set T
 
 down is not universe polymorphic
 Arguments down [d T] A%_classical_set_scope _
@@ -12233,7 +12239,7 @@ Declared in
 library mathcomp.classical.classical_sets, line 2952, characters 11-15
 ">down</a></span><span class="id"> </span><span id="A:1996" class="id"><a name="A:1996" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#UpperLowerTheory.T">T</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="x:1997" class="id"><a name="x:1997" class="">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="gallina-kwd"> exists</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="y:1998" class="id"><a name="y:1998" class="">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:1996">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#y:1998">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#x:1997">x</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#4a718365fe6d60a4322f996a7adbd575"> &lt;=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#4a718365fe6d60a4322f996a7adbd575"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#y:1998">y</a></span>)<span class="id">%O</span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="has_ubound" class="id"><a name="has_ubound" class="" title="has_ubound : forall [d : disp_t] [T : porderType d], set T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="has_ubound" class="id"><a name="has_ubound" class="" title="has_ubound : forall [d : Order.disp_t] [T : porderType d], set T -> Prop
 
 has_ubound is not universe polymorphic
 Arguments has_ubound [d T] A%_classical_set_scope
@@ -12242,7 +12248,7 @@ Expands to: Constant mathcomp.classical.classical_sets.has_ubound
 Declared in
 library mathcomp.classical.classical_sets, line 2954, characters 11-21
 ">has_ubound</a></span><span class="id"> </span><span id="A:1999" class="id"><a name="A:1999" class="">A</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#ubound">ubound</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:1999">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="has_sup" class="id"><a name="has_sup" class="" title="has_sup : forall [d : disp_t] [T : porderType d], set T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="has_sup" class="id"><a name="has_sup" class="" title="has_sup : forall [d : Order.disp_t] [T : porderType d], set T -> Prop
 
 has_sup is not universe polymorphic
 Arguments has_sup [d T] A%_classical_set_scope
@@ -12251,7 +12257,7 @@ Expands to: Constant mathcomp.classical.classical_sets.has_sup
 Declared in
 library mathcomp.classical.classical_sets, line 2955, characters 11-18
 ">has_sup</a></span><span class="id"> </span><span id="A:2000" class="id"><a name="A:2000" class="">A</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:2000">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#has_ubound">has_ubound</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:2000">A</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="has_lbound" class="id"><a name="has_lbound" class="" title="has_lbound : forall [d : disp_t] [T : porderType d], set T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="has_lbound" class="id"><a name="has_lbound" class="" title="has_lbound : forall [d : Order.disp_t] [T : porderType d], set T -> Prop
 
 has_lbound is not universe polymorphic
 Arguments has_lbound [d T] A%_classical_set_scope
@@ -12260,7 +12266,7 @@ Expands to: Constant mathcomp.classical.classical_sets.has_lbound
 Declared in
 library mathcomp.classical.classical_sets, line 2956, characters 11-21
 ">has_lbound</a></span><span class="id"> </span><span id="A:2001" class="id"><a name="A:2001" class="">A</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#lbound">lbound</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:2001">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="has_inf" class="id"><a name="has_inf" class="" title="has_inf : forall [d : disp_t] [T : porderType d], set T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="has_inf" class="id"><a name="has_inf" class="" title="has_inf : forall [d : Order.disp_t] [T : porderType d], set T -> Prop
 
 has_inf is not universe polymorphic
 Arguments has_inf [d T] A%_classical_set_scope
@@ -12271,7 +12277,8 @@ library mathcomp.classical.classical_sets, line 2957, characters 11-18
 ">has_inf</a></span><span class="id"> </span><span id="A:2002" class="id"><a name="A:2002" class="">A</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:2002">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#has_lbound">has_lbound</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:2002">A</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="has_ub_set1" class="id"><a name="has_ub_set1" class="" title="has_ub_set1 :
-forall [d : disp_t] [T : porderType d] (x : T), has_ubound (T:=T) [set x]
+forall [d : Order.disp_t] [T : porderType d] (x : T),
+has_ubound (T:=T) [set x]
 
 has_ub_set1 is not universe polymorphic
 Arguments has_ub_set1 [d T] x
@@ -12286,7 +12293,8 @@ library mathcomp.classical.classical_sets, line 2959, characters 6-17
 <span class="gallina-kwd"> by</span><span class="gallina-kwd"> exists</span><span class="id"> x;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#ub_set1">ub_set1</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="has_inf0" class="id"><a name="has_inf0" class="" title="has_inf0 :
-forall [d : disp_t] [T : porderType d], ~ has_inf (T:=T) classical_sets.set0
+forall [d : Order.disp_t] [T : porderType d],
+~ has_inf (T:=T) classical_sets.set0
 
 has_inf0 is not universe polymorphic
 Arguments has_inf0 [d T] _
@@ -12301,7 +12309,8 @@ library mathcomp.classical.classical_sets, line 2962, characters 6-14
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.classical_sets.html#has_inf">has_inf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#not_andP">not_andP</a></span><span class="id">;</span><span class="id"> left;</span><span class="id"> exact/</span><span class="id"><a href="mathcomp.classical.classical_sets.html#nonemptyPn">nonemptyPn</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="has_sup0" class="id"><a name="has_sup0" class="" title="has_sup0 :
-forall [d : disp_t] [T : porderType d], ~ has_sup (T:=T) classical_sets.set0
+forall [d : Order.disp_t] [T : porderType d],
+~ has_sup (T:=T) classical_sets.set0
 
 has_sup0 is not universe polymorphic
 Arguments has_sup0 [d T] _
@@ -12316,7 +12325,7 @@ library mathcomp.classical.classical_sets, line 2965, characters 6-14
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.classical_sets.html#has_sup">has_sup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#not_andP">not_andP</a></span><span class="id">;</span><span class="id"> left;</span><span class="id"> exact/</span><span class="id"><a href="mathcomp.classical.classical_sets.html#nonemptyPn">nonemptyPn</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="has_sup1" class="id"><a name="has_sup1" class="" title="has_sup1 :
-forall [d : disp_t] [T : porderType d] (x : T), has_sup (T:=T) [set x]
+forall [d : Order.disp_t] [T : porderType d] (x : T), has_sup (T:=T) [set x]
 
 has_sup1 is not universe polymorphic
 Arguments has_sup1 [d T] x
@@ -12331,7 +12340,7 @@ library mathcomp.classical.classical_sets, line 2968, characters 6-14
 <span class="gallina-kwd"> by</span><span class="id"> split;</span><span class="id"> [exists</span><span class="id"> x</span><span class="id"> |</span><span class="gallina-kwd"> exists</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> y</span><span class="id"> -&gt;]</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="has_inf1" class="id"><a name="has_inf1" class="" title="has_inf1 :
-forall [d : disp_t] [T : porderType d] (x : T), has_inf (T:=T) [set x]
+forall [d : Order.disp_t] [T : porderType d] (x : T), has_inf (T:=T) [set x]
 
 has_inf1 is not universe polymorphic
 Arguments has_inf1 [d T] x
@@ -12346,7 +12355,7 @@ library mathcomp.classical.classical_sets, line 2971, characters 6-14
 <span class="gallina-kwd"> by</span><span class="id"> split;</span><span class="id"> [exists</span><span class="id"> x</span><span class="id"> |</span><span class="gallina-kwd"> exists</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> y</span><span class="id"> -&gt;]</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="subset_has_lbound" class="id"><a name="subset_has_lbound" class="" title="subset_has_lbound :
-forall [d : disp_t] [T : porderType d] [A B : set T],
+forall [d : Order.disp_t] [T : porderType d] [A B : set T],
 (A `<=` B)%classic -> has_lbound (T:=T) B -> has_lbound (T:=T) A
 
 subset_has_lbound is not universe polymorphic
@@ -12362,7 +12371,7 @@ library mathcomp.classical.classical_sets, line 2974, characters 6-23
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> AB</span><span class="id"> [l</span><span class="id"> Bl];</span><span class="gallina-kwd"> exists</span><span class="id"> l</span><span class="id"> =&gt;</span><span class="id"> a</span><span class="id"> Aa;</span><span class="id"> exact/Bl/AB</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="subset_has_ubound" class="id"><a name="subset_has_ubound" class="" title="subset_has_ubound :
-forall [d : disp_t] [T : porderType d] [A B : set T],
+forall [d : Order.disp_t] [T : porderType d] [A B : set T],
 (A `<=` B)%classic -> has_ubound (T:=T) B -> has_ubound (T:=T) A
 
 subset_has_ubound is not universe polymorphic
@@ -12378,7 +12387,7 @@ library mathcomp.classical.classical_sets, line 2977, characters 6-23
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> AB</span><span class="id"> [l</span><span class="id"> Bl];</span><span class="gallina-kwd"> exists</span><span class="id"> l</span><span class="id"> =&gt;</span><span class="id"> a</span><span class="id"> Aa;</span><span class="id"> exact/Bl/AB</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="downP" class="id"><a name="downP" class="" title="downP :
-forall [d : disp_t] [T : porderType d] (A : set T) (x : T),
+forall [d : Order.disp_t] [T : porderType d] (A : set T) (x : T),
 (exists2 y : T, A y & (x <= y)%O) <-> down (T:=T) A x
 
 downP is not universe polymorphic
@@ -12393,7 +12402,7 @@ library mathcomp.classical.classical_sets, line 2980, characters 6-11
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> [[y</span><span class="id"> Ay</span><span class="id"> xy]|[y</span><span class="id"> [Ay</span><span class="id"> xy]]];</span><span class="id"> [exists</span><span class="id"> y|</span><span class="gallina-kwd"> exists</span><span class="id"> y]</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="isLub" class="id"><a name="isLub" class="" title="isLub : forall [d : disp_t] [T : porderType d], set T -> T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="isLub" class="id"><a name="isLub" class="" title="isLub : forall [d : Order.disp_t] [T : porderType d], set T -> T -> Prop
 
 isLub is not universe polymorphic
 Arguments isLub [d T] A%_classical_set_scope m
@@ -12403,7 +12412,7 @@ Declared in
 library mathcomp.classical.classical_sets, line 2983, characters 11-16
 ">isLub</a></span><span class="id"> </span><span id="A:2014" class="id"><a name="A:2014" class="">A</a></span><span class="id"> </span><span id="m:2015" class="id"><a name="m:2015" class="">m</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#ubound">ubound</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:2014">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#m:2015">m</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="b:2016" class="id"><a name="b:2016" class="">b</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#ubound">ubound</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:2014">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#b:2016">b</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#m:2015">m</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#4a718365fe6d60a4322f996a7adbd575"> &lt;=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#4a718365fe6d60a4322f996a7adbd575"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b:2016">b</a></span>)<span class="id">%O</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="supremums" class="id"><a name="supremums" class="" title="supremums : forall [d : disp_t] [T : porderType d], set T -> set T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="supremums" class="id"><a name="supremums" class="" title="supremums : forall [d : Order.disp_t] [T : porderType d], set T -> set T
 
 supremums is not universe polymorphic
 Arguments supremums [d T] A%_classical_set_scope _
@@ -12414,7 +12423,7 @@ library mathcomp.classical.classical_sets, line 2985, characters 11-20
 ">supremums</a></span><span class="id"> </span><span id="A:2017" class="id"><a name="A:2017" class="">A</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#ubound">ubound</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:2017">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#lbound">lbound</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#ubound">ubound</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:2017">A</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="supremums1" class="id"><a name="supremums1" class="" title="supremums1 :
-forall [d : disp_t] [T : porderType d] (x : T),
+forall [d : Order.disp_t] [T : porderType d] (x : T),
 supremums (T:=T) [set x] = [set x]%classic
 
 supremums1 is not universe polymorphic
@@ -12433,13 +12442,13 @@ library mathcomp.classical.classical_sets, line 2987, characters 6-16
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_subset1_supremums" class="id"><a name="is_subset1_supremums" class="" title="is_subset1_supremums :
-forall [d : disp_t] [T : porderType d] [A : set T],
+forall [d : Order.disp_t] [T : porderType d] [A : set T],
 is_subset1 (supremums (T:=T) A)
 
 is_subset1_supremums is not universe polymorphic
 Expanded type for implicit arguments
 is_subset1_supremums :
-forall [d : disp_t] [T : porderType d] [A : set T] [x y : T],
+forall [d : Order.disp_t] [T : porderType d] [A : set T] [x y : T],
 supremums (T:=T) A x -> supremums (T:=T) A y -> x = y
 
 Arguments is_subset1_supremums [d T] [A]%_classical_set_scope [x y] _ _
@@ -12455,7 +12464,7 @@ library mathcomp.classical.classical_sets, line 2994, characters 6-26
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.eq_le">eq_le</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#ub_lb_ub">ub_lb_ub</a></span><span class="id"> Ax</span><span class="id"> yA</span>) (<span class="id"><a href="mathcomp.classical.classical_sets.html#ub_lb_ub">ub_lb_ub</a></span><span class="id"> Ay</span><span class="id"> xA</span>).<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="supremum" class="id"><a name="supremum" class="" title="supremum : forall [d : disp_t] [T : porderType d], T -> set T -> T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="supremum" class="id"><a name="supremum" class="" title="supremum : forall [d : Order.disp_t] [T : porderType d], T -> set T -> T
 
 supremum is not universe polymorphic
 Arguments supremum [d T] x0 A%_classical_set_scope
@@ -12466,7 +12475,7 @@ library mathcomp.classical.classical_sets, line 3000, characters 11-19
 ">supremum</a></span><span class="id"> </span><span id="x0:2020" class="id"><a name="x0:2020" class="">x0</a></span><span class="id"> </span><span id="A:2021" class="id"><a name="A:2021" class="">A</a></span><span class="id"> :=</span><span class="gallina-kwd"> if</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:2021">A</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> ==</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span><span class="gallina-kwd"> then</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#x0:2020">x0</a></span><span class="gallina-kwd"> else</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#xget">xget</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#x0:2020">x0</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#supremums">supremums</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:2021">A</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="supremum_out" class="id"><a name="supremum_out" class="" title="supremum_out :
-forall [d : disp_t] [T : porderType d] (x0 : T) [A : set T],
+forall [d : Order.disp_t] [T : porderType d] (x0 : T) [A : set T],
 ~ has_sup (T:=T) A -> supremum (T:=T) x0 A = x0
 
 supremum_out is not universe polymorphic
@@ -12485,7 +12494,7 @@ library mathcomp.classical.classical_sets, line 3002, characters 6-18
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="supremum0" class="id"><a name="supremum0" class="" title="supremum0 :
-forall [d : disp_t] [T : porderType d] (x0 : T),
+forall [d : Order.disp_t] [T : porderType d] (x0 : T),
 supremum (T:=T) x0 classical_sets.set0 = x0
 
 supremum0 is not universe polymorphic
@@ -12501,7 +12510,7 @@ library mathcomp.classical.classical_sets, line 3009, characters 6-15
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.classical_sets.html#supremum">supremum</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqxx">eqxx</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="supremum1" class="id"><a name="supremum1" class="" title="supremum1 :
-forall [d : disp_t] [T : porderType d] (x0 x : T),
+forall [d : Order.disp_t] [T : porderType d] (x0 x : T),
 supremum (T:=T) x0 [set x] = x
 
 supremum1 is not universe polymorphic
@@ -12519,7 +12528,7 @@ library mathcomp.classical.classical_sets, line 3012, characters 6-15
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#supremums1">supremums1</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#xgetP">xgetP</a></span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> /</span>(_<span class="id"> x</span>)<span class="id"> /</span>(_<span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#erefl">erefl</a></span>).<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="infimums" class="id"><a name="infimums" class="" title="infimums : forall [d : disp_t] [T : porderType d], set T -> set T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="infimums" class="id"><a name="infimums" class="" title="infimums : forall [d : Order.disp_t] [T : porderType d], set T -> set T
 
 infimums is not universe polymorphic
 Arguments infimums [d T] A%_classical_set_scope _
@@ -12530,7 +12539,7 @@ library mathcomp.classical.classical_sets, line 3019, characters 11-19
 ">infimums</a></span><span class="id"> </span><span id="A:2027" class="id"><a name="A:2027" class="">A</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#lbound">lbound</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:2027">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#ubound">ubound</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#lbound">lbound</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#A:2027">A</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="infimums1" class="id"><a name="infimums1" class="" title="infimums1 :
-forall [d : disp_t] [T : porderType d] (x : T),
+forall [d : Order.disp_t] [T : porderType d] (x : T),
 infimums (T:=T) [set x] = [set x]%classic
 
 infimums1 is not universe polymorphic
@@ -12549,13 +12558,13 @@ library mathcomp.classical.classical_sets, line 3021, characters 6-15
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_subset1_infimums" class="id"><a name="is_subset1_infimums" class="" title="is_subset1_infimums :
-forall [d : disp_t] [T : porderType d] [A : set T],
+forall [d : Order.disp_t] [T : porderType d] [A : set T],
 is_subset1 (infimums (T:=T) A)
 
 is_subset1_infimums is not universe polymorphic
 Expanded type for implicit arguments
 is_subset1_infimums :
-forall [d : disp_t] [T : porderType d] [A : set T] [x y : T],
+forall [d : Order.disp_t] [T : porderType d] [A : set T] [x y : T],
 infimums (T:=T) A x -> infimums (T:=T) A y -> x = y
 
 Arguments is_subset1_infimums [d T] [A]%_classical_set_scope [x y] _ _
@@ -12571,7 +12580,7 @@ library mathcomp.classical.classical_sets, line 3028, characters 6-25
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.eq_le">eq_le</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#lb_ub_lb">lb_ub_lb</a></span><span class="id"> Ax</span><span class="id"> yA</span>) (<span class="id"><a href="mathcomp.classical.classical_sets.html#lb_ub_lb">lb_ub_lb</a></span><span class="id"> Ay</span><span class="id"> xA</span>).<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="infimum" class="id"><a name="infimum" class="" title="infimum : forall [d : disp_t] [T : porderType d], T -> set T -> T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="infimum" class="id"><a name="infimum" class="" title="infimum : forall [d : Order.disp_t] [T : porderType d], T -> set T -> T
 
 infimum is not universe polymorphic
 Arguments infimum [d T] x0 A%_classical_set_scope
@@ -12589,7 +12598,7 @@ library mathcomp.classical.classical_sets, line 3034, characters 11-18
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">A</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#UpperLowerOrderTheory.T">T</a></span>) (<span class="id">x</span><span class="id"> y</span><span class="id"> z</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#UpperLowerOrderTheory.T">T</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ge_supremum_Nmem" class="id"><a name="ge_supremum_Nmem" class="" title="ge_supremum_Nmem :
-forall [d : disp_t] [T : orderType d] (x0 : T) [A : set T] [t : T],
+forall [d : Order.disp_t] [T : orderType d] (x0 : T) [A : set T] [t : T],
 (supremums (T:=T) A !=set0)%classic -> A t -> (t <= supremum (T:=T) x0 A)%O
 
 ge_supremum_Nmem is not universe polymorphic
@@ -12608,7 +12617,7 @@ library mathcomp.classical.classical_sets, line 3043, characters 6-22
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="le_infimum_Nmem" class="id"><a name="le_infimum_Nmem" class="" title="le_infimum_Nmem :
-forall [d : disp_t] [T : orderType d] (x0 : T) [A : set T] [t : T],
+forall [d : Order.disp_t] [T : orderType d] (x0 : T) [A : set T] [t : T],
 (infimums (T:=T) A !=set0)%classic -> A t -> (infimum (T:=T) x0 A <= t)%O
 
 le_infimum_Nmem is not universe polymorphic
@@ -12630,8 +12639,9 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nat_supremums_neq0" class="id"><a name="nat_supremums_neq0" class="" title="nat_supremums_neq0 :
 forall [A : set nat],
-(ubound (T:=NatOrder.Datatypes_nat__canonical__Order_POrder) A !=set0)%classic ->
-(supremums (T:=NatOrder.Datatypes_nat__canonical__Order_POrder) A !=set0)%classic
+(ubound (T:=Order.NatOrder.Datatypes_nat__canonical__Order_POrder) A !=set0)%classic ->
+(supremums (T:=Order.NatOrder.Datatypes_nat__canonical__Order_POrder) A
+ !=set0)%classic
 
 nat_supremums_neq0 is not universe polymorphic
 Arguments nat_supremums_neq0 [A]%_classical_set_scope _
@@ -12760,7 +12770,7 @@ library mathcomp.classical.classical_sets, line 3090, characters 6-13
 <br/>
 <span class="vernacular">End</span><span class="id"> meets</span>.<br/>
 <br/>
-<span class="vernacular">Fact</span><span class="id"> </span><span id="set_display" class="id"><a name="set_display" class="" title="set_display : disp_t
+<span class="vernacular">Fact</span><span class="id"> </span><span id="set_display" class="id"><a name="set_display" class="" title="set_display : Order.disp_t
 
 set_display is not universe polymorphic
 set_display is opaque

@@ -256,13 +256,16 @@
 &nbsp;&nbsp;<span class="id"><a href="NOTFOUND the module url for HB.structures#07a2fe97f630e8e0c2d8d753544c8c8c">{</a></span><span id="T:2" class="id"><a name="T:2" class="">T</a></span><span class="id"><a href="NOTFOUND the module url for HB.structures#07a2fe97f630e8e0c2d8d753544c8c8c"> of</a></span><span class="id"><a href="NOTFOUND the module url for HB.structures#07a2fe97f630e8e0c2d8d753544c8c8c"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.normed_module.html#NormedModule">NormedModule</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.complete_normed_module.html#K:1">K</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.complete_normed_module.html#T:2">T</a></span><span class="id"><a href="NOTFOUND the module url for HB.structures#07a2fe97f630e8e0c2d8d753544c8c8c"> &amp;</a></span><span class="id"><a href="NOTFOUND the module url for HB.structures#07a2fe97f630e8e0c2d8d753544c8c8c"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#Complete">Complete</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.complete_normed_module.html#T:2">T</a></span><span class="id"><a href="NOTFOUND the module url for HB.structures#07a2fe97f630e8e0c2d8d753544c8c8c">}</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="R_complete" class="id"><a name="R_complete" class="" title="R_complete :
-forall [R : realType] [F : set_system R], ProperFilter F -> cauchy F -> cvg F
+forall [R : realType] [F : filter.set_system R],
+filter.ProperFilter F ->
+cauchy F -> filter.cvg_to (filter.nbhs F) (filter.nbhs (filter.lim F))
 
 R_complete is not universe polymorphic
 Expanded type for implicit arguments
 R_complete :
-forall [R : realType] [F : set_system R],
-ProperFilter F -> cauchy F -> forall [t : set R], nbhs (lim F) t -> F t
+forall [R : realType] [F : filter.set_system R],
+filter.ProperFilter F ->
+cauchy F -> forall [t : set R], filter.nbhs (filter.lim F) t -> F t
 
 Arguments R_complete [R F] _ _ [t] _
 R_complete is opaque

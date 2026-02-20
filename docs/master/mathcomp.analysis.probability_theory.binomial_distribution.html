@@ -579,8 +579,8 @@ forall {R : realType} (n : nat) [p : R] [p0 : (0 <= p)%R]
   (p1 : ((NngNum (R:=R) (x:=p) p0)%:num <= 1)%R),
 bin_prob n (p:=p) (p0:=p0) p1 0 =
 (widen_itv
-   ((NngNum (R:=R) (x:=unstable.onem (NngNum (R:=R) (x:=p) p0)%:num)
-       (unstable.onem_ge0 (R:=R) (r:=(NngNum (R:=R) (x:=p) p0)%:num) p1))%:num
+   ((NngNum (R:=R) (x:=((NngNum (R:=R) (x:=p) p0)%:num).~)
+       (onem_ge0 (R:=R) (r:=(NngNum (R:=R) (x:=p) p0)%:num) p1))%:num
     ^+ n)%:itv%R
  :
  {nonneg R}%R)
@@ -606,8 +606,8 @@ forall {R : realType} (n : nat) [p : R] [p0 : (0 <= p)%R]
 bin_prob n (p:=p) (p0:=p0) p1 1 =
 (widen_itv
    ((NngNum (R:=R) (x:=p) p0)%:num *
-    (NngNum (R:=R) (x:=unstable.onem (NngNum (R:=R) (x:=p) p0)%:num)
-       (unstable.onem_ge0 (R:=R) (r:=(NngNum (R:=R) (x:=p) p0)%:num) p1))%:num
+    (NngNum (R:=R) (x:=((NngNum (R:=R) (x:=p) p0)%:num).~)
+       (onem_ge0 (R:=R) (r:=(NngNum (R:=R) (x:=p) p0)%:num) p1))%:num
     ^+ n.-1 *+ n)%:itv%R
  :
  {nonneg R}%R)
@@ -713,7 +713,7 @@ forall [R : realType] (n : nat)
   (U : set Datatypes_bool__canonical__measurable_structure_SigmaRing),
 (0 <= p <= 1)%R ->
 (\int[binomial_prob n p]_y (\d_(0 < y)%N)%R U)%E =
-bernoulli_prob (1 - unstable.onem p ^+ n) U
+bernoulli_prob (1 - p.~ ^+ n) U
 
 integral_binomial_prob is not universe polymorphic
 Arguments integral_binomial_prob [R] n%_nat_scope 

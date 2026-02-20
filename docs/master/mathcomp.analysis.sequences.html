@@ -483,7 +483,7 @@ Declared in library mathcomp.analysis.sequences, line 191, characters 6-20
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#propeqE">propeqE</a></span><span class="id">;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> du</span><span class="id"> x</span><span class="id"> y;</span><span class="id"> rewrite</span><span class="id"> -du</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.lerN2">lerN2</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nondecreasing_seqP" class="id"><a name="nondecreasing_seqP" class="" title="nondecreasing_seqP :
-forall [d : Order.disp_t] [T : porderType d] (u_ : T ^nat),
+forall [d : disp_t] [T : porderType d] (u_ : T ^nat),
 (forall n : nat, (u_ n <= u_ n.+1)%O) <->
 {homo u_ : n m / n <= m >-> (n <= m)%O}
 
@@ -500,7 +500,7 @@ Declared in library mathcomp.analysis.sequences, line 195, characters 6-24
 <span class="gallina-kwd"> by</span><span class="id"> split=&gt;</span><span class="id"> [|h</span><span class="id"> n];</span><span class="id"> [exact:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#homo_leq">homo_leq</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.le_trans">le_trans</a></span><span class="id"> |</span><span class="id"> exact:</span><span class="id"> h]</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nonincreasing_seqP" class="id"><a name="nonincreasing_seqP" class="" title="nonincreasing_seqP :
-forall [d : Order.disp_t] [T : porderType d] (u_ : T ^nat),
+forall [d : disp_t] [T : porderType d] (u_ : T ^nat),
 (forall n : nat, (u_ n.+1 <= u_ n)%O) <->
 {homo u_ : n m / n <= m >-> (m <= n)%O}
 
@@ -519,7 +519,7 @@ Declared in library mathcomp.analysis.sequences, line 199, characters 6-24
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="increasing_seqP" class="id"><a name="increasing_seqP" class="" title="increasing_seqP :
-forall [d : Order.disp_t] [T : porderType d] (u_ : T ^nat),
+forall [d : disp_t] [T : porderType d] (u_ : T ^nat),
 (forall n : nat, (u_ n < u_ n.+1)%O) <-> increasing_seq u_
 
 increasing_seqP is not universe polymorphic
@@ -537,13 +537,13 @@ Declared in library mathcomp.analysis.sequences, line 206, characters 6-21
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="increasing_seq_injective" class="id"><a name="increasing_seq_injective" class="" title="increasing_seq_injective :
-forall [d : Order.disp_t] {T : orderType d} [f : T ^nat],
+forall [d : disp_t] {T : orderType d} [f : T ^nat],
 increasing_seq f -> injective f
 
 increasing_seq_injective is not universe polymorphic
 Expanded type for implicit arguments
 increasing_seq_injective :
-forall [d : Order.disp_t] {T : orderType d} [f : T ^nat],
+forall [d : disp_t] {T : orderType d} [f : T ^nat],
 increasing_seq f -> forall [x1 x2 : nat], f x1 = f x2 -> x1 = x2
 
 Arguments increasing_seq_injective [d] {T} [f] _ [x1 x2] _
@@ -567,7 +567,7 @@ Declared in library mathcomp.analysis.sequences, line 213, characters 6-30
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="decreasing_seqP" class="id"><a name="decreasing_seqP" class="" title="decreasing_seqP :
-forall [d : Order.disp_t] [T : porderType d] (u_ : T ^nat),
+forall [d : disp_t] [T : porderType d] (u_ : T ^nat),
 (forall n : nat, (u_ n.+1 < u_ n)%O) <-> decreasing_seq u_
 
 decreasing_seqP is not universe polymorphic
@@ -591,7 +591,7 @@ Declared in library mathcomp.analysis.sequences, line 227, characters 6-21
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lef_at" class="id"><a name="lef_at" class="" title="lef_at :
-forall [aT : Type] [d : Order.disp_t] [T : porderType d] 
+forall [aT : Type] [d : disp_t] [T : porderType d] 
   [f : (aT -> T) ^nat] (x : aT),
 {homo f : n m / n <= m >-> (n <= m)%O} ->
 {homo f^~ x : n m / n <= m >-> (n <= m)%O}
@@ -599,7 +599,7 @@ forall [aT : Type] [d : Order.disp_t] [T : porderType d]
 lef_at is not universe polymorphic
 Expanded type for implicit arguments
 lef_at :
-forall [aT : Type] [d : Order.disp_t] [T : porderType d] 
+forall [aT : Type] [d : disp_t] [T : porderType d] 
   [f : (aT -> T) ^nat] (x : aT),
 {homo f : n m / n <= m >-> (n <= m)%O} ->
 forall [x0 y : nat],
@@ -961,8 +961,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="seqDUE" class="id"><a name="seqDUE" class="" title="seqDUE :
 forall {R : realDomainType} (n : nat) (r : R),
-seqDU (fun n0 : nat => `]r, (r + n0%:R%R)%E]%classic) n =
-`](r + n.-1%:R%R)%E, (r + n%:R%R)%E]%classic
+seqDU (fun n0 : nat => `]r, (r + n0%:R)%R]%classic) n =
+`](r + n.-1%:R)%R, (r + n%:R)%R]%classic
 
 seqDUE is not universe polymorphic
 Arguments seqDUE {R} n%_nat_scope r%_ring_scope
@@ -995,10 +995,17 @@ Qed.</div></details>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">f</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#sequences_patched.NatShift.V">V</a></span>) (<span class="id">u</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#sequences_patched.NatShift.V">V</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04"> ^nat</a></span>)  (<span class="id">l</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#sequences_patched.NatShift.V">V</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_restrict" class="id"><a name="cvg_restrict" class="" title="cvg_restrict :
-forall (N : nat) [V : ptopologicalType] (f : nat -> V) 
-  (u_ : V ^nat) (l : set_system V),
-([sequence if (n <= N)%N then f n else u_ n]_n%R x @[x --> \oo] --> l)%classic =
-(u_ x @[x --> \oo] --> l)%classic
+forall (N : nat) [V : topology_structure.PointedTopological.type]
+  (f : nat -> topology_structure.PointedTopological.sort V)
+  (u_ : (topology_structure.PointedTopological.sort V) ^nat)
+  (l : filter.set_system (topology_structure.PointedTopological.sort V)),
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [sequence if (n <= N)%N then f n else u_ n]_n%R
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs l) =
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs l)
 
 cvg_restrict is not universe polymorphic
 Arguments cvg_restrict N%_nat_scope [V] f%_function_scope u_ l
@@ -1016,8 +1023,19 @@ Declared in library mathcomp.analysis.sequences, line 414, characters 6-18
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_restrict" class="id"><a name="is_cvg_restrict" class="" title="is_cvg_restrict :
-forall (N : nat) [V : ptopologicalType] (f : nat -> V) (u_ : V ^nat),
-cvgn [sequence if (n <= N)%N then f n else u_ n]_n%R = cvgn u_
+forall (N : nat) [V : topology_structure.PointedTopological.type]
+  (f : nat -> topology_structure.PointedTopological.sort V)
+  (u_ : (topology_structure.PointedTopological.sort V) ^nat),
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [sequence if (n <= N)%N then f n else u_ n]_n%R
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap [sequence if (n <= N)%N then f n else u_ n]_n%R
+           (filter.nbhs filter.eventually)))) =
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))))
 
 is_cvg_restrict is not universe polymorphic
 Arguments is_cvg_restrict N%_nat_scope [V] f%_function_scope u_
@@ -1034,9 +1052,15 @@ Declared in library mathcomp.analysis.sequences, line 422, characters 6-21
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_centern" class="id"><a name="cvg_centern" class="" title="cvg_centern :
-forall (N : nat) [V : ptopologicalType] (u_ : V ^nat) (l : set_system V),
-([sequence u_ (n - N)%N]_n%R x @[x --> \oo] --> l)%classic =
-(u_ x @[x --> \oo] --> l)%classic
+forall (N : nat) [V : topology_structure.PointedTopological.type]
+  (u_ : (topology_structure.PointedTopological.sort V) ^nat)
+  (l : filter.set_system (topology_structure.PointedTopological.sort V)),
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [sequence u_ (n - N)%N]_n%R (filter.nbhs filter.eventually)))
+  (filter.nbhs l) =
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs l)
 
 cvg_centern is not universe polymorphic
 Arguments cvg_centern N%_nat_scope [V] u_ l
@@ -1055,9 +1079,15 @@ Declared in library mathcomp.analysis.sequences, line 429, characters 6-17
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_shiftn" class="id"><a name="cvg_shiftn" class="" title="cvg_shiftn :
-forall (N : nat) [V : ptopologicalType] (u_ : V ^nat) (l : set_system V),
-([sequence u_ (n + N)%N]_n%R x @[x --> \oo] --> l)%classic =
-(u_ x @[x --> \oo] --> l)%classic
+forall (N : nat) [V : topology_structure.PointedTopological.type]
+  (u_ : (topology_structure.PointedTopological.sort V) ^nat)
+  (l : filter.set_system (topology_structure.PointedTopological.sort V)),
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [sequence u_ (n + N)%N]_n%R (filter.nbhs filter.eventually)))
+  (filter.nbhs l) =
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs l)
 
 cvg_shiftn is not universe polymorphic
 Arguments cvg_shiftn N%_nat_scope [V] u_ l
@@ -1079,9 +1109,15 @@ Declared in library mathcomp.analysis.sequences, line 438, characters 6-16
 <span class="vernacular">Variables</span> (<span id="sequences_patched.V" class="id"><a name="sequences_patched.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#PointedTopological.Exports.ptopologicalType">ptopologicalType</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_shiftS" class="id"><a name="cvg_shiftS" class="" title="cvg_shiftS :
-forall [V : ptopologicalType] (u_ : nat -> V) (l : set_system V),
-([sequence u_ n.+1]_n%R x @[x --> \oo] --> l)%classic =
-(u_ x @[x --> \oo] --> l)%classic
+forall [V : topology_structure.PointedTopological.type]
+  (u_ : nat -> topology_structure.PointedTopological.sort V)
+  (l : filter.set_system (topology_structure.PointedTopological.sort V)),
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [sequence u_ n.+1]_n%R (filter.nbhs filter.eventually)))
+  (filter.nbhs l) =
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs l)
 
 cvg_shiftS is not universe polymorphic
 Arguments cvg_shiftS [V] u_%_function_scope l
@@ -1106,7 +1142,11 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lt_lim" class="id"><a name="lt_lim" class="" title="lt_lim :
 forall [R : realFieldType] [u : R ^nat] [M : R],
 {homo u : n m / n <= m >-> (n <= m)%R} ->
-cvgn u -> (M < limn u)%R -> \forall n \near \oo%classic, (M <= u n)%R
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u (filter.nbhs filter.eventually)))) ->
+(M < filter.lim (filter.fmap u (filter.nbhs filter.eventually)))%R ->
+filter.prop_near1 filter.eventually (P:=fun n : nat => (M <= u n)%R)
+  (inPhantom (forall n : nat, (M <= u n)%R))
 
 lt_lim is not universe polymorphic
 Arguments lt_lim [R u] [M]%_ring_scope _ _ _
@@ -1129,7 +1169,10 @@ Declared in library mathcomp.analysis.sequences, line 463, characters 6-12
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nonincreasing_cvgn_ge" class="id"><a name="nonincreasing_cvgn_ge" class="" title="nonincreasing_cvgn_ge :
 forall [R : realFieldType] [u_ : R ^nat],
 {homo u_ : n m / n <= m >-> (m <= n)%R} ->
-cvgn u_ -> forall n : nat, (limn u_ <= u_ n)%R
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually)))) ->
+forall n : nat,
+(filter.lim (filter.fmap u_ (filter.nbhs filter.eventually)) <= u_ n)%R
 
 nonincreasing_cvgn_ge is not universe polymorphic
 Arguments nonincreasing_cvgn_ge [R u_] _ _ n%_nat_scope
@@ -1157,7 +1200,10 @@ Declared in library mathcomp.analysis.sequences, line 474, characters 6-27
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nondecreasing_cvgn_le" class="id"><a name="nondecreasing_cvgn_le" class="" title="nondecreasing_cvgn_le :
 forall [R : realFieldType] [u_ : R ^nat],
 {homo u_ : n m / n <= m >-> (n <= m)%R} ->
-cvgn u_ -> forall n : nat, (u_ n <= limn u_)%R
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually)))) ->
+forall n : nat,
+(u_ n <= filter.lim (filter.fmap u_ (filter.nbhs filter.eventually)))%R
 
 nondecreasing_cvgn_le is not universe polymorphic
 Arguments nondecreasing_cvgn_le [R u_] _ _ n%_nat_scope
@@ -1176,7 +1222,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_has_ub" class="id"><a name="cvg_has_ub" class="" title="cvg_has_ub :
 forall [R : realFieldType] [u_ : R ^nat],
-cvgn u_ ->
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually)))) ->
 has_ubound
   (T:={|
         Num.POrderedZmodule.sort := R;
@@ -1221,7 +1268,9 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_has_sup" class="id"><a name="cvg_has_sup" class="" title="cvg_has_sup :
 forall [R : realFieldType] [u_ : R ^nat],
-cvgn u_ -> has_sup (T:=R) (range u_)
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually)))) ->
+has_sup (T:=R) (range u_)
 
 cvg_has_sup is not universe polymorphic
 Arguments cvg_has_sup [R u_] _
@@ -1238,7 +1287,9 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_has_inf" class="id"><a name="cvg_has_inf" class="" title="cvg_has_inf :
 forall [R : realFieldType] [u_ : R ^nat],
-cvgn u_ -> has_inf (T:=R) (range u_)
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually)))) ->
+has_inf (T:=R) (range u_)
 
 cvg_has_inf is not universe polymorphic
 Arguments cvg_has_inf [R u_] _
@@ -1309,7 +1360,7 @@ Declared in library mathcomp.analysis.sequences, line 524, characters 6-16
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="seriesSr" class="id"><a name="seriesSr" class="" title="seriesSr :
 forall [V : GRing.Zmodule.Exports.zmodType] (u_ : V ^nat) (n : nat),
-series u_ n.+1 = (series u_ n + u_ n)%E
+series u_ n.+1 = (series u_ n + u_ n)%R
 
 seriesSr is not universe polymorphic
 Arguments seriesSr [V] u_ n%_nat_scope
@@ -1324,7 +1375,7 @@ Declared in library mathcomp.analysis.sequences, line 527, characters 6-14
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="seriesS" class="id"><a name="seriesS" class="" title="seriesS :
 forall [V : GRing.Zmodule.Exports.zmodType] (u_ : V ^nat) (n : nat),
-series u_ n.+1 = (u_ n + series u_ n)%E
+series u_ n.+1 = (u_ n + series u_ n)%R
 
 seriesS is not universe polymorphic
 Arguments seriesS [V] u_ n%_nat_scope
@@ -1354,7 +1405,7 @@ Declared in library mathcomp.analysis.sequences, line 533, characters 6-14
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="series_addn" class="id"><a name="series_addn" class="" title="series_addn :
 forall [V : GRing.Zmodule.Exports.zmodType] (u_ : V ^nat) (m n : nat),
-series u_ (n + m) = (series u_ m + (\sum_(m <= k < n + m) u_ k)%R)%E
+series u_ (n + m)%N = (series u_ m + \sum_(m <= k < n + m) u_ k)%R
 
 series_addn is not universe polymorphic
 Arguments series_addn [V] u_ (m n)%_nat_scope
@@ -1439,7 +1490,7 @@ Declared in library mathcomp.analysis.sequences, line 557, characters 6-13
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="seriesD" class="id"><a name="seriesD" class="" title="seriesD :
 forall [V : GRing.Zmodule.Exports.zmodType] (f g : V ^nat),
-series (f + g)%E = (series f + series g)%E
+series (f + g)%R = (series f + series g)%R
 
 seriesD is not universe polymorphic
 Arguments seriesD [V] f g
@@ -1474,7 +1525,15 @@ Declared in library mathcomp.analysis.sequences, line 563, characters 6-13
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_seriesN" class="id"><a name="is_cvg_seriesN" class="" title="is_cvg_seriesN :
 forall [V : numFieldType] (f : V ^nat),
-cvgn (series (- f)%R) = cvgn (series f)
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series (- f)%R) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (series (- f)%R) (filter.nbhs filter.eventually)))) =
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually))))
 
 is_cvg_seriesN is not universe polymorphic
 Arguments is_cvg_seriesN [V] f
@@ -1489,7 +1548,12 @@ Declared in library mathcomp.analysis.sequences, line 571, characters 6-20
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_seriesN" class="id"><a name="lim_seriesN" class="" title="lim_seriesN :
 forall [V : numFieldType] [f : V ^nat],
-cvgn (series f) -> limn (series (- f)%R) = (- limn (series f))%R
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
+filter.lim (filter.fmap (series (- f)%R) (filter.nbhs filter.eventually)) =
+(- filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))%R
 
 lim_seriesN is not universe polymorphic
 Arguments lim_seriesN [V f] _
@@ -1505,16 +1569,31 @@ Declared in library mathcomp.analysis.sequences, line 574, characters 6-17
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_seriesZ" class="id"><a name="is_cvg_seriesZ" class="" title="is_cvg_seriesZ :
 forall [V : numFieldType] [f : V ^nat] [k : V],
-cvgn (series f) -> cvgn (series (k *: f)%R)
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (series (k *: f)%R) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (series (k *: f)%R) (filter.nbhs filter.eventually))))
 
 is_cvg_seriesZ is not universe polymorphic
 Expanded type for implicit arguments
 is_cvg_seriesZ :
 forall [V : numFieldType] [f : V ^nat] [k : V],
-cvgn (series f) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
 forall
   [t : set (numFieldNormedType.NumField_sort__canonical__GRing_Lmodule V)],
-nbhs (limn (series (k *: f)%R)) t ->
+filter.nbhs
+  (filter.lim
+     (filter.fmap (series (k *: f)%R) (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` series (k *: f)%R @^-1` t)%classic
@@ -1531,7 +1610,12 @@ Declared in library mathcomp.analysis.sequences, line 578, characters 6-20
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_seriesZ" class="id"><a name="lim_seriesZ" class="" title="lim_seriesZ :
 forall [V : numFieldType] [f : V ^nat] (k : V),
-cvgn (series f) -> limn (series (k *: f)%R) = (k *: limn (series f))%R
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
+filter.lim (filter.fmap (series (k *: f)%R) (filter.nbhs filter.eventually)) =
+(k *: filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))%R
 
 lim_seriesZ is not universe polymorphic
 Arguments lim_seriesZ [V f] k%_ring_scope _
@@ -1547,19 +1631,41 @@ Declared in library mathcomp.analysis.sequences, line 581, characters 6-17
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_seriesD" class="id"><a name="is_cvg_seriesD" class="" title="is_cvg_seriesD :
 forall [V : numFieldType] [f g : V ^nat],
-cvgn (series f) -> cvgn (series g) -> cvgn (series (f + g)%E)
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series g) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series g) (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (series (f + g)%R) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (series (f + g)%R) (filter.nbhs filter.eventually))))
 
 is_cvg_seriesD is not universe polymorphic
 Expanded type for implicit arguments
 is_cvg_seriesD :
 forall [V : numFieldType] [f g : V ^nat],
-cvgn (series f) ->
-cvgn (series g) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series g) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series g) (filter.nbhs filter.eventually)))) ->
 forall [t : set V],
-nbhs (limn (series (f + g)%E)) t ->
+filter.nbhs
+  (filter.lim
+     (filter.fmap (series (f + g)%R) (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
-  ((fun N : nat => [set n | N <= n]) i `<=` series (f + g)%E @^-1` t)%classic
+  ((fun N : nat => [set n | N <= n]) i `<=` series (f + g)%R @^-1` t)%classic
 
 Arguments is_cvg_seriesD [V f g] _ _ [t] _
 is_cvg_seriesD is opaque
@@ -1574,9 +1680,17 @@ Declared in library mathcomp.analysis.sequences, line 585, characters 6-20
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_seriesD" class="id"><a name="lim_seriesD" class="" title="lim_seriesD :
 forall [V : numFieldType] [f g : V ^nat],
-cvgn (series f) ->
-cvgn (series g) ->
-limn (series (f + g)%E) = (limn (series f) + limn (series g))%E
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series g) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series g) (filter.nbhs filter.eventually)))) ->
+filter.lim (filter.fmap (series (f + g)%R) (filter.nbhs filter.eventually)) =
+(filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)) +
+ filter.lim (filter.fmap (series g) (filter.nbhs filter.eventually)))%R
 
 lim_seriesD is not universe polymorphic
 Arguments lim_seriesD [V f g] _ _
@@ -1592,16 +1706,38 @@ Declared in library mathcomp.analysis.sequences, line 589, characters 6-17
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_seriesB" class="id"><a name="is_cvg_seriesB" class="" title="is_cvg_seriesB :
 forall [V : numFieldType] [f g : V ^nat],
-cvgn (series f) -> cvgn (series g) -> cvgn (series (f - g)%R)
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series g) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series g) (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (series (f - g)%R) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (series (f - g)%R) (filter.nbhs filter.eventually))))
 
 is_cvg_seriesB is not universe polymorphic
 Expanded type for implicit arguments
 is_cvg_seriesB :
 forall [V : numFieldType] [f g : V ^nat],
-cvgn (series f) ->
-cvgn (series g) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series g) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series g) (filter.nbhs filter.eventually)))) ->
 forall [t : set V],
-nbhs (limn (series (f - g)%R)) t ->
+filter.nbhs
+  (filter.lim
+     (filter.fmap (series (f - g)%R) (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` series (f - g)%R @^-1` t)%classic
@@ -1619,9 +1755,17 @@ Declared in library mathcomp.analysis.sequences, line 593, characters 6-20
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_seriesB" class="id"><a name="lim_seriesB" class="" title="lim_seriesB :
 forall [V : numFieldType] [f g : V ^nat],
-cvgn (series f) ->
-cvgn (series g) ->
-limn (series (f - g)%R) = (limn (series f) - limn (series g))%R
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series g) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series g) (filter.nbhs filter.eventually)))) ->
+filter.lim (filter.fmap (series (f - g)%R) (filter.nbhs filter.eventually)) =
+(filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)) -
+ filter.lim (filter.fmap (series g) (filter.nbhs filter.eventually)))%R
 
 lim_seriesB is not universe polymorphic
 Arguments lim_seriesB [V f g] _ _
@@ -1639,9 +1783,17 @@ Declared in library mathcomp.analysis.sequences, line 597, characters 6-17
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_series_le" class="id"><a name="lim_series_le" class="" title="lim_series_le :
 forall [V : realFieldType] [f g : V ^nat],
-cvgn (series f) ->
-cvgn (series g) ->
-(forall n : nat, (f n <= g n)%R) -> (limn (series f) <= limn (series g))%R
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series g) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series g) (filter.nbhs filter.eventually)))) ->
+(forall n : nat, (f n <= g n)%R) ->
+(filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)) <=
+ filter.lim (filter.fmap (series g) (filter.nbhs filter.eventually)))%R
 
 lim_series_le is not universe polymorphic
 Arguments lim_series_le [V f g] _ _ _%_function_scope
@@ -1689,7 +1841,7 @@ Declared in library mathcomp.analysis.sequences, line 614, characters 6-13
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_sum_telescope" class="id"><a name="eq_sum_telescope" class="" title="eq_sum_telescope :
 forall [V : GRing.Zmodule.Exports.zmodType] (u_ : V ^nat) (n : nat),
-u_ n = (u_ 0%N + series (telescope u_) n)%E
+u_ n = (u_ 0%N + series (telescope u_) n)%R
 
 eq_sum_telescope is not universe polymorphic
 Arguments eq_sum_telescope [V] u_ n%_nat_scope
@@ -1709,7 +1861,18 @@ Declared in library mathcomp.analysis.sequences, line 617, characters 6-22
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_series_restrict" class="id"><a name="is_cvg_series_restrict" class="" title="is_cvg_series_restrict :
 forall (N : nat) [K : numFieldType] [V : normedModType K] (u_ : V ^nat),
-cvgn [sequence \sum_(N <= k < n) u_ k]_n%R = cvgn (series u_)
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [sequence \sum_(N <= k < n) u_ k]_n%R
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap [sequence \sum_(N <= k < n) u_ k]_n%R
+           (filter.nbhs filter.eventually)))) =
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series u_) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series u_) (filter.nbhs filter.eventually))))
 
 is_cvg_series_restrict is not universe polymorphic
 Arguments is_cvg_series_restrict N%_nat_scope [K V] u_
@@ -1738,7 +1901,8 @@ Qed.</div></details>
 forall [R : realType] [u_ : R ^nat],
 {homo u_ : n m / n <= m >-> (n <= m)%R} ->
 has_ubound (T:=R) (range u_) ->
-(u_ x @[x --> \oo] --> sup (range u_))%classic
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (sup (range u_)))
 
 nondecreasing_cvgn is not universe polymorphic
 Expanded type for implicit arguments
@@ -1747,7 +1911,7 @@ forall [R : realType] [u_ : R ^nat],
 {homo u_ : n m / n <= m >-> (n <= m)%R} ->
 has_ubound (T:=R) (range u_) ->
 forall [t : set R],
-nbhs (sup (range u_)) t ->
+filter.nbhs (sup (range u_)) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` u_ @^-1` t)%classic
@@ -1776,7 +1940,9 @@ Declared in library mathcomp.analysis.sequences, line 641, characters 6-24
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nondecreasing_is_cvgn" class="id"><a name="nondecreasing_is_cvgn" class="" title="nondecreasing_is_cvgn :
 forall [R : realType] [u_ : R ^nat],
 {homo u_ : n m / n <= m >-> (n <= m)%R} ->
-has_ubound (T:=R) (range u_) -> cvgn u_
+has_ubound (T:=R) (range u_) ->
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))))
 
 nondecreasing_is_cvgn is not universe polymorphic
 Expanded type for implicit arguments
@@ -1785,7 +1951,7 @@ forall [R : realType] [u_ : R ^nat],
 {homo u_ : n m / n <= m >-> (n <= m)%R} ->
 has_ubound (T:=R) (range u_) ->
 forall [t : set R],
-nbhs (limn u_) t ->
+filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` u_ @^-1` t)%classic
@@ -1804,16 +1970,22 @@ Declared in library mathcomp.analysis.sequences, line 656, characters 6-27
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nondecreasing_dvgn_lt" class="id"><a name="nondecreasing_dvgn_lt" class="" title="nondecreasing_dvgn_lt :
 forall [R : realType] [u_ : R ^nat],
 {homo u_ : n m / n <= m >-> (n <= m)%R} ->
-~ cvgn u_ -> (u_ x @[x --> \oo] --> +oo%R)%classic
+~
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually)))) ->
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs +oo%R)
 
 nondecreasing_dvgn_lt is not universe polymorphic
 Expanded type for implicit arguments
 nondecreasing_dvgn_lt :
 forall [R : realType] [u_ : R ^nat],
 {homo u_ : n m / n <= m >-> (n <= m)%R} ->
-~ cvgn u_ ->
+~
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually)))) ->
 forall [t : set R],
-nbhs +oo%R t ->
+filter.nbhs +oo%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` u_ @^-1` t)%classic
@@ -1835,17 +2007,31 @@ Declared in library mathcomp.analysis.sequences, line 660, characters 6-27
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="near_nondecreasing_is_cvgn" class="id"><a name="near_nondecreasing_is_cvgn" class="" title="near_nondecreasing_is_cvgn :
 forall [R : realType] [u_ : R ^nat] [M : R],
-{near \oo%classic, {homo u_ : n m / n <= m >-> (n <= m)%R}} ->
-(\forall n \near \oo%classic, (u_ n <= M)%R) -> cvgn u_
+filter.prop_near1 filter.eventually
+  (P:=fun x : nat =>
+      forall y : nat,
+      (fun n m : nat => is_true (n <= m)) x y ->
+      (fun n m : R => is_true (n <= m)%R) (u_ x) (u_ y))
+  (inPhantom {homo u_ : n m / n <= m >-> (n <= m)%R}) ->
+filter.prop_near1 filter.eventually (P:=fun n : nat => (u_ n <= M)%R)
+  (inPhantom (forall n : nat, (u_ n <= M)%R)) ->
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))))
 
 near_nondecreasing_is_cvgn is not universe polymorphic
 Expanded type for implicit arguments
 near_nondecreasing_is_cvgn :
 forall [R : realType] [u_ : R ^nat] [M : R],
-{near \oo%classic, {homo u_ : n m / n <= m >-> (n <= m)%R}} ->
-(\forall n \near \oo%classic, (u_ n <= M)%R) ->
+filter.prop_near1 filter.eventually
+  (P:=fun x : nat =>
+      forall y : nat,
+      (fun n m : nat => is_true (n <= m)) x y ->
+      (fun n m : R => is_true (n <= m)%R) (u_ x) (u_ y))
+  (inPhantom {homo u_ : n m / n <= m >-> (n <= m)%R}) ->
+filter.prop_near1 filter.eventually (P:=fun n : nat => (u_ n <= M)%R)
+  (inPhantom (forall n : nat, (u_ n <= M)%R)) ->
 forall [t : set R],
-nbhs (limn u_) t ->
+filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` u_ @^-1` t)%classic
@@ -1872,7 +2058,8 @@ Qed.</div></details>
 forall [R : realType] [u_ : R ^nat],
 {homo u_ : n m / n <= m >-> (m <= n)%R} ->
 has_lbound (T:=R) (range u_) ->
-(u_ x @[x --> \oo] --> inf (range u_))%classic
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (inf (range u_)))
 
 nonincreasing_cvgn is not universe polymorphic
 Expanded type for implicit arguments
@@ -1881,7 +2068,7 @@ forall [R : realType] [u_ : R ^nat],
 {homo u_ : n m / n <= m >-> (m <= n)%R} ->
 has_lbound (T:=R) (range u_) ->
 forall [t : set R],
-nbhs (inf (range u_)) t ->
+filter.nbhs (inf (range u_)) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` u_ @^-1` t)%classic
@@ -1904,7 +2091,9 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nonincreasing_is_cvgn" class="id"><a name="nonincreasing_is_cvgn" class="" title="nonincreasing_is_cvgn :
 forall [R : realType] [u_ : R ^nat],
 {homo u_ : n m / n <= m >-> (m <= n)%R} ->
-has_lbound (T:=R) (range u_) -> cvgn u_
+has_lbound (T:=R) (range u_) ->
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))))
 
 nonincreasing_is_cvgn is not universe polymorphic
 Expanded type for implicit arguments
@@ -1913,7 +2102,7 @@ forall [R : realType] [u_ : R ^nat],
 {homo u_ : n m / n <= m >-> (m <= n)%R} ->
 has_lbound (T:=R) (range u_) ->
 forall [t : set R],
-nbhs (limn u_) t ->
+filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` u_ @^-1` t)%classic
@@ -1931,17 +2120,31 @@ Declared in library mathcomp.analysis.sequences, line 690, characters 6-27
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="near_nonincreasing_is_cvgn" class="id"><a name="near_nonincreasing_is_cvgn" class="" title="near_nonincreasing_is_cvgn :
 forall [R : realType] [u_ : R ^nat] [m : R],
-{near \oo%classic, {homo u_ : n m0 / n <= m0 >-> (m0 <= n)%R}} ->
-(\forall n \near \oo%classic, (m <= u_ n)%R) -> cvgn u_
+filter.prop_near1 filter.eventually
+  (P:=fun x : nat =>
+      forall y : nat,
+      (fun n m0 : nat => is_true (n <= m0)) x y ->
+      (fun n m0 : R => is_true (m0 <= n)%R) (u_ x) (u_ y))
+  (inPhantom {homo u_ : n m0 / n <= m0 >-> (m0 <= n)%R}) ->
+filter.prop_near1 filter.eventually (P:=fun n : nat => (m <= u_ n)%R)
+  (inPhantom (forall n : nat, (m <= u_ n)%R)) ->
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))))
 
 near_nonincreasing_is_cvgn is not universe polymorphic
 Expanded type for implicit arguments
 near_nonincreasing_is_cvgn :
 forall [R : realType] [u_ : R ^nat] [m : R],
-{near \oo%classic, {homo u_ : n m0 / n <= m0 >-> (m0 <= n)%R}} ->
-(\forall n \near \oo%classic, (m <= u_ n)%R) ->
+filter.prop_near1 filter.eventually
+  (P:=fun x : nat =>
+      forall y : nat,
+      (fun n m0 : nat => is_true (n <= m0)) x y ->
+      (fun n m0 : R => is_true (m0 <= n)%R) (u_ x) (u_ y))
+  (inPhantom {homo u_ : n m0 / n <= m0 >-> (m0 <= n)%R}) ->
+filter.prop_near1 filter.eventually (P:=fun n : nat => (m <= u_ n)%R)
+  (inPhantom (forall n : nat, (m <= u_ n)%R)) ->
 forall [t : set R],
-nbhs (limn u_) t ->
+filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` u_ @^-1` t)%classic
@@ -1966,8 +2169,19 @@ Qed.</div></details>
 forall [R : realType] [u_ v_ : R ^nat],
 {homo u_ : n m / n <= m >-> (n <= m)%R} ->
 {homo v_ : n m / n <= m >-> (m <= n)%R} ->
-((v_ - u_)%R x @[x --> \oo] --> 0%R)%classic ->
-[/\ limn v_ = limn u_, cvgn u_ & cvgn v_]
+filter.cvg_to
+  (filter.nbhs (filter.fmap (v_ - u_)%R (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R) ->
+[/\ filter.lim (filter.fmap v_ (filter.nbhs filter.eventually)) =
+    filter.lim (filter.fmap u_ (filter.nbhs filter.eventually)),
+    filter.cvg_to
+      (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+      (filter.nbhs
+         (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))))
+  & filter.cvg_to
+      (filter.nbhs (filter.fmap v_ (filter.nbhs filter.eventually)))
+      (filter.nbhs
+         (filter.lim (filter.fmap v_ (filter.nbhs filter.eventually))))]
 
 adjacent_seq is not universe polymorphic
 Arguments adjacent_seq [R u_ v_] _ _ _
@@ -2038,13 +2252,16 @@ Declared in library mathcomp.analysis.sequences, line 731, characters 6-18
 <span class="id"> exact/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.ltW">ltW</a></span><span class="id">/</span><span class="id"><a href="mathcomp.analysis.sequences.html#harmonic_gt0">harmonic_gt0</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_harmonic" class="id"><a name="cvg_harmonic" class="" title="cvg_harmonic :
-forall {R : archiRealFieldType}, (harmonic x @[x --> \oo] --> 0%R)%classic
+forall {R : archiRealFieldType},
+filter.cvg_to
+  (filter.nbhs (filter.fmap harmonic (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R)
 
 cvg_harmonic is not universe polymorphic
 Expanded type for implicit arguments
 cvg_harmonic :
 forall {R : archiRealFieldType} [t : set R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` harmonic @^-1` t)%classic
@@ -2065,13 +2282,16 @@ Declared in library mathcomp.analysis.sequences, line 734, characters 6-18
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvge_harmonic" class="id"><a name="cvge_harmonic" class="" title="cvge_harmonic :
 forall {R : archiRealFieldType},
-((EFin \o harmonic) x @[x --> \oo] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (EFin \o harmonic) (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R)
 
 cvge_harmonic is not universe polymorphic
 Expanded type for implicit arguments
 cvge_harmonic :
 forall {R : archiRealFieldType} [t : set \bar R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` (EFin \o harmonic) @^-1` t)%classic
@@ -2087,7 +2307,15 @@ Declared in library mathcomp.analysis.sequences, line 742, characters 6-19
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.normed_module.html#cvg_EFin">cvg_EFin</a></span><span class="id">;</span><span class="id"> [exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#nearW">nearW</a></span><span class="id"> |</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#cvg_harmonic">cvg_harmonic</a></span><span class="id">]</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="dvg_harmonic" class="id"><a name="dvg_harmonic" class="" title="dvg_harmonic : forall [R : numFieldType], ~ cvgn (series harmonic)
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="dvg_harmonic" class="id"><a name="dvg_harmonic" class="" title="dvg_harmonic :
+forall [R : numFieldType],
+~
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (series harmonic) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (series harmonic) (filter.nbhs filter.eventually))))
 
 dvg_harmonic is not universe polymorphic
 Arguments dvg_harmonic [R] _
@@ -2152,16 +2380,21 @@ Declared in library mathcomp.analysis.sequences, line 772, characters 11-27
 <br/>
 <span class="vernacular">Theorem</span><span class="id"> </span><span id="cesaro" class="id"><a name="cesaro" class="" title="cesaro :
 forall [R : archiRealFieldType] [u_ : R ^nat] [l : R],
-(u_ x @[x --> \oo] --> l)%classic ->
-(arithmetic_mean (R:=R) u_ x @[x --> \oo] --> l)%classic
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs l) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (arithmetic_mean (R:=R) u_) (filter.nbhs filter.eventually)))
+  (filter.nbhs l)
 
 cesaro is not universe polymorphic
 Expanded type for implicit arguments
 cesaro :
 forall [R : archiRealFieldType] [u_ : R ^nat] [l : R],
-(u_ x @[x --> \oo] --> l)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs l) ->
 forall [t : set R],
-nbhs l t ->
+filter.nbhs l t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` arithmetic_mean (R:=R) u_ @^-1` t)%classic
@@ -2225,18 +2458,31 @@ Declared in library mathcomp.analysis.sequences, line 779, characters 8-14
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cesaro_converse" class="id"><a name="cesaro_converse" class="" title="cesaro_converse :
 forall [R : archiRealFieldType] [u_ : R ^nat] [l : R],
-telescope u_ =o_(\oo%classic) harmonic ->
-(arithmetic_mean (R:=R) u_ x @[x --> \oo] --> l)%classic ->
-(u_ x @[x --> \oo] --> l)%classic
+telescope u_ =
+landau.the_littleo landau.the_tag filter.eventually_filterType
+  (Phantom (filter.set_system nat) (filter.nbhs filter.eventually))
+  (telescope u_) harmonic ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (arithmetic_mean (R:=R) u_) (filter.nbhs filter.eventually)))
+  (filter.nbhs l) ->
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs l)
 
 cesaro_converse is not universe polymorphic
 Expanded type for implicit arguments
 cesaro_converse :
 forall [R : archiRealFieldType] [u_ : R ^nat] [l : R],
-telescope u_ =o_(\oo%classic) harmonic ->
-(arithmetic_mean (R:=R) u_ x @[x --> \oo] --> l)%classic ->
+telescope u_ =
+landau.the_littleo landau.the_tag filter.eventually_filterType
+  (Phantom (filter.set_system nat) (filter.nbhs filter.eventually))
+  (telescope u_) harmonic ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (arithmetic_mean (R:=R) u_) (filter.nbhs filter.eventually)))
+  (filter.nbhs l) ->
 forall [t : set R],
-nbhs l t ->
+filter.nbhs l t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` u_ @^-1` t)%classic
@@ -2322,15 +2568,23 @@ Declared in library mathcomp.analysis.sequences, line 828, characters 6-21
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_series_cvg_0" class="id"><a name="cvg_series_cvg_0" class="" title="cvg_series_cvg_0 :
 forall [K : numFieldType] [V : normedModType K] [u_ : V ^nat],
-cvgn (series u_) -> (u_ x @[x --> \oo] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series u_) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series u_) (filter.nbhs filter.eventually)))) ->
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R)
 
 cvg_series_cvg_0 is not universe polymorphic
 Expanded type for implicit arguments
 cvg_series_cvg_0 :
 forall [K : numFieldType] [V : normedModType K] [u_ : V ^nat],
-cvgn (series u_) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series u_) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series u_) (filter.nbhs filter.eventually)))) ->
 forall [t : set V],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` u_ @^-1` t)%classic
@@ -2459,7 +2713,10 @@ Declared in library mathcomp.analysis.sequences, line 940, characters 6-21
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_arithmetic" class="id"><a name="cvg_arithmetic" class="" title="cvg_arithmetic :
 forall [R : archiRealFieldType] (a : R) [z : R],
-(0 < z)%R -> (arithmetic a z x @[x --> \oo] --> +oo%R)%classic
+(0 < z)%R ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (arithmetic a z) (filter.nbhs filter.eventually)))
+  (filter.nbhs +oo%R)
 
 cvg_arithmetic is not universe polymorphic
 Expanded type for implicit arguments
@@ -2467,7 +2724,7 @@ cvg_arithmetic :
 forall [R : archiRealFieldType] (a : R) [z : R],
 (0 < z)%R ->
 forall [t : set R],
-nbhs +oo%R t ->
+filter.nbhs +oo%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` arithmetic a z @^-1` t)%classic
@@ -2490,7 +2747,11 @@ Declared in library mathcomp.analysis.sequences, line 943, characters 6-20
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_expr" class="id"><a name="cvg_expr" class="" title="cvg_expr :
 forall [R : archiRealFieldType] [z : R],
 (`|z| < 1)%R ->
-((GRing.exp (R:=R) z : R ^nat) x @[x --> \oo] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (GRing.exp (R:=R) z : R ^nat)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R)
 
 cvg_expr is not universe polymorphic
 Expanded type for implicit arguments
@@ -2498,7 +2759,7 @@ cvg_expr :
 forall [R : archiRealFieldType] [z : R],
 (`|z| < 1)%R ->
 forall [t : set R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -2564,7 +2825,10 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_geometric_series" class="id"><a name="cvg_geometric_series" class="" title="cvg_geometric_series :
 forall [R : archiRealFieldType] [a z : R],
 (`|z| < 1)%R ->
-(series (geometric a z) x @[x --> \oo] --> (a / (1 - z))%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (series (geometric a z)) (filter.nbhs filter.eventually)))
+  (filter.nbhs (a / (1 - z))%R)
 
 cvg_geometric_series is not universe polymorphic
 Expanded type for implicit arguments
@@ -2572,7 +2836,7 @@ cvg_geometric_series :
 forall [R : archiRealFieldType] [a z : R],
 (`|z| < 1)%R ->
 forall [t : set R],
-nbhs (a / (1 - z))%R t ->
+filter.nbhs (a / (1 - z))%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` series (geometric a z) @^-1` t)%classic
@@ -2594,8 +2858,11 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_geometric_series_half" class="id"><a name="cvg_geometric_series_half" class="" title="cvg_geometric_series_half :
 forall {R : archiRealFieldType} (r : R) (n : nat),
-(series (fun k : nat => (r / (2 ^ (k + n.+1))%:R)%R : R^o) x @[x --> \oo] --> 
- ((r / 2 ^+ n)%R : R^o))%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (series (fun k : nat => (r / (2 ^ (k + n.+1))%:R)%R : R^o))
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs ((r / 2 ^+ n)%R : R^o))
 
 cvg_geometric_series_half is not universe polymorphic
 Arguments cvg_geometric_series_half {R} r%_ring_scope n%_nat_scope t _
@@ -2636,7 +2903,10 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_geometric" class="id"><a name="cvg_geometric" class="" title="cvg_geometric :
 forall [R : archiRealFieldType] (a : R) [z : R],
-(`|z| < 1)%R -> (geometric a z x @[x --> \oo] --> 0%R)%classic
+(`|z| < 1)%R ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (geometric a z) (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R)
 
 cvg_geometric is not universe polymorphic
 Expanded type for implicit arguments
@@ -2644,7 +2914,7 @@ cvg_geometric :
 forall [R : archiRealFieldType] (a : R) [z : R],
 (`|z| < 1)%R ->
 forall [t : set R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` geometric a z @^-1` t)%classic
@@ -2662,7 +2932,13 @@ Declared in library mathcomp.analysis.sequences, line 1007, characters 6-19
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_geometric_series" class="id"><a name="is_cvg_geometric_series" class="" title="is_cvg_geometric_series :
 forall [R : archiRealFieldType] [a z : R],
-(`|z| < 1)%R -> cvgn (series (geometric a z))
+(`|z| < 1)%R ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (series (geometric a z)) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (series (geometric a z)) (filter.nbhs filter.eventually))))
 
 is_cvg_geometric_series is not universe polymorphic
 Expanded type for implicit arguments
@@ -2670,7 +2946,10 @@ is_cvg_geometric_series :
 forall [R : archiRealFieldType] [a z : R],
 (`|z| < 1)%R ->
 forall [t : set R],
-nbhs (limn (series (geometric a z))) t ->
+filter.nbhs
+  (filter.lim
+     (filter.fmap (series (geometric a z)) (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` series (geometric a z) @^-1` t)%classic
@@ -2722,11 +3001,13 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cauchy_seriesP" class="id"><a name="cauchy_seriesP" class="" title="cauchy_seriesP :
 forall {R : numFieldType} [V : normedModType R] (u_ : V ^nat),
-cauchy (series u_ x @[x --> \oo])%classic <->
+uniform_structure.cauchy
+  (filter.fmap (series u_) (filter.nbhs filter.eventually)) <->
 (forall e : R,
  (0 < e)%R ->
- \forall n \near (\oo%classic, \oo%classic), (`|\sum_(n.1 <= k < n.2) u_ k| <
-                                              e)%R)
+ filter.prop_near1 (filter.eventually, filter.eventually)
+   (P:=fun n : nat * nat => (`|\sum_(n.1 <= k < n.2) u_ k| < e)%R)
+   (inPhantom (forall n : nat * nat, (`|\sum_(n.1 <= k < n.2) u_ k| < e)%R)))
 
 cauchy_seriesP is not universe polymorphic
 Arguments cauchy_seriesP {R} [V] u_
@@ -2753,7 +3034,15 @@ Declared in library mathcomp.analysis.sequences, line 1027, characters 6-20
 forall [R : realType] [u_ v_ : R ^nat],
 (forall n : nat, (0 <= u_ n)%R) ->
 (forall n : nat, (0 <= v_ n)%R) ->
-(forall n : nat, (u_ n <= v_ n)%R) -> cvgn (series v_) -> cvgn (series u_)
+(forall n : nat, (u_ n <= v_ n)%R) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series v_) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series v_) (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series u_) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series u_) (filter.nbhs filter.eventually))))
 
 series_le_cvg is not universe polymorphic
 Expanded type for implicit arguments
@@ -2762,9 +3051,13 @@ forall [R : realType] [u_ v_ : R ^nat],
 (forall n : nat, (0 <= u_ n)%R) ->
 (forall n : nat, (0 <= v_ n)%R) ->
 (forall n : nat, (u_ n <= v_ n)%R) ->
-cvgn (series v_) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series v_) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series v_) (filter.nbhs filter.eventually)))) ->
 forall [t : set R],
-nbhs (limn (series u_)) t ->
+filter.nbhs
+  (filter.lim (filter.fmap (series u_) (filter.nbhs filter.eventually))) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` series u_ @^-1` t)%classic
@@ -2788,15 +3081,30 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="normed_cvg" class="id"><a name="normed_cvg" class="" title="normed_cvg :
 forall {R : realType} [V : completeNormedModType R] [u_ : V ^nat],
-cvgn [normed series u_]%R -> cvgn (series u_)
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [normed series u_]%R (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap [normed series u_]%R (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series u_) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series u_) (filter.nbhs filter.eventually))))
 
 normed_cvg is not universe polymorphic
 Expanded type for implicit arguments
 normed_cvg :
 forall {R : realType} [V : completeNormedModType R] [u_ : V ^nat],
-cvgn [normed series u_]%R ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [normed series u_]%R (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap [normed series u_]%R (filter.nbhs filter.eventually)))) ->
 forall [t : set V],
-nbhs (limn (series u_)) t ->
+filter.nbhs
+  (filter.lim (filter.fmap (series u_) (filter.nbhs filter.eventually))) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` series u_ @^-1` t)%classic
@@ -2818,7 +3126,14 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_series_norm" class="id"><a name="lim_series_norm" class="" title="lim_series_norm :
 forall {R : realType} [V : completeNormedModType R] [f : V ^nat],
-cvgn [normed series f]%R -> (`|limn (series f)| <= limn [normed series f])%R
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [normed series f]%R (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap [normed series f]%R (filter.nbhs filter.eventually)))) ->
+(`|filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually))| <=
+ filter.lim (filter.fmap [normed series f] (filter.nbhs filter.eventually)))%R
 
 lim_series_norm is not universe polymorphic
 Arguments lim_series_norm {R} [V f] _
@@ -2839,7 +3154,12 @@ Declared in library mathcomp.analysis.sequences, line 1061, characters 6-21
 <span class="vernacular">Section</span><span class="id"> series_linear</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_series_bounded" class="id"><a name="cvg_series_bounded" class="" title="cvg_series_bounded :
-forall [R : realFieldType] [f : R ^nat], cvgn (series f) -> bounded_fun f
+forall [R : realFieldType] [f : R ^nat],
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
+bounded_fun f
 
 cvg_series_bounded is not universe polymorphic
 Arguments cvg_series_bounded [R f] _
@@ -2860,7 +3180,10 @@ forall [R : realFieldType] [f : R -> R]
   [k : R],
 (0 < k)%R ->
 (forall r : R, (0 < `|r| < k)%R -> (`|f r| <= K * `|r|)%R) ->
-(f x @[x --> (0%R)^'] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [eta f] (filter.nbhs (topology_structure.dnbhs 0%R))))
+  (filter.nbhs 0%R)
 
 cvg_to_0_linear is not universe polymorphic
 Expanded type for implicit arguments
@@ -2871,18 +3194,20 @@ forall [R : realFieldType] [f : R -> R]
 (0 < k)%R ->
 (forall r : R, (0 < `|r| < k)%R -> (`|f r| <= K * `|r|)%R) ->
 forall [t : set R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
-  (ball_ [eta normr] 0%R i
+  (pseudometric_structure.ball_ [eta normr] 0%R i
    `<=` (fun
-           t0 : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.RealField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+           t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.RealField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
          (fun
-            y : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.RealField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+            y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.RealField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
           is_true (y != 0%R)) t0 ->
          ([eta f] @^-1` t) t0))%classic
 
@@ -2941,9 +3266,19 @@ forall [R : realType] [f : nat -> R] [g : R -> nat -> R]
              |}
          |}],
 (0 < k)%R ->
-cvgn (series f) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
 (forall r : R, (0 < `|r| < k)%R -> forall n : nat, (`|g r n| <= f n * `|r|)%R) ->
-(limn (series (g x)) @[x --> (0%R)^'] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap
+        (fun x : R =>
+         filter.lim
+           (filter.fmap (series (g x)) (filter.nbhs filter.eventually)))
+        (filter.nbhs (topology_structure.dnbhs 0%R))))
+  (filter.nbhs 0%R)
 
 lim_cvg_to_0_linear is not universe polymorphic
 Expanded type for implicit arguments
@@ -2974,24 +3309,36 @@ forall [R : realType] [f : nat -> R] [g : R -> nat -> R]
              |}
          |}],
 (0 < k)%R ->
-cvgn (series f) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
 (forall r : R, (0 < `|r| < k)%R -> forall n : nat, (`|g r n| <= f n * `|r|)%R) ->
 forall
-  [t : set (numFieldTopology.Real_sort__canonical__filter_PointedNbhs R)],
-nbhs 0%R t ->
+  [t : set
+         (filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointed
+            (filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_PointedFiltered
+               (num_topology.numFieldTopology.Real_sort__canonical__filter_PointedNbhs
+                  R)))],
+filter.nbhs 0%R t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
-  (ball_ [eta normr] 0%R i
+  (pseudometric_structure.ball_ [eta normr] 0%R i
    `<=` (fun
-           t0 : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.Real_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+           t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.Real_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
          (fun
-            y : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.Real_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+            y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.Real_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
           is_true (y != 0%R)) t0 ->
-         ((fun x : R => limn (series (g x))) @^-1` t) t0))%classic
+         ((fun x : R =>
+           filter.lim
+             (filter.fmap (series (g x)) (filter.nbhs filter.eventually))) @^-1`
+          t) t0))%classic
 
 Arguments lim_cvg_to_0_linear [R] [f g]%_function_scope 
   [k] _ _ _%_function_scope [t] _
@@ -3158,7 +3505,15 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_series_exp_coeff_pos" class="id"><a name="is_cvg_series_exp_coeff_pos" class="" title="is_cvg_series_exp_coeff_pos :
 forall [R : realType] [x : R],
-(0 < x)%R -> cvgn (series (exp_coeff (R:=R) x))
+(0 < x)%R ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (series (exp_coeff (R:=R) x))
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (series (exp_coeff (R:=R) x))
+           (filter.nbhs filter.eventually))))
 
 is_cvg_series_exp_coeff_pos is not universe polymorphic
 Expanded type for implicit arguments
@@ -3167,7 +3522,11 @@ forall [R : realType] [x : R],
 (0 < x)%R ->
 forall
   [t : set (join_GRing_PzRing_between_GRing_PzSemiRing_and_Algebra_Zmodule R)],
-nbhs (limn (series (exp_coeff (R:=R) x))) t ->
+filter.nbhs
+  (filter.lim
+     (filter.fmap (series (exp_coeff (R:=R) x))
+        (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -3208,7 +3567,15 @@ Declared in library mathcomp.analysis.sequences, line 1205, characters 6-29
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_series_exp_coeff" class="id"><a name="is_cvg_series_exp_coeff" class="" title="is_cvg_series_exp_coeff :
-forall {R : realType} (x : R), cvgn (series (exp_coeff (R:=R) x))
+forall {R : realType} (x : R),
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (series (exp_coeff (R:=R) x))
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (series (exp_coeff (R:=R) x))
+           (filter.nbhs filter.eventually))))
 
 is_cvg_series_exp_coeff is not universe polymorphic
 Arguments is_cvg_series_exp_coeff {R} x%_ring_scope t _
@@ -3230,13 +3597,16 @@ Declared in library mathcomp.analysis.sequences, line 1211, characters 6-29
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_exp_coeff" class="id"><a name="cvg_exp_coeff" class="" title="cvg_exp_coeff :
 forall [R : realType] (x : R),
-(exp_coeff (R:=R) x x0 @[x0 --> \oo] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (exp_coeff (R:=R) x) (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R)
 
 cvg_exp_coeff is not universe polymorphic
 Expanded type for implicit arguments
 cvg_exp_coeff :
 forall [R : realType] (x : R) [t : set R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` exp_coeff (R:=R) x @^-1` t)%classic
@@ -3268,19 +3638,18 @@ Declared in library mathcomp.analysis.sequences, line 1229, characters 11-15
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nat_nondecreasing_is_cvg" class="id"><a name="nat_nondecreasing_is_cvg" class="" title="nat_nondecreasing_is_cvg :
 forall [u_ : nat ^nat],
 {homo u_ : n m / n <= m >-> (n <= m)%O} ->
-has_ubound (T:=Order.NatOrder.Datatypes_nat__canonical__Order_POrder)
-  (range u_) ->
-cvgn u_
+has_ubound (T:=NatOrder.Datatypes_nat__canonical__Order_POrder) (range u_) ->
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))))
 
 nat_nondecreasing_is_cvg is not universe polymorphic
 Expanded type for implicit arguments
 nat_nondecreasing_is_cvg :
 forall [u_ : nat ^nat],
 {homo u_ : n m / n <= m >-> (n <= m)%O} ->
-has_ubound (T:=Order.NatOrder.Datatypes_nat__canonical__Order_POrder)
-  (range u_) ->
+has_ubound (T:=NatOrder.Datatypes_nat__canonical__Order_POrder) (range u_) ->
 forall [t : set nat],
-nbhs (limn u_) t ->
+filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` u_ @^-1` t)%classic
@@ -3344,7 +3713,12 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_nseries_near" class="id"><a name="cvg_nseries_near" class="" title="cvg_nseries_near :
 forall [u : nat ^nat],
-cvgn (nseries u) -> \forall n \near \oo%classic, u n = 0
+filter.cvg_to
+  (filter.nbhs (filter.fmap (nseries u) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (nseries u) (filter.nbhs filter.eventually)))) ->
+filter.prop_near1 filter.eventually (P:=fun n : nat => u n = 0%N)
+  (inPhantom (forall n : nat, u n = 0%N))
 
 cvg_nseries_near is not universe polymorphic
 Arguments cvg_nseries_near [u] _
@@ -3371,15 +3745,26 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="dvg_nseries" class="id"><a name="dvg_nseries" class="" title="dvg_nseries :
 forall [u : nat ^nat],
-~ cvgn (nseries u) -> (nseries u x @[x --> \oo] --> \oo)%classic
+~
+filter.cvg_to
+  (filter.nbhs (filter.fmap (nseries u) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (nseries u) (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (nseries u) (filter.nbhs filter.eventually)))
+  (filter.nbhs filter.eventually)
 
 dvg_nseries is not universe polymorphic
 Expanded type for implicit arguments
 dvg_nseries :
 forall [u : nat ^nat],
-~ cvgn (nseries u) ->
+~
+filter.cvg_to
+  (filter.nbhs (filter.fmap (nseries u) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (nseries u) (filter.nbhs filter.eventually)))) ->
 forall [t : set nat],
-nbhs \oo%classic t ->
+filter.nbhs filter.eventually t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` nseries u @^-1` t)%classic
@@ -3410,7 +3795,8 @@ Declared in library mathcomp.analysis.sequences, line 1278, characters 6-17
 forall {R : realType} [S : set \bar R],
 S != set0 ->
 {u : (\bar R) ^nat | forall i : nat, S (u i) &
-(u x @[x --> \oo] --> ereal_inf (R:=R) S)%classic}
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (ereal.ereal_inf (R:=R) S))}
 
 ereal_inf_seq is not universe polymorphic
 Arguments ereal_inf_seq {R} [S]%_classical_set_scope _
@@ -3450,7 +3836,8 @@ Declared in library mathcomp.analysis.sequences, line 1294, characters 6-19
 forall {R : realType} [S : set \bar R],
 S != set0 ->
 {u : nat -> \bar R | forall i : nat, S (u i) &
-(u x @[x --> \oo] --> ereal_sup (R:=R) S)%classic}
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (ereal.ereal_sup (R:=R) S))}
 
 ereal_sup_seq is not universe polymorphic
 Arguments ereal_sup_seq {R} [S]%_classical_set_scope _
@@ -3547,7 +3934,7 @@ Declared in library mathcomp.analysis.sequences, line 1362, characters 6-17
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eseriesSr" class="id"><a name="eseriesSr" class="" title="eseriesSr :
 forall [R : numDomainType] (u_ : (\bar R) ^nat) (n : nat),
-eseries u_ n.+1 = (eseries u_ n + u_ n)%E
+eseries u_ n.+1 = (eseries u_ n + u_ n)%R
 
 eseriesSr is not universe polymorphic
 Arguments eseriesSr [R] u_ n%_nat_scope
@@ -3562,7 +3949,7 @@ Declared in library mathcomp.analysis.sequences, line 1365, characters 6-15
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eseriesS" class="id"><a name="eseriesS" class="" title="eseriesS :
 forall [R : numDomainType] (u_ : (\bar R) ^nat) (n : nat),
-eseries u_ n.+1 = (u_ n + eseries u_ n)%E
+eseries u_ n.+1 = (u_ n + eseries u_ n)%R
 
 eseriesS is not universe polymorphic
 Arguments eseriesS [R] u_ n%_nat_scope
@@ -3593,7 +3980,7 @@ Declared in library mathcomp.analysis.sequences, line 1371, characters 6-15
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eseries_addn" class="id"><a name="eseries_addn" class="" title="eseries_addn :
 forall [R : numDomainType] (u_ : (\bar R) ^nat) (m n : nat),
-eseries u_ (n + m) = (eseries u_ m + (\sum_(m <= k < n + m) u_ k)%R)%E
+eseries u_ (n + m)%N = (eseries u_ m + \sum_(m <= k < n + m) u_ k)%R
 
 eseries_addn is not universe polymorphic
 Arguments eseries_addn [R] u_ (m n)%_nat_scope
@@ -3673,14 +4060,17 @@ Declared in library mathcomp.analysis.sequences, line 1390, characters 6-24
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_geometric_eseries_half" class="id"><a name="cvg_geometric_eseries_half" class="" title="cvg_geometric_eseries_half :
 forall {R : archiRealFieldType} [r : R] [n : nat],
-(eseries (fun k : nat => (r / (2 ^ (k + n.+1))%:R)%:E) x @[x --> \oo] --> 
- (r / 2 ^+ n)%:E)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (eseries (fun k : nat => (r / (2 ^ (k + n.+1))%:R)%:E))
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (r / 2 ^+ n)%:E)
 
 cvg_geometric_eseries_half is not universe polymorphic
 Expanded type for implicit arguments
 cvg_geometric_eseries_half :
 forall {R : archiRealFieldType} [r : R] [n : nat] [t : set \bar R],
-nbhs (r / 2 ^+ n)%:E t ->
+filter.nbhs (r / 2 ^+ n)%:E t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n0 | N <= n0]) i
@@ -3755,7 +4145,8 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ereal_nondecreasing_cvgn" class="id"><a name="ereal_nondecreasing_cvgn" class="" title="ereal_nondecreasing_cvgn :
 forall [R : realType] [u_ : (\bar R) ^nat],
 {homo u_ : n m / n <= m >-> (n <= m)%E} ->
-(u_ x @[x --> \oo] --> ereal_sup (R:=R) (range u_))%classic
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (ereal.ereal_sup (R:=R) (range u_)))
 
 ereal_nondecreasing_cvgn is not universe polymorphic
 Expanded type for implicit arguments
@@ -3763,7 +4154,7 @@ ereal_nondecreasing_cvgn :
 forall [R : realType] [u_ : (\bar R) ^nat],
 {homo u_ : n m / n <= m >-> (n <= m)%E} ->
 forall [t : set \bar R],
-nbhs (ereal_sup (R:=R) (range u_)) t ->
+filter.nbhs (ereal.ereal_sup (R:=R) (range u_)) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` u_ @^-1` t)%classic
@@ -3832,7 +4223,9 @@ Declared in library mathcomp.analysis.sequences, line 1436, characters 6-30
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ereal_nondecreasing_is_cvgn" class="id"><a name="ereal_nondecreasing_is_cvgn" class="" title="ereal_nondecreasing_is_cvgn :
 forall [R : realType] [u_ : (\bar R) ^nat],
-{homo u_ : n m / n <= m >-> (n <= m)%E} -> cvgn u_
+{homo u_ : n m / n <= m >-> (n <= m)%E} ->
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))))
 
 ereal_nondecreasing_is_cvgn is not universe polymorphic
 Expanded type for implicit arguments
@@ -3840,7 +4233,7 @@ ereal_nondecreasing_is_cvgn :
 forall [R : realType] [u_ : (\bar R) ^nat],
 {homo u_ : n m / n <= m >-> (n <= m)%E} ->
 forall [t : set \bar R],
-nbhs (limn u_) t ->
+filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` u_ @^-1` t)%classic
@@ -3859,7 +4252,8 @@ Declared in library mathcomp.analysis.sequences, line 1492, characters 6-33
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ereal_nonincreasing_cvgn" class="id"><a name="ereal_nonincreasing_cvgn" class="" title="ereal_nonincreasing_cvgn :
 forall [R : realType] [u_ : (\bar R) ^nat],
 {homo u_ : n m / n <= m >-> (m <= n)%E} ->
-(u_ x @[x --> \oo] --> ereal_inf (R:=R) (range u_))%classic
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (ereal.ereal_inf (R:=R) (range u_)))
 
 ereal_nonincreasing_cvgn is not universe polymorphic
 Expanded type for implicit arguments
@@ -3867,7 +4261,7 @@ ereal_nonincreasing_cvgn :
 forall [R : realType] [u_ : (\bar R) ^nat],
 {homo u_ : n m / n <= m >-> (m <= n)%E} ->
 forall [t : set \bar R],
-nbhs (ereal_inf (R:=R) (range u_)) t ->
+filter.nbhs (ereal.ereal_inf (R:=R) (range u_)) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` u_ @^-1` t)%classic
@@ -3892,7 +4286,9 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ereal_nonincreasing_is_cvgn" class="id"><a name="ereal_nonincreasing_is_cvgn" class="" title="ereal_nonincreasing_is_cvgn :
 forall [R : realType] [u_ : (\bar R) ^nat],
-{homo u_ : n m / n <= m >-> (m <= n)%E} -> cvgn u_
+{homo u_ : n m / n <= m >-> (m <= n)%E} ->
+filter.cvg_to (filter.nbhs (filter.fmap u_ (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))))
 
 ereal_nonincreasing_is_cvgn is not universe polymorphic
 Expanded type for implicit arguments
@@ -3900,7 +4296,7 @@ ereal_nonincreasing_is_cvgn :
 forall [R : realType] [u_ : (\bar R) ^nat],
 {homo u_ : n m / n <= m >-> (m <= n)%E} ->
 forall [t : set \bar R],
-nbhs (limn u_) t ->
+filter.nbhs (filter.lim (filter.fmap u_ (filter.nbhs filter.eventually))) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` u_ @^-1` t)%classic
@@ -3947,7 +4343,10 @@ Declared in library mathcomp.analysis.sequences, line 1513, characters 6-32
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> u_ge0</span><span class="id"> n</span><span class="id"> m</span><span class="id"> nm;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_sum_nneg_natr">lee_sum_nneg_natr</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="congr_lim" class="id"><a name="congr_lim" class="" title="congr_lim :
-forall [R : numFieldType] [f g : nat -> \bar R], f = g -> limn f = limn g
+forall [R : numFieldType] [f g : nat -> \bar R],
+f = g ->
+filter.lim (filter.fmap f (filter.nbhs filter.eventually)) =
+filter.lim (filter.fmap g (filter.nbhs filter.eventually))
 
 congr_lim is not universe polymorphic
 Arguments congr_lim [R] [f g]%_function_scope _
@@ -3963,10 +4362,12 @@ Declared in library mathcomp.analysis.sequences, line 1518, characters 6-15
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nondecreasing_telescope_sumey" class="id"><a name="nondecreasing_telescope_sumey" class="" title="nondecreasing_telescope_sumey :
 forall [R : realType] (n : nat) [f : nat -> R],
-limn (EFin \o f) \is a fin_num ->
+filter.lim (filter.fmap (EFin \o f) (filter.nbhs filter.eventually))
+  \is a fin_num ->
 {homo f : x y / x <= y >-> (x <= y)%R} ->
 \big[+%R/0%R]_(n <= k <oo) ((f k.+1)%:E - (f k)%:E)%E =
-(limn (EFin \o f) - (f n)%:E)%E
+(filter.lim (filter.fmap (EFin \o f) (filter.nbhs filter.eventually)) -
+ (f n)%:E)%E
 
 nondecreasing_telescope_sumey is not universe polymorphic
 Arguments nondecreasing_telescope_sumey [R] n%_nat_scope 
@@ -4094,7 +4495,9 @@ Declared in library mathcomp.analysis.sequences, line 1567, characters 6-17
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_mkord" class="id"><a name="lim_mkord" class="" title="lim_mkord :
 forall [R : realFieldType] (P : {pred nat}) (f : (\bar R) ^nat),
-limn (fun n : nat => (\sum_(k < n | P k) f k)%R) =
+filter.lim
+  (filter.fmap (fun n : nat => (\sum_(k < n | P k) f k)%R)
+     (filter.nbhs filter.eventually)) =
 \big[+%R/0%R]_(0 <= k <oo | P k) f k
 
 lim_mkord is not universe polymorphic
@@ -4244,7 +4647,11 @@ Declared in library mathcomp.analysis.sequences, line 1621, characters 6-20
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_ereal_nneg_natsum_cond" class="id"><a name="is_cvg_ereal_nneg_natsum_cond" class="" title="is_cvg_ereal_nneg_natsum_cond :
 forall [R : realType] [u_ : (\bar R) ^nat] [m : nat] [P : pred nat],
 (forall n : nat, m <= n -> P n -> (0%R <= u_ n)%E) ->
-cvgn (fun n : nat => (\sum_(m <= i < n | P i) u_ i)%R)
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => (\sum_(m <= i < n | P i) u_ i)%R)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (\big[+%R/0%R]_(m <= i <oo | P i) u_ i))
 
 is_cvg_ereal_nneg_natsum_cond is not universe polymorphic
 Expanded type for implicit arguments
@@ -4252,7 +4659,7 @@ is_cvg_ereal_nneg_natsum_cond :
 forall [R : realType] [u_ : (\bar R) ^nat] [m : nat] [P : pred nat],
 (forall n : nat, m <= n -> P n -> (0%R <= u_ n)%E) ->
 forall [t : set (GRing.BaseAddUMagma.sort \bar R)],
-nbhs (\big[+%R/0%R]_(m <= i <oo | P i) u_ i) t ->
+filter.nbhs (\big[+%R/0%R]_(m <= i <oo | P i) u_ i) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -4276,7 +4683,11 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_ereal_npos_natsum_cond" class="id"><a name="is_cvg_ereal_npos_natsum_cond" class="" title="is_cvg_ereal_npos_natsum_cond :
 forall [R : realType] [u_ : (\bar R) ^nat] [m : nat] [P : pred nat],
 (forall n : nat, m <= n -> P n -> (u_ n <= 0%R)%E) ->
-cvgn (fun n : nat => (\sum_(m <= i < n | P i) u_ i)%R)
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => (\sum_(m <= i < n | P i) u_ i)%R)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (\big[+%R/0%R]_(m <= i <oo | P i) u_ i))
 
 is_cvg_ereal_npos_natsum_cond is not universe polymorphic
 Expanded type for implicit arguments
@@ -4284,7 +4695,7 @@ is_cvg_ereal_npos_natsum_cond :
 forall [R : realType] [u_ : (\bar R) ^nat] [m : nat] [P : pred nat],
 (forall n : nat, m <= n -> P n -> (u_ n <= 0%R)%E) ->
 forall [t : set (GRing.BaseAddUMagma.sort \bar R)],
-nbhs (\big[+%R/0%R]_(m <= i <oo | P i) u_ i) t ->
+filter.nbhs (\big[+%R/0%R]_(m <= i <oo | P i) u_ i) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -4308,7 +4719,11 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_ereal_nneg_natsum" class="id"><a name="is_cvg_ereal_nneg_natsum" class="" title="is_cvg_ereal_nneg_natsum :
 forall [R : realType] [u_ : (\bar R) ^nat] [m : nat],
 (forall n : nat, m <= n -> (0%R <= u_ n)%E) ->
-cvgn (fun n : nat => (\sum_(m <= i < n) u_ i)%R)
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => (\sum_(m <= i < n) u_ i)%R)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (\big[+%R/0%R]_(m <= i <oo) u_ i))
 
 is_cvg_ereal_nneg_natsum is not universe polymorphic
 Expanded type for implicit arguments
@@ -4316,7 +4731,7 @@ is_cvg_ereal_nneg_natsum :
 forall [R : realType] [u_ : (\bar R) ^nat] [m : nat],
 (forall n : nat, m <= n -> (0%R <= u_ n)%E) ->
 forall [t : set (GRing.BaseAddUMagma.sort \bar R)],
-nbhs (\big[+%R/0%R]_(m <= i <oo) u_ i) t ->
+filter.nbhs (\big[+%R/0%R]_(m <= i <oo) u_ i) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -4337,7 +4752,11 @@ Declared in library mathcomp.analysis.sequences, line 1651, characters 6-30
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_ereal_npos_natsum" class="id"><a name="is_cvg_ereal_npos_natsum" class="" title="is_cvg_ereal_npos_natsum :
 forall [R : realType] [u_ : (\bar R) ^nat] [m : nat],
 (forall n : nat, m <= n -> (u_ n <= 0%R)%E) ->
-cvgn (fun n : nat => (\sum_(m <= i < n) u_ i)%R)
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => (\sum_(m <= i < n) u_ i)%R)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (\big[+%R/0%R]_(m <= i <oo) u_ i))
 
 is_cvg_ereal_npos_natsum is not universe polymorphic
 Expanded type for implicit arguments
@@ -4345,7 +4764,7 @@ is_cvg_ereal_npos_natsum :
 forall [R : realType] [u_ : (\bar R) ^nat] [m : nat],
 (forall n : nat, m <= n -> (u_ n <= 0%R)%E) ->
 forall [t : set (GRing.BaseAddUMagma.sort \bar R)],
-nbhs (\big[+%R/0%R]_(m <= i <oo) u_ i) t ->
+filter.nbhs (\big[+%R/0%R]_(m <= i <oo) u_ i) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -4366,7 +4785,11 @@ Declared in library mathcomp.analysis.sequences, line 1655, characters 6-30
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_nneseries_cond" class="id"><a name="is_cvg_nneseries_cond" class="" title="is_cvg_nneseries_cond :
 forall [R : realType] [u_ : (\bar R) ^nat] [P : pred nat] [N : nat],
 (forall n : nat, N <= n -> P n -> (0%R <= u_ n)%E) ->
-cvgn (fun n : nat => (\sum_(N <= i < n | P i) u_ i)%R)
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => (\sum_(N <= i < n | P i) u_ i)%R)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (\big[+%R/0%R]_(N <= i <oo | P i) u_ i))
 
 is_cvg_nneseries_cond is not universe polymorphic
 Expanded type for implicit arguments
@@ -4374,7 +4797,7 @@ is_cvg_nneseries_cond :
 forall [R : realType] [u_ : (\bar R) ^nat] [P : pred nat] [N : nat],
 (forall n : nat, N <= n -> P n -> (0%R <= u_ n)%E) ->
 forall [t : set (GRing.BaseAddUMagma.sort \bar R)],
-nbhs (\big[+%R/0%R]_(N <= i <oo | P i) u_ i) t ->
+filter.nbhs (\big[+%R/0%R]_(N <= i <oo | P i) u_ i) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N0 : nat => [set n | N0 <= n]) i
@@ -4396,7 +4819,11 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_npeseries_cond" class="id"><a name="is_cvg_npeseries_cond" class="" title="is_cvg_npeseries_cond :
 forall [R : realType] [u_ : (\bar R) ^nat] [P : pred nat] [N : nat],
 (forall n : nat, N <= n -> P n -> (u_ n <= 0%R)%E) ->
-cvgn (fun n : nat => (\sum_(N <= i < n | P i) u_ i)%R)
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => (\sum_(N <= i < n | P i) u_ i)%R)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (\big[+%R/0%R]_(N <= i <oo | P i) u_ i))
 
 is_cvg_npeseries_cond is not universe polymorphic
 Expanded type for implicit arguments
@@ -4404,7 +4831,7 @@ is_cvg_npeseries_cond :
 forall [R : realType] [u_ : (\bar R) ^nat] [P : pred nat] [N : nat],
 (forall n : nat, N <= n -> P n -> (u_ n <= 0%R)%E) ->
 forall [t : set (GRing.BaseAddUMagma.sort \bar R)],
-nbhs (\big[+%R/0%R]_(N <= i <oo | P i) u_ i) t ->
+filter.nbhs (\big[+%R/0%R]_(N <= i <oo | P i) u_ i) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N0 : nat => [set n | N0 <= n]) i
@@ -4425,7 +4852,11 @@ Declared in library mathcomp.analysis.sequences, line 1665, characters 6-27
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_nneseries" class="id"><a name="is_cvg_nneseries" class="" title="is_cvg_nneseries :
 forall [R : realType] [u_ : (\bar R) ^nat] [P : pred nat] [N : nat],
 (forall n : nat, N <= n -> P n -> (0%R <= u_ n)%E) ->
-cvgn (fun n : nat => (\sum_(N <= i < n | P i) u_ i)%R)
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => (\sum_(N <= i < n | P i) u_ i)%R)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (\big[+%R/0%R]_(N <= i <oo | P i) u_ i))
 
 is_cvg_nneseries is not universe polymorphic
 Expanded type for implicit arguments
@@ -4433,7 +4864,7 @@ is_cvg_nneseries :
 forall [R : realType] [u_ : (\bar R) ^nat] [P : pred nat] [N : nat],
 (forall n : nat, N <= n -> P n -> (0%R <= u_ n)%E) ->
 forall [t : set (GRing.BaseAddUMagma.sort \bar R)],
-nbhs (\big[+%R/0%R]_(N <= i <oo | P i) u_ i) t ->
+filter.nbhs (\big[+%R/0%R]_(N <= i <oo | P i) u_ i) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N0 : nat => [set n | N0 <= n]) i
@@ -4453,7 +4884,11 @@ Declared in library mathcomp.analysis.sequences, line 1669, characters 6-22
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_npeseries" class="id"><a name="is_cvg_npeseries" class="" title="is_cvg_npeseries :
 forall [R : realType] [u_ : (\bar R) ^nat] [P : pred nat] [N : nat],
 (forall n : nat, N <= n -> P n -> (u_ n <= 0%R)%E) ->
-cvgn (fun n : nat => (\sum_(N <= i < n | P i) u_ i)%R)
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => (\sum_(N <= i < n | P i) u_ i)%R)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (\big[+%R/0%R]_(N <= i <oo | P i) u_ i))
 
 is_cvg_npeseries is not universe polymorphic
 Expanded type for implicit arguments
@@ -4461,7 +4896,7 @@ is_cvg_npeseries :
 forall [R : realType] [u_ : (\bar R) ^nat] [P : pred nat] [N : nat],
 (forall n : nat, N <= n -> P n -> (u_ n <= 0%R)%E) ->
 forall [t : set (GRing.BaseAddUMagma.sort \bar R)],
-nbhs (\big[+%R/0%R]_(N <= i <oo | P i) u_ i) t ->
+filter.nbhs (\big[+%R/0%R]_(N <= i <oo | P i) u_ i) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N0 : nat => [set n | N0 <= n]) i
@@ -4523,7 +4958,11 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nnseries_is_cvg" class="id"><a name="nnseries_is_cvg" class="" title="nnseries_is_cvg :
 forall {R : realType} [u : nat -> R],
 (forall i : nat, (0 <= u i)%R) ->
-(\big[+%R/0%R]_(0 <= k <oo) (u k)%:E < +oo)%E -> cvgn (series u)
+(\big[+%R/0%R]_(0 <= k <oo) (u k)%:E < +oo)%E ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series u) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series u) (filter.nbhs filter.eventually))))
 
 nnseries_is_cvg is not universe polymorphic
 Expanded type for implicit arguments
@@ -4532,7 +4971,8 @@ forall {R : realType} [u : nat -> R],
 (forall i : nat, (0 <= u i)%R) ->
 (\big[+%R/0%R]_(0 <= k <oo) (u k)%:E < +oo)%E ->
 forall [t : set R],
-nbhs (limn (series u)) t ->
+filter.nbhs
+  (filter.lim (filter.fmap (series u) (filter.nbhs filter.eventually))) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` series u @^-1` t)%classic
@@ -4745,7 +5185,7 @@ Declared in library mathcomp.analysis.sequences, line 1785, characters 6-20
 forall {R : realType} {f : nat -> \bar R} (N n : nat),
 (forall k : nat, N <= k -> (0%R <= f k)%E) ->
 \big[+%R/0%R]_(N <= k <oo) f k =
-((\sum_(N <= k < N + n) f k)%R + \big[+%R/0%R]_(N + n <= k <oo) f k)%E
+(\sum_(N <= k < N + n) f k + \big[+%R/0]_(N + n <= k <oo) f k)%R
 
 nneseries_split is not universe polymorphic
 Arguments nneseries_split {R} {f}%_function_scope 
@@ -4781,8 +5221,7 @@ Declared in library mathcomp.analysis.sequences, line 1798, characters 6-21
 forall [R : realType] [f : nat -> \bar R] (N n : nat) [P : pred nat],
 (forall k : nat, P k -> (0%R <= f k)%E) ->
 \big[+%R/0%R]_(N <= k <oo | P k) f k =
-((\sum_(N <= k < N + n | P k) f k)%R +
- \big[+%R/0%R]_(N + n <= k <oo | P k) f k)%E
+(\sum_(N <= k < N + n | P k) f k + \big[+%R/0]_(N + n <= k <oo | P k) f k)%R
 
 nneseries_split_cond is not universe polymorphic
 Arguments nneseries_split_cond [R] [f]%_function_scope 
@@ -4807,7 +5246,7 @@ forall {R : realType} [f : nat -> \bar R] [n : nat] [P : pred nat],
 (forall k : nat, P k -> (0%R <= f k)%E) ->
 P n ->
 \big[+%R/0%R]_(0 <= k <oo | P k) f k =
-(f n + \big[+%R/0%R]_(0 <= k <oo | P k && (k != n)) f k)%E
+(f n + \big[+%R/0]_(0 <= k <oo | P k && (k != n)) f k)%R
 
 nneseriesD1 is not universe polymorphic
 Arguments nneseriesD1 {R} [f]%_function_scope [n]%_nat_scope 
@@ -4844,9 +5283,9 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nneseries_recl" class="id"><a name="nneseries_recl" class="" title="nneseries_recl :
 forall {R : realType} [P : pred nat] [f : nat -> \bar R],
 (forall k : nat, P k -> (0%R <= f k)%E) ->
-P 0 ->
+P 0%N ->
 \big[+%R/0%R]_(0 <= k <oo | P k) f k =
-(f 0%N + \big[+%R/0%R]_(1 <= k <oo | P k) f k)%E
+(f 0%N + \big[+%R/0]_(1 <= k <oo | P k) f k)%R
 
 nneseries_recl is not universe polymorphic
 Arguments nneseries_recl {R} [P] [f]%_function_scope _%_function_scope _
@@ -4867,7 +5306,11 @@ Qed.</div></details>
 forall [R : realType] [f : (\bar R) ^nat] [P : nat -> bool],
 (\big[+%R/0%R]_(0 <= k <oo | P k) f k < +oo)%E ->
 (forall k : nat, P k -> (0%R <= f k)%E) ->
-(\big[+%R/0%R]_(N <= k <oo | P k) f k @[N --> \oo] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun N : nat => \big[+%R/0%R]_(N <= k <oo | P k) f k)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R)
 
 nneseries_tail_cvg is not universe polymorphic
 Expanded type for implicit arguments
@@ -4875,8 +5318,12 @@ nneseries_tail_cvg :
 forall [R : realType] [f : (\bar R) ^nat] [P : nat -> bool],
 (\big[+%R/0%R]_(0 <= k <oo | P k) f k < +oo)%E ->
 (forall k : nat, P k -> (0%R <= f k)%E) ->
-forall [t : set constructive_ereal_extended__canonical__filter_PointedNbhs],
-nbhs 0%R t ->
+forall
+  [t : set
+         (filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointed
+            (filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_PointedFiltered
+               ereal.constructive_ereal_extended__canonical__filter_PointedNbhs))],
+filter.nbhs 0%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -4916,8 +5363,8 @@ Qed.</div></details>
 forall [R : realType] [f g : nat -> \bar R] [P : pred nat] [N : nat],
 (forall i : nat, N <= i -> P i -> (0%R <= f i)%E) ->
 (forall i : nat, N <= i -> P i -> (0%R <= g i)%E) ->
-\big[+%R/0%R]_(N <= i <oo | P i) (f i + g i)%E =
-(\big[+%R/0%R]_(N <= i <oo | P i) f i + \big[+%R/0%R]_(N <= i <oo | P i) g i)%E
+\big[+%R/0%R]_(N <= i <oo | P i) (f i + g i)%R =
+(\big[+%R/0]_(N <= i <oo | P i) f i + \big[+%R/0]_(N <= i <oo | P i) g i)%R
 
 nneseriesD is not universe polymorphic
 Arguments nneseriesD [R] [f g]%_function_scope [P] 
@@ -5001,7 +5448,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nneseries_addn" class="id"><a name="nneseries_addn" class="" title="nneseries_addn :
 forall {R : realType} [f : (\bar R) ^nat] (k : nat),
 (forall i : nat, (0%R <= f i)%E) ->
-\big[+%R/0%R]_(0 <= i <oo) f (i + k) = \big[+%R/0%R]_(k <= i <oo) f i
+\big[+%R/0%R]_(0 <= i <oo) f (i + k)%N = \big[+%R/0%R]_(k <= i <oo) f i
 
 nneseries_addn is not universe polymorphic
 Arguments nneseries_addn {R} [f] k%_nat_scope _%_function_scope
@@ -5024,7 +5471,11 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lte_lim" class="id"><a name="lte_lim" class="" title="lte_lim :
 forall [R : realFieldType] [u : (\bar R) ^nat] [M : R],
 {homo u : n m / n <= m >-> (n <= m)%E} ->
-cvgn u -> (M%:E < limn u)%E -> \forall n \near \oo%classic, (M%:E <= u n)%E
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u (filter.nbhs filter.eventually)))) ->
+(M%:E < filter.lim (filter.fmap u (filter.nbhs filter.eventually)))%E ->
+filter.prop_near1 filter.eventually (P:=fun n : nat => (M%:E <= u n)%E)
+  (inPhantom (forall n : nat, (M%:E <= u n)%E))
 
 lte_lim is not universe polymorphic
 Arguments lte_lim [R u] [M]%_ring_scope _ _ _
@@ -5057,8 +5508,8 @@ forall [R : realType] [A : (\bar R) ^nat]
   (P : pred nat),
 (forall n : nat, (0%R <= A n)%E) ->
 (0 <= e)%R ->
-(\big[+%R/0%R]_(0 <= i <oo | P i) (A i + (e / (2 ^ i.+1)%:R)%:E) <=
- \big[+%R/0%R]_(0 <= i <oo | P i) A i + e%:E)%E
+(\big[+%R/0%R]_(0 <= i <oo | P i) (A i + (e / (2 ^ i.+1)%:R)%:E)%R <=
+ (\big[+%R/0]_(0 <= i <oo | P i) A i + e%:E)%R)%E
 
 epsilon_trick is not universe polymorphic
 Arguments epsilon_trick [R A e] P _%_function_scope _
@@ -5132,8 +5583,14 @@ Qed.</div></details>
 forall {R : realFieldType} [u : R ^nat] [r : R],
 (0 < r)%R ->
 (forall k : nat, (0 <= u k)%R) ->
-(minr (u n) r @[n --> \oo] --> 0%R)%classic ->
-(u n @[n --> \oo] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => minr (u n) r)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta u] (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R)
 
 minr_cvg_0_cvg_0 is not universe polymorphic
 Expanded type for implicit arguments
@@ -5141,9 +5598,13 @@ minr_cvg_0_cvg_0 :
 forall {R : realFieldType} [u : R ^nat] [r : R],
 (0 < r)%R ->
 (forall k : nat, (0 <= u k)%R) ->
-(minr (u n) r @[n --> \oo] --> 0%R)%classic ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => minr (u n) r)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R) ->
 forall [t : set R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` [eta u] @^-1` t)%classic
@@ -5171,8 +5632,14 @@ Declared in library mathcomp.analysis.sequences, line 2004, characters 6-22
 forall {R : realFieldType} [u : R ^nat] [r : R],
 (r < 0)%R ->
 (forall k : nat, (u k <= 0)%R) ->
-(maxr (u n) r @[n --> \oo] --> 0%R)%classic ->
-(u n @[n --> \oo] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => maxr (u n) r)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta u] (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R)
 
 maxr_cvg_0_cvg_0 is not universe polymorphic
 Expanded type for implicit arguments
@@ -5180,9 +5647,13 @@ maxr_cvg_0_cvg_0 :
 forall {R : realFieldType} [u : R ^nat] [r : R],
 (r < 0)%R ->
 (forall k : nat, (u k <= 0)%R) ->
-(maxr (u n) r @[n --> \oo] --> 0%R)%classic ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => maxr (u n) r)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R) ->
 forall [t : set R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` [eta u] @^-1` t)%classic
@@ -5215,8 +5686,13 @@ Qed.</div></details>
 forall {R : realFieldType} [u : (\bar R) ^nat] [x : \bar R],
 (0%R < x)%E ->
 (forall k : nat, (0%R <= u k)%E) ->
-(mine (u n) x @[n --> \oo] --> 0%R)%classic ->
-\forall n \near \oo%classic, u n \is a fin_num
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => Def.min (u n) x)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R) ->
+filter.prop_near1 filter.eventually (P:=fun n : nat => u n \is a fin_num)
+  (inPhantom (forall n : nat, u n \is a fin_num))
 
 mine_cvg_0_cvg_fin_num is not universe polymorphic
 Arguments mine_cvg_0_cvg_fin_num {R} [u] [x]%_ereal_scope 
@@ -5244,8 +5720,16 @@ Declared in library mathcomp.analysis.sequences, line 2033, characters 6-28
 forall {R : realFieldType} [u : (\bar R) ^nat] [r : R],
 (0 < r)%R ->
 (forall k : nat, (0%R <= u k)%E) ->
-(mine (u n) r%:E @[n --> \oo] --> 0%R)%classic ->
-(minr (fine (u n)) r @[n --> \oo] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => Def.min (u n) r%:E)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => minr (fine (u n)) r)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R)
 
 mine_cvg_minr_cvg is not universe polymorphic
 Expanded type for implicit arguments
@@ -5253,9 +5737,13 @@ mine_cvg_minr_cvg :
 forall {R : realFieldType} [u : (\bar R) ^nat] [r : R],
 (0 < r)%R ->
 (forall k : nat, (0%R <= u k)%E) ->
-(mine (u n) r%:E @[n --> \oo] --> 0%R)%classic ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => Def.min (u n) r%:E)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R) ->
 forall [t : set R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -5286,8 +5774,14 @@ Declared in library mathcomp.analysis.sequences, line 2047, characters 6-23
 forall {R : realFieldType} [u : (\bar R) ^nat] [x : \bar R],
 (0%R < x)%E ->
 (forall k : nat, (0%R <= u k)%E) ->
-(mine (u n) x @[n --> \oo] --> 0%R)%classic ->
-(u n @[n --> \oo] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => Def.min (u n) x)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta u] (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R)
 
 mine_cvg_0_cvg_0 is not universe polymorphic
 Expanded type for implicit arguments
@@ -5295,9 +5789,13 @@ mine_cvg_0_cvg_0 :
 forall {R : realFieldType} [u : (\bar R) ^nat] [x : \bar R],
 (0%R < x)%E ->
 (forall k : nat, (0%R <= u k)%E) ->
-(mine (u n) x @[n --> \oo] --> 0%R)%classic ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => Def.min (u n) x)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R) ->
 forall [t : set \bar R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` [eta u] @^-1` t)%classic
@@ -5326,8 +5824,13 @@ Qed.</div></details>
 forall {R : realFieldType} [u : (\bar R) ^nat] [x : \bar R],
 (x < 0%R)%E ->
 (forall k : nat, (u k <= 0%R)%E) ->
-(maxe (u n) x @[n --> \oo] --> 0%R)%classic ->
-\forall n \near \oo%classic, u n \is a fin_num
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => Def.max (u n) x)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R) ->
+filter.prop_near1 filter.eventually (P:=fun n : nat => u n \is a fin_num)
+  (inPhantom (forall n : nat, u n \is a fin_num))
 
 maxe_cvg_0_cvg_fin_num is not universe polymorphic
 Arguments maxe_cvg_0_cvg_fin_num {R} [u] [x]%_ereal_scope 
@@ -5352,8 +5855,16 @@ Qed.</div></details>
 forall {R : realFieldType} [u : (\bar R) ^nat] [r : R],
 (r < 0)%R ->
 (forall k : nat, (u k <= 0%R)%E) ->
-(maxe (u n) r%:E @[n --> \oo] --> 0%R)%classic ->
-(maxr (fine (u n)) r @[n --> \oo] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => Def.max (u n) r%:E)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => maxr (fine (u n)) r)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R)
 
 maxe_cvg_maxr_cvg is not universe polymorphic
 Expanded type for implicit arguments
@@ -5361,9 +5872,13 @@ maxe_cvg_maxr_cvg :
 forall {R : realFieldType} [u : (\bar R) ^nat] [r : R],
 (r < 0)%R ->
 (forall k : nat, (u k <= 0%R)%E) ->
-(maxe (u n) r%:E @[n --> \oo] --> 0%R)%classic ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => Def.max (u n) r%:E)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R) ->
 forall [t : set R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -5392,8 +5907,14 @@ Qed.</div></details>
 forall {R : realFieldType} [u : (\bar R) ^nat] [x : \bar R],
 (x < 0%R)%E ->
 (forall k : nat, (u k <= 0%R)%E) ->
-(maxe (u n) x @[n --> \oo] --> 0%R)%classic ->
-(u n @[n --> \oo] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => Def.max (u n) x)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta u] (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R)
 
 maxe_cvg_0_cvg_0 is not universe polymorphic
 Expanded type for implicit arguments
@@ -5401,9 +5922,13 @@ maxe_cvg_0_cvg_0 :
 forall {R : realFieldType} [u : (\bar R) ^nat] [x : \bar R],
 (x < 0%R)%E ->
 (forall k : nat, (u k <= 0%R)%E) ->
-(maxe (u n) x @[n --> \oo] --> 0%R)%classic ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => Def.max (u n) x)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R) ->
 forall [t : set \bar R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` [eta u] @^-1` t)%classic
@@ -5441,7 +5966,7 @@ Declared in library mathcomp.analysis.sequences, line 2109, characters 11-16
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">u</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#sdrop.R">R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#32d8c90f413029fb5c0e82f0559cd7ef">^o</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="has_lbound_sdrop" class="id"><a name="has_lbound_sdrop" class="" title="has_lbound_sdrop :
-forall [d : Order.disp_t] [R : porderType d] [u : (R^o) ^nat],
+forall [d : disp_t] [R : porderType d] [u : (R^o) ^nat],
 has_lbound (T:=R) (range u) -> forall m : nat, has_lbound (T:=R) (sdrop u m)
 
 has_lbound_sdrop is not universe polymorphic
@@ -5458,7 +5983,7 @@ Declared in library mathcomp.analysis.sequences, line 2115, characters 6-22
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="has_ubound_sdrop" class="id"><a name="has_ubound_sdrop" class="" title="has_ubound_sdrop :
-forall [d : Order.disp_t] [R : porderType d] [u : (R^o) ^nat],
+forall [d : disp_t] [R : porderType d] [u : (R^o) ^nat],
 has_ubound (T:=R) (range u) -> forall m : nat, has_ubound (T:=R) (sdrop u m)
 
 has_ubound_sdrop is not universe polymorphic
@@ -5590,15 +6115,25 @@ Declared in library mathcomp.analysis.sequences, line 2159, characters 6-24
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_sups" class="id"><a name="is_cvg_sups" class="" title="is_cvg_sups :
-forall [R : realType] [u : (R^o) ^nat], cvgn u -> cvgn (sups (R:=R) u)
+forall [R : realType] [u : (R^o) ^nat],
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (sups (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (sups (R:=R) u) (filter.nbhs filter.eventually))))
 
 is_cvg_sups is not universe polymorphic
 Expanded type for implicit arguments
 is_cvg_sups :
 forall [R : realType] [u : (R^o) ^nat],
-cvgn u ->
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u (filter.nbhs filter.eventually)))) ->
 forall [t : set R],
-nbhs (limn (sups (R:=R) u)) t ->
+filter.nbhs
+  (filter.lim (filter.fmap (sups (R:=R) u) (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` sups (R:=R) u @^-1` t)%classic
@@ -5621,15 +6156,25 @@ Declared in library mathcomp.analysis.sequences, line 2166, characters 6-17
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_infs" class="id"><a name="is_cvg_infs" class="" title="is_cvg_infs :
-forall [R : realType] [u : (R^o) ^nat], cvgn u -> cvgn (infs (R:=R) u)
+forall [R : realType] [u : (R^o) ^nat],
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (infs (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (infs (R:=R) u) (filter.nbhs filter.eventually))))
 
 is_cvg_infs is not universe polymorphic
 Expanded type for implicit arguments
 is_cvg_infs :
 forall [R : realType] [u : (R^o) ^nat],
-cvgn u ->
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u (filter.nbhs filter.eventually)))) ->
 forall [t : set R],
-nbhs (limn (infs (R:=R) u)) t ->
+filter.nbhs
+  (filter.lim (filter.fmap (infs (R:=R) u) (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` infs (R:=R) u @^-1` t)%classic
@@ -5647,7 +6192,9 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="infs_le_sups" class="id"><a name="infs_le_sups" class="" title="infs_le_sups :
 forall [R : realType] [u : (R^o) ^nat] (n : nat),
-cvgn u -> (infs (R:=R) u n <= sups (R:=R) u n)%R
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u (filter.nbhs filter.eventually)))) ->
+(infs (R:=R) u n <= sups (R:=R) u n)%R
 
 infs_le_sups is not universe polymorphic
 Arguments infs_le_sups [R u] n%_nat_scope _
@@ -5669,7 +6216,9 @@ Qed.</div></details>
 forall [R : realType] [u : (R^o) ^nat],
 has_ubound (T:=R) (range u) ->
 has_lbound (T:=R) (range u) ->
-(sups (R:=R) u x @[x --> \oo] --> inf (range (sups (R:=R) u)))%classic
+filter.cvg_to
+  (filter.nbhs (filter.fmap (sups (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs (inf (range (sups (R:=R) u))))
 
 cvg_sups_inf is not universe polymorphic
 Expanded type for implicit arguments
@@ -5678,7 +6227,7 @@ forall [R : realType] [u : (R^o) ^nat],
 has_ubound (T:=R) (range u) ->
 has_lbound (T:=R) (range u) ->
 forall [t : set R],
-nbhs (inf (range (sups (R:=R) u))) t ->
+filter.nbhs (inf (range (sups (R:=R) u))) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` sups (R:=R) u @^-1` t)%classic
@@ -5702,7 +6251,9 @@ Qed.</div></details>
 forall [R : realType] [u : (R^o) ^nat],
 has_ubound (T:=R) (range u) ->
 has_lbound (T:=R) (range u) ->
-(infs (R:=R) u x @[x --> \oo] --> sup (range (infs (R:=R) u)))%classic
+filter.cvg_to
+  (filter.nbhs (filter.fmap (infs (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs (sup (range (infs (R:=R) u))))
 
 cvg_infs_sup is not universe polymorphic
 Expanded type for implicit arguments
@@ -5711,7 +6262,7 @@ forall [R : realType] [u : (R^o) ^nat],
 has_ubound (T:=R) (range u) ->
 has_lbound (T:=R) (range u) ->
 forall [t : set R],
-nbhs (sup (range (infs (R:=R) u))) t ->
+filter.nbhs (sup (range (infs (R:=R) u))) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` infs (R:=R) u @^-1` t)%classic
@@ -5850,9 +6401,11 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="limn_sup" class="id"><a name="limn_sup" class="" title="limn_sup :
 forall [R : realType],
 (R^o) ^nat ->
-join_order_topology_POrderedPointedTopological_between_Order_POrder_and_filter_PointedNbhs
-  (numFieldTopology.Real_sort__canonical__order_topology_POrderedPointedTopological
-     R)
+filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointed
+  (filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_PointedFiltered
+     (order_topology.POrderedPointedTopological.Exports.join_order_topology_POrderedPointedTopological_between_Order_POrder_and_filter_PointedNbhs
+        (num_topology.numFieldTopology.Real_sort__canonical__order_topology_POrderedPointedTopological
+           R)))
 
 limn_sup is not universe polymorphic
 Arguments limn_sup [R] u
@@ -5864,9 +6417,11 @@ Declared in library mathcomp.analysis.sequences, line 2270, characters 11-19
 <span class="vernacular">Definition</span><span class="id"> </span><span id="limn_inf" class="id"><a name="limn_inf" class="" title="limn_inf :
 forall [R : realType],
 (R^o) ^nat ->
-join_pseudometric_normed_Zmodule_PseudoMetricNormedZmod_between_Algebra_BaseZmodule_and_filter_PointedNbhs
-  (numFieldNormedType.Real_sort__canonical__pseudometric_normed_Zmodule_PseudoMetricNormedZmod
-     R)
+filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointed
+  (filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_PointedFiltered
+     (join_pseudometric_normed_Zmodule_PseudoMetricNormedZmod_between_Algebra_BaseZmodule_and_filter_PointedNbhs
+        (numFieldNormedType.Real_sort__canonical__pseudometric_normed_Zmodule_PseudoMetricNormedZmod
+           R)))
 
 limn_inf is not universe polymorphic
 Arguments limn_inf [R] u
@@ -5877,7 +6432,9 @@ Declared in library mathcomp.analysis.sequences, line 2272, characters 11-19
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="limn_infN" class="id"><a name="limn_infN" class="" title="limn_infN :
 forall [R : realType] [u : (R^o) ^nat],
-cvgn u -> limn_inf (R:=R) (-%R%R \o u) = (- limn_sup (R:=R) u)%R
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u (filter.nbhs filter.eventually)))) ->
+limn_inf (R:=R) (-%R%R \o u) = (- limn_sup (R:=R) u)%R
 
 limn_infN is not universe polymorphic
 Arguments limn_infN [R u] _
@@ -5929,7 +6486,9 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="limn_inf_sup" class="id"><a name="limn_inf_sup" class="" title="limn_inf_sup :
 forall [R : realType] [u : (R^o) ^nat],
-cvgn u -> (limn_inf (R:=R) u <= limn_sup (R:=R) u)%R
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u (filter.nbhs filter.eventually)))) ->
+(limn_inf (R:=R) u <= limn_sup (R:=R) u)%R
 
 limn_inf_sup is not universe polymorphic
 Arguments limn_inf_sup [R u] _
@@ -5946,10 +6505,14 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_limn_inf_sup" class="id"><a name="cvg_limn_inf_sup" class="" title="cvg_limn_inf_sup :
 forall [R : realType] [u : (R^o) ^nat]
-  [l : join_pseudometric_normed_Zmodule_PseudoMetricNormedZmod_between_Algebra_BaseZmodule_and_filter_PointedNbhs
-         (numFieldNormedType.Real_sort__canonical__pseudometric_normed_Zmodule_PseudoMetricNormedZmod
-            R)],
-(u x @[x --> \oo] --> l)%classic ->
+  [l : filter.Filtered.sort
+         (filter.PointedFiltered.Exports.filter_PointedFiltered__to__filter_Filtered
+            (filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_PointedFiltered
+               (join_pseudometric_normed_Zmodule_PseudoMetricNormedZmod_between_Algebra_BaseZmodule_and_filter_PointedNbhs
+                  (numFieldNormedType.Real_sort__canonical__pseudometric_normed_Zmodule_PseudoMetricNormedZmod
+                     R))))],
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs l) ->
 (limn_inf (R:=R) u = l) * (limn_sup (R:=R) u = l)
 
 cvg_limn_inf_sup is not universe polymorphic
@@ -5987,7 +6550,11 @@ Declared in library mathcomp.analysis.sequences, line 2299, characters 6-22
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_limn_infE" class="id"><a name="cvg_limn_infE" class="" title="cvg_limn_infE :
-forall [R : realType] [u : (R^o) ^nat], cvgn u -> limn_inf (R:=R) u = limn u
+forall [R : realType] [u : (R^o) ^nat],
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u (filter.nbhs filter.eventually)))) ->
+limn_inf (R:=R) u =
+filter.lim (filter.fmap u (filter.nbhs filter.eventually))
 
 cvg_limn_infE is not universe polymorphic
 Arguments cvg_limn_infE [R u] _
@@ -6003,7 +6570,11 @@ Declared in library mathcomp.analysis.sequences, line 2326, characters 6-19
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_limn_supE" class="id"><a name="cvg_limn_supE" class="" title="cvg_limn_supE :
-forall [R : realType] [u : (R^o) ^nat], cvgn u -> limn_sup (R:=R) u = limn u
+forall [R : realType] [u : (R^o) ^nat],
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u (filter.nbhs filter.eventually)))) ->
+limn_sup (R:=R) u =
+filter.lim (filter.fmap u (filter.nbhs filter.eventually))
 
 cvg_limn_supE is not universe polymorphic
 Arguments cvg_limn_supE [R u] _
@@ -6020,18 +6591,24 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_sups" class="id"><a name="cvg_sups" class="" title="cvg_sups :
 forall [R : realType] [u : (R^o) ^nat]
-  [l : GRing_regular__canonical__filter_Filtered R],
-(u x @[x --> \oo] --> l)%classic ->
-(sups (R:=R) u x @[x --> \oo] --> (l : R^o))%classic
+  [l : filter.Filtered.sort
+         (num_topology.GRing_regular__canonical__filter_Filtered R)],
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs l) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (sups (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs (l : R^o))
 
 cvg_sups is not universe polymorphic
 Expanded type for implicit arguments
 cvg_sups :
 forall [R : realType] [u : (R^o) ^nat]
-  [l : GRing_regular__canonical__filter_Filtered R],
-(u x @[x --> \oo] --> l)%classic ->
+  [l : filter.Filtered.sort
+         (num_topology.GRing_regular__canonical__filter_Filtered R)],
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs l) ->
 forall [t : set R],
-nbhs (l : R^o) t ->
+filter.nbhs (l : R^o) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` sups (R:=R) u @^-1` t)%classic
@@ -6051,18 +6628,24 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_infs" class="id"><a name="cvg_infs" class="" title="cvg_infs :
 forall [R : realType] [u : (R^o) ^nat]
-  [l : GRing_regular__canonical__filter_Filtered R],
-(u x @[x --> \oo] --> l)%classic ->
-(infs (R:=R) u x @[x --> \oo] --> (l : R^o))%classic
+  [l : filter.Filtered.sort
+         (num_topology.GRing_regular__canonical__filter_Filtered R)],
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs l) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (infs (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs (l : R^o))
 
 cvg_infs is not universe polymorphic
 Expanded type for implicit arguments
 cvg_infs :
 forall [R : realType] [u : (R^o) ^nat]
-  [l : GRing_regular__canonical__filter_Filtered R],
-(u x @[x --> \oo] --> l)%classic ->
+  [l : filter.Filtered.sort
+         (num_topology.GRing_regular__canonical__filter_Filtered R)],
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs l) ->
 forall [t : set R],
-nbhs (l : R^o) t ->
+filter.nbhs (l : R^o) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` infs (R:=R) u @^-1` t)%classic
@@ -6084,7 +6667,7 @@ Qed.</div></details>
 forall [R : realType] [u v : (R^o) ^nat],
 bounded_fun u ->
 bounded_fun v ->
-(limn_sup (R:=R) (u \+ v) <= (limn_sup (R:=R) u + limn_sup (R:=R) v)%E)%R
+(limn_sup (R:=R) (u \+ v) <= limn_sup (R:=R) u + limn_sup (R:=R) v)%R
 
 le_limn_supD is not universe polymorphic
 Arguments le_limn_supD [R u v] _ _
@@ -6119,7 +6702,7 @@ Qed.</div></details>
 forall [R : realType] [u v : (R^o) ^nat],
 bounded_fun u ->
 bounded_fun v ->
-((limn_inf (R:=R) u + limn_inf (R:=R) v)%E <= limn_inf (R:=R) (u \+ v))%R
+(limn_inf (R:=R) u + limn_inf (R:=R) v <= limn_inf (R:=R) (u \+ v))%R
 
 le_limn_infD is not universe polymorphic
 Arguments le_limn_infD [R u v] _ _
@@ -6152,9 +6735,11 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="limn_supD" class="id"><a name="limn_supD" class="" title="limn_supD :
 forall [R : realType] [u v : (R^o) ^nat],
-cvgn u ->
-cvgn v ->
-limn_sup (R:=R) (u \+ v)%R = (limn_sup (R:=R) u + limn_sup (R:=R) v)%E
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u (filter.nbhs filter.eventually)))) ->
+filter.cvg_to (filter.nbhs (filter.fmap v (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap v (filter.nbhs filter.eventually)))) ->
+limn_sup (R:=R) (u \+ v)%R = (limn_sup (R:=R) u + limn_sup (R:=R) v)%R
 
 limn_supD is not universe polymorphic
 Arguments limn_supD [R u v] _ _
@@ -6177,9 +6762,11 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="limn_infD" class="id"><a name="limn_infD" class="" title="limn_infD :
 forall [R : realType] [u v : (R^o) ^nat],
-cvgn u ->
-cvgn v ->
-limn_inf (R:=R) (u \+ v)%R = (limn_inf (R:=R) u + limn_inf (R:=R) v)%E
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u (filter.nbhs filter.eventually)))) ->
+filter.cvg_to (filter.nbhs (filter.fmap v (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap v (filter.nbhs filter.eventually)))) ->
+limn_inf (R:=R) (u \+ v)%R = (limn_inf (R:=R) u + limn_inf (R:=R) v)%R
 
 limn_infD is not universe polymorphic
 Arguments limn_infD [R u v] _ _
@@ -6325,14 +6912,16 @@ Declared in library mathcomp.analysis.sequences, line 2453, characters 6-20
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_esups_inf" class="id"><a name="cvg_esups_inf" class="" title="cvg_esups_inf :
 forall [R : realType] [u : (\bar R) ^nat],
-(esups (R:=R) u x @[x --> \oo] --> ereal_inf (R:=R) (range (esups (R:=R) u)))%classic
+filter.cvg_to
+  (filter.nbhs (filter.fmap (esups (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs (ereal.ereal_inf (R:=R) (range (esups (R:=R) u))))
 
 cvg_esups_inf is not universe polymorphic
 Expanded type for implicit arguments
 cvg_esups_inf :
 forall [R : realType] [u : (\bar R) ^nat]
   [t : set constructive_ereal_extended__canonical__Order_POrder],
-nbhs (ereal_inf (R:=R) (range (esups (R:=R) u))) t ->
+filter.nbhs (ereal.ereal_inf (R:=R) (range (esups (R:=R) u))) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` esups (R:=R) u @^-1` t)%classic
@@ -6348,14 +6937,21 @@ Declared in library mathcomp.analysis.sequences, line 2460, characters 6-19
 <span class="gallina-kwd"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#ereal_nonincreasing_cvgn">ereal_nonincreasing_cvgn</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#nonincreasing_esups">nonincreasing_esups</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_esups" class="id"><a name="is_cvg_esups" class="" title="is_cvg_esups :
-forall [R : realType] [u : (\bar R) ^nat], cvgn (esups (R:=R) u)
+forall [R : realType] [u : (\bar R) ^nat],
+filter.cvg_to
+  (filter.nbhs (filter.fmap (esups (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (esups (R:=R) u) (filter.nbhs filter.eventually))))
 
 is_cvg_esups is not universe polymorphic
 Expanded type for implicit arguments
 is_cvg_esups :
 forall [R : realType] [u : (\bar R) ^nat]
   [t : set constructive_ereal_extended__canonical__Order_POrder],
-nbhs (limn (esups (R:=R) u)) t ->
+filter.nbhs
+  (filter.lim (filter.fmap (esups (R:=R) u) (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` esups (R:=R) u @^-1` t)%classic
@@ -6372,13 +6968,15 @@ Declared in library mathcomp.analysis.sequences, line 2463, characters 6-18
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_einfs_sup" class="id"><a name="cvg_einfs_sup" class="" title="cvg_einfs_sup :
 forall [R : realType] [u : (\bar R) ^nat],
-(einfs (R:=R) u x @[x --> \oo] --> ereal_sup (R:=R) (range (einfs (R:=R) u)))%classic
+filter.cvg_to
+  (filter.nbhs (filter.fmap (einfs (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs (ereal.ereal_sup (R:=R) (range (einfs (R:=R) u))))
 
 cvg_einfs_sup is not universe polymorphic
 Expanded type for implicit arguments
 cvg_einfs_sup :
 forall [R : realType] [u : (\bar R) ^nat] [t : set \bar R],
-nbhs (ereal_sup (R:=R) (range (einfs (R:=R) u))) t ->
+filter.nbhs (ereal.ereal_sup (R:=R) (range (einfs (R:=R) u))) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` einfs (R:=R) u @^-1` t)%classic
@@ -6394,13 +6992,20 @@ Declared in library mathcomp.analysis.sequences, line 2466, characters 6-19
 <span class="gallina-kwd"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#ereal_nondecreasing_cvgn">ereal_nondecreasing_cvgn</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#nondecreasing_einfs">nondecreasing_einfs</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_einfs" class="id"><a name="is_cvg_einfs" class="" title="is_cvg_einfs :
-forall [R : realType] [u : (\bar R) ^nat], cvgn (einfs (R:=R) u)
+forall [R : realType] [u : (\bar R) ^nat],
+filter.cvg_to
+  (filter.nbhs (filter.fmap (einfs (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (einfs (R:=R) u) (filter.nbhs filter.eventually))))
 
 is_cvg_einfs is not universe polymorphic
 Expanded type for implicit arguments
 is_cvg_einfs :
 forall [R : realType] [u : (\bar R) ^nat] [t : set \bar R],
-nbhs (limn (einfs (R:=R) u)) t ->
+filter.nbhs
+  (filter.lim (filter.fmap (einfs (R:=R) u) (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` einfs (R:=R) u @^-1` t)%classic
@@ -6491,7 +7096,8 @@ Declared in library mathcomp.analysis.sequences, line 2504, characters 11-20
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="limn_esup_lim" class="id"><a name="limn_esup_lim" class="" title="limn_esup_lim :
 forall {R : realType} (u : (\bar R) ^nat),
-limn_esup u = limn (esups (R:=R) u)
+limn_esup u =
+filter.lim (filter.fmap (esups (R:=R) u) (filter.nbhs filter.eventually))
 
 limn_esup_lim is not universe polymorphic
 Arguments limn_esup_lim {R} u
@@ -6515,7 +7121,8 @@ Declared in library mathcomp.analysis.sequences, line 2506, characters 6-19
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="limn_einf_lim" class="id"><a name="limn_einf_lim" class="" title="limn_einf_lim :
 forall {R : realType} (u : (\bar R) ^nat),
-limn_einf u = limn (einfs (R:=R) u)
+limn_einf u =
+filter.lim (filter.fmap (einfs (R:=R) u) (filter.nbhs filter.eventually))
 
 limn_einf_lim is not universe polymorphic
 Arguments limn_einf_lim {R} u
@@ -6541,7 +7148,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="limn_einf_shift" class="id"><a name="limn_einf_shift" class="" title="limn_einf_shift :
 forall [R : realType] (u : (\bar R) ^nat) [l : \bar R],
 l \is a fin_num ->
-limn_einf (fun x : nat => (l + u x)%E) = (l + limn_einf u)%E
+limn_einf (fun x : nat => (l + u x)%R) = (l + limn_einf u)%R
 
 limn_einf_shift is not universe polymorphic
 Arguments limn_einf_shift [R] u [l]%_ereal_scope _
@@ -6571,7 +7178,9 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="limn_esup_le_cvg" class="id"><a name="limn_esup_le_cvg" class="" title="limn_esup_le_cvg :
 forall [R : realType] [u : (\bar R) ^nat] [l : \bar R],
 (limn_esup u <= l)%E ->
-(forall n : nat, (l <= u n)%E) -> (u x @[x --> \oo] --> l)%classic
+(forall n : nat, (l <= u n)%E) ->
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs l)
 
 limn_esup_le_cvg is not universe polymorphic
 Expanded type for implicit arguments
@@ -6580,7 +7189,7 @@ forall [R : realType] [u : (\bar R) ^nat] [l : \bar R],
 (limn_esup u <= l)%E ->
 (forall n : nat, (l <= u n)%E) ->
 forall [t : set \bar R],
-nbhs l t ->
+filter.nbhs l t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` u @^-1` t)%classic
@@ -6655,7 +7264,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgNy_limn_einf_sup" class="id"><a name="cvgNy_limn_einf_sup" class="" title="cvgNy_limn_einf_sup :
 forall [R : realType] [u : (\bar R) ^nat],
-(u x @[x --> \oo] --> -oo%E)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs -oo%E) ->
 (limn_einf u = -oo%E) * (limn_esup u = -oo%E)
 
 cvgNy_limn_einf_sup is not universe polymorphic
@@ -6678,16 +7288,20 @@ Declared in library mathcomp.analysis.sequences, line 2579, characters 6-25
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgNy_einfs" class="id"><a name="cvgNy_einfs" class="" title="cvgNy_einfs :
 forall [R : realType] [u : (\bar R) ^nat],
-(u x @[x --> \oo] --> -oo%E)%classic ->
-(einfs (R:=R) u x @[x --> \oo] --> -oo%E)%classic
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs -oo%E) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (einfs (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs -oo%E)
 
 cvgNy_einfs is not universe polymorphic
 Expanded type for implicit arguments
 cvgNy_einfs :
 forall [R : realType] [u : (\bar R) ^nat],
-(u x @[x --> \oo] --> -oo%E)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs -oo%E) ->
 forall [t : set \bar R],
-nbhs -oo%E t ->
+filter.nbhs -oo%E t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` einfs (R:=R) u @^-1` t)%classic
@@ -6707,16 +7321,20 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgNy_esups" class="id"><a name="cvgNy_esups" class="" title="cvgNy_esups :
 forall [R : realType] [u : (\bar R) ^nat],
-(u x @[x --> \oo] --> -oo%E)%classic ->
-(esups (R:=R) u x @[x --> \oo] --> -oo%E)%classic
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs -oo%E) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (esups (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs -oo%E)
 
 cvgNy_esups is not universe polymorphic
 Expanded type for implicit arguments
 cvgNy_esups :
 forall [R : realType] [u : (\bar R) ^nat],
-(u x @[x --> \oo] --> -oo%E)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs -oo%E) ->
 forall [t : set constructive_ereal_extended__canonical__Order_POrder],
-nbhs -oo%E t ->
+filter.nbhs -oo%E t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` esups (R:=R) u @^-1` t)%classic
@@ -6735,16 +7353,20 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgy_einfs" class="id"><a name="cvgy_einfs" class="" title="cvgy_einfs :
 forall [R : realType] [u : (\bar R) ^nat],
-(u x @[x --> \oo] --> +oo%E)%classic ->
-(einfs (R:=R) u x @[x --> \oo] --> +oo%E)%classic
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs +oo%E) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (einfs (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs +oo%E)
 
 cvgy_einfs is not universe polymorphic
 Expanded type for implicit arguments
 cvgy_einfs :
 forall [R : realType] [u : (\bar R) ^nat],
-(u x @[x --> \oo] --> +oo%E)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs +oo%E) ->
 forall [t : set \bar R],
-nbhs +oo%E t ->
+filter.nbhs +oo%E t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` einfs (R:=R) u @^-1` t)%classic
@@ -6763,16 +7385,20 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgy_esups" class="id"><a name="cvgy_esups" class="" title="cvgy_esups :
 forall [R : realType] [u : (\bar R) ^nat],
-(u x @[x --> \oo] --> +oo%E)%classic ->
-(esups (R:=R) u x @[x --> \oo] --> +oo%E)%classic
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs +oo%E) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (esups (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs +oo%E)
 
 cvgy_esups is not universe polymorphic
 Expanded type for implicit arguments
 cvgy_esups :
 forall [R : realType] [u : (\bar R) ^nat],
-(u x @[x --> \oo] --> +oo%E)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs +oo%E) ->
 forall [t : set constructive_ereal_extended__canonical__Order_POrder],
-nbhs +oo%E t ->
+filter.nbhs +oo%E t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` esups (R:=R) u @^-1` t)%classic
@@ -6791,16 +7417,20 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_esups" class="id"><a name="cvg_esups" class="" title="cvg_esups :
 forall [R : realType] [u : (\bar R) ^nat] [l : \bar R],
-(u x @[x --> \oo] --> l)%classic ->
-(esups (R:=R) u x @[x --> \oo] --> l)%classic
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs l) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (esups (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs l)
 
 cvg_esups is not universe polymorphic
 Expanded type for implicit arguments
 cvg_esups :
 forall [R : realType] [u : (\bar R) ^nat] [l : \bar R],
-(u x @[x --> \oo] --> l)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs l) ->
 forall [t : set constructive_ereal_extended__canonical__Order_POrder],
-nbhs l t ->
+filter.nbhs l t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` esups (R:=R) u @^-1` t)%classic
@@ -6836,16 +7466,20 @@ Declared in library mathcomp.analysis.sequences, line 2615, characters 6-15
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_einfs" class="id"><a name="cvg_einfs" class="" title="cvg_einfs :
 forall [R : realType] [u : (\bar R) ^nat] [l : \bar R],
-(u x @[x --> \oo] --> l)%classic ->
-(einfs (R:=R) u x @[x --> \oo] --> l)%classic
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs l) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (einfs (R:=R) u) (filter.nbhs filter.eventually)))
+  (filter.nbhs l)
 
 cvg_einfs is not universe polymorphic
 Expanded type for implicit arguments
 cvg_einfs :
 forall [R : realType] [u : (\bar R) ^nat] [l : \bar R],
-(u x @[x --> \oo] --> l)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs l) ->
 forall [t : set \bar R],
-nbhs l t ->
+filter.nbhs l t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` einfs (R:=R) u @^-1` t)%classic
@@ -6864,7 +7498,9 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_limn_einf_sup" class="id"><a name="cvg_limn_einf_sup" class="" title="cvg_limn_einf_sup :
 forall [R : realType] [u : (\bar R) ^nat] [l : \bar R],
-(u x @[x --> \oo] --> l)%classic -> (limn_einf u = l) * (limn_esup u = l)
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs l) ->
+(limn_einf u = l) * (limn_esup u = l)
 
 cvg_limn_einf_sup is not universe polymorphic
 Arguments cvg_limn_einf_sup [R u] [l]%_ereal_scope _
@@ -6882,7 +7518,10 @@ Declared in library mathcomp.analysis.sequences, line 2644, characters 6-23
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_limn_einfE" class="id"><a name="is_cvg_limn_einfE" class="" title="is_cvg_limn_einfE :
-forall [R : realType] [u : (\bar R) ^nat], cvgn u -> limn_einf u = limn u
+forall [R : realType] [u : (\bar R) ^nat],
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u (filter.nbhs filter.eventually)))) ->
+limn_einf u = filter.lim (filter.fmap u (filter.nbhs filter.eventually))
 
 is_cvg_limn_einfE is not universe polymorphic
 Arguments is_cvg_limn_einfE [R u] _
@@ -6898,7 +7537,10 @@ Declared in library mathcomp.analysis.sequences, line 2652, characters 6-23
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_limn_esupE" class="id"><a name="is_cvg_limn_esupE" class="" title="is_cvg_limn_esupE :
-forall [R : realType] [u : (\bar R) ^nat], cvgn u -> limn_esup u = limn u
+forall [R : realType] [u : (\bar R) ^nat],
+filter.cvg_to (filter.nbhs (filter.fmap u (filter.nbhs filter.eventually)))
+  (filter.nbhs (filter.lim (filter.fmap u (filter.nbhs filter.eventually)))) ->
+limn_esup u = filter.lim (filter.fmap u (filter.nbhs filter.eventually))
 
 is_cvg_limn_esupE is not universe polymorphic
 Arguments is_cvg_limn_esupE [R u] _
@@ -6939,7 +7581,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cluster_eventuallyP" class="id"><a name="cluster_eventuallyP" class="" title="cluster_eventuallyP :
 forall {R : realFieldType} (u_ : R ^nat) (a : R),
-cluster (u_ x @[x --> \oo])%classic a <->
+compact.cluster (filter.fmap u_ (filter.nbhs filter.eventually)) a <->
 (forall (e : R) (n : nat),
  (0 < e)%R -> exists2 p : nat, n <= p & (`|a - u_ p| <= e)%R)
 
@@ -7053,9 +7695,12 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cluster_eventually_cvg" class="id"><a name="cluster_eventually_cvg" class="" title="cluster_eventually_cvg :
 forall {R : realType} (u_ : R ^nat) (a : R),
-cluster (u_ x @[x --> \oo])%classic a <->
+compact.cluster (filter.fmap u_ (filter.nbhs filter.eventually)) a <->
 (exists2 f : nat -> nat,
-   increasing_seq f & ((u_ \o f) x @[x --> \oo] --> a)%classic)
+   increasing_seq f &
+   filter.cvg_to
+     (filter.nbhs (filter.fmap (u_ \o f) (filter.nbhs filter.eventually)))
+     (filter.nbhs a))
 
 cluster_eventually_cvg is not universe polymorphic
 Arguments cluster_eventually_cvg {R} u_ a%_ring_scope
@@ -7079,23 +7724,26 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="limit_point_cluster_eventually" class="id"><a name="limit_point_cluster_eventually" class="" title="limit_point_cluster_eventually :
 forall {R : realType} [u_ : R ^nat] [a : R],
-limit_point (range u_) a -> cluster (u_ x @[x --> \oo])%classic a
+topology_structure.limit_point (range u_) a ->
+compact.cluster (filter.fmap u_ (filter.nbhs filter.eventually)) a
 
 limit_point_cluster_eventually is not universe polymorphic
 Expanded type for implicit arguments
 limit_point_cluster_eventually :
 forall {R : realType} [u_ : R ^nat] [a : R],
-limit_point (range u_) a ->
+topology_structure.limit_point (range u_) a ->
 forall
   [A
    B : set
-         (numFieldTopology.Real_sort__canonical__topology_structure_Topological
-            R)],
-(u_ x @[x --> \oo])%classic A ->
-nbhs a B ->
+         (topology_structure.Topological.sort
+            (num_topology.numFieldTopology.Real_sort__canonical__topology_structure_Topological
+               R))],
+filter.fmap u_ (filter.nbhs filter.eventually) A ->
+filter.nbhs a B ->
 exists
-  a0 : numFieldTopology.Real_sort__canonical__topology_structure_Topological
-         R,
+  a0 : topology_structure.Topological.sort
+         (num_topology.numFieldTopology.Real_sort__canonical__topology_structure_Topological
+            R),
   (A `&` B)%classic a0
 
 Arguments limit_point_cluster_eventually {R} [u_] [a]%_ring_scope _ [A B] _ _
@@ -7313,7 +7961,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="infinite_bounded_limit_point_nonempty" class="id"><a name="infinite_bounded_limit_point_nonempty" class="" title="infinite_bounded_limit_point_nonempty :
 forall {R : realType} [E : set R],
-infinite_set E -> bounded_set E -> (limit_point E !=set0)%classic
+infinite_set E ->
+bounded_set E -> (topology_structure.limit_point E !=set0)%classic
 
 infinite_bounded_limit_point_nonempty is not universe polymorphic
 Arguments infinite_bounded_limit_point_nonempty {R} 
@@ -7411,7 +8060,7 @@ Declared in library mathcomp.analysis.sequences, line 2979, characters 6-34
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="infinite_increasing_seq" class="id"><a name="infinite_increasing_seq" class="" title="infinite_increasing_seq :
-forall {d : Order.disp_t} {T : porderType d} [A : set T],
+forall {d : disp_t} {T : porderType d} [A : set T],
 (forall x : T, infinite_set [set y | A y /\ (x < y)%O]) ->
 forall x0 : T,
 exists f : nat -> T,
@@ -7439,7 +8088,7 @@ Declared in library mathcomp.analysis.sequences, line 2990, characters 6-29
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="infinite_increasing_seq_wf" class="id"><a name="infinite_increasing_seq_wf" class="" title="infinite_increasing_seq_wf :
-forall {d : Order.disp_t} {T : orderType d} [A : set T],
+forall {d : disp_t} {T : orderType d} [A : set T],
 (forall x : T, finite_set [set y | (y <= x)%O]) ->
 infinite_set A ->
 forall x0 : T,
@@ -7466,9 +8115,15 @@ Declared in library mathcomp.analysis.sequences, line 3002, characters 6-32
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_range_cvg_subsequence" class="id"><a name="finite_range_cvg_subsequence" class="" title="finite_range_cvg_subsequence :
-forall {T : ptopologicalType} [x_ : T ^nat],
+forall {T : topology_structure.PointedTopological.type}
+  [x_ : (topology_structure.PointedTopological.sort T) ^nat],
 finite_set (range x_) ->
-exists2 f : nat -> nat, increasing_seq f & cvgn (x_ \o f)
+exists2 f : nat -> nat,
+  increasing_seq f &
+  filter.cvg_to
+    (filter.nbhs (filter.fmap (x_ \o f) (filter.nbhs filter.eventually)))
+    (filter.nbhs
+       (filter.lim (filter.fmap (x_ \o f) (filter.nbhs filter.eventually))))
 
 finite_range_cvg_subsequence is not universe polymorphic
 Arguments finite_range_cvg_subsequence {T} [x_] _
@@ -7492,7 +8147,13 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Theorem</span><span class="id"> </span><span id="bolzano_weierstrass" class="id"><a name="bolzano_weierstrass" class="" title="bolzano_weierstrass :
 forall {R : realType} [u_ : R ^nat],
-bounded_fun u_ -> exists2 f : nat -> nat, increasing_seq f & cvgn (u_ \o f)
+bounded_fun u_ ->
+exists2 f : nat -> nat,
+  increasing_seq f &
+  filter.cvg_to
+    (filter.nbhs (filter.fmap (u_ \o f) (filter.nbhs filter.eventually)))
+    (filter.nbhs
+       (filter.lim (filter.fmap (u_ \o f) (filter.nbhs filter.eventually))))
 
 bolzano_weierstrass is not universe polymorphic
 Arguments bolzano_weierstrass {R} [u_] _
@@ -7577,7 +8238,16 @@ Qed.</div></details>
 forall {R : realType} {X : completeNormedModType R} 
   [U : set X] [f : {fun U >-> U}] [q : {nonneg R}%R],
 contraction q f ->
-forall [base : X], U base -> cvgn (fun n : nat => iter n f base)
+forall [base : X],
+U base ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => iter n f base)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (fun n : nat => iter n f base)
+           (filter.nbhs filter.eventually))))
 
 contraction_cvg is not universe polymorphic
 Expanded type for implicit arguments
@@ -7588,7 +8258,11 @@ contraction q f ->
 forall [base : X],
 U base ->
 forall [t : set X],
-nbhs (limn (fun n : nat => iter n f base)) t ->
+filter.nbhs
+  (filter.lim
+     (filter.fmap (fun n : nat => iter n f base)
+        (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -7636,8 +8310,13 @@ forall {R : realType} {X : completeNormedModType R}
 contraction q f ->
 forall [base : X],
 U base ->
-closed U ->
-limn (fun n : nat => iter n f base) = f (limn (fun n : nat => iter n f base))
+topology_structure.closed U ->
+filter.lim
+  (filter.fmap (fun n : nat => iter n f base) (filter.nbhs filter.eventually)) =
+f
+  (filter.lim
+     (filter.fmap (fun n : nat => iter n f base)
+        (filter.nbhs filter.eventually)))
 
 contraction_cvg_fixed is not universe polymorphic
 Arguments contraction_cvg_fixed {R X} [U]%_classical_set_scope 
@@ -7672,7 +8351,8 @@ Declared in library mathcomp.analysis.sequences, line 3104, characters 6-27
 forall {R : realType} {X : completeNormedModType R} 
   [U : set X] [f : {fun U >-> U}],
 is_contraction f ->
-closed U -> (U !=set0)%classic -> exists2 p : X, U p & p = f p
+topology_structure.closed U ->
+(U !=set0)%classic -> exists2 p : X, U p & p = f p
 
 banach_fixed_point is not universe polymorphic
 Arguments banach_fixed_point {R X} [U]%_classical_set_scope [f] ctrf _ _
@@ -7696,16 +8376,21 @@ Declared in library mathcomp.analysis.sequences, line 3125, characters 8-26
 <br/>
 <span class="vernacular">Theorem</span><span class="id"> </span><span id="Baire" class="id"><a name="Baire" class="" title="Baire :
 forall [K : realType] [U : completeNormedModType K] [F : (set U) ^nat],
-(forall i : nat, open (F i) /\ dense (T:=U) (F i)) ->
-dense (T:=U) (\bigcap_i F i)
+(forall i : nat,
+ topology_structure.open (F i) /\ topology_structure.dense (T:=U) (F i)) ->
+topology_structure.dense (T:=U) (\bigcap_i F i)
 
 Baire is not universe polymorphic
 Expanded type for implicit arguments
 Baire :
 forall [K : realType] [U : completeNormedModType K] [F : (set U) ^nat],
-(forall i : nat, open (F i) /\ dense (T:=U) (F i)) ->
-forall [O : set U],
-(O !=set0)%classic -> open O -> exists a : U, (O `&` \bigcap_i F i)%classic a
+(forall i : nat,
+ topology_structure.open (F i) /\ topology_structure.dense (T:=U) (F i)) ->
+forall [O : set (topology_structure.Topological.sort U)],
+(O !=set0)%classic ->
+topology_structure.open O ->
+exists a : topology_structure.Topological.sort U,
+  (O `&` \bigcap_i F i)%classic a
 
 Arguments Baire [K U F] _%_function_scope [O] _ _
 Baire is opaque
@@ -7812,7 +8497,10 @@ Declared in library mathcomp.analysis.sequences, line 3224, characters 11-27
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bounded_landau" class="id"><a name="bounded_landau" class="" title="bounded_landau :
 forall [K : realType] [V W : normedModType K] (f : {linear V -> W}),
 bounded_fun_norm (K:=K) (V:=V) (W:=W) f <->
-(f : V -> W) =O_(0%R : V) cst (1%R : K)
+(f : V -> W) =
+landau.the_bigO landau.the_tag (topology_structure.nbhs_filter_on 0%R)
+  (Phantom (filter.set_system V) (filter.nbhs (0%R : V))) 
+  (f : V -> W) (cst (1%R : K))
 
 bounded_landau is not universe polymorphic
 Arguments bounded_landau [K V W] f

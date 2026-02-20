@@ -524,7 +524,7 @@ Declared in library mathcomp.reals.signed, line 234, characters 11-24
 <span class="vernacular">Local</span><span class="vernacular"> Coercion</span><span class="id"> </span><span id="Signed.is_real" class="id"><a name="Signed.is_real" class="" title="Signed.is_real not a defined object.
 ">is_real</a></span><span class="id"> </span><span id="r:35" class="id"><a name="r:35" class="">r</a></span><span class="id"> :=</span><span class="gallina-kwd"> if</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#r:35">r</a></span><span class="id"> is</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#KnownSign.Real">Real</a></span><span class="id"> _</span><span class="gallina-kwd"> then</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="gallina-kwd"> else</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span>.<br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Signed.reality_cond" class="id"><a name="Signed.reality_cond" class="" title="Signed.reality_cond :
-forall [disp : disp_t] [T : porderType disp],
+forall [disp : Order.disp_t] [T : porderType disp],
 T -> KnownSign.reality -> T -> bool
 
 Signed.reality_cond is not universe polymorphic
@@ -562,8 +562,9 @@ Declared in library mathcomp.reals.signed, line 247, characters 11-23
 <span class="id">}</span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Signed.mk" class="id"><a name="Signed.mk" class="" title="Signed.mk :
-forall {d : disp_t} {T : porderType d} [x0 : T] [nz : KnownSign.nullity]
-  [cond : KnownSign.reality] [r : T],
+forall {d : Order.disp_t} {T : porderType d} [x0 : T]
+  [nz : KnownSign.nullity] [cond : KnownSign.reality] 
+  [r : T],
 Signed.spec x0 nz cond r -> {compare x0 & nz & cond}
 
 Signed.mk is not universe polymorphic
@@ -576,8 +577,9 @@ Declared in library mathcomp.reals.signed, line 276, characters 11-13
 &nbsp;&nbsp;<span class="id">@</span><span class="id"><a href="mathcomp.reals.signed.html#Signed.Def">Def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#d:53">d</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#T:54">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x0:55">x0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nz:56">nz</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#cond:57">cond</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#r:58">r</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#P:59">P</a></span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Signed.from" class="id"><a name="Signed.from" class="" title="Signed.from :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} {x : {compare x0 & nz & cond}},
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  {x : {compare x0 & nz & cond}},
 phantom T x%:num%R -> {compare x0 & nz & cond}
 
 Signed.from is not universe polymorphic
@@ -590,8 +592,9 @@ Declared in library mathcomp.reals.signed, line 279, characters 11-15
 &nbsp;&nbsp;<span class="id">{</span><span id="x:65" class="id"><a name="x:65" class="">x</a></span><span class="id"> :</span><span class="id"> @</span><span class="id"><a href="mathcomp.reals.signed.html#Signed.def">def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#d:60">d</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#T:61">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x0:62">x0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nz:63">nz</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#cond:64">cond</a></span><span class="id">}</span> (<span id="phx:66" class="id"><a name="phx:66" class="">phx</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#phantom">phantom</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#T:61">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:65">x</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:65">x</a></span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Signed.fromP" class="id"><a name="Signed.fromP" class="" title="Signed.fromP :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} {x : {compare x0 & nz & cond}},
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  {x : {compare x0 & nz & cond}},
 phantom T x%:num%R -> Signed.spec x0 nz cond x%:num%R
 
 Signed.fromP is not universe polymorphic
@@ -671,8 +674,8 @@ Declared in library mathcomp.reals.signed, line 326, characters 11-17
 <span class="vernacular">Variables</span> (<span id="POrder.x0" class="id"><a name="POrder.x0" class="">x0</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#POrder.T">T</a></span>) (<span id="POrder.nz" class="id"><a name="POrder.nz" class="">nz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="POrder.cond" class="id"><a name="POrder.cond" class="">cond</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>).<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="sT" class="id"><a name="sT" class="">sT</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#POrder.x0">x0</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#POrder.nz">nz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#POrder.cond">cond</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>.<br/>
 <span id="Signed_def__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Signed_def__canonical__eqtype_SubType" class="" title="Signed_def__canonical__eqtype_SubType :
-forall [d : disp_t] [T : porderType d] (x0 : T) (nz : KnownSign.nullity)
-  (cond : KnownSign.reality),
+forall [d : Order.disp_t] [T : porderType d] (x0 : T)
+  (nz : KnownSign.nullity) (cond : KnownSign.reality),
 subType (T:=T) (fun x : T => Signed.spec x0 nz cond x)
 
 Signed_def__canonical__eqtype_SubType is not universe polymorphic
@@ -683,8 +686,8 @@ Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__eqtype_SubType
 Declared in library mathcomp.reals.signed, line 338, characters 0-65
 ">HB</a></span></span>.<span id="Signed_def__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Signed_def__canonical__eqtype_SubType" class="" title="Signed_def__canonical__eqtype_SubType :
-forall [d : disp_t] [T : porderType d] (x0 : T) (nz : KnownSign.nullity)
-  (cond : KnownSign.reality),
+forall [d : Order.disp_t] [T : porderType d] (x0 : T)
+  (nz : KnownSign.nullity) (cond : KnownSign.reality),
 subType (T:=T) (fun x : T => Signed.spec x0 nz cond x)
 
 Signed_def__canonical__eqtype_SubType is not universe polymorphic
@@ -695,8 +698,8 @@ Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__eqtype_SubType
 Declared in library mathcomp.reals.signed, line 338, characters 0-65
 ">instance</a></span></span><span class="vernacular"> Definition</span><span id="Signed_def__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Signed_def__canonical__eqtype_SubType" class="" title="Signed_def__canonical__eqtype_SubType :
-forall [d : disp_t] [T : porderType d] (x0 : T) (nz : KnownSign.nullity)
-  (cond : KnownSign.reality),
+forall [d : Order.disp_t] [T : porderType d] (x0 : T)
+  (nz : KnownSign.nullity) (cond : KnownSign.reality),
 subType (T:=T) (fun x : T => Signed.spec x0 nz cond x)
 
 Signed_def__canonical__eqtype_SubType is not universe polymorphic
@@ -707,8 +710,8 @@ Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__eqtype_SubType
 Declared in library mathcomp.reals.signed, line 338, characters 0-65
 "> _</a></span></span><span id="Signed_def__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Signed_def__canonical__eqtype_SubType" class="" title="Signed_def__canonical__eqtype_SubType :
-forall [d : disp_t] [T : porderType d] (x0 : T) (nz : KnownSign.nullity)
-  (cond : KnownSign.reality),
+forall [d : Order.disp_t] [T : porderType d] (x0 : T)
+  (nz : KnownSign.nullity) (cond : KnownSign.reality),
 subType (T:=T) (fun x : T => Signed.spec x0 nz cond x)
 
 Signed_def__canonical__eqtype_SubType is not universe polymorphic
@@ -719,8 +722,8 @@ Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__eqtype_SubType
 Declared in library mathcomp.reals.signed, line 338, characters 0-65
 "> :=</a></span></span><span id="Signed_def__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Signed_def__canonical__eqtype_SubType" class="" title="Signed_def__canonical__eqtype_SubType :
-forall [d : disp_t] [T : porderType d] (x0 : T) (nz : KnownSign.nullity)
-  (cond : KnownSign.reality),
+forall [d : Order.disp_t] [T : porderType d] (x0 : T)
+  (nz : KnownSign.nullity) (cond : KnownSign.reality),
 subType (T:=T) (fun x : T => Signed.spec x0 nz cond x)
 
 Signed_def__canonical__eqtype_SubType is not universe polymorphic
@@ -732,7 +735,7 @@ Expands to: Constant
 Declared in library mathcomp.reals.signed, line 338, characters 0-65
 "> [isSub</a></span></span><span class="gallina-kwd"> for</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#2da1a13c2d8418cd34c731e37f154fe7"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.reals.signed.html#r">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#r">r</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#POrder.d">d</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#POrder.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#POrder.x0">x0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#POrder.nz">nz</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#POrder.cond">cond</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#2da1a13c2d8418cd34c731e37f154fe7">]</a></span>.<br/>
 <span id="Signed_def__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="Signed_def__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="Signed_def__canonical__choice_SubChoice" class="id"><span id="Signed_def__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="Signed_def__canonical__eqtype_SubEquality" class="id"><span id="Signed_def__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="Order_POrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="Order_POrder__to__Order_isDuallyPreorder" class="id"><span id="Order_POrder__to__eqtype_hasDecEq" class="id"><span id="Order_POrder__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Signed_def__canonical__Order_POrder" class="" title="Signed_def__canonical__Order_POrder :
-forall [d : disp_t] [T : porderType d],
+forall [d : Order.disp_t] [T : porderType d],
 T -> KnownSign.nullity -> KnownSign.reality -> porderType d
 
 Signed_def__canonical__Order_POrder is not universe polymorphic
@@ -743,7 +746,7 @@ Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__Order_POrder
 Declared in library mathcomp.reals.signed, line 339, characters 0-69
 ">HB</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="Signed_def__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="Signed_def__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="Signed_def__canonical__choice_SubChoice" class="id"><span id="Signed_def__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="Signed_def__canonical__eqtype_SubEquality" class="id"><span id="Signed_def__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="Order_POrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="Order_POrder__to__Order_isDuallyPreorder" class="id"><span id="Order_POrder__to__eqtype_hasDecEq" class="id"><span id="Order_POrder__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Signed_def__canonical__Order_POrder" class="" title="Signed_def__canonical__Order_POrder :
-forall [d : disp_t] [T : porderType d],
+forall [d : Order.disp_t] [T : porderType d],
 T -> KnownSign.nullity -> KnownSign.reality -> porderType d
 
 Signed_def__canonical__Order_POrder is not universe polymorphic
@@ -754,7 +757,7 @@ Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__Order_POrder
 Declared in library mathcomp.reals.signed, line 339, characters 0-69
 ">instance</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="Signed_def__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="Signed_def__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="Signed_def__canonical__choice_SubChoice" class="id"><span id="Signed_def__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="Signed_def__canonical__eqtype_SubEquality" class="id"><span id="Signed_def__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="Order_POrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="Order_POrder__to__Order_isDuallyPreorder" class="id"><span id="Order_POrder__to__eqtype_hasDecEq" class="id"><span id="Order_POrder__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Signed_def__canonical__Order_POrder" class="" title="Signed_def__canonical__Order_POrder :
-forall [d : disp_t] [T : porderType d],
+forall [d : Order.disp_t] [T : porderType d],
 T -> KnownSign.nullity -> KnownSign.reality -> porderType d
 
 Signed_def__canonical__Order_POrder is not universe polymorphic
@@ -765,7 +768,7 @@ Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__Order_POrder
 Declared in library mathcomp.reals.signed, line 339, characters 0-69
 "> _</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="Signed_def__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="Signed_def__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="Signed_def__canonical__choice_SubChoice" class="id"><span id="Signed_def__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="Signed_def__canonical__eqtype_SubEquality" class="id"><span id="Signed_def__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="Order_POrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="Order_POrder__to__Order_isDuallyPreorder" class="id"><span id="Order_POrder__to__eqtype_hasDecEq" class="id"><span id="Order_POrder__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Signed_def__canonical__Order_POrder" class="" title="Signed_def__canonical__Order_POrder :
-forall [d : disp_t] [T : porderType d],
+forall [d : Order.disp_t] [T : porderType d],
 T -> KnownSign.nullity -> KnownSign.reality -> porderType d
 
 Signed_def__canonical__Order_POrder is not universe polymorphic
@@ -776,7 +779,7 @@ Expands to: Constant
             mathcomp.reals.signed.Signed_def__canonical__Order_POrder
 Declared in library mathcomp.reals.signed, line 339, characters 0-69
 "> :</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="Signed_def__canonical__Order_POrder" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="Signed_def__canonical__Order_Preorder" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="Signed_def__canonical__choice_SubChoice" class="id"><span id="Signed_def__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="Signed_def__canonical__eqtype_SubEquality" class="id"><span id="Signed_def__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="Order_POrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="Order_POrder__to__Order_isDuallyPreorder" class="id"><span id="Order_POrder__to__eqtype_hasDecEq" class="id"><span id="Order_POrder__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Signed_def__canonical__Order_POrder" class="" title="Signed_def__canonical__Order_POrder :
-forall [d : disp_t] [T : porderType d],
+forall [d : Order.disp_t] [T : porderType d],
 T -> KnownSign.nullity -> KnownSign.reality -> porderType d
 
 Signed_def__canonical__Order_POrder is not universe polymorphic
@@ -790,7 +793,8 @@ Declared in library mathcomp.reals.signed, line 339, characters 0-69
 <span class="vernacular">End</span><span class="id"> POrder</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="top_typ_subproof" class="id"><a name="top_typ_subproof" class="" title="top_typ_subproof :
-forall [d : disp_t] [T : porderType d] (x0 x : T), Signed.spec x0 ?=0 >?<0 x
+forall [d : Order.disp_t] [T : porderType d] (x0 x : T),
+Signed.spec x0 ?=0 >?<0 x
 
 top_typ_subproof is not universe polymorphic
 Arguments top_typ_subproof [d T] x0 x
@@ -804,7 +808,8 @@ Declared in library mathcomp.reals.signed, line 342, characters 6-22
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="top_typ" class="id"><a name="top_typ" class="" title="top_typ : forall [d : disp_t] [T : porderType d], T -> Signed.typ d ?=0 >?<0
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="top_typ" class="id"><a name="top_typ" class="" title="top_typ :
+forall [d : Order.disp_t] [T : porderType d], T -> Signed.typ d ?=0 >?<0
 
 top_typ is not universe polymorphic
 Arguments top_typ [d T] x0
@@ -874,7 +879,7 @@ Declared in library mathcomp.reals.signed, line 360, characters 10-24
 ">real_field_typ</a></span> (<span id="R:98" class="id"><a name="R:98" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.RealField.Exports.realFieldType">realFieldType</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#Typ">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#Typ">Typ</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.reals.signed.html#real_field_typ_subproof">real_field_typ_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#R:98">R</a></span>).<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="nat_typ_subproof" class="id"><a name="nat_typ_subproof" class="" title="nat_typ_subproof : forall x : nat, Signed.spec 0 ?=0 >=0 x
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="nat_typ_subproof" class="id"><a name="nat_typ_subproof" class="" title="nat_typ_subproof : forall x : nat, Signed.spec 0%N ?=0 >=0 x
 
 nat_typ_subproof is not universe polymorphic
 Arguments nat_typ_subproof x%_nat_scope
@@ -887,7 +892,7 @@ Declared in library mathcomp.reals.signed, line 363, characters 6-22
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="nat_typ" class="id"><a name="nat_typ" class="" title="nat_typ : Signed.typ NatOrder.nat_display ?=0 >=0
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="nat_typ" class="id"><a name="nat_typ" class="" title="nat_typ : Signed.typ Order.NatOrder.nat_display ?=0 >=0
 
 nat_typ is not universe polymorphic
 nat_typ is transparent
@@ -896,8 +901,9 @@ Declared in library mathcomp.reals.signed, line 366, characters 10-17
 ">nat_typ</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Typ">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#Typ">Typ</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nat_typ_subproof">nat_typ_subproof</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="typ_snum_subproof" class="id"><a name="typ_snum_subproof" class="" title="typ_snum_subproof :
-forall [d : disp_t] [nz : KnownSign.nullity] [cond : KnownSign.reality]
-  [xt : Signed.typ d nz cond] (x : Signed.sort xt),
+forall [d : Order.disp_t] [nz : KnownSign.nullity] 
+  [cond : KnownSign.reality] [xt : Signed.typ d nz cond] 
+  (x : Signed.sort xt),
 Signed.spec (Signed.sort_x0 xt) nz cond x
 
 typ_snum_subproof is not universe polymorphic
@@ -920,8 +926,8 @@ Declared in library mathcomp.reals.signed, line 368, characters 6-23
    registered head symbol) is found, a canonical instance of
    Signed.typ, like the ones above, will be looked for. </div>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="typ_snum" class="id"><a name="typ_snum" class="" title="typ_snum :
-forall [d : disp_t] [nz : KnownSign.nullity] [cond : KnownSign.reality]
-  [xt : Signed.typ d nz cond],
+forall [d : Order.disp_t] [nz : KnownSign.nullity] 
+  [cond : KnownSign.reality] [xt : Signed.typ d nz cond],
 Signed.sort xt -> {compare Signed.sort_x0 xt & nz & cond}
 
 typ_snum is not universe polymorphic
@@ -968,8 +974,9 @@ Declared in library mathcomp.reals.signed, line 378, characters 10-18
 <span class="vernacular">Implicit</span><span class="gallina-kwd"> Type</span><span class="id"> x</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#sT">sT</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="signed_intro" class="id"><a name="signed_intro" class="" title="signed_intro :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} {x : {compare x0 & nz & cond}},
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  {x : {compare x0 & nz & cond}},
 x%:num%R = x%:num%R
 
 signed_intro is not universe polymorphic
@@ -985,8 +992,8 @@ Declared in library mathcomp.reals.signed, line 418, characters 6-18
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bottom" class="id"><a name="bottom" class="" title="bottom :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality},
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality},
 {compare x0 & nz & cond} -> unify_nz !=0 nz -> unify_r =0 cond -> False
 
 bottom is not universe polymorphic
@@ -1003,8 +1010,9 @@ Declared in library mathcomp.reals.signed, line 420, characters 6-12
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="gt0" class="id"><a name="gt0" class="" title="gt0 :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond}),
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}),
 unify_nz !=0 nz -> unify_r >=0 cond -> ((x0 : T) < (x%:num%R : T))%O
 
 gt0 is not universe polymorphic
@@ -1022,8 +1030,9 @@ Declared in library mathcomp.reals.signed, line 425, characters 6-9
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="le0F" class="id"><a name="le0F" class="" title="le0F :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond}),
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}),
 unify_nz !=0 nz -> unify_r >=0 cond -> ((x%:num%R : T) <= (x0 : T))%O = false
 
 le0F is not universe polymorphic
@@ -1039,8 +1048,9 @@ Declared in library mathcomp.reals.signed, line 431, characters 6-10
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> ?</span><span class="id"> ?;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.lt_geF">lt_geF</a></span><span class="id">//;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#gt0">gt0</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lt0" class="id"><a name="lt0" class="" title="lt0 :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond}),
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}),
 unify_nz !=0 nz -> unify_r <=0 cond -> ((x%:num%R : T) < (x0 : T))%O
 
 lt0 is not universe polymorphic
@@ -1059,8 +1069,9 @@ Declared in library mathcomp.reals.signed, line 434, characters 6-9
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ge0F" class="id"><a name="ge0F" class="" title="ge0F :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond}),
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}),
 unify_nz !=0 nz -> unify_r <=0 cond -> ((x0 : T) <= (x%:num%R : T))%O = false
 
 ge0F is not universe polymorphic
@@ -1076,8 +1087,9 @@ Declared in library mathcomp.reals.signed, line 441, characters 6-10
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> ?</span><span class="id"> ?;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.lt_geF">lt_geF</a></span><span class="id">//;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#lt0">lt0</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ge0" class="id"><a name="ge0" class="" title="ge0 :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond}),
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}),
 unify_r >=0 cond -> ((x0 : T) <= (x%:num%R : T))%O
 
 ge0 is not universe polymorphic
@@ -1093,8 +1105,9 @@ Declared in library mathcomp.reals.signed, line 444, characters 6-9
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lt0F" class="id"><a name="lt0F" class="" title="lt0F :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond}),
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}),
 unify_r >=0 cond -> ((x%:num%R : T) < (x0 : T))%O = false
 
 lt0F is not universe polymorphic
@@ -1110,8 +1123,9 @@ Declared in library mathcomp.reals.signed, line 449, characters 6-10
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> ?;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.le_gtF">le_gtF</a></span><span class="id">//;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#ge0">ge0</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="le0" class="id"><a name="le0" class="" title="le0 :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond}),
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}),
 unify_r <=0 cond -> ((x%:num%R : T) <= (x0 : T))%O
 
 le0 is not universe polymorphic
@@ -1127,8 +1141,9 @@ Declared in library mathcomp.reals.signed, line 452, characters 6-9
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="gt0F" class="id"><a name="gt0F" class="" title="gt0F :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond}),
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}),
 unify_r <=0 cond -> ((x0 : T) < (x%:num%R : T))%O = false
 
 gt0F is not universe polymorphic
@@ -1144,8 +1159,9 @@ Declared in library mathcomp.reals.signed, line 457, characters 6-10
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> ?;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.le_gtF">le_gtF</a></span><span class="id">//;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#le0">le0</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cmp0" class="id"><a name="cmp0" class="" title="cmp0 :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond}),
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}),
 unify_r >=<0 cond -> (x0 >=< x%:num%R)%O
 
 cmp0 is not universe polymorphic
@@ -1165,8 +1181,9 @@ Declared in library mathcomp.reals.signed, line 460, characters 6-10
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="neq0" class="id"><a name="neq0" class="" title="neq0 :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond}),
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}),
 unify_nz !=0 nz -> x%:num%R != x0 :> T
 
 neq0 is not universe polymorphic
@@ -1182,8 +1199,9 @@ Declared in library mathcomp.reals.signed, line 468, characters 6-10
 <span class="gallina-kwd"> by</span><span class="id"> case:</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> [x</span><span class="id"> /=</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#andP">andP</a></span><span class="id">[]];</span><span class="id"> move:</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Theory.cond">cond</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Theory.nz">nz</a></span><span class="id"> =&gt;</span><span class="id"> [[[]|]|]</span><span class="id"> []</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eq0F" class="id"><a name="eq0F" class="" title="eq0F :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond}),
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}),
 unify_nz !=0 nz -> (x%:num%R == x0 :> T) = false
 
 eq0F is not universe polymorphic
@@ -1199,8 +1217,9 @@ Declared in library mathcomp.reals.signed, line 471, characters 6-10
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> /</span><span class="id"><a href="mathcomp.reals.signed.html#neq0">neq0</a></span><span class="id">-/</span>(_<span class="id"> x</span>)<span class="id">/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#negPf">negPf</a></span><span class="id">-&gt;</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eq0" class="id"><a name="eq0" class="" title="eq0 :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond}),
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}),
 unify_r =0 cond -> x%:num%R = x0
 
 eq0 is not universe polymorphic
@@ -1216,9 +1235,10 @@ Declared in library mathcomp.reals.signed, line 474, characters 6-9
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="widen_signed_subproof" class="id"><a name="widen_signed_subproof" class="" title="widen_signed_subproof :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond})
-  [nz' : KnownSign.nullity] [cond' : KnownSign.reality],
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}) [nz' : KnownSign.nullity]
+  [cond' : KnownSign.reality],
 unify_nz nz' nz -> unify_r cond' cond -> Signed.spec x0 nz' cond' x%:num%R
 
 widen_signed_subproof is not universe polymorphic
@@ -1240,8 +1260,8 @@ Declared in library mathcomp.reals.signed, line 479, characters 6-27
 Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="widen_signed" class="id"><a name="widen_signed" class="" title="widen_signed :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality},
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality},
 {compare x0 & nz & cond} ->
 forall {nz' : KnownSign.nullity} {cond' : KnownSign.reality},
 unify_nz nz' nz -> unify_r cond' cond -> {compare x0 & nz' & cond'}
@@ -1258,9 +1278,10 @@ Declared in library mathcomp.reals.signed, line 488, characters 11-23
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#widen_signed_subproof">widen_signed_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:150">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#unz:153">unz</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#ucond:154">ucond</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="widen_signedE" class="id"><a name="widen_signedE" class="" title="widen_signedE :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond})
-  {unz : unify_nz nz nz} {ucond : unify_r cond cond},
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}) {unz : unify_nz nz nz}
+  {ucond : unify_r cond cond},
 widen_signed x = x
 
 widen_signedE is not universe polymorphic
@@ -1277,9 +1298,10 @@ Declared in library mathcomp.reals.signed, line 492, characters 6-19
 <span class="id"> exact/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#val_inj">val_inj</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="posE" class="id"><a name="posE" class="" title="posE :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond})
-  {unz : unify_nz !=0 nz} {ucond : unify_r >=0 cond},
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}) {unz : unify_nz !=0 nz}
+  {ucond : unify_r >=0 cond},
 ((x%:num)%:pos)%:num%R = x%:num%R
 
 posE is not universe polymorphic
@@ -1296,9 +1318,10 @@ Declared in library mathcomp.reals.signed, line 496, characters 6-10
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nngE" class="id"><a name="nngE" class="" title="nngE :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} (x : {compare x0 & nz & cond})
-  {unz : unify_nz ?=0 nz} {ucond : unify_r >=0 cond},
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality}
+  (x : {compare x0 & nz & cond}) {unz : unify_nz ?=0 nz}
+  {ucond : unify_r >=0 cond},
 ((x%:num)%:nng)%:num%R = x%:num%R
 
 nngE is not universe polymorphic
@@ -1477,12 +1500,12 @@ Declared in library mathcomp.reals.signed, line 574, characters 11-29
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#min_reality_subdef">min_reality_subdef</a></span><span class="id"> /</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="min_snum_subproof" class="id"><a name="min_snum_subproof" class="" title="min_snum_subproof :
-forall {disp : disp_t} {T : porderType disp} {x0 : T}
-  [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality]
+forall {disp : Order.disp_t} {T : porderType disp} 
+  {x0 : T} [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality]
   (x : {compare x0 & xnz & xr}) (y : {compare x0 & ynz & yr}),
 let rnz := min_nonzero_subdef xnz ynz xr yr in
 let rrl := min_reality_subdef xnz ynz xr yr in
-Signed.spec x0 rnz rrl (Def.min x%:num%R y%:num%R)
+Signed.spec x0 rnz rrl (Order.Def.min x%:num%R y%:num%R)
 
 min_snum_subproof is not universe polymorphic
 Arguments min_snum_subproof {disp T x0} [xnz ynz]%_snum_nullity_scope
@@ -1525,8 +1548,8 @@ Declared in library mathcomp.reals.signed, line 587, characters 6-23
 Qed.</div></details>
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="min_snum" class="id"><a name="min_snum" class="" title="min_snum :
-forall {disp : disp_t} {T : porderType disp} {x0 : T}
-  [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality],
+forall {disp : Order.disp_t} {T : porderType disp} 
+  {x0 : T} [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality],
 {compare x0 & xnz & xr} ->
 {compare x0 & ynz & yr} ->
 {compare x0 & min_nonzero_subdef xnz ynz xr yr & min_reality_subdef xnz ynz
@@ -1585,12 +1608,12 @@ Declared in library mathcomp.reals.signed, line 630, characters 11-29
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#max_reality_subdef">max_reality_subdef</a></span><span class="id"> /</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="max_snum_subproof" class="id"><a name="max_snum_subproof" class="" title="max_snum_subproof :
-forall {disp : disp_t} {T : porderType disp} {x0 : T}
-  [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality]
+forall {disp : Order.disp_t} {T : porderType disp} 
+  {x0 : T} [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality]
   (x : {compare x0 & xnz & xr}) (y : {compare x0 & ynz & yr}),
 let rnz := max_nonzero_subdef xnz ynz xr yr in
 let rrl := max_reality_subdef xnz ynz xr yr in
-Signed.spec x0 rnz rrl (Def.max x%:num%R y%:num%R)
+Signed.spec x0 rnz rrl (Order.Def.max x%:num%R y%:num%R)
 
 max_snum_subproof is not universe polymorphic
 Arguments max_snum_subproof {disp T x0} [xnz ynz]%_snum_nullity_scope
@@ -1633,8 +1656,8 @@ Declared in library mathcomp.reals.signed, line 643, characters 6-23
 Qed.</div></details>
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="max_snum" class="id"><a name="max_snum" class="" title="max_snum :
-forall {disp : disp_t} {T : porderType disp} {x0 : T}
-  [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality],
+forall {disp : Order.disp_t} {T : porderType disp} 
+  {x0 : T} [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality],
 {compare x0 & xnz & xr} ->
 {compare x0 & ynz & yr} ->
 {compare x0 & max_nonzero_subdef xnz ynz xr yr & max_reality_subdef xnz ynz
@@ -1976,7 +1999,7 @@ Declared in library mathcomp.reals.signed, line 795, characters 10-18
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="natmul_snum_subproof" class="id"><a name="natmul_snum_subproof" class="" title="natmul_snum_subproof :
 forall {R : numDomainType} [xnz nnz : KnownSign.nullity]
   [xr nr : KnownSign.reality] (x : {num R & xnz & xr}%R)
-  (n : {compare 0 & nnz & nr}),
+  (n : {compare 0%N & nnz & nr}),
 let rnz := mul_nonzero_subdef xnz nnz xr nr in
 let rrl := mul_reality_subdef xnz nnz xr nr in
 (KnownSign.nullity_bool rnz ==> ((x%:num *+ n%:num)%R != 0%R)) &&
@@ -2012,7 +2035,7 @@ Qed.</div></details>
 forall {R : numDomainType} [xnz nnz : KnownSign.nullity]
   [xr nr : KnownSign.reality],
 {num R & xnz & xr}%R ->
-{compare 0 & nnz & nr} ->
+{compare 0%N & nnz & nr} ->
 {compare 0%R & mul_nonzero_subdef xnz nnz xr nr & 
 mul_reality_subdef xnz nnz xr nr}
 
@@ -2158,7 +2181,7 @@ Declared in library mathcomp.reals.signed, line 854, characters 11-31
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="exprn_snum_subproof" class="id"><a name="exprn_snum_subproof" class="" title="exprn_snum_subproof :
 forall {R : numDomainType} [xnz nnz : KnownSign.nullity]
   [xr nr : KnownSign.reality] (x : {num R & xnz & xr}%R)
-  (n : {compare 0 & nnz & nr}),
+  (n : {compare 0%N & nnz & nr}),
 let rnz := exprn_nonzero_subdef xnz nnz xr nr in
 let rrl := exprn_reality_subdef xnz nnz xr nr in
 (KnownSign.nullity_bool rnz ==> ((x%:num ^+ n%:num)%R != 0%R)) &&
@@ -2194,7 +2217,7 @@ Qed.</div></details>
 forall {R : numDomainType} [xnz nnz : KnownSign.nullity]
   [xr nr : KnownSign.reality],
 {num R & xnz & xr}%R ->
-{compare 0 & nnz & nr} ->
+{compare 0%N & nnz & nr} ->
 {compare 0%R & exprn_nonzero_subdef xnz nnz xr nr & 
 exprn_reality_subdef xnz nnz xr nr}
 
@@ -2354,7 +2377,7 @@ Declared in library mathcomp.reals.signed, line 933, characters 10-20
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> nat_scope</span>.<br/>
 <span class="vernacular">Implicit</span><span class="gallina-kwd"> Type</span> (<span class="id">n</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>).<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="zeron_snum_subproof" class="id"><a name="zeron_snum_subproof" class="" title="zeron_snum_subproof : Signed.spec 0 ?=0 =0 0
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="zeron_snum_subproof" class="id"><a name="zeron_snum_subproof" class="" title="zeron_snum_subproof : Signed.spec 0%N ?=0 =0 0%N
 
 zeron_snum_subproof is not universe polymorphic
 zeron_snum_subproof is opaque
@@ -2366,7 +2389,7 @@ Declared in library mathcomp.reals.signed, line 942, characters 6-25
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="zeron_snum" class="id"><a name="zeron_snum" class="" title="zeron_snum : {compare 0 & ?=0 & =0}
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="zeron_snum" class="id"><a name="zeron_snum" class="" title="zeron_snum : {compare 0%N & ?=0 & =0}
 
 zeron_snum is not universe polymorphic
 zeron_snum is transparent
@@ -2374,7 +2397,7 @@ Expands to: Constant mathcomp.reals.signed.zeron_snum
 Declared in library mathcomp.reals.signed, line 945, characters 10-20
 ">zeron_snum</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#zeron_snum_subproof">zeron_snum_subproof</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="succn_snum_subproof" class="id"><a name="succn_snum_subproof" class="" title="succn_snum_subproof : forall n : nat, Signed.spec 0 !=0 >=0 n.+1
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="succn_snum_subproof" class="id"><a name="succn_snum_subproof" class="" title="succn_snum_subproof : forall n : nat, Signed.spec 0%N !=0 >=0 n.+1
 
 succn_snum_subproof is not universe polymorphic
 Arguments succn_snum_subproof n%_nat_scope
@@ -2387,7 +2410,7 @@ Declared in library mathcomp.reals.signed, line 947, characters 6-25
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="succn_snum" class="id"><a name="succn_snum" class="" title="succn_snum : nat -> {compare 0 & !=0 & >=0}
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="succn_snum" class="id"><a name="succn_snum" class="" title="succn_snum : nat -> {compare 0%N & !=0 & >=0}
 
 succn_snum is not universe polymorphic
 Arguments succn_snum n%_nat_scope
@@ -2398,8 +2421,8 @@ Declared in library mathcomp.reals.signed, line 950, characters 10-20
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="double_snum_subproof" class="id"><a name="double_snum_subproof" class="" title="double_snum_subproof :
 forall [nz : KnownSign.nullity] [r : KnownSign.reality]
-  (x : {compare 0 & nz & r}),
-Signed.spec 0 nz r x%:num%R.*2
+  (x : {compare 0%N & nz & r}),
+Signed.spec 0%N nz r x%:num%R.*2
 
 double_snum_subproof is not universe polymorphic
 Arguments double_snum_subproof [nz]%_snum_nullity_scope 
@@ -2416,7 +2439,7 @@ Declared in library mathcomp.reals.signed, line 952, characters 6-26
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="double_snum" class="id"><a name="double_snum" class="" title="double_snum :
 forall [nz : KnownSign.nullity] [r : KnownSign.reality],
-{compare 0 & nz & r} -> {compare 0 & nz & r}
+{compare 0%N & nz & r} -> {compare 0%N & nz & r}
 
 double_snum is not universe polymorphic
 Arguments double_snum [nz]%_snum_nullity_scope [r]%_snum_sign_scope x
@@ -2428,10 +2451,10 @@ Declared in library mathcomp.reals.signed, line 956, characters 10-21
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="addn_snum_subproof" class="id"><a name="addn_snum_subproof" class="" title="addn_snum_subproof :
 forall [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality]
-  (x : {compare 0 & xnz & xr}) (y : {compare 0 & ynz & yr}),
+  (x : {compare 0%N & xnz & xr}) (y : {compare 0%N & ynz & yr}),
 let rnz := add_nonzero_subdef xnz ynz xr yr in
 let rrl := add_reality_subdef xnz ynz xr yr in
-Signed.spec 0 rnz rrl (x%:num%R + y%:num%R)
+Signed.spec 0%N rnz rrl (x%:num%R + y%:num%R)%N
 
 addn_snum_subproof is not universe polymorphic
 Arguments addn_snum_subproof [xnz ynz]%_snum_nullity_scope
@@ -2453,10 +2476,10 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="addn_snum" class="id"><a name="addn_snum" class="" title="addn_snum :
 forall [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality],
-{compare 0 & xnz & xr} ->
-{compare 0 & ynz & yr} ->
-{compare 0 & add_nonzero_subdef xnz ynz xr yr & add_reality_subdef xnz ynz xr
-                                                 yr}
+{compare 0%N & xnz & xr} ->
+{compare 0%N & ynz & yr} ->
+{compare 0%N & add_nonzero_subdef xnz ynz xr yr & 
+add_reality_subdef xnz ynz xr yr}
 
 addn_snum is not universe polymorphic
 Arguments addn_snum [xnz ynz]%_snum_nullity_scope 
@@ -2470,10 +2493,10 @@ Declared in library mathcomp.reals.signed, line 969, characters 10-19
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="muln_snum_subproof" class="id"><a name="muln_snum_subproof" class="" title="muln_snum_subproof :
 forall [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality]
-  (x : {compare 0 & xnz & xr}) (y : {compare 0 & ynz & yr}),
+  (x : {compare 0%N & xnz & xr}) (y : {compare 0%N & ynz & yr}),
 let rnz := mul_nonzero_subdef xnz ynz xr yr in
 let rrl := mul_reality_subdef xnz ynz xr yr in
-Signed.spec 0 rnz rrl (x%:num%R * y%:num%R)
+Signed.spec 0%N rnz rrl (x%:num%R * y%:num%R)%N
 
 muln_snum_subproof is not universe polymorphic
 Arguments muln_snum_subproof [xnz ynz]%_snum_nullity_scope
@@ -2496,10 +2519,10 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="muln_snum" class="id"><a name="muln_snum" class="" title="muln_snum :
 forall [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality],
-{compare 0 & xnz & xr} ->
-{compare 0 & ynz & yr} ->
-{compare 0 & mul_nonzero_subdef xnz ynz xr yr & mul_reality_subdef xnz ynz xr
-                                                 yr}
+{compare 0%N & xnz & xr} ->
+{compare 0%N & ynz & yr} ->
+{compare 0%N & mul_nonzero_subdef xnz ynz xr yr & 
+mul_reality_subdef xnz ynz xr yr}
 
 muln_snum is not universe polymorphic
 Arguments muln_snum [xnz ynz]%_snum_nullity_scope 
@@ -2513,10 +2536,10 @@ Declared in library mathcomp.reals.signed, line 984, characters 10-19
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expn_snum_subproof" class="id"><a name="expn_snum_subproof" class="" title="expn_snum_subproof :
 forall [xnz nnz : KnownSign.nullity] [xr nr : KnownSign.reality]
-  (x : {compare 0 & xnz & xr}) (n : {compare 0 & nnz & nr}),
+  (x : {compare 0%N & xnz & xr}) (n : {compare 0%N & nnz & nr}),
 let rnz := exprn_nonzero_subdef xnz nnz xr nr in
 let rrl := exprn_reality_subdef xnz nnz xr nr in
-Signed.spec 0 rnz rrl (x%:num%R ^ n%:num%R)
+Signed.spec 0%N rnz rrl (x%:num%R ^ n%:num%R)%N
 
 expn_snum_subproof is not universe polymorphic
 Arguments expn_snum_subproof [xnz nnz]%_snum_nullity_scope
@@ -2542,9 +2565,9 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="expn_snum" class="id"><a name="expn_snum" class="" title="expn_snum :
 forall [xnz nnz : KnownSign.nullity] [xr nr : KnownSign.reality],
-{compare 0 & xnz & xr} ->
-{compare 0 & nnz & nr} ->
-{compare 0 & exprn_nonzero_subdef xnz nnz xr nr & 
+{compare 0%N & xnz & xr} ->
+{compare 0%N & nnz & nr} ->
+{compare 0%N & exprn_nonzero_subdef xnz nnz xr nr & 
 exprn_reality_subdef xnz nnz xr nr}
 
 expn_snum is not universe polymorphic
@@ -2559,10 +2582,10 @@ Declared in library mathcomp.reals.signed, line 1002, characters 10-19
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="minn_snum_subproof" class="id"><a name="minn_snum_subproof" class="" title="minn_snum_subproof :
 forall [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality]
-  (x : {compare 0 & xnz & xr}) (y : {compare 0 & ynz & yr}),
+  (x : {compare 0%N & xnz & xr}) (y : {compare 0%N & ynz & yr}),
 let rnz := min_nonzero_subdef xnz ynz xr yr in
 let rrl := min_reality_subdef xnz ynz xr yr in
-Signed.spec 0 rnz rrl (Nat.min x%:num%R y%:num%R)
+Signed.spec 0%N rnz rrl (Init.Nat.min x%:num%R y%:num%R)
 
 minn_snum_subproof is not universe polymorphic
 Arguments minn_snum_subproof [xnz ynz]%_snum_nullity_scope
@@ -2584,10 +2607,10 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="minn_snum" class="id"><a name="minn_snum" class="" title="minn_snum :
 forall [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality],
-{compare 0 & xnz & xr} ->
-{compare 0 & ynz & yr} ->
-{compare 0 & min_nonzero_subdef xnz ynz xr yr & min_reality_subdef xnz ynz xr
-                                                 yr}
+{compare 0%N & xnz & xr} ->
+{compare 0%N & ynz & yr} ->
+{compare 0%N & min_nonzero_subdef xnz ynz xr yr & 
+min_reality_subdef xnz ynz xr yr}
 
 minn_snum is not universe polymorphic
 Arguments minn_snum [xnz ynz]%_snum_nullity_scope 
@@ -2601,10 +2624,10 @@ Declared in library mathcomp.reals.signed, line 1016, characters 10-19
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="maxn_snum_subproof" class="id"><a name="maxn_snum_subproof" class="" title="maxn_snum_subproof :
 forall [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality]
-  (x : {compare 0 & xnz & xr}) (y : {compare 0 & ynz & yr}),
+  (x : {compare 0%N & xnz & xr}) (y : {compare 0%N & ynz & yr}),
 let rnz := max_nonzero_subdef xnz ynz xr yr in
 let rrl := max_reality_subdef xnz ynz xr yr in
-Signed.spec 0 rnz rrl (maxn x%:num%R y%:num%R)
+Signed.spec 0%N rnz rrl (maxn x%:num%R y%:num%R)
 
 maxn_snum_subproof is not universe polymorphic
 Arguments maxn_snum_subproof [xnz ynz]%_snum_nullity_scope
@@ -2627,10 +2650,10 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="maxn_snum" class="id"><a name="maxn_snum" class="" title="maxn_snum :
 forall [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality],
-{compare 0 & xnz & xr} ->
-{compare 0 & ynz & yr} ->
-{compare 0 & max_nonzero_subdef xnz ynz xr yr & max_reality_subdef xnz ynz xr
-                                                 yr}
+{compare 0%N & xnz & xr} ->
+{compare 0%N & ynz & yr} ->
+{compare 0%N & max_nonzero_subdef xnz ynz xr yr & 
+max_reality_subdef xnz ynz xr yr}
 
 maxn_snum is not universe polymorphic
 Arguments maxn_snum [xnz ynz]%_snum_nullity_scope 
@@ -2648,7 +2671,7 @@ Declared in library mathcomp.reals.signed, line 1031, characters 10-19
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Posz_snum_subproof" class="id"><a name="Posz_snum_subproof" class="" title="Posz_snum_subproof :
 forall [xnz : KnownSign.nullity] [xr : KnownSign.reality]
-  (x : {compare 0 & xnz & xr}),
+  (x : {compare 0%N & xnz & xr}),
 Signed.spec 0%Z xnz xr x%:num%R
 
 Posz_snum_subproof is not universe polymorphic
@@ -2668,7 +2691,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Posz_snum" class="id"><a name="Posz_snum" class="" title="Posz_snum :
 forall [xnz : KnownSign.nullity] [xr : KnownSign.reality],
-{compare 0 & xnz & xr} -> {compare 0%Z & xnz & xr}
+{compare 0%N & xnz & xr} -> {compare 0%Z & xnz & xr}
 
 Posz_snum is not universe polymorphic
 Arguments Posz_snum [xnz]%_snum_nullity_scope [xr]%_snum_sign_scope x
@@ -2735,8 +2758,8 @@ Declared in library mathcomp.reals.signed, line 1063, characters 6-13
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="num" class="id"><a name="num" class="">num</a></span><span class="id"> :=</span> (<span class="id">@</span><span class="id"><a href="mathcomp.reals.signed.html#num">num</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Morph.x0">x0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Morph.nz">nz</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Morph.cond">cond</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="num_eq" class="id"><a name="num_eq" class="" title="num_eq :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality},
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality},
 {mono num : x y / x == y >-> x == y}
 
 num_eq is not universe polymorphic
@@ -2751,9 +2774,9 @@ Declared in library mathcomp.reals.signed, line 1075, characters 6-12
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="num_le" class="id"><a name="num_le" class="" title="num_le :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality},
-increasing_fun num
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality},
+{mono num : x y / (x <= y)%O >-> (x <= y)%O}
 
 num_le is not universe polymorphic
 Arguments num_le {d T x0} {nz}%_snum_nullity_scope 
@@ -2767,8 +2790,8 @@ Declared in library mathcomp.reals.signed, line 1076, characters 6-12
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="num_lt" class="id"><a name="num_lt" class="" title="num_lt :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality},
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality},
 {mono num : x y / (x < y)%O >-> (x < y)%O}
 
 num_lt is not universe polymorphic
@@ -2783,9 +2806,9 @@ Declared in library mathcomp.reals.signed, line 1077, characters 6-12
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="num_min" class="id"><a name="num_min" class="" title="num_min :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality},
-{morph num : x y / Def.min x y >-> Def.min x y}
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality},
+{morph num : x y / Order.Def.min x y >-> Order.Def.min x y}
 
 num_min is not universe polymorphic
 Arguments num_min {d T x0} {nz}%_snum_nullity_scope 
@@ -2799,9 +2822,9 @@ Declared in library mathcomp.reals.signed, line 1078, characters 6-13
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> y;</span><span class="id"> rewrite</span><span class="id"> !</span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.minEle">minEle</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#num_le">num_le</a></span><span class="id"> -</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#fun_if">fun_if</a></span>. Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="num_max" class="id"><a name="num_max" class="" title="num_max :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality},
-{morph num : x y / Def.max x y >-> Def.max x y}
+forall {d : Order.disp_t} {T : porderType d} {x0 : T}
+  {nz : KnownSign.nullity} {cond : KnownSign.reality},
+{morph num : x y / Order.Def.max x y >-> Order.Def.max x y}
 
 num_max is not universe polymorphic
 Arguments num_max {d T x0} {nz}%_snum_nullity_scope 
@@ -3119,7 +3142,8 @@ Declared in library mathcomp.reals.signed, line 1171, characters 6-13
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="onem_PosNum" class="id"><a name="onem_PosNum" class="" title="onem_PosNum :
 forall [R : numDomainType] [r : R] (r1 : (r < 1)%R),
-r.~%R = (PosNum (R:=R) (x:=r.~) (onem_gt0 (R:=R) (r:=r) r1))%:num%R
+unstable.onem r =
+(PosNum (R:=R) (x:=unstable.onem r) (unstable.onem_gt0 (R:=R) (r:=r) r1))%:num%R
 
 onem_PosNum is not universe polymorphic
 Arguments onem_PosNum [R] [r]%_ring_scope r1
@@ -3135,8 +3159,9 @@ Declared in library mathcomp.reals.signed, line 1208, characters 6-17
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="onemX_NngNum" class="id"><a name="onemX_NngNum" class="" title="onemX_NngNum :
 forall [R : numDomainType] [r : R] (r1 : (r <= 1)%R) 
   (r0 : (0 <= r)%R) (n : nat),
-(r ^+ n).~%R =
-(NngNum (R:=R) (x:=(r ^+ n).~) (onemX_ge0 (R:=R) (r:=r) n r0 r1))%:num%R
+unstable.onem (r ^+ n) =
+(NngNum (R:=R) (x:=unstable.onem (r ^+ n))
+   (unstable.onemX_ge0 (R:=R) (r:=r) n r0 r1))%:num%R
 
 onemX_NngNum is not universe polymorphic
 Arguments onemX_NngNum [R] [r]%_ring_scope r1 r0 n%_nat_scope
@@ -3152,7 +3177,7 @@ Declared in library mathcomp.reals.signed, line 1211, characters 6-18
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="onem_nonneg_proof" class="id"><a name="onem_nonneg_proof" class="" title="onem_nonneg_proof :
 forall [R : numDomainType] [p : {nonneg R}%R],
-(p%:num <= 1)%R -> (0 <= (p%:num).~)%R
+(p%:num <= 1)%R -> (0 <= unstable.onem p%:num)%R
 
 onem_nonneg_proof is not universe polymorphic
 Arguments onem_nonneg_proof [R p] _

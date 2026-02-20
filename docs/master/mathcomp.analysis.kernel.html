@@ -1880,7 +1880,7 @@ Declared in library mathcomp.analysis.kernel, line 459, characters 0-97
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sprob_kernelP" class="id"><a name="sprob_kernelP" class="" title="sprob_kernelP :
 forall [d d' : measure_display] [X : measurableType d]
   [Y : measurableType d'] [R : realType] (k : X -> set Y -> \bar R),
-(ereal_sup (R:=R) [set k x [set: Y]%classic | x in [set: X]] <= 1)%E <->
+(ereal.ereal_sup (R:=R) [set k x [set: Y]%classic | x in [set: X]] <= 1)%E <->
 (forall x : X, (k x [set: Y]%classic <= 1)%E)
 
 sprob_kernelP is not universe polymorphic
@@ -2696,7 +2696,12 @@ forall {d d' : measure_display} {X : measurableType d}
   (l : X -> measure Y R) (k_ : {nnsfun X * Y >-> R} ^nat),
 {homo ((fun x : nat => k_ x) : (X * Y -> R) ^nat) : n m / 
 n <= m >-> (n <= m)%O} ->
-(forall z : X * Y, ((k_ n z)%:E @[n --> \oo] --> k z)%classic) ->
+(forall z : X * Y,
+ filter.cvg_to
+   (filter.nbhs
+      (filter.fmap (fun n : nat => (k_ n z)%:E)
+         (filter.nbhs filter.eventually)))
+   (filter.nbhs (k z))) ->
 (forall (n : nat) (r : R),
  measurable_fun (T:=X)
    (U:=constructive_ereal_extended__canonical__measurable_structure_SigmaRing
@@ -4612,7 +4617,12 @@ forall [d d' : measure_display] [X : measurableType d]
 {homo ((fun x : nat => k_ x) : (Y -> R) ^nat) : n m / 
 n <= m >-> (n <= m)%O} ->
 (forall z : Y,
- [set: Y]%classic z -> ((k_ n z)%:E @[n --> \oo] --> k z)%classic) ->
+ [set: Y]%classic z ->
+ filter.cvg_to
+   (filter.nbhs
+      (filter.fmap (fun n : nat => (k_ n z)%:E)
+         (filter.nbhs filter.eventually)))
+   (filter.nbhs (k z))) ->
 forall [l : X -> measure Y R],
 (forall (n : nat) (r : R),
  measurable_fun (T:=X)
@@ -4633,7 +4643,12 @@ forall [d d' : measure_display] [X : measurableType d]
 {homo ((fun x : nat => k_ x) : (Y -> R) ^nat) : n m / 
 n <= m >-> (n <= m)%O} ->
 (forall z : Y,
- [set: Y]%classic z -> ((k_ n z)%:E @[n --> \oo] --> k z)%classic) ->
+ [set: Y]%classic z ->
+ filter.cvg_to
+   (filter.nbhs
+      (filter.fmap (fun n : nat => (k_ n z)%:E)
+         (filter.nbhs filter.eventually)))
+   (filter.nbhs (k z))) ->
 forall [l : X -> measure Y R],
 (forall (n : nat) (r : R),
  measurable_fun (T:=X)
@@ -5339,7 +5354,7 @@ trivIset
 ((d1, d2).-prod).-measurable%classic (\bigcup_n F n) ->
 forall
   [t : set constructive_ereal_extended__canonical__Algebra_BaseAddUMagma],
-nbhs (kproduct (T0:=T0) (T1:=T1) (T2:=T2) k1 k2 x (\bigcup_n F n)) t ->
+filter.nbhs (kproduct (T0:=T0) (T1:=T1) (T2:=T2) k1 k2 x (\bigcup_n F n)) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i

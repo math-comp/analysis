@@ -389,16 +389,25 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 93
 <span class="vernacular">Variables</span> (<span id="at_left_right_topologicalType.R" class="id"><a name="at_left_right_topologicalType.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.NumField.Exports.numFieldType">numFieldType</a></span>) (<span id="at_left_right_topologicalType.V" class="id"><a name="at_left_right_topologicalType.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span>) (<span id="at_left_right_topologicalType.f" class="id"><a name="at_left_right_topologicalType.f" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#R:10">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#V:12">V</a></span>) (<span id="at_left_right_topologicalType.x" class="id"><a name="at_left_right_topologicalType.x" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#R:10">R</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_at_right_filter" class="id"><a name="cvg_at_right_filter" class="" title="cvg_at_right_filter :
-forall [R : numFieldType] [V : topologicalType] [f : R -> V] [x : R] [l : V],
-(f z @[z --> x] --> l)%classic -> (f z @[z --> x^'+] --> l)%classic
+forall [R : numFieldType] [V : topology_structure.Topological.type]
+  [f : R -> topology_structure.Topological.sort V] 
+  [x : R] [l : topology_structure.Topological.sort V],
+filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs x)))
+  (filter.nbhs l) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (x^'+)%classic)))
+  (filter.nbhs l)
 
 cvg_at_right_filter is not universe polymorphic
 Expanded type for implicit arguments
 cvg_at_right_filter :
-forall [R : numFieldType] [V : topologicalType] [f : R -> V] [x : R] [l : V],
-(f z @[z --> x] --> l)%classic ->
-forall [t : set V],
-nbhs l t ->
+forall [R : numFieldType] [V : topology_structure.Topological.type]
+  [f : R -> topology_structure.Topological.sort V] 
+  [x : R] [l : topology_structure.Topological.sort V],
+filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs x)))
+  (filter.nbhs l) ->
+forall [t : set (topology_structure.Topological.sort V)],
+filter.nbhs l t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i
@@ -420,16 +429,25 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 10
 <span class="id"> exact:</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#cvg_within_filter">cvg_within_filter</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span> (<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#at_left_right_topologicalType.x">x</a></span>)). Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_at_left_filter" class="id"><a name="cvg_at_left_filter" class="" title="cvg_at_left_filter :
-forall [R : numFieldType] [V : topologicalType] [f : R -> V] [x : R] [l : V],
-(f z @[z --> x] --> l)%classic -> (f z @[z --> x^'-] --> l)%classic
+forall [R : numFieldType] [V : topology_structure.Topological.type]
+  [f : R -> topology_structure.Topological.sort V] 
+  [x : R] [l : topology_structure.Topological.sort V],
+filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs x)))
+  (filter.nbhs l) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (x^'-)%classic)))
+  (filter.nbhs l)
 
 cvg_at_left_filter is not universe polymorphic
 Expanded type for implicit arguments
 cvg_at_left_filter :
-forall [R : numFieldType] [V : topologicalType] [f : R -> V] [x : R] [l : V],
-(f z @[z --> x] --> l)%classic ->
-forall [t : set V],
-nbhs l t ->
+forall [R : numFieldType] [V : topology_structure.Topological.type]
+  [f : R -> topology_structure.Topological.sort V] 
+  [x : R] [l : topology_structure.Topological.sort V],
+filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs x)))
+  (filter.nbhs l) ->
+forall [t : set (topology_structure.Topological.sort V)],
+filter.nbhs l t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i
@@ -451,17 +469,30 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 10
 <span class="id"> exact:</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#cvg_within_filter">cvg_within_filter</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span> (<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#at_left_right_topologicalType.x">x</a></span>)). Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_at_right_within" class="id"><a name="cvg_at_right_within" class="" title="cvg_at_right_within :
-forall [R : numFieldType] [V : topologicalType] [f : R -> V] [x : R],
-(f x0 @[x0 --> x^'+] --> f x)%classic ->
-(f x0 @[x0 --> within (fun u : R => (x <= u)%R) (nbhs x)] --> f x)%classic
+forall [R : numFieldType] [V : topology_structure.Topological.type]
+  [f : R -> topology_structure.Topological.sort V] 
+  [x : R],
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (x^'+)%classic)))
+  (filter.nbhs (f x)) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [eta f]
+        (filter.nbhs
+           (filter.within (fun u : R => (x <= u)%R) (filter.nbhs x)))))
+  (filter.nbhs (f x))
 
 cvg_at_right_within is not universe polymorphic
 Expanded type for implicit arguments
 cvg_at_right_within :
-forall [R : numFieldType] [V : topologicalType] [f : R -> V] [x : R],
-(f x0 @[x0 --> x^'+] --> f x)%classic ->
-forall [t : set V],
-nbhs (f x) t ->
+forall [R : numFieldType] [V : topology_structure.Topological.type]
+  [f : R -> topology_structure.Topological.sort V] 
+  [x : R],
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (x^'+)%classic)))
+  (filter.nbhs (f x)) ->
+forall [t : set (topology_structure.Topological.sort V)],
+filter.nbhs (f x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i
@@ -485,17 +516,30 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_at_left_within" class="id"><a name="cvg_at_left_within" class="" title="cvg_at_left_within :
-forall [R : numFieldType] [V : topologicalType] [f : R -> V] [x : R],
-(f x0 @[x0 --> x^'-] --> f x)%classic ->
-(f x0 @[x0 --> within (fun u : R => (u <= x)%R) (nbhs x)] --> f x)%classic
+forall [R : numFieldType] [V : topology_structure.Topological.type]
+  [f : R -> topology_structure.Topological.sort V] 
+  [x : R],
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (x^'-)%classic)))
+  (filter.nbhs (f x)) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [eta f]
+        (filter.nbhs
+           (filter.within (fun u : R => (u <= x)%R) (filter.nbhs x)))))
+  (filter.nbhs (f x))
 
 cvg_at_left_within is not universe polymorphic
 Expanded type for implicit arguments
 cvg_at_left_within :
-forall [R : numFieldType] [V : topologicalType] [f : R -> V] [x : R],
-(f x0 @[x0 --> x^'-] --> f x)%classic ->
-forall [t : set V],
-nbhs (f x) t ->
+forall [R : numFieldType] [V : topology_structure.Topological.type]
+  [f : R -> topology_structure.Topological.sort V] 
+  [x : R],
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (x^'-)%classic)))
+  (filter.nbhs (f x)) ->
+forall [t : set (topology_structure.Topological.sort V)],
+filter.nbhs (f x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i
@@ -586,16 +630,16 @@ forall [R : numDomainType] [T : Type]
      local_mixin_Algebra_BaseAddMagma_isAddMagma
      local_mixin_Algebra_AddMagma_isAddSemigroup
      local_mixin_Num_Zmodule_isSemiNormed]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ T]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ T T]
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ T]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ T T]
   [local_mixin_uniform_structure_Nbhs_isUniform_mixin : 
    Nbhs_isUniform_mixin.axioms_ T local_mixin_choice_hasChoice
      local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
      local_mixin_filter_isFiltered]
   [local_mixin_topology_structure_Nbhs_isTopological : 
-   Nbhs_isTopological.axioms_ T local_mixin_choice_hasChoice
-     local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
-     local_mixin_filter_isFiltered]
+   topology_structure.Nbhs_isTopological.axioms_ T
+     local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+     local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   [local_mixin_pseudometric_structure_Uniform_isPseudoMetric : 
    Uniform_isPseudoMetric.axioms_ R T local_mixin_choice_hasChoice
      local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
@@ -743,16 +787,16 @@ forall [R : numDomainType] [T : Type]
      local_mixin_Algebra_BaseAddMagma_isAddMagma
      local_mixin_Algebra_AddMagma_isAddSemigroup
      local_mixin_Num_Zmodule_isSemiNormed]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ T]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ T T]
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ T]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ T T]
   [local_mixin_uniform_structure_Nbhs_isUniform_mixin : 
    Nbhs_isUniform_mixin.axioms_ T local_mixin_choice_hasChoice
      local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
      local_mixin_filter_isFiltered]
   [local_mixin_topology_structure_Nbhs_isTopological : 
-   Nbhs_isTopological.axioms_ T local_mixin_choice_hasChoice
-     local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
-     local_mixin_filter_isFiltered]
+   topology_structure.Nbhs_isTopological.axioms_ T
+     local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+     local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   [local_mixin_pseudometric_structure_Uniform_isPseudoMetric : 
    Uniform_isPseudoMetric.axioms_ R T local_mixin_choice_hasChoice
      local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
@@ -900,16 +944,16 @@ forall [R : numDomainType] [T : Type]
      local_mixin_Algebra_BaseAddMagma_isAddMagma
      local_mixin_Algebra_AddMagma_isAddSemigroup
      local_mixin_Num_Zmodule_isSemiNormed]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ T]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ T T]
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ T]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ T T]
   [local_mixin_uniform_structure_Nbhs_isUniform_mixin : 
    Nbhs_isUniform_mixin.axioms_ T local_mixin_choice_hasChoice
      local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
      local_mixin_filter_isFiltered]
   [local_mixin_topology_structure_Nbhs_isTopological : 
-   Nbhs_isTopological.axioms_ T local_mixin_choice_hasChoice
-     local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
-     local_mixin_filter_isFiltered]
+   topology_structure.Nbhs_isTopological.axioms_ T
+     local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+     local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   [local_mixin_pseudometric_structure_Uniform_isPseudoMetric : 
    Uniform_isPseudoMetric.axioms_ R T local_mixin_choice_hasChoice
      local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
@@ -1057,16 +1101,16 @@ forall [R : numDomainType] [T : Type]
      local_mixin_Algebra_BaseAddMagma_isAddMagma
      local_mixin_Algebra_AddMagma_isAddSemigroup
      local_mixin_Num_Zmodule_isSemiNormed]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ T]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ T T]
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ T]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ T T]
   [local_mixin_uniform_structure_Nbhs_isUniform_mixin : 
    Nbhs_isUniform_mixin.axioms_ T local_mixin_choice_hasChoice
      local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
      local_mixin_filter_isFiltered]
   [local_mixin_topology_structure_Nbhs_isTopological : 
-   Nbhs_isTopological.axioms_ T local_mixin_choice_hasChoice
-     local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
-     local_mixin_filter_isFiltered]
+   topology_structure.Nbhs_isTopological.axioms_ T
+     local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+     local_mixin_filter_selfFiltered local_mixin_filter_isFiltered]
   [local_mixin_pseudometric_structure_Uniform_isPseudoMetric : 
    Uniform_isPseudoMetric.axioms_ R T local_mixin_choice_hasChoice
      local_mixin_eqtype_hasDecEq local_mixin_filter_selfFiltered
@@ -1206,7 +1250,7 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 16
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_nbhs_norm" class="id"><a name="nbhs_nbhs_norm" class="" title="nbhs_nbhs_norm :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K},
-nbhs_ball_ (ball_ normr) = nbhs
+nbhs_ball_ (ball_ normr) = filter.nbhs
 
 nbhs_nbhs_norm is not universe polymorphic
 Arguments nbhs_nbhs_norm {K V}
@@ -1222,9 +1266,10 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 17
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#ball_normE">ball_normE</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#funeqE">funeqE</a></span><span class="id"> =&gt;</span><span class="id"> x;</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#filter_from_ballE">filter_from_ballE</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_normP" class="id"><a name="nbhs_normP" class="" title="nbhs_normP :
-forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
-  (x : V) (P : V -> Prop),
-(\near x, P x) <-> nbhs_ball_ (ball_ normr) x P
+forall {K : numDomainType} {V : pseudoMetricNormedZmodType K}
+  (x : filter.Filtered.sort V) (P : V -> Prop),
+filter.prop_near1 x (P:=P) (inPhantom (forall x0 : V, P x0)) <->
+nbhs_ball_ (ball_ normr) x P
 
 nbhs_normP is not universe polymorphic
 Arguments nbhs_normP {K V} x P%_function_scope
@@ -1241,7 +1286,7 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 17
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_le_nbhs_norm" class="id"><a name="nbhs_le_nbhs_norm" class="" title="nbhs_le_nbhs_norm :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} [x : V],
-(nbhs x `=>` nbhs_ball_ (ball_ normr) x)%classic
+filter.cvg_to (filter.nbhs x) (nbhs_ball_ (ball_ normr) x)
 
 nbhs_le_nbhs_norm is not universe polymorphic
 Expanded type for implicit arguments
@@ -1272,14 +1317,14 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 17
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_norm_le_nbhs" class="id"><a name="nbhs_norm_le_nbhs" class="" title="nbhs_norm_le_nbhs :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} [x : V],
-(nbhs_ball_ (ball_ normr) x `=>` nbhs x)%classic
+filter.cvg_to (nbhs_ball_ (ball_ normr) x) (filter.nbhs x)
 
 nbhs_norm_le_nbhs is not universe polymorphic
 Expanded type for implicit arguments
 nbhs_norm_le_nbhs :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
   [x : V] [t : set V],
-nbhs x t ->
+filter.nbhs x t ->
 exists2 i : K,
   [set e | (0 < e)%R]%classic i & (ball_ normr x i `<=` t)%classic
 
@@ -1297,7 +1342,7 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 18
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="filter_from_norm_nbhs" class="id"><a name="filter_from_norm_nbhs" class="" title="filter_from_norm_nbhs :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} (x : V),
-filter_from [set x0 | (0 < x0)%R] (ball_ normr x) = nbhs x
+filter.filter_from [set x0 | (0 < x0)%R] (ball_ normr x) = filter.nbhs x
 
 filter_from_norm_nbhs is not universe polymorphic
 Arguments filter_from_norm_nbhs {K V} x%_ring_scope
@@ -1316,7 +1361,8 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 18
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_normE" class="id"><a name="nbhs_normE" class="" title="nbhs_normE :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
   (x : V) (P : V -> Prop),
-nbhs_ball_ (ball_ normr) x P = (\near x, P x)
+nbhs_ball_ (ball_ normr) x P =
+filter.prop_near1 x (P:=P) (inPhantom (forall x0 : V, P x0))
 
 nbhs_normE is not universe polymorphic
 Arguments nbhs_normE {K V} x P%_function_scope
@@ -1335,7 +1381,8 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 18
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="filter_from_normE" class="id"><a name="filter_from_normE" class="" title="filter_from_normE :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
   (x : V) (P : V -> Prop),
-filter_from [set x0 | (0 < x0)%R] (ball_ normr x) P = (\near x, P x)
+filter.filter_from [set x0 | (0 < x0)%R] (ball_ normr x) P =
+filter.prop_near1 x (P:=P) (inPhantom (forall x0 : V, P x0))
 
 filter_from_normE is not universe polymorphic
 Arguments filter_from_normE {K V} x P%_function_scope
@@ -1354,7 +1401,9 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 19
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="near_nbhs_norm" class="id"><a name="near_nbhs_norm" class="" title="near_nbhs_norm :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
   (x : V) (P : V -> Prop),
-(\forall x0 \near nbhs_ball_ (ball_ normr) x, P x0) = (\near x, P x)
+filter.prop_near1 (nbhs_ball_ (ball_ normr) x) (P:=P)
+  (inPhantom (forall x0 : V, P x0)) =
+filter.prop_near1 x (P:=P) (inPhantom (forall x0 : V, P x0))
 
 near_nbhs_norm is not universe polymorphic
 Arguments near_nbhs_norm {K V} x P%_function_scope
@@ -1392,7 +1441,7 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 20
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_ball_norm" class="id"><a name="nbhs_ball_norm" class="" title="nbhs_ball_norm :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
   (x : V) (eps : {posnum K}%R),
-nbhs x (ball_ normr x eps%:num)
+filter.nbhs x (ball_ normr x eps%:num)
 
 nbhs_ball_norm is not universe polymorphic
 Arguments nbhs_ball_norm {K V} x eps
@@ -1473,14 +1522,16 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 21
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="fcvgrPdist_lt" class="id"><a name="fcvgrPdist_lt" class="" title="fcvgrPdist_lt :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K}
-  {F : set_system V},
-Filter F ->
+  {F : filter.set_system V},
+filter.Filter F ->
 forall y : V,
-(F --> y)%classic <->
+filter.cvg_to (filter.nbhs F) (filter.nbhs y) <->
 (forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F, (`|y - F| < eps)%R)
+ (0 < eps)%R ->
+ filter.prop_near1 F (P:=fun y' : V => (`|y - y'| < eps)%R)
+   (inPhantom (forall y' : V, (`|y - y'| < eps)%R)))
 
 fcvgrPdist_lt is not universe polymorphic
 Arguments fcvgrPdist_lt {K V F FF} y
@@ -1498,14 +1549,16 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 21
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgrPdist_lt" class="id"><a name="cvgrPdist_lt" class="" title="cvgrPdist_lt :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall (f : T -> V) (y : V),
-(f x @[x --> F] --> y)%classic <->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) <->
 (forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F, (`|y - f F| < eps)%R)
+ (0 < eps)%R ->
+ filter.prop_near1 F (P:=fun t : T => (`|y - f t| < eps)%R)
+   (inPhantom (forall t : T, (`|y - f t| < eps)%R)))
 
 cvgrPdist_lt is not universe polymorphic
 Arguments cvgrPdist_lt {K V} {T}%_type_scope {F FF} f%_function_scope y
@@ -1523,14 +1576,16 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 22
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgrPdistC_lt" class="id"><a name="cvgrPdistC_lt" class="" title="cvgrPdistC_lt :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall (f : T -> V) (y : V),
-(f x @[x --> F] --> y)%classic <->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) <->
 (forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F, (`|f F - y| < eps)%R)
+ (0 < eps)%R ->
+ filter.prop_near1 F (P:=fun t : T => (`|f t - y| < eps)%R)
+   (inPhantom (forall t : T, (`|f t - y| < eps)%R)))
 
 cvgrPdistC_lt is not universe polymorphic
 Arguments cvgrPdistC_lt {K V} {T}%_type_scope {F FF} f%_function_scope y
@@ -1549,14 +1604,16 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_dist_lt" class="id"><a name="cvgr_dist_lt" class="" title="cvgr_dist_lt :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall (f : T -> V) (y : V),
-(f x @[x --> F] --> y)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
 forall
   eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
           K,
-(0 < eps)%R -> \near F, (`|y - f F| < eps)%R
+(0 < eps)%R ->
+filter.prop_near1 F (P:=fun t : T => (`|y - f t| < eps)%R)
+  (inPhantom (forall t : T, (`|y - f t| < eps)%R))
 
 cvgr_dist_lt is not universe polymorphic
 Arguments cvgr_dist_lt {K V} {T}%_type_scope {F FF} 
@@ -1575,14 +1632,16 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 23
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_distC_lt" class="id"><a name="cvgr_distC_lt" class="" title="cvgr_distC_lt :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall (f : T -> V) (y : V),
-(f x @[x --> F] --> y)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
 forall
   eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
           K,
-(0 < eps)%R -> \near F, (`|f F - y| < eps)%R
+(0 < eps)%R ->
+filter.prop_near1 F (P:=fun t : T => (`|f t - y| < eps)%R)
+  (inPhantom (forall t : T, (`|f t - y| < eps)%R))
 
 cvgr_distC_lt is not universe polymorphic
 Arguments cvgr_distC_lt {K V} {T}%_type_scope {F FF} 
@@ -1601,14 +1660,16 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 23
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_dist_le" class="id"><a name="cvgr_dist_le" class="" title="cvgr_dist_le :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall (f : T -> V) (y : V),
-(f x @[x --> F] --> y)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
 forall
   eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
           K,
-(0 < eps)%R -> \near F, (`|y - f F| <= eps)%R
+(0 < eps)%R ->
+filter.prop_near1 F (P:=fun t : T => (`|y - f t| <= eps)%R)
+  (inPhantom (forall t : T, (`|y - f t| <= eps)%R))
 
 cvgr_dist_le is not universe polymorphic
 Arguments cvgr_dist_le {K V} {T}%_type_scope {F FF} 
@@ -1628,14 +1689,16 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 24
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_distC_le" class="id"><a name="cvgr_distC_le" class="" title="cvgr_distC_le :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall (f : T -> V) (y : V),
-(f x @[x --> F] --> y)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
 forall
   eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
           K,
-(0 < eps)%R -> \near F, (`|f F - y| <= eps)%R
+(0 < eps)%R ->
+filter.prop_near1 F (P:=fun t : T => (`|f t - y| <= eps)%R)
+  (inPhantom (forall t : T, (`|f t - y| <= eps)%R))
 
 cvgr_distC_le is not universe polymorphic
 Arguments cvgr_distC_le {K V} {T}%_type_scope {F FF} 
@@ -1655,8 +1718,8 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 24
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_norm0P" class="id"><a name="nbhs_norm0P" class="" title="nbhs_norm0P :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} {P : V -> Prop},
-(\forall x \near 0%R, P x) <->
-filter_from [set e | (0 < e)%R]
+filter.prop_near1 0%R (P:=P) (inPhantom (forall x : V, P x)) <->
+filter.filter_from [set e | (0 < e)%R]
   (fun
      e : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K =>
@@ -1682,14 +1745,16 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr0Pnorm_lt" class="id"><a name="cvgr0Pnorm_lt" class="" title="cvgr0Pnorm_lt :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall f : T -> V,
-(f x @[x --> F] --> 0%R)%classic <->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs 0%R) <->
 (forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F, (`|f F| < eps)%R)
+ (0 < eps)%R ->
+ filter.prop_near1 F (P:=fun t : T => (`|f t| < eps)%R)
+   (inPhantom (forall t : T, (`|f t| < eps)%R)))
 
 cvgr0Pnorm_lt is not universe polymorphic
 Arguments cvgr0Pnorm_lt {K V} {T}%_type_scope {F FF} f%_function_scope
@@ -1708,14 +1773,16 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr0_norm_lt" class="id"><a name="cvgr0_norm_lt" class="" title="cvgr0_norm_lt :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall f : T -> V,
-(f x @[x --> F] --> 0%R)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs 0%R) ->
 forall
   eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
           K,
-(0 < eps)%R -> \near F, (`|f F| < eps)%R
+(0 < eps)%R ->
+filter.prop_near1 F (P:=fun t : T => (`|f t| < eps)%R)
+  (inPhantom (forall t : T, (`|f t| < eps)%R))
 
 cvgr0_norm_lt is not universe polymorphic
 Arguments cvgr0_norm_lt {K V} {T}%_type_scope {F FF} 
@@ -1734,14 +1801,16 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 26
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr0_norm_le" class="id"><a name="cvgr0_norm_le" class="" title="cvgr0_norm_le :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall f : T -> V,
-(f x @[x --> F] --> 0%R)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs 0%R) ->
 forall
   eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
           K,
-(0 < eps)%R -> \near F, (`|f F| <= eps)%R
+(0 < eps)%R ->
+filter.prop_near1 F (P:=fun t : T => (`|f t| <= eps)%R)
+  (inPhantom (forall t : T, (`|f t| <= eps)%R))
 
 cvgr0_norm_le is not universe polymorphic
 Arguments cvgr0_norm_le {K V} {T}%_type_scope {F FF} 
@@ -1760,15 +1829,20 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 27
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs0_lt" class="id"><a name="nbhs0_lt" class="" title="nbhs0_lt :
-forall [R : realFieldType] [x : R],
-(0 < x)%R -> \forall r \near nbhs (0%R : R), (r < x)%R
+forall {K : numDomainType} {V : pseudoMetricNormedZmodType K}
+  [e : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
+         K],
+(0 < e)%R ->
+filter.prop_near1 (0%R : V) (P:=fun x : V => (`|x| < e)%R)
+  (inPhantom (forall x : V, (`|x| < e)%R))
 
 nbhs0_lt is not universe polymorphic
-Arguments nbhs0_lt [R] [x]%_ring_scope _
+Arguments nbhs0_lt {K V} [e] _
 nbhs0_lt is opaque
-Expands to: Constant mathcomp.analysis.topology_theory.num_topology.nbhs0_lt
+Expands to: Constant
+            mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.nbhs0_lt
 Declared in
-library mathcomp.analysis.topology_theory.num_topology, line 369, characters 6-14
+library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 277, characters 6-14
 ">nbhs0_lt</a></span><span class="id"> </span><span id="e:161" class="id"><a name="e:161" class="">e</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#e:161">e</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#be9d045413b70f39126ce7af3de2a77f">\forall</a></span><span class="id"><a href="mathcomp.classical.filter.html#be9d045413b70f39126ce7af3de2a77f"> </a></span><span id="x:162" class="id"><a name="x:162" class="">x</a></span><span class="id"><a href="mathcomp.classical.filter.html#be9d045413b70f39126ce7af3de2a77f"> \near</a></span> (<span class="id">0</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#pseudoMetricNormedZmod_numDomainType.V">V</a></span>)<span class="id"><a href="mathcomp.classical.filter.html#be9d045413b70f39126ce7af3de2a77f">,</a></span><span class="id"><a href="mathcomp.classical.filter.html#be9d045413b70f39126ce7af3de2a77f"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#x:162">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#e:161">e</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -1779,7 +1853,9 @@ library mathcomp.analysis.topology_theory.num_topology, line 369, characters 6-1
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K}
   [e : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
          K],
-(0 < e)%R -> \forall x \near (0%R : V)^'%classic, (`|x| < e)%R
+(0 < e)%R ->
+filter.prop_near1 (topology_structure.dnbhs (0%R : V))
+  (P:=fun x : V => (`|x| < e)%R) (inPhantom (forall x : V, (`|x| < e)%R))
 
 dnbhs0_lt is not universe polymorphic
 Arguments dnbhs0_lt {K V} [e] _
@@ -1798,7 +1874,9 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 28
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K}
   [e : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
          K],
-(0 < e)%R -> \forall x \near 0%R : V, (`|x| <= e)%R
+(0 < e)%R ->
+filter.prop_near1 (0%R : V) (P:=fun x : V => (`|x| <= e)%R)
+  (inPhantom (forall x : V, (`|x| <= e)%R))
 
 nbhs0_le is not universe polymorphic
 Arguments nbhs0_le {K V} [e] _
@@ -1817,7 +1895,9 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 28
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K}
   [e : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
          K],
-(0 < e)%R -> \forall x \near (0%R : V)^'%classic, (`|x| <= e)%R
+(0 < e)%R ->
+filter.prop_near1 (topology_structure.dnbhs (0%R : V))
+  (P:=fun x : V => (`|x| <= e)%R) (inPhantom (forall x : V, (`|x| <= e)%R))
 
 dnbhs0_le is not universe polymorphic
 Arguments dnbhs0_le {K V} [e] _
@@ -1853,7 +1933,9 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 28
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhsDl" class="id"><a name="nbhsDl" class="" title="nbhsDl :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
   (P : set V) (x y : V),
-(\forall z \near (x + y)%E, P z) <-> (\near x, P (x + y)%E)
+filter.prop_near1 (x + y)%R (P:=P) (inPhantom (forall z : V, P z)) <->
+filter.prop_near1 x (P:=fun x0 : V => P (x0 + y)%R)
+  (inPhantom (forall x0 : V, P (x0 + y)%R))
 
 nbhsDl is not universe polymorphic
 Arguments nbhsDl {K V} P%_classical_set_scope x y
@@ -1875,7 +1957,9 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhsDr" class="id"><a name="nbhsDr" class="" title="nbhsDr :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
   (P : set V) (x y : V),
-(\forall z \near (x + y)%E, P z) <-> (\near y, P (x + y)%E)
+filter.prop_near1 (x + y)%R (P:=P) (inPhantom (forall z : V, P z)) <->
+filter.prop_near1 y (P:=fun y0 : V => P (x + y0)%R)
+  (inPhantom (forall y0 : V, P (x + y0)%R))
 
 nbhsDr is not universe polymorphic
 Arguments nbhsDr {K V} P%_classical_set_scope (x y)%_ring_scope
@@ -1894,9 +1978,12 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 30
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs0P" class="id"><a name="nbhs0P" class="" title="nbhs0P :
 forall {K : numDomainType} {V : pseudoMetricNormedZmodType K} 
   (P : set V)
-  (x : join_tvs_NbhsNmodule_between_Algebra_BaseAddMagma_and_filter_Filtered
-         V),
-(\near x, P x) <-> (\forall e \near 0%R, P (x + e)%E)
+  (x : filter.Filtered.sort
+         (join_tvs_NbhsNmodule_between_Algebra_BaseAddMagma_and_filter_Filtered
+            V)),
+filter.prop_near1 x (P:=P) (inPhantom (forall x0 : V, P x0)) <->
+filter.prop_near1 0%R (P:=fun e : V => P (x + e)%R)
+  (inPhantom (forall e : V, P (x + e)%R))
 
 nbhs0P is not universe polymorphic
 Arguments nbhs0P {K V} P%_classical_set_scope x
@@ -1969,8 +2056,9 @@ hausdorff_space V
 norm_hausdorff is not universe polymorphic
 Expanded type for implicit arguments
 norm_hausdorff :
-forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] [p q : V],
-cluster (nbhs p) q -> p = q
+forall [R : numFieldType] [V : pseudoMetricNormedZmodType R]
+  [p q : topology_structure.Topological.sort V],
+cluster (filter.nbhs p) q -> p = q
 
 Arguments norm_hausdorff [R V p q] _
 norm_hausdorff is opaque
@@ -2029,17 +2117,19 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 36
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="norm_cvg_unique" class="id"><a name="norm_cvg_unique" class="" title="norm_cvg_unique :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R]
-  {F : set_system V},
-ProperFilter F -> is_subset1 [set x | (F --> x)%classic]
+  {F : filter.set_system V},
+filter.ProperFilter F ->
+is_subset1 [set x | filter.cvg_to (filter.nbhs F) (filter.nbhs x)]
 
 norm_cvg_unique is not universe polymorphic
 Expanded type for implicit arguments
 norm_cvg_unique :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R]
-  {F : set_system V},
-ProperFilter F ->
+  {F : filter.set_system V},
+filter.ProperFilter F ->
 forall [x y : V],
-[set x0 | F --> x0]%classic x -> [set x0 | F --> x0]%classic y -> x = y
+[set x0 | filter.cvg_to (filter.nbhs F) (filter.nbhs x0)]%classic x ->
+[set x0 | filter.cvg_to (filter.nbhs F) (filter.nbhs x0)]%classic y -> x = y
 
 Arguments norm_cvg_unique [R V] {F FF} [x y] _ _
 norm_cvg_unique is opaque
@@ -2056,7 +2146,7 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 36
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="norm_cvg_eq" class="id"><a name="norm_cvg_eq" class="" title="norm_cvg_eq :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] [x y : V],
-(x --> y)%classic -> x = y
+filter.cvg_to (filter.nbhs x) (filter.nbhs y) -> x = y
 
 norm_cvg_eq is not universe polymorphic
 Arguments norm_cvg_eq [R V x y] _
@@ -2072,7 +2162,7 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 36
 <span class="id"> exact:</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#cvg_eq">cvg_eq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#pseudoMetricNormedZmod_numFieldType.V">V</a></span>). Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="norm_lim_id" class="id"><a name="norm_lim_id" class="" title="norm_lim_id :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] (x : V),
-lim (nbhs x) = x
+filter.lim (filter.nbhs x) = x
 
 norm_lim_id is not universe polymorphic
 Arguments norm_lim_id [R V] x
@@ -2089,8 +2179,10 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 36
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="norm_cvg_lim" class="id"><a name="norm_cvg_lim" class="" title="norm_cvg_lim :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R]
-  {F : set_system V},
-ProperFilter F -> forall [l : V], (F --> l)%classic -> lim F = l
+  {F : filter.set_system V},
+filter.ProperFilter F ->
+forall [l : V],
+filter.cvg_to (filter.nbhs F) (filter.nbhs l) -> filter.lim F = l
 
 norm_cvg_lim is not universe polymorphic
 Arguments norm_cvg_lim [R V] {F FF} [l] _
@@ -2107,10 +2199,12 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 37
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="norm_lim_near_cst" class="id"><a name="norm_lim_near_cst" class="" title="norm_lim_near_cst :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
-  [U : Type] {F : set_system U},
-ProperFilter F ->
+  [U : Type] {F : filter.set_system U},
+filter.ProperFilter F ->
 forall [l : V] [f : U -> V],
-(\near F, f F = l) -> lim (f x @[x --> F])%classic = l
+filter.prop_near1 F (P:=fun x : U => f x = l)
+  (inPhantom (forall x : U, f x = l)) ->
+filter.lim (filter.fmap f (filter.nbhs F)) = l
 
 norm_lim_near_cst is not universe polymorphic
 Arguments norm_lim_near_cst [R V] [U]%_type_scope 
@@ -2129,8 +2223,9 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 37
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="norm_lim_cst" class="id"><a name="norm_lim_cst" class="" title="norm_lim_cst :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
-  [U : Type] {F : set_system U},
-ProperFilter F -> forall k : V, lim (k @[_ --> F])%classic = k
+  [U : Type] {F : filter.set_system U},
+filter.ProperFilter F ->
+forall k : V, filter.lim (filter.fmap (fun=> k) (filter.nbhs F)) = k
 
 norm_lim_cst is not universe polymorphic
 Arguments norm_lim_cst [R V] [U]%_type_scope {F FF} k
@@ -2148,22 +2243,30 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 37
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="norm_cvgi_unique" class="id"><a name="norm_cvgi_unique" class="" title="norm_cvgi_unique :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
-  {U : Type} {F : set_system U},
-ProperFilter F ->
+  {U : Type} {F : filter.set_system U},
+filter.ProperFilter F ->
 forall [f : U -> set V],
-{near F, is_fun f} -> is_subset1 [set x | (f x `@[x --> F] --> x)%classic]
+filter.prop_near1 F (P:=is_subset1 \o f) (inPhantom (is_fun f)) ->
+is_subset1
+  [set x | filter.cvg_to (filter.nbhs (filter.fmapi f (filter.nbhs F)))
+             (filter.nbhs x)]
 
 norm_cvgi_unique is not universe polymorphic
 Expanded type for implicit arguments
 norm_cvgi_unique :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
-  {U : Type} {F : set_system U},
-ProperFilter F ->
+  {U : Type} {F : filter.set_system U},
+filter.ProperFilter F ->
 forall [f : U -> set V],
-{near F, is_fun f} ->
+filter.prop_near1 F (P:=is_subset1 \o f) (inPhantom (is_fun f)) ->
 forall [x y : V],
-[set x0 | f x `@[x --> F] --> x0]%classic x ->
-[set x0 | f x `@[x --> F] --> x0]%classic y -> x = y
+[set x0 | filter.cvg_to (filter.nbhs (filter.fmapi f (filter.nbhs F)))
+            (filter.nbhs x0)]%classic
+  x ->
+[set x0 | filter.cvg_to (filter.nbhs (filter.fmapi f (filter.nbhs F)))
+            (filter.nbhs x0)]%classic
+  y ->
+x = y
 
 Arguments norm_cvgi_unique [R V] {U}%_type_scope {F FF} 
   [f]%_function_scope _ [x y] _ _
@@ -2181,11 +2284,12 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 38
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="norm_cvgi_lim" class="id"><a name="norm_cvgi_lim" class="" title="norm_cvgi_lim :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
-  {U : Type} {F : set_system U},
-ProperFilter F ->
+  {U : Type} {F : filter.set_system U},
+filter.ProperFilter F ->
 forall [f : U -> V -> Prop] [l : V],
 F (fun x : U => is_subset1 (f x)) ->
-(f x `@[x --> F] --> l)%classic -> lim (f x `@[x --> F])%classic = l
+filter.cvg_to (filter.nbhs (filter.fmapi f (filter.nbhs F))) (filter.nbhs l) ->
+filter.lim (filter.fmapi f (filter.nbhs F)) = l
 
 norm_cvgi_lim is not universe polymorphic
 Arguments norm_cvgi_lim [R V] {U}%_type_scope {F FF} 
@@ -2281,7 +2385,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="normm_lt_split" class="id"><a name="normm_lt_split" class="" title="normm_lt_split :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
   [x y : V] [e : R],
-(`|x| < e / 2)%R -> (`|y| < e / 2)%R -> (`|(x + y)%E| < e)%R
+(`|x| < e / 2)%R -> (`|y| < e / 2)%R -> (`|x + y| < e)%R
 
 normm_lt_split is not universe polymorphic
 Arguments normm_lt_split [R V x y] [e]%_ring_scope _ _
@@ -2660,7 +2764,7 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 44
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ball_itv" class="id"><a name="ball_itv" class="" title="ball_itv :
 forall {R : realFieldType} (x r : R),
-ball x r = `](x - r)%R, (x + r)%E[%classic
+ball x r = `](x - r)%R, (x + r)%R[%classic
 
 ball_itv is not universe polymorphic
 Arguments ball_itv {R} (x r)%_ring_scope
@@ -2684,17 +2788,25 @@ continuous on pseudoMetricNormedZmodType </div>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="continuity_pseudoMetricNormedZmodType.K" class="id"><a name="continuity_pseudoMetricNormedZmodType.K" class="">K</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.NumField.Exports.numFieldType">numFieldType</a></span><span class="id">}</span><span class="id"> {</span><span id="continuity_pseudoMetricNormedZmodType.V" class="id"><a name="continuity_pseudoMetricNormedZmodType.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#pseudoMetricNormedZmodType">pseudoMetricNormedZmodType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#K:260">K</a></span><span class="id">}</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="oppr_continuous" class="id"><a name="oppr_continuous" class="" title="oppr_continuous :
-forall {K : numFieldType} {V : pseudoMetricNormedZmodType K},
-continuous -%R%R
+forall {K : numFieldType} {V : pseudoMetricNormedZmodType K}
+  [x : filter.Nbhs.sort
+         (join_tvs_NbhsZmodule_between_Algebra_BaseZmodule_and_filter_Nbhs V)],
+filter.continuous_at
+  (T:=join_tvs_NbhsZmodule_between_Algebra_BaseZmodule_and_filter_Nbhs V)
+  (U:=join_tvs_NbhsZmodule_between_Algebra_BaseZmodule_and_filter_Nbhs V) x
+  -%R%R
 
 oppr_continuous is not universe polymorphic
 Expanded type for implicit arguments
 oppr_continuous :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K}
-  [x : join_tvs_NbhsZmodule_between_Algebra_BaseZmodule_and_filter_Nbhs V]
+  [x : filter.Nbhs.sort
+         (join_tvs_NbhsZmodule_between_Algebra_BaseZmodule_and_filter_Nbhs V)]
   [t : set
-         (join_tvs_NbhsZmodule_between_Algebra_BaseZmodule_and_filter_Nbhs V)],
-nbhs (- x)%R t ->
+         (filter.Nbhs.sort
+            (join_tvs_NbhsZmodule_between_Algebra_BaseZmodule_and_filter_Nbhs
+               V))],
+filter.nbhs (- x)%R t ->
 (let (nbhs) :=
    PseudoMetricNormedZmod.filter_isFiltered_mixin
      (let
@@ -2719,13 +2831,35 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 45
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="add_continuous" class="id"><a name="add_continuous" class="" title="add_continuous :
-forall {s : TopologicalNmodule.type}, continuous (fst \+ snd)%E
+forall {K : numFieldType} {V : pseudoMetricNormedZmodType K}
+  [x : filter.Nbhs.sort (filter.Datatypes_prod__canonical__filter_Nbhs V V)],
+filter.continuous_at (T:=filter.Datatypes_prod__canonical__filter_Nbhs V V)
+  (U:=join_tvs_NbhsNmodule_between_Algebra_BaseAddMagma_and_filter_Nbhs V) x
+  (fst \+ snd)%E
 
 add_continuous is not universe polymorphic
-Arguments add_continuous {s} x t _
-add_continuous is transparent
-Expands to: Constant mathcomp.analysis.tvs.add_continuous
-Declared in library mathcomp.analysis.tvs, line 88, characters 0-126
+Expanded type for implicit arguments
+add_continuous :
+forall {K : numFieldType} {V : pseudoMetricNormedZmodType K}
+  [x : filter.Nbhs.sort (filter.Datatypes_prod__canonical__filter_Nbhs V V)]
+  [t : set
+         (filter.Nbhs.sort
+            (join_tvs_NbhsNmodule_between_Algebra_BaseAddMagma_and_filter_Nbhs
+               V))],
+filter.nbhs ((fst \+ snd)%E x) t ->
+exists2 i : set (filter.Nbhs.sort V) * set (filter.Nbhs.sort V),
+  (fun P : set (filter.Nbhs.sort V) * set (filter.Nbhs.sort V) =>
+   filter.nbhs x.1 P.1 /\ filter.nbhs x.2 P.2) i &
+  ((fun P : set (filter.Nbhs.sort V) * set (filter.Nbhs.sort V) =>
+    P.1 `*` P.2) i
+   `<=` (fst \+ snd)%E @^-1` t)%classic
+
+Arguments add_continuous {K V} [x t] _
+add_continuous is opaque
+Expands to: Constant
+            mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.add_continuous
+Declared in
+library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 463, characters 6-20
 ">add_continuous</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="z:262" class="id"><a name="z:262" class="">z</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#continuity_pseudoMetricNormedZmodType.V">V</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#continuity_pseudoMetricNormedZmodType.V">V</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#z:262">z</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#z:262">z</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -2735,18 +2869,22 @@ Declared in library mathcomp.analysis.tvs, line 88, characters 0-126
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="natmul_continuous" class="id"><a name="natmul_continuous" class="" title="natmul_continuous :
-forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} [n : nat],
-continuous ((Algebra.natmul (V:=V))^~ n)
+forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
+  [n : nat] [x : filter.Nbhs.sort V],
+filter.continuous_at (T:=V)
+  (U:=join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs V) x
+  ((Algebra.natmul (V:=V))^~ n)
 
 natmul_continuous is not universe polymorphic
 Expanded type for implicit arguments
 natmul_continuous :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  [n : nat] [x : V]
+  [n : nat] [x : filter.Nbhs.sort V]
   [t : set
-         (join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
-            V)],
-nbhs (((Algebra.natmul (V:=V))^~ n) x) t ->
+         (filter.Nbhs.sort
+            (join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
+               V))],
+filter.nbhs (((Algebra.natmul (V:=V))^~ n) x) t ->
 (let (nbhs) :=
    PseudoMetricNormedZmod.filter_isFiltered_mixin
      (let
@@ -2772,16 +2910,21 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 46
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="norm_continuous" class="id"><a name="norm_continuous" class="" title="norm_continuous :
-forall {K : numFieldType} {V : pseudoMetricNormedZmodType K},
-continuous (normr : V -> K)
+forall {K : numFieldType} {V : pseudoMetricNormedZmodType K}
+  [x : filter.Nbhs.sort V],
+filter.continuous_at (T:=V)
+  (U:=numFieldTopology.NumField_sort__canonical__filter_Nbhs K) x
+  (normr : V -> K)
 
 norm_continuous is not universe polymorphic
 Expanded type for implicit arguments
 norm_continuous :
-forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  [x : V]
-  [t : set (numFieldTopology.NumField_sort__canonical__filter_Nbhs K)],
-nbhs ((normr : V -> K) x) t ->
+forall {K : numFieldType} {V : pseudoMetricNormedZmodType K}
+  [x : filter.Nbhs.sort V]
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.NumField_sort__canonical__filter_Nbhs K))],
+filter.nbhs ((normr : V -> K) x) t ->
 (let (nbhs) :=
    PseudoMetricNormedZmod.filter_isFiltered_mixin
      (let
@@ -2819,8 +2962,9 @@ hausdorff_space V
 pseudoMetricNormedZModType_hausdorff is not universe polymorphic
 Expanded type for implicit arguments
 pseudoMetricNormedZModType_hausdorff :
-forall [R : realFieldType] [V : pseudoMetricNormedZmodType R] [p q : V],
-cluster (nbhs p) q -> p = q
+forall [R : realFieldType] [V : pseudoMetricNormedZmodType R]
+  [p q : topology_structure.Topological.sort V],
+cluster (filter.nbhs p) q -> p = q
 
 Arguments pseudoMetricNormedZModType_hausdorff [R V p q] _
 pseudoMetricNormedZModType_hausdorff is opaque
@@ -2843,8 +2987,9 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 49
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_right0P" class="id"><a name="nbhs_right0P" class="" title="nbhs_right0P :
 forall [R : numFieldType] (x : R) (P : set R),
-(\forall y \near (x^'+)%classic, P y) <->
-(\forall e \near (0^'+)%classic, P (x + e)%E)
+filter.prop_near1 (x^'+)%classic (P:=P) (inPhantom (forall y : R, P y)) <->
+filter.prop_near1 (0^'+)%classic (P:=fun e : R => P (x + e)%R)
+  (inPhantom (forall e : R, P (x + e)%R))
 
 nbhs_right0P is not universe polymorphic
 Arguments nbhs_right0P [R] x%_ring_scope P%_classical_set_scope
@@ -2865,8 +3010,9 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_left0P" class="id"><a name="nbhs_left0P" class="" title="nbhs_left0P :
 forall [R : numFieldType] (x : R) (P : set R),
-(\forall y \near (x^'-)%classic, P y) <->
-(\forall e \near (0^'+)%classic, P (x - e)%R)
+filter.prop_near1 (x^'-)%classic (P:=P) (inPhantom (forall y : R, P y)) <->
+filter.prop_near1 (0^'+)%classic (P:=fun e : R => P (x - e)%R)
+  (inPhantom (forall e : R, P (x - e)%R))
 
 nbhs_left0P is not universe polymorphic
 Arguments nbhs_left0P [R] x%_ring_scope P%_classical_set_scope
@@ -2888,8 +3034,10 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 50
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_right_leftP" class="id"><a name="nbhs_right_leftP" class="" title="nbhs_right_leftP :
 forall [R : numFieldType] (p : R) (P : pred R),
-(\forall x \near ((- p)^'+)%classic, (P \o -%R%R) x) <->
-(\forall x \near (p^'-)%classic, P x)
+filter.prop_near1 ((- p)^'+)%classic (P:=fun x : R => (P \o -%R%R) x)
+  (inPhantom (forall x : R, (P \o -%R%R) x)) <->
+filter.prop_near1 (p^'-)%classic (P:=fun x : R => P x)
+  (inPhantom (forall x : R, P x))
 
 nbhs_right_leftP is not universe polymorphic
 Arguments nbhs_right_leftP [R] p%_ring_scope P
@@ -2909,7 +3057,9 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_left_gt" class="id"><a name="nbhs_left_gt" class="" title="nbhs_left_gt :
 forall [R : numFieldType] [x z : R],
-(z < x)%R -> \forall y \near (x^'-)%classic, (z < y)%R
+(z < x)%R ->
+filter.prop_near1 (x^'-)%classic (P:=fun y : R => (z < y)%R)
+  (inPhantom (forall y : R, (z < y)%R))
 
 nbhs_left_gt is not universe polymorphic
 Arguments nbhs_left_gt [R] [x z]%_ring_scope _
@@ -2928,7 +3078,9 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 52
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_left_ge" class="id"><a name="nbhs_left_ge" class="" title="nbhs_left_ge :
 forall [R : numFieldType] [x z : R],
-(z < x)%R -> \forall y \near (x^'-)%classic, (z <= y)%R
+(z < x)%R ->
+filter.prop_near1 (x^'-)%classic (P:=fun y : R => (z <= y)%R)
+  (inPhantom (forall y : R, (z <= y)%R))
 
 nbhs_left_ge is not universe polymorphic
 Arguments nbhs_left_ge [R] [x z]%_ring_scope _
@@ -2948,7 +3100,9 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 53
 forall [R : numFieldType] (x : R)
   [e : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
          R],
-(0 < e)%R -> \forall y \near (x^'-)%classic, (x - y < e)%R
+(0 < e)%R ->
+filter.prop_near1 (x^'-)%classic (P:=fun y : R => (x - y < e)%R)
+  (inPhantom (forall y : R, (x - y < e)%R))
 
 nbhs_left_ltBl is not universe polymorphic
 Arguments nbhs_left_ltBl [R] x%_ring_scope [e] _
@@ -2967,7 +3121,9 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 53
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="not_near_at_leftP" class="id"><a name="not_near_at_leftP" class="" title="not_near_at_leftP :
 forall [R : numFieldType] (p : R) (P : pred R),
-~ (\forall x \near (p^'-)%classic, P x) <->
+~
+filter.prop_near1 (p^'-)%classic (P:=fun x : R => P x)
+  (inPhantom (forall x : R, P x)) <->
 (forall e : {posnum R}%R, exists2 x : R, (p - e%:num < x < p)%R & ~ P x)
 
 not_near_at_leftP is not universe polymorphic
@@ -2999,7 +3155,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="at_rightN" class="id"><a name="at_rightN" class="" title="at_rightN :
 forall [R : numFieldType] (a : R),
-((- a)^'+)%classic = ((- x)%R @[x --> a^'-])%classic
+((- a)^'+)%classic = filter.fmap -%R%R (filter.nbhs (a^'-)%classic)
 
 at_rightN is not universe polymorphic
 Arguments at_rightN [R] a%_ring_scope
@@ -3019,7 +3175,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="at_leftN" class="id"><a name="at_leftN" class="" title="at_leftN :
 forall [R : numFieldType] (a : R),
-((- a)^'-)%classic = ((- x)%R @[x --> a^'+])%classic
+((- a)^'-)%classic = filter.fmap -%R%R (filter.nbhs (a^'+)%classic)
 
 at_leftN is not universe polymorphic
 Arguments at_leftN [R] a%_ring_scope
@@ -3040,9 +3196,14 @@ Qed.</div></details>
 <span class="vernacular">End</span><span class="id"> at_left_right</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_at_leftNP" class="id"><a name="cvg_at_leftNP" class="" title="cvg_at_leftNP :
-forall {T : topologicalType} {R : numFieldType} (f : R -> T) (a : R) (l : T),
-(f x @[x --> a^'-] --> l)%classic <->
-((f \o -%R%R) x @[x --> (- a)^'+] --> l)%classic
+forall {T : topology_structure.Topological.type} {R : numFieldType}
+  (f : R -> topology_structure.Topological.sort T) 
+  (a : R) (l : topology_structure.Topological.sort T),
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs (a^'-)%classic)))
+  (filter.nbhs l) <->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (f \o -%R%R) (filter.nbhs ((- a)^'+)%classic)))
+  (filter.nbhs l)
 
 cvg_at_leftNP is not universe polymorphic
 Arguments cvg_at_leftNP {T R} f%_function_scope a%_ring_scope l
@@ -3061,9 +3222,14 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 57
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_at_rightNP" class="id"><a name="cvg_at_rightNP" class="" title="cvg_at_rightNP :
-forall {T : topologicalType} {R : numFieldType} (f : R -> T) (a : R) (l : T),
-(f x @[x --> a^'+] --> l)%classic <->
-((f \o -%R%R) x @[x --> (- a)^'-] --> l)%classic
+forall {T : topology_structure.Topological.type} {R : numFieldType}
+  (f : R -> topology_structure.Topological.sort T) 
+  (a : R) (l : topology_structure.Topological.sort T),
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs (a^'+)%classic)))
+  (filter.nbhs l) <->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (f \o -%R%R) (filter.nbhs ((- a)^'-)%classic)))
+  (filter.nbhs l)
 
 cvg_at_rightNP is not universe polymorphic
 Arguments cvg_at_rightNP {T R} f%_function_scope a%_ring_scope l
@@ -3087,10 +3253,13 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhsr0P" class="id"><a name="nbhsr0P" class="" title="nbhsr0P :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
   (P : set V)
-  (x : join_tvs_NbhsNmodule_between_Algebra_BaseAddMagma_and_filter_Filtered
-         V),
-(\near x, P x) <->
-(\forall e \near (0^'+)%classic, forall y : V, (`|x - y| <= e)%R -> P y)
+  (x : filter.Filtered.sort
+         (join_tvs_NbhsNmodule_between_Algebra_BaseAddMagma_and_filter_Filtered
+            V)),
+filter.prop_near1 x (P:=P) (inPhantom (forall y : V, P y)) <->
+filter.prop_near1 (0^'+)%classic
+  (P:=fun e : R => forall y : V, (`|x - y| <= e)%R -> P y)
+  (inPhantom (forall (e : R) (y : V), (`|x - y| <= e)%R -> P y))
 
 nbhsr0P is not universe polymorphic
 Arguments nbhsr0P [R V] P%_classical_set_scope x
@@ -3138,14 +3307,16 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgrPdist_le" class="id"><a name="cvgrPdist_le" class="" title="cvgrPdist_le :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall (f : T -> V) (y : V),
-(f x @[x --> F] --> y)%classic <->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) <->
 (forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            R,
- (0 < eps)%R -> \near F, (`|y - f F| <= eps)%R)
+ (0 < eps)%R ->
+ filter.prop_near1 F (P:=fun t : T => (`|y - f t| <= eps)%R)
+   (inPhantom (forall t : T, (`|y - f t| <= eps)%R)))
 
 cvgrPdist_le is not universe polymorphic
 Arguments cvgrPdist_le [R V] {T}%_type_scope {F FF} f%_function_scope y
@@ -3163,11 +3334,18 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 62
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgrPdist_ltp" class="id"><a name="cvgrPdist_ltp" class="" title="cvgrPdist_ltp :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall (f : T -> V) (y : V),
-(f x @[x --> F] --> y)%classic <->
-(\forall eps \near (0^'+)%classic, \near F, (`|y - f F| < eps)%R)
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) <->
+filter.prop_near1 (0^'+)%classic
+  (P:=fun eps : R =>
+      filter.prop_near1 F (P:=fun t : T => (`|y - f t| < eps)%R)
+        (inPhantom (forall t : T, (`|y - f t| < eps)%R)))
+  (inPhantom
+     (forall eps : R,
+      filter.prop_near1 F (P:=fun t : T => (`|y - f t| < eps)%R)
+        (inPhantom (forall t : T, (`|y - f t| < eps)%R))))
 
 cvgrPdist_ltp is not universe polymorphic
 Arguments cvgrPdist_ltp [R V] {T}%_type_scope {F FF} f%_function_scope y
@@ -3185,11 +3363,18 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 62
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgrPdist_lep" class="id"><a name="cvgrPdist_lep" class="" title="cvgrPdist_lep :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall (f : T -> V) (y : V),
-(f x @[x --> F] --> y)%classic <->
-(\forall eps \near (0^'+)%classic, \near F, (`|y - f F| <= eps)%R)
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) <->
+filter.prop_near1 (0^'+)%classic
+  (P:=fun eps : R =>
+      filter.prop_near1 F (P:=fun t : T => (`|y - f t| <= eps)%R)
+        (inPhantom (forall t : T, (`|y - f t| <= eps)%R)))
+  (inPhantom
+     (forall eps : R,
+      filter.prop_near1 F (P:=fun t : T => (`|y - f t| <= eps)%R)
+        (inPhantom (forall t : T, (`|y - f t| <= eps)%R))))
 
 cvgrPdist_lep is not universe polymorphic
 Arguments cvgrPdist_lep [R V] {T}%_type_scope {F FF} f%_function_scope y
@@ -3207,14 +3392,16 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 63
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgrPdistC_le" class="id"><a name="cvgrPdistC_le" class="" title="cvgrPdistC_le :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall (f : T -> V) (y : V),
-(f x @[x --> F] --> y)%classic <->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) <->
 (forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            R,
- (0 < eps)%R -> \near F, (`|f F - y| <= eps)%R)
+ (0 < eps)%R ->
+ filter.prop_near1 F (P:=fun t : T => (`|f t - y| <= eps)%R)
+   (inPhantom (forall t : T, (`|f t - y| <= eps)%R)))
 
 cvgrPdistC_le is not universe polymorphic
 Arguments cvgrPdistC_le [R V] {T}%_type_scope {F FF} f%_function_scope y
@@ -3234,11 +3421,18 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgrPdistC_ltp" class="id"><a name="cvgrPdistC_ltp" class="" title="cvgrPdistC_ltp :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall (f : T -> V) (y : V),
-(f x @[x --> F] --> y)%classic <->
-(\forall eps \near (0^'+)%classic, \near F, (`|f F - y| < eps)%R)
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) <->
+filter.prop_near1 (0^'+)%classic
+  (P:=fun eps : R =>
+      filter.prop_near1 F (P:=fun t : T => (`|f t - y| < eps)%R)
+        (inPhantom (forall t : T, (`|f t - y| < eps)%R)))
+  (inPhantom
+     (forall eps : R,
+      filter.prop_near1 F (P:=fun t : T => (`|f t - y| < eps)%R)
+        (inPhantom (forall t : T, (`|f t - y| < eps)%R))))
 
 cvgrPdistC_ltp is not universe polymorphic
 Arguments cvgrPdistC_ltp [R V] {T}%_type_scope {F FF} f%_function_scope y
@@ -3257,11 +3451,18 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgrPdistC_lep" class="id"><a name="cvgrPdistC_lep" class="" title="cvgrPdistC_lep :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall (f : T -> V) (y : V),
-(f x @[x --> F] --> y)%classic <->
-(\forall eps \near (0^'+)%classic, \near F, (`|f F - y| <= eps)%R)
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) <->
+filter.prop_near1 (0^'+)%classic
+  (P:=fun eps : R =>
+      filter.prop_near1 F (P:=fun t : T => (`|f t - y| <= eps)%R)
+        (inPhantom (forall t : T, (`|f t - y| <= eps)%R)))
+  (inPhantom
+     (forall eps : R,
+      filter.prop_near1 F (P:=fun t : T => (`|f t - y| <= eps)%R)
+        (inPhantom (forall t : T, (`|f t - y| <= eps)%R))))
 
 cvgrPdistC_lep is not universe polymorphic
 Arguments cvgrPdistC_lep [R V] {T}%_type_scope {F FF} f%_function_scope y
@@ -3280,14 +3481,16 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr0Pnorm_le" class="id"><a name="cvgr0Pnorm_le" class="" title="cvgr0Pnorm_le :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall f : T -> V,
-(f x @[x --> F] --> 0%R)%classic <->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs 0%R) <->
 (forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            R,
- (0 < eps)%R -> \near F, (`|f F| <= eps)%R)
+ (0 < eps)%R ->
+ filter.prop_near1 F (P:=fun t : T => (`|f t| <= eps)%R)
+   (inPhantom (forall t : T, (`|f t| <= eps)%R)))
 
 cvgr0Pnorm_le is not universe polymorphic
 Arguments cvgr0Pnorm_le [R V] {T}%_type_scope {F FF} f%_function_scope
@@ -3307,11 +3510,18 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr0Pnorm_ltp" class="id"><a name="cvgr0Pnorm_ltp" class="" title="cvgr0Pnorm_ltp :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall f : T -> V,
-(f x @[x --> F] --> 0%R)%classic <->
-(\forall eps \near (0^'+)%classic, \near F, (`|f F| < eps)%R)
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs 0%R) <->
+filter.prop_near1 (0^'+)%classic
+  (P:=fun eps : R =>
+      filter.prop_near1 F (P:=fun t : T => (`|f t| < eps)%R)
+        (inPhantom (forall t : T, (`|f t| < eps)%R)))
+  (inPhantom
+     (forall eps : R,
+      filter.prop_near1 F (P:=fun t : T => (`|f t| < eps)%R)
+        (inPhantom (forall t : T, (`|f t| < eps)%R))))
 
 cvgr0Pnorm_ltp is not universe polymorphic
 Arguments cvgr0Pnorm_ltp [R V] {T}%_type_scope {F FF} f%_function_scope
@@ -3330,11 +3540,18 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr0Pnorm_lep" class="id"><a name="cvgr0Pnorm_lep" class="" title="cvgr0Pnorm_lep :
 forall [R : numFieldType] [V : pseudoMetricNormedZmodType R] 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall f : T -> V,
-(f x @[x --> F] --> 0%R)%classic <->
-(\forall eps \near (0^'+)%classic, \near F, (`|f F| <= eps)%R)
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs 0%R) <->
+filter.prop_near1 (0^'+)%classic
+  (P:=fun eps : R =>
+      filter.prop_near1 F (P:=fun t : T => (`|f t| <= eps)%R)
+        (inPhantom (forall t : T, (`|f t| <= eps)%R)))
+  (inPhantom
+     (forall eps : R,
+      filter.prop_near1 F (P:=fun t : T => (`|f t| <= eps)%R)
+        (inPhantom (forall t : T, (`|f t| <= eps)%R))))
 
 cvgr0Pnorm_lep is not universe polymorphic
 Arguments cvgr0Pnorm_lep [R V] {T}%_type_scope {F FF} f%_function_scope
@@ -3353,11 +3570,14 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_norm_lt" class="id"><a name="cvgr_norm_lt" class="" title="cvgr_norm_lt :
 forall {R : numFieldType} {V : pseudoMetricNormedZmodType R} 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall {f : T -> V} (y : V),
-(f x @[x --> F] --> y)%classic ->
-forall u : R, (`|y| < u)%R -> \near F, (`|f F| < u)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+forall u : R,
+(`|y| < u)%R ->
+filter.prop_near1 F (P:=fun t : T => (`|f t| < u)%R)
+  (inPhantom (forall t : T, (`|f t| < u)%R))
 
 cvgr_norm_lt is not universe polymorphic
 Arguments cvgr_norm_lt {R V} {T}%_type_scope {F FF} 
@@ -3381,11 +3601,14 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 67
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_norm_le" class="id"><a name="cvgr_norm_le" class="" title="cvgr_norm_le :
 forall {R : numFieldType} {V : pseudoMetricNormedZmodType R} 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall {f : T -> V} (y : V),
-(f x @[x --> F] --> y)%classic ->
-forall u : R, (`|y| < u)%R -> \near F, (`|f F| <= u)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+forall u : R,
+(`|y| < u)%R ->
+filter.prop_near1 F (P:=fun t : T => (`|f t| <= u)%R)
+  (inPhantom (forall t : T, (`|f t| <= u)%R))
 
 cvgr_norm_le is not universe polymorphic
 Arguments cvgr_norm_le {R V} {T}%_type_scope {F FF} 
@@ -3405,11 +3628,14 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 68
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_norm_gt" class="id"><a name="cvgr_norm_gt" class="" title="cvgr_norm_gt :
 forall {R : numFieldType} {V : pseudoMetricNormedZmodType R} 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall {f : T -> V} (y : V),
-(f x @[x --> F] --> y)%classic ->
-forall u : R, (u < `|y|)%R -> \near F, (u < `|f F|)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+forall u : R,
+(u < `|y|)%R ->
+filter.prop_near1 F (P:=fun t : T => (u < `|f t|)%R)
+  (inPhantom (forall t : T, (u < `|f t|)%R))
 
 cvgr_norm_gt is not universe polymorphic
 Arguments cvgr_norm_gt {R V} {T}%_type_scope {F FF} 
@@ -3434,11 +3660,14 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 68
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_norm_ge" class="id"><a name="cvgr_norm_ge" class="" title="cvgr_norm_ge :
 forall {R : numFieldType} {V : pseudoMetricNormedZmodType R} 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall {f : T -> V} (y : V),
-(f x @[x --> F] --> y)%classic ->
-forall u : R, (u < `|y|)%R -> \near F, (u <= `|f F|)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+forall u : R,
+(u < `|y|)%R ->
+filter.prop_near1 F (P:=fun t : T => (u <= `|f t|)%R)
+  (inPhantom (forall t : T, (u <= `|f t|)%R))
 
 cvgr_norm_ge is not universe polymorphic
 Arguments cvgr_norm_ge {R V} {T}%_type_scope {F FF} 
@@ -3458,10 +3687,13 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 70
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_neq0" class="id"><a name="cvgr_neq0" class="" title="cvgr_neq0 :
 forall {R : numFieldType} {V : pseudoMetricNormedZmodType R} 
-  {T : Type} {F : set_system T},
-Filter F ->
+  {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall {f : T -> V} (y : V),
-(f x @[x --> F] --> y)%classic -> y != 0%R -> \near F, f F != 0%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+y != 0%R ->
+filter.prop_near1 F (P:=fun t : T => f t != 0%R)
+  (inPhantom (forall t : T, f t != 0%R))
 
 cvgr_neq0 is not universe polymorphic
 Arguments cvgr_neq0 {R V} {T}%_type_scope {F FF} {f}%_function_scope y _ _
@@ -3515,18 +3747,22 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 70
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_comp_cvg" class="id"><a name="continuous_comp_cvg" class="" title="continuous_comp_cvg :
 forall {R : numFieldType} [U V : pseudoMetricNormedZmodType R] 
   [f : U -> V] [g : R -> U] [r : R] [l : V],
-continuous f ->
-((f \o g) x @[x --> r] --> l)%classic -> (f x @[x --> g r] --> l)%classic
+(forall x : filter.Nbhs.sort U, filter.continuous_at (T:=U) (U:=V) x f) ->
+filter.cvg_to (filter.nbhs (filter.fmap [eta f \o g] (filter.nbhs r)))
+  (filter.nbhs l) ->
+filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs (g r))))
+  (filter.nbhs l)
 
 continuous_comp_cvg is not universe polymorphic
 Expanded type for implicit arguments
 continuous_comp_cvg :
 forall {R : numFieldType} [U V : pseudoMetricNormedZmodType R] 
   [f : U -> V] [g : R -> U] [r : R] [l : V],
-continuous f ->
-((f \o g) x @[x --> r] --> l)%classic ->
+(forall x : filter.Nbhs.sort U, filter.continuous_at (T:=U) (U:=V) x f) ->
+filter.cvg_to (filter.nbhs (filter.fmap [eta f \o g] (filter.nbhs r)))
+  (filter.nbhs l) ->
 forall [t : set V],
-nbhs l t ->
+filter.nbhs l t ->
 (let (nbhs) :=
    PseudoMetricNormedZmod.filter_isFiltered_mixin
      (let
@@ -3565,7 +3801,8 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 74
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closure_gt" class="id"><a name="closure_gt" class="" title="closure_gt :
 forall [R : realFieldType] (z : R),
-closure ([set x | (z < x)%R]%classic : set R) = [set x | (z <= x)%R]%classic
+topology_structure.closure ([set x | (z < x)%R]%classic : set R) =
+[set x | (z <= x)%R]%classic
 
 closure_gt is not universe polymorphic
 Arguments closure_gt [R] z%_ring_scope
@@ -3589,7 +3826,7 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 76
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closure_lt" class="id"><a name="closure_lt" class="" title="closure_lt :
 forall [R : realFieldType] (z : R),
-closure [set x | (x < z)%R] = [set x | (x <= z)%R]%classic
+topology_structure.closure [set x | (x < z)%R] = [set x | (x <= z)%R]%classic
 
 closure_lt is not universe polymorphic
 Arguments closure_lt [R] z%_ring_scope
@@ -3619,9 +3856,11 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 77
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="open_itvoo_subset" class="id"><a name="open_itvoo_subset" class="" title="open_itvoo_subset :
 forall {R : realFieldType} [A : set R] [x : R],
-open A ->
+topology_structure.open A ->
 A x ->
-\forall r \near (0^'+)%classic, (`](x - r)%R, (x + r)%E[ `<=` A)%classic
+filter.prop_near1 (0^'+)%classic
+  (P:=fun r : R => (`](x - r)%R, (x + r)%R[ `<=` A)%classic)
+  (inPhantom (forall r : R, (`](x - r)%R, (x + r)%R[ `<=` A)%classic))
 
 open_itvoo_subset is not universe polymorphic
 Arguments open_itvoo_subset {R} [A]%_classical_set_scope [x]%_ring_scope _ _
@@ -3643,9 +3882,11 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="open_itvcc_subset" class="id"><a name="open_itvcc_subset" class="" title="open_itvcc_subset :
 forall {R : realFieldType} [A : set R] [x : R],
-open A ->
+topology_structure.open A ->
 A x ->
-\forall r \near (0^'+)%classic, (`[(x - r)%R, (x + r)%E] `<=` A)%classic
+filter.prop_near1 (0^'+)%classic
+  (P:=fun r : R => (`[(x - r)%R, (x + r)%R] `<=` A)%classic)
+  (inPhantom (forall r : R, (`[(x - r)%R, (x + r)%R] `<=` A)%classic))
 
 open_itvcc_subset is not universe polymorphic
 Arguments open_itvcc_subset {R} [A]%_classical_set_scope [x]%_ring_scope _ _
@@ -3672,7 +3913,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="dense_set1C" class="id"><a name="dense_set1C" class="" title="dense_set1C :
 forall {R : realFieldType} (r : R),
-dense
+topology_structure.dense
   (T:=numFieldTopology.RealField_sort__canonical__topology_structure_Topological
         R)
   [set~ r]
@@ -3682,13 +3923,15 @@ Expanded type for implicit arguments
 dense_set1C :
 forall {R : realFieldType} (r : R)
   [O : set
-         (numFieldTopology.RealField_sort__canonical__topology_structure_Topological
-            R)],
+         (topology_structure.Topological.sort
+            (numFieldTopology.RealField_sort__canonical__topology_structure_Topological
+               R))],
 (O !=set0)%classic ->
-open O ->
+topology_structure.open O ->
 exists
-  a : numFieldTopology.RealField_sort__canonical__topology_structure_Topological
-        R,
+  a : topology_structure.Topological.sort
+        (numFieldTopology.RealField_sort__canonical__topology_structure_Topological
+           R),
   (O `&` [set~ r])%classic a
 
 Arguments dense_set1C {R} r%_ring_scope [O] _ _
@@ -3721,11 +3964,18 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 81
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_norm_lty" class="id"><a name="cvgr_norm_lty" class="" title="cvgr_norm_lty :
 forall {R : numFieldType} {V : pseudoMetricNormedZmodType R} 
-  {I : Type} {F : set_system I},
-Filter F ->
+  {I : Type} {F : filter.set_system I},
+filter.Filter F ->
 forall (f : I -> V) (y : V),
-(f x @[x --> F] --> y)%classic ->
-\forall M \near +oo%R, \near F, (`|f F| < M)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+filter.prop_near1 +oo%R
+  (P:=fun M : R =>
+      filter.prop_near1 F (P:=fun y' : I => (`|f y'| < M)%R)
+        (inPhantom (forall y' : I, (`|f y'| < M)%R)))
+  (inPhantom
+     (forall M : R,
+      filter.prop_near1 F (P:=fun y' : I => (`|f y'| < M)%R)
+        (inPhantom (forall y' : I, (`|f y'| < M)%R))))
 
 cvgr_norm_lty is not universe polymorphic
 Arguments cvgr_norm_lty {R V} {I}%_type_scope {F FF} f%_function_scope y _
@@ -3744,11 +3994,18 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 83
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_norm_ley" class="id"><a name="cvgr_norm_ley" class="" title="cvgr_norm_ley :
 forall {R : numFieldType} {V : pseudoMetricNormedZmodType R} 
-  {I : Type} {F : set_system I},
-Filter F ->
+  {I : Type} {F : filter.set_system I},
+filter.Filter F ->
 forall (f : I -> V) (y : V),
-(f x @[x --> F] --> y)%classic ->
-\forall M \near +oo%R, \near F, (`|f F| <= M)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+filter.prop_near1 +oo%R
+  (P:=fun M : R =>
+      filter.prop_near1 F (P:=fun y' : I => (`|f y'| <= M)%R)
+        (inPhantom (forall y' : I, (`|f y'| <= M)%R)))
+  (inPhantom
+     (forall M : R,
+      filter.prop_near1 F (P:=fun y' : I => (`|f y'| <= M)%R)
+        (inPhantom (forall y' : I, (`|f y'| <= M)%R))))
 
 cvgr_norm_ley is not universe polymorphic
 Arguments cvgr_norm_ley {R V} {I}%_type_scope {F FF} f%_function_scope y _
@@ -3767,11 +4024,18 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 84
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_norm_gtNy" class="id"><a name="cvgr_norm_gtNy" class="" title="cvgr_norm_gtNy :
 forall {R : numFieldType} {V : pseudoMetricNormedZmodType R} 
-  {I : Type} {F : set_system I},
-Filter F ->
+  {I : Type} {F : filter.set_system I},
+filter.Filter F ->
 forall (f : I -> V) (y : V),
-(f x @[x --> F] --> y)%classic ->
-\forall M \near -oo%R, \near F, (M < `|f F|)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+filter.prop_near1 -oo%R
+  (P:=fun M : R =>
+      filter.prop_near1 F (P:=fun y' : I => (M < `|f y'|)%R)
+        (inPhantom (forall y' : I, (M < `|f y'|)%R)))
+  (inPhantom
+     (forall M : R,
+      filter.prop_near1 F (P:=fun y' : I => (M < `|f y'|)%R)
+        (inPhantom (forall y' : I, (M < `|f y'|)%R))))
 
 cvgr_norm_gtNy is not universe polymorphic
 Arguments cvgr_norm_gtNy {R V} {I}%_type_scope {F FF} f%_function_scope y _
@@ -3790,11 +4054,18 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 84
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_norm_geNy" class="id"><a name="cvgr_norm_geNy" class="" title="cvgr_norm_geNy :
 forall {R : numFieldType} {V : pseudoMetricNormedZmodType R} 
-  {I : Type} {F : set_system I},
-Filter F ->
+  {I : Type} {F : filter.set_system I},
+filter.Filter F ->
 forall (f : I -> V) (y : V),
-(f x @[x --> F] --> y)%classic ->
-\forall M \near -oo%R, \near F, (M <= `|f F|)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+filter.prop_near1 -oo%R
+  (P:=fun M : R =>
+      filter.prop_near1 F (P:=fun y' : I => (M <= `|f y'|)%R)
+        (inPhantom (forall y' : I, (M <= `|f y'|)%R)))
+  (inPhantom
+     (forall M : R,
+      filter.prop_near1 F (P:=fun y' : I => (M <= `|f y'|)%R)
+        (inPhantom (forall y' : I, (M <= `|f y'|)%R))))
 
 cvgr_norm_geNy is not universe polymorphic
 Arguments cvgr_norm_geNy {R V} {I}%_type_scope {F FF} f%_function_scope y _
@@ -3821,12 +4092,15 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 85
 <span class="vernacular">Variable</span> (<span id="at_left_rightR.R" class="id"><a name="at_left_rightR.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.NumField.Exports.numFieldType">numFieldType</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="real_cvgr_lt" class="id"><a name="real_cvgr_lt" class="" title="real_cvgr_lt :
-forall {R : numFieldType} {T : Type} {F : set_system T},
-Filter F ->
+forall {R : numFieldType} {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall {f : T -> R} (y : R),
 y \is Num.real ->
-(f x @[x --> F] --> y)%classic ->
-forall z : R, (y < z)%R -> \near F, f F \is Num.real -> (f F < z)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+forall z : R,
+(y < z)%R ->
+filter.prop_near1 F (P:=fun t : T => f t \is Num.real -> (f t < z)%R)
+  (inPhantom (forall t : T, f t \is Num.real -> (f t < z)%R))
 
 real_cvgr_lt is not universe polymorphic
 Arguments real_cvgr_lt {R} {T}%_type_scope {F FF} 
@@ -3848,12 +4122,15 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 86
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="real_cvgr_le" class="id"><a name="real_cvgr_le" class="" title="real_cvgr_le :
-forall {R : numFieldType} {T : Type} {F : set_system T},
-Filter F ->
+forall {R : numFieldType} {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall {f : T -> R} (y : R),
 y \is Num.real ->
-(f x @[x --> F] --> y)%classic ->
-forall z : R, (y < z)%R -> \near F, f F \is Num.real -> (f F <= z)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+forall z : R,
+(y < z)%R ->
+filter.prop_near1 F (P:=fun t : T => f t \is Num.real -> (f t <= z)%R)
+  (inPhantom (forall t : T, f t \is Num.real -> (f t <= z)%R))
 
 real_cvgr_le is not universe polymorphic
 Arguments real_cvgr_le {R} {T}%_type_scope {F FF} 
@@ -3874,12 +4151,15 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 87
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="real_cvgr_gt" class="id"><a name="real_cvgr_gt" class="" title="real_cvgr_gt :
-forall {R : numFieldType} {T : Type} {F : set_system T},
-Filter F ->
+forall {R : numFieldType} {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall {f : T -> R} (y : R),
 y \is Num.real ->
-(f x @[x --> F] --> y)%classic ->
-forall z : R, (z < y)%R -> \near F, f F \is Num.real -> (z < f F)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+forall z : R,
+(z < y)%R ->
+filter.prop_near1 F (P:=fun t : T => f t \is Num.real -> (z < f t)%R)
+  (inPhantom (forall t : T, f t \is Num.real -> (z < f t)%R))
 
 real_cvgr_gt is not universe polymorphic
 Arguments real_cvgr_gt {R} {T}%_type_scope {F FF} 
@@ -3901,12 +4181,15 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 88
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="real_cvgr_ge" class="id"><a name="real_cvgr_ge" class="" title="real_cvgr_ge :
-forall {R : numFieldType} {T : Type} {F : set_system T},
-Filter F ->
+forall {R : numFieldType} {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall {f : T -> R} (y : R),
 y \is Num.real ->
-(f x @[x --> F] --> y)%classic ->
-forall z : R, (z < y)%R -> \near F, f F \is Num.real -> (z <= f F)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+forall z : R,
+(z < y)%R ->
+filter.prop_near1 F (P:=fun t : T => f t \is Num.real -> (z <= f t)%R)
+  (inPhantom (forall t : T, f t \is Num.real -> (z <= f t)%R))
 
 real_cvgr_ge is not universe polymorphic
 Arguments real_cvgr_ge {R} {T}%_type_scope {F FF} 
@@ -3937,9 +4220,10 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="at_right_in_segment" class="id"><a name="at_right_in_segment" class="" title="at_right_in_segment :
 forall [R : realFieldType] (x : R) (P : set R),
-(\forall e \near (0^'+)%classic, {in `[x - e, (x + e)%E]%R,
-                                   forall x0 : R, P x0}) <->
-(\near x, P x)
+filter.prop_near1 (0^'+)%classic
+  (P:=fun e : R => {in `[x - e, x + e]%R, forall x0 : R, P x0})
+  (inPhantom (forall e : R, {in `[x - e, x + e]%R, forall x0 : R, P x0})) <->
+filter.prop_near1 x (P:=P) (inPhantom (forall x0 : R, P x0))
 
 at_right_in_segment is not universe polymorphic
 Arguments at_right_in_segment [R] x%_ring_scope P%_classical_set_scope
@@ -3958,11 +4242,14 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 91
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_lt" class="id"><a name="cvgr_lt" class="" title="cvgr_lt :
-forall {R : realFieldType} {T : Type} {F : set_system T},
-Filter F ->
+forall {R : realFieldType} {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall {f : T -> R} (y : R),
-(f x @[x --> F] --> y)%classic ->
-forall z : R, (y < z)%R -> \near F, (f F < z)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+forall z : R,
+(y < z)%R ->
+filter.prop_near1 F (P:=fun t : T => (f t < z)%R)
+  (inPhantom (forall t : T, (f t < z)%R))
 
 cvgr_lt is not universe polymorphic
 Arguments cvgr_lt {R} {T}%_type_scope {F FF} {f}%_function_scope
@@ -3982,11 +4269,14 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 91
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_le" class="id"><a name="cvgr_le" class="" title="cvgr_le :
-forall {R : realFieldType} {T : Type} {F : set_system T},
-Filter F ->
+forall {R : realFieldType} {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall {f : T -> R} (y : R),
-(f x @[x --> F] --> y)%classic ->
-forall z : R, (y < z)%R -> \near F, (f F <= z)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+forall z : R,
+(y < z)%R ->
+filter.prop_near1 F (P:=fun t : T => (f t <= z)%R)
+  (inPhantom (forall t : T, (f t <= z)%R))
 
 cvgr_le is not universe polymorphic
 Arguments cvgr_le {R} {T}%_type_scope {F FF} {f}%_function_scope
@@ -4005,11 +4295,14 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 92
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_gt" class="id"><a name="cvgr_gt" class="" title="cvgr_gt :
-forall {R : realFieldType} {T : Type} {F : set_system T},
-Filter F ->
+forall {R : realFieldType} {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall {f : T -> R} (y : R),
-(f x @[x --> F] --> y)%classic ->
-forall z : R, (z < y)%R -> \near F, (z < f F)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+forall z : R,
+(z < y)%R ->
+filter.prop_near1 F (P:=fun t : T => (z < f t)%R)
+  (inPhantom (forall t : T, (z < f t)%R))
 
 cvgr_gt is not universe polymorphic
 Arguments cvgr_gt {R} {T}%_type_scope {F FF} {f}%_function_scope
@@ -4029,11 +4322,14 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 93
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_ge" class="id"><a name="cvgr_ge" class="" title="cvgr_ge :
-forall {R : realFieldType} {T : Type} {F : set_system T},
-Filter F ->
+forall {R : realFieldType} {T : Type} {F : filter.set_system T},
+filter.Filter F ->
 forall {f : T -> R} (y : R),
-(f x @[x --> F] --> y)%classic ->
-forall z : R, (z < y)%R -> \near F, (z <= f F)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+forall z : R,
+(z < y)%R ->
+filter.prop_near1 F (P:=fun t : T => (z <= f t)%R)
+  (inPhantom (forall t : T, (z <= f t)%R))
 
 cvgr_ge is not universe polymorphic
 Arguments cvgr_ge {R} {T}%_type_scope {F FF} {f}%_function_scope
@@ -4058,19 +4354,20 @@ Qed.</div></details>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#cvgr_gt">cvgr_gt</a></span><span class="id"> {R</span><span class="id"> T</span><span class="id"> F</span><span class="id"> FF</span><span class="id"> f}</span>.<br/>
 <br/>
 <span class="vernacular">Module</span><span class="vernacular"> Export</span><span class="id"> </span><span id="NbhsNorm" class="id"><a name="NbhsNorm" class="">NbhsNorm</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="NbhsNorm.nbhs_simpl" class="id"><a name="NbhsNorm.nbhs_simpl" class="" title="NbhsNorm.nbhs_simpl :
-(forall (T : Type) (F : set_system T), nbhs F = F) *
-(forall (T : Type) (F : filter_on T), nbhs F = nbhs F) *
+<span class="vernacular">Definition</span><span class="id"> </span><span id="NbhsNorm.nbhs_simpl" class="id"><a name="NbhsNorm.nbhs_simpl" class="" title="nbhs_simpl :
+(forall (T : Type) (F : filter.set_system T), filter.nbhs F = F) *
+(forall (T : Type) (F : filter.filter_on T),
+ filter.nbhs F = filter.nbhs (filter.filter F)) *
 (forall (M : uniformType) (x : M),
- filter_from entourage ((xsection (T2:=M))^~ x) = nbhs x) *
-(forall M : uniformType, nbhs_ entourage = nbhs) *
+ filter.filter_from entourage ((xsection (T2:=M))^~ x) = filter.nbhs x) *
+(forall M : uniformType, nbhs_ entourage = filter.nbhs) *
 (forall (K : numDomainType) (V : pseudoMetricNormedZmodType K),
- nbhs_ball_ (ball_ normr) = nbhs) *
+ nbhs_ball_ (ball_ normr) = filter.nbhs) *
 (forall (K : numDomainType) (V : pseudoMetricNormedZmodType K) (x : V),
- filter_from [set x0 | (0 < x0)%R] (ball_ normr x) = nbhs x)
+ filter.filter_from [set x0 | (0 < x0)%R] (ball_ normr x) = filter.nbhs x)
 
-NbhsNorm.nbhs_simpl is not universe polymorphic
-NbhsNorm.nbhs_simpl is transparent
+nbhs_simpl is not universe polymorphic
+nbhs_simpl is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.NbhsNorm.nbhs_simpl
 Declared in
@@ -4130,8 +4427,17 @@ forall {R : realFieldType} {K : numDomainType}
   {U : pseudoMetricNormedZmodType K} [a b : R] (f : R -> U),
 (a < b)%R ->
 {within `[a, b], continuous f}%classic <->
-[/\ {in `]a, b[%R, continuous f}, (f x @[x --> a^'+] --> f a)%classic
-  & (f x @[x --> b^'-] --> f b)%classic]
+[/\ {in `]a, b[%R,
+      forall
+        x : filter.Nbhs.sort
+              (numFieldTopology.RealField_sort__canonical__filter_Nbhs R),
+      filter.continuous_at
+        (T:=numFieldTopology.RealField_sort__canonical__filter_Nbhs R) (U:=U)
+        x f},
+    filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs (a^'+)%classic)))
+      (filter.nbhs (f a))
+  & filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs (b^'-)%classic)))
+      (filter.nbhs (f b))]
 
 continuous_within_itvP is not universe polymorphic
 Arguments continuous_within_itvP {R K U} [a b] f%_function_scope _
@@ -4175,7 +4481,15 @@ Qed.</div></details>
 forall {R : realFieldType} {K : numDomainType}
   {U : pseudoMetricNormedZmodType K} (a : R) (f : R -> U),
 {within `[a, +oo[, continuous f}%classic <->
-{in `]a, +oo[%R, continuous f} /\ (f x @[x --> a^'+] --> f a)%classic
+{in `]a, +oo[%R,
+  forall
+    x : filter.Nbhs.sort
+          (numFieldTopology.RealField_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.RealField_sort__canonical__filter_Nbhs R) (U:=U) x f} /\
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (a^'+)%classic)))
+  (filter.nbhs (f a))
 
 continuous_within_itvcyP is not universe polymorphic
 Arguments continuous_within_itvcyP {R K U} a f%_function_scope
@@ -4212,7 +4526,15 @@ Qed.</div></details>
 forall {R : realFieldType} {K : numDomainType}
   {U : pseudoMetricNormedZmodType K} (b : R) (f : R -> U),
 {within `]-oo, b], continuous f}%classic <->
-{in `]-oo, b[%R, continuous f} /\ (f x @[x --> b^'-] --> f b)%classic
+{in `]-oo, b[%R,
+  forall
+    x : filter.Nbhs.sort
+          (numFieldTopology.RealField_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.RealField_sort__canonical__filter_Nbhs R) (U:=U) x f} /\
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta f] (filter.nbhs (b^'-)%classic)))
+  (filter.nbhs (f b))
 
 continuous_within_itvNycP is not universe polymorphic
 Arguments continuous_within_itvNycP {R K U} b f%_function_scope
@@ -4253,7 +4575,14 @@ forall {R : realFieldType} {K : numDomainType}
   [x : R],
 (a < b)%R ->
 {within `[a, b], continuous f}%classic ->
-x \in `]a, b[%R -> {for x, continuous f}
+x \in `]a, b[%R ->
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.RealField_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.RealField_sort__canonical__filter_Nbhs R) (U:=U) x0
+    f}
 
 within_continuous_continuous is not universe polymorphic
 Expanded type for implicit arguments
@@ -4264,8 +4593,8 @@ forall {R : realFieldType} {K : numDomainType}
 (a < b)%R ->
 {within `[a, b], continuous f}%classic ->
 x \in `]a, b[%R ->
-forall [t : set U],
-nbhs (f x) t ->
+forall [t : set (filter.Nbhs.sort U)],
+filter.nbhs (f x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` f @^-1` t)%classic
@@ -4288,39 +4617,58 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 10
 Qed.</div></details>
 <br/>
 <span class="vernacular">Module</span><span class="vernacular"> Export</span><span class="id"> </span><span id="NearNorm" class="id"><a name="NearNorm" class="">NearNorm</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="NearNorm.near_simpl" class="id"><a name="NearNorm.near_simpl" class="" title="NearNorm.near_simpl :
-(forall (U : Type) (T : filteredType U) (x : T) (P : set U),
- (\forall x0 \near nbhs x, P x0) = (\near x, P x)) *
-(forall (U : Type) (T : filteredType U) (x : T) (P : set U),
- nbhs x P = (\near x, P x)) *
-(forall (X : Type) (fX : filteredType X) (x : fX) (P : set X),
- nbhs x P = (\near x, P x)) *
-(forall (T : Type) (F : filter_on T) (P : set T),
- (\near F, P F) = (\forall x \near F, P x)) *
-(forall (T U : Type) (f : T -> U) (F : set_system T) (P : set U),
- (\forall y \near (f x @[x --> F])%classic, P y) = (\near F, P (f F))) *
-(forall (T U : Type) (f : T -> set U) (F : set_system T) (P : set U),
- (\forall y \near (f x `@[x --> F])%classic, P y) =
- (\near F, exists y : U, f F y /\ P y)) *
-(forall (T T' U U' : Type) (f : T -> U) (g : T' -> U') 
-   (F : set_system T) (G : set_system T') (P : U -> set U'),
- Filter F ->
- Filter G ->
- (\forall y \near (f x @[x --> F])%classic & y' \near 
-  (g x @[x --> G])%classic, P y y') =
- (\near F & G, P (f F) (g G))) *
+<span class="vernacular">Definition</span><span class="id"> </span><span id="NearNorm.near_simpl" class="id"><a name="NearNorm.near_simpl" class="" title="near_simpl :
+(forall (U : Type) (T : filter.Filtered.type U) (x : filter.Filtered.sort T)
+   (P : set U),
+ filter.prop_near1 (filter.nbhs x) (P:=P) (inPhantom (forall x0 : U, P x0)) =
+ filter.prop_near1 x (P:=P) (inPhantom (forall x0 : U, P x0))) *
+(forall (U : Type) (T : filter.Filtered.type U) (x : filter.Filtered.sort T)
+   (P : set U),
+ filter.nbhs x P =
+ filter.prop_near1 x (P:=P) (inPhantom (forall x0 : U, P x0))) *
+(forall (X : Type) (fX : filter.Filtered.type X)
+   (x : filter.Filtered.sort fX) (P : set X),
+ filter.nbhs x P =
+ filter.prop_near1 x (P:=P) (inPhantom (forall x0 : X, P x0))) *
+(forall (T : Type) (F : filter.filter_on T) (P : set T),
+ filter.prop_near1 F (P:=P) (inPhantom (forall x : T, P x)) =
+ filter.prop_near1 (filter.filter F) (P:=P) (inPhantom (forall x : T, P x))) *
+(forall (T U : Type) (f : T -> U) (F : filter.set_system T) (P : set U),
+ filter.prop_near1 (filter.fmap f (filter.nbhs F)) (P:=P)
+   (inPhantom (forall y : U, P y)) =
+ filter.prop_near1 F (P:=fun x : T => P (f x))
+   (inPhantom (forall x : T, P (f x)))) *
+(forall (T U : Type) (f : T -> set U) (F : filter.set_system T) (P : set U),
+ filter.prop_near1 (filter.fmapi f (filter.nbhs F)) (P:=P)
+   (inPhantom (forall y : U, P y)) =
+ filter.prop_near1 F (P:=fun x : T => exists y : U, f x y /\ P y)
+   (inPhantom (forall x : T, exists y : U, f x y /\ P y))) *
+(forall (T T' U U' : Type) (f : T -> U) (g : T' -> U')
+   (F : filter.set_system T) (G : filter.set_system T') 
+   (P : U -> set U'),
+ filter.Filter F ->
+ filter.Filter G ->
+ filter.prop_near2 (filter.fmap f (filter.nbhs F))
+   (filter.fmap g (filter.nbhs G)) (P:=P)
+   (inPhantom (forall (y : U) (y' : U'), P y y')) =
+ filter.prop_near2 F G (P:=fun (x : T) (x' : T') => P (f x) (g x'))
+   (inPhantom (forall (x : T) (x' : T'), P (f x) (g x')))) *
 (forall (K : numDomainType) (V : pseudoMetricNormedZmodType K) 
    (x : V) (P : V -> Prop),
- nbhs_ball_ (ball_ normr) x P = (\near x, P x)) *
+ nbhs_ball_ (ball_ normr) x P =
+ filter.prop_near1 x (P:=P) (inPhantom (forall x0 : V, P x0))) *
 (forall (K : numDomainType) (V : pseudoMetricNormedZmodType K) 
    (x : V) (P : V -> Prop),
- filter_from [set x0 | (0 < x0)%R] (ball_ normr x) P = (\near x, P x)) *
+ filter.filter_from [set x0 | (0 < x0)%R] (ball_ normr x) P =
+ filter.prop_near1 x (P:=P) (inPhantom (forall x0 : V, P x0))) *
 (forall (K : numDomainType) (V : pseudoMetricNormedZmodType K) 
    (x : V) (P : V -> Prop),
- (\forall x0 \near nbhs_ball_ (ball_ normr) x, P x0) = (\near x, P x))
+ filter.prop_near1 (nbhs_ball_ (ball_ normr) x) (P:=P)
+   (inPhantom (forall x0 : V, P x0)) =
+ filter.prop_near1 x (P:=P) (inPhantom (forall x0 : V, P x0)))
 
-NearNorm.near_simpl is not universe polymorphic
-NearNorm.near_simpl is transparent
+near_simpl is not universe polymorphic
+near_simpl is transparent
 Expands to: Constant
             mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.NearNorm.near_simpl
 Declared in
@@ -4337,20 +4685,22 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgN" class="id"><a name="cvgN" class="" title="cvgN :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V] [a : V],
-(f x @[x --> F] --> a)%classic -> ((- f)%R x @[x --> F] --> (- a)%R)%classic
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs a) ->
+filter.cvg_to (filter.nbhs (filter.fmap (- f)%R (filter.nbhs F)))
+  (filter.nbhs (- a)%R)
 
 cvgN is not universe polymorphic
 Expanded type for implicit arguments
 cvgN :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V] [a : V],
-(f x @[x --> F] --> a)%classic ->
-forall [t : set V], nbhs (- a)%R t -> F ((- f)%R @^-1` t)%classic
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs a) ->
+forall [t : set V], filter.nbhs (- a)%R t -> F ((- f)%R @^-1` t)%classic
 
 Arguments cvgN {K V} {T}%_type_scope [F] {FF} [f]%_function_scope [a] _ [t] _
 cvgN is opaque
@@ -4366,10 +4716,12 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgNP" class="id"><a name="cvgNP" class="" title="cvgNP :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall (f : T -> V) (a : V),
-((- f)%R x @[x --> F] --> (- a)%R)%classic <-> (f x @[x --> F] --> a)%classic
+filter.cvg_to (filter.nbhs (filter.fmap (- f)%R (filter.nbhs F)))
+  (filter.nbhs (- a)%R) <->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs a)
 
 cvgNP is not universe polymorphic
 Arguments cvgNP {K V} {T}%_type_scope [F] {FF} f%_function_scope a
@@ -4386,21 +4738,26 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvgN" class="id"><a name="is_cvgN" class="" title="is_cvgN :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V],
-cvg (f x @[x --> F])%classic -> cvg ((- f)%R x @[x --> F])%classic
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F)))) ->
+filter.cvg_to (filter.nbhs (filter.fmap (- f)%R (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap (- f)%R (filter.nbhs F))))
 
 is_cvgN is not universe polymorphic
 Expanded type for implicit arguments
 is_cvgN :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V],
-cvg (f x @[x --> F])%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F)))) ->
 forall [t : set V],
-nbhs (lim ((- f)%R x @[x --> F])%classic) t -> F ((- f)%R @^-1` t)%classic
+filter.nbhs (filter.lim (filter.fmap (- f)%R (filter.nbhs F))) t ->
+F ((- f)%R @^-1` t)%classic
 
 Arguments is_cvgN {K V} {T}%_type_scope [F] {FF} [f]%_function_scope _ [t] _
 is_cvgN is opaque
@@ -4416,10 +4773,13 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvgNE" class="id"><a name="is_cvgNE" class="" title="is_cvgNE :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall f : T -> V,
-cvg ((- f)%R x @[x --> F])%classic = cvg (f x @[x --> F])%classic
+filter.cvg_to (filter.nbhs (filter.fmap (- f)%R (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap (- f)%R (filter.nbhs F)))) =
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F))))
 
 is_cvgNE is not universe polymorphic
 Arguments is_cvgNE {K V} {T}%_type_scope [F] {FF} f%_function_scope
@@ -4436,22 +4796,25 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgMn" class="id"><a name="cvgMn" class="" title="cvgMn :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V] [n : nat] [a : V],
-(f x @[x --> F] --> a)%classic ->
-(((GRing.natmul (V:=V))^~ n \o f) x @[x --> F] --> (a *+ n)%R)%classic
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs a) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap ((GRing.natmul (V:=V))^~ n \o f) (filter.nbhs F)))
+  (filter.nbhs (a *+ n)%R)
 
 cvgMn is not universe polymorphic
 Expanded type for implicit arguments
 cvgMn :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V] [n : nat] [a : V],
-(f x @[x --> F] --> a)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs a) ->
 forall [t : set (GRing.BaseAddUMagma.sort V)],
-nbhs (a *+ n)%R t -> F (((GRing.natmul (V:=V))^~ n \o f) @^-1` t)%classic
+filter.nbhs (a *+ n)%R t ->
+F (((GRing.natmul (V:=V))^~ n \o f) @^-1` t)%classic
 
 Arguments cvgMn {K V} {T}%_type_scope [F] {FF} [f]%_function_scope
   [n]%_nat_scope [a] _ [t] _
@@ -4468,22 +4831,30 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvgMn" class="id"><a name="is_cvgMn" class="" title="is_cvgMn :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V] [n : nat],
-cvg (f x @[x --> F])%classic ->
-cvg (((GRing.natmul (V:=V))^~ n \o f) x @[x --> F])%classic
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap ((GRing.natmul (V:=V))^~ n \o f) (filter.nbhs F)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap ((GRing.natmul (V:=V))^~ n \o f) (filter.nbhs F))))
 
 is_cvgMn is not universe polymorphic
 Expanded type for implicit arguments
 is_cvgMn :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V] [n : nat],
-cvg (f x @[x --> F])%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F)))) ->
 forall [t : set (GRing.BaseAddUMagma.sort V)],
-nbhs (lim (((GRing.natmul (V:=V))^~ n \o f) x @[x --> F])%classic) t ->
+filter.nbhs
+  (filter.lim (filter.fmap ((GRing.natmul (V:=V))^~ n \o f) (filter.nbhs F)))
+  t ->
 F (((GRing.natmul (V:=V))^~ n \o f) @^-1` t)%classic
 
 Arguments is_cvgMn {K V} {T}%_type_scope [F] {FF} 
@@ -4501,23 +4872,24 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgD" class="id"><a name="cvgD" class="" title="cvgD :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f g : T -> V] [a b : V],
-(f x @[x --> F] --> a)%classic ->
-(g x @[x --> F] --> b)%classic ->
-((f + g)%E x @[x --> F] --> (a + b)%E)%classic
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs a) ->
+filter.cvg_to (filter.nbhs (filter.fmap g (filter.nbhs F))) (filter.nbhs b) ->
+filter.cvg_to (filter.nbhs (filter.fmap (f + g)%R (filter.nbhs F)))
+  (filter.nbhs (a + b)%R)
 
 cvgD is not universe polymorphic
 Expanded type for implicit arguments
 cvgD :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f g : T -> V] [a b : V],
-(f x @[x --> F] --> a)%classic ->
-(g x @[x --> F] --> b)%classic ->
-forall [t : set V], nbhs (a + b)%E t -> F ((f + g)%E @^-1` t)%classic
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs a) ->
+filter.cvg_to (filter.nbhs (filter.fmap g (filter.nbhs F))) (filter.nbhs b) ->
+forall [t : set V], filter.nbhs (a + b)%R t -> F ((f + g)%R @^-1` t)%classic
 
 Arguments cvgD {K V} {T}%_type_scope [F] {FF} [f g]%_function_scope 
   [a b] _ _ [t] _
@@ -4534,24 +4906,30 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvgD" class="id"><a name="is_cvgD" class="" title="is_cvgD :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f g : T -> V],
-cvg (f x @[x --> F])%classic ->
-cvg (g x @[x --> F])%classic -> cvg ((f + g)%E x @[x --> F])%classic
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F)))) ->
+filter.cvg_to (filter.nbhs (filter.fmap g (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap g (filter.nbhs F)))) ->
+filter.cvg_to (filter.nbhs (filter.fmap (f + g)%R (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap (f + g)%R (filter.nbhs F))))
 
 is_cvgD is not universe polymorphic
 Expanded type for implicit arguments
 is_cvgD :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f g : T -> V],
-cvg (f x @[x --> F])%classic ->
-cvg (g x @[x --> F])%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F)))) ->
+filter.cvg_to (filter.nbhs (filter.fmap g (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap g (filter.nbhs F)))) ->
 forall [t : set V],
-nbhs (lim ((f + g)%E x @[x --> F])%classic) t ->
-F ((f + g)%E @^-1` t)%classic
+filter.nbhs (filter.lim (filter.fmap (f + g)%R (filter.nbhs F))) t ->
+F ((f + g)%R @^-1` t)%classic
 
 Arguments is_cvgD {K V} {T}%_type_scope [F] {FF} [f g]%_function_scope 
   _ _ [t] _
@@ -4568,23 +4946,24 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgB" class="id"><a name="cvgB" class="" title="cvgB :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f g : T -> V] [a b : V],
-(f x @[x --> F] --> a)%classic ->
-(g x @[x --> F] --> b)%classic ->
-((f - g)%R x @[x --> F] --> (a - b)%R)%classic
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs a) ->
+filter.cvg_to (filter.nbhs (filter.fmap g (filter.nbhs F))) (filter.nbhs b) ->
+filter.cvg_to (filter.nbhs (filter.fmap (f - g)%R (filter.nbhs F)))
+  (filter.nbhs (a - b)%R)
 
 cvgB is not universe polymorphic
 Expanded type for implicit arguments
 cvgB :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f g : T -> V] [a b : V],
-(f x @[x --> F] --> a)%classic ->
-(g x @[x --> F] --> b)%classic ->
-forall [t : set V], nbhs (a - b)%R t -> F ((f - g)%R @^-1` t)%classic
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs a) ->
+filter.cvg_to (filter.nbhs (filter.fmap g (filter.nbhs F))) (filter.nbhs b) ->
+forall [t : set V], filter.nbhs (a - b)%R t -> F ((f - g)%R @^-1` t)%classic
 
 Arguments cvgB {K V} {T}%_type_scope [F] {FF} [f g]%_function_scope 
   [a b] _ _ [t] _
@@ -4601,23 +4980,29 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvgB" class="id"><a name="is_cvgB" class="" title="is_cvgB :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f g : T -> V],
-cvg (f x @[x --> F])%classic ->
-cvg (g x @[x --> F])%classic -> cvg ((f - g)%R x @[x --> F])%classic
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F)))) ->
+filter.cvg_to (filter.nbhs (filter.fmap g (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap g (filter.nbhs F)))) ->
+filter.cvg_to (filter.nbhs (filter.fmap (f - g)%R (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap (f - g)%R (filter.nbhs F))))
 
 is_cvgB is not universe polymorphic
 Expanded type for implicit arguments
 is_cvgB :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f g : T -> V],
-cvg (f x @[x --> F])%classic ->
-cvg (g x @[x --> F])%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F)))) ->
+filter.cvg_to (filter.nbhs (filter.fmap g (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap g (filter.nbhs F)))) ->
 forall [t : set V],
-nbhs (lim ((f - g)%R x @[x --> F])%classic) t ->
+filter.nbhs (filter.lim (filter.fmap (f - g)%R (filter.nbhs F))) t ->
 F ((f - g)%R @^-1` t)%classic
 
 Arguments is_cvgB {K V} {T}%_type_scope [F] {FF} [f g]%_function_scope 
@@ -4635,11 +5020,15 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvgDlE" class="id"><a name="is_cvgDlE" class="" title="is_cvgDlE :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall (f : T -> V) [g : T -> V],
-cvg (g x @[x --> F])%classic ->
-cvg ((f + g)%E x @[x --> F])%classic = cvg (f x @[x --> F])%classic
+filter.cvg_to (filter.nbhs (filter.fmap g (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap g (filter.nbhs F)))) ->
+filter.cvg_to (filter.nbhs (filter.fmap (f + g)%R (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap (f + g)%R (filter.nbhs F)))) =
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F))))
 
 is_cvgDlE is not universe polymorphic
 Arguments is_cvgDlE {K V} {T}%_type_scope [F] {FF} 
@@ -4659,11 +5048,15 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvgDrE" class="id"><a name="is_cvgDrE" class="" title="is_cvgDrE :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V] (g : T -> V),
-cvg (f x @[x --> F])%classic ->
-cvg ((f + g)%E x @[x --> F])%classic = cvg (g x @[x --> F])%classic
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F)))) ->
+filter.cvg_to (filter.nbhs (filter.fmap (f + g)%R (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap (f + g)%R (filter.nbhs F)))) =
+filter.cvg_to (filter.nbhs (filter.fmap g (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap g (filter.nbhs F))))
 
 is_cvgDrE is not universe polymorphic
 Arguments is_cvgDrE {K V} {T}%_type_scope [F] {FF} 
@@ -4681,22 +5074,25 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_sub0" class="id"><a name="cvg_sub0" class="" title="cvg_sub0 :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f g : T -> V] [a : V],
-((f - g)%R x @[x --> F] --> (0%R : V))%classic ->
-(g x @[x --> F] --> a)%classic -> (f x @[x --> F] --> a)%classic
+filter.cvg_to (filter.nbhs (filter.fmap (f - g)%R (filter.nbhs F)))
+  (filter.nbhs (0%R : V)) ->
+filter.cvg_to (filter.nbhs (filter.fmap g (filter.nbhs F))) (filter.nbhs a) ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs a)
 
 cvg_sub0 is not universe polymorphic
 Expanded type for implicit arguments
 cvg_sub0 :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f g : T -> V] [a : V],
-((f - g)%R x @[x --> F] --> (0%R : V))%classic ->
-(g x @[x --> F] --> a)%classic ->
-forall [t : set V], nbhs a t -> F (f @^-1` t)%classic
+filter.cvg_to (filter.nbhs (filter.fmap (f - g)%R (filter.nbhs F)))
+  (filter.nbhs (0%R : V)) ->
+filter.cvg_to (filter.nbhs (filter.fmap g (filter.nbhs F))) (filter.nbhs a) ->
+forall [t : set V], filter.nbhs a t -> F (f @^-1` t)%classic
 
 Arguments cvg_sub0 {K V} {T}%_type_scope [F] {FF} 
   [f g]%_function_scope [a] _ _ [t] _
@@ -4714,21 +5110,23 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_zero" class="id"><a name="cvg_zero" class="" title="cvg_zero :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V] [a : V],
-((f - cst a)%R x @[x --> F] --> (0%R : V))%classic ->
-(f x @[x --> F] --> a)%classic
+filter.cvg_to (filter.nbhs (filter.fmap (f - cst a)%R (filter.nbhs F)))
+  (filter.nbhs (0%R : V)) ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs a)
 
 cvg_zero is not universe polymorphic
 Expanded type for implicit arguments
 cvg_zero :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V] [a : V],
-((f - cst a)%R x @[x --> F] --> (0%R : V))%classic ->
-forall [t : set V], nbhs a t -> F (f @^-1` t)%classic
+filter.cvg_to (filter.nbhs (filter.fmap (f - cst a)%R (filter.nbhs F)))
+  (filter.nbhs (0%R : V)) ->
+forall [t : set V], filter.nbhs a t -> F (f @^-1` t)%classic
 
 Arguments cvg_zero {K V} {T}%_type_scope [F] {FF} 
   [f]%_function_scope [a] _ [t] _
@@ -4745,10 +5143,13 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="subr_cvg0" class="id"><a name="subr_cvg0" class="" title="subr_cvg0 :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall (f : T -> V) (a : V),
-((f x - a)%R @[x --> F] --> 0%R)%classic <-> (f x @[x --> F] --> a)%classic
+filter.cvg_to
+  (filter.nbhs (filter.fmap (fun x : T => (f x - a)%R) (filter.nbhs F)))
+  (filter.nbhs 0%R) <->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs a)
 
 subr_cvg0 is not universe polymorphic
 Arguments subr_cvg0 {K V} {T}%_type_scope [F] {FF} f%_function_scope a
@@ -4767,22 +5168,24 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_norm" class="id"><a name="cvg_norm" class="" title="cvg_norm :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V] [a : V],
-(f x @[x --> F] --> a)%classic ->
-(`|f x|%R @[x --> F] --> (`|a|%R : K))%classic
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs a) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (fun x : T => `|f x|%R) (filter.nbhs F)))
+  (filter.nbhs (`|a|%R : K))
 
 cvg_norm is not universe polymorphic
 Expanded type for implicit arguments
 cvg_norm :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V] [a : V],
-(f x @[x --> F] --> a)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs a) ->
 forall [t : set K],
-nbhs (`|a|%R : K) t -> F ((fun x : T => `|f x|%R) @^-1` t)%classic
+filter.nbhs (`|a|%R : K) t -> F ((fun x : T => `|f x|%R) @^-1` t)%classic
 
 Arguments cvg_norm {K V} {T}%_type_scope [F] {FF} 
   [f]%_function_scope [a] _ [t] _
@@ -4799,22 +5202,28 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_norm" class="id"><a name="is_cvg_norm" class="" title="is_cvg_norm :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V],
-cvg (f x @[x --> F])%classic ->
-cvg ((normr \o f : T -> K) x @[x --> F])%classic
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (normr \o f : T -> K) (filter.nbhs F)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (normr \o f : T -> K) (filter.nbhs F))))
 
 is_cvg_norm is not universe polymorphic
 Expanded type for implicit arguments
 is_cvg_norm :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V],
-cvg (f x @[x --> F])%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F)))) ->
 forall [t : set K],
-nbhs (lim ((normr \o f : T -> K) x @[x --> F])%classic) t ->
+filter.nbhs (filter.lim (filter.fmap (normr \o f : T -> K) (filter.nbhs F)))
+  t ->
 F ((normr \o f : T -> K) @^-1` t)%classic
 
 Arguments is_cvg_norm {K V} {T}%_type_scope [F] {FF} 
@@ -4832,11 +5241,13 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="norm_cvg0P" class="id"><a name="norm_cvg0P" class="" title="norm_cvg0P :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall f : T -> V,
-(`|f x|%R @[x --> F] --> (0%R : K^o))%classic <->
-(f x @[x --> F] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs (filter.fmap (fun x : T => `|f x|%R) (filter.nbhs F)))
+  (filter.nbhs (0%R : K^o)) <->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs 0%R)
 
 norm_cvg0P is not universe polymorphic
 Arguments norm_cvg0P {K V} {T}%_type_scope [F] {FF} f%_function_scope
@@ -4856,21 +5267,25 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="norm_cvg0" class="id"><a name="norm_cvg0" class="" title="norm_cvg0 :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V],
-(`|f x|%R @[x --> F] --> (0%R : K^o))%classic ->
-(f x @[x --> F] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs (filter.fmap (fun x : T => `|f x|%R) (filter.nbhs F)))
+  (filter.nbhs (0%R : K^o)) ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs 0%R)
 
 norm_cvg0 is not universe polymorphic
 Expanded type for implicit arguments
 norm_cvg0 :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-Filter F ->
+  {T : Type} [F : filter.set_system T],
+filter.Filter F ->
 forall [f : T -> V],
-(`|f x|%R @[x --> F] --> (0%R : K^o))%classic ->
-forall [t : set V], nbhs 0%R t -> F (f @^-1` t)%classic
+filter.cvg_to
+  (filter.nbhs (filter.fmap (fun x : T => `|f x|%R) (filter.nbhs F)))
+  (filter.nbhs (0%R : K^o)) ->
+forall [t : set V], filter.nbhs 0%R t -> F (f @^-1` t)%classic
 
 Arguments norm_cvg0 {K V} {T}%_type_scope [F] {FF} 
   [f]%_function_scope _ [t] _
@@ -4904,7 +5319,8 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 &nbsp;&nbsp;(<span id="x:631" class="id"><a name="x:631" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#V:629">V</a></span>) (<span id="e:632" class="id"><a name="e:632" class="">e</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#R:628">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="y:633" class="id"><a name="y:633" class="">y</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#norm:630">norm</a></span> (<span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#x:631">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#y:633">y</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#e:632">e</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="closed_ball" class="id"><a name="closed_ball" class="" title="closed_ball :
-forall [R : numDomainType] [V : pseudoMetricType R], V -> R -> set V
+forall [R : numDomainType] [V : pseudoMetricType R],
+V -> R -> set (topology_structure.Topological.sort V)
 
 closed_ball is not universe polymorphic
 Arguments closed_ball [R V] x e%_ring_scope _
@@ -4918,7 +5334,7 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closure_ballE" class="id"><a name="closure_ballE" class="" title="closure_ballE :
 forall [R : numDomainType] [V : pseudoMetricType R] (c : V) (r : R),
-closure (ball c r) = closed_ball (V:=V) c r
+topology_structure.closure (ball c r) = closed_ball (V:=V) c r
 
 closure_ballE is not universe polymorphic
 Arguments closure_ballE [R V] c r%_ring_scope
@@ -4963,7 +5379,9 @@ Expanded type for implicit arguments
 closed_ballxx :
 forall [R : numDomainType] [V : pseudoMetricType R] [x : V] [e : R],
 (0 < e)%R ->
-forall [B : set V], nbhs x B -> exists a : V, (ball x e `&` B)%classic a
+forall [B : set (topology_structure.Topological.sort V)],
+filter.nbhs x B ->
+exists a : topology_structure.Topological.sort V, (ball x e `&` B)%classic a
 
 Arguments closed_ballxx [R V x] [e]%_ring_scope _ [B] _
 closed_ballxx is opaque
@@ -4980,14 +5398,17 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closed_ball_closed" class="id"><a name="closed_ball_closed" class="" title="closed_ball_closed :
 forall [R : numDomainType] [V : pseudoMetricType R] [x : V] [r : R],
-closed (closed_ball (V:=V) x r)
+topology_structure.closed (closed_ball (V:=V) x r)
 
 closed_ball_closed is not universe polymorphic
 Expanded type for implicit arguments
 closed_ball_closed :
-forall [R : numDomainType] [V : pseudoMetricType R] [x : V] [r : R] [t : V],
-closure (closed_ball (V:=V) x r) t ->
-forall [B : set V], nbhs t B -> exists a : V, (ball x r `&` B)%classic a
+forall [R : numDomainType] [V : pseudoMetricType R] 
+  [x : V] [r : R] [t : topology_structure.Topological.sort V],
+topology_structure.closure (closed_ball (V:=V) x r) t ->
+forall [B : set (topology_structure.Topological.sort V)],
+filter.nbhs t B ->
+exists a : topology_structure.Topological.sort V, (ball x r `&` B)%classic a
 
 Arguments closed_ball_closed [R V x] [r]%_ring_scope [t] _ [B] _
 closed_ball_closed is opaque
@@ -5011,7 +5432,9 @@ Expanded type for implicit arguments
 subset_closed_ball :
 forall [R : numDomainType] [V : pseudoMetricType R] [x : V] [r : R] [t : V],
 ball x r t ->
-forall [B : set V], nbhs t B -> exists a : V, (ball x r `&` B)%classic a
+forall [B : set (topology_structure.Topological.sort V)],
+filter.nbhs t B ->
+exists a : topology_structure.Topological.sort V, (ball x r `&` B)%classic a
 
 Arguments subset_closed_ball [R V x] [r]%_ring_scope [t] _ [B] _
 subset_closed_ball is opaque
@@ -5035,7 +5458,7 @@ Expanded type for implicit arguments
 subset_closure_half :
 forall [R : numFieldType] [V : pseudoMetricType R] [x : V] [r : R],
 (0 < r)%R ->
-forall [t : V],
+forall [t : topology_structure.Topological.sort V],
 closed_ball (V:=V) x (r / 2) t ->
 (let (ball, _, _, _, _) :=
    PseudoMetric.pseudometric_structure_Uniform_isPseudoMetric_mixin
@@ -5070,9 +5493,11 @@ Expanded type for implicit arguments
 le_closed_ball :
 forall [R : numFieldType] [M : pseudoMetricType R] [x : M] [e1 e2 : R],
 (e1 <= e2)%R ->
-forall [t : M],
+forall [t : topology_structure.Topological.sort M],
 closed_ball (V:=M) x e1 t ->
-forall [B : set M], nbhs t B -> exists a : M, (ball x e2 `&` B)%classic a
+forall [B : set (topology_structure.Topological.sort M)],
+filter.nbhs t B ->
+exists a : topology_structure.Topological.sort M, (ball x e2 `&` B)%classic a
 
 Arguments le_closed_ball [R M x] [e1 e2]%_ring_scope _ [t] _ [B] _
 le_closed_ball is opaque
@@ -5098,11 +5523,13 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="limN" class="id"><a name="limN" class="" title="limN :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-ProperFilter F ->
+  {T : Type} [F : filter.set_system T],
+filter.ProperFilter F ->
 forall [f : T -> V],
-cvg (f x @[x --> F])%classic ->
-lim ((- f)%R x @[x --> F])%classic = (- lim (f x @[x --> F])%classic)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F)))) ->
+filter.lim (filter.fmap (- f)%R (filter.nbhs F)) =
+(- filter.lim (filter.fmap f (filter.nbhs F)))%R
 
 limN is not universe polymorphic
 Arguments limN {K V} {T}%_type_scope [F] {FF} [f]%_function_scope _
@@ -5119,13 +5546,16 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 12
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="limD" class="id"><a name="limD" class="" title="limD :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-ProperFilter F ->
+  {T : Type} [F : filter.set_system T],
+filter.ProperFilter F ->
 forall [f g : T -> V],
-cvg (f x @[x --> F])%classic ->
-cvg (g x @[x --> F])%classic ->
-lim ((f + g)%E x @[x --> F])%classic =
-(lim (f x @[x --> F])%classic + lim (g x @[x --> F])%classic)%E
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F)))) ->
+filter.cvg_to (filter.nbhs (filter.fmap g (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap g (filter.nbhs F)))) ->
+filter.lim (filter.fmap (f + g)%R (filter.nbhs F)) =
+(filter.lim (filter.fmap f (filter.nbhs F)) +
+ filter.lim (filter.fmap g (filter.nbhs F)))%R
 
 limD is not universe polymorphic
 Arguments limD {K V} {T}%_type_scope [F] {FF} [f g]%_function_scope _ _
@@ -5143,13 +5573,16 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 12
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="limB" class="id"><a name="limB" class="" title="limB :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-ProperFilter F ->
+  {T : Type} [F : filter.set_system T],
+filter.ProperFilter F ->
 forall [f g : T -> V],
-cvg (f x @[x --> F])%classic ->
-cvg (g x @[x --> F])%classic ->
-lim ((f - g)%R x @[x --> F])%classic =
-(lim (f x @[x --> F])%classic - lim (g x @[x --> F])%classic)%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F)))) ->
+filter.cvg_to (filter.nbhs (filter.fmap g (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap g (filter.nbhs F)))) ->
+filter.lim (filter.fmap (f - g)%R (filter.nbhs F)) =
+(filter.lim (filter.fmap f (filter.nbhs F)) -
+ filter.lim (filter.fmap g (filter.nbhs F)))%R
 
 limB is not universe polymorphic
 Arguments limB {K V} {T}%_type_scope [F] {FF} [f g]%_function_scope _ _
@@ -5167,11 +5600,13 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 12
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_norm" class="id"><a name="lim_norm" class="" title="lim_norm :
 forall {K : numFieldType} {V : pseudoMetricNormedZmodType K} 
-  {T : Type} [F : set_system T],
-ProperFilter F ->
+  {T : Type} [F : filter.set_system T],
+filter.ProperFilter F ->
 forall [f : T -> V],
-cvg (f x @[x --> F])%classic ->
-lim ((`|f x|%R : K) @[x --> F])%classic = `|lim (f x @[x --> F])%classic|%R
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (filter.lim (filter.fmap f (filter.nbhs F)))) ->
+filter.lim (filter.fmap (fun x : T => `|f x|%R : K) (filter.nbhs F)) =
+`|filter.lim (filter.fmap f (filter.nbhs F))|%R
 
 lim_norm is not universe polymorphic
 Arguments lim_norm {K V} {T}%_type_scope [F] {FF} [f]%_function_scope _
@@ -5196,7 +5631,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="dominated_by" class="id"><a name="dominated_by" class="" title="dominated_by :
 forall {T : Type} {K : numDomainType} {V W : pseudoMetricNormedZmodType K},
-(T -> V) -> K -> (T -> W) -> set_system T -> Prop
+(T -> V) -> K -> (T -> W) -> filter.set_system T -> Prop
 
 dominated_by is not universe polymorphic
 Arguments dominated_by {T}%_type_scope {K V W} h%_function_scope
@@ -5211,7 +5646,7 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 12
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="strictly_dominated_by" class="id"><a name="strictly_dominated_by" class="" title="strictly_dominated_by :
 forall {T : Type} {K : numDomainType} {V W : pseudoMetricNormedZmodType K},
-(T -> V) -> K -> (T -> W) -> set_system T -> Prop
+(T -> V) -> K -> (T -> W) -> filter.set_system T -> Prop
 
 strictly_dominated_by is not universe polymorphic
 Arguments strictly_dominated_by {T}%_type_scope {K V W} 
@@ -5228,16 +5663,16 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 12
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sub_dominatedl" class="id"><a name="sub_dominatedl" class="" title="sub_dominatedl :
 forall {T : Type} {K : numDomainType} {V W : pseudoMetricNormedZmodType K}
-  [h : T -> V] [k : K] [F G : set_system T],
-(F `=>` G)%classic ->
+  [h : T -> V] [k : K] [F G : filter.set_system T],
+filter.cvg_to F G ->
 ((dominated_by h k)^~ G `<=` (dominated_by h k)^~ F)%classic
 
 sub_dominatedl is not universe polymorphic
 Expanded type for implicit arguments
 sub_dominatedl :
 forall {T : Type} {K : numDomainType} {V W : pseudoMetricNormedZmodType K}
-  [h : T -> V] [k : K] [F G : set_system T],
-(F `=>` G)%classic ->
+  [h : T -> V] [k : K] [F G : filter.set_system T],
+filter.cvg_to F G ->
 forall [t : T -> W],
 ((dominated_by h k)^~ G) t -> F [set x | (`|t x| <= k * `|h x|)%R]%classic
 
@@ -5259,9 +5694,10 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 12
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sub_dominatedr" class="id"><a name="sub_dominatedr" class="" title="sub_dominatedr :
 forall [T : Type] [K : numDomainType] [V : pseudoMetricNormedZmodType K]
-  [h : T -> V] [k : K] [f g : T -> V] [F : set_system T],
-Filter F ->
-(\near F, (`|f F| <= `|g F|)%R) ->
+  [h : T -> V] [k : K] [f g : T -> V] [F : filter.set_system T],
+filter.Filter F ->
+filter.prop_near1 F (P:=fun x : T => (`|f x| <= `|g x|)%R)
+  (inPhantom (forall x : T, (`|f x| <= `|g x|)%R)) ->
 dominated_by h k g F -> dominated_by h k f F
 
 sub_dominatedr is not universe polymorphic
@@ -5287,9 +5723,10 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 12
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ex_dom_bound" class="id"><a name="ex_dom_bound" class="" title="ex_dom_bound :
 forall {T : Type} {K : numFieldType} {V W : pseudoMetricNormedZmodType K}
-  (h : T -> V) (f : T -> W) {F : set_system T},
-ProperFilter F ->
-(\forall M \near +oo%R, dominated_by h M f F) <->
+  (h : T -> V) (f : T -> W) {F : filter.set_system T},
+filter.ProperFilter F ->
+filter.prop_near1 +oo%R (P:=fun M : K => dominated_by h M f F)
+  (inPhantom (forall M : K, dominated_by h M f F)) <->
 (exists M : K, dominated_by h M f F)
 
 ex_dom_bound is not universe polymorphic
@@ -5321,10 +5758,12 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ex_strict_dom_bound" class="id"><a name="ex_strict_dom_bound" class="" title="ex_strict_dom_bound :
 forall {T : Type} {K : numFieldType} {V W : pseudoMetricNormedZmodType K}
-  [h : T -> V] (f : T -> W) [F : set_system T],
-ProperFilter F ->
-(\near F, h F != 0%R) ->
-(\forall M \near +oo%R, dominated_by h M f F) <->
+  [h : T -> V] (f : T -> W) [F : filter.set_system T],
+filter.ProperFilter F ->
+filter.prop_near1 F (P:=fun x : T => h x != 0%R)
+  (inPhantom (forall x : T, h x != 0%R)) ->
+filter.prop_near1 +oo%R (P:=fun M : K => dominated_by h M f F)
+  (inPhantom (forall M : K, dominated_by h M f F)) <->
 (exists M : K, strictly_dominated_by h M f F)
 
 ex_strict_dom_bound is not universe polymorphic
@@ -5353,7 +5792,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="bounded_near" class="id"><a name="bounded_near" class="" title="bounded_near :
 forall {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K},
-(T -> V) -> set_system T -> Prop
+(T -> V) -> filter.set_system T -> Prop
 
 bounded_near is not universe polymorphic
 Arguments bounded_near {T}%_type_scope {K V} f%_function_scope F
@@ -5391,15 +5830,15 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 12
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sub_boundedr" class="id"><a name="sub_boundedr" class="" title="sub_boundedr :
 forall {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K}
-  [F G : set_system T],
-(F `=>` G)%classic -> (bounded_near^~ G `<=` bounded_near^~ F)%classic
+  [F G : filter.set_system T],
+filter.cvg_to F G -> (bounded_near^~ G `<=` bounded_near^~ F)%classic
 
 sub_boundedr is not universe polymorphic
 Expanded type for implicit arguments
 sub_boundedr :
 forall {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K}
-  [F G : set_system T],
-(F `=>` G)%classic ->
+  [F G : filter.set_system T],
+filter.cvg_to F G ->
 forall [t : T -> V],
 (bounded_near^~ G) t ->
 exists M : K,
@@ -5422,9 +5861,11 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 13
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sub_boundedl" class="id"><a name="sub_boundedl" class="" title="sub_boundedl :
 forall {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K}
-  [f g : T -> V] [F : set_system T],
-Filter F ->
-(\near F, (`|f F| <= `|g F|)%R) -> bounded_near g F -> bounded_near f F
+  [f g : T -> V] [F : filter.set_system T],
+filter.Filter F ->
+filter.prop_near1 F (P:=fun x : T => (`|f x| <= `|g x|)%R)
+  (inPhantom (forall x : T, (`|f x| <= `|g x|)%R)) ->
+bounded_near g F -> bounded_near f F
 
 sub_boundedl is not universe polymorphic
 Arguments sub_boundedl {T}%_type_scope {K V} [f g]%_function_scope [F] FF _ _
@@ -5444,8 +5885,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ex_strict_bound_gt0" class="id"><a name="ex_strict_bound_gt0" class="" title="ex_strict_bound_gt0 :
 forall {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K}
-  [f : T -> V] [F : set_system T],
-Filter F ->
+  [f : T -> V] [F : filter.set_system T],
+filter.Filter F ->
 bounded_near f F ->
 exists2
   M : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
@@ -5493,8 +5934,9 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="boundedE" class="id"><a name="boundedE" class="" title="boundedE :
 forall {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K},
 bounded_near =
-(fun (f : T -> V) (F : set_system T) =>
- \forall M \near +oo%R, dominated_by fun1 M f F)
+(fun (f : T -> V) (F : filter.set_system T) =>
+ filter.prop_near1 +oo%R (P:=fun M : K => dominated_by fun1 M f F)
+   (inPhantom (forall M : K, dominated_by fun1 M f F)))
 
 boundedE is not universe polymorphic
 Arguments boundedE {T}%_type_scope {K V}
@@ -5533,8 +5975,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ex_bound" class="id"><a name="ex_bound" class="" title="ex_bound :
 forall {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K}
-  (f : T -> V) {F : set_system T},
-ProperFilter F ->
+  (f : T -> V) {F : filter.set_system T},
+filter.ProperFilter F ->
 bounded_near f F <-> (exists M : K, F [set x | (`|f x| <= M)%R]%classic)
 
 ex_bound is not universe polymorphic
@@ -5553,8 +5995,8 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 13
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ex_strict_bound" class="id"><a name="ex_strict_bound" class="" title="ex_strict_bound :
 forall {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K}
-  (f : T -> V) {F : set_system T},
-ProperFilter F ->
+  (f : T -> V) {F : filter.set_system T},
+filter.ProperFilter F ->
 bounded_near f F <-> (exists M : K, F [set x | (`|f x| < M)%R]%classic)
 
 ex_strict_bound is not universe polymorphic
@@ -5580,10 +6022,11 @@ library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 13
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_bounded" class="id"><a name="cvg_bounded" class="" title="cvg_bounded :
 forall {R : numFieldType} {V : pseudoMetricNormedZmodType R} 
-  {I : Type} {F : set_system I},
-Filter F ->
+  {I : Type} {F : filter.set_system I},
+filter.Filter F ->
 forall (f : I -> V) (y : V),
-(f x @[x --> F] --> y)%classic -> bounded_near f F
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
+bounded_near f F
 
 cvg_bounded is not universe polymorphic
 Arguments cvg_bounded {R V} {I}%_type_scope {F FF} f%_function_scope y _

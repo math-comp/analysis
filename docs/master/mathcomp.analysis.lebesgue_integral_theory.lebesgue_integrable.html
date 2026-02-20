@@ -1552,7 +1552,7 @@ forall [f1 f2 : T -> R],
 mu.-integrable D (EFin \o f1) ->
 mu.-integrable D (EFin \o f2) ->
 (\int[mu]_(x in D) (EFin \o f1 \+ (EFin \o f2)) x)%E =
-(\int[mu]_(x in D) (EFin \o f1) x + \int[mu]_(x in D) (EFin \o f2) x)%E
+((\int[mu]_(x in D) (EFin \o f1) x)%E + (\int[mu]_(x in D) (EFin \o f2) x)%E)%R
 
 integralD_EFin is not universe polymorphic
 Arguments integralD_EFin [d]%_measure_display_scope 
@@ -1693,8 +1693,8 @@ d.-measurable%classic D ->
 forall [f1 f2 : T -> \bar R],
 mu.-integrable D f1 ->
 mu.-integrable D f2 ->
-(\int[mu]_(x in D) (f1 x + f2 x))%E =
-(\int[mu]_(x in D) f1 x + \int[mu]_(x in D) f2 x)%E
+(\int[mu]_(x in D) (f1 x + f2 x)%R)%E =
+((\int[mu]_(x in D) f1 x)%E + (\int[mu]_(x in D) f2 x)%E)%R
 
 integralD is not universe polymorphic
 Arguments integralD [d]%_measure_display_scope [T R mu]
@@ -2116,7 +2116,7 @@ forall [f : T -> \bar R],
 m1.-integrable D f ->
 m2.-integrable D f ->
 (\int[measure_add (T:=T) (R:=R) m1 m2]_(x in D) f x)%E =
-(\int[m1]_(x in D) f x + \int[m2]_(x in D) f x)%E
+((\int[m1]_(x in D) f x)%E + (\int[m2]_(x in D) f x)%E)%R
 
 integral_measure_add is not universe polymorphic
 Arguments integral_measure_add [d]%_measure_display_scope 

@@ -286,14 +286,32 @@ forall {R : realType} [d : measure_display] {Y : measurableType d}
 d.-measurable%classic B ->
 forall [u v : R],
 (forall x : R, `]u, v[%classic x -> mu.-integrable B (EFin \o f x)) ->
-(\forall y \ae mu, B y -> {in `]u, v[%classic, continuous (f^~ y)}) ->
+(\forall y \ae mu, B y ->
+                   {in `]u, v[%classic,
+                     forall
+                       x : filter.Nbhs.sort
+                             (numFieldTopology.Real_sort__canonical__filter_Nbhs
+                                R),
+                     filter.continuous_at
+                       (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs
+                             R)
+                       (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs
+                             R)
+                       x (f^~ y)}) ->
 forall [g : Y -> R],
 mu.-integrable B (EFin \o g) ->
 (forall x : R,
  `]u, v[%classic x -> \forall y \ae mu, B y -> (`|f x y| <= g y)%R) ->
 {in `]u, v[%classic,
-  continuous
-    (fun l : numFieldTopology.Real_sort__canonical__filter_Nbhs R =>
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+    (U:=numFieldTopology.RealField_sort__canonical__filter_Nbhs R) x0
+    (fun
+       l : filter.Nbhs.sort
+             (numFieldTopology.Real_sort__canonical__filter_Nbhs R) =>
      (\int[mu]_(x in B) f l x)%R)}
 
 continuity_under_integral is not universe polymorphic
@@ -304,22 +322,40 @@ forall {R : realType} [d : measure_display] {Y : measurableType d}
 d.-measurable%classic B ->
 forall [u v : R],
 (forall x : R, `]u, v[%classic x -> mu.-integrable B (EFin \o f x)) ->
-(\forall y \ae mu, B y -> {in `]u, v[%classic, continuous (f^~ y)}) ->
+(\forall y \ae mu, B y ->
+                   {in `]u, v[%classic,
+                     forall
+                       x : filter.Nbhs.sort
+                             (numFieldTopology.Real_sort__canonical__filter_Nbhs
+                                R),
+                     filter.continuous_at
+                       (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs
+                             R)
+                       (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs
+                             R)
+                       x (f^~ y)}) ->
 forall [g : Y -> R],
 mu.-integrable B (EFin \o g) ->
 (forall x : R,
  `]u, v[%classic x -> \forall y \ae mu, B y -> (`|f x y| <= g y)%R) ->
 forall [x : R],
 x \in `]u, v[%classic ->
-forall [t : set (numFieldTopology.RealField_sort__canonical__filter_Nbhs R)],
-nbhs
-  ((fun l : numFieldTopology.Real_sort__canonical__filter_Nbhs R =>
+forall
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.RealField_sort__canonical__filter_Nbhs R))],
+filter.nbhs
+  ((fun
+      l : filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R) =>
     (\int[mu]_(x0 in B) f l x0)%R) x)
   t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i
-   `<=` (fun l : numFieldTopology.Real_sort__canonical__filter_Nbhs R =>
+   `<=` (fun
+           l : filter.Nbhs.sort
+                 (numFieldTopology.Real_sort__canonical__filter_Nbhs R) =>
          (\int[mu]_(x0 in B) f l x0)%R) @^-1`
         t)%classic
 
@@ -472,10 +508,15 @@ forall [G : Y -> R],
 mu.-integrable B (EFin \o G) ->
 (forall (x : R) (y : Y),
  `]u, v[%classic x -> B y -> (`|partial1of2 f x y| <= G y)%R) ->
-((h^-1 *:
-  ((fun x' : R => \int[mu]_(y in B) f x' y) (h + a)%E -
-   (fun x' : R => \int[mu]_(y in B) f x' y) a))%R @[h --> 
- (0%R)^'] --> (\int[mu]_(y in B) partial1of2 f a y)%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap
+        (fun h : R =>
+         (h^-1 *:
+          ((fun x' : R => \int[mu]_(y in B) f x' y) (h + a) -
+           (fun x' : R => \int[mu]_(y in B) f x' y) a))%R)
+        (filter.nbhs (topology_structure.dnbhs 0%R))))
+  (filter.nbhs (\int[mu]_(y in B) partial1of2 f a y)%R)
 
 cvg_differentiation_under_integral is not universe polymorphic
 Expanded type for implicit arguments
@@ -495,20 +536,22 @@ mu.-integrable B (EFin \o G) ->
 forall
   [t : set
          (numFieldNormedType.RealField_sort__canonical__GRing_LSemiModule R)],
-nbhs (\int[mu]_(y in B) partial1of2 f a y)%R t ->
+filter.nbhs (\int[mu]_(y in B) partial1of2 f a y)%R t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] 0%R i
    `<=` (fun
-           t0 : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (Real_sort__canonical__tvs_PreTopologicalNmodule R) =>
+           t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (Real_sort__canonical__tvs_PreTopologicalNmodule R)) =>
          (fun
-            y : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (Real_sort__canonical__tvs_PreTopologicalNmodule R) =>
+            y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (Real_sort__canonical__tvs_PreTopologicalNmodule R)) =>
           is_true (y != 0%R)) t0 ->
          ((fun h : R =>
            (h^-1 *:
-            ((fun x' : R => \int[mu]_(y in B) f x' y) (h + a)%E -
+            ((fun x' : R => \int[mu]_(y in B) f x' y) (h + a) -
              (fun x' : R => \int[mu]_(y in B) f x' y) a))%R) @^-1`
           t) t0))%classic
 
@@ -714,24 +757,28 @@ forall
   [t : set
          (numFieldNormedType.RealField_sort__canonical__normed_module_NormedModule
             R)],
-nbhs
-  (lim
-     ((h^-1 *:
-       (((fun x' : R => \int[mu]_(y in B) f x' y) \o shift a) h%:A -
-        (fun x' : R => \int[mu]_(y in B) f x' y) a))%R @[h --> 
-      (0%R)^'])%classic)
+filter.nbhs
+  (filter.lim
+     (filter.fmap
+        (fun h : R =>
+         (h^-1 *:
+          (((fun x' : R => \int[mu]_(y in B) f x' y) \o shift a) h%:A -
+           (fun x' : R => \int[mu]_(y in B) f x' y) a))%R)
+        (filter.nbhs (topology_structure.dnbhs 0%R))))
   t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] 0%R i
    `<=` (fun
-           t0 : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+           t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
          (fun
-            y : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+            y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
           is_true (y != 0%R)) t0 ->
          ((fun h : R =>
            (h^-1 *:

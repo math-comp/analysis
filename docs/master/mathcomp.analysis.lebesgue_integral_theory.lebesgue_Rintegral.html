@@ -527,7 +527,7 @@ d.-measurable%classic B ->
 mu.-integrable (A `|` B) (EFin \o f) ->
 [disjoint A & B]%classic ->
 (\int[mu]_(x in A `|` B) f x)%R =
-((\int[mu]_(x in A) f x)%R + (\int[mu]_(x in B) f x)%R)%E
+(\int[mu]_(x in A) f x + \int[mu]_(x in B) f x)%R
 
 Rintegral_setU is not universe polymorphic
 Arguments Rintegral_setU [d]%_measure_display_scope 
@@ -645,8 +645,8 @@ forall [d : measure_display] {T : measurableType d}
 d.-measurable%classic D ->
 mu.-integrable D (EFin \o f1) ->
 mu.-integrable D (EFin \o f2) ->
-(\int[mu]_(x in D) (f1 x + f2 x)%E)%R =
-((\int[mu]_(x in D) f1 x)%R + (\int[mu]_(x in D) f2 x)%R)%E
+(\int[mu]_(x in D) (f1 x + f2 x))%R =
+(\int[mu]_(x in D) f1 x + \int[mu]_(x in D) f2 x)%R
 
 RintegralD is not universe polymorphic
 Arguments RintegralD [d]%_measure_display_scope {T R} 

@@ -292,13 +292,17 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pi_irrational.exp_fact" class="id"><a name="pi_irrational.exp_fact" class="" title="pi_irrational.exp_fact :
 forall [R : realType] (r : R),
-((r ^+ n / n`!%:R)%R @[n --> \oo] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => (r ^+ n / n`!%:R)%R)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R)
 
 pi_irrational.exp_fact is not universe polymorphic
 Expanded type for implicit arguments
 pi_irrational.exp_fact :
 forall [R : realType] (r : R) [t : set R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -493,7 +497,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pi_irrational.Fpi_int" class="id"><a name="pi_irrational.Fpi_int" class="" title="pi_irrational.Fpi_int :
 forall {R : realType} (na : nat) [nb : nat] (n : nat),
-nb != 0 ->
+nb != 0%N ->
 (pi_irrational.F na nb n).[pi_irrational.pirat na nb]%R \is a Num.int
 
 pi_irrational.Fpi_int is not universe polymorphic
@@ -513,8 +517,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pi_irrational.D2FDF" class="id"><a name="pi_irrational.D2FDF" class="" title="pi_irrational.D2FDF :
 forall {R : realType} (na : nat) [nb : nat] (n : nat),
-nb != 0 ->
-((pi_irrational.F na nb n)^`(2)%R + pi_irrational.F na nb n)%E =
+nb != 0%N ->
+((pi_irrational.F na nb n)^`(2) + pi_irrational.F na nb n)%R =
 pi_irrational.f na nb n
 
 pi_irrational.D2FDF is not universe polymorphic
@@ -644,7 +648,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pi_irrational.intfsin_int" class="id"><a name="pi_irrational.intfsin_int" class="" title="pi_irrational.intfsin_int :
 forall {R : realType} [na nb : nat],
-nb != 0 ->
+nb != 0%N ->
 pi_irrational.pirat na nb = pi ->
 forall n : nat, pi_irrational.intfsin na nb n \is a Num.int
 
@@ -749,7 +753,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pi_irrational.intfsin_gt0" class="id"><a name="pi_irrational.intfsin_gt0" class="" title="pi_irrational.intfsin_gt0 :
 forall {R : realType} [na nb : nat],
-nb != 0 ->
+nb != 0%N ->
 pi_irrational.pirat na nb = pi ->
 forall n : nat, (0 < pi_irrational.intfsin na nb n)%R
 
@@ -804,11 +808,13 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pi_irrational.intfsin_small" class="id"><a name="pi_irrational.intfsin_small" class="" title="pi_irrational.intfsin_small :
 forall {R : realType} [na nb : nat],
-nb != 0 ->
+nb != 0%N ->
 pi_irrational.pirat na nb = pi ->
 forall [e : R],
 (0 < e)%R ->
-\forall n \near \oo%classic, (0 < pi_irrational.intfsin na nb n < e)%R
+filter.prop_near1 filter.eventually
+  (P:=fun n : nat => (0 < pi_irrational.intfsin na nb n < e)%R)
+  (inPhantom (forall n : nat, (0 < pi_irrational.intfsin na nb n < e)%R))
 
 pi_irrational.intfsin_small is not universe polymorphic
 Arguments pi_irrational.intfsin_small {R} [na nb]%_nat_scope 

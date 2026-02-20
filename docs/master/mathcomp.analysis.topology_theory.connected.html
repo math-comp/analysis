@@ -252,7 +252,9 @@ This file provides connected and its related notions.
 <span class="vernacular">Variable</span><span class="id"> </span><span id="connected_sets.T" class="id"><a name="connected_sets.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> A</span><span class="id"> B</span><span class="id"> C</span><span class="id"> D</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_sets.T">T</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="connected" class="id"><a name="connected" class="" title="connected : forall {T : topologicalType}, set T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="connected" class="id"><a name="connected" class="" title="connected :
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> Prop
 
 connected is not universe polymorphic
 Arguments connected {T} A%_classical_set_scope
@@ -264,15 +266,19 @@ library mathcomp.analysis.topology_theory.connected, line 29, characters 11-20
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="B:4" class="id"><a name="B:4" class="">B</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:4">B</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span> (<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span id="C:6" class="id"><span id="C:5" class="id"><a name="C:6" class="">C</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:5">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:4">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:3">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:6">C</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span id="C:8" class="id"><span id="C:7" class="id"><a name="C:8" class="">C</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:7">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:4">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:3">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:8">C</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:4">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:3">A</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected0" class="id"><a name="connected0" class="" title="connected0 : forall [T : topologicalType], connected set0
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected0" class="id"><a name="connected0" class="" title="connected0 : forall [T : topology_structure.Topological.type], connected set0
 
 connected0 is not universe polymorphic
 Expanded type for implicit arguments
 connected0 :
-forall [T : topologicalType] [B : set T],
+forall [T : topology_structure.Topological.type]
+  [B : set (topology_structure.Topological.sort T)],
 (B !=set0)%classic ->
-(exists2 C : set T, open C & B = (set0 `&` C)%classic) ->
-(exists2 C : set T, closed C & B = (set0 `&` C)%classic) -> B = set0
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.open C & B = (set0 `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.closed C & B = (set0 `&` C)%classic) ->
+B = set0
 
 Arguments connected0 [T B] _ _ _
 connected0 is opaque
@@ -285,7 +291,10 @@ library mathcomp.analysis.topology_theory.connected, line 33, characters 6-16
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> ?</span><span class="id"> ?</span><span class="id"> [?</span><span class="id"> ?];</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0I">set0I</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="separated" class="id"><a name="separated" class="" title="separated : forall [T : topologicalType], set T -> set T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="separated" class="id"><a name="separated" class="" title="separated :
+forall [T : topology_structure.Topological.type],
+set (topology_structure.Topological.sort T) ->
+set (topology_structure.Topological.sort T) -> Prop
 
 separated is not universe polymorphic
 Arguments separated [T] (A B)%_classical_set_scope
@@ -297,7 +306,8 @@ library mathcomp.analysis.topology_theory.connected, line 36, characters 11-20
 &nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:9">A</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:10">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:9">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#B:10">B</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="separatedC" class="id"><a name="separatedC" class="" title="separatedC :
-forall [T : topologicalType] (A B : set T),
+forall [T : topology_structure.Topological.type]
+  (A B : set (topology_structure.Topological.sort T)),
 separated (T:=T) A B = separated (T:=T) B A
 
 separatedC is not universe polymorphic
@@ -313,7 +323,8 @@ library mathcomp.analysis.topology_theory.connected, line 39, characters 6-16
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#separated">separated</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#andC">andC</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setIC">setIC</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#setIC">setIC</a></span><span class="id"> _</span><span class="id"> B</span>). Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="separated_disjoint" class="id"><a name="separated_disjoint" class="" title="separated_disjoint :
-forall [T : topologicalType] [A B : set T],
+forall [T : topology_structure.Topological.type]
+  [A B : set (topology_structure.Topological.sort T)],
 separated (T:=T) A B -> (A `&` B)%classic = set0
 
 separated_disjoint is not universe polymorphic
@@ -332,9 +343,10 @@ library mathcomp.analysis.topology_theory.connected, line 42, characters 6-24
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="connectedPn" class="id"><a name="connectedPn" class="" title="connectedPn :
-forall [T : topologicalType] (A : set T),
+forall [T : topology_structure.Topological.type]
+  (A : set (topology_structure.Topological.sort T)),
 ~ connected A <->
-(exists E : bool -> set T,
+(exists E : bool -> set (topology_structure.Topological.sort T),
    [/\ forall b : bool, (E b !=set0)%classic,
        A = (E false `|` E true)%classic
      & separated (T:=T) (E false) (E true)])
@@ -380,9 +392,10 @@ library mathcomp.analysis.topology_theory.connected, line 48, characters 6-17
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="connectedP" class="id"><a name="connectedP" class="" title="connectedP :
-forall [T : topologicalType] (A : set T),
+forall [T : topology_structure.Topological.type]
+  (A : set (topology_structure.Topological.sort T)),
 connected A <->
-(forall E : bool -> set T,
+(forall E : bool -> set (topology_structure.Topological.sort T),
  ~
  [/\ forall b : bool, (E b !=set0)%classic, A = (E false `|` E true)%classic
    & separated (T:=T) (E false) (E true)])
@@ -403,7 +416,8 @@ library mathcomp.analysis.topology_theory.connected, line 80, characters 6-16
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_subset" class="id"><a name="connected_subset" class="" title="connected_subset :
-forall [T : topologicalType] [A B C : set T],
+forall [T : topology_structure.Topological.type]
+  [A B C : set (topology_structure.Topological.sort T)],
 separated (T:=T) A B ->
 (C `<=` A `|` B)%classic ->
 connected C -> (C `<=` A)%classic \/ (C `<=` B)%classic
@@ -433,15 +447,22 @@ library mathcomp.analysis.topology_theory.connected, line 87, characters 6-22
 &nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> move:</span><span class="id"> AB;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#separated">separated</a></span><span class="id"> =&gt;</span><span class="id"> -[]</span><span class="id"> _;</span><span class="id"> apply/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id">/</span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0P">set0P</a></span><span class="id">;</span><span class="gallina-kwd"> exists</span><span class="id"> x</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected1" class="id"><a name="connected1" class="" title="connected1 : forall [T : topologicalType] [x : T], connected [set x]
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="connected1" class="id"><a name="connected1" class="" title="connected1 :
+forall [T : topology_structure.Topological.type]
+  [x : topology_structure.Topological.sort T],
+connected [set x]
 
 connected1 is not universe polymorphic
 Expanded type for implicit arguments
 connected1 :
-forall [T : topologicalType] [x : T] [B : set T],
+forall [T : topology_structure.Topological.type]
+  [x : topology_structure.Topological.sort T]
+  [B : set (topology_structure.Topological.sort T)],
 (B !=set0)%classic ->
-(exists2 C : set T, open C & B = ([set x] `&` C)%classic) ->
-(exists2 C : set T, closed C & B = ([set x] `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.open C & B = ([set x] `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.closed C & B = ([set x] `&` C)%classic) ->
 B = [set x]%classic
 
 Arguments connected1 [T x B] _ _ _
@@ -459,20 +480,26 @@ Qed.</div></details>
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> connected1</span><span class="id"> :</span><span class="id"> core</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigcup_connected" class="id"><a name="bigcup_connected" class="" title="bigcup_connected :
-forall [T : topologicalType] [I : Type] [A : I -> set T] [P : I -> Prop],
+forall [T : topology_structure.Topological.type] [I : Type]
+  [A : I -> set (topology_structure.Topological.sort T)] 
+  [P : I -> Prop],
 (\bigcap_(i in P) A i !=set0)%classic ->
 (forall i : I, P i -> connected (A i)) -> connected (\bigcup_(i in P) A i)
 
 bigcup_connected is not universe polymorphic
 Expanded type for implicit arguments
 bigcup_connected :
-forall [T : topologicalType] [I : Type] [A : I -> set T] [P : I -> Prop],
+forall [T : topology_structure.Topological.type] [I : Type]
+  [A : I -> set (topology_structure.Topological.sort T)] 
+  [P : I -> Prop],
 (\bigcap_(i in P) A i !=set0)%classic ->
 (forall i : I, P i -> connected (A i)) ->
-forall [B : set T],
+forall [B : set (topology_structure.Topological.sort T)],
 (B !=set0)%classic ->
-(exists2 C : set T, open C & B = (\bigcup_(i in P) A i `&` C)%classic) ->
-(exists2 C : set T, closed C & B = (\bigcup_(i in P) A i `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.open C & B = (\bigcup_(i in P) A i `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.closed C & B = (\bigcup_(i in P) A i `&` C)%classic) ->
 B = (\bigcup_(i in P) A i)%classic
 
 Arguments bigcup_connected [T] [I]%_type_scope [A P]%_function_scope 
@@ -512,20 +539,24 @@ library mathcomp.analysis.topology_theory.connected, line 110, characters 6-22
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="connectedU" class="id"><a name="connectedU" class="" title="connectedU :
-forall [T : topologicalType] [A B : set T],
+forall [T : topology_structure.Topological.type]
+  [A B : set (topology_structure.Topological.sort T)],
 (A `&` B !=set0)%classic -> connected A -> connected B -> connected (A `|` B)
 
 connectedU is not universe polymorphic
 Expanded type for implicit arguments
 connectedU :
-forall [T : topologicalType] [A B : set T],
+forall [T : topology_structure.Topological.type]
+  [A B : set (topology_structure.Topological.sort T)],
 (A `&` B !=set0)%classic ->
 connected A ->
 connected B ->
-forall [B0 : set T],
+forall [B0 : set (topology_structure.Topological.sort T)],
 (B0 !=set0)%classic ->
-(exists2 C : set T, open C & B0 = ((A `|` B) `&` C)%classic) ->
-(exists2 C : set T, closed C & B0 = ((A `|` B) `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.open C & B0 = ((A `|` B) `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.closed C & B0 = ((A `|` B) `&` C)%classic) ->
 B0 = (A `|` B)%classic
 
 Arguments connectedU [T] [A B]%_classical_set_scope _ _ _ [B] _ _ _
@@ -544,19 +575,25 @@ library mathcomp.analysis.topology_theory.connected, line 137, characters 6-16
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_closure" class="id"><a name="connected_closure" class="" title="connected_closure :
-forall [T : topologicalType] [A : set T],
-connected A -> connected (closure A)
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)],
+connected A -> connected (topology_structure.closure A)
 
 connected_closure is not universe polymorphic
 Expanded type for implicit arguments
 connected_closure :
-forall [T : topologicalType] [A : set T],
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)],
 connected A ->
-forall [B : set T],
+forall [B : set (topology_structure.Topological.sort T)],
 (B !=set0)%classic ->
-(exists2 C : set T, open C & B = (closure A `&` C)%classic) ->
-(exists2 C : set T, closed C & B = (closure A `&` C)%classic) ->
-B = closure A
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.open C &
+   B = (topology_structure.closure A `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.closed C &
+   B = (topology_structure.closure A `&` C)%classic) ->
+B = topology_structure.closure A
 
 Arguments connected_closure [T] [A]%_classical_set_scope _ [B] _ _ _
 connected_closure is opaque
@@ -580,7 +617,11 @@ library mathcomp.analysis.topology_theory.connected, line 145, characters 6-23
 <span class="id">-</span><span class="gallina-kwd"> by</span><span class="gallina-kwd"> exists</span><span class="id"> C2</span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> rewrite</span><span class="id"> C2E</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setIA">setIA</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#setIidl">setIidl</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#subset_closure">subset_closure</a></span><span class="id"> _</span><span class="id"> _</span>)).<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="connected_component" class="id"><a name="connected_component" class="" title="connected_component : forall {T : topologicalType}, set T -> T -> set T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="connected_component" class="id"><a name="connected_component" class="" title="connected_component :
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) ->
+topology_structure.Topological.sort T ->
+set (topology_structure.Topological.sort T)
 
 connected_component is not universe polymorphic
 Arguments connected_component {T} A%_classical_set_scope x _
@@ -593,16 +634,23 @@ library mathcomp.analysis.topology_theory.connected, line 159, characters 11-30
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#6c1866a3b78974b64276da9cd4d63a55">\bigcup_</a></span>(<span id="A:46" class="id"><a name="A:46" class="">A</a></span><span class="gallina-kwd"> in</span><span class="id"><a href="mathcomp.classical.classical_sets.html#6c1866a3b78974b64276da9cd4d63a55"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span id="C:45" class="id"><a name="C:45" class="">C</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> :</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_sets.T">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">[/\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:45">C</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#x:44">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:45">C</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:43">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected">connected</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#C:45">C</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">]</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">]</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#6c1866a3b78974b64276da9cd4d63a55"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#A:46">A</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="component_connected" class="id"><a name="component_connected" class="" title="component_connected :
-forall [T : topologicalType] [A : set T] [x : T],
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
 connected (connected_component A x)
 
 component_connected is not universe polymorphic
 Expanded type for implicit arguments
 component_connected :
-forall [T : topologicalType] [A : set T] [x : T] [B : set T],
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T]
+  [B : set (topology_structure.Topological.sort T)],
 (B !=set0)%classic ->
-(exists2 C : set T, open C & B = (connected_component A x `&` C)%classic) ->
-(exists2 C : set T, closed C & B = (connected_component A x `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.open C & B = (connected_component A x `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort T),
+   topology_structure.closed C & B = (connected_component A x `&` C)%classic) ->
 B = connected_component A x
 
 Arguments component_connected [T] [A]%_classical_set_scope [x B] _ _ _
@@ -618,13 +666,17 @@ library mathcomp.analysis.topology_theory.connected, line 162, characters 6-25
 <span class="gallina-kwd"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#bigcup_connected">bigcup_connected</a></span><span class="id">;</span><span class="id"> [exists</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> C</span><span class="id"> []|move=&gt;</span><span class="id"> C</span><span class="id"> []]</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_sub" class="id"><a name="connected_component_sub" class="" title="connected_component_sub :
-forall [T : topologicalType] [A : set T] [x : T],
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
 (connected_component A x `<=` A)%classic
 
 connected_component_sub is not universe polymorphic
 Expanded type for implicit arguments
 connected_component_sub :
-forall [T : topologicalType] [A : set T] [x t : T],
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x t : topology_structure.Topological.sort T],
 connected_component A x t -> A t
 
 Arguments connected_component_sub [T] [A]%_classical_set_scope [x t] _
@@ -640,7 +692,9 @@ library mathcomp.analysis.topology_theory.connected, line 165, characters 6-29
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> y</span><span class="id"> [B</span><span class="id"> [_</span><span class="id"> +</span><span class="id"> _]]</span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#69f87318111a06c23cf3b6c947249a45">[apply]</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_id" class="id"><a name="connected_component_id" class="" title="connected_component_id :
-forall [T : topologicalType] [A : set T] [x : T],
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
 A x -> connected A -> connected_component A x = A
 
 connected_component_id is not universe polymorphic
@@ -660,7 +714,9 @@ library mathcomp.analysis.topology_theory.connected, line 168, characters 6-28
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_out" class="id"><a name="connected_component_out" class="" title="connected_component_out :
-forall [T : topologicalType] [A : set T] [x : T],
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
 ~ A x -> connected_component A x = set0
 
 connected_component_out is not universe polymorphic
@@ -678,20 +734,24 @@ library mathcomp.analysis.topology_theory.connected, line 175, characters 6-29
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> NAx;</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.classical.classical_sets.html#subset0">subset0</a></span><span class="id"> =&gt;</span><span class="id"> y</span><span class="id"> [B</span><span class="id"> [/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#d18bf1e242aa8006719f115a8f44092e">[swap]</a></span><span class="id">/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#69f87318111a06c23cf3b6c947249a45">[apply]</a></span><span class="id">]]</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_max" class="id"><a name="connected_component_max" class="" title="connected_component_max :
-forall [T : topologicalType] [A B : set T] [x : T],
+forall [T : topology_structure.Topological.type]
+  [A B : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
 B x ->
 (B `<=` A)%classic -> connected B -> (B `<=` connected_component A x)%classic
 
 connected_component_max is not universe polymorphic
 Expanded type for implicit arguments
 connected_component_max :
-forall [T : topologicalType] [A B : set T] [x : T],
+forall [T : topology_structure.Topological.type]
+  [A B : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
 B x ->
 (B `<=` A)%classic ->
 connected B ->
-forall [t : T],
+forall [t : topology_structure.Topological.sort T],
 B t ->
-exists2 i : set T,
+exists2 i : set (topology_structure.Topological.sort T),
   [set C | [/\ C x, C `<=` A & connected C]]%classic i & id i t
 
 Arguments connected_component_max [T] [A B]%_classical_set_scope 
@@ -709,7 +769,9 @@ library mathcomp.analysis.topology_theory.connected, line 179, characters 6-29
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> Bx</span><span class="id"> BA</span><span class="id"> Bc</span><span class="id"> y</span><span class="id"> By;</span><span class="gallina-kwd"> exists</span><span class="id"> B</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_refl" class="id"><a name="connected_component_refl" class="" title="connected_component_refl :
-forall [T : topologicalType] [A : set T] [x : T],
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
 A x -> connected_component A x x
 
 connected_component_refl is not universe polymorphic
@@ -726,7 +788,8 @@ library mathcomp.analysis.topology_theory.connected, line 183, characters 6-30
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> Ax;</span><span class="gallina-kwd"> exists</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id">x</span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> //</span><span class="id"> _</span><span class="id"> -&gt;</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_cover" class="id"><a name="connected_component_cover" class="" title="connected_component_cover :
-forall [T : topologicalType] (A : set T),
+forall [T : topology_structure.Topological.type]
+  (A : set (topology_structure.Topological.sort T)),
 (\bigcup_(A0 in [set connected_component A x | x in A]) A0)%classic = A
 
 connected_component_cover is not universe polymorphic
@@ -746,7 +809,9 @@ library mathcomp.analysis.topology_theory.connected, line 186, characters 6-31
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_sym" class="id"><a name="connected_component_sym" class="" title="connected_component_sym :
-forall [T : topologicalType] [A : set T] [x y : T],
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x y : topology_structure.Topological.sort T],
 connected_component A x y -> connected_component A y x
 
 connected_component_sym is not universe polymorphic
@@ -764,7 +829,9 @@ library mathcomp.analysis.topology_theory.connected, line 193, characters 6-29
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> [B</span><span class="id"> [*]];</span><span class="gallina-kwd"> exists</span><span class="id"> B</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_component_trans" class="id"><a name="connected_component_trans" class="" title="connected_component_trans :
-forall [T : topologicalType] [A : set T] [y x z : T],
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [y x z : topology_structure.Topological.sort T],
 connected_component A x y ->
 connected_component A y z -> connected_component A x z
 
@@ -786,7 +853,9 @@ library mathcomp.analysis.topology_theory.connected, line 197, characters 6-31
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="same_connected_component" class="id"><a name="same_connected_component" class="" title="same_connected_component :
-forall [T : topologicalType] [A : set T] [x y : T],
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x y : topology_structure.Topological.sort T],
 connected_component A x y ->
 connected_component A x = connected_component A y
 
@@ -807,17 +876,22 @@ library mathcomp.analysis.topology_theory.connected, line 205, characters 6-30
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="component_closed" class="id"><a name="component_closed" class="" title="component_closed :
-forall [T : topologicalType] [A : set T] [x : T],
-closed A -> closed (connected_component A x)
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
+topology_structure.closed A ->
+topology_structure.closed (connected_component A x)
 
 component_closed is not universe polymorphic
 Expanded type for implicit arguments
 component_closed :
-forall [T : topologicalType] [A : set T] [x : T],
-closed A ->
-forall [t : T],
-closure (connected_component A x) t ->
-exists2 i : set T,
+forall [T : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
+topology_structure.closed A ->
+forall [t : topology_structure.Topological.sort T],
+topology_structure.closure (connected_component A x) t ->
+exists2 i : set (topology_structure.Topological.sort T),
   [set C | [/\ C x, C `<=` A & connected C]]%classic i & id i t
 
 Arguments component_closed [T] [A]%_classical_set_scope [x] _ [t] _
@@ -841,8 +915,9 @@ library mathcomp.analysis.topology_theory.connected, line 212, characters 6-22
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="clopen_separatedP" class="id"><a name="clopen_separatedP" class="" title="clopen_separatedP :
-forall [T : topologicalType] (A : set T),
-clopen A <-> separated (T:=T) A (~` A)
+forall [T : topology_structure.Topological.type]
+  (A : set (topology_structure.Topological.sort T)),
+topology_structure.clopen A <-> separated (T:=T) A (~` A)
 
 clopen_separatedP is not universe polymorphic
 Arguments clopen_separatedP [T] A%_classical_set_scope

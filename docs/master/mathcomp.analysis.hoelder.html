@@ -776,7 +776,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="hoelder_conjugate_eq1" class="id"><a name="hoelder_conjugate_eq1" class="" title="hoelder_conjugate_eq1 :
 forall {R : realType} [p : \bar R],
-(-oo < p)%E -> p != 0%R -> (p^-1 + (hoelder_conjugate p)^-1)%E = 1%E
+(-oo < p)%E -> p != 0%R -> (p^-1%E + (hoelder_conjugate p)^-1%E)%R = 1%E
 
 hoelder_conjugate_eq1 is not universe polymorphic
 Arguments hoelder_conjugate_eq1 {R} [p]%_ereal_scope _ _
@@ -825,7 +825,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="hoelder_conjugateP" class="id"><a name="hoelder_conjugateP" class="" title="hoelder_conjugateP :
 forall {R : realType} [p : \bar R] (q : \bar R),
-(-oo < p)%E -> p != 0%R -> (p^-1 + q^-1)%E = 1%E <-> q = hoelder_conjugate p
+(-oo < p)%E ->
+p != 0%R -> (p^-1%E + q^-1%E)%R = 1%E <-> q = hoelder_conjugate p
 
 hoelder_conjugateP is not universe polymorphic
 Arguments hoelder_conjugateP {R} [p]%_ereal_scope q%_ereal_scope _ _
@@ -880,7 +881,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="hoelder_Mconjugate" class="id"><a name="hoelder_Mconjugate" class="" title="hoelder_Mconjugate :
 forall {R : realType} [p : \bar R],
 (-oo < p)%E ->
-p != 0%R -> (p * hoelder_conjugate p)%E = (p + hoelder_conjugate p)%E
+p != 0%R -> (p * hoelder_conjugate p)%E = (p + hoelder_conjugate p)%R
 
 hoelder_Mconjugate is not universe polymorphic
 Arguments hoelder_Mconjugate {R} [p]%_ereal_scope _ _
@@ -1063,7 +1064,7 @@ measurable_fun (T:=T)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R) [set: T] g ->
 (0 < p)%R ->
 (0 < q)%R ->
-(p^-1%R + q^-1%R)%E = 1%R ->
+(p^-1 + q^-1)%R = 1%R ->
 ('N[mu]_1[EFin \o (f \* g)%R] <=
  'N[mu]_p%:E[EFin \o f] * 'N[mu]_q%:E[EFin \o g])%E
 
@@ -1155,10 +1156,9 @@ forall {R : realType} [a1 a2 b1 b2 p q : R],
 (0 <= b2)%R ->
 (0 < p)%R ->
 (0 < q)%R ->
-(p^-1%R + q^-1%R)%E = 1%R ->
-(((a1 * b1)%R + (a2 * b2)%R)%E <=
- ((a1 `^ p)%R + (a2 `^ p)%R)%E `^ p^-1 *
- ((b1 `^ q)%R + (b2 `^ q)%R)%E `^ q^-1)%R
+(p^-1 + q^-1)%R = 1%R ->
+(a1 * b1 + a2 * b2 <=
+ (a1 `^ p + a2 `^ p) `^ p^-1 * (b1 `^ q + b2 `^ q) `^ q^-1)%R
 
 hoelder2 is not universe polymorphic
 Arguments hoelder2 {R} [a1 a2 b1 b2 p q]%_ring_scope _ _ _ _ _ _ _
@@ -1357,7 +1357,7 @@ measurable_fun (T:=T)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R) [set: T] g ->
 (1 <= p)%R ->
 ('N[mu]_p%:E[EFin \o (f \+ g)%R] <=
- 'N[mu]_p%:E[EFin \o f] + 'N[mu]_p%:E[EFin \o g])%E
+ ('N[mu]_p%:E[EFin \o f] + 'N[mu]_p%:E[EFin \o g])%R)%E
 
 minkowski_EFin is not universe polymorphic
 Arguments minkowski_EFin [d]%_measure_display_scope 
@@ -1473,7 +1473,7 @@ measurable_fun (T:=T)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R) [set: T] g ->
 (1 <= p)%R ->
 ('N[mu]_p%:E[EFin \o f] <=
- 'N[mu]_p%:E[EFin \o (f \+ g)] + 'N[mu]_p%:E[EFin \o g])%E
+ ('N[mu]_p%:E[EFin \o (f \+ g)%E] + 'N[mu]_p%:E[EFin \o g])%R)%E
 
 lerB_DLnorm is not universe polymorphic
 Arguments lerB_DLnorm [d]%_measure_display_scope [T R] 
@@ -1537,7 +1537,8 @@ measurable_fun (T:=T)
 measurable_fun (T:=T)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R) [set: T] g ->
 (1 <= p)%E ->
-('N[mu]_p[EFin \o (f \+ g)%R] <= 'N[mu]_p[EFin \o f] + 'N[mu]_p[EFin \o g])%E
+('N[mu]_p[EFin \o (f \+ g)%R] <=
+ ('N[mu]_p[EFin \o f] + 'N[mu]_p[EFin \o g])%R)%E
 
 eminkowski is not universe polymorphic
 Arguments eminkowski [d]%_measure_display_scope [T R] 
@@ -3143,9 +3144,9 @@ Qed.</div></details>
 forall [d : measure_display] [T : measurableType d] 
   [R : realType] [mu : measure T R] [p : \bar R] [p1 : (1 <= p)%E]
   (f g : LfunType (T:=T) (R:=R) mu (p:=p) p1),
-((fun f0 : T -> R => fine 'N[mu]_p[EFin \o f0]) (f + g)%E <=
- ((fun f0 : T -> R => fine 'N[mu]_p[EFin \o f0]) f +
-  (fun f0 : T -> R => fine 'N[mu]_p[EFin \o f0]) g)%E)%R
+((fun f0 : T -> R => fine 'N[mu]_p[EFin \o f0]) (f + g) <=
+ (fun f0 : T -> R => fine 'N[mu]_p[EFin \o f0]) f +
+ (fun f0 : T -> R => fine 'N[mu]_p[EFin \o f0]) g)%R
 
 ler_LnormD is not universe polymorphic
 Arguments ler_LnormD [d]%_measure_display_scope [T R mu] 

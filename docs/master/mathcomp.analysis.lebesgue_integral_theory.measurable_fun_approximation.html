@@ -660,7 +660,11 @@ forall [d : measure_display] [T : measurableType d]
 (forall x0 : T, D x0 -> (0%R <= f x0)%E) ->
 D x ->
 (f x < +oo)%E ->
-(approx (T:=T) (R:=R) D f x0 x @[x0 --> \oo] --> fine (f x))%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap ((approx (T:=T) (R:=R) D f)^~ x)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (fine (f x)))
 
 cvg_approx is not universe polymorphic
 Expanded type for implicit arguments
@@ -671,7 +675,7 @@ forall [d : measure_display] [T : measurableType d]
 D x ->
 (f x < +oo)%E ->
 forall [t : set R],
-nbhs (fine (f x)) t ->
+filter.nbhs (fine (f x)) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -749,7 +753,17 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="dvg_approx" class="id"><a name="dvg_approx" class="" title="dvg_approx :
 forall [d : measure_display] [T : measurableType d] 
   [R : realType] [D : set T] [f : T -> \bar R] [x : T],
-D x -> f x = +oo%E -> ~ cvgn ((approx (T:=T) (R:=R) D f)^~ x : nat -> R^o)
+D x ->
+f x = +oo%E ->
+~
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap ((approx (T:=T) (R:=R) D f)^~ x : nat -> R^o)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap ((approx (T:=T) (R:=R) D f)^~ x : nat -> R^o)
+           (filter.nbhs filter.eventually))))
 
 dvg_approx is not universe polymorphic
 Arguments dvg_approx [d]%_measure_display_scope [T R]
@@ -780,7 +794,11 @@ forall [d : measure_display] [T : measurableType d]
 (forall x : T, D x -> (0%R <= f x)%E) ->
 forall [x : T],
 D x ->
-((EFin \o (approx (T:=T) (R:=R) D f)^~ x) x0 @[x0 --> \oo] --> f x)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (EFin \o (approx (T:=T) (R:=R) D f)^~ x)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (f x))
 
 ecvg_approx is not universe polymorphic
 Expanded type for implicit arguments
@@ -791,7 +809,7 @@ forall [d : measure_display] [T : measurableType d]
 forall [x : T],
 D x ->
 forall [t : set \bar R],
-nbhs (f x) t ->
+filter.nbhs (f x) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -896,9 +914,14 @@ forall [d : measure_display] [T : measurableType d]
 (forall x : T, D x -> (0%R <= f x)%E) ->
 forall [x : T],
 D x ->
-((EFin \o
-    (fun x0 : nat => nnsfun_approx (T:=T) (R:=R) (D:=D) mD (f:=f) mf x0 x))
-   x0 @[x0 --> \oo] --> f x)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap
+        (EFin \o
+           (fun x0 : nat =>
+            nnsfun_approx (T:=T) (R:=R) (D:=D) mD (f:=f) mf x0 x))
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (f x))
 
 cvg_nnsfun_approx is not universe polymorphic
 Expanded type for implicit arguments
@@ -914,7 +937,7 @@ forall [d : measure_display] [T : measurableType d]
 forall [x : T],
 D x ->
 forall [t : set \bar R],
-nbhs (f x) t ->
+filter.nbhs (f x) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -1003,7 +1026,11 @@ exists g : {nnsfun T >-> R} ^nat,
   n <= m >-> (n <= m)%O} /\
   (forall x : T,
    D x ->
-   ((EFin \o (fun x0 : nat => g x0 x)) x0 @[x0 --> \oo] --> f x)%classic)
+   filter.cvg_to
+     (filter.nbhs
+        (filter.fmap (EFin \o (fun x0 : nat => g x0 x))
+           (filter.nbhs filter.eventually)))
+     (filter.nbhs (f x)))
 
 approximation is not universe polymorphic
 Arguments approximation [d]%_measure_display_scope 
@@ -1204,7 +1231,11 @@ measurable_fun (T:=T)
 exists g : {sfun T >-> R} ^nat,
   forall x : T,
   D x ->
-  ((EFin \o (fun x0 : nat => g x0 x)) x0 @[x0 --> \oo] --> f x)%classic
+  filter.cvg_to
+    (filter.nbhs
+       (filter.fmap (EFin \o (fun x0 : nat => g x0 x))
+          (filter.nbhs filter.eventually)))
+    (filter.nbhs (f x))
 
 approximation_sfun is not universe polymorphic
 Arguments approximation_sfun [d]%_measure_display_scope 
@@ -2381,8 +2412,9 @@ measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing rT)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing rT) A f ->
 exists
   K : set
-        (numFieldTopology.Real_sort__canonical__topology_structure_Topological
-           rT),
+        (topology_structure.Topological.sort
+           (numFieldTopology.Real_sort__canonical__topology_structure_Topological
+              rT)),
   [/\ compact K, (K `<=` A)%classic,
       (lebesgue_measure (A `\` K)%classic < eps%:E)%E
     & {within K, continuous f}%classic]

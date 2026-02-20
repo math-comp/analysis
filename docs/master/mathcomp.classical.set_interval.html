@@ -2082,7 +2082,7 @@ library mathcomp.classical.set_interval, line 645, characters 6-16
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="le_line_path" class="id"><a name="le_line_path" class="" title="le_line_path :
 forall [R : numFieldType] [a b : R],
-(a < b)%R -> increasing_fun (line_path (R:=R) a b)
+(a < b)%R -> {mono line_path (R:=R) a b : x y / (x <= y)%R}
 
 le_line_path is not universe polymorphic
 Arguments le_line_path [R] [a b]%_ring_scope _ x y
@@ -2101,7 +2101,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="le_factor" class="id"><a name="le_factor" class="" title="le_factor :
 forall [R : numFieldType] [a b : R],
-(a < b)%R -> increasing_fun (factor (R:=R) a b)
+(a < b)%R -> {mono factor (R:=R) a b : x y / (x <= y)%R >-> (x <= y)%R}
 
 le_factor is not universe polymorphic
 Arguments le_factor [R] [a b]%_ring_scope _ x y

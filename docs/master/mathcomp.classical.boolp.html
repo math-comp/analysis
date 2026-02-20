@@ -2262,7 +2262,7 @@ Declared in library mathcomp.classical.boolp, line 576, characters 6-16
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> Qxy</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id">;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#contraTP">contraTP</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="contra_leP" class="id"><a name="contra_leP" class="" title="contra_leP :
-forall {disp1 : disp_t} {T1 : porderType disp1} [P : Prop] [x y : T1],
+forall {disp1 : Order.disp_t} {T1 : porderType disp1} [P : Prop] [x y : T1],
 (~ P -> (x < y)%O) -> (y <= x)%O -> P
 
 contra_leP is not universe polymorphic
@@ -2280,7 +2280,7 @@ Declared in library mathcomp.classical.boolp, line 579, characters 6-16
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="contra_ltP" class="id"><a name="contra_ltP" class="" title="contra_ltP :
-forall {disp1 : disp_t} {T1 : porderType disp1} [P : Prop] [x y : T1],
+forall {disp1 : Order.disp_t} {T1 : porderType disp1} [P : Prop] [x y : T1],
 (~ P -> (x <= y)%O) -> (y < x)%O -> P
 
 contra_ltP is not universe polymorphic
@@ -3189,10 +3189,10 @@ Qed.</div></details>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">TTheory</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigmax_geP" class="id"><a name="bigmax_geP" class="" title="bigmax_geP :
-forall [d : disp_t] [T : orderType d] (x : T) [I : finType] 
-  (P : pred I) (m : T) (F : I -> T),
+forall [d : Order.disp_t] [T : orderType d] (x : T) 
+  [I : finType] (P : pred I) (m : T) (F : I -> T),
 reflect ((m <= x)%O \/ (exists2 i : I, P i & (m <= F i)%O))
-  (m <= \big[Def.max/x]_(i | P i) F i)%O
+  (m <= \big[Order.Def.max/x]_(i | P i) F i)%O
 
 bigmax_geP is not universe polymorphic
 Arguments bigmax_geP [d T] x [I] P m F%_function_scope
@@ -3212,10 +3212,10 @@ Declared in library mathcomp.classical.boolp, line 860, characters 6-16
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigmax_gtP" class="id"><a name="bigmax_gtP" class="" title="bigmax_gtP :
-forall [d : disp_t] [T : orderType d] (x : T) [I : finType] 
-  (P : pred I) (m : T) (F : I -> T),
+forall [d : Order.disp_t] [T : orderType d] (x : T) 
+  [I : finType] (P : pred I) (m : T) (F : I -> T),
 reflect ((m < x)%O \/ (exists2 i : I, P i & (m < F i)%O))
-  (m < \big[Def.max/x]_(i | P i) F i)%O
+  (m < \big[Order.Def.max/x]_(i | P i) F i)%O
 
 bigmax_gtP is not universe polymorphic
 Arguments bigmax_gtP [d T] x [I] P m F%_function_scope
@@ -3235,10 +3235,10 @@ Declared in library mathcomp.classical.boolp, line 870, characters 6-16
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigmin_leP" class="id"><a name="bigmin_leP" class="" title="bigmin_leP :
-forall [d : disp_t] [T : orderType d] (x : T) [I : finType] 
-  (P : pred I) (m : T) (F : I -> T),
+forall [d : Order.disp_t] [T : orderType d] (x : T) 
+  [I : finType] (P : pred I) (m : T) (F : I -> T),
 reflect ((x <= m)%O \/ (exists2 i : I, P i & (F i <= m)%O))
-  (\big[Def.min/x]_(i | P i) F i <= m)%O
+  (\big[Order.Def.min/x]_(i | P i) F i <= m)%O
 
 bigmin_leP is not universe polymorphic
 Arguments bigmin_leP [d T] x [I] P m F%_function_scope
@@ -3258,10 +3258,10 @@ Declared in library mathcomp.classical.boolp, line 880, characters 6-16
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigmin_ltP" class="id"><a name="bigmin_ltP" class="" title="bigmin_ltP :
-forall [d : disp_t] [T : orderType d] (x : T) [I : finType] 
-  (P : pred I) (m : T) (F : I -> T),
+forall [d : Order.disp_t] [T : orderType d] (x : T) 
+  [I : finType] (P : pred I) (m : T) (F : I -> T),
 reflect ((x < m)%O \/ (exists2 i : I, P i & (F i < m)%O))
-  (\big[Def.min/x]_(i | P i) F i < m)%O
+  (\big[Order.Def.min/x]_(i | P i) F i < m)%O
 
 bigmin_ltP is not universe polymorphic
 Arguments bigmin_ltP [d T] x [I] P m F%_function_scope
@@ -3288,7 +3288,7 @@ Qed.</div></details>
 <span class="vernacular">Variables</span> (<span id="FunOrder.FunOrder.aT" class="id"><a name="FunOrder.FunOrder.aT" class="">aT</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>) (<span id="FunOrder.FunOrder.d" class="id"><a name="FunOrder.FunOrder.d" class="">d</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.disp_t">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.disp_t">disp_t</a></span>) (<span id="FunOrder.FunOrder.T" class="id"><a name="FunOrder.FunOrder.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrder.Exports.porderType">porderType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#d:618">d</a></span>).<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> f</span><span class="id"> g</span><span class="id"> h</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#FunOrder.FunOrder.aT">aT</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#FunOrder.FunOrder.T">T</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="FunOrder.fun_display" class="id"><a name="FunOrder.fun_display" class="" title="FunOrder.fun_display : disp_t
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="FunOrder.fun_display" class="id"><a name="FunOrder.fun_display" class="" title="FunOrder.fun_display : Order.disp_t
 
 FunOrder.fun_display is not universe polymorphic
 FunOrder.fun_display is opaque
@@ -3301,7 +3301,7 @@ Declared in library mathcomp.classical.boolp, line 908, characters 6-17
 <span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#Order.default_display">Order</a></span>.<span class="id"><a href="mathcomp.classical.mathcomp_extra.html#Order.default_display">default_display</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="FunOrder.lef" class="id"><a name="FunOrder.lef" class="" title="FunOrder.lef :
-forall [aT : Type] [d : disp_t] [T : porderType d],
+forall [aT : Type] [d : Order.disp_t] [T : porderType d],
 (aT -> T) -> (aT -> T) -> bool
 
 FunOrder.lef is not universe polymorphic
@@ -3313,7 +3313,7 @@ Declared in library mathcomp.classical.boolp, line 910, characters 11-14
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span> <span id="f19451cbaa2069d404dd9bdd9c3b0464" class="id"><a name="f19451cbaa2069d404dd9bdd9c3b0464" class="">&quot;f &lt;= g&quot;</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.classical.boolp.html#FunOrder.lef">lef</a></span><span class="id"> f</span><span class="id"> g</span>).<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="FunOrder.ltf" class="id"><a name="FunOrder.ltf" class="" title="FunOrder.ltf :
-forall [aT : Type] [d : disp_t] [T : porderType d],
+forall [aT : Type] [d : Order.disp_t] [T : porderType d],
 (aT -> T) -> (aT -> T) -> bool
 
 FunOrder.ltf is not universe polymorphic
@@ -3325,7 +3325,7 @@ Declared in library mathcomp.classical.boolp, line 913, characters 11-14
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span> <span id="FunOrder.FunOrder.:::x_'&lt;'_x" class="id"><a name="FunOrder.FunOrder.:::x_'&lt;'_x" class="">&quot;f &lt; g&quot;</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.classical.boolp.html#FunOrder.ltf">ltf</a></span><span class="id"> f</span><span class="id"> g</span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="FunOrder.ltf_def" class="id"><a name="FunOrder.ltf_def" class="" title="FunOrder.ltf_def :
-forall [aT : Type] [d : disp_t] [T : porderType d] (f g : aT -> T),
+forall [aT : Type] [d : Order.disp_t] [T : porderType d] (f g : aT -> T),
 FunOrder.ltf (T:=T) f g = (g != f) && FunOrder.lef (T:=T) f g
 
 FunOrder.ltf_def is not universe polymorphic
@@ -3347,7 +3347,7 @@ Declared in library mathcomp.classical.boolp, line 916, characters 6-13
 Qed.</div></details>
 <br/>
 <span class="vernacular">Fact</span><span class="id"> </span><span id="FunOrder.lef_refl" class="id"><a name="FunOrder.lef_refl" class="" title="FunOrder.lef_refl :
-forall [aT : Type] [d : disp_t] [T : porderType d],
+forall [aT : Type] [d : Order.disp_t] [T : porderType d],
 reflexive (T:=aT -> T) (FunOrder.lef (T:=T))
 
 FunOrder.lef_refl is not universe polymorphic
@@ -3362,13 +3362,13 @@ Declared in library mathcomp.classical.boolp, line 927, characters 5-13
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> f;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#asboolP">asboolP</a></span><span class="id"> =&gt;</span><span class="id"> x</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Fact</span><span class="id"> </span><span id="FunOrder.lef_anti" class="id"><a name="FunOrder.lef_anti" class="" title="FunOrder.lef_anti :
-forall [aT : Type] [d : disp_t] [T : porderType d],
+forall [aT : Type] [d : Order.disp_t] [T : porderType d],
 antisymmetric (T:=aT -> T) (FunOrder.lef (T:=T))
 
 FunOrder.lef_anti is not universe polymorphic
 Expanded type for implicit arguments
 FunOrder.lef_anti :
-forall [aT : Type] [d : disp_t] [T : porderType d] [x y : aT -> T],
+forall [aT : Type] [d : Order.disp_t] [T : porderType d] [x y : aT -> T],
 FunOrder.lef (T:=T) x y && FunOrder.lef (T:=T) y x -> x = y
 
 Arguments FunOrder.lef_anti [aT]%_type_scope [d T x y] _
@@ -3384,13 +3384,13 @@ Declared in library mathcomp.classical.boolp, line 929, characters 5-13
 Qed.</div></details>
 <br/>
 <span class="vernacular">Fact</span><span class="id"> </span><span id="FunOrder.lef_trans" class="id"><a name="FunOrder.lef_trans" class="" title="FunOrder.lef_trans :
-forall [aT : Type] [d : disp_t] [T : porderType d],
+forall [aT : Type] [d : Order.disp_t] [T : porderType d],
 transitive (T:=aT -> T) (FunOrder.lef (T:=T))
 
 FunOrder.lef_trans is not universe polymorphic
 Expanded type for implicit arguments
 FunOrder.lef_trans :
-forall [aT : Type] [d : disp_t] [T : porderType d] [y x z : aT -> T],
+forall [aT : Type] [d : Order.disp_t] [T : porderType d] [y x z : aT -> T],
 FunOrder.lef (T:=T) x y ->
 FunOrder.lef (T:=T) y z -> FunOrder.lef (T:=T) x z = true
 
@@ -3407,7 +3407,8 @@ Declared in library mathcomp.classical.boolp, line 935, characters 5-14
 Qed.</div></details>
 <br/>
 <span id="FunOrder.prod__canonical__Order_POrder" class="id"><span id="FunOrder.HB_unnamed_mixin_24" class="id"><span id="FunOrder.prod__canonical__Order_Preorder" class="id"><span id="FunOrder.HB_unnamed_mixin_23" class="id"><span id="FunOrder.Order_isPOrder__to__Order_isDuallyPreorder" class="id"><span id="FunOrder.Order_isPOrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="FunOrder.HB_unnamed_factory_20" class="id"><a name="FunOrder.prod__canonical__Order_POrder" class="" title="FunOrder.prod__canonical__Order_POrder :
-Type -> forall [d : disp_t], porderType d -> porderType FunOrder.fun_display
+Type ->
+forall [d : Order.disp_t], porderType d -> porderType FunOrder.fun_display
 
 FunOrder.prod__canonical__Order_POrder is not universe polymorphic
 Arguments FunOrder.prod__canonical__Order_POrder aT%_type_scope [d] T
@@ -3417,7 +3418,8 @@ Expands to: Constant
 Declared in library mathcomp.classical.boolp, line 941, characters 0-128
 ">#[export]</a></span></span></span></span></span></span></span><br/>
 <span id="FunOrder.prod__canonical__Order_POrder" class="id"><span id="FunOrder.HB_unnamed_mixin_24" class="id"><span id="FunOrder.prod__canonical__Order_Preorder" class="id"><span id="FunOrder.HB_unnamed_mixin_23" class="id"><span id="FunOrder.Order_isPOrder__to__Order_isDuallyPreorder" class="id"><span id="FunOrder.Order_isPOrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="FunOrder.HB_unnamed_factory_20" class="id"><a name="FunOrder.prod__canonical__Order_POrder" class="" title="FunOrder.prod__canonical__Order_POrder :
-Type -> forall [d : disp_t], porderType d -> porderType FunOrder.fun_display
+Type ->
+forall [d : Order.disp_t], porderType d -> porderType FunOrder.fun_display
 
 FunOrder.prod__canonical__Order_POrder is not universe polymorphic
 Arguments FunOrder.prod__canonical__Order_POrder aT%_type_scope [d] T
@@ -3426,7 +3428,8 @@ Expands to: Constant
             mathcomp.classical.boolp.FunOrder.prod__canonical__Order_POrder
 Declared in library mathcomp.classical.boolp, line 941, characters 0-128
 ">HB</a></span></span></span></span></span></span></span>.<span id="FunOrder.prod__canonical__Order_POrder" class="id"><span id="FunOrder.HB_unnamed_mixin_24" class="id"><span id="FunOrder.prod__canonical__Order_Preorder" class="id"><span id="FunOrder.HB_unnamed_mixin_23" class="id"><span id="FunOrder.Order_isPOrder__to__Order_isDuallyPreorder" class="id"><span id="FunOrder.Order_isPOrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="FunOrder.HB_unnamed_factory_20" class="id"><a name="FunOrder.prod__canonical__Order_POrder" class="" title="FunOrder.prod__canonical__Order_POrder :
-Type -> forall [d : disp_t], porderType d -> porderType FunOrder.fun_display
+Type ->
+forall [d : Order.disp_t], porderType d -> porderType FunOrder.fun_display
 
 FunOrder.prod__canonical__Order_POrder is not universe polymorphic
 Arguments FunOrder.prod__canonical__Order_POrder aT%_type_scope [d] T
@@ -3435,7 +3438,8 @@ Expands to: Constant
             mathcomp.classical.boolp.FunOrder.prod__canonical__Order_POrder
 Declared in library mathcomp.classical.boolp, line 941, characters 0-128
 ">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="FunOrder.prod__canonical__Order_POrder" class="id"><span id="FunOrder.HB_unnamed_mixin_24" class="id"><span id="FunOrder.prod__canonical__Order_Preorder" class="id"><span id="FunOrder.HB_unnamed_mixin_23" class="id"><span id="FunOrder.Order_isPOrder__to__Order_isDuallyPreorder" class="id"><span id="FunOrder.Order_isPOrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="FunOrder.HB_unnamed_factory_20" class="id"><a name="FunOrder.prod__canonical__Order_POrder" class="" title="FunOrder.prod__canonical__Order_POrder :
-Type -> forall [d : disp_t], porderType d -> porderType FunOrder.fun_display
+Type ->
+forall [d : Order.disp_t], porderType d -> porderType FunOrder.fun_display
 
 FunOrder.prod__canonical__Order_POrder is not universe polymorphic
 Arguments FunOrder.prod__canonical__Order_POrder aT%_type_scope [d] T
@@ -3444,7 +3448,8 @@ Expands to: Constant
             mathcomp.classical.boolp.FunOrder.prod__canonical__Order_POrder
 Declared in library mathcomp.classical.boolp, line 941, characters 0-128
 "> _</a></span></span></span></span></span></span></span><span id="FunOrder.prod__canonical__Order_POrder" class="id"><span id="FunOrder.HB_unnamed_mixin_24" class="id"><span id="FunOrder.prod__canonical__Order_Preorder" class="id"><span id="FunOrder.HB_unnamed_mixin_23" class="id"><span id="FunOrder.Order_isPOrder__to__Order_isDuallyPreorder" class="id"><span id="FunOrder.Order_isPOrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="FunOrder.HB_unnamed_factory_20" class="id"><a name="FunOrder.prod__canonical__Order_POrder" class="" title="FunOrder.prod__canonical__Order_POrder :
-Type -> forall [d : disp_t], porderType d -> porderType FunOrder.fun_display
+Type ->
+forall [d : Order.disp_t], porderType d -> porderType FunOrder.fun_display
 
 FunOrder.prod__canonical__Order_POrder is not universe polymorphic
 Arguments FunOrder.prod__canonical__Order_POrder aT%_type_scope [d] T
@@ -3453,7 +3458,8 @@ Expands to: Constant
             mathcomp.classical.boolp.FunOrder.prod__canonical__Order_POrder
 Declared in library mathcomp.classical.boolp, line 941, characters 0-128
 "> :=</a></span></span></span></span></span></span></span><span id="FunOrder.prod__canonical__Order_POrder" class="id"><span id="FunOrder.HB_unnamed_mixin_24" class="id"><span id="FunOrder.prod__canonical__Order_Preorder" class="id"><span id="FunOrder.HB_unnamed_mixin_23" class="id"><span id="FunOrder.Order_isPOrder__to__Order_isDuallyPreorder" class="id"><span id="FunOrder.Order_isPOrder__to__Order_Preorder_isDuallyPOrder" class="id"><span id="FunOrder.HB_unnamed_factory_20" class="id"><a name="FunOrder.prod__canonical__Order_POrder" class="" title="FunOrder.prod__canonical__Order_POrder :
-Type -> forall [d : disp_t], porderType d -> porderType FunOrder.fun_display
+Type ->
+forall [d : Order.disp_t], porderType d -> porderType FunOrder.fun_display
 
 FunOrder.prod__canonical__Order_POrder is not universe polymorphic
 Arguments FunOrder.prod__canonical__Order_POrder aT%_type_scope [d] T
@@ -3472,7 +3478,7 @@ Declared in library mathcomp.classical.boolp, line 941, characters 0-128
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> f</span><span class="id"> g</span><span class="id"> h</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#FunOrder.FunLattice.aT">aT</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#FunOrder.FunLattice.T">T</a></span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="FunOrder.meetf" class="id"><a name="FunOrder.meetf" class="" title="FunOrder.meetf :
-forall [aT : Type] [d : disp_t] [T : latticeType d],
+forall [aT : Type] [d : Order.disp_t] [T : latticeType d],
 (aT -> T) -> (aT -> T) -> aT -> T
 
 FunOrder.meetf is not universe polymorphic
@@ -3482,7 +3488,7 @@ Expands to: Constant mathcomp.classical.boolp.FunOrder.meetf
 Declared in library mathcomp.classical.boolp, line 952, characters 11-16
 ">meetf</a></span><span class="id"> </span><span id="f:636" class="id"><a name="f:636" class="">f</a></span><span class="id"> </span><span id="g:637" class="id"><a name="g:637" class="">g</a></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="x:638" class="id"><a name="x:638" class="">x</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.meet">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.meet">meet</a></span> (<span class="id"><a href="mathcomp.classical.boolp.html#f:636">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:638">x</a></span>) (<span class="id"><a href="mathcomp.classical.boolp.html#g:637">g</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:638">x</a></span>).<br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="FunOrder.joinf" class="id"><a name="FunOrder.joinf" class="" title="FunOrder.joinf :
-forall [aT : Type] [d : disp_t] [T : latticeType d],
+forall [aT : Type] [d : Order.disp_t] [T : latticeType d],
 (aT -> T) -> (aT -> T) -> aT -> T
 
 FunOrder.joinf is not universe polymorphic
@@ -3493,7 +3499,7 @@ Declared in library mathcomp.classical.boolp, line 953, characters 11-16
 ">joinf</a></span><span class="id"> </span><span id="f:639" class="id"><a name="f:639" class="">f</a></span><span class="id"> </span><span id="g:640" class="id"><a name="g:640" class="">g</a></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="x:641" class="id"><a name="x:641" class="">x</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.join">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.join">join</a></span> (<span class="id"><a href="mathcomp.classical.boolp.html#f:639">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:641">x</a></span>) (<span class="id"><a href="mathcomp.classical.boolp.html#g:640">g</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:641">x</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="FunOrder.meetfC" class="id"><a name="FunOrder.meetfC" class="" title="FunOrder.meetfC :
-forall [aT : Type] [d : disp_t] [T : latticeType d],
+forall [aT : Type] [d : Order.disp_t] [T : latticeType d],
 commutative (FunOrder.meetf (T:=T))
 
 FunOrder.meetfC is not universe polymorphic
@@ -3508,7 +3514,7 @@ Declared in library mathcomp.classical.boolp, line 955, characters 6-12
 <span class="id"> move=&gt;</span><span class="id"> f</span><span class="id"> g;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#funext">funext</a></span><span class="id"> =&gt;</span><span class="id"> x;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.MeetTheory.meetC">meetC</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="FunOrder.joinfC" class="id"><a name="FunOrder.joinfC" class="" title="FunOrder.joinfC :
-forall [aT : Type] [d : disp_t] [T : latticeType d],
+forall [aT : Type] [d : Order.disp_t] [T : latticeType d],
 commutative (FunOrder.joinf (T:=T))
 
 FunOrder.joinfC is not universe polymorphic
@@ -3523,7 +3529,7 @@ Declared in library mathcomp.classical.boolp, line 958, characters 6-12
 <span class="id"> move=&gt;</span><span class="id"> f</span><span class="id"> g;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#funext">funext</a></span><span class="id"> =&gt;</span><span class="id"> x;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.JoinTheory.joinC">joinC</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="FunOrder.meetfA" class="id"><a name="FunOrder.meetfA" class="" title="FunOrder.meetfA :
-forall [aT : Type] [d : disp_t] [T : latticeType d],
+forall [aT : Type] [d : Order.disp_t] [T : latticeType d],
 associative (FunOrder.meetf (T:=T))
 
 FunOrder.meetfA is not universe polymorphic
@@ -3538,7 +3544,7 @@ Declared in library mathcomp.classical.boolp, line 961, characters 6-12
 <span class="id"> move=&gt;</span><span class="id"> f</span><span class="id"> g</span><span class="id"> h;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#funext">funext</a></span><span class="id"> =&gt;</span><span class="id"> x;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.MeetTheory.meetA">meetA</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="FunOrder.joinfA" class="id"><a name="FunOrder.joinfA" class="" title="FunOrder.joinfA :
-forall [aT : Type] [d : disp_t] [T : latticeType d],
+forall [aT : Type] [d : Order.disp_t] [T : latticeType d],
 associative (FunOrder.joinf (T:=T))
 
 FunOrder.joinfA is not universe polymorphic
@@ -3553,7 +3559,7 @@ Declared in library mathcomp.classical.boolp, line 964, characters 6-12
 <span class="id"> move=&gt;</span><span class="id"> f</span><span class="id"> g</span><span class="id"> h;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#funext">funext</a></span><span class="id"> =&gt;</span><span class="id"> x;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.JoinTheory.joinA">joinA</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="FunOrder.joinfKI" class="id"><a name="FunOrder.joinfKI" class="" title="FunOrder.joinfKI :
-forall [aT : Type] [d : disp_t] [T : latticeType d] (g f : aT -> T),
+forall [aT : Type] [d : Order.disp_t] [T : latticeType d] (g f : aT -> T),
 FunOrder.meetf (T:=T) f (FunOrder.joinf (T:=T) f g) = f
 
 FunOrder.joinfKI is not universe polymorphic
@@ -3568,7 +3574,7 @@ Declared in library mathcomp.classical.boolp, line 967, characters 6-13
 <span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#funext">funext</a></span><span class="id"> =&gt;</span><span class="id"> x;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.LatticeTheory.joinKI">joinKI</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="FunOrder.meetfKU" class="id"><a name="FunOrder.meetfKU" class="" title="FunOrder.meetfKU :
-forall [aT : Type] [d : disp_t] [T : latticeType d] (g f : aT -> T),
+forall [aT : Type] [d : Order.disp_t] [T : latticeType d] (g f : aT -> T),
 FunOrder.joinf (T:=T) f (FunOrder.meetf (T:=T) f g) = f
 
 FunOrder.meetfKU is not universe polymorphic
@@ -3583,7 +3589,7 @@ Declared in library mathcomp.classical.boolp, line 970, characters 6-13
 <span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#funext">funext</a></span><span class="id"> =&gt;</span><span class="id"> x;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.LatticeTheory.meetKU">meetKU</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="FunOrder.lef_meet" class="id"><a name="FunOrder.lef_meet" class="" title="FunOrder.lef_meet :
-forall [aT : Type] [d : disp_t] [T : latticeType d] (f g : aT -> T),
+forall [aT : Type] [d : Order.disp_t] [T : latticeType d] (f g : aT -> T),
 (f <= g)%O = (FunOrder.meetf (T:=T) f g == f)
 
 FunOrder.lef_meet is not universe polymorphic
@@ -3602,7 +3608,7 @@ Qed.</div></details>
 <br/>
 <span id="FunOrder.prod__canonical__Order_Lattice" class="id"><span id="FunOrder.prod__canonical__Order_JoinSemilattice" class="id"><span id="FunOrder.HB_unnamed_mixin_29" class="id"><span id="FunOrder.prod__canonical__Order_MeetSemilattice" class="id"><span id="FunOrder.HB_unnamed_mixin_28" class="id"><span id="FunOrder.Order_POrder_isLattice__to__Order_POrder_isJoinSemilattice" class="id"><span id="FunOrder.Order_POrder_isLattice__to__Order_POrder_isMeetSemilattice" class="id"><span id="FunOrder.HB_unnamed_factory_25" class="id"><a name="FunOrder.prod__canonical__Order_Lattice" class="" title="FunOrder.prod__canonical__Order_Lattice :
 Type ->
-forall [d : disp_t], latticeType d -> latticeType FunOrder.fun_display
+forall [d : Order.disp_t], latticeType d -> latticeType FunOrder.fun_display
 
 FunOrder.prod__canonical__Order_Lattice is not universe polymorphic
 Arguments FunOrder.prod__canonical__Order_Lattice aT%_type_scope [d] T
@@ -3613,7 +3619,7 @@ Declared in library mathcomp.classical.boolp, line 980, characters 0-134
 ">#[export]</a></span></span></span></span></span></span></span></span><br/>
 <span id="FunOrder.prod__canonical__Order_Lattice" class="id"><span id="FunOrder.prod__canonical__Order_JoinSemilattice" class="id"><span id="FunOrder.HB_unnamed_mixin_29" class="id"><span id="FunOrder.prod__canonical__Order_MeetSemilattice" class="id"><span id="FunOrder.HB_unnamed_mixin_28" class="id"><span id="FunOrder.Order_POrder_isLattice__to__Order_POrder_isJoinSemilattice" class="id"><span id="FunOrder.Order_POrder_isLattice__to__Order_POrder_isMeetSemilattice" class="id"><span id="FunOrder.HB_unnamed_factory_25" class="id"><a name="FunOrder.prod__canonical__Order_Lattice" class="" title="FunOrder.prod__canonical__Order_Lattice :
 Type ->
-forall [d : disp_t], latticeType d -> latticeType FunOrder.fun_display
+forall [d : Order.disp_t], latticeType d -> latticeType FunOrder.fun_display
 
 FunOrder.prod__canonical__Order_Lattice is not universe polymorphic
 Arguments FunOrder.prod__canonical__Order_Lattice aT%_type_scope [d] T
@@ -3623,7 +3629,7 @@ Expands to: Constant
 Declared in library mathcomp.classical.boolp, line 980, characters 0-134
 ">HB</a></span></span></span></span></span></span></span></span>.<span id="FunOrder.prod__canonical__Order_Lattice" class="id"><span id="FunOrder.prod__canonical__Order_JoinSemilattice" class="id"><span id="FunOrder.HB_unnamed_mixin_29" class="id"><span id="FunOrder.prod__canonical__Order_MeetSemilattice" class="id"><span id="FunOrder.HB_unnamed_mixin_28" class="id"><span id="FunOrder.Order_POrder_isLattice__to__Order_POrder_isJoinSemilattice" class="id"><span id="FunOrder.Order_POrder_isLattice__to__Order_POrder_isMeetSemilattice" class="id"><span id="FunOrder.HB_unnamed_factory_25" class="id"><a name="FunOrder.prod__canonical__Order_Lattice" class="" title="FunOrder.prod__canonical__Order_Lattice :
 Type ->
-forall [d : disp_t], latticeType d -> latticeType FunOrder.fun_display
+forall [d : Order.disp_t], latticeType d -> latticeType FunOrder.fun_display
 
 FunOrder.prod__canonical__Order_Lattice is not universe polymorphic
 Arguments FunOrder.prod__canonical__Order_Lattice aT%_type_scope [d] T
@@ -3633,7 +3639,7 @@ Expands to: Constant
 Declared in library mathcomp.classical.boolp, line 980, characters 0-134
 ">instance</a></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="FunOrder.prod__canonical__Order_Lattice" class="id"><span id="FunOrder.prod__canonical__Order_JoinSemilattice" class="id"><span id="FunOrder.HB_unnamed_mixin_29" class="id"><span id="FunOrder.prod__canonical__Order_MeetSemilattice" class="id"><span id="FunOrder.HB_unnamed_mixin_28" class="id"><span id="FunOrder.Order_POrder_isLattice__to__Order_POrder_isJoinSemilattice" class="id"><span id="FunOrder.Order_POrder_isLattice__to__Order_POrder_isMeetSemilattice" class="id"><span id="FunOrder.HB_unnamed_factory_25" class="id"><a name="FunOrder.prod__canonical__Order_Lattice" class="" title="FunOrder.prod__canonical__Order_Lattice :
 Type ->
-forall [d : disp_t], latticeType d -> latticeType FunOrder.fun_display
+forall [d : Order.disp_t], latticeType d -> latticeType FunOrder.fun_display
 
 FunOrder.prod__canonical__Order_Lattice is not universe polymorphic
 Arguments FunOrder.prod__canonical__Order_Lattice aT%_type_scope [d] T
@@ -3643,7 +3649,7 @@ Expands to: Constant
 Declared in library mathcomp.classical.boolp, line 980, characters 0-134
 "> _</a></span></span></span></span></span></span></span></span><span id="FunOrder.prod__canonical__Order_Lattice" class="id"><span id="FunOrder.prod__canonical__Order_JoinSemilattice" class="id"><span id="FunOrder.HB_unnamed_mixin_29" class="id"><span id="FunOrder.prod__canonical__Order_MeetSemilattice" class="id"><span id="FunOrder.HB_unnamed_mixin_28" class="id"><span id="FunOrder.Order_POrder_isLattice__to__Order_POrder_isJoinSemilattice" class="id"><span id="FunOrder.Order_POrder_isLattice__to__Order_POrder_isMeetSemilattice" class="id"><span id="FunOrder.HB_unnamed_factory_25" class="id"><a name="FunOrder.prod__canonical__Order_Lattice" class="" title="FunOrder.prod__canonical__Order_Lattice :
 Type ->
-forall [d : disp_t], latticeType d -> latticeType FunOrder.fun_display
+forall [d : Order.disp_t], latticeType d -> latticeType FunOrder.fun_display
 
 FunOrder.prod__canonical__Order_Lattice is not universe polymorphic
 Arguments FunOrder.prod__canonical__Order_Lattice aT%_type_scope [d] T
@@ -3653,7 +3659,7 @@ Expands to: Constant
 Declared in library mathcomp.classical.boolp, line 980, characters 0-134
 "> :=</a></span></span></span></span></span></span></span></span><span id="FunOrder.prod__canonical__Order_Lattice" class="id"><span id="FunOrder.prod__canonical__Order_JoinSemilattice" class="id"><span id="FunOrder.HB_unnamed_mixin_29" class="id"><span id="FunOrder.prod__canonical__Order_MeetSemilattice" class="id"><span id="FunOrder.HB_unnamed_mixin_28" class="id"><span id="FunOrder.Order_POrder_isLattice__to__Order_POrder_isJoinSemilattice" class="id"><span id="FunOrder.Order_POrder_isLattice__to__Order_POrder_isMeetSemilattice" class="id"><span id="FunOrder.HB_unnamed_factory_25" class="id"><a name="FunOrder.prod__canonical__Order_Lattice" class="" title="FunOrder.prod__canonical__Order_Lattice :
 Type ->
-forall [d : disp_t], latticeType d -> latticeType FunOrder.fun_display
+forall [d : Order.disp_t], latticeType d -> latticeType FunOrder.fun_display
 
 FunOrder.prod__canonical__Order_Lattice is not universe polymorphic
 Arguments FunOrder.prod__canonical__Order_Lattice aT%_type_scope [d] T
@@ -3672,7 +3678,7 @@ Declared in library mathcomp.classical.boolp, line 980, characters 0-134
 <span class="vernacular">Export</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#FunOrder.Exports">FunOrder</a></span>.<span class="vernacular">Exports</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lefP" class="id"><a name="lefP" class="" title="lefP :
-forall [aT : Type] [d : disp_t] [T : porderType d] (f g : aT -> T),
+forall [aT : Type] [d : Order.disp_t] [T : porderType d] (f g : aT -> T),
 reflect (forall x : aT, (f x <= g x)%O) (f <= g)%O
 
 lefP is not universe polymorphic
@@ -3688,7 +3694,8 @@ Declared in library mathcomp.classical.boolp, line 991, characters 6-10
 <span class="gallina-kwd"> by</span><span class="id"> apply:</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#iffP">iffP</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#idP">idP</a></span>)<span class="id"> =&gt;</span><span class="id"> [fg|fg];</span><span class="id"> [exact/</span><span class="id"><a href="mathcomp.classical.boolp.html#asboolP">asboolP</a></span><span class="id"> |</span><span class="id"> exact/</span><span class="id"><a href="mathcomp.classical.boolp.html#asboolP">asboolP</a></span><span class="id">]</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="meetfE" class="id"><a name="meetfE" class="" title="meetfE :
-forall [aT : Type] [d : disp_t] [T : latticeType d] (f g : aT -> T) (x : aT),
+forall [aT : Type] [d : Order.disp_t] [T : latticeType d] 
+  (f g : aT -> T) (x : aT),
 (f `&` g)%O x = (f x `&` g x)%O
 
 meetfE is not universe polymorphic
@@ -3704,7 +3711,8 @@ Declared in library mathcomp.classical.boolp, line 995, characters 6-12
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="joinfE" class="id"><a name="joinfE" class="" title="joinfE :
-forall [aT : Type] [d : disp_t] [T : latticeType d] (f g : aT -> T) (x : aT),
+forall [aT : Type] [d : Order.disp_t] [T : latticeType d] 
+  (f g : aT -> T) (x : aT),
 (f `|` g)%O x = (f x `|` g x)%O
 
 joinfE is not universe polymorphic

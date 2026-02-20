@@ -407,16 +407,26 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="edist_fin_open" class="id"><a name="edist_fin_open" class="" title="edist_fin_open :
 forall {R : realType} {X : pseudoMetricType R},
-open [set xy | edist xy \is a fin_num]%classic
+topology_structure.open [set xy | edist xy \is a fin_num]%classic
 
 edist_fin_open is not universe polymorphic
 Expanded type for implicit arguments
 edist_fin_open :
-forall {R : realType} {X : pseudoMetricType R} [t : X * X],
+forall {R : realType} {X : pseudoMetricType R}
+  [t : topology_structure.Topological.sort X *
+       topology_structure.Topological.sort X],
 [set xy | edist xy \is a fin_num]%classic t ->
-exists2 i : set X * set X,
-  (fun P : set X * set X => nbhs t.1 P.1 /\ nbhs t.2 P.2) i &
-  ((fun P : set X * set X => P.1 `*` P.2) i
+exists2
+  i : set (topology_structure.Topological.sort X) *
+      set (topology_structure.Topological.sort X),
+  (fun
+     P : set (topology_structure.Topological.sort X) *
+         set (topology_structure.Topological.sort X) =>
+   filter.nbhs t.1 P.1 /\ filter.nbhs t.2 P.2) i &
+  ((fun
+      P : set (topology_structure.Topological.sort X) *
+          set (topology_structure.Topological.sort X) =>
+    P.1 `*` P.2) i
    `<=` [set xy | edist xy \is a fin_num])%classic
 
 Arguments edist_fin_open {R X} [t] _
@@ -437,14 +447,16 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="edist_fin_closed" class="id"><a name="edist_fin_closed" class="" title="edist_fin_closed :
 forall {R : realType} {X : pseudoMetricType R},
-closed [set xy | edist xy \is a fin_num]
+topology_structure.closed [set xy | edist xy \is a fin_num]
 
 edist_fin_closed is not universe polymorphic
 Expanded type for implicit arguments
 edist_fin_closed :
 forall {R : realType} {X : pseudoMetricType R}
-  [t : Datatypes_prod__canonical__topology_structure_Topological],
-closure [set xy | edist xy \is a fin_num] t -> (edist t \is a fin_num) = true
+  [t : topology_structure.Topological.sort
+         Datatypes_prod__canonical__topology_structure_Topological],
+topology_structure.closure [set xy | edist xy \is a fin_num] t ->
+(edist t \is a fin_num) = true
 
 Arguments edist_fin_closed {R X} [t] _
 edist_fin_closed is opaque
@@ -464,16 +476,27 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="edist_pinfty_open" class="id"><a name="edist_pinfty_open" class="" title="edist_pinfty_open :
 forall {R : realType} {X : pseudoMetricType R},
-open [set xy | edist xy = +oo%E]%classic
+topology_structure.open [set xy | edist xy = +oo%E]%classic
 
 edist_pinfty_open is not universe polymorphic
 Expanded type for implicit arguments
 edist_pinfty_open :
-forall {R : realType} {X : pseudoMetricType R} [t : X * X],
+forall {R : realType} {X : pseudoMetricType R}
+  [t : topology_structure.Topological.sort X *
+       topology_structure.Topological.sort X],
 [set xy | edist xy = +oo%E]%classic t ->
-exists2 i : set X * set X,
-  (fun P : set X * set X => nbhs t.1 P.1 /\ nbhs t.2 P.2) i &
-  ((fun P : set X * set X => P.1 `*` P.2) i `<=` [set xy | edist xy = +oo%E])%classic
+exists2
+  i : set (topology_structure.Topological.sort X) *
+      set (topology_structure.Topological.sort X),
+  (fun
+     P : set (topology_structure.Topological.sort X) *
+         set (topology_structure.Topological.sort X) =>
+   filter.nbhs t.1 P.1 /\ filter.nbhs t.2 P.2) i &
+  ((fun
+      P : set (topology_structure.Topological.sort X) *
+          set (topology_structure.Topological.sort X) =>
+    P.1 `*` P.2) i
+   `<=` [set xy | edist xy = +oo%E])%classic
 
 Arguments edist_pinfty_open {R X} [t] _
 edist_pinfty_open is opaque
@@ -507,7 +530,7 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 117, characters 6-15
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="edist_triangle" class="id"><a name="edist_triangle" class="" title="edist_triangle :
 forall {R : realType} {X : pseudoMetricType R} (x y z : X),
-(edist (x, z) <= edist (x, y) + edist (y, z))%E
+(edist (x, z) <= (edist (x, y) + edist (y, z))%R)%E
 
 edist_triangle is not universe polymorphic
 Arguments edist_triangle {R X} x y z
@@ -548,18 +571,26 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 120, characters 6-20
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="edist_continuous" class="id"><a name="edist_continuous" class="" title="edist_continuous :
-forall {R : realType} {X : pseudoMetricType R}, continuous edist
+forall {R : realType} {X : pseudoMetricType R}
+  [x : filter.Nbhs.sort (filter.Datatypes_prod__canonical__filter_Nbhs X X)],
+filter.continuous_at (T:=filter.Datatypes_prod__canonical__filter_Nbhs X X)
+  (U:=ereal.constructive_ereal_extended__canonical__filter_Nbhs) x edist
 
 edist_continuous is not universe polymorphic
 Expanded type for implicit arguments
 edist_continuous :
 forall {R : realType} {X : pseudoMetricType R}
-  [x : Datatypes_prod__canonical__filter_Nbhs X X]
-  [t : set constructive_ereal_extended__canonical__filter_Nbhs],
-nbhs (edist x) t ->
-exists2 i : set X * set X,
-  (fun P : set X * set X => nbhs x.1 P.1 /\ nbhs x.2 P.2) i &
-  ((fun P : set X * set X => P.1 `*` P.2) i `<=` edist @^-1` t)%classic
+  [x : filter.Nbhs.sort (filter.Datatypes_prod__canonical__filter_Nbhs X X)]
+  [t : set
+         (filter.Nbhs.sort
+            ereal.constructive_ereal_extended__canonical__filter_Nbhs)],
+filter.nbhs (edist x) t ->
+exists2 i : set (filter.Nbhs.sort X) * set (filter.Nbhs.sort X),
+  (fun P : set (filter.Nbhs.sort X) * set (filter.Nbhs.sort X) =>
+   filter.nbhs x.1 P.1 /\ filter.nbhs x.2 P.2) i &
+  ((fun P : set (filter.Nbhs.sort X) * set (filter.Nbhs.sort X) =>
+    P.1 `*` P.2) i
+   `<=` edist @^-1` t)%classic
 
 Arguments edist_continuous {R X} [x t] _
 edist_continuous is opaque
@@ -607,7 +638,8 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 149, characters 6-22
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="edist_closeP" class="id"><a name="edist_closeP" class="" title="edist_closeP :
-forall {R : realType} {X : pseudoMetricType R} (x y : X),
+forall {R : realType} {X : pseudoMetricType R}
+  (x y : topology_structure.Topological.sort X),
 close (T:=X) x y <-> edist (x, y) = 0%R
 
 edist_closeP is not universe polymorphic
@@ -651,7 +683,8 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 203, characters 6-16
 <span class="id"> exact/</span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#edist_closeP">edist_closeP</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="edist_closel" class="id"><a name="edist_closel" class="" title="edist_closel :
-forall {R : realType} {X : pseudoMetricType R} [x y : X] (z : X),
+forall {R : realType} {X : pseudoMetricType R}
+  [x y : topology_structure.Topological.sort X] (z : X),
 close (T:=X) x y -> edist (x, z) = edist (y, z)
 
 edist_closel is not universe polymorphic
@@ -727,7 +760,7 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 227, characters 6-21
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="edist_inf_triangle" class="id"><a name="edist_inf_triangle" class="" title="edist_inf_triangle :
 forall {R : realType} {T : pseudoMetricType R} (A : set T) (x y : T),
-(edist_inf A x <= edist (x, y) + edist_inf A y)%E
+(edist_inf A x <= (edist (x, y) + edist_inf A y)%R)%E
 
 edist_inf_triangle is not universe polymorphic
 Arguments edist_inf_triangle {R T} A%_classical_set_scope x y
@@ -755,15 +788,21 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 231, characters 6-24
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="edist_inf_continuous" class="id"><a name="edist_inf_continuous" class="" title="edist_inf_continuous :
-forall {R : realType} {T : pseudoMetricType R} [A : set T],
-continuous (edist_inf A)
+forall {R : realType} {T : pseudoMetricType R} [A : set T]
+  [x : filter.Nbhs.sort T],
+filter.continuous_at (T:=T)
+  (U:=ereal.constructive_ereal_extended__canonical__filter_Nbhs) x
+  (edist_inf A)
 
 edist_inf_continuous is not universe polymorphic
 Expanded type for implicit arguments
 edist_inf_continuous :
-forall {R : realType} {T : pseudoMetricType R} [A : set T] 
-  [x : T] [t : set constructive_ereal_extended__canonical__filter_Nbhs],
-nbhs (edist_inf A x) t ->
+forall {R : realType} {T : pseudoMetricType R} [A : set T]
+  [x : filter.Nbhs.sort T]
+  [t : set
+         (filter.Nbhs.sort
+            ereal.constructive_ereal_extended__canonical__filter_Nbhs)],
+filter.nbhs (edist_inf A x) t ->
 (let (nbhs) :=
    PseudoMetric.filter_isFiltered_mixin
      (let (sort, class) as record return (PseudoMetric.axioms_ R record) :=
@@ -901,7 +940,10 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> topological_urysohn_separator</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="topological_urysohn_separator.T" class="id"><a name="topological_urysohn_separator.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span><span class="id"> {</span><span id="topological_urysohn_separator.R" class="id"><a name="topological_urysohn_separator.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="uniform_separator" class="id"><a name="uniform_separator" class="" title="uniform_separator : forall {T : topologicalType}, set T -> set T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="uniform_separator" class="id"><a name="uniform_separator" class="" title="uniform_separator :
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) ->
+set (topology_structure.Topological.sort T) -> Prop
 
 uniform_separator is not universe polymorphic
 Arguments uniform_separator {T} (A B)%_classical_set_scope
@@ -933,7 +975,10 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 354, characters 11-28
 Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Urysohn" class="id"><a name="Urysohn" class="" title="Urysohn :
-forall {T : topologicalType} {R : realType}, set T -> set T -> T -> R
+forall {T : topology_structure.Topological.type} {R : realType},
+set (topology_structure.Topological.sort T) ->
+set (topology_structure.Topological.sort T) ->
+topology_structure.Topological.sort T -> R
 
 Urysohn is not universe polymorphic
 Arguments Urysohn {T R} (A B)%_classical_set_scope _
@@ -946,18 +991,37 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 373, characters 11-18
 <span class="vernacular">Section</span><span class="id"> urysohn_facts</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Urysohn_continuous" class="id"><a name="Urysohn_continuous" class="" title="Urysohn_continuous :
-forall {T : topologicalType} {R : realType} [A B : set T],
-continuous (Urysohn A B)
+forall {T : topology_structure.Topological.type} {R : realType}
+  [A B : set (topology_structure.Topological.sort T)]
+  [x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            T)],
+filter.continuous_at
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T)
+  (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x 
+  (Urysohn A B)
 
 Urysohn_continuous is not universe polymorphic
 Expanded type for implicit arguments
 Urysohn_continuous :
-forall {T : topologicalType} {R : realType} [A B : set T] 
-  [x : T] [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-nbhs (Urysohn A B x) t ->
+forall {T : topology_structure.Topological.type} {R : realType}
+  [A B : set (topology_structure.Topological.sort T)]
+  [x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            T)]
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs (Urysohn A B x) t ->
 (let (nbhs) :=
-   Topological.filter_isFiltered_mixin
-     (let (sort, class) as record return (Topological.axioms_ record) := T in
+   topology_structure.Topological.filter_isFiltered_mixin
+     (let
+        (sort, class) as record
+         return
+           (topology_structure.Topological.axioms_
+              (topology_structure.Topological.sort record)) :=
+        T in
       class) in
  nbhs) x (Urysohn A B @^-1` t)%classic
 
@@ -974,13 +1038,16 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 377, characters 6-24
 <span class="gallina-kwd"> by</span><span class="id"> have</span><span class="id"> []</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#projT2">projT2</a></span> (<span class="id"><a href="mathcomp.classical.boolp.html#cid">cid</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#Urysohn'">Urysohn'</a></span><span class="id"> A</span><span class="id"> B</span>)). Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Urysohn_range" class="id"><a name="Urysohn_range" class="" title="Urysohn_range :
-forall {T : topologicalType} {R : realType} [A B : set T],
+forall {T : topology_structure.Topological.type} {R : realType}
+  [A B : set (topology_structure.Topological.sort T)],
 (range (Urysohn A B) `<=` `[0%R, 1%R])%classic
 
 Urysohn_range is not universe polymorphic
 Expanded type for implicit arguments
 Urysohn_range :
-forall {T : topologicalType} {R : realType} [A B : set T] [t : R],
+forall {T : topology_structure.Topological.type} {R : realType}
+  [A B : set (topology_structure.Topological.sort T)] 
+  [t : R],
 range (Urysohn A B) t -> (t \in `[0, 1]%R) = true
 
 Arguments Urysohn_range {T R} [A B]%_classical_set_scope [t] _
@@ -996,14 +1063,16 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 380, characters 6-19
 <span class="gallina-kwd"> by</span><span class="id"> have</span><span class="id"> []</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#projT2">projT2</a></span> (<span class="id"><a href="mathcomp.classical.boolp.html#cid">cid</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#Urysohn'">Urysohn'</a></span><span class="id"> A</span><span class="id"> B</span>)). Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Urysohn_sub0" class="id"><a name="Urysohn_sub0" class="" title="Urysohn_sub0 :
-forall {T : topologicalType} {R : realType} [A B : set T],
+forall {T : topology_structure.Topological.type} {R : realType}
+  [A B : set (topology_structure.Topological.sort T)],
 uniform_separator A B ->
 ([set Urysohn A B x | x in A] `<=` [set 0%R])%classic
 
 Urysohn_sub0 is not universe polymorphic
 Expanded type for implicit arguments
 Urysohn_sub0 :
-forall {T : topologicalType} {R : realType} [A B : set T],
+forall {T : topology_structure.Topological.type} {R : realType}
+  [A B : set (topology_structure.Topological.sort T)],
 uniform_separator A B ->
 forall [t : R], [set Urysohn A B x | x in A]%classic t -> t = 0%R
 
@@ -1020,14 +1089,16 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 383, characters 6-18
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> eE;</span><span class="id"> have</span><span class="id"> [_</span><span class="id"> _</span><span class="id"> /</span>(_<span class="id"> eE</span>)<span class="id">[]]</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#projT2">projT2</a></span> (<span class="id"><a href="mathcomp.classical.boolp.html#cid">cid</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#Urysohn'">Urysohn'</a></span><span class="id"> A</span><span class="id"> B</span>)). Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Urysohn_sub1" class="id"><a name="Urysohn_sub1" class="" title="Urysohn_sub1 :
-forall {T : topologicalType} {R : realType} [A B : set T],
+forall {T : topology_structure.Topological.type} {R : realType}
+  [A B : set (topology_structure.Topological.sort T)],
 uniform_separator A B ->
 ([set Urysohn A B x | x in B] `<=` [set 1%R])%classic
 
 Urysohn_sub1 is not universe polymorphic
 Expanded type for implicit arguments
 Urysohn_sub1 :
-forall {T : topologicalType} {R : realType} [A B : set T],
+forall {T : topology_structure.Topological.type} {R : realType}
+  [A B : set (topology_structure.Topological.sort T)],
 uniform_separator A B ->
 forall [t : R], [set Urysohn A B x | x in B]%classic t -> t = 1%R
 
@@ -1044,7 +1115,8 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 387, characters 6-18
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> eE;</span><span class="id"> have</span><span class="id"> [_</span><span class="id"> _</span><span class="id"> /</span>(_<span class="id"> eE</span>)<span class="id">[]]</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#projT2">projT2</a></span> (<span class="id"><a href="mathcomp.classical.boolp.html#cid">cid</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#Urysohn'">Urysohn'</a></span><span class="id"> A</span><span class="id"> B</span>)). Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Urysohn_eq0" class="id"><a name="Urysohn_eq0" class="" title="Urysohn_eq0 :
-forall {T : topologicalType} {R : realType} [A B : set T],
+forall {T : topology_structure.Topological.type} {R : realType}
+  [A B : set (topology_structure.Topological.sort T)],
 uniform_separator A B ->
 (A !=set0)%classic ->
 [set Urysohn A B x | x in A]%classic = [set 0%R]%classic
@@ -1066,7 +1138,8 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 391, characters 6-17
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Urysohn_eq1" class="id"><a name="Urysohn_eq1" class="" title="Urysohn_eq1 :
-forall {T : topologicalType} {R : realType} [A B : set T],
+forall {T : topology_structure.Topological.type} {R : realType}
+  [A B : set (topology_structure.Topological.sort T)],
 uniform_separator A B ->
 (B !=set0)%classic ->
 [set Urysohn A B x | x in B]%classic = [set 1%R]%classic
@@ -1239,7 +1312,7 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> n</span><span class="id"> IH</span><span class="id"> G</span><span class="id"> [R]</span><span class="id"> /IH</span><span class="id"> AAR</span><span class="id"> [M]</span><span class="id"> /IH</span><span class="id"> AAM</span><span class="id"> &lt;-</span><span class="id"> z;</span><span class="id"> split;</span><span class="id"> [exact:</span><span class="id"> AAR</span><span class="id"> |</span><span class="id"> exact:</span><span class="id"> AAM]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="urysohnType" class="id"><a name="urysohnType" class="" title="urysohnType : topologicalType -> Type
+<span class="vernacular">Definition</span><span class="id"> </span><span id="urysohnType" class="id"><a name="urysohnType" class="" title="urysohnType : topology_structure.Topological.type -> Type
 
 urysohnType is not universe polymorphic
 Arguments urysohnType {T}
@@ -1249,7 +1322,8 @@ Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 539, characters 11-22
 ">urysohnType</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#Urysohn.T">T</a></span>.<br/>
 <br/>
-<span id="urysohn_urysohnType__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="urysohn_urysohnType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="urysohn_urysohnType__canonical__choice_Choice" class="" title="urysohn_urysohnType__canonical__choice_Choice : topologicalType -> choiceType
+<span id="urysohn_urysohnType__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="urysohn_urysohnType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="urysohn_urysohnType__canonical__choice_Choice" class="" title="urysohn_urysohnType__canonical__choice_Choice :
+topology_structure.Topological.type -> choiceType
 
 urysohn_urysohnType__canonical__choice_Choice is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__choice_Choice {T}
@@ -1258,7 +1332,8 @@ Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.urysohn_urysohnType__canonical__choice_Choice
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 541, characters 0-50
-">HB</a></span></span></span></span></span></span></span>.<span id="urysohn_urysohnType__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="urysohn_urysohnType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="urysohn_urysohnType__canonical__choice_Choice" class="" title="urysohn_urysohnType__canonical__choice_Choice : topologicalType -> choiceType
+">HB</a></span></span></span></span></span></span></span>.<span id="urysohn_urysohnType__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="urysohn_urysohnType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="urysohn_urysohnType__canonical__choice_Choice" class="" title="urysohn_urysohnType__canonical__choice_Choice :
+topology_structure.Topological.type -> choiceType
 
 urysohn_urysohnType__canonical__choice_Choice is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__choice_Choice {T}
@@ -1267,7 +1342,8 @@ Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.urysohn_urysohnType__canonical__choice_Choice
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 541, characters 0-50
-">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="urysohn_urysohnType__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="urysohn_urysohnType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="urysohn_urysohnType__canonical__choice_Choice" class="" title="urysohn_urysohnType__canonical__choice_Choice : topologicalType -> choiceType
+">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="urysohn_urysohnType__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="urysohn_urysohnType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="urysohn_urysohnType__canonical__choice_Choice" class="" title="urysohn_urysohnType__canonical__choice_Choice :
+topology_structure.Topological.type -> choiceType
 
 urysohn_urysohnType__canonical__choice_Choice is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__choice_Choice {T}
@@ -1276,7 +1352,8 @@ Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.urysohn_urysohnType__canonical__choice_Choice
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 541, characters 0-50
-"> _</a></span></span></span></span></span></span></span><span id="urysohn_urysohnType__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="urysohn_urysohnType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="urysohn_urysohnType__canonical__choice_Choice" class="" title="urysohn_urysohnType__canonical__choice_Choice : topologicalType -> choiceType
+"> _</a></span></span></span></span></span></span></span><span id="urysohn_urysohnType__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="urysohn_urysohnType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="urysohn_urysohnType__canonical__choice_Choice" class="" title="urysohn_urysohnType__canonical__choice_Choice :
+topology_structure.Topological.type -> choiceType
 
 urysohn_urysohnType__canonical__choice_Choice is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__choice_Choice {T}
@@ -1285,7 +1362,8 @@ Expands to: Constant
             mathcomp.analysis.normedtype_theory.urysohn.urysohn_urysohnType__canonical__choice_Choice
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 541, characters 0-50
-"> :=</a></span></span></span></span></span></span></span><span id="urysohn_urysohnType__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="urysohn_urysohnType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="urysohn_urysohnType__canonical__choice_Choice" class="" title="urysohn_urysohnType__canonical__choice_Choice : topologicalType -> choiceType
+"> :=</a></span></span></span></span></span></span></span><span id="urysohn_urysohnType__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="urysohn_urysohnType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="urysohn_urysohnType__canonical__choice_Choice" class="" title="urysohn_urysohnType__canonical__choice_Choice :
+topology_structure.Topological.type -> choiceType
 
 urysohn_urysohnType__canonical__choice_Choice is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__choice_Choice {T}
@@ -1297,7 +1375,8 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 541, characters 0-50
 "> Choice</a></span></span></span></span></span></span></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.on">on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#urysohnType">urysohnType</a></span>.<br/>
 <br/>
 <span id="urysohn_urysohnType__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="urysohn_urysohnType__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="urysohn_urysohnType__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="urysohn_urysohnType__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="uniform_structure_isUniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_isUniform__to__filter_isFiltered" class="id"><span id="uniform_structure_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="urysohn_urysohnType__canonical__uniform_structure_Uniform" class="" title="urysohn_urysohnType__canonical__uniform_structure_Uniform :
-forall {T : topologicalType}, normal_space T -> set T -> uniformType
+forall {T : topology_structure.Topological.type},
+normal_space T -> set (topology_structure.Topological.sort T) -> uniformType
 
 urysohn_urysohnType__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_Uniform 
@@ -1308,7 +1387,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 543, characters 0-118
 ">HB</a></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="urysohn_urysohnType__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="urysohn_urysohnType__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="urysohn_urysohnType__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="urysohn_urysohnType__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="uniform_structure_isUniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_isUniform__to__filter_isFiltered" class="id"><span id="uniform_structure_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="urysohn_urysohnType__canonical__uniform_structure_Uniform" class="" title="urysohn_urysohnType__canonical__uniform_structure_Uniform :
-forall {T : topologicalType}, normal_space T -> set T -> uniformType
+forall {T : topology_structure.Topological.type},
+normal_space T -> set (topology_structure.Topological.sort T) -> uniformType
 
 urysohn_urysohnType__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_Uniform 
@@ -1319,7 +1399,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 543, characters 0-118
 ">instance</a></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="urysohn_urysohnType__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="urysohn_urysohnType__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="urysohn_urysohnType__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="urysohn_urysohnType__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="uniform_structure_isUniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_isUniform__to__filter_isFiltered" class="id"><span id="uniform_structure_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="urysohn_urysohnType__canonical__uniform_structure_Uniform" class="" title="urysohn_urysohnType__canonical__uniform_structure_Uniform :
-forall {T : topologicalType}, normal_space T -> set T -> uniformType
+forall {T : topology_structure.Topological.type},
+normal_space T -> set (topology_structure.Topological.sort T) -> uniformType
 
 urysohn_urysohnType__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_Uniform 
@@ -1330,7 +1411,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 543, characters 0-118
 "> _</a></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="urysohn_urysohnType__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="urysohn_urysohnType__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="urysohn_urysohnType__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="urysohn_urysohnType__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="uniform_structure_isUniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_isUniform__to__filter_isFiltered" class="id"><span id="uniform_structure_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="urysohn_urysohnType__canonical__uniform_structure_Uniform" class="" title="urysohn_urysohnType__canonical__uniform_structure_Uniform :
-forall {T : topologicalType}, normal_space T -> set T -> uniformType
+forall {T : topology_structure.Topological.type},
+normal_space T -> set (topology_structure.Topological.sort T) -> uniformType
 
 urysohn_urysohnType__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_Uniform 
@@ -1344,8 +1426,10 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 543, characters 0-118
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#isUniform.Build">isUniform</a></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#isUniform.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#urysohnType">urysohnType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#ury_unif_filter">ury_unif_filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#ury_unif_refl">ury_unif_refl</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#ury_unif_inv">ury_unif_inv</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#ury_unif_split">ury_unif_split</a></span>.<br/>
 <span id="urysohn_urysohnType__canonical__uniform_structure_PointedUniform" class="id"><span id="urysohn_urysohnType__canonical__topology_structure_PointedTopological" class="id"><span id="urysohn_urysohnType__canonical__filter_PointedNbhs" class="id"><span id="urysohn_urysohnType__canonical__filter_PointedFiltered" class="id"><span id="urysohn_urysohnType__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_20" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_16" class="id"><span id="Urysohn.normal_uniform_separators.hb_instance_15.p" class="id"><a name="urysohn_urysohnType__canonical__uniform_structure_PointedUniform" class="" title="urysohn_urysohnType__canonical__uniform_structure_PointedUniform :
-forall {T : topologicalType},
-normal_space T -> set T -> Pointed.axioms_ T -> puniformType
+forall {T : topology_structure.Topological.type},
+normal_space T ->
+set (topology_structure.Topological.sort T) ->
+Pointed.axioms_ (topology_structure.Topological.sort T) -> puniformType
 
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_PointedUniform
@@ -1356,8 +1440,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 546, characters 0-86
 ">HB</a></span></span></span></span></span></span></span></span></span>.<span id="urysohn_urysohnType__canonical__uniform_structure_PointedUniform" class="id"><span id="urysohn_urysohnType__canonical__topology_structure_PointedTopological" class="id"><span id="urysohn_urysohnType__canonical__filter_PointedNbhs" class="id"><span id="urysohn_urysohnType__canonical__filter_PointedFiltered" class="id"><span id="urysohn_urysohnType__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_20" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_16" class="id"><span id="Urysohn.normal_uniform_separators.hb_instance_15.p" class="id"><a name="urysohn_urysohnType__canonical__uniform_structure_PointedUniform" class="" title="urysohn_urysohnType__canonical__uniform_structure_PointedUniform :
-forall {T : topologicalType},
-normal_space T -> set T -> Pointed.axioms_ T -> puniformType
+forall {T : topology_structure.Topological.type},
+normal_space T ->
+set (topology_structure.Topological.sort T) ->
+Pointed.axioms_ (topology_structure.Topological.sort T) -> puniformType
 
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_PointedUniform
@@ -1368,8 +1454,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 546, characters 0-86
 ">instance</a></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="urysohn_urysohnType__canonical__uniform_structure_PointedUniform" class="id"><span id="urysohn_urysohnType__canonical__topology_structure_PointedTopological" class="id"><span id="urysohn_urysohnType__canonical__filter_PointedNbhs" class="id"><span id="urysohn_urysohnType__canonical__filter_PointedFiltered" class="id"><span id="urysohn_urysohnType__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_20" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_16" class="id"><span id="Urysohn.normal_uniform_separators.hb_instance_15.p" class="id"><a name="urysohn_urysohnType__canonical__uniform_structure_PointedUniform" class="" title="urysohn_urysohnType__canonical__uniform_structure_PointedUniform :
-forall {T : topologicalType},
-normal_space T -> set T -> Pointed.axioms_ T -> puniformType
+forall {T : topology_structure.Topological.type},
+normal_space T ->
+set (topology_structure.Topological.sort T) ->
+Pointed.axioms_ (topology_structure.Topological.sort T) -> puniformType
 
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_PointedUniform
@@ -1380,8 +1468,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 546, characters 0-86
 "> _</a></span></span></span></span></span></span></span></span></span><span id="urysohn_urysohnType__canonical__uniform_structure_PointedUniform" class="id"><span id="urysohn_urysohnType__canonical__topology_structure_PointedTopological" class="id"><span id="urysohn_urysohnType__canonical__filter_PointedNbhs" class="id"><span id="urysohn_urysohnType__canonical__filter_PointedFiltered" class="id"><span id="urysohn_urysohnType__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_20" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_16" class="id"><span id="Urysohn.normal_uniform_separators.hb_instance_15.p" class="id"><a name="urysohn_urysohnType__canonical__uniform_structure_PointedUniform" class="" title="urysohn_urysohnType__canonical__uniform_structure_PointedUniform :
-forall {T : topologicalType},
-normal_space T -> set T -> Pointed.axioms_ T -> puniformType
+forall {T : topology_structure.Topological.type},
+normal_space T ->
+set (topology_structure.Topological.sort T) ->
+Pointed.axioms_ (topology_structure.Topological.sort T) -> puniformType
 
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_PointedUniform
@@ -1392,8 +1482,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 546, characters 0-86
 "> {p</a></span></span></span></span></span></span></span></span></span><span id="urysohn_urysohnType__canonical__uniform_structure_PointedUniform" class="id"><span id="urysohn_urysohnType__canonical__topology_structure_PointedTopological" class="id"><span id="urysohn_urysohnType__canonical__filter_PointedNbhs" class="id"><span id="urysohn_urysohnType__canonical__filter_PointedFiltered" class="id"><span id="urysohn_urysohnType__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_20" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_16" class="id"><span id="Urysohn.normal_uniform_separators.hb_instance_15.p" class="id"><a name="urysohn_urysohnType__canonical__uniform_structure_PointedUniform" class="" title="urysohn_urysohnType__canonical__uniform_structure_PointedUniform :
-forall {T : topologicalType},
-normal_space T -> set T -> Pointed.axioms_ T -> puniformType
+forall {T : topology_structure.Topological.type},
+normal_space T ->
+set (topology_structure.Topological.sort T) ->
+Pointed.axioms_ (topology_structure.Topological.sort T) -> puniformType
 
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_PointedUniform
@@ -1404,8 +1496,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 546, characters 0-86
 "> :</a></span></span></span></span></span></span></span></span></span><span id="urysohn_urysohnType__canonical__uniform_structure_PointedUniform" class="id"><span id="urysohn_urysohnType__canonical__topology_structure_PointedTopological" class="id"><span id="urysohn_urysohnType__canonical__filter_PointedNbhs" class="id"><span id="urysohn_urysohnType__canonical__filter_PointedFiltered" class="id"><span id="urysohn_urysohnType__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_20" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_16" class="id"><span id="Urysohn.normal_uniform_separators.hb_instance_15.p" class="id"><a name="urysohn_urysohnType__canonical__uniform_structure_PointedUniform" class="" title="urysohn_urysohnType__canonical__uniform_structure_PointedUniform :
-forall {T : topologicalType},
-normal_space T -> set T -> Pointed.axioms_ T -> puniformType
+forall {T : topology_structure.Topological.type},
+normal_space T ->
+set (topology_structure.Topological.sort T) ->
+Pointed.axioms_ (topology_structure.Topological.sort T) -> puniformType
 
 urysohn_urysohnType__canonical__uniform_structure_PointedUniform is not universe polymorphic
 Arguments urysohn_urysohnType__canonical__uniform_structure_PointedUniform
@@ -1418,10 +1512,12 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 546, characters 0-86
 "> Pointed</a></span></span></span></span></span></span></span></span></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#Urysohn.T">T</a></span><span class="id">}</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.copy">Pointed</a></span>.<span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.copy">copy</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#urysohnType">urysohnType</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.Pack">Pointed</a></span>.<span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.Pack">Pack</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#p:115">p</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="normal_uniform_separator" class="id"><a name="normal_uniform_separator" class="" title="normal_uniform_separator :
-forall {T : topologicalType},
+forall {T : topology_structure.Topological.type},
 normal_space T ->
-forall [A B : set T],
-closed A -> closed B -> (A `&` B)%classic = set0 -> uniform_separator A B
+forall [A B : set (topology_structure.Topological.sort T)],
+topology_structure.closed A ->
+topology_structure.closed B ->
+(A `&` B)%classic = set0 -> uniform_separator A B
 
 normal_uniform_separator is not universe polymorphic
 Arguments normal_uniform_separator {T} normalT [A B]%_classical_set_scope 
@@ -1473,10 +1569,19 @@ Qed.</div></details>
 <span class="vernacular">End</span><span class="id"> Urysohn</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="uniform_separatorP" class="id"><a name="uniform_separatorP" class="" title="uniform_separatorP :
-forall {T : topologicalType} {R : realType} (A B : set T),
+forall {T : topology_structure.Topological.type} {R : realType}
+  (A B : set (topology_structure.Topological.sort T)),
 uniform_separator A B <->
-(exists f : T -> R,
-   [/\ continuous f, (range f `<=` `[0%R, 1%R])%classic,
+(exists f : topology_structure.Topological.sort T -> R,
+   [/\ forall
+         x : filter.Nbhs.sort
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  T),
+       filter.continuous_at
+         (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               T)
+         (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x f,
+       (range f `<=` `[0%R, 1%R])%classic,
        ([set f x | x in A] `<=` [set 0%R])%classic
      & ([set f x | x in B] `<=` [set 1%R])%classic])
 
@@ -1547,14 +1652,15 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="normal_openP" class="id"><a name="normal_openP" class="" title="normal_openP :
 realType ->
-forall {T : topologicalType},
+forall {T : topology_structure.Topological.type},
 normal_space T <->
-(forall A B : set T,
- closed A ->
- closed B ->
+(forall A B : set (topology_structure.Topological.sort T),
+ topology_structure.closed A ->
+ topology_structure.closed B ->
  (A `&` B)%classic = set0 ->
- exists U V : set T,
-   [/\ open U, open V, (A `<=` U)%classic, (B `<=` V)%classic
+ exists U V : set (topology_structure.Topological.sort T),
+   [/\ topology_structure.open U, topology_structure.open V,
+       (A `<=` U)%classic, (B `<=` V)%classic
      & (U `&` V)%classic = set0])
 
 normal_openP is not universe polymorphic
@@ -1573,10 +1679,12 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 643, characters 6-18
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="normal_separatorP" class="id"><a name="normal_separatorP" class="" title="normal_separatorP :
 realType ->
-forall {T : topologicalType},
+forall {T : topology_structure.Topological.type},
 normal_space T <->
-(forall A B : set T,
- closed A -> closed B -> (A `&` B)%classic = set0 -> uniform_separator A B)
+(forall A B : set (topology_structure.Topological.sort T),
+ topology_structure.closed A ->
+ topology_structure.closed B ->
+ (A `&` B)%classic = set0 -> uniform_separator A B)
 
 normal_separatorP is not universe polymorphic
 Arguments normal_separatorP {R T}
@@ -1606,7 +1714,7 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 648, characters 6-23
    If you don't care, you can use the `completely_regular_uniformity.type`
    which builds the uniformity.
 </div>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="completely_regular_space" class="id"><a name="completely_regular_space" class="" title="completely_regular_space : topologicalType -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="completely_regular_space" class="id"><a name="completely_regular_space" class="" title="completely_regular_space : topology_structure.Topological.type -> Prop
 
 completely_regular_space is not universe polymorphic
 Arguments completely_regular_space T
@@ -1621,7 +1729,7 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 666, characters 11-35
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="point_uniform_separator" class="id"><a name="point_uniform_separator" class="" title="point_uniform_separator :
 realType ->
 forall {T : uniformType} [x : T] [B : set T],
-closed B -> ~ B x -> uniform_separator [set x] B
+topology_structure.closed B -> ~ B x -> uniform_separator [set x] B
 
 point_uniform_separator is not universe polymorphic
 Arguments point_uniform_separator {R T} [x] [B]%_classical_set_scope _ _
@@ -1650,13 +1758,23 @@ uniform_completely_regular is not universe polymorphic
 Expanded type for implicit arguments
 uniform_completely_regular :
 realType ->
-forall {T : uniformType} [a : T] [B : set T],
-closed B ->
+forall {T : uniformType} [a : topology_structure.Topological.sort T]
+  [B : set (topology_structure.Topological.sort T)],
+topology_structure.closed B ->
 ~ B a ->
-exists (uT : Uniform.axioms_ T^o) (E : set (T * T)),
-  let UT := {| Uniform.sort := T^o; Uniform.class := uT |} in
+exists
+  (uT : Uniform.axioms_ (topology_structure.Topological.sort T)^o) 
+(E : set
+       (topology_structure.Topological.sort T *
+        topology_structure.Topological.sort T)),
+  let UT :=
+    {|
+      Uniform.sort := (topology_structure.Topological.sort T)^o;
+      Uniform.class := uT
+    |} in
   [/\ entourage E, ([set a] `*` B `&` E)%classic = set0
-    & forall x : UT, (nbhs x `<=` nbhs x)%classic]
+    & forall x : filter.Filtered.sort UT,
+      (filter.nbhs x `<=` filter.nbhs x)%classic]
 
 Arguments uniform_completely_regular {R T} [a B] _ _
 uniform_completely_regular is opaque
@@ -1673,23 +1791,33 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 680, characters 6-32
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="normal_completely_regular" class="id"><a name="normal_completely_regular" class="" title="normal_completely_regular :
 realType ->
-forall {T : topologicalType},
+forall {T : topology_structure.Topological.type},
 normal_space T -> accessible_space T -> completely_regular_space T
 
 normal_completely_regular is not universe polymorphic
 Expanded type for implicit arguments
 normal_completely_regular :
 realType ->
-forall {T : topologicalType},
+forall {T : topology_structure.Topological.type},
 normal_space T ->
 accessible_space T ->
-forall [a : T] [B : set T],
-closed B ->
+forall [a : topology_structure.Topological.sort T]
+  [B : set (topology_structure.Topological.sort T)],
+topology_structure.closed B ->
 ~ B a ->
-exists (uT : Uniform.axioms_ T^o) (E : set (T * T)),
-  let UT := {| Uniform.sort := T^o; Uniform.class := uT |} in
+exists
+  (uT : Uniform.axioms_ (topology_structure.Topological.sort T)^o) 
+(E : set
+       (topology_structure.Topological.sort T *
+        topology_structure.Topological.sort T)),
+  let UT :=
+    {|
+      Uniform.sort := (topology_structure.Topological.sort T)^o;
+      Uniform.class := uT
+    |} in
   [/\ entourage E, ([set a] `*` B `&` E)%classic = set0
-    & forall x : UT, (nbhs x `<=` nbhs x)%classic]
+    & forall x : filter.Filtered.sort UT,
+      (filter.nbhs x `<=` filter.nbhs x)%classic]
 
 Arguments normal_completely_regular {R T} _ _ [a B] _ _
 normal_completely_regular is opaque
@@ -1706,20 +1834,23 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 684, characters 6-31
 <span class="gallina-kwd">by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.classical_sets.html#disjoints_subset">disjoints_subset</a></span><span class="id"> =&gt;</span><span class="id"> ?</span><span class="id"> -&gt;</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="uniform_regular" class="id"><a name="uniform_regular" class="" title="uniform_regular : forall {T : uniformType}, regular_space T
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="uniform_regular" class="id"><a name="uniform_regular" class="" title="uniform_regular : forall {X : uniformType}, regular_space X
 
 uniform_regular is not universe polymorphic
 Expanded type for implicit arguments
 uniform_regular :
-forall {T : uniformType} [a : T] [t : set T],
-nbhs a t -> exists2 i : set T, nbhs a i & (closure i `<=` t)%classic
+forall {X : uniformType} [a : topology_structure.Topological.sort X]
+  [t : set (topology_structure.Topological.sort X)],
+filter.nbhs a t ->
+exists2 i : set (topology_structure.Topological.sort X),
+  filter.nbhs a i & (topology_structure.closure i `<=` t)%classic
 
-Arguments uniform_regular {T} [a t] _
+Arguments uniform_regular {X} [a t] _
 uniform_regular is opaque
 Expands to: Constant
-            mathcomp.analysis.topology_theory.separation_axioms.uniform_regular
+            mathcomp.analysis.normedtype_theory.urysohn.uniform_regular
 Declared in
-library mathcomp.analysis.topology_theory.separation_axioms, line 537, characters 6-21
+library mathcomp.analysis.normedtype_theory.urysohn, line 691, characters 6-21
 ">uniform_regular</a></span><span class="id"> {</span><span id="X:153" class="id"><a name="X:153" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#Uniform.Exports.uniformType">uniformType</a></span><span class="id">}</span><span class="id"> :</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#regular_space">regular_space</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#X:153">X</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -1771,7 +1902,9 @@ Qed.</div></details>
 Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="completely_regular_uniformity.type" class="id"><a name="completely_regular_uniformity.type" class="" title="completely_regular_uniformity.type :
-realType -> forall {X : topologicalType}, completely_regular_space X -> Type
+realType ->
+forall {X : topology_structure.Topological.type},
+completely_regular_space X -> Type
 
 completely_regular_uniformity.type is not universe polymorphic
 Arguments completely_regular_uniformity.type {R X} crs
@@ -1784,7 +1917,8 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 737, characters 11-15
 <br/>
 <span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_31" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__filter_Nbhs" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_30" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__filter_Filtered" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_29" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__choice_Choice" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_28" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__eqtype_Equality" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_27" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__topology_structure_Nbhs_isTopological" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__filter_isFiltered" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__filter_selfFiltered" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__eqtype_hasDecEq" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__choice_hasChoice" class="id"><span id="completely_regular_uniformity.HB_unnamed_factory_21" class="id"><a name="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological" class="" title="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological :
 realType ->
-forall {X : topologicalType}, completely_regular_space X -> topologicalType
+forall {X : topology_structure.Topological.type},
+completely_regular_space X -> topology_structure.Topological.type
 
 completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -1797,7 +1931,8 @@ Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 739, characters 0-62
 ">#[export]</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_31" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__filter_Nbhs" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_30" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__filter_Filtered" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_29" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__choice_Choice" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_28" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__eqtype_Equality" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_27" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__topology_structure_Nbhs_isTopological" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__filter_isFiltered" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__filter_selfFiltered" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__eqtype_hasDecEq" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__choice_hasChoice" class="id"><span id="completely_regular_uniformity.HB_unnamed_factory_21" class="id"><a name="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological" class="" title="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological :
 realType ->
-forall {X : topologicalType}, completely_regular_space X -> topologicalType
+forall {X : topology_structure.Topological.type},
+completely_regular_space X -> topology_structure.Topological.type
 
 completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -1810,7 +1945,8 @@ Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 739, characters 0-62
 "> HB</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_31" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__filter_Nbhs" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_30" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__filter_Filtered" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_29" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__choice_Choice" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_28" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__eqtype_Equality" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_27" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__topology_structure_Nbhs_isTopological" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__filter_isFiltered" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__filter_selfFiltered" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__eqtype_hasDecEq" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__choice_hasChoice" class="id"><span id="completely_regular_uniformity.HB_unnamed_factory_21" class="id"><a name="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological" class="" title="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological :
 realType ->
-forall {X : topologicalType}, completely_regular_space X -> topologicalType
+forall {X : topology_structure.Topological.type},
+completely_regular_space X -> topology_structure.Topological.type
 
 completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -1823,7 +1959,8 @@ Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 739, characters 0-62
 ">instance</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_31" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__filter_Nbhs" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_30" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__filter_Filtered" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_29" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__choice_Choice" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_28" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__eqtype_Equality" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_27" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__topology_structure_Nbhs_isTopological" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__filter_isFiltered" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__filter_selfFiltered" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__eqtype_hasDecEq" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__choice_hasChoice" class="id"><span id="completely_regular_uniformity.HB_unnamed_factory_21" class="id"><a name="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological" class="" title="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological :
 realType ->
-forall {X : topologicalType}, completely_regular_space X -> topologicalType
+forall {X : topology_structure.Topological.type},
+completely_regular_space X -> topology_structure.Topological.type
 
 completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -1836,7 +1973,8 @@ Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 739, characters 0-62
 "> _</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_31" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__filter_Nbhs" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_30" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__filter_Filtered" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_29" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__choice_Choice" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_28" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__eqtype_Equality" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_27" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__topology_structure_Nbhs_isTopological" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__filter_isFiltered" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__filter_selfFiltered" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__eqtype_hasDecEq" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__choice_hasChoice" class="id"><span id="completely_regular_uniformity.HB_unnamed_factory_21" class="id"><a name="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological" class="" title="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological :
 realType ->
-forall {X : topologicalType}, completely_regular_space X -> topologicalType
+forall {X : topology_structure.Topological.type},
+completely_regular_space X -> topology_structure.Topological.type
 
 completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -1849,7 +1987,8 @@ Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 739, characters 0-62
 "> :=</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_31" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__filter_Nbhs" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_30" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__filter_Filtered" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_29" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__choice_Choice" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_28" class="id"><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__eqtype_Equality" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_27" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__topology_structure_Nbhs_isTopological" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__filter_isFiltered" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__filter_selfFiltered" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__eqtype_hasDecEq" class="id"><span id="completely_regular_uniformity.topology_structure_Topological__to__choice_hasChoice" class="id"><span id="completely_regular_uniformity.HB_unnamed_factory_21" class="id"><a name="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological" class="" title="completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological :
 realType ->
-forall {X : topologicalType}, completely_regular_space X -> topologicalType
+forall {X : topology_structure.Topological.type},
+completely_regular_space X -> topology_structure.Topological.type
 
 completely_regular_uniformity.completely_regular_uniformity_type__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -1863,7 +2002,8 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 739, characters 0-62
 "> Topological</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.copy">copy</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#completely_regular_uniformity.type">type</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#completely_regular_uniformity.completely_regular_uniformity.X">X</a></span>.<br/>
 <span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_35" class="id"><span id="completely_regular_uniformity.uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="completely_regular_uniformity.HB_unnamed_factory_32" class="id"><a name="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform" class="" title="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform :
 realType ->
-forall {X : topologicalType}, completely_regular_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+completely_regular_space X -> uniformType
 
 completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments
@@ -1876,7 +2016,8 @@ Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 740, characters 0-222
 ">#[export]</a></span></span></span></span><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_35" class="id"><span id="completely_regular_uniformity.uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="completely_regular_uniformity.HB_unnamed_factory_32" class="id"><a name="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform" class="" title="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform :
 realType ->
-forall {X : topologicalType}, completely_regular_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+completely_regular_space X -> uniformType
 
 completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments
@@ -1889,7 +2030,8 @@ Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 740, characters 0-222
 "> HB</a></span></span></span></span>.<span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_35" class="id"><span id="completely_regular_uniformity.uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="completely_regular_uniformity.HB_unnamed_factory_32" class="id"><a name="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform" class="" title="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform :
 realType ->
-forall {X : topologicalType}, completely_regular_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+completely_regular_space X -> uniformType
 
 completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments
@@ -1902,7 +2044,8 @@ Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 740, characters 0-222
 ">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_35" class="id"><span id="completely_regular_uniformity.uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="completely_regular_uniformity.HB_unnamed_factory_32" class="id"><a name="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform" class="" title="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform :
 realType ->
-forall {X : topologicalType}, completely_regular_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+completely_regular_space X -> uniformType
 
 completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments
@@ -1915,7 +2058,8 @@ Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 740, characters 0-222
 "> _</a></span></span></span></span><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_35" class="id"><span id="completely_regular_uniformity.uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="completely_regular_uniformity.HB_unnamed_factory_32" class="id"><a name="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform" class="" title="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform :
 realType ->
-forall {X : topologicalType}, completely_regular_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+completely_regular_space X -> uniformType
 
 completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments
@@ -1928,7 +2072,8 @@ Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 740, characters 0-222
 "> :=</a></span></span></span></span><span id="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform" class="id"><span id="completely_regular_uniformity.HB_unnamed_mixin_35" class="id"><span id="completely_regular_uniformity.uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="completely_regular_uniformity.HB_unnamed_factory_32" class="id"><a name="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform" class="" title="completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform :
 realType ->
-forall {X : topologicalType}, completely_regular_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+completely_regular_space X -> uniformType
 
 completely_regular_uniformity.completely_regular_uniformity_type__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments
@@ -1948,7 +2093,7 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 740, characters 0-222
 &nbsp;&nbsp;(<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage_split_ex">entourage_split_ex</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#completely_regular_uniformity.completely_regular_uniformity.X'">X'</a></span>)<br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#completely_regular_uniformity.completely_regular_uniformity.completely_regular_nbhsE">completely_regular_nbhsE</a></span>.<br/>
 <span id="completely_regular_uniformity.HB_unnamed_factory_36" class="id"><a name="completely_regular_uniformity.HB_unnamed_factory_36" class="" title="completely_regular_uniformity.HB_unnamed_factory_36 :
-forall {R : realType} {X : topologicalType}
+forall {R : realType} {X : topology_structure.Topological.type}
   (crs : completely_regular_space X),
 Uniform.axioms_ (completely_regular_uniformity.type crs)
 
@@ -1960,7 +2105,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 748, characters 0-54
 ">#[export]</a></span><span id="completely_regular_uniformity.HB_unnamed_factory_36" class="id"><a name="completely_regular_uniformity.HB_unnamed_factory_36" class="" title="completely_regular_uniformity.HB_unnamed_factory_36 :
-forall {R : realType} {X : topologicalType}
+forall {R : realType} {X : topology_structure.Topological.type}
   (crs : completely_regular_space X),
 Uniform.axioms_ (completely_regular_uniformity.type crs)
 
@@ -1972,7 +2117,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 748, characters 0-54
 "> HB</a></span>.<span id="completely_regular_uniformity.HB_unnamed_factory_36" class="id"><a name="completely_regular_uniformity.HB_unnamed_factory_36" class="" title="completely_regular_uniformity.HB_unnamed_factory_36 :
-forall {R : realType} {X : topologicalType}
+forall {R : realType} {X : topology_structure.Topological.type}
   (crs : completely_regular_space X),
 Uniform.axioms_ (completely_regular_uniformity.type crs)
 
@@ -1984,7 +2129,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 748, characters 0-54
 ">instance</a></span><span class="vernacular"> Definition</span><span id="completely_regular_uniformity.HB_unnamed_factory_36" class="id"><a name="completely_regular_uniformity.HB_unnamed_factory_36" class="" title="completely_regular_uniformity.HB_unnamed_factory_36 :
-forall {R : realType} {X : topologicalType}
+forall {R : realType} {X : topology_structure.Topological.type}
   (crs : completely_regular_space X),
 Uniform.axioms_ (completely_regular_uniformity.type crs)
 
@@ -1996,7 +2141,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 748, characters 0-54
 "> _</a></span><span id="completely_regular_uniformity.HB_unnamed_factory_36" class="id"><a name="completely_regular_uniformity.HB_unnamed_factory_36" class="" title="completely_regular_uniformity.HB_unnamed_factory_36 :
-forall {R : realType} {X : topologicalType}
+forall {R : realType} {X : topology_structure.Topological.type}
   (crs : completely_regular_space X),
 Uniform.axioms_ (completely_regular_uniformity.type crs)
 
@@ -2008,7 +2153,7 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 748, characters 0-54
 "> :=</a></span><span id="completely_regular_uniformity.HB_unnamed_factory_36" class="id"><a name="completely_regular_uniformity.HB_unnamed_factory_36" class="" title="completely_regular_uniformity.HB_unnamed_factory_36 :
-forall {R : realType} {X : topologicalType}
+forall {R : realType} {X : topology_structure.Topological.type}
   (crs : completely_regular_space X),
 Uniform.axioms_ (completely_regular_uniformity.type crs)
 
@@ -2034,31 +2179,50 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 748, characters 0-54
 <span class="vernacular">Let</span><span class="id"> </span><span id="locally_compact_uniform.opc" class="id"><a name="locally_compact_uniform.opc" class="">opc</a></span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#one_point_compactification">one_point_compactification</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#locally_compact_uniform.X">X</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="one_point_compactification_completely_reg" class="id"><a name="one_point_compactification_completely_reg" class="" title="one_point_compactification_completely_reg :
-forall {X : topologicalType},
+forall {X : topology_structure.Topological.type},
 realType ->
-locally_compact [set: X] ->
-hausdorff_space X -> completely_regular_space (one_point_compactification X)
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X ->
+completely_regular_space
+  (one_point_compactification (topology_structure.Topological.sort X))
 
 one_point_compactification_completely_reg is not universe polymorphic
 Expanded type for implicit arguments
 one_point_compactification_completely_reg :
-forall {X : topologicalType},
+forall {X : topology_structure.Topological.type},
 realType ->
-locally_compact [set: X] ->
+locally_compact [set: topology_structure.Topological.sort X] ->
 hausdorff_space X ->
-forall [a : one_point_compactification X]
-  [B : set (one_point_compactification X)],
-closed B ->
+forall
+  [a : topology_structure.Topological.sort
+         (one_point_compactification (topology_structure.Topological.sort X))]
+  [B : set
+         (topology_structure.Topological.sort
+            (one_point_compactification
+               (topology_structure.Topological.sort X)))],
+topology_structure.closed B ->
 ~ B a ->
 exists
-  (uT : Uniform.axioms_ (one_point_compactification X)^o) 
-(E : set (one_point_compactification X * one_point_compactification X)),
+  (uT : Uniform.axioms_
+          (topology_structure.Topological.sort
+             (one_point_compactification
+                (topology_structure.Topological.sort X)))^o) 
+(E : set
+       (topology_structure.Topological.sort
+          (one_point_compactification (topology_structure.Topological.sort X)) *
+        topology_structure.Topological.sort
+          (one_point_compactification (topology_structure.Topological.sort X)))),
   let UT :=
     {|
-      Uniform.sort := (one_point_compactification X)^o; Uniform.class := uT
+      Uniform.sort :=
+        (topology_structure.Topological.sort
+           (one_point_compactification
+              (topology_structure.Topological.sort X)))^o;
+      Uniform.class := uT
     |} in
   [/\ entourage E, ([set a] `*` B `&` E)%classic = set0
-    & forall x : UT, (nbhs x `<=` nbhs x)%classic]
+    & forall x : filter.Filtered.sort UT,
+      (filter.nbhs x `<=` filter.nbhs x)%classic]
 
 Arguments one_point_compactification_completely_reg {X R} lcpt hsdf [a B] _ _
 one_point_compactification_completely_reg is opaque
@@ -2079,8 +2243,10 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 762, characters 6-47
 Qed.</div></details>
 <br/>
 <span id="urysohn_opc__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_55" class="id"><span id="urysohn_opc__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_54" class="id"><span id="urysohn_opc__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_53" class="id"><span id="urysohn_opc__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_52" class="id"><span id="urysohn_opc__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_51" class="id"><span id="urysohn_opc__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_50" class="id"><span id="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Uniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_Uniform__to__filter_isFiltered" class="id"><span id="uniform_structure_Uniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_Uniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_Uniform__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_43" class="id"><a name="urysohn_opc__canonical__uniform_structure_Uniform" class="" title="urysohn_opc__canonical__uniform_structure_Uniform :
-forall {X : topologicalType},
-realType -> locally_compact [set: X] -> hausdorff_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+realType ->
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X -> uniformType
 
 urysohn_opc__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments urysohn_opc__canonical__uniform_structure_Uniform {X R} lcpt hsdf
@@ -2091,8 +2257,10 @@ Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 772, characters 0-144
 ">#[local]</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><br/>
 <span id="urysohn_opc__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_55" class="id"><span id="urysohn_opc__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_54" class="id"><span id="urysohn_opc__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_53" class="id"><span id="urysohn_opc__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_52" class="id"><span id="urysohn_opc__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_51" class="id"><span id="urysohn_opc__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_50" class="id"><span id="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Uniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_Uniform__to__filter_isFiltered" class="id"><span id="uniform_structure_Uniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_Uniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_Uniform__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_43" class="id"><a name="urysohn_opc__canonical__uniform_structure_Uniform" class="" title="urysohn_opc__canonical__uniform_structure_Uniform :
-forall {X : topologicalType},
-realType -> locally_compact [set: X] -> hausdorff_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+realType ->
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X -> uniformType
 
 urysohn_opc__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments urysohn_opc__canonical__uniform_structure_Uniform {X R} lcpt hsdf
@@ -2102,8 +2270,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 772, characters 0-144
 ">HB</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="urysohn_opc__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_55" class="id"><span id="urysohn_opc__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_54" class="id"><span id="urysohn_opc__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_53" class="id"><span id="urysohn_opc__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_52" class="id"><span id="urysohn_opc__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_51" class="id"><span id="urysohn_opc__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_50" class="id"><span id="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Uniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_Uniform__to__filter_isFiltered" class="id"><span id="uniform_structure_Uniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_Uniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_Uniform__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_43" class="id"><a name="urysohn_opc__canonical__uniform_structure_Uniform" class="" title="urysohn_opc__canonical__uniform_structure_Uniform :
-forall {X : topologicalType},
-realType -> locally_compact [set: X] -> hausdorff_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+realType ->
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X -> uniformType
 
 urysohn_opc__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments urysohn_opc__canonical__uniform_structure_Uniform {X R} lcpt hsdf
@@ -2113,8 +2283,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 772, characters 0-144
 ">instance</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="urysohn_opc__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_55" class="id"><span id="urysohn_opc__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_54" class="id"><span id="urysohn_opc__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_53" class="id"><span id="urysohn_opc__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_52" class="id"><span id="urysohn_opc__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_51" class="id"><span id="urysohn_opc__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_50" class="id"><span id="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Uniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_Uniform__to__filter_isFiltered" class="id"><span id="uniform_structure_Uniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_Uniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_Uniform__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_43" class="id"><a name="urysohn_opc__canonical__uniform_structure_Uniform" class="" title="urysohn_opc__canonical__uniform_structure_Uniform :
-forall {X : topologicalType},
-realType -> locally_compact [set: X] -> hausdorff_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+realType ->
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X -> uniformType
 
 urysohn_opc__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments urysohn_opc__canonical__uniform_structure_Uniform {X R} lcpt hsdf
@@ -2124,8 +2296,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 772, characters 0-144
 "> _</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="urysohn_opc__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_55" class="id"><span id="urysohn_opc__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_54" class="id"><span id="urysohn_opc__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_53" class="id"><span id="urysohn_opc__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_52" class="id"><span id="urysohn_opc__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_51" class="id"><span id="urysohn_opc__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_50" class="id"><span id="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Uniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_Uniform__to__filter_isFiltered" class="id"><span id="uniform_structure_Uniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_Uniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_Uniform__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_43" class="id"><a name="urysohn_opc__canonical__uniform_structure_Uniform" class="" title="urysohn_opc__canonical__uniform_structure_Uniform :
-forall {X : topologicalType},
-realType -> locally_compact [set: X] -> hausdorff_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+realType ->
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X -> uniformType
 
 urysohn_opc__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments urysohn_opc__canonical__uniform_structure_Uniform {X R} lcpt hsdf
@@ -2135,8 +2309,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 772, characters 0-144
 "> :=</a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span id="urysohn_opc__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_55" class="id"><span id="urysohn_opc__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_54" class="id"><span id="urysohn_opc__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_53" class="id"><span id="urysohn_opc__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_52" class="id"><span id="urysohn_opc__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_51" class="id"><span id="urysohn_opc__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_50" class="id"><span id="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Uniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_Uniform__to__filter_isFiltered" class="id"><span id="uniform_structure_Uniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_Uniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_Uniform__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_43" class="id"><a name="urysohn_opc__canonical__uniform_structure_Uniform" class="" title="urysohn_opc__canonical__uniform_structure_Uniform :
-forall {X : topologicalType},
-realType -> locally_compact [set: X] -> hausdorff_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+realType ->
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X -> uniformType
 
 urysohn_opc__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments urysohn_opc__canonical__uniform_structure_Uniform {X R} lcpt hsdf
@@ -2151,9 +2327,10 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 772, characters 0-144
 <br/>
 <span class="vernacular">Let</span><span class="id"> </span><span id="locally_compact_uniform.X'" class="id"><a name="locally_compact_uniform.X'" class="">X'</a></span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_topology">initial_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#locally_compact_uniform.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#locally_compact_uniform.opc">opc</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#Some">Some</a></span>.<br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_one_point_compactification_weakE" class="id"><a name="nbhs_one_point_compactification_weakE" class="" title="nbhs_one_point_compactification_weakE :
-forall {X : topologicalType} {R : realType} (lcpt : locally_compact [set: X])
+forall {X : topology_structure.Topological.type} {R : realType}
+  (lcpt : locally_compact [set: topology_structure.Topological.sort X])
   (hsdf : hausdorff_space X),
-nbhs = nbhs_ entourage
+filter.nbhs = nbhs_ entourage
 
 nbhs_one_point_compactification_weakE is not universe polymorphic
 Arguments nbhs_one_point_compactification_weakE {X R} lcpt hsdf
@@ -2170,8 +2347,10 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 778, characters 6-43
 Qed.</div></details>
 <br/>
 <span id="Topological_sort__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_64" class="id"><span id="Topological_sort__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_63" class="id"><span id="HB_unnamed_mixin_62" class="id"><span id="HB_unnamed_mixin_61" class="id"><span id="HB_unnamed_mixin_60" class="id"><span id="HB_unnamed_mixin_59" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_56" class="id"><a name="Topological_sort__canonical__uniform_structure_Uniform" class="" title="Topological_sort__canonical__uniform_structure_Uniform :
-forall {X : topologicalType},
-realType -> locally_compact [set: X] -> hausdorff_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+realType ->
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X -> uniformType
 
 Topological_sort__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Topological_sort__canonical__uniform_structure_Uniform 
@@ -2182,8 +2361,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 783, characters 0-258
 ">#[local,</a></span></span></span></span></span></span></span></span></span></span></span><span id="Topological_sort__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_64" class="id"><span id="Topological_sort__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_63" class="id"><span id="HB_unnamed_mixin_62" class="id"><span id="HB_unnamed_mixin_61" class="id"><span id="HB_unnamed_mixin_60" class="id"><span id="HB_unnamed_mixin_59" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_56" class="id"><a name="Topological_sort__canonical__uniform_structure_Uniform" class="" title="Topological_sort__canonical__uniform_structure_Uniform :
-forall {X : topologicalType},
-realType -> locally_compact [set: X] -> hausdorff_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+realType ->
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X -> uniformType
 
 Topological_sort__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Topological_sort__canonical__uniform_structure_Uniform 
@@ -2195,8 +2376,10 @@ Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 783, characters 0-258
 "> non_forgetful_inheritance]</a></span></span></span></span></span></span></span></span></span></span></span><br/>
 <span id="Topological_sort__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_64" class="id"><span id="Topological_sort__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_63" class="id"><span id="HB_unnamed_mixin_62" class="id"><span id="HB_unnamed_mixin_61" class="id"><span id="HB_unnamed_mixin_60" class="id"><span id="HB_unnamed_mixin_59" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_56" class="id"><a name="Topological_sort__canonical__uniform_structure_Uniform" class="" title="Topological_sort__canonical__uniform_structure_Uniform :
-forall {X : topologicalType},
-realType -> locally_compact [set: X] -> hausdorff_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+realType ->
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X -> uniformType
 
 Topological_sort__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Topological_sort__canonical__uniform_structure_Uniform 
@@ -2207,8 +2390,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 783, characters 0-258
 ">HB</a></span></span></span></span></span></span></span></span></span></span></span>.<span id="Topological_sort__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_64" class="id"><span id="Topological_sort__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_63" class="id"><span id="HB_unnamed_mixin_62" class="id"><span id="HB_unnamed_mixin_61" class="id"><span id="HB_unnamed_mixin_60" class="id"><span id="HB_unnamed_mixin_59" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_56" class="id"><a name="Topological_sort__canonical__uniform_structure_Uniform" class="" title="Topological_sort__canonical__uniform_structure_Uniform :
-forall {X : topologicalType},
-realType -> locally_compact [set: X] -> hausdorff_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+realType ->
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X -> uniformType
 
 Topological_sort__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Topological_sort__canonical__uniform_structure_Uniform 
@@ -2219,8 +2404,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 783, characters 0-258
 ">instance</a></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="Topological_sort__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_64" class="id"><span id="Topological_sort__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_63" class="id"><span id="HB_unnamed_mixin_62" class="id"><span id="HB_unnamed_mixin_61" class="id"><span id="HB_unnamed_mixin_60" class="id"><span id="HB_unnamed_mixin_59" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_56" class="id"><a name="Topological_sort__canonical__uniform_structure_Uniform" class="" title="Topological_sort__canonical__uniform_structure_Uniform :
-forall {X : topologicalType},
-realType -> locally_compact [set: X] -> hausdorff_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+realType ->
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X -> uniformType
 
 Topological_sort__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Topological_sort__canonical__uniform_structure_Uniform 
@@ -2231,8 +2418,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 783, characters 0-258
 "> _</a></span></span></span></span></span></span></span></span></span></span></span><span id="Topological_sort__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_64" class="id"><span id="Topological_sort__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_63" class="id"><span id="HB_unnamed_mixin_62" class="id"><span id="HB_unnamed_mixin_61" class="id"><span id="HB_unnamed_mixin_60" class="id"><span id="HB_unnamed_mixin_59" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_56" class="id"><a name="Topological_sort__canonical__uniform_structure_Uniform" class="" title="Topological_sort__canonical__uniform_structure_Uniform :
-forall {X : topologicalType},
-realType -> locally_compact [set: X] -> hausdorff_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+realType ->
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X -> uniformType
 
 Topological_sort__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Topological_sort__canonical__uniform_structure_Uniform 
@@ -2243,8 +2432,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.normedtype_theory.urysohn, line 783, characters 0-258
 "> :=</a></span></span></span></span></span></span></span></span></span></span></span><span id="Topological_sort__canonical__uniform_structure_Uniform" class="id"><span id="HB_unnamed_mixin_64" class="id"><span id="Topological_sort__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_63" class="id"><span id="HB_unnamed_mixin_62" class="id"><span id="HB_unnamed_mixin_61" class="id"><span id="HB_unnamed_mixin_60" class="id"><span id="HB_unnamed_mixin_59" class="id"><span id="uniform_structure_Nbhs_isUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Nbhs_isUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="HB_unnamed_factory_56" class="id"><a name="Topological_sort__canonical__uniform_structure_Uniform" class="" title="Topological_sort__canonical__uniform_structure_Uniform :
-forall {X : topologicalType},
-realType -> locally_compact [set: X] -> hausdorff_space X -> uniformType
+forall {X : topology_structure.Topological.type},
+realType ->
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X -> uniformType
 
 Topological_sort__canonical__uniform_structure_Uniform is not universe polymorphic
 Arguments Topological_sort__canonical__uniform_structure_Uniform 
@@ -2264,24 +2455,35 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 783, characters 0-258
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#nbhs_one_point_compactification_weakE">nbhs_one_point_compactification_weakE</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="locally_compact_completely_regular" class="id"><a name="locally_compact_completely_regular" class="" title="locally_compact_completely_regular :
-forall {X : topologicalType},
+forall {X : topology_structure.Topological.type},
 realType ->
-locally_compact [set: X] -> hausdorff_space X -> completely_regular_space X
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X -> completely_regular_space X
 
 locally_compact_completely_regular is not universe polymorphic
 Expanded type for implicit arguments
 locally_compact_completely_regular :
-forall {X : topologicalType},
+forall {X : topology_structure.Topological.type},
 realType ->
-locally_compact [set: X] ->
+locally_compact [set: topology_structure.Topological.sort X] ->
 hausdorff_space X ->
-forall [a : X] [B : set X],
-closed B ->
+forall [a : topology_structure.Topological.sort X]
+  [B : set (topology_structure.Topological.sort X)],
+topology_structure.closed B ->
 ~ B a ->
-exists (uT : Uniform.axioms_ X^o) (E : set (X * X)),
-  let UT := {| Uniform.sort := X^o; Uniform.class := uT |} in
+exists
+  (uT : Uniform.axioms_ (topology_structure.Topological.sort X)^o) 
+(E : set
+       (topology_structure.Topological.sort X *
+        topology_structure.Topological.sort X)),
+  let UT :=
+    {|
+      Uniform.sort := (topology_structure.Topological.sort X)^o;
+      Uniform.class := uT
+    |} in
   [/\ entourage E, ([set a] `*` B `&` E)%classic = set0
-    & forall x : UT, (nbhs x `<=` nbhs x)%classic]
+    & forall x : filter.Filtered.sort UT,
+      (filter.nbhs x `<=` filter.nbhs x)%classic]
 
 Arguments locally_compact_completely_regular {X R} lcpt hsdf [a B] _ _
 locally_compact_completely_regular is opaque
@@ -2299,16 +2501,20 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 793, characters 6-40
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="completely_regular_regular" class="id"><a name="completely_regular_regular" class="" title="completely_regular_regular :
 realType ->
-forall {X : topologicalType}, completely_regular_space X -> regular_space X
+forall {X : topology_structure.Topological.type},
+completely_regular_space X -> regular_space X
 
 completely_regular_regular is not universe polymorphic
 Expanded type for implicit arguments
 completely_regular_regular :
 realType ->
-forall {X : topologicalType},
+forall {X : topology_structure.Topological.type},
 completely_regular_space X ->
-forall [a : X] [t : set X],
-nbhs a t -> exists2 i : set X, nbhs a i & (closure i `<=` t)%classic
+forall [a : topology_structure.Topological.sort X]
+  [t : set (topology_structure.Topological.sort X)],
+filter.nbhs a t ->
+exists2 i : set (topology_structure.Topological.sort X),
+  filter.nbhs a i & (topology_structure.closure i `<=` t)%classic
 
 Arguments completely_regular_regular {R X} _ [a t] _
 completely_regular_regular is opaque
@@ -2328,13 +2534,16 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> pseudometric_normal</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="regular_openP" class="id"><a name="regular_openP" class="" title="regular_openP :
-forall {T : topologicalType} (x : T),
+forall {T : topology_structure.Topological.type}
+  (x : topology_structure.Topological.sort T),
 {for x, regular_space T} <->
-(forall A : set T,
- closed A ->
+(forall A : set (topology_structure.Topological.sort T),
+ topology_structure.closed A ->
  ~ A x ->
- exists U V : set T,
-   [/\ open U, open V, U x, (A `<=` V)%classic & (U `&` V)%classic = set0])
+ exists U V : set (topology_structure.Topological.sort T),
+   [/\ topology_structure.open U, topology_structure.open V, 
+      U x, (A `<=` V)%classic
+     & (U `&` V)%classic = set0])
 
 regular_openP is not universe polymorphic
 Arguments regular_openP {T} x
@@ -2372,10 +2581,13 @@ forall {R : realType} {X : pseudoMetricType R}, normal_space X
 pseudometric_normal is not universe polymorphic
 Expanded type for implicit arguments
 pseudometric_normal :
-forall {R : realType} {X : pseudoMetricType R} [A : set X],
-closed A ->
-forall [t : set X],
-set_nbhs A t -> exists2 i : set X, set_nbhs A i & (closure i `<=` t)%classic
+forall {R : realType} {X : pseudoMetricType R}
+  [A : set (topology_structure.Topological.sort X)],
+topology_structure.closed A ->
+forall [t : set (topology_structure.Topological.sort X)],
+set_nbhs A t ->
+exists2 i : set (topology_structure.Topological.sort X),
+  set_nbhs A i & (topology_structure.closure i `<=` t)%classic
 
 Arguments pseudometric_normal {R X} [A] _ [t] _
 pseudometric_normal is opaque

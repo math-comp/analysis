@@ -1117,7 +1117,7 @@ library mathcomp.experimental_reals.realseq, line 360, characters 6-15
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ncvg_shift" class="id"><a name="ncvg_shift" class="" title="ncvg_shift :
 forall [R : realType] (k : nat) (u : nat -> R) (l : \bar R),
-ncvg (R:=R) u l <-> ncvg (R:=R) (fun n : nat => u (n + k)) l
+ncvg (R:=R) u l <-> ncvg (R:=R) (fun n : nat => u (n + k)%N) l
 
 ncvg_shift is not universe polymorphic
 Arguments ncvg_shift [R] k%_nat_scope u%_function_scope l%_ereal_scope
@@ -1140,7 +1140,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="iscvg_shift" class="id"><a name="iscvg_shift" class="" title="iscvg_shift :
 forall [R : realType] (k : nat) (u : nat -> R),
-iscvg (R:=R) u <-> iscvg (R:=R) (fun n : nat => u (n + k))
+iscvg (R:=R) u <-> iscvg (R:=R) (fun n : nat => u (n + k)%N)
 
 iscvg_shift is not universe polymorphic
 Arguments iscvg_shift [R] k%_nat_scope u%_function_scope
@@ -1440,7 +1440,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nlim_lift" class="id"><a name="nlim_lift" class="" title="nlim_lift :
 forall {R : realType} (u : nat -> R) (p : nat),
-nlim (fun n : nat => u (n + p)) = nlim u
+nlim (fun n : nat => u (n + p)%N) = nlim u
 
 nlim_lift is not universe polymorphic
 Arguments nlim_lift {R} u%_function_scope p%_nat_scope

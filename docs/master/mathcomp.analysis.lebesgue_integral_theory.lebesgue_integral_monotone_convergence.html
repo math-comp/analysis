@@ -275,8 +275,15 @@ forall [d : measure_display] [T : measurableType d]
 (forall x : T, (0%R <= f x)%E) ->
 (forall x : T, {homo (fun x0 : nat => g x0 x) : n m / n <= m >-> (n <= m)%R}) ->
 (forall x : T,
- ((EFin \o (fun x0 : nat => g x0 x)) x0 @[x0 --> \oo] --> f x)%classic) ->
-(\int[mu]_x f x)%E = limn (sintegral (R:=R) mu \o (fun x : nat => g x))
+ filter.cvg_to
+   (filter.nbhs
+      (filter.fmap (EFin \o (fun x0 : nat => g x0 x))
+         (filter.nbhs filter.eventually)))
+   (filter.nbhs (f x))) ->
+(\int[mu]_x f x)%E =
+filter.lim
+  (filter.fmap (sintegral (R:=R) mu \o (fun x : nat => g x))
+     (filter.nbhs filter.eventually))
 
 nd_ge0_integral_lim is not universe polymorphic
 Arguments nd_ge0_integral_lim [d]%_measure_display_scope 
@@ -560,8 +567,12 @@ forall [g' : (T -> \bar R) ^nat],
    D (g' n)) ->
 (forall (n : nat) (x : T), D x -> (0%R <= g' n x)%E) ->
 (forall x : T, D x -> {homo g'^~ x : n m / n <= m >-> (n <= m)%E}) ->
-(\int[mu]_(x in D) (fun x0 : T => limn (g'^~ x0)) x)%E =
-limn (fun n : nat => (\int[mu]_(x in D) g' n x)%E)
+(\int[mu]_(x in D)
+    (fun x0 : T =>
+     filter.lim (filter.fmap (g'^~ x0) (filter.nbhs filter.eventually))) x)%E =
+filter.lim
+  (filter.fmap (fun n : nat => (\int[mu]_(x in D) g' n x)%E)
+     (filter.nbhs filter.eventually))
 
 monotone_convergence is not universe polymorphic
 Arguments monotone_convergence [d]%_measure_display_scope 
@@ -617,9 +628,15 @@ forall [g' : (T -> \bar R) ^nat],
    D (g' n)) ->
 (forall (n : nat) (x : T), D x -> (0%R <= g' n x)%E) ->
 (forall x : T, D x -> {homo g'^~ x : n m / n <= m >-> (n <= m)%E}) ->
-((\int[mu]_(x in D) g' n x)%E @[n \oo] --> (\int[mu]_(x in D)
-                                               (fun x0 : T => limn (g'^~ x0))
-                                                 x)%E)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => (\int[mu]_(x in D) g' n x)%E)
+        filter.eventually))
+  (filter.nbhs
+     (\int[mu]_(x in D)
+         (fun x0 : T =>
+          filter.lim (filter.fmap (g'^~ x0) (filter.nbhs filter.eventually)))
+           x)%E)
 
 cvg_monotone_convergence is not universe polymorphic
 Expanded type for implicit arguments
@@ -639,7 +656,11 @@ forall
   [t : set
          (GRing.BaseAddMagma.sort
             constructive_ereal_extended__canonical__Algebra_BaseAddMagma)],
-nbhs (\int[mu]_(x in D) (fun x0 : T => limn (g'^~ x0)) x)%E t ->
+filter.nbhs
+  (\int[mu]_(x in D)
+      (fun x0 : T =>
+       filter.lim (filter.fmap (g'^~ x0) (filter.nbhs filter.eventually))) x)%E
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i

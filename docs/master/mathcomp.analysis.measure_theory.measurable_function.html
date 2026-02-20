@@ -1905,8 +1905,7 @@ forall [d1 d2 : measure_display] [T1 : measurableType d1]
 measurable_fun
   (T:=Datatypes_prod__canonical__measurable_structure_SigmaRing T1 T2)
   (U:=Datatypes_prod__canonical__measurable_structure_SigmaRing T2 T1)
-  [set: Datatypes_prod__canonical__measurable_structure_SigmaRing T1 T2]
-  unstable.swap
+  [set: Datatypes_prod__canonical__measurable_structure_SigmaRing T1 T2] swap
 
 measurable_swap is not universe polymorphic
 Expanded type for implicit arguments
@@ -1925,7 +1924,7 @@ forall [i : set (set (T1 * T2))],
   i ->
 i
   ([set: Datatypes_prod__canonical__measurable_structure_SigmaRing T1 T2]
-   `&` unstable.swap @^-1` Y)%classic
+   `&` swap @^-1` Y)%classic
 
 Arguments measurable_swap [d1 d2]%_measure_display_scope 
   [T1 T2] _ [Y] _ [i] _

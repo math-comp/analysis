@@ -630,7 +630,14 @@ let F :=
   fun x0 : R =>
   (\int[lebesgue_measure]_(t in [set` Interval a (BRight x0)]) f t)%R in
 (a < BRight x)%E ->
-{for x, continuous f} -> derivable F x 1 /\ F^`()%classic x = f x
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 f} ->
+derivable F x 1 /\ F^`()%classic x = f x
 
 continuous_FTC1 is not universe polymorphic
 Arguments continuous_FTC1 {R} [f]%_function_scope 
@@ -659,7 +666,14 @@ forall {R : realType} [f : R -> R] [a x u : R],
 lebesgue_measure.-integrable `[a, u] (EFin \o f) ->
 let F := fun x0 : R => (\int[lebesgue_measure]_(t in `[a, x0]) f t)%R in
 (a < x)%R ->
-{for x, continuous f} -> derivable F x 1 /\ F^`()%classic x = f x
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 f} ->
+derivable F x 1 /\ F^`()%classic x = f x
 
 continuous_FTC1_closed is not universe polymorphic
 Arguments continuous_FTC1_closed {R} [f]%_function_scope 
@@ -704,8 +718,12 @@ forall {R : realType} [a b e : R] [f : R -> R],
 (a < b)%R ->
 (0 < e)%R ->
 lebesgue_measure.-integrable `[a, b] (EFin \o f) ->
-\forall c \near a, (a <= c)%R ->
-                   (`|parameterized_integral lebesgue_measure a c f| < e)%R
+filter.prop_near1 a
+  (P:=fun c : R =>
+      (a <= c)%R -> (`|parameterized_integral lebesgue_measure a c f| < e)%R)
+  (inPhantom
+     (forall c : R,
+      (a <= c)%R -> (`|parameterized_integral lebesgue_measure a c f| < e)%R))
 
 parameterized_integral_near_left is not universe polymorphic
 Arguments parameterized_integral_near_left {R} [a b e]%_ring_scope
@@ -762,7 +780,11 @@ Declared in library mathcomp.analysis.ftc, line 363, characters 6-38
 forall {R : realType} [a b : R] [f : R -> R],
 (a < b)%R ->
 lebesgue_measure.-integrable `[a, b] (EFin \o f) ->
-(parameterized_integral lebesgue_measure a x f @[x --> a] --> 0%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap ((parameterized_integral lebesgue_measure a)^~ f)
+        (filter.nbhs a)))
+  (filter.nbhs 0%R)
 
 parameterized_integral_cvg_left is not universe polymorphic
 Expanded type for implicit arguments
@@ -771,7 +793,7 @@ forall {R : realType} [a b : R] [f : R -> R],
 (a < b)%R ->
 lebesgue_measure.-integrable `[a, b] (EFin \o f) ->
 forall [t : set R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] a i
@@ -803,8 +825,11 @@ Declared in library mathcomp.analysis.ftc, line 406, characters 6-37
 forall {R : realType} [a b : R] [f : R -> R],
 (a < b)%R ->
 lebesgue_measure.-integrable `[a, b] (EFin \o f) ->
-(parameterized_integral lebesgue_measure a x f @[x --> b^'-] --> 
- parameterized_integral lebesgue_measure a b f)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap ((parameterized_integral lebesgue_measure a)^~ f)
+        (filter.nbhs (b^'-)%classic)))
+  (filter.nbhs (parameterized_integral lebesgue_measure a b f))
 
 parameterized_integral_cvg_at_left is not universe polymorphic
 Expanded type for implicit arguments
@@ -813,7 +838,7 @@ forall {R : realType} [a b : R] [f : R -> R],
 (a < b)%R ->
 lebesgue_measure.-integrable `[a, b] (EFin \o f) ->
 forall [t : set R],
-nbhs (parameterized_integral lebesgue_measure a b f) t ->
+filter.nbhs (parameterized_integral lebesgue_measure a b f) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] b i
@@ -878,15 +903,19 @@ parameterized_integral_continuous :
 forall {R : realType} [a b : R] [f : R -> R],
 (a <= b)%R ->
 lebesgue_measure.-integrable `[a, b] (EFin \o f) ->
-forall [x : subspace_topology_subspace__canonical__filter_Nbhs `[a, b]]
-  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-nbhs
+forall
+  [x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs `[a, b])]
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs
   (from_subspace `[a, b] ((parameterized_integral lebesgue_measure a)^~ f) x)
   t ->
 (if
   if if pselect (`[a, b]%classic x) then true else false then true else false
- then within `[a, b] (nbhs x)
- else globally [set x])
+ then filter.within `[a, b] (filter.nbhs x)
+ else filter.globally [set x])
   (from_subspace `[a, b] ((parameterized_integral lebesgue_measure a)^~ f) @^-1`
    t)%classic
 
@@ -1111,9 +1140,12 @@ Declared in library mathcomp.analysis.ftc, line 548, characters 10-25
 forall {R : realType} [f F : R -> R] [a l : R],
 (forall x : R, (a <= x)%R -> (0 <= f x)%R) ->
 {within `[a, +oo[, continuous f}%classic ->
-(F x @[x --> +oo%R] --> l)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap [eta F] (filter.nbhs +oo%R)))
+  (filter.nbhs l) ->
 (forall x : R, (a < x)%R -> derivable F x 1) ->
-(F x @[x --> a^'+] --> F a)%classic ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F] (filter.nbhs (a^'+)%classic)))
+  (filter.nbhs (F a)) ->
 {in `]a, +oo[%R, F^`()%classic =1 f} ->
 (\int[lebesgue_measure]_(x in `[a, +oo[) (f x)%:E)%E = (l%:E - (F a)%:E)%E
 
@@ -1225,9 +1257,12 @@ Declared in library mathcomp.analysis.ftc, line 650, characters 6-26
 forall {R : realType} [f F : R -> R] [a l : R],
 (forall x : R, (a <= x)%R -> (0 <= f x)%R) ->
 {within `[a, +oo[, continuous f}%classic ->
-(F x @[x --> +oo%R] --> l)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap [eta F] (filter.nbhs +oo%R)))
+  (filter.nbhs l) ->
 (forall x : R, (a < x)%R -> derivable F x 1) ->
-(F x @[x --> a^'+] --> F a)%classic ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F] (filter.nbhs (a^'+)%classic)))
+  (filter.nbhs (F a)) ->
 {in `]a, +oo[%R, F^`()%classic =1 f} ->
 (\int[lebesgue_measure]_(x in `[a, +oo[) f x)%R = (l - F a)%R
 
@@ -1256,8 +1291,11 @@ Qed.</div></details>
 forall {R : realType} [f F : R -> R] [a l : R],
 (forall x : R, (a <= x)%R -> (f x <= 0)%R) ->
 {within `[a, +oo[, continuous f}%classic ->
-(F x @[x --> +oo%R] --> l)%classic ->
-(F x @[x --> a^'+] --> F a)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap [eta F] (filter.nbhs +oo%R)))
+  (filter.nbhs l) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F] (filter.nbhs (a^'+)%classic)))
+  (filter.nbhs (F a)) ->
 (forall x : R, (a < x)%R -> derivable F x 1) ->
 {in `]a, +oo[%R, F^`()%classic =1 f} ->
 (\int[lebesgue_measure]_(x in `[a, +oo[) (f x)%:E)%E = (l%:E - (F a)%:E)%E
@@ -1500,9 +1538,15 @@ Qed.</div></details>
 forall {R : realType} [F G : R -> R] [a : R] [b : itv_bound R] [l : R],
 (BRight a < b)%O ->
 {in Interval (BLeft a) b &, {homo F : x y / (x < y)%R}} ->
-(F x @[x --> a^'+] --> F a)%classic ->
-(G x @[x --> (F a)^'+] --> l)%classic ->
-((G \o F) x @[x --> a^'+] --> l)%classic
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F] (filter.nbhs (a^'+)%classic)))
+  (filter.nbhs (F a)) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta G] (filter.nbhs ((F a)^'+)%classic)))
+  (filter.nbhs l) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta G \o F] (filter.nbhs (a^'+)%classic)))
+  (filter.nbhs l)
 
 increasing_cvg_at_right_comp is not universe polymorphic
 Expanded type for implicit arguments
@@ -1510,10 +1554,14 @@ increasing_cvg_at_right_comp :
 forall {R : realType} [F G : R -> R] [a : R] [b : itv_bound R] [l : R],
 (BRight a < b)%O ->
 {in Interval (BLeft a) b &, {homo F : x y / (x < y)%R}} ->
-(F x @[x --> a^'+] --> F a)%classic ->
-(G x @[x --> (F a)^'+] --> l)%classic ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F] (filter.nbhs (a^'+)%classic)))
+  (filter.nbhs (F a)) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta G] (filter.nbhs ((F a)^'+)%classic)))
+  (filter.nbhs l) ->
 forall [t : set R],
-nbhs l t ->
+filter.nbhs l t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] a i
@@ -1567,9 +1615,15 @@ Declared in library mathcomp.analysis.ftc, line 895, characters 6-34
 forall {R : realType} [F G : R -> R] [a : itv_bound R] [b l : R],
 (a < BLeft b)%O ->
 {in Interval a (BRight b) &, {homo F : x y / (x < y)%R}} ->
-(F x @[x --> b^'-] --> F b)%classic ->
-(G x @[x --> (F b)^'-] --> l)%classic ->
-((G \o F) x @[x --> b^'-] --> l)%classic
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F] (filter.nbhs (b^'-)%classic)))
+  (filter.nbhs (F b)) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta G] (filter.nbhs ((F b)^'-)%classic)))
+  (filter.nbhs l) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta G \o F] (filter.nbhs (b^'-)%classic)))
+  (filter.nbhs l)
 
 increasing_cvg_at_left_comp is not universe polymorphic
 Expanded type for implicit arguments
@@ -1577,10 +1631,14 @@ increasing_cvg_at_left_comp :
 forall {R : realType} [F G : R -> R] [a : itv_bound R] [b l : R],
 (a < BLeft b)%O ->
 {in Interval a (BRight b) &, {homo F : x y / (x < y)%R}} ->
-(F x @[x --> b^'-] --> F b)%classic ->
-(G x @[x --> (F b)^'-] --> l)%classic ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F] (filter.nbhs (b^'-)%classic)))
+  (filter.nbhs (F b)) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta G] (filter.nbhs ((F b)^'-)%classic)))
+  (filter.nbhs l) ->
 forall [t : set R],
-nbhs l t ->
+filter.nbhs l t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] b i
@@ -1631,9 +1689,15 @@ Declared in library mathcomp.analysis.ftc, line 930, characters 6-33
 forall {R : realType} [F G : R -> R] [a : R] [b : itv_bound R] [l : R],
 (BRight a < b)%O ->
 {in Interval (BLeft a) b &, {homo F : x y /~ (x < y)%R}} ->
-(F x @[x --> a^'+] --> F a)%classic ->
-(G x @[x --> (F a)^'-] --> l)%classic ->
-((G \o F) x @[x --> a^'+] --> l)%classic
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F] (filter.nbhs (a^'+)%classic)))
+  (filter.nbhs (F a)) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta G] (filter.nbhs ((F a)^'-)%classic)))
+  (filter.nbhs l) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta G \o F] (filter.nbhs (a^'+)%classic)))
+  (filter.nbhs l)
 
 decreasing_cvg_at_right_comp is not universe polymorphic
 Expanded type for implicit arguments
@@ -1641,10 +1705,14 @@ decreasing_cvg_at_right_comp :
 forall {R : realType} [F G : R -> R] [a : R] [b : itv_bound R] [l : R],
 (BRight a < b)%O ->
 {in Interval (BLeft a) b &, {homo F : x y /~ (x < y)%R}} ->
-(F x @[x --> a^'+] --> F a)%classic ->
-(G x @[x --> (F a)^'-] --> l)%classic ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F] (filter.nbhs (a^'+)%classic)))
+  (filter.nbhs (F a)) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta G] (filter.nbhs ((F a)^'-)%classic)))
+  (filter.nbhs l) ->
 forall [t : set R],
-nbhs l t ->
+filter.nbhs l t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] a i
@@ -1696,9 +1764,15 @@ Declared in library mathcomp.analysis.ftc, line 963, characters 6-34
 forall {R : realType} [F G : R -> R] [a : itv_bound R] [b l : R],
 (a < BLeft b)%O ->
 {in Interval a (BRight b) &, {homo F : x y /~ (x < y)%R}} ->
-(F x @[x --> b^'-] --> F b)%classic ->
-(G x @[x --> (F b)^'+] --> l)%classic ->
-((G \o F) x @[x --> b^'-] --> l)%classic
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F] (filter.nbhs (b^'-)%classic)))
+  (filter.nbhs (F b)) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta G] (filter.nbhs ((F b)^'+)%classic)))
+  (filter.nbhs l) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta G \o F] (filter.nbhs (b^'-)%classic)))
+  (filter.nbhs l)
 
 decreasing_cvg_at_left_comp is not universe polymorphic
 Expanded type for implicit arguments
@@ -1706,10 +1780,14 @@ decreasing_cvg_at_left_comp :
 forall {R : realType} [F G : R -> R] [a : itv_bound R] [b l : R],
 (a < BLeft b)%O ->
 {in Interval a (BRight b) &, {homo F : x y /~ (x < y)%R}} ->
-(F x @[x --> b^'-] --> F b)%classic ->
-(G x @[x --> (F b)^'+] --> l)%classic ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F] (filter.nbhs (b^'-)%classic)))
+  (filter.nbhs (F b)) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta G] (filter.nbhs ((F b)^'+)%classic)))
+  (filter.nbhs l) ->
 forall [t : set R],
-nbhs l t ->
+filter.nbhs l t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] b i
@@ -1759,18 +1837,20 @@ Declared in library mathcomp.analysis.ftc, line 996, characters 6-33
 <span class="vernacular">End</span><span class="id"> integration_by_substitution_preliminaries</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgNy_compNP" class="id"><a name="cvgNy_compNP" class="" title="cvgNy_compNP :
-forall {T : topologicalType} {R : numFieldType} (f : R -> T)
-  (l : set_system T),
-(f x @[x --> -oo%R] --> l)%classic <->
-((f \o -%R%R) x @[x --> +oo%R] --> l)%classic
+forall {T : topology_structure.Topological.type} {R : numFieldType}
+  (f : R -> topology_structure.Topological.sort T)
+  (l : filter.set_system (topology_structure.Topological.sort T)),
+filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs -oo%R)))
+  (filter.nbhs l) <->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta f \o -%R%R] (filter.nbhs +oo%R)))
+  (filter.nbhs l)
 
 cvgNy_compNP is not universe polymorphic
 Arguments cvgNy_compNP {T R} f%_function_scope l
 cvgNy_compNP is opaque
-Expands to: Constant
-            mathcomp.analysis.normedtype_theory.num_normedtype.cvgNy_compNP
-Declared in
-library mathcomp.analysis.normedtype_theory.num_normedtype, line 529, characters 6-18
+Expands to: Constant mathcomp.analysis.ftc.cvgNy_compNP
+Declared in library mathcomp.analysis.ftc, line 1032, characters 6-18
 ">cvgNy_compNP</a></span><span class="id"> {</span><span id="T:312" class="id"><a name="T:312" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span><span class="id"> {</span><span id="R:313" class="id"><a name="R:313" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.NumField.Exports.numFieldType">numFieldType</a></span><span class="id">}</span> (<span id="f:314" class="id"><a name="f:314" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.ftc.html#R:313">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.ftc.html#T:312">T</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="l:315" class="id"><a name="l:315" class="">l</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.ftc.html#T:312">T</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.ftc.html#f:314">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.ftc.html#x:316">x</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> @[</a></span><span id="x:316" class="id"><a name="x:316" class="">x</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html#::ring_scope:'-oo'">-oo</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f">]</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.ftc.html#l:315">l</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> &lt;-&gt;</a></span> (<span class="id"><a href="mathcomp.analysis.ftc.html#f:314">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#a8ac36d488c8d5cdcfec5adcde894e5f">-%R</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> x</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> @[</a></span><span id="x:317" class="id"><a name="x:317" class="">x</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html#423d7544dbaa8438f698fe5437adc41f">+oo</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f">]</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.ftc.html#l:315">l</a></span>.<br/>
@@ -1782,18 +1862,20 @@ library mathcomp.analysis.normedtype_theory.num_normedtype, line 529, characters
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgy_compNP" class="id"><a name="cvgy_compNP" class="" title="cvgy_compNP :
-forall {T : topologicalType} {R : numFieldType} (f : R -> T)
-  (l : set_system T),
-(f x @[x --> +oo%R] --> l)%classic <->
-((f \o -%R%R) x @[x --> -oo%R] --> l)%classic
+forall {T : topology_structure.Topological.type} {R : numFieldType}
+  (f : R -> topology_structure.Topological.sort T)
+  (l : filter.set_system (topology_structure.Topological.sort T)),
+filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs +oo%R)))
+  (filter.nbhs l) <->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta f \o -%R%R] (filter.nbhs -oo%R)))
+  (filter.nbhs l)
 
 cvgy_compNP is not universe polymorphic
 Arguments cvgy_compNP {T R} f%_function_scope l
 cvgy_compNP is opaque
-Expands to: Constant
-            mathcomp.analysis.normedtype_theory.num_normedtype.cvgy_compNP
-Declared in
-library mathcomp.analysis.normedtype_theory.num_normedtype, line 539, characters 6-17
+Expands to: Constant mathcomp.analysis.ftc.cvgy_compNP
+Declared in library mathcomp.analysis.ftc, line 1041, characters 6-17
 ">cvgy_compNP</a></span><span class="id"> {</span><span id="T:320" class="id"><a name="T:320" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span><span class="id"> {</span><span id="R:321" class="id"><a name="R:321" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.NumField.Exports.numFieldType">numFieldType</a></span><span class="id">}</span> (<span id="f:322" class="id"><a name="f:322" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.ftc.html#R:321">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.ftc.html#T:320">T</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="l:323" class="id"><a name="l:323" class="">l</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.ftc.html#T:320">T</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.ftc.html#f:322">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.ftc.html#x:324">x</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> @[</a></span><span id="x:324" class="id"><a name="x:324" class="">x</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html#423d7544dbaa8438f698fe5437adc41f">+oo</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f">]</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.ftc.html#l:323">l</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"> &lt;-&gt;</a></span> (<span class="id"><a href="mathcomp.analysis.ftc.html#f:322">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#a8ac36d488c8d5cdcfec5adcde894e5f">-%R</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> x</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> @[</a></span><span id="x:325" class="id"><a name="x:325" class="">x</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html#::ring_scope:'-oo'">-oo</a></span><span class="id"><a href="mathcomp.classical.filter.html#9ae20bc67dba0e37ea0806b2f353bb2f">]</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.ftc.html#l:323">l</a></span>.<br/>
@@ -1814,9 +1896,26 @@ Qed.</div></details>
 forall {R : realType} [F G : R -> R] [a b : R],
 (a <= b)%R ->
 {in `[a, b]%R &, {homo F : x y /~ (x < y)%R}} ->
-{in `]a, b[%R, continuous F^`()%classic} ->
-cvg (F^`() x @[x --> a^'+])%classic ->
-cvg (F^`() x @[x --> b^'-])%classic ->
+{in `]a, b[%R,
+  forall
+    x : filter.Nbhs.sort
+          (numFieldTopology.NumField_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.NumField_sort__canonical__filter_Nbhs R)
+    (U:=filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_Nbhs
+          (join_normed_module_NormedModule_between_GRing_LSemiModule_and_filter_PointedNbhs
+             (Real_sort__canonical__normed_module_NormedModule R)))
+    x F^`()%classic} ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F^`()%classic] (filter.nbhs (a^'+)%classic)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap [eta F^`()%classic] (filter.nbhs (a^'+)%classic)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F^`()%classic] (filter.nbhs (b^'-)%classic)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap [eta F^`()%classic] (filter.nbhs (b^'-)%classic)))) ->
 derivable_oo_LRcontinuous F a b ->
 {within `[F b, F a], continuous G}%classic ->
 (\int[lebesgue_measure]_(x in `[F b, F a]) (G x)%:E)%E =
@@ -2003,9 +2102,26 @@ Qed.</div></details>
 forall {R : realType} [F G : R -> R] [a b : R],
 (a <= b)%R ->
 {in `[a, b]%R &, {homo F : x y / (x < y)%R}} ->
-{in `]a, b[%R, continuous F^`()%classic} ->
-cvg (F^`() x @[x --> a^'+])%classic ->
-cvg (F^`() x @[x --> b^'-])%classic ->
+{in `]a, b[%R,
+  forall
+    x : filter.Nbhs.sort
+          (numFieldTopology.NumField_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.NumField_sort__canonical__filter_Nbhs R)
+    (U:=filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_Nbhs
+          (join_normed_module_NormedModule_between_GRing_LSemiModule_and_filter_PointedNbhs
+             (Real_sort__canonical__normed_module_NormedModule R)))
+    x F^`()%classic} ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F^`()%classic] (filter.nbhs (a^'+)%classic)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap [eta F^`()%classic] (filter.nbhs (a^'+)%classic)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F^`()%classic] (filter.nbhs (b^'-)%classic)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap [eta F^`()%classic] (filter.nbhs (b^'-)%classic)))) ->
 derivable_oo_LRcontinuous F a b ->
 {within `[F a, F b], continuous G}%classic ->
 (\int[lebesgue_measure]_(x in `[F a, F b]) (G x)%:E)%E =
@@ -2095,11 +2211,28 @@ Declared in library mathcomp.analysis.ftc, line 1207, characters 6-44
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="decreasing_ge0_integration_by_substitutiony" class="id"><a name="decreasing_ge0_integration_by_substitutiony" class="" title="decreasing_ge0_integration_by_substitutiony :
 forall {R : realType} [F G : R -> R] [a : R],
 {in `[a, +oo[%R &, {homo F : x y /~ (x < y)%R}} ->
-{in `]a, +oo[%R, continuous F^`()%classic} ->
-cvg (F^`() x @[x --> a^'+])%classic ->
-cvg (F^`() x @[x --> +oo%R])%classic ->
+{in `]a, +oo[%R,
+  forall
+    x : filter.Nbhs.sort
+          (numFieldTopology.NumField_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.NumField_sort__canonical__filter_Nbhs R)
+    (U:=filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_Nbhs
+          (join_normed_module_NormedModule_between_GRing_LSemiModule_and_filter_PointedNbhs
+             (Real_sort__canonical__normed_module_NormedModule R)))
+    x F^`()%classic} ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F^`()%classic] (filter.nbhs (a^'+)%classic)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap [eta F^`()%classic] (filter.nbhs (a^'+)%classic)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F^`()%classic] (filter.nbhs +oo%R)))
+  (filter.nbhs
+     (filter.lim (filter.fmap [eta F^`()%classic] (filter.nbhs +oo%R)))) ->
 derivable_oy_Rcontinuous F a ->
-(F x @[x --> +oo%R] --> -oo%R)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap [eta F] (filter.nbhs +oo%R)))
+  (filter.nbhs -oo%R) ->
 {within `]-oo, F a], continuous G}%classic ->
 {in `]-oo, F a[%R, forall x : R, (0 <= G x)%R} ->
 (\int[lebesgue_measure]_(x in `]-oo, F a]) (G x)%:E)%E =
@@ -2310,11 +2443,28 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="increasing_ge0_integration_by_substitutiony" class="id"><a name="increasing_ge0_integration_by_substitutiony" class="" title="increasing_ge0_integration_by_substitutiony :
 forall {R : realType} [F G : R -> R] [a : R],
 {in `[a, +oo[%R &, {homo F : x y / (x < y)%R}} ->
-{in `]a, +oo[%R, continuous F^`()%classic} ->
-cvg (F^`() x @[x --> a^'+])%classic ->
-cvg (F^`() x @[x --> +oo%R])%classic ->
+{in `]a, +oo[%R,
+  forall
+    x : filter.Nbhs.sort
+          (numFieldTopology.NumField_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.NumField_sort__canonical__filter_Nbhs R)
+    (U:=filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_Nbhs
+          (join_normed_module_NormedModule_between_GRing_LSemiModule_and_filter_PointedNbhs
+             (Real_sort__canonical__normed_module_NormedModule R)))
+    x F^`()%classic} ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F^`()%classic] (filter.nbhs (a^'+)%classic)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap [eta F^`()%classic] (filter.nbhs (a^'+)%classic)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F^`()%classic] (filter.nbhs +oo%R)))
+  (filter.nbhs
+     (filter.lim (filter.fmap [eta F^`()%classic] (filter.nbhs +oo%R)))) ->
 derivable_oy_Rcontinuous F a ->
-(F x @[x --> +oo%R] --> +oo%R)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap [eta F] (filter.nbhs +oo%R)))
+  (filter.nbhs +oo%R) ->
 {within `[F a, +oo[, continuous G}%classic ->
 {in `]F a, +oo[%R, forall x : R, (0 <= G x)%R} ->
 (\int[lebesgue_measure]_(x in `[F a, +oo[) (G x)%:E)%E =
@@ -2432,11 +2582,26 @@ Declared in library mathcomp.analysis.ftc, line 1455, characters 6-49
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="increasing_ge0_integration_by_substitutionNy" class="id"><a name="increasing_ge0_integration_by_substitutionNy" class="" title="increasing_ge0_integration_by_substitutionNy :
 forall {R : realType} [F G : R -> R] [b : R],
 {in `]-oo, b]%R &, {homo F : x y / (x < y)%R}} ->
-{in `]-oo, b[%R, continuous F^`()%classic} ->
-cvg (F^`() x @[x --> -oo%R])%classic ->
-(F^`() x @[x --> b^'-] --> F^`() b)%classic ->
+{in `]-oo, b[%R,
+  forall
+    x : filter.Nbhs.sort
+          (numFieldTopology.NumField_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.NumField_sort__canonical__filter_Nbhs R)
+    (U:=filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_Nbhs
+          (join_normed_module_NormedModule_between_GRing_LSemiModule_and_filter_PointedNbhs
+             (Real_sort__canonical__normed_module_NormedModule R)))
+    x F^`()%classic} ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F^`()%classic] (filter.nbhs -oo%R)))
+  (filter.nbhs
+     (filter.lim (filter.fmap [eta F^`()%classic] (filter.nbhs -oo%R)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F^`()%classic] (filter.nbhs (b^'-)%classic)))
+  (filter.nbhs (F^`()%classic b)) ->
 derivable_Nyo_Lcontinuous F b ->
-(F x @[x --> -oo%R] --> -oo%R)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap [eta F] (filter.nbhs -oo%R)))
+  (filter.nbhs -oo%R) ->
 {within `]-oo, F b], continuous G}%classic ->
 {in `]-oo, F b[%R, forall x : R, (0 <= G x)%R} ->
 (\int[lebesgue_measure]_(x in `]-oo, F b]) (G x)%:E)%E =
@@ -2638,14 +2803,35 @@ Declared in library mathcomp.analysis.ftc, line 1554, characters 6-50
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="increasing_ge0_integration_by_substitutionT" class="id"><a name="increasing_ge0_integration_by_substitutionT" class="" title="increasing_ge0_integration_by_substitutionT :
 forall {R : realType} [F G : R -> R],
 {homo F : x y / (x < y)%R} ->
-continuous F^`()%classic ->
-cvg (F^`() x @[x --> -oo%R])%classic ->
-cvg (F^`() x @[x --> +oo%R])%classic ->
+(forall
+   x : filter.Nbhs.sort
+         (numFieldTopology.NumField_sort__canonical__filter_Nbhs R),
+ filter.continuous_at
+   (T:=numFieldTopology.NumField_sort__canonical__filter_Nbhs R)
+   (U:=filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_Nbhs
+         (join_normed_module_NormedModule_between_GRing_LSemiModule_and_filter_PointedNbhs
+            (Real_sort__canonical__normed_module_NormedModule R)))
+   x F^`()%classic) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F^`()%classic] (filter.nbhs -oo%R)))
+  (filter.nbhs
+     (filter.lim (filter.fmap [eta F^`()%classic] (filter.nbhs -oo%R)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta F^`()%classic] (filter.nbhs +oo%R)))
+  (filter.nbhs
+     (filter.lim (filter.fmap [eta F^`()%classic] (filter.nbhs +oo%R)))) ->
 (forall x : Real_sort__canonical__normed_module_NormedModule R,
  derivable F x 1) ->
-(F x @[x --> -oo%R] --> -oo%R)%classic ->
-(F x @[x --> +oo%R] --> +oo%R)%classic ->
-continuous G ->
+filter.cvg_to (filter.nbhs (filter.fmap [eta F] (filter.nbhs -oo%R)))
+  (filter.nbhs -oo%R) ->
+filter.cvg_to (filter.nbhs (filter.fmap [eta F] (filter.nbhs +oo%R)))
+  (filter.nbhs +oo%R) ->
+(forall
+   x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+ filter.continuous_at
+   (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+   (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x G) ->
 (forall x : R, (0 <= G x)%R) ->
 (\int[lebesgue_measure]_x (G x)%:E)%E =
 (\int[lebesgue_measure]_x (((G \o F) * F^`()%classic) x)%:E)%E
@@ -2734,8 +2920,7 @@ forall {R : realType} [G : R -> R] [r : R],
 (0 <= r <= 1)%R ->
 {within `[0%R, r], continuous G}%classic ->
 (\int[lebesgue_measure]_(x in `[0%R, r]) (G x)%:E)%E =
-(\int[lebesgue_measure]_(x in `[unstable.onem r, 1%R])
-    (G (unstable.onem x))%:E)%E
+(\int[lebesgue_measure]_(x in `[r.~%R, 1%R]) (G x.~)%:E)%E
 
 integration_by_substitution_onem is not universe polymorphic
 Arguments integration_by_substitution_onem {R} [G]%_function_scope
@@ -2775,7 +2960,7 @@ forall {R : realType} [G : R -> R] [r : R],
 (0 <= r <= 1)%R ->
 {within `[0%R, r], continuous G}%classic ->
 (\int[lebesgue_measure]_(x in `[0, r]) G x)%R =
-(\int[lebesgue_measure]_(x in `[unstable.onem r, 1]) G (unstable.onem x))%R
+(\int[lebesgue_measure]_(x in `[r.~, 1]) G x.~)%R
 
 Rintegration_by_substitution_onem is not universe polymorphic
 Arguments Rintegration_by_substitution_onem {R} [G]%_function_scope
@@ -2804,7 +2989,12 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ge0_symfun_integralT" class="id"><a name="ge0_symfun_integralT" class="" title="ge0_symfun_integralT :
 forall {R : realType} [f : R -> R],
 (forall x : R, (0 <= f x)%R) ->
-continuous f ->
+(forall
+   x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+ filter.continuous_at
+   (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+   (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x f) ->
 f =1 f \o -%R%R ->
 (\int[lebesgue_measure]_x (f x)%:E)%E =
 (2 * \int[lebesgue_measure]_(x in [set x | (0 <= x)%R]) (f x)%:E)%E

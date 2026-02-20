@@ -286,7 +286,10 @@ library mathcomp.analysis.topology_theory.compact, line 47, characters 6-12
 <span class="vernacular">Section</span><span class="id"> Compact</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Compact.T" class="id"><a name="Compact.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="cluster" class="id"><a name="cluster" class="" title="cluster : forall {T : topologicalType}, set_system T -> set T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="cluster" class="id"><a name="cluster" class="" title="cluster :
+forall {T : topology_structure.Topological.type},
+filter.set_system (topology_structure.Topological.sort T) ->
+set (topology_structure.Topological.sort T)
 
 cluster is not universe polymorphic
 Arguments cluster {T} F _
@@ -296,13 +299,24 @@ Declared in
 library mathcomp.analysis.topology_theory.compact, line 52, characters 11-18
 ">cluster</a></span> (<span id="F:6" class="id"><a name="F:6" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Compact.T">T</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span id="p:7" class="id"><a name="p:7" class="">p</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> :</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Compact.T">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:6">F</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#66dbad1460009d34aaa2b12bce284203"> `#`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#66dbad1460009d34aaa2b12bce284203"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#p:7">p</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">]</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="cluster_nbhs" class="id"><a name="cluster_nbhs" class="" title="cluster_nbhs : forall {T : topologicalType} [t : T], cluster (nbhs t) t
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="cluster_nbhs" class="id"><a name="cluster_nbhs" class="" title="cluster_nbhs :
+forall {T : topology_structure.Topological.type}
+  [t : filter.Filtered.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+            T)],
+cluster (filter.nbhs t) t
 
 cluster_nbhs is not universe polymorphic
 Expanded type for implicit arguments
 cluster_nbhs :
-forall {T : topologicalType} [t : T] [A B : set T],
-nbhs t A -> nbhs t B -> exists a : T, (A `&` B)%classic a
+forall {T : topology_structure.Topological.type}
+  [t : filter.Filtered.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+            T)]
+  [A B : set (topology_structure.Topological.sort T)],
+filter.nbhs t A ->
+filter.nbhs t B ->
+exists a : topology_structure.Topological.sort T, (A `&` B)%classic a
 
 Arguments cluster_nbhs {T} [t A B] _ _
 cluster_nbhs is opaque
@@ -316,8 +330,9 @@ library mathcomp.analysis.topology_theory.compact, line 54, characters 6-18
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> A</span><span class="id"> B</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#nbhs_singleton">nbhs_singleton</a></span><span class="id"> At</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#nbhs_singleton">nbhs_singleton</a></span><span class="id"> Bt;</span><span class="gallina-kwd"> exists</span><span class="id"> t</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="clusterEonbhs" class="id"><a name="clusterEonbhs" class="" title="clusterEonbhs :
-forall {T : topologicalType} (F : set_system T),
-cluster F = [set p | F `#` open_nbhs p]%classic
+forall {T : topology_structure.Topological.type}
+  (F : filter.set_system (topology_structure.Topological.sort T)),
+cluster F = [set p | F `#` topology_structure.open_nbhs p]%classic
 
 clusterEonbhs is not universe polymorphic
 Arguments clusterEonbhs {T} F
@@ -332,8 +347,9 @@ library mathcomp.analysis.topology_theory.compact, line 57, characters 6-19
 <span class="gallina-kwd"> by</span><span class="id"> under</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#eq_fun">eq_fun</a></span><span class="id"> do</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#meets_openr">meets_openr</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="clusterE" class="id"><a name="clusterE" class="" title="clusterE :
-forall {T : topologicalType} (F : set_system T),
-cluster F = (\bigcap_(A in F) closure A)%classic
+forall {T : topology_structure.Topological.type}
+  (F : filter.set_system (topology_structure.Topological.sort T)),
+cluster F = (\bigcap_(A in F) topology_structure.closure A)%classic
 
 clusterE is not universe polymorphic
 Arguments clusterE {T} F
@@ -348,7 +364,9 @@ library mathcomp.analysis.topology_theory.compact, line 60, characters 6-14
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#predeqE">predeqE</a></span><span class="id"> =&gt;</span><span class="id"> p;</span><span class="id"> split=&gt;</span><span class="id"> cF</span><span class="id"> ????;</span><span class="id"> apply:</span><span class="id"> cF</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closureEcluster" class="id"><a name="closureEcluster" class="" title="closureEcluster :
-forall {T : topologicalType} (E : set T), closure E = cluster (globally E)
+forall {T : topology_structure.Topological.type}
+  (E : set (topology_structure.Topological.sort T)),
+topology_structure.closure E = cluster (filter.globally E)
 
 closureEcluster is not universe polymorphic
 Arguments closureEcluster {T} E%_classical_set_scope
@@ -364,19 +382,29 @@ library mathcomp.analysis.topology_theory.compact, line 63, characters 6-21
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closureEnbhs">closureEnbhs</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_cluster" class="id"><a name="cvg_cluster" class="" title="cvg_cluster :
-forall {T : topologicalType}
-  [F G : filter_set_system__canonical__filter_Filtered T],
-(F --> G)%classic -> (cluster F `<=` cluster G)%classic
+forall {T : topology_structure.Topological.type}
+  [F
+   G : filter.Filtered.sort
+         (filter.filter_set_system__canonical__filter_Filtered
+            (topology_structure.Topological.sort T))],
+filter.cvg_to (filter.nbhs F) (filter.nbhs G) ->
+(cluster F `<=` cluster G)%classic
 
 cvg_cluster is not universe polymorphic
 Expanded type for implicit arguments
 cvg_cluster :
-forall {T : topologicalType}
-  [F G : filter_set_system__canonical__filter_Filtered T],
-(F --> G)%classic ->
-forall [t : T],
+forall {T : topology_structure.Topological.type}
+  [F
+   G : filter.Filtered.sort
+         (filter.filter_set_system__canonical__filter_Filtered
+            (topology_structure.Topological.sort T))],
+filter.cvg_to (filter.nbhs F) (filter.nbhs G) ->
+forall [t : topology_structure.Topological.sort T],
 cluster F t ->
-forall [A B : set T], G A -> nbhs t B -> exists a : T, (A `&` B)%classic a
+forall [A B : set (topology_structure.Topological.sort T)],
+G A ->
+filter.nbhs t B ->
+exists a : topology_structure.Topological.sort T, (A `&` B)%classic a
 
 Arguments cvg_cluster {T} [F G] _ [t] _ [A B] _ _
 cvg_cluster is opaque
@@ -390,10 +418,14 @@ library mathcomp.analysis.topology_theory.compact, line 66, characters 6-17
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> sGF</span><span class="id"> p</span><span class="id"> Fp</span><span class="id"> P</span><span class="id"> Q</span><span class="id"> GP</span><span class="id"> Qp;</span><span class="id"> apply:</span><span class="id"> Fp</span><span class="id"> Qp;</span><span class="id"> apply:</span><span class="id"> sGF</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cluster_cvgE" class="id"><a name="cluster_cvgE" class="" title="cluster_cvgE :
-forall {T : topologicalType} [F : set_system T],
-Filter F ->
+forall {T : topology_structure.Topological.type}
+  [F : filter.set_system (topology_structure.Topological.sort T)],
+filter.Filter F ->
 cluster F =
-[set p | (exists2 G : set_system T, ProperFilter G & G --> p /\ F `<=` G)]%classic
+[set p | (exists2
+            G : filter.set_system (topology_structure.Topological.sort T),
+            filter.ProperFilter G &
+            filter.cvg_to (filter.nbhs G) (filter.nbhs p) /\ F `<=` G)]%classic
 
 cluster_cvgE is not universe polymorphic
 Arguments cluster_cvgE {T} [F] _
@@ -432,10 +464,14 @@ library mathcomp.analysis.topology_theory.compact, line 69, characters 6-18
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closureEcvg" class="id"><a name="closureEcvg" class="" title="closureEcvg :
-forall {T : topologicalType} (E : set T),
-closure E =
-[set p | (exists2 G : set_system T,
-            ProperFilter G & G --> p /\ globally E `<=` G)]%classic
+forall {T : topology_structure.Topological.type}
+  (E : set (topology_structure.Topological.sort T)),
+topology_structure.closure E =
+[set p | (exists2
+            G : filter.set_system (topology_structure.Topological.sort T),
+            filter.ProperFilter G &
+            filter.cvg_to (filter.nbhs G) (filter.nbhs p) /\
+            filter.globally E `<=` G)]%classic
 
 closureEcvg is not universe polymorphic
 Arguments closureEcvg {T} E%_classical_set_scope
@@ -451,7 +487,9 @@ library mathcomp.analysis.topology_theory.compact, line 97, characters 6-17
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#closureEcluster">closureEcluster</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cluster_cvgE">cluster_cvgE</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="compact" class="id"><a name="compact" class="" title="compact : forall {T : topologicalType}, set T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="compact" class="id"><a name="compact" class="" title="compact :
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> Prop
 
 compact is not universe polymorphic
 Arguments compact {T} A%_classical_set_scope
@@ -462,13 +500,17 @@ library mathcomp.analysis.topology_theory.compact, line 102, characters 11-18
 ">compact</a></span><span class="id"> </span><span id="A:28" class="id"><a name="A:28" class="">A</a></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span> (<span id="F:29" class="id"><a name="F:29" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Compact.T">T</a></span>)<span class="id">,</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#ProperFilter">ProperFilter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:29">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:29">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:28">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:28">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cluster">cluster</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:29">F</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact0" class="id"><a name="compact0" class="" title="compact0 : forall {T : topologicalType}, compact set0
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact0" class="id"><a name="compact0" class="" title="compact0 : forall {T : topology_structure.Topological.type}, compact set0
 
 compact0 is not universe polymorphic
 Expanded type for implicit arguments
 compact0 :
-forall {T : topologicalType} [F : set_system T],
-ProperFilter F -> F set0 -> exists a : T, (set0 `&` cluster F)%classic a
+forall {T : topology_structure.Topological.type}
+  [F : filter.set_system (topology_structure.Topological.sort T)],
+filter.ProperFilter F ->
+F set0 ->
+exists a : topology_structure.Topological.sort T,
+  (set0 `&` cluster F)%classic a
 
 Arguments compact0 {T} [F] _ _
 compact0 is opaque
@@ -482,18 +524,22 @@ library mathcomp.analysis.topology_theory.compact, line 105, characters 6-14
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> F</span><span class="id"> FF</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.filter.html#filter_ex">filter_ex</a></span><span class="id"> []</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="subclosed_compact" class="id"><a name="subclosed_compact" class="" title="subclosed_compact :
-forall {T : topologicalType} [A B : set T],
-closed A -> compact B -> (A `<=` B)%classic -> compact A
+forall {T : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort T)],
+topology_structure.closed A -> compact B -> (A `<=` B)%classic -> compact A
 
 subclosed_compact is not universe polymorphic
 Expanded type for implicit arguments
 subclosed_compact :
-forall {T : topologicalType} [A B : set T],
-closed A ->
+forall {T : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort T)],
+topology_structure.closed A ->
 compact B ->
 (A `<=` B)%classic ->
-forall [F : set_system T],
-ProperFilter F -> F A -> exists a : T, (A `&` cluster F)%classic a
+forall [F : filter.set_system (topology_structure.Topological.sort T)],
+filter.ProperFilter F ->
+F A ->
+exists a : topology_structure.Topological.sort T, (A `&` cluster F)%classic a
 
 Arguments subclosed_compact {T} [A B]%_classical_set_scope _ _ _ [F] _ _
 subclosed_compact is opaque
@@ -521,14 +567,21 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> /clAp</span><span class="id"> [q</span><span class="id"> [Aq</span><span class="id"> AqsoBq]];</span><span class="gallina-kwd"> exists</span><span class="id"> q;</span><span class="id"> apply:</span><span class="id"> AqsoBq</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_set1" class="id"><a name="compact_set1" class="" title="compact_set1 : forall {T : topologicalType} [x : T], compact [set x]
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_set1" class="id"><a name="compact_set1" class="" title="compact_set1 :
+forall {T : topology_structure.Topological.type}
+  [x : topology_structure.Topological.sort T],
+compact [set x]
 
 compact_set1 is not universe polymorphic
 Expanded type for implicit arguments
 compact_set1 :
-forall {T : topologicalType} [x : T] [F : set_system T],
-ProperFilter F ->
-F [set x]%classic -> exists a : T, ([set x] `&` cluster F)%classic a
+forall {T : topology_structure.Topological.type}
+  [x : topology_structure.Topological.sort T]
+  [F : filter.set_system (topology_structure.Topological.sort T)],
+filter.ProperFilter F ->
+F [set x]%classic ->
+exists a : topology_structure.Topological.sort T,
+  ([set x] `&` cluster F)%classic a
 
 Arguments compact_set1 {T} [x F] _ _
 compact_set1 is opaque
@@ -546,18 +599,22 @@ library mathcomp.analysis.topology_theory.compact, line 124, characters 6-18
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_closedI" class="id"><a name="compact_closedI" class="" title="compact_closedI :
-forall {T : topologicalType} [A B : set T],
-compact A -> closed B -> compact (A `&` B)
+forall {T : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort T)],
+compact A -> topology_structure.closed B -> compact (A `&` B)
 
 compact_closedI is not universe polymorphic
 Expanded type for implicit arguments
 compact_closedI :
-forall {T : topologicalType} [A B : set T],
+forall {T : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort T)],
 compact A ->
-closed B ->
-forall [F : set_system T],
-ProperFilter F ->
-F (A `&` B)%classic -> exists a : T, (A `&` B `&` cluster F)%classic a
+topology_structure.closed B ->
+forall [F : filter.set_system (topology_structure.Topological.sort T)],
+filter.ProperFilter F ->
+F (A `&` B)%classic ->
+exists a : topology_structure.Topological.sort T,
+  (A `&` B `&` cluster F)%classic a
 
 Arguments compact_closedI {T} [A B]%_classical_set_scope _ _ [F] _ _
 compact_closedI is opaque
@@ -580,7 +637,9 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> near_covering</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="near_covering.X" class="id"><a name="near_covering.X" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="near_covering" class="id"><a name="near_covering" class="" title="near_covering : forall {X : topologicalType}, set X -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="near_covering" class="id"><a name="near_covering" class="" title="near_covering :
+forall {X : topology_structure.Topological.type},
+set (topology_structure.Topological.sort X) -> Prop
 
 near_covering is not universe polymorphic
 Arguments near_covering {X} K%_classical_set_scope
@@ -639,7 +698,9 @@ library mathcomp.analysis.topology_theory.compact, line 145, characters 11-24
 <span class="id">Unshelve</span>. <span class="id">end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_near_coveringP" class="id"><a name="compact_near_coveringP" class="" title="compact_near_coveringP :
-forall {X : topologicalType} (A : set X), compact A <-> near_covering A
+forall {X : topology_structure.Topological.type}
+  (A : set (topology_structure.Topological.sort X)),
+compact A <-> near_covering A
 
 compact_near_coveringP is not universe polymorphic
 Arguments compact_near_coveringP {X} A%_classical_set_scope
@@ -655,7 +716,9 @@ library mathcomp.analysis.topology_theory.compact, line 191, characters 6-28
 <span class="gallina-kwd">by</span><span class="id"> split;</span><span class="id"> [exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#near_covering.compact_near_covering">compact_near_covering</a></span><span class="id">|</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#near_covering.near_covering_compact">near_covering_compact</a></span><span class="id">]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="near_covering_within" class="id"><a name="near_covering_within" class="" title="near_covering_within : forall {X : topologicalType}, set X -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="near_covering_within" class="id"><a name="near_covering_within" class="" title="near_covering_within :
+forall {X : topology_structure.Topological.type},
+set (topology_structure.Topological.sort X) -> Prop
 
 near_covering_within is not universe polymorphic
 Arguments near_covering_within {X} K%_classical_set_scope
@@ -671,7 +734,8 @@ library mathcomp.analysis.topology_theory.compact, line 196, characters 11-31
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#3a790c7390ef97f6a108c0787d66de4c">\near</a></span><span class="id"><a href="mathcomp.classical.filter.html#3a790c7390ef97f6a108c0787d66de4c"> </a></span><span id="F:63" class="id"><span id="F:62" class="id"><span id="F:61" class="id"><a name="F:63" class="">F</a></span></span></span><span class="id"><a href="mathcomp.classical.filter.html#3a790c7390ef97f6a108c0787d66de4c">,</a></span><span class="id"><a href="mathcomp.classical.filter.html#3a790c7390ef97f6a108c0787d66de4c"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#K:54">K</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#P:57">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:63">F</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="near_covering_withinP" class="id"><a name="near_covering_withinP" class="" title="near_covering_withinP :
-forall {X : topologicalType} (K : set X),
+forall {X : topology_structure.Topological.type}
+  (K : set (topology_structure.Topological.sort X)),
 near_covering_within K <-> near_covering K
 
 near_covering_withinP is not universe polymorphic
@@ -696,8 +760,10 @@ library mathcomp.analysis.topology_theory.compact, line 202, characters 6-27
 <span class="vernacular">End</span><span class="id"> near_covering</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ultra_cvg_clusterE" class="id"><a name="ultra_cvg_clusterE" class="" title="ultra_cvg_clusterE :
-forall [T : topologicalType] [F : set_system T],
-UltraFilter (T:=T) F -> cluster F = [set p | F --> p]%classic
+forall [T : topology_structure.Topological.type]
+  [F : filter.set_system (topology_structure.Topological.sort T)],
+filter.UltraFilter (T:=topology_structure.Topological.sort T) F ->
+cluster F = [set p | filter.cvg_to (filter.nbhs F) (filter.nbhs p)]%classic
 
 ultra_cvg_clusterE is not universe polymorphic
 Arguments ultra_cvg_clusterE [T F] _
@@ -717,10 +783,14 @@ library mathcomp.analysis.topology_theory.compact, line 214, characters 6-24
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_ultra" class="id"><a name="compact_ultra" class="" title="compact_ultra :
-forall T : topologicalType,
+forall T : topology_structure.Topological.type,
 compact =
-[set A | (forall F : set_system T,
-          UltraFilter (T:=T) F -> F A -> A `&` [set p | F --> p] !=set0)]%classic
+[set A | (forall
+            F : filter.set_system (topology_structure.Topological.sort T),
+          filter.UltraFilter (T:=topology_structure.Topological.sort T) F ->
+          F A ->
+          A `&` [set p | filter.cvg_to (filter.nbhs F) (filter.nbhs p)]
+          !=set0)]%classic
 
 compact_ultra is not universe polymorphic
 Arguments compact_ultra T
@@ -746,18 +816,22 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Precompact.X" class="id"><a name="Precompact.X" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="compactU" class="id"><a name="compactU" class="" title="compactU :
-forall {X : topologicalType} [A B : set X],
+forall {X : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort X)],
 compact A -> compact B -> compact (A `|` B)
 
 compactU is not universe polymorphic
 Expanded type for implicit arguments
 compactU :
-forall {X : topologicalType} [A B : set X],
+forall {X : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort X)],
 compact A ->
 compact B ->
-forall [F : set_system X],
-ProperFilter F ->
-F (A `|` B)%classic -> exists a : X, ((A `|` B) `&` cluster F)%classic a
+forall [F : filter.set_system (topology_structure.Topological.sort X)],
+filter.ProperFilter F ->
+F (A `|` B)%classic ->
+exists a : topology_structure.Topological.sort X,
+  ((A `|` B) `&` cluster F)%classic a
 
 Arguments compactU {X} [A B]%_classical_set_scope _ _ [F] _ _
 compactU is opaque
@@ -776,7 +850,8 @@ library mathcomp.analysis.topology_theory.compact, line 237, characters 6-14
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigsetU_compact" class="id"><a name="bigsetU_compact" class="" title="bigsetU_compact :
-forall {X : topologicalType} [I : Type] [F : I -> set X] 
+forall {X : topology_structure.Topological.type} [I : Type]
+  [F : I -> set (topology_structure.Topological.sort X)] 
   [s : seq I] [P : pred I],
 (forall i : I, P i -> compact (F i)) ->
 compact (\big[setU/set0]_(i <- s | P i) F i)
@@ -784,13 +859,15 @@ compact (\big[setU/set0]_(i <- s | P i) F i)
 bigsetU_compact is not universe polymorphic
 Expanded type for implicit arguments
 bigsetU_compact :
-forall {X : topologicalType} [I : Type] [F : I -> set X] 
+forall {X : topology_structure.Topological.type} [I : Type]
+  [F : I -> set (topology_structure.Topological.sort X)] 
   [s : seq I] [P : pred I],
 (forall i : I, P i -> compact (F i)) ->
-forall [F0 : set_system X],
-ProperFilter F0 ->
+forall [F0 : filter.set_system (topology_structure.Topological.sort X)],
+filter.ProperFilter F0 ->
 F0 (\big[setU/set0]_(i <- s | P i) F i) ->
-exists a : X, (\big[setU/set0]_(i <- s | P i) F i `&` cluster F0)%classic a
+exists a : topology_structure.Topological.sort X,
+  (\big[setU/set0]_(i <- s | P i) F i `&` cluster F0)%classic a
 
 Arguments bigsetU_compact {X} [I]%_type_scope [F]%_function_scope
   [s]%_seq_scope [P] _%_function_scope [F] _ _
@@ -809,7 +886,9 @@ library mathcomp.analysis.topology_theory.compact, line 246, characters 6-21
 <br/>
 <div class="doc">The closed condition here is neccessary to make this definition work in a
     non-hausdorff setting. </div>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="compact_near" class="id"><a name="compact_near" class="" title="compact_near : forall {X : topologicalType}, set_system X -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="compact_near" class="id"><a name="compact_near" class="" title="compact_near :
+forall {X : topology_structure.Topological.type},
+filter.set_system (topology_structure.Topological.sort X) -> Prop
 
 compact_near is not universe polymorphic
 Arguments compact_near {X} F
@@ -820,7 +899,9 @@ library mathcomp.analysis.topology_theory.compact, line 253, characters 11-23
 ">compact_near</a></span> (<span id="F:87" class="id"><a name="F:87" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Precompact.X">X</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">exists2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span id="U:89" class="id"><span id="U:88" class="id"><a name="U:89" class="">U</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#F:87">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#U:88">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact">compact</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#U:89">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#U:89">U</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="precompact" class="id"><a name="precompact" class="" title="precompact : forall {X : topologicalType}, set X -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="precompact" class="id"><a name="precompact" class="" title="precompact :
+forall {X : topology_structure.Topological.type},
+set (topology_structure.Topological.sort X) -> Prop
 
 precompact is not universe polymorphic
 Arguments precompact {X} C%_classical_set_scope
@@ -831,7 +912,9 @@ library mathcomp.analysis.topology_theory.compact, line 256, characters 11-21
 ">precompact</a></span> (<span id="C:90" class="id"><a name="C:90" class="">C</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#Precompact.X">X</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#compact_near">compact_near</a></span> (<span class="id"><a href="mathcomp.classical.filter.html#globally">globally</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#C:90">C</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="precompactE" class="id"><a name="precompactE" class="" title="precompactE :
-forall {X : topologicalType} (C : set X), precompact C = compact (closure C)
+forall {X : topology_structure.Topological.type}
+  (C : set (topology_structure.Topological.sort X)),
+precompact C = compact (topology_structure.closure C)
 
 precompactE is not universe polymorphic
 Arguments precompactE {X} C%_classical_set_scope
@@ -851,7 +934,8 @@ library mathcomp.analysis.topology_theory.compact, line 258, characters 6-17
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="precompact_subset" class="id"><a name="precompact_subset" class="" title="precompact_subset :
-forall {X : topologicalType} [A B : set X],
+forall {X : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort X)],
 (A `<=` B)%classic -> precompact B -> precompact A
 
 precompact_subset is not universe polymorphic
@@ -870,8 +954,9 @@ library mathcomp.analysis.topology_theory.compact, line 267, characters 6-23
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="precompact_closed" class="id"><a name="precompact_closed" class="" title="precompact_closed :
-forall {X : topologicalType} [A : set X],
-closed A -> precompact A = compact A
+forall {X : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort X)],
+topology_structure.closed A -> precompact A = compact A
 
 precompact_closed is not universe polymorphic
 Arguments precompact_closed {X} [A]%_classical_set_scope _
@@ -889,7 +974,9 @@ library mathcomp.analysis.topology_theory.compact, line 273, characters 6-23
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> {1}</span>(_<span class="id"> :</span><span class="id"> A</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"> A</span>)<span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#precompactE">precompactE</a></span><span class="id">//</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure_id">closure_id</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="locally_compact" class="id"><a name="locally_compact" class="" title="locally_compact : forall {X : topologicalType}, set X -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="locally_compact" class="id"><a name="locally_compact" class="" title="locally_compact :
+forall {X : topology_structure.Topological.type},
+set (topology_structure.Topological.sort X) -> Prop
 
 locally_compact is not universe polymorphic
 Arguments locally_compact {X} A%_classical_set_scope
@@ -921,7 +1008,9 @@ library mathcomp.analysis.topology_theory.compact, line 284, characters 11-30
 <span class="vernacular">Section</span><span class="id"> Covers</span>.<br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="Covers.T" class="id"><a name="Covers.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="cover_compact" class="id"><a name="cover_compact" class="" title="cover_compact : forall [T : topologicalType], set T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="cover_compact" class="id"><a name="cover_compact" class="" title="cover_compact :
+forall [T : topology_structure.Topological.type],
+set (topology_structure.Topological.sort T) -> Prop
 
 cover_compact is not universe polymorphic
 Arguments cover_compact [T] A%_classical_set_scope
@@ -935,8 +1024,10 @@ library mathcomp.analysis.topology_theory.compact, line 291, characters 11-24
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#finite_subset_cover">finite_subset_cover</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D:107">D</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#f:108">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:105">A</a></span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="open_fam_of" class="id"><a name="open_fam_of" class="" title="open_fam_of :
-forall [T : topologicalType],
-set T -> forall [I : Type], set I -> (I -> set T) -> Prop
+forall [T : topology_structure.Topological.type],
+set (topology_structure.Topological.sort T) ->
+forall [I : Type],
+set I -> (I -> set (topology_structure.Topological.sort T)) -> Prop
 
 open_fam_of is not universe polymorphic
 Arguments open_fam_of [T] A%_classical_set_scope [I]%_type_scope
@@ -950,11 +1041,14 @@ library mathcomp.analysis.topology_theory.compact, line 296, characters 11-22
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:117" class="id"><a name="i:117" class="">i</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#D:112">D</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:117">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#f:113">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:117">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#A:110">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#g:116">g</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#i:117">i</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cover_compactE" class="id"><a name="cover_compactE" class="" title="cover_compactE :
-forall T : topologicalType,
+forall T : topology_structure.Topological.type,
 cover_compact (T:=T) =
-[set A | (forall (I : choiceType) (D : set I) (f : I -> set T),
+[set A | (forall (I : choiceType) (D : set I)
+            (f : I -> set (topology_structure.Topological.sort T)),
           open_fam_of (T:=T) A D f ->
-          A `<=` cover D f -> finite_subset_cover (I:=I) D (U:=T) f A)]%classic
+          A `<=` cover D f ->
+          finite_subset_cover (I:=I) D
+            (U:=topology_structure.Topological.sort T) f A)]%classic
 
 cover_compactE is not universe polymorphic
 Arguments cover_compactE T
@@ -983,8 +1077,10 @@ library mathcomp.analysis.topology_theory.compact, line 300, characters 6-20
 Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="closed_fam_of" class="id"><a name="closed_fam_of" class="" title="closed_fam_of :
-forall [T : topologicalType],
-set T -> forall [I : Type], set I -> (I -> set T) -> Prop
+forall [T : topology_structure.Topological.type],
+set (topology_structure.Topological.sort T) ->
+forall [I : Type],
+set I -> (I -> set (topology_structure.Topological.sort T)) -> Prop
 
 closed_fam_of is not universe polymorphic
 Arguments closed_fam_of [T] A%_classical_set_scope 
@@ -1003,11 +1099,17 @@ library mathcomp.analysis.topology_theory.compact, line 318, characters 11-24
 <span class="vernacular">Variable</span><span class="id"> </span><span id="PCovers.T" class="id"><a name="PCovers.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#PointedTopological.Exports.ptopologicalType">ptopologicalType</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_In0" class="id"><a name="compact_In0" class="" title="compact_In0 :
-forall T : ptopologicalType,
+forall T : topology_structure.PointedTopological.type,
 compact =
-[set A | (forall (I : choiceType) (D : set I) (f : I -> set T),
-          closed_fam_of (T:=T) A D f ->
-          finI (I:=I) (T:=T) D f -> \bigcap_(i in D) f i !=set0)]%classic
+[set A | (forall (I : choiceType) (D : set I)
+            (f : I -> set (topology_structure.PointedTopological.sort T)),
+          closed_fam_of
+            (T:=topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+                  T)
+            A D f ->
+          filter.finI (I:=I)
+            (T:=topology_structure.PointedTopological.sort T) D f ->
+          \bigcap_(i in D) f i !=set0)]%classic
 
 compact_In0 is not universe polymorphic
 Arguments compact_In0 T
@@ -1037,7 +1139,12 @@ library mathcomp.analysis.topology_theory.compact, line 327, characters 6-17
 <span class="gallina-kwd">by</span><span class="id"> have</span><span class="id"> /AclFIp</span><span class="id"> [_]</span><span class="id"> :=</span><span class="id"> FB;</span><span class="id"> move=&gt;</span><span class="id"> /</span>(_<span class="id"> _</span><span class="id"> p_C</span>).<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_cover" class="id"><a name="compact_cover" class="" title="compact_cover : forall T : ptopologicalType, compact = cover_compact (T:=T)
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_cover" class="id"><a name="compact_cover" class="" title="compact_cover :
+forall T : topology_structure.PointedTopological.type,
+compact =
+cover_compact
+  (T:=topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+        T)
 
 compact_cover is not universe polymorphic
 Arguments compact_cover T
@@ -1095,15 +1202,20 @@ Qed.</div></details>
 <span class="vernacular">End</span><span class="id"> PCovers</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="finite_compact" class="id"><a name="finite_compact" class="" title="finite_compact :
-forall {X : topologicalType} [A : set X], finite_set A -> compact A
+forall {X : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort X)],
+finite_set A -> compact A
 
 finite_compact is not universe polymorphic
 Expanded type for implicit arguments
 finite_compact :
-forall {X : topologicalType} [A : set X],
+forall {X : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort X)],
 finite_set A ->
-forall [F : set_system X],
-ProperFilter F -> F A -> exists a : X, (A `&` cluster F)%classic a
+forall [F : filter.set_system (topology_structure.Topological.sort X)],
+filter.ProperFilter F ->
+F A ->
+exists a : topology_structure.Topological.sort X, (A `&` cluster F)%classic a
 
 Arguments finite_compact {X} [A]%_classical_set_scope _ [F] _ _
 finite_compact is opaque
@@ -1121,8 +1233,15 @@ library mathcomp.analysis.topology_theory.compact, line 394, characters 6-20
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="clopen_countable" class="id"><a name="clopen_countable" class="" title="clopen_countable :
-forall {T : ptopologicalType},
-compact [set: T] -> second_countable -> countable (T:=set T) clopen
+forall {T : topology_structure.PointedTopological.type},
+compact [set: topology_structure.PointedTopological.sort T] ->
+topology_structure.second_countable ->
+countable
+  (T:=set
+        (topology_structure.Topological.sort
+           (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+              T)))
+  topology_structure.clopen
 
 clopen_countable is not universe polymorphic
 Arguments clopen_countable {T} _ _
@@ -1163,15 +1282,19 @@ library mathcomp.analysis.topology_theory.compact, line 402, characters 6-22
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_cauchy_cvg" class="id"><a name="compact_cauchy_cvg" class="" title="compact_cauchy_cvg :
-forall {T : puniformType} [U : set T] [F : set_system T],
-ProperFilter F -> cauchy F -> F U -> compact U -> cvg F
+forall {T : puniformType} [U : set T] [F : filter.set_system T],
+filter.ProperFilter F ->
+cauchy F ->
+F U ->
+compact U -> filter.cvg_to (filter.nbhs F) (filter.nbhs (filter.lim F))
 
 compact_cauchy_cvg is not universe polymorphic
 Expanded type for implicit arguments
 compact_cauchy_cvg :
-forall {T : puniformType} [U : set T] [F : set_system T],
-ProperFilter F ->
-cauchy F -> F U -> compact U -> forall [t : set T], nbhs (lim F) t -> F t
+forall {T : puniformType} [U : set T] [F : filter.set_system T],
+filter.ProperFilter F ->
+cauchy F ->
+F U -> compact U -> forall [t : set T], filter.nbhs (filter.lim F) t -> F t
 
 Arguments compact_cauchy_cvg {T} [U]%_classical_set_scope [F] _ _ _ _ [t] _
 compact_cauchy_cvg is opaque
@@ -1195,7 +1318,7 @@ library mathcomp.analysis.topology_theory.compact, line 431, characters 6-24
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_second_countable" class="id"><a name="compact_second_countable" class="" title="compact_second_countable :
 forall {R : realType} {T : pseudoPMetricType R},
-compact [set: T] -> second_countable
+compact [set: T] -> topology_structure.second_countable
 
 compact_second_countable is not universe polymorphic
 Arguments compact_second_countable {R T} _
@@ -1234,7 +1357,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="clopen_surj" class="id"><a name="clopen_surj" class="" title="clopen_surj :
 forall {R : realType} {T : pseudoPMetricType R},
-compact [set: T] -> $| {surjfun [set: nat] >-> clopen} |
+compact [set: T] -> $| {surjfun [set: nat] >-> topology_structure.clopen} |
 
 clopen_surj is not universe polymorphic
 Arguments clopen_surj {R T} _

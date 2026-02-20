@@ -546,7 +546,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="outer_measureU2" class="id"><a name="outer_measureU2" class="" title="outer_measureU2 :
 forall [T : Type] [R : realType] (mu : {outer_measure set T -> \bar R}%R)
   (A B : set T),
-(mu (A `|` B)%classic <= mu A + mu B)%E
+(mu (A `|` B)%classic <= (mu A + mu B)%R)%E
 
 outer_measureU2 is not universe polymorphic
 Arguments outer_measureU2 [T]%_type_scope [R] mu (A B)%_classical_set_scope
@@ -569,7 +569,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="le_outer_measureIC" class="id"><a name="le_outer_measureIC" class="" title="le_outer_measureIC :
 forall [R : realFieldType] [T : Type]
   (mu : {outer_measure set T -> \bar R}%R) (A X : set T),
-(mu X <= mu (X `&` A)%classic + mu (X `&` ~` A)%classic)%E
+(mu X <= (mu (X `&` A)%classic + mu (X `&` ~` A)%classic)%R)%E
 
 le_outer_measureIC is not universe polymorphic
 Arguments le_outer_measureIC [R] [T]%_type_scope mu
@@ -623,7 +623,8 @@ library mathcomp.analysis.measure_theory.measure_extension, line 212, characters
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="le_caratheodory_measurable" class="id"><a name="le_caratheodory_measurable" class="" title="le_caratheodory_measurable :
 forall [R : realType] [T : Type] [mu : {outer_measure set T -> \bar R}%R]
   [A : set T],
-(forall X : set T, (mu (X `&` A)%classic + mu (X `&` ~` A)%classic <= mu X)%E) ->
+(forall X : set T,
+ ((mu (X `&` A)%classic + mu (X `&` ~` A)%classic)%R <= mu X)%E) ->
 mu.-caratheodory%classic A
 
 le_caratheodory_measurable is not universe polymorphic
@@ -716,7 +717,7 @@ forall [R : realType] [T : Type] [mu : {outer_measure set T -> \bar R}%R]
   (X : set T) [A B : set T],
 mu.-caratheodory%classic A ->
 mu.-caratheodory%classic B ->
-(mu (X `&` (A `|` B))%classic + mu (X `&` ~` (A `|` B))%classic <= mu X)%E
+((mu (X `&` (A `|` B))%classic + mu (X `&` ~` (A `|` B))%classic)%R <= mu X)%E
 
 caratheodory_measurable_setU_le is not universe polymorphic
 Arguments caratheodory_measurable_setU_le [R] [T]%_type_scope 
@@ -881,7 +882,7 @@ mu.-caratheodory%classic B ->
 forall X : set T,
 [disjoint A & B]%classic ->
 mu (X `&` (A `|` B))%classic =
-(mu (X `&` A)%classic + mu (X `&` B)%classic)%E
+(mu (X `&` A)%classic + mu (X `&` B)%classic)%R
 
 disjoint_caratheodoryIU is not universe polymorphic
 Arguments disjoint_caratheodoryIU [R] [T]%_type_scope 
@@ -943,8 +944,9 @@ forall [R : realType] [T : Type] [mu : {outer_measure set T -> \bar R}%R]
 (forall n : nat, mu.-caratheodory%classic (A n)) ->
 trivIset (T:=T) [set: nat] A ->
 forall X : set T,
-(\big[+%R/0%R]_(0 <= k <oo) mu (X `&` A k)%classic +
- mu (X `&` ~` (\bigcup_k A k))%classic <= mu X)%E
+((\big[+%R/0]_(0 <= k <oo) mu (X `&` A k)%classic +
+  mu (X `&` ~` (\bigcup_k A k))%classic)%R <=
+ mu X)%E
 
 caratheodory_lime_le is not universe polymorphic
 Arguments caratheodory_lime_le [R] [T]%_type_scope 
@@ -1283,7 +1285,7 @@ trivIset
 (mu.-cara).-measurable%classic (\bigcup_n F n) ->
 forall
   [t : set constructive_ereal_extended__canonical__Algebra_BaseAddUMagma],
-nbhs
+filter.nbhs
   ((mu : set (caratheodory_type (R:=R) (T:=T) mu) -> \bar R)
      (\bigcup_n F n)%classic)
   t ->
@@ -1421,7 +1423,7 @@ forall [R : realType] [T : pointedType]
          (measure_extension_caratheodory_type__canonical__measurable_structure_SemiRingOfSets
             (R:=R) (T:=T) mu)],
 (mu : set (caratheodory_type (R:=R) (T:=T) mu) -> \bar R).-negligible t ->
-forall X : set T, mu X = (mu (X `&` t)%classic + mu (X `&` ~` t)%classic)%E
+forall X : set T, mu X = (mu (X `&` t)%classic + mu (X `&` ~` t)%classic)%R
 
 Arguments measure_is_complete_caratheodory [R T mu t] _ X
 measure_is_complete_caratheodory is opaque
@@ -1891,7 +1893,7 @@ measure_extension_mu_ext__canonical__measure_extension_OuterMeasure (R:=R) mu
 (measure_extension_mu_ext__canonical__measure_extension_OuterMeasure (R:=R)
    mu (X `&` t)%classic +
  measure_extension_mu_ext__canonical__measure_extension_OuterMeasure (R:=R)
-   mu (X `&` ~` t)%classic)%E
+   mu (X `&` ~` t)%classic)%R
 
 Arguments sub_caratheodory [d]%_measure_display_scope [T R] mu [t] _ X
 sub_caratheodory is opaque

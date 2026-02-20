@@ -265,7 +265,9 @@ library mathcomp.analysis.topology_theory.quotient_topology, line 23, characters
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="Q" class="id"><a name="Q" class="">Q</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#quotient_topology">quotient_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#quotients.unpointed.Q0">Q0</a></span>).<br/>
 <br/>
 <span id="quotient_topology_quotient_topology__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_3" class="id"><span id="generic_quotient_Quotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="quotient_topology_quotient_topology__canonical__generic_quotient_Quotient" class="" title="quotient_topology_quotient_topology__canonical__generic_quotient_Quotient :
-forall {T : topologicalType}, quotType T -> quotType T
+forall {T : topology_structure.Topological.type},
+quotType (topology_structure.Topological.sort T) ->
+quotType (topology_structure.Topological.sort T)
 
 quotient_topology_quotient_topology__canonical__generic_quotient_Quotient is not universe polymorphic
 Arguments
@@ -277,7 +279,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 32, characters 0-47
 ">HB</a></span></span></span></span>.<span id="quotient_topology_quotient_topology__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_3" class="id"><span id="generic_quotient_Quotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="quotient_topology_quotient_topology__canonical__generic_quotient_Quotient" class="" title="quotient_topology_quotient_topology__canonical__generic_quotient_Quotient :
-forall {T : topologicalType}, quotType T -> quotType T
+forall {T : topology_structure.Topological.type},
+quotType (topology_structure.Topological.sort T) ->
+quotType (topology_structure.Topological.sort T)
 
 quotient_topology_quotient_topology__canonical__generic_quotient_Quotient is not universe polymorphic
 Arguments
@@ -289,7 +293,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 32, characters 0-47
 ">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="quotient_topology_quotient_topology__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_3" class="id"><span id="generic_quotient_Quotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="quotient_topology_quotient_topology__canonical__generic_quotient_Quotient" class="" title="quotient_topology_quotient_topology__canonical__generic_quotient_Quotient :
-forall {T : topologicalType}, quotType T -> quotType T
+forall {T : topology_structure.Topological.type},
+quotType (topology_structure.Topological.sort T) ->
+quotType (topology_structure.Topological.sort T)
 
 quotient_topology_quotient_topology__canonical__generic_quotient_Quotient is not universe polymorphic
 Arguments
@@ -301,7 +307,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 32, characters 0-47
 "> _</a></span></span></span></span><span id="quotient_topology_quotient_topology__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_3" class="id"><span id="generic_quotient_Quotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="quotient_topology_quotient_topology__canonical__generic_quotient_Quotient" class="" title="quotient_topology_quotient_topology__canonical__generic_quotient_Quotient :
-forall {T : topologicalType}, quotType T -> quotType T
+forall {T : topology_structure.Topological.type},
+quotType (topology_structure.Topological.sort T) ->
+quotType (topology_structure.Topological.sort T)
 
 quotient_topology_quotient_topology__canonical__generic_quotient_Quotient is not universe polymorphic
 Arguments
@@ -313,7 +321,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 32, characters 0-47
 "> :=</a></span></span></span></span><span id="quotient_topology_quotient_topology__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_3" class="id"><span id="generic_quotient_Quotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="quotient_topology_quotient_topology__canonical__generic_quotient_Quotient" class="" title="quotient_topology_quotient_topology__canonical__generic_quotient_Quotient :
-forall {T : topologicalType}, quotType T -> quotType T
+forall {T : topology_structure.Topological.type},
+quotType (topology_structure.Topological.sort T) ->
+quotType (topology_structure.Topological.sort T)
 
 quotient_topology_quotient_topology__canonical__generic_quotient_Quotient is not universe polymorphic
 Arguments
@@ -326,8 +336,15 @@ Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 32, characters 0-47
 "> Quotient</a></span></span></span></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#Quotient.copy">copy</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#Q">Q</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#quotients.unpointed.Q0">Q0</a></span>.<br/>
 <span id="quotient_topology_quotient_topology__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="eqtype_SubType__to__eqtype_isSub" class="id"><span id="HB_unnamed_factory_4" class="id"><a name="quotient_topology_quotient_topology__canonical__eqtype_SubType" class="" title="quotient_topology_quotient_topology__canonical__eqtype_SubType :
-forall {T : topologicalType} {Q0 : quotType T},
-subType (T:=T) (fun x : T => repr (\pi_(quotient_topology Q0)%qT x) == x)
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)},
+subType
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+  (fun
+     x : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+           T =>
+   repr (\pi_(quotient_topology Q0)%qT x) == x)
 
 quotient_topology_quotient_topology__canonical__eqtype_SubType is not universe polymorphic
 Arguments quotient_topology_quotient_topology__canonical__eqtype_SubType
@@ -338,8 +355,15 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 33, characters 0-47
 ">HB</a></span></span></span></span>.<span id="quotient_topology_quotient_topology__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="eqtype_SubType__to__eqtype_isSub" class="id"><span id="HB_unnamed_factory_4" class="id"><a name="quotient_topology_quotient_topology__canonical__eqtype_SubType" class="" title="quotient_topology_quotient_topology__canonical__eqtype_SubType :
-forall {T : topologicalType} {Q0 : quotType T},
-subType (T:=T) (fun x : T => repr (\pi_(quotient_topology Q0)%qT x) == x)
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)},
+subType
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+  (fun
+     x : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+           T =>
+   repr (\pi_(quotient_topology Q0)%qT x) == x)
 
 quotient_topology_quotient_topology__canonical__eqtype_SubType is not universe polymorphic
 Arguments quotient_topology_quotient_topology__canonical__eqtype_SubType
@@ -350,8 +374,15 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 33, characters 0-47
 ">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="quotient_topology_quotient_topology__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="eqtype_SubType__to__eqtype_isSub" class="id"><span id="HB_unnamed_factory_4" class="id"><a name="quotient_topology_quotient_topology__canonical__eqtype_SubType" class="" title="quotient_topology_quotient_topology__canonical__eqtype_SubType :
-forall {T : topologicalType} {Q0 : quotType T},
-subType (T:=T) (fun x : T => repr (\pi_(quotient_topology Q0)%qT x) == x)
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)},
+subType
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+  (fun
+     x : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+           T =>
+   repr (\pi_(quotient_topology Q0)%qT x) == x)
 
 quotient_topology_quotient_topology__canonical__eqtype_SubType is not universe polymorphic
 Arguments quotient_topology_quotient_topology__canonical__eqtype_SubType
@@ -362,8 +393,15 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 33, characters 0-47
 "> _</a></span></span></span></span><span id="quotient_topology_quotient_topology__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="eqtype_SubType__to__eqtype_isSub" class="id"><span id="HB_unnamed_factory_4" class="id"><a name="quotient_topology_quotient_topology__canonical__eqtype_SubType" class="" title="quotient_topology_quotient_topology__canonical__eqtype_SubType :
-forall {T : topologicalType} {Q0 : quotType T},
-subType (T:=T) (fun x : T => repr (\pi_(quotient_topology Q0)%qT x) == x)
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)},
+subType
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+  (fun
+     x : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+           T =>
+   repr (\pi_(quotient_topology Q0)%qT x) == x)
 
 quotient_topology_quotient_topology__canonical__eqtype_SubType is not universe polymorphic
 Arguments quotient_topology_quotient_topology__canonical__eqtype_SubType
@@ -374,8 +412,15 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 33, characters 0-47
 "> :=</a></span></span></span></span><span id="quotient_topology_quotient_topology__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="eqtype_SubType__to__eqtype_isSub" class="id"><span id="HB_unnamed_factory_4" class="id"><a name="quotient_topology_quotient_topology__canonical__eqtype_SubType" class="" title="quotient_topology_quotient_topology__canonical__eqtype_SubType :
-forall {T : topologicalType} {Q0 : quotType T},
-subType (T:=T) (fun x : T => repr (\pi_(quotient_topology Q0)%qT x) == x)
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)},
+subType
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+  (fun
+     x : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+           T =>
+   repr (\pi_(quotient_topology Q0)%qT x) == x)
 
 quotient_topology_quotient_topology__canonical__eqtype_SubType is not universe polymorphic
 Arguments quotient_topology_quotient_topology__canonical__eqtype_SubType
@@ -387,9 +432,15 @@ Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 33, characters 0-47
 "> [Sub</a></span></span></span></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#dbe3f15938ee74bccaa808a5ab05ac67"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#Q">Q</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#dbe3f15938ee74bccaa808a5ab05ac67"> of</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#dbe3f15938ee74bccaa808a5ab05ac67"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#quotients.unpointed.T">T</a></span><span class="gallina-kwd"> by</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#dbe3f15938ee74bccaa808a5ab05ac67"> %/]</a></span>.<br/>
 <span id="quotient_topology_quotient_topology__canonical__choice_SubChoice" class="id"><span id="quotient_topology_quotient_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="quotient_topology_quotient_topology__canonical__eqtype_SubEquality" class="id"><span id="quotient_topology_quotient_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_7" class="id"><a name="quotient_topology_quotient_topology__canonical__choice_SubChoice" class="" title="quotient_topology_quotient_topology__canonical__choice_SubChoice :
-forall {T : topologicalType} {Q0 : quotType T},
-subChoiceType (T:=T)
-  (fun x : T => repr (\pi_(quotient_topology Q0)%qT x) == x)
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)},
+subChoiceType
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+  (fun
+     x : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+           T =>
+   repr (\pi_(quotient_topology Q0)%qT x) == x)
 
 quotient_topology_quotient_topology__canonical__choice_SubChoice is not universe polymorphic
 Arguments quotient_topology_quotient_topology__canonical__choice_SubChoice
@@ -400,9 +451,15 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 34, characters 0-48
 ">HB</a></span></span></span></span></span></span></span></span></span>.<span id="quotient_topology_quotient_topology__canonical__choice_SubChoice" class="id"><span id="quotient_topology_quotient_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="quotient_topology_quotient_topology__canonical__eqtype_SubEquality" class="id"><span id="quotient_topology_quotient_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_7" class="id"><a name="quotient_topology_quotient_topology__canonical__choice_SubChoice" class="" title="quotient_topology_quotient_topology__canonical__choice_SubChoice :
-forall {T : topologicalType} {Q0 : quotType T},
-subChoiceType (T:=T)
-  (fun x : T => repr (\pi_(quotient_topology Q0)%qT x) == x)
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)},
+subChoiceType
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+  (fun
+     x : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+           T =>
+   repr (\pi_(quotient_topology Q0)%qT x) == x)
 
 quotient_topology_quotient_topology__canonical__choice_SubChoice is not universe polymorphic
 Arguments quotient_topology_quotient_topology__canonical__choice_SubChoice
@@ -413,9 +470,15 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 34, characters 0-48
 ">instance</a></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="quotient_topology_quotient_topology__canonical__choice_SubChoice" class="id"><span id="quotient_topology_quotient_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="quotient_topology_quotient_topology__canonical__eqtype_SubEquality" class="id"><span id="quotient_topology_quotient_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_7" class="id"><a name="quotient_topology_quotient_topology__canonical__choice_SubChoice" class="" title="quotient_topology_quotient_topology__canonical__choice_SubChoice :
-forall {T : topologicalType} {Q0 : quotType T},
-subChoiceType (T:=T)
-  (fun x : T => repr (\pi_(quotient_topology Q0)%qT x) == x)
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)},
+subChoiceType
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+  (fun
+     x : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+           T =>
+   repr (\pi_(quotient_topology Q0)%qT x) == x)
 
 quotient_topology_quotient_topology__canonical__choice_SubChoice is not universe polymorphic
 Arguments quotient_topology_quotient_topology__canonical__choice_SubChoice
@@ -426,9 +489,15 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 34, characters 0-48
 "> _</a></span></span></span></span></span></span></span></span></span><span id="quotient_topology_quotient_topology__canonical__choice_SubChoice" class="id"><span id="quotient_topology_quotient_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="quotient_topology_quotient_topology__canonical__eqtype_SubEquality" class="id"><span id="quotient_topology_quotient_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_7" class="id"><a name="quotient_topology_quotient_topology__canonical__choice_SubChoice" class="" title="quotient_topology_quotient_topology__canonical__choice_SubChoice :
-forall {T : topologicalType} {Q0 : quotType T},
-subChoiceType (T:=T)
-  (fun x : T => repr (\pi_(quotient_topology Q0)%qT x) == x)
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)},
+subChoiceType
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+  (fun
+     x : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+           T =>
+   repr (\pi_(quotient_topology Q0)%qT x) == x)
 
 quotient_topology_quotient_topology__canonical__choice_SubChoice is not universe polymorphic
 Arguments quotient_topology_quotient_topology__canonical__choice_SubChoice
@@ -439,9 +508,15 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 34, characters 0-48
 "> :=</a></span></span></span></span></span></span></span></span></span><span id="quotient_topology_quotient_topology__canonical__choice_SubChoice" class="id"><span id="quotient_topology_quotient_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="quotient_topology_quotient_topology__canonical__eqtype_SubEquality" class="id"><span id="quotient_topology_quotient_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_7" class="id"><a name="quotient_topology_quotient_topology__canonical__choice_SubChoice" class="" title="quotient_topology_quotient_topology__canonical__choice_SubChoice :
-forall {T : topologicalType} {Q0 : quotType T},
-subChoiceType (T:=T)
-  (fun x : T => repr (\pi_(quotient_topology Q0)%qT x) == x)
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)},
+subChoiceType
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+  (fun
+     x : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+           T =>
+   repr (\pi_(quotient_topology Q0)%qT x) == x)
 
 quotient_topology_quotient_topology__canonical__choice_SubChoice is not universe polymorphic
 Arguments quotient_topology_quotient_topology__canonical__choice_SubChoice
@@ -454,7 +529,8 @@ library mathcomp.analysis.topology_theory.quotient_topology, line 34, characters
 "> [Choice</a></span></span></span></span></span></span></span></span></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#66b07d305ccef05249d819a7d15ac0a1"> of</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#66b07d305ccef05249d819a7d15ac0a1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#Q">Q</a></span><span class="gallina-kwd"> by</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#66b07d305ccef05249d819a7d15ac0a1"> &lt;:]</a></span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="quotient_open" class="id"><a name="quotient_open" class="" title="quotient_open :
-forall {T : topologicalType} {Q0 : quotType T},
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)},
 set (quotient_topology Q0) -> Prop
 
 quotient_open is not universe polymorphic
@@ -467,9 +543,10 @@ library mathcomp.analysis.topology_theory.quotient_topology, line 36, characters
 ">quotient_open</a></span><span class="id"> </span><span id="U:5" class="id"><a name="U:5" class="">U</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#3337bf2cd4a8dc684c396fc9814b46a9">\pi_</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#Q">Q</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#U:5">U</a></span>).<br/>
 <br/>
 <span class="id">Program</span><span class="vernacular"> Definition</span><span class="id"> </span><span id="quotient_topologicalType_mixin" class="id"><a name="quotient_topologicalType_mixin" class="" title="quotient_topologicalType_mixin :
-forall {T : topologicalType} {Q0 : quotType T},
-isOpenTopological.axioms_ (quotient_topology Q0)
-  quotient_topology.HB_unnamed_mixin_11 quotient_topology.HB_unnamed_mixin_10
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)},
+topology_structure.isOpenTopological.axioms_ (quotient_topology Q0)
+  HB_unnamed_mixin_11 HB_unnamed_mixin_10
 
 quotient_topologicalType_mixin is not universe polymorphic
 Arguments quotient_topologicalType_mixin {T Q0}
@@ -493,7 +570,9 @@ library mathcomp.analysis.topology_theory.quotient_topology, line 38, characters
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> I</span><span class="id"> f</span><span class="id"> ofi;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#bigcup_open">bigcup_open</a></span><span class="id"> =&gt;</span><span class="id"> i</span><span class="id"> _;</span><span class="id"> exact:</span><span class="id"> ofi</span>. Qed.</div></details>
 <span id="quotient_topology_quotient_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="topology_structure_isOpenTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_12" class="id"><a name="quotient_topology_quotient_topology__canonical__topology_structure_Topological" class="" title="quotient_topology_quotient_topology__canonical__topology_structure_Topological :
-forall {T : topologicalType}, quotType T -> topologicalType
+forall {T : topology_structure.Topological.type},
+quotType (topology_structure.Topological.sort T) ->
+topology_structure.Topological.type
 
 quotient_topology_quotient_topology__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -505,7 +584,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 43, characters 0-59
 ">HB</a></span></span></span></span></span></span></span></span></span></span>.<span id="quotient_topology_quotient_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="topology_structure_isOpenTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_12" class="id"><a name="quotient_topology_quotient_topology__canonical__topology_structure_Topological" class="" title="quotient_topology_quotient_topology__canonical__topology_structure_Topological :
-forall {T : topologicalType}, quotType T -> topologicalType
+forall {T : topology_structure.Topological.type},
+quotType (topology_structure.Topological.sort T) ->
+topology_structure.Topological.type
 
 quotient_topology_quotient_topology__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -517,7 +598,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 43, characters 0-59
 ">instance</a></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="quotient_topology_quotient_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="topology_structure_isOpenTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_12" class="id"><a name="quotient_topology_quotient_topology__canonical__topology_structure_Topological" class="" title="quotient_topology_quotient_topology__canonical__topology_structure_Topological :
-forall {T : topologicalType}, quotType T -> topologicalType
+forall {T : topology_structure.Topological.type},
+quotType (topology_structure.Topological.sort T) ->
+topology_structure.Topological.type
 
 quotient_topology_quotient_topology__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -529,7 +612,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 43, characters 0-59
 "> _</a></span></span></span></span></span></span></span></span></span></span><span id="quotient_topology_quotient_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="topology_structure_isOpenTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_12" class="id"><a name="quotient_topology_quotient_topology__canonical__topology_structure_Topological" class="" title="quotient_topology_quotient_topology__canonical__topology_structure_Topological :
-forall {T : topologicalType}, quotType T -> topologicalType
+forall {T : topology_structure.Topological.type},
+quotType (topology_structure.Topological.sort T) ->
+topology_structure.Topological.type
 
 quotient_topology_quotient_topology__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -541,7 +626,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 43, characters 0-59
 "> :=</a></span></span></span></span></span></span></span></span></span></span><span id="quotient_topology_quotient_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_16" class="id"><span id="topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="topology_structure_isOpenTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_12" class="id"><a name="quotient_topology_quotient_topology__canonical__topology_structure_Topological" class="" title="quotient_topology_quotient_topology__canonical__topology_structure_Topological :
-forall {T : topologicalType}, quotType T -> topologicalType
+forall {T : topology_structure.Topological.type},
+quotType (topology_structure.Topological.sort T) ->
+topology_structure.Topological.type
 
 quotient_topology_quotient_topology__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -555,21 +642,49 @@ library mathcomp.analysis.topology_theory.quotient_topology, line 43, characters
 "> quotient_topologicalType_mixin</a></span></span></span></span></span></span></span></span></span></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pi_continuous" class="id"><a name="pi_continuous" class="" title="pi_continuous :
-forall {T : topologicalType} {Q0 : quotType T},
-continuous (\pi_(quotient_topology Q0)%qT : T -> quotient_topology Q0)
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)}
+  [x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            T)],
+filter.continuous_at
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T)
+  (U:=quotient_topology_quotient_topology__canonical__filter_Nbhs) x
+  (\pi_(quotient_topology Q0)%qT
+   :
+   topology_structure.Topological.sort T -> quotient_topology Q0)
 
 pi_continuous is not universe polymorphic
 Expanded type for implicit arguments
 pi_continuous :
-forall {T : topologicalType} {Q0 : quotType T} [x : T]
-  [t : set quotient_topology_quotient_topology__canonical__filter_Nbhs],
-nbhs ((\pi_(quotient_topology Q0)%qT : T -> quotient_topology Q0) x) t ->
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)}
+  [x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            T)]
+  [t : set
+         (filter.Nbhs.sort
+            quotient_topology_quotient_topology__canonical__filter_Nbhs)],
+filter.nbhs
+  ((\pi_(quotient_topology Q0)%qT
+    :
+    topology_structure.Topological.sort T -> quotient_topology Q0) x)
+  t ->
 (let (nbhs) :=
-   Topological.filter_isFiltered_mixin
-     (let (sort, class) as record return (Topological.axioms_ record) := T in
+   topology_structure.Topological.filter_isFiltered_mixin
+     (let
+        (sort, class) as record
+         return
+           (topology_structure.Topological.axioms_
+              (topology_structure.Topological.sort record)) :=
+        T in
       class) in
  nbhs) x
-  ((\pi_(quotient_topology Q0)%qT : T -> quotient_topology Q0) @^-1` t)%classic
+  ((\pi_(quotient_topology Q0)%qT
+    :
+    topology_structure.Topological.sort T -> quotient_topology Q0) @^-1`
+   t)%classic
 
 Arguments pi_continuous {T Q0} [x t] _
 pi_continuous is opaque
@@ -584,9 +699,28 @@ library mathcomp.analysis.topology_theory.quotient_topology, line 45, characters
 <span class="id"> exact/</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#continuousP">continuousP</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="quotient_continuous" class="id"><a name="quotient_continuous" class="" title="quotient_continuous :
-forall {T : topologicalType} {Q0 : quotType T} {Z : topologicalType}
-  (f : quotient_topology Q0 -> Z),
-continuous f <-> continuous (f \o \pi_(quotient_topology Q0)%qT)
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)}
+  {Z : topology_structure.Topological.type}
+  (f : quotient_topology Q0 -> topology_structure.Topological.sort Z),
+(forall
+   x : filter.Nbhs.sort
+         quotient_topology_quotient_topology__canonical__filter_Nbhs,
+ filter.continuous_at
+   (T:=quotient_topology_quotient_topology__canonical__filter_Nbhs)
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         Z)
+   x f) <->
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            T),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         T)
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         Z)
+   x (f \o \pi_(quotient_topology Q0)%qT))
 
 quotient_continuous is not universe polymorphic
 Arguments quotient_continuous {T Q0 Z} f%_function_scope
@@ -605,29 +739,74 @@ library mathcomp.analysis.topology_theory.quotient_topology, line 48, characters
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="repr_comp_continuous" class="id"><a name="repr_comp_continuous" class="" title="repr_comp_continuous :
-forall {T : topologicalType} {Q0 : quotType T} [Z : topologicalType]
-  [g : T -> Z],
-continuous g ->
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)}
+  [Z : topology_structure.Topological.type]
+  [g : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort Z],
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            T),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         T)
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         Z)
+   x g) ->
 {homo g : a b / \pi_(quotient_topology Q0)%qT a ==
                 \pi_(quotient_topology Q0)%qT b :> 
                 quotient_topology Q0 >-> a == b} ->
-continuous (g \o repr : quotient_topology Q0 -> Z)
+forall
+  [x : filter.Nbhs.sort
+         quotient_topology_quotient_topology__canonical__filter_Nbhs],
+filter.continuous_at
+  (T:=quotient_topology_quotient_topology__canonical__filter_Nbhs)
+  (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        Z)
+  x
+  (g \o repr : quotient_topology Q0 -> topology_structure.Topological.sort Z)
 
 repr_comp_continuous is not universe polymorphic
 Expanded type for implicit arguments
 repr_comp_continuous :
-forall {T : topologicalType} {Q0 : quotType T} [Z : topologicalType]
-  [g : T -> Z],
-continuous g ->
+forall {T : topology_structure.Topological.type}
+  {Q0 : quotType (topology_structure.Topological.sort T)}
+  [Z : topology_structure.Topological.type]
+  [g : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort Z],
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            T),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         T)
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         Z)
+   x g) ->
 {homo g : a b / \pi_(quotient_topology Q0)%qT a ==
                 \pi_(quotient_topology Q0)%qT b :> 
                 quotient_topology Q0 >-> a == b} ->
-forall [x : quotient_topology_quotient_topology__canonical__filter_Nbhs]
-  [t : set Z],
-nbhs ((g \o repr : quotient_topology Q0 -> Z) x) t ->
+forall
+  [x : filter.Nbhs.sort
+         quotient_topology_quotient_topology__canonical__filter_Nbhs]
+  [t : set
+         (filter.Nbhs.sort
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               Z))],
+filter.nbhs
+  ((g \o repr : quotient_topology Q0 -> topology_structure.Topological.sort Z)
+     x)
+  t ->
 exists B : set (quotient_topology Q0),
-  [/\ isOpenTopological.op quotient_topology.HB_unnamed_factory_12 B, B x
-    & (B `<=` (g \o repr : quotient_topology Q0 -> Z) @^-1` t)%classic]
+  [/\ topology_structure.isOpenTopological.op HB_unnamed_factory_12 B, B x
+    & (B
+       `<=` (g \o
+               repr
+             :
+             quotient_topology Q0 -> topology_structure.Topological.sort Z) @^-1`
+            t)%classic]
 
 Arguments repr_comp_continuous {T Q0} [Z] [g]%_function_scope
   _%_function_scope _ [x t] _
@@ -654,7 +833,9 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="quotients.pointed.T" class="id"><a name="quotients.pointed.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#PointedTopological.Exports.ptopologicalType">ptopologicalType</a></span><span class="id">}</span><span class="id"> {</span><span id="quotients.pointed.Q0" class="id"><a name="quotients.pointed.Q0" class="">Q0</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#Quotient.Exports.quotType">quotType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#T:15">T</a></span><span class="id">}</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="Q" class="id"><a name="Q" class="">Q</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#quotient_topology">quotient_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#quotients.pointed.Q0">Q0</a></span>).<br/>
 <span id="quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_PointedNbhs" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_PointedFiltered" class="id"><span id="quotient_topology_quotient_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological" class="" title="quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological :
-forall {T : ptopologicalType}, quotType T -> ptopologicalType
+forall {T : topology_structure.PointedTopological.type},
+quotType (topology_structure.PointedTopological.sort T) ->
+topology_structure.PointedTopological.type
 
 quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -666,7 +847,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 70, characters 0-64
 ">HB</a></span></span></span></span></span>.<span id="quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_PointedNbhs" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_PointedFiltered" class="id"><span id="quotient_topology_quotient_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological" class="" title="quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological :
-forall {T : ptopologicalType}, quotType T -> ptopologicalType
+forall {T : topology_structure.PointedTopological.type},
+quotType (topology_structure.PointedTopological.sort T) ->
+topology_structure.PointedTopological.type
 
 quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -678,7 +861,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 70, characters 0-64
 ">instance</a></span></span></span></span></span><span class="vernacular"> Definition</span><span id="quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_PointedNbhs" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_PointedFiltered" class="id"><span id="quotient_topology_quotient_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological" class="" title="quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological :
-forall {T : ptopologicalType}, quotType T -> ptopologicalType
+forall {T : topology_structure.PointedTopological.type},
+quotType (topology_structure.PointedTopological.sort T) ->
+topology_structure.PointedTopological.type
 
 quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -690,7 +875,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 70, characters 0-64
 "> _</a></span></span></span></span></span><span id="quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_PointedNbhs" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_PointedFiltered" class="id"><span id="quotient_topology_quotient_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological" class="" title="quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological :
-forall {T : ptopologicalType}, quotType T -> ptopologicalType
+forall {T : topology_structure.PointedTopological.type},
+quotType (topology_structure.PointedTopological.sort T) ->
+topology_structure.PointedTopological.type
 
 quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -702,7 +889,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.quotient_topology, line 70, characters 0-64
 "> :=</a></span></span></span></span></span><span id="quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_PointedNbhs" class="id"><span id="quotient_topology_quotient_topology__canonical__filter_PointedFiltered" class="id"><span id="quotient_topology_quotient_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_19" class="id"><a name="quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological" class="" title="quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological :
-forall {T : ptopologicalType}, quotType T -> ptopologicalType
+forall {T : topology_structure.PointedTopological.type},
+quotType (topology_structure.PointedTopological.sort T) ->
+topology_structure.PointedTopological.type
 
 quotient_topology_quotient_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments

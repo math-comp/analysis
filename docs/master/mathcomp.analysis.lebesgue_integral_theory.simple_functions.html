@@ -931,7 +931,7 @@ library mathcomp.analysis.lebesgue_integral_theory.simple_functions, line 148, c
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="fctD" class="id"><a name="fctD" class="" title="fctD :
 forall [T : pointedType] [K : pzRingType] (f g : T -> K),
-(f + g)%E = (f \+ g)%R
+(f + g)%R = (f \+ g)%R
 
 fctD is not universe polymorphic
 Arguments fctD [T K] (f g)%_function_scope
@@ -997,7 +997,7 @@ library mathcomp.analysis.lebesgue_integral_theory.simple_functions, line 159, c
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.functions.html#cst">cst</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> /</span>.<br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="fctWE" class="id"><a name="fctWE" class="" title="fctWE :
 (forall (T : pointedType) (K : pzRingType) (f g : T -> K),
- (f + g)%E = (f \+ g)%R) *
+ (f + g)%R = (f \+ g)%R) *
 (forall (T : pointedType) (K : pzRingType) (f : T -> K), (- f)%R = (\- f)%R) *
 (forall (T : pointedType) (K : pzRingType) (f g : T -> K),
  (f * g)%R = (f \* g)%R) *
@@ -1220,7 +1220,7 @@ library mathcomp.analysis.lebesgue_integral_theory.simple_functions, line 184, c
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sfunD" class="id"><a name="sfunD" class="" title="sfunD :
 forall [d : measure_display] [aT : measurableType d] 
   [rT : realType] (f g : {sfun aT >-> rT}),
-(f + g)%E =1 (f \+ g)%R
+(f + g)%R =1 (f \+ g)%R
 
 sfunD is not universe polymorphic
 Arguments sfunD [d]%_measure_display_scope [aT rT] f g x

@@ -274,19 +274,30 @@ https://github.com/affeldt-aist/coq-robot.
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_series_cvg_series_group" class="id"><a name="cvg_series_cvg_series_group" class="" title="cvg_series_cvg_series_group :
 forall [R : realFieldType] [f : R ^nat] [k : nat],
-cvgn (series f) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
 0 < k ->
-([series \sum_(n * k <= i < n.+1 * k) f i]_n%R x @[x --> \oo] --> 
- limn (series f))%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [series \sum_(n * k <= i < n.+1 * k) f i]_n%R
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually))))
 
 cvg_series_cvg_series_group is not universe polymorphic
 Expanded type for implicit arguments
 cvg_series_cvg_series_group :
 forall [R : realFieldType] [f : R ^nat] [k : nat],
-cvgn (series f) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
 0 < k ->
 forall [t : set R],
-nbhs (limn (series f)) t ->
+filter.nbhs
+  (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually))) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -312,9 +323,13 @@ Declared in library mathcomp.analysis.trigo, line 49, characters 6-33
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lt_sum_lim_series" class="id"><a name="lt_sum_lim_series" class="" title="lt_sum_lim_series :
 forall [R : realFieldType] [f : R ^nat] [n : nat],
-cvgn (series f) ->
-(forall d : nat, (0 < (f (n + d.*2)%N + f (n + d.*2.+1)%N)%E)%R) ->
-(\sum_(0 <= i < n) f i < limn (series f))%R
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series f) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))) ->
+(forall d : nat, (0 < f (n + d.*2)%N + f (n + d.*2.+1)%N)%R) ->
+(\sum_(0 <= i < n) f i <
+ filter.lim (filter.fmap (series f) (filter.nbhs filter.eventually)))%R
 
 lt_sum_lim_series is not universe polymorphic
 Arguments lt_sum_lim_series [R f] [n]%_nat_scope _ _%_function_scope
@@ -362,7 +377,7 @@ Declared in library mathcomp.analysis.trigo, line 87, characters 11-19
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="periodicn" class="id"><a name="periodicn" class="" title="periodicn :
 forall [U V : GRing.Zmodule.Exports.zmodType] [f : U -> V] [T : U],
 periodic (U:=U) (V:=V) f T ->
-forall (n : nat) (a : U), f (a + (T *+ n)%R)%E = f a
+forall (n : nat) (a : U), f (a + T *+ n)%R = f a
 
 periodicn is not universe polymorphic
 Arguments periodicn [U V] [f]%_function_scope [T]%_ring_scope 
@@ -397,7 +412,7 @@ Declared in library mathcomp.analysis.trigo, line 99, characters 11-22
 forall [U : GRing.Zmodule.Exports.zmodType] [V : pzRingType] 
   [f : U -> V] [T : U],
 alternating (U:=U) (V:=V) f T ->
-forall (n : nat) (a : U), f (a + (T *+ n)%R)%E = ((-1) ^+ n * f a)%R
+forall (n : nat) (a : U), f (a + T *+ n)%R = ((-1) ^+ n * f a)%R
 
 alternatingn is not universe polymorphic
 Arguments alternatingn [U V] [f]%_function_scope [T]%_ring_scope 
@@ -430,28 +445,40 @@ Declared in library mathcomp.analysis.trigo, line 110, characters 11-20
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">[sequence</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#odd">odd</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#n:52">n</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span> (<span class="id">-1</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:52">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'.-1'">-1</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#1ecb2ec20b22101a31d2177b576c9a81">/2</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:51">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:52">n</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:52">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#fb85b56582e20c3ab47a4e55b1f6f111">`!</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">]_</a></span><span id="n:52" class="id"><a name="n:52" class="">n</a></span>.<br/>
 <br/>
 <span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><a name="sin_unlock_subterm" class="" title="sin_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
+unlockable
+  (fun (R : realType) (x : R) =>
+   filter.lim
+     (filter.fmap (series (sin_coeff x)) (filter.nbhs filter.eventually)))
 
 sin_unlock_subterm is not universe polymorphic
 sin_unlock_subterm is transparent
 Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 113, characters 0-80
 ">HB</a></span></span></span></span></span></span></span></span>.<span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><a name="sin_unlock_subterm" class="" title="sin_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
+unlockable
+  (fun (R : realType) (x : R) =>
+   filter.lim
+     (filter.fmap (series (sin_coeff x)) (filter.nbhs filter.eventually)))
 
 sin_unlock_subterm is not universe polymorphic
 sin_unlock_subterm is transparent
 Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 113, characters 0-80
 ">lock</a></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><a name="sin_unlock_subterm" class="" title="sin_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
+unlockable
+  (fun (R : realType) (x : R) =>
+   filter.lim
+     (filter.fmap (series (sin_coeff x)) (filter.nbhs filter.eventually)))
 
 sin_unlock_subterm is not universe polymorphic
 sin_unlock_subterm is transparent
 Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 113, characters 0-80
 "> sin</a></span></span></span></span></span></span></span></span><span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><a name="sin_unlock_subterm" class="" title="sin_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
+unlockable
+  (fun (R : realType) (x : R) =>
+   filter.lim
+     (filter.fmap (series (sin_coeff x)) (filter.nbhs filter.eventually)))
 
 sin_unlock_subterm is not universe polymorphic
 sin_unlock_subterm is transparent
@@ -459,7 +486,10 @@ Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 113, characters 0-80
 "> {R</a></span></span></span></span></span></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> </span><span id="x:54" class="id"><a name="x:54" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:53">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#lim">lim</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#series">series</a></span> (<span class="id"><a href="mathcomp.analysis.trigo.html#sin_coeff">sin_coeff</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:54">x</a></span>)<span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#228a5fbd8d7ef28f21231bccff88d0b0">\oo</a></span>).<br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_sin" class="id"><a name="locked_sin" class="" title="locked_sin :
-unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
+unlockable
+  (fun (R : realType) (x : R) =>
+   filter.lim
+     (filter.fmap (series (sin_coeff x)) (filter.nbhs filter.eventually)))
 
 locked_sin is not universe polymorphic
 locked_sin is transparent
@@ -478,28 +508,40 @@ Declared in library mathcomp.analysis.trigo, line 116, characters 11-20
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">[sequence</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351">~~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#odd">odd</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#n:59">n</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span> (<span class="id">-1</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssrint.html#11a706273cccd094dd42b3c7d6457ef8">^</a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:59">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#1ecb2ec20b22101a31d2177b576c9a81">/2</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:58">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:59">n</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:59">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#fb85b56582e20c3ab47a4e55b1f6f111">`!</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">]_</a></span><span id="n:59" class="id"><a name="n:59" class="">n</a></span>.<br/>
 <br/>
 <span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><a name="cos_unlock_subterm" class="" title="cos_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
+unlockable
+  (fun (R : realType) (x : R) =>
+   filter.lim
+     (filter.fmap (series (cos_coeff x)) (filter.nbhs filter.eventually)))
 
 cos_unlock_subterm is not universe polymorphic
 cos_unlock_subterm is transparent
 Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 119, characters 0-80
 ">HB</a></span></span></span></span></span></span></span></span>.<span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><a name="cos_unlock_subterm" class="" title="cos_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
+unlockable
+  (fun (R : realType) (x : R) =>
+   filter.lim
+     (filter.fmap (series (cos_coeff x)) (filter.nbhs filter.eventually)))
 
 cos_unlock_subterm is not universe polymorphic
 cos_unlock_subterm is transparent
 Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 119, characters 0-80
 ">lock</a></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><a name="cos_unlock_subterm" class="" title="cos_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
+unlockable
+  (fun (R : realType) (x : R) =>
+   filter.lim
+     (filter.fmap (series (cos_coeff x)) (filter.nbhs filter.eventually)))
 
 cos_unlock_subterm is not universe polymorphic
 cos_unlock_subterm is transparent
 Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 119, characters 0-80
 "> cos</a></span></span></span></span></span></span></span></span><span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><a name="cos_unlock_subterm" class="" title="cos_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
+unlockable
+  (fun (R : realType) (x : R) =>
+   filter.lim
+     (filter.fmap (series (cos_coeff x)) (filter.nbhs filter.eventually)))
 
 cos_unlock_subterm is not universe polymorphic
 cos_unlock_subterm is transparent
@@ -507,7 +549,10 @@ Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 119, characters 0-80
 "> {R</a></span></span></span></span></span></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> </span><span id="x:61" class="id"><a name="x:61" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:60">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#lim">lim</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#series">series</a></span> (<span class="id"><a href="mathcomp.analysis.trigo.html#cos_coeff">cos_coeff</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:61">x</a></span>)<span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#228a5fbd8d7ef28f21231bccff88d0b0">\oo</a></span>).<br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_cos" class="id"><a name="locked_cos" class="" title="locked_cos :
-unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
+unlockable
+  (fun (R : realType) (x : R) =>
+   filter.lim
+     (filter.fmap (series (cos_coeff x)) (filter.nbhs filter.eventually)))
 
 locked_cos is not universe polymorphic
 locked_cos is transparent
@@ -552,14 +597,23 @@ Declared in library mathcomp.analysis.trigo, line 130, characters 6-20
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.trigo.html#sin_coeff">sin_coeff</a></span><span class="id"> /=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#odd_double">odd_double</a></span><span class="id"> /=</span><span class="id"> !</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mul0r">mul0r</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_series_sin_coeff" class="id"><a name="is_cvg_series_sin_coeff" class="" title="is_cvg_series_sin_coeff :
-forall [R : realType] [x : R], cvgn (series (sin_coeff x))
+forall [R : realType] [x : R],
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (series (sin_coeff x)) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (series (sin_coeff x)) (filter.nbhs filter.eventually))))
 
 is_cvg_series_sin_coeff is not universe polymorphic
 Expanded type for implicit arguments
 is_cvg_series_sin_coeff :
 forall [R : realType] [x : R]
   [t : set (join_GRing_PzRing_between_GRing_PzSemiRing_and_Algebra_Zmodule R)],
-nbhs (limn (series (sin_coeff x))) t ->
+filter.nbhs
+  (filter.lim
+     (filter.fmap (series (sin_coeff x)) (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` series (sin_coeff x) @^-1` t)%classic
@@ -585,9 +639,11 @@ Qed.</div></details>
 forall R : realType,
 sin =
 (fun x : R =>
- limn
-   (pseries (R:=R) (fun n : nat => ((odd n)%:R * (-1) ^+ n.-1./2 / n`!%:R)%R)
-      x))
+ filter.lim
+   (filter.fmap
+      (pseries (R:=R)
+         (fun n : nat => ((odd n)%:R * (-1) ^+ n.-1./2 / n`!%:R)%R) x)
+      (filter.nbhs filter.eventually)))
 
 sinE is not universe polymorphic
 Arguments sinE R
@@ -628,14 +684,18 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_sin_coeff'" class="id"><a name="cvg_sin_coeff'" class="" title="cvg_sin_coeff' :
 forall [R : realType] [x : R],
-(series (sin_coeff' (R:=R) x) x0 @[x0 --> \oo] --> sin x)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (series (sin_coeff' (R:=R) x))
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (sin x))
 
 cvg_sin_coeff' is not universe polymorphic
 Expanded type for implicit arguments
 cvg_sin_coeff' :
 forall [R : realType] [x : R]
   [t : set (join_GRing_PzRing_between_GRing_PzSemiRing_and_Algebra_Zmodule R)],
-nbhs (sin x) t ->
+filter.nbhs (sin x) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -727,7 +787,7 @@ Declared in library mathcomp.analysis.trigo, line 189, characters 6-19
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.trigo.html#cos_coeff">cos_coeff</a></span><span class="id"> /=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#odd_double">odd_double</a></span><span class="id"> /=</span><span class="id"> !</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mul0r">mul0r</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="cos_coeff_2_0" class="id"><a name="cos_coeff_2_0" class="" title="cos_coeff_2_0 : forall R : realType, cos_coeff 2 0 = 1%R
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="cos_coeff_2_0" class="id"><a name="cos_coeff_2_0" class="" title="cos_coeff_2_0 : forall R : realType, cos_coeff 2 0%N = 1%R
 
 cos_coeff_2_0 is not universe polymorphic
 Arguments cos_coeff_2_0 R
@@ -789,14 +849,23 @@ Declared in library mathcomp.analysis.trigo, line 204, characters 6-16
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_series_cos_coeff" class="id"><a name="is_cvg_series_cos_coeff" class="" title="is_cvg_series_cos_coeff :
-forall [R : realType] [x : R], cvgn (series (cos_coeff x))
+forall [R : realType] [x : R],
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (series (cos_coeff x)) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (series (cos_coeff x)) (filter.nbhs filter.eventually))))
 
 is_cvg_series_cos_coeff is not universe polymorphic
 Expanded type for implicit arguments
 is_cvg_series_cos_coeff :
 forall [R : realType] [x : R]
   [t : set (join_GRing_PzRing_between_GRing_PzSemiRing_and_Algebra_Zmodule R)],
-nbhs (limn (series (cos_coeff x))) t ->
+filter.nbhs
+  (filter.lim
+     (filter.fmap (series (cos_coeff x)) (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` series (cos_coeff x) @^-1` t)%classic
@@ -822,10 +891,13 @@ Qed.</div></details>
 forall R : realType,
 cos =
 (fun x : R =>
- limn
-   (series
-      (fun n : nat =>
-       ((fun n0 : nat => (~~ odd n0)%:R * (-1) ^+ n0./2 / n0`!%:R) n * x ^+ n)%R)))
+ filter.lim
+   (filter.fmap
+      (series
+         (fun n : nat =>
+          ((fun n0 : nat => (~~ odd n0)%:R * (-1) ^+ n0./2 / n0`!%:R) n *
+           x ^+ n)%R))
+      (filter.nbhs filter.eventually)))
 
 cosE is not universe polymorphic
 Arguments cosE R
@@ -869,14 +941,18 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_cos_coeff'" class="id"><a name="cvg_cos_coeff'" class="" title="cvg_cos_coeff' :
 forall [R : realType] [x : R],
-(series (cos_coeff' (R:=R) x) x0 @[x0 --> \oo] --> cos x)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (series (cos_coeff' (R:=R) x))
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (cos x))
 
 cvg_cos_coeff' is not universe polymorphic
 Expanded type for implicit arguments
 cvg_cos_coeff' :
 forall [R : realType] [x : R]
   [t : set (join_GRing_PzRing_between_GRing_PzSemiRing_and_Algebra_Zmodule R)],
-nbhs (cos x) t ->
+filter.nbhs (cos x) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -984,20 +1060,24 @@ Expanded type for implicit arguments
 derivable_sin :
 forall [R : realType] [x : R]
   [t : set (Real_sort__canonical__normed_module_NormedModule R)],
-nbhs
-  (lim ((h^-1 *: ((sin \o shift x) h%:A - sin x))%R @[h --> (0%R)^'])%classic)
+filter.nbhs
+  (filter.lim
+     (filter.fmap (fun h : R => (h^-1 *: ((sin \o shift x) h%:A - sin x))%R)
+        (filter.nbhs (topology_structure.dnbhs 0%R))))
   t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] 0%R i
    `<=` (fun
-           t0 : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+           t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
          (fun
-            y : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+            y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
           is_true (y != 0%R)) t0 ->
          ((fun h : R => (h^-1 *: ((sin \o shift x) h%:A - sin x))%R) @^-1` t)
            t0))%classic
@@ -1012,15 +1092,24 @@ Declared in library mathcomp.analysis.trigo, line 291, characters 6-19
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html#ex_derive">ex_derive</a></span><span class="id">;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#is_derive_sin">is_derive_sin</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_sin" class="id"><a name="continuous_sin" class="" title="continuous_sin : forall [R : realType], continuous sin
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_sin" class="id"><a name="continuous_sin" class="" title="continuous_sin :
+forall [R : realType]
+  [x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+filter.continuous_at
+  (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+  (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x sin
 
 continuous_sin is not universe polymorphic
 Expanded type for implicit arguments
 continuous_sin :
 forall [R : realType]
-  [x : numFieldTopology.Real_sort__canonical__filter_Nbhs R]
-  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-nbhs (sin x) t ->
+  [x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)]
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs (sin x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` sin @^-1` t)%classic
@@ -1069,20 +1158,24 @@ Expanded type for implicit arguments
 derivable_cos :
 forall [R : realType] [x : R]
   [t : set (Real_sort__canonical__normed_module_NormedModule R)],
-nbhs
-  (lim ((h^-1 *: ((cos \o shift x) h%:A - cos x))%R @[h --> (0%R)^'])%classic)
+filter.nbhs
+  (filter.lim
+     (filter.fmap (fun h : R => (h^-1 *: ((cos \o shift x) h%:A - cos x))%R)
+        (filter.nbhs (topology_structure.dnbhs 0%R))))
   t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] 0%R i
    `<=` (fun
-           t0 : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+           t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
          (fun
-            y : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+            y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
           is_true (y != 0%R)) t0 ->
          ((fun h : R => (h^-1 *: ((cos \o shift x) h%:A - cos x))%R) @^-1` t)
            t0))%classic
@@ -1097,15 +1190,24 @@ Declared in library mathcomp.analysis.trigo, line 323, characters 6-19
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html#ex_derive">ex_derive</a></span><span class="id">;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#is_derive_cos">is_derive_cos</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_cos" class="id"><a name="continuous_cos" class="" title="continuous_cos : forall [R : realType], continuous cos
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_cos" class="id"><a name="continuous_cos" class="" title="continuous_cos :
+forall [R : realType]
+  [x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+filter.continuous_at
+  (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+  (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x cos
 
 continuous_cos is not universe polymorphic
 Expanded type for implicit arguments
 continuous_cos :
 forall [R : realType]
-  [x : numFieldTopology.Real_sort__canonical__filter_Nbhs R]
-  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-nbhs (cos x) t ->
+  [x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)]
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs (cos x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` cos @^-1` t)%classic
@@ -1121,8 +1223,7 @@ Declared in library mathcomp.analysis.trigo, line 326, characters 6-20
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> x;</span><span class="id"> exact/</span><span class="id"><a href="mathcomp.analysis.derive.html#differentiable_continuous">differentiable_continuous</a></span><span class="id">/</span><span class="id"><a href="mathcomp.analysis.derive.html#derivable1_diffP">derivable1_diffP</a></span><span class="id">/</span><span class="id"><a href="mathcomp.analysis.trigo.html#derivable_cos">derivable_cos</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="cos2Dsin2" class="id"><a name="cos2Dsin2" class="" title="cos2Dsin2 :
-forall [R : realType] (x : R), ((cos x ^+ 2)%R + (sin x ^+ 2)%R)%E = 1%R
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="cos2Dsin2" class="id"><a name="cos2Dsin2" class="" title="cos2Dsin2 : forall [R : realType] (x : R), (cos x ^+ 2 + sin x ^+ 2)%R = 1%R
 
 cos2Dsin2 is not universe polymorphic
 Arguments cos2Dsin2 [R] x%_ring_scope
@@ -1223,8 +1324,8 @@ Declared in library mathcomp.analysis.trigo, line 360, characters 6-13
 <br/>
 <span class="vernacular">Fact</span><span class="id"> </span><span id="sinD_cosD" class="id"><a name="sinD_cosD" class="" title="sinD_cosD :
 forall [R : realType] (x y : R),
-(((sin (x + y)%E - ((sin x * cos y)%R + (cos x * sin y)%R)%E) ^+ 2)%R +
- ((cos (x + y)%E - (cos x * cos y - sin x * sin y)) ^+ 2)%R)%E =
+((sin (x + y) - (sin x * cos y + cos x * sin y)) ^+ 2 +
+ (cos (x + y) - (cos x * cos y - sin x * sin y)) ^+ 2)%R =
 0%R
 
 sinD_cosD is not universe polymorphic
@@ -1249,7 +1350,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sinD" class="id"><a name="sinD" class="" title="sinD :
 forall [R : realType] (x y : R),
-sin (x + y)%E = ((sin x * cos y)%R + (cos x * sin y)%R)%E
+sin (x + y) = (sin x * cos y + cos x * sin y)%R
 
 sinD is not universe polymorphic
 Arguments sinD [R] (x y)%_ring_scope
@@ -1267,7 +1368,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cosD" class="id"><a name="cosD" class="" title="cosD :
 forall [R : realType] (x y : R),
-cos (x + y)%E = (cos x * cos y - sin x * sin y)%R
+cos (x + y) = (cos x * cos y - sin x * sin y)%R
 
 cosD is not universe polymorphic
 Arguments cosD [R] (x y)%_ring_scope
@@ -1339,7 +1440,7 @@ Declared in library mathcomp.analysis.trigo, line 399, characters 6-16
 <br/>
 <span class="vernacular">Fact</span><span class="id"> </span><span id="sinN_cosN" class="id"><a name="sinN_cosN" class="" title="sinN_cosN :
 forall [R : realType] (x : R),
-(((sin (- x) + sin x)%E ^+ 2)%R + ((cos (- x) - cos x) ^+ 2)%R)%E = 0%R
+((sin (- x) + sin x) ^+ 2 + (cos (- x) - cos x) ^+ 2)%R = 0%R
 
 sinN_cosN is not universe polymorphic
 Arguments sinN_cosN [R] x%_ring_scope
@@ -1422,7 +1523,7 @@ Declared in library mathcomp.analysis.trigo, line 431, characters 6-12
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cosB" class="id"><a name="cosB" class="" title="cosB :
 forall [R : realType] (x y : R),
-cos (x - y) = ((cos x * cos y)%R + (sin x * sin y)%R)%E
+cos (x - y) = (cos x * cos y + sin x * sin y)%R
 
 cosB is not universe polymorphic
 Arguments cosB [R] (x y)%_ring_scope
@@ -2075,7 +2176,7 @@ Declared in library mathcomp.analysis.trigo, line 689, characters 6-13
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> a;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#cosD">cosD</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#cos2pi">cos2pi</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr1">mulr1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#sin2pi">sin2pi</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr0">mulr0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.subr0">subr0</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cosDpihalf" class="id"><a name="cosDpihalf" class="" title="cosDpihalf :
-forall [R : realType] (a : R), cos (a + (trigo.pi / 2)%R)%E = (- sin a)%R
+forall [R : realType] (a : R), cos (a + trigo.pi / 2) = (- sin a)%R
 
 cosDpihalf is not universe polymorphic
 Arguments cosDpihalf [R] a%_ring_scope
@@ -2101,8 +2202,7 @@ Declared in library mathcomp.analysis.trigo, line 695, characters 6-16
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#cosB">cosB</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#cos_pihalf">cos_pihalf</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr0">mulr0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.add0r">add0r</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#sin_pihalf">sin_pihalf</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr1">mulr1</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="sinDpihalf" class="id"><a name="sinDpihalf" class="" title="sinDpihalf :
-forall [R : realType] (a : R), sin (a + (trigo.pi / 2)%R)%E = cos a
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="sinDpihalf" class="id"><a name="sinDpihalf" class="" title="sinDpihalf : forall [R : realType] (a : R), sin (a + trigo.pi / 2) = cos a
 
 sinDpihalf is not universe polymorphic
 Arguments sinDpihalf [R] a%_ring_scope
@@ -2356,7 +2456,7 @@ Declared in library mathcomp.analysis.trigo, line 789, characters 6-10
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="tanD" class="id"><a name="tanD" class="" title="tanD :
 forall [R : realType] [x y : R],
 cos x != 0%R ->
-cos y != 0%R -> tan (x + y)%E = ((tan x + tan y)%E / (1 - tan x * tan y))%R
+cos y != 0%R -> tan (x + y) = ((tan x + tan y) / (1 - tan x * tan y))%R
 
 tanD is not universe polymorphic
 Arguments tanD [R] [x y]%_ring_scope _ _
@@ -2390,7 +2490,7 @@ Declared in library mathcomp.analysis.trigo, line 800, characters 6-16
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cos2_tan2" class="id"><a name="cos2_tan2" class="" title="cos2_tan2 :
 forall [R : realType] [x : R],
-cos x != 0%R -> (cos x ^- 2)%R = (1%R + (tan x ^+ 2)%R)%E
+cos x != 0%R -> (cos x ^- 2)%R = (1 + tan x ^+ 2)%R
 
 cos2_tan2 is not universe polymorphic
 Arguments cos2_tan2 [R] [x]%_ring_scope _
@@ -2435,7 +2535,7 @@ Declared in library mathcomp.analysis.trigo, line 812, characters 6-19
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span> (<span class="id">@</span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.lt_trans">lt_trans</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> 0</span>)<span class="id">//</span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.oppr_lt0">oppr_lt0</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.divr_gt0">divr_gt0</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.trigo.html#pi_gt0">pi_gt0</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="tanDpi" class="id"><a name="tanDpi" class="" title="tanDpi : forall [R : realType] (x : R), tan (x + trigo.pi)%E = tan x
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="tanDpi" class="id"><a name="tanDpi" class="" title="tanDpi : forall [R : realType] (x : R), tan (x + trigo.pi) = tan x
 
 tanDpi is not universe polymorphic
 Arguments tanDpi [R] x%_ring_scope
@@ -2449,15 +2549,26 @@ Declared in library mathcomp.analysis.trigo, line 820, characters 6-12
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.trigo.html#tan">tan</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#cosDpi">cosDpi</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#sinDpi">sinDpi</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.divrNN">divrNN</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_tan" class="id"><a name="continuous_tan" class="" title="continuous_tan :
-forall [R : realType] [x : R], cos x != 0%R -> {for x, continuous tan}
+forall [R : realType] [x : R],
+cos x != 0%R ->
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 tan}
 
 continuous_tan is not universe polymorphic
 Expanded type for implicit arguments
 continuous_tan :
 forall [R : realType] [x : R],
 cos x != 0%R ->
-forall [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-nbhs (tan x) t ->
+forall
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs (tan x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` tan @^-1` t)%classic
@@ -2502,20 +2613,24 @@ derivable_tan :
 forall [R : realType] [x : R],
 cos x != 0%R ->
 forall [t : set (Real_sort__canonical__normed_module_NormedModule R)],
-nbhs
-  (lim ((h^-1 *: ((tan \o shift x) h%:A - tan x))%R @[h --> (0%R)^'])%classic)
+filter.nbhs
+  (filter.lim
+     (filter.fmap (fun h : R => (h^-1 *: ((tan \o shift x) h%:A - tan x))%R)
+        (filter.nbhs (topology_structure.dnbhs 0%R))))
   t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] 0%R i
    `<=` (fun
-           t0 : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+           t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
          (fun
-            y : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+            y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
           is_true (y != 0%R)) t0 ->
          ((fun h : R => (h^-1 *: ((tan \o shift x) h%:A - tan x))%R) @^-1` t)
            t0))%classic
@@ -2887,15 +3002,26 @@ Declared in library mathcomp.analysis.trigo, line 955, characters 6-14
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_acos" class="id"><a name="continuous_acos" class="" title="continuous_acos :
-forall [R : realType] [x : R], (-1 < x < 1)%R -> {for x, continuous acos}
+forall [R : realType] [x : R],
+(-1 < x < 1)%R ->
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 acos}
 
 continuous_acos is not universe polymorphic
 Expanded type for implicit arguments
 continuous_acos :
 forall [R : realType] [x : R],
 (-1 < x < 1)%R ->
-forall [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-nbhs (acos x) t ->
+forall
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs (acos x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` acos @^-1` t)%classic
@@ -3174,15 +3300,26 @@ Declared in library mathcomp.analysis.trigo, line 1054, characters 6-14
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_asin" class="id"><a name="continuous_asin" class="" title="continuous_asin :
-forall [R : realType] [x : R], (-1 < x < 1)%R -> {for x, continuous asin}
+forall [R : realType] [x : R],
+(-1 < x < 1)%R ->
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 asin}
 
 continuous_asin is not universe polymorphic
 Expanded type for implicit arguments
 continuous_asin :
 forall [R : realType] [x : R],
 (-1 < x < 1)%R ->
-forall [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-nbhs (asin x) t ->
+forall
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs (asin x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` asin @^-1` t)%classic
@@ -3339,8 +3476,7 @@ Declared in library mathcomp.analysis.trigo, line 1113, characters 10-22
 ">oneDsqr_inum</a></span><span class="id"> </span><span id="x:280" class="id"><a name="x:280" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1d654871949ca8d814504e500b52e67c">{itv</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1d654871949ca8d814504e500b52e67c"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#oneDsqr.R">R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1d654871949ca8d814504e500b52e67c"> &amp;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1d654871949ca8d814504e500b52e67c"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html#c5d1424554ae4f6d783beb7e2b68e8c1">`[</a></span><span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html#c5d1424554ae4f6d783beb7e2b68e8c1">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html#c5d1424554ae4f6d783beb7e2b68e8c1"> +oo[</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1d654871949ca8d814504e500b52e67c">}</a></span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#ItvReal">ItvReal</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#oneDsqr.R">R</a></span> (<span class="id"><a href="mathcomp.analysis.trigo.html#oneDsqr">oneDsqr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:280">x</a></span>)<br/>
 &nbsp;&nbsp;(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html#BLeft">BLeft</a></span><span class="id"> 1%Z</span>) (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html#BInfty">BInfty</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span>) (<span class="id"><a href="mathcomp.analysis.trigo.html#oneDsqr_ge1">oneDsqr_ge1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:280">x</a></span>)<span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#erefl">erefl</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="oneDsqrV_le1" class="id"><a name="oneDsqrV_le1" class="" title="oneDsqrV_le1 :
-forall {R : realType} (x : R), (unstable.inv_fun oneDsqr x <= 1)%R
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="oneDsqrV_le1" class="id"><a name="oneDsqrV_le1" class="" title="oneDsqrV_le1 : forall {R : realType} (x : R), ((oneDsqr\^-1) x <= 1)%R
 
 oneDsqrV_le1 is not universe polymorphic
 Arguments oneDsqrV_le1 {R} x%_ring_scope
@@ -3353,15 +3489,24 @@ Declared in library mathcomp.analysis.trigo, line 1116, characters 6-18
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.Theory.invf_le1">invf_le1</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_oneDsqr" class="id"><a name="continuous_oneDsqr" class="" title="continuous_oneDsqr : forall {R : realType}, continuous oneDsqr
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_oneDsqr" class="id"><a name="continuous_oneDsqr" class="" title="continuous_oneDsqr :
+forall {R : realType}
+  [x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+filter.continuous_at
+  (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+  (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x oneDsqr
 
 continuous_oneDsqr is not universe polymorphic
 Expanded type for implicit arguments
 continuous_oneDsqr :
 forall {R : realType}
-  [x : numFieldTopology.Real_sort__canonical__filter_Nbhs R]
-  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-nbhs (oneDsqr x) t ->
+  [x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)]
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs (oneDsqr x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` oneDsqr @^-1` t)%classic
@@ -3377,18 +3522,27 @@ Declared in library mathcomp.analysis.trigo, line 1118, characters 6-24
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#cvgD">cvgD</a></span><span class="id">;</span><span class="id"> [exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#cvg_cst">cvg_cst</a></span><span class="id">|exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.realfun.html#exprn_continuous">exprn_continuous</a></span><span class="id">]</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_oneDsqrV" class="id"><a name="continuous_oneDsqrV" class="" title="continuous_oneDsqrV :
-forall {R : realType}, continuous (unstable.inv_fun oneDsqr)
+forall {R : realType}
+  [x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+filter.continuous_at
+  (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+  (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x 
+  (oneDsqr\^-1)%R
 
 continuous_oneDsqrV is not universe polymorphic
 Expanded type for implicit arguments
 continuous_oneDsqrV :
 forall {R : realType}
-  [x : numFieldTopology.Real_sort__canonical__filter_Nbhs R]
-  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-nbhs (unstable.inv_fun oneDsqr x) t ->
+  [x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)]
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs ((oneDsqr\^-1)%R x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
-  (ball_ [eta normr] x i `<=` unstable.inv_fun oneDsqr @^-1` t)%classic
+  (ball_ [eta normr] x i `<=` (oneDsqr\^-1)%R @^-1` t)%classic
 
 Arguments continuous_oneDsqrV {R} [x t] _
 continuous_oneDsqrV is opaque
@@ -3558,14 +3712,24 @@ Declared in library mathcomp.analysis.trigo, line 1191, characters 6-10
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval.html#in_itv">in_itv</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#atan_gtNpi2">atan_gtNpi2</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#atan_ltpi2">atan_ltpi2</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_atan" class="id"><a name="continuous_atan" class="" title="continuous_atan : forall [R : realType] [x : R], {for x, continuous atan}
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_atan" class="id"><a name="continuous_atan" class="" title="continuous_atan :
+forall [R : realType] [x : R],
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 atan}
 
 continuous_atan is not universe polymorphic
 Expanded type for implicit arguments
 continuous_atan :
 forall [R : realType] [x : R]
-  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-nbhs (atan x) t ->
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs (atan x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` atan @^-1` t)%classic
@@ -3588,7 +3752,7 @@ Declared in library mathcomp.analysis.trigo, line 1197, characters 6-21
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cos_atan" class="id"><a name="cos_atan" class="" title="cos_atan :
 forall [R : realType] (x : R),
-cos (atan x) = (Num.ExtraDef.sqrtr (1%R + (x ^+ 2)%R)%E)^-1%R
+cos (atan x) = (Num.ExtraDef.sqrtr (1 + x ^+ 2))^-1%R
 
 cos_atan is not universe polymorphic
 Arguments cos_atan [R] x%_ring_scope
@@ -3632,21 +3796,25 @@ Expanded type for implicit arguments
 derivable_atan :
 forall [R : realType] [x : R]
   [t : set (Real_sort__canonical__normed_module_NormedModule R)],
-nbhs
-  (lim
-     ((h^-1 *: ((atan \o shift x) h%:A - atan x))%R @[h --> (0%R)^'])%classic)
+filter.nbhs
+  (filter.lim
+     (filter.fmap
+        (fun h : R => (h^-1 *: ((atan \o shift x) h%:A - atan x))%R)
+        (filter.nbhs (topology_structure.dnbhs 0%R))))
   t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] 0%R i
    `<=` (fun
-           t0 : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+           t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
          (fun
-            y : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+            y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
           is_true (y != 0%R)) t0 ->
          ((fun h : R => (h^-1 *: ((atan \o shift x) h%:A - atan x))%R) @^-1`
           t) t0))%classic
@@ -3662,8 +3830,7 @@ Declared in library mathcomp.analysis.trigo, line 1233, characters 6-20
 <span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html#ex_derive">ex_derive</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="derive1_atan" class="id"><a name="derive1_atan" class="" title="derive1_atan :
-forall [R : realType],
-atan^`()%classic =1 (fun x : R => (1%R + (x ^+ 2)%R)%E^-1%R)
+forall [R : realType], atan^`()%classic =1 (fun x : R => (1 + x ^+ 2)^-1%R)
 
 derive1_atan is not universe polymorphic
 Arguments derive1_atan [R] x
@@ -3721,13 +3888,15 @@ Declared in library mathcomp.analysis.trigo, line 1250, characters 6-13
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgy_atan" class="id"><a name="cvgy_atan" class="" title="cvgy_atan :
-forall [R : realType], (atan x @[x --> +oo%R] --> (trigo.pi / 2)%R)%classic
+forall [R : realType],
+filter.cvg_to (filter.nbhs (filter.fmap [eta atan] (filter.nbhs +oo%R)))
+  (filter.nbhs (trigo.pi / 2)%R)
 
 cvgy_atan is not universe polymorphic
 Expanded type for implicit arguments
 cvgy_atan :
 forall [R : realType] [t : set R],
-nbhs (trigo.pi / 2)%R t ->
+filter.nbhs (trigo.pi / 2)%R t ->
 exists M : R,
   M \is Num.real /\
   (forall x : R, (M < x)%R -> ([eta atan] @^-1` t)%classic x)

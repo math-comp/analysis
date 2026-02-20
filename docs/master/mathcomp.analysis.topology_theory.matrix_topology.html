@@ -257,8 +257,8 @@ Matrices `'M[T]_(m, n)` are endowed with the structures of:
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> M</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">'M[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_Topology.T">T</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">]_</a></span>(<span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_Topology.m">m</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_Topology.n">n</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mx_nbhs_filter" class="id"><a name="mx_nbhs_filter" class="" title="mx_nbhs_filter :
-forall (m n : nat) (T : topologicalType) (M : 'M_(m, n)),
-ProperFilter (nbhs M)
+forall (m n : nat) (T : topology_structure.Topological.type) (M : 'M_(m, n)),
+filter.ProperFilter (filter.nbhs M)
 
 mx_nbhs_filter is not universe polymorphic
 Arguments mx_nbhs_filter (m n)%_nat_scope T M%_ring_scope
@@ -280,8 +280,9 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 33, characters 6
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mx_nbhs_singleton" class="id"><a name="mx_nbhs_singleton" class="" title="mx_nbhs_singleton :
-forall (m n : nat) (T : topologicalType) (M : 'M_(m, n)) (A : set 'M_(m, n)),
-nbhs M A -> A M
+forall (m n : nat) (T : topology_structure.Topological.type) 
+  (M : 'M_(m, n)) (A : set 'M_(m, n)),
+filter.nbhs M A -> A M
 
 mx_nbhs_singleton is not universe polymorphic
 Arguments mx_nbhs_singleton (m n)%_nat_scope T M%_ring_scope
@@ -298,8 +299,9 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 43, characters 6
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> [P</span><span class="id"> M_P];</span><span class="id"> apply=&gt;</span><span class="id"> ??;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#nbhs_singleton">nbhs_singleton</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mx_nbhs_nbhs" class="id"><a name="mx_nbhs_nbhs" class="" title="mx_nbhs_nbhs :
-forall (m n : nat) (T : topologicalType) (M : 'M_(m, n)) (A : set 'M_(m, n)),
-nbhs M A -> nbhs M (nbhs^~ A)
+forall (m n : nat) (T : topology_structure.Topological.type) 
+  (M : 'M_(m, n)) (A : set 'M_(m, n)),
+filter.nbhs M A -> filter.nbhs M (filter.nbhs^~ A)
 
 mx_nbhs_nbhs is not universe polymorphic
 Arguments mx_nbhs_nbhs (m n)%_nat_scope T M%_ring_scope
@@ -319,7 +321,9 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 46, characters 6
 Qed.</div></details>
 <br/>
 <span id="matrix_matrix__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_3" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="matrix_matrix__canonical__topology_structure_Topological" class="" title="matrix_matrix__canonical__topology_structure_Topological :
-nat -> nat -> topologicalType -> topologicalType
+nat ->
+nat ->
+topology_structure.Topological.type -> topology_structure.Topological.type
 
 matrix_matrix__canonical__topology_structure_Topological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_Topological
@@ -330,7 +334,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 53, characters 0-118
 ">HB</a></span></span></span></span>.<span id="matrix_matrix__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_3" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="matrix_matrix__canonical__topology_structure_Topological" class="" title="matrix_matrix__canonical__topology_structure_Topological :
-nat -> nat -> topologicalType -> topologicalType
+nat ->
+nat ->
+topology_structure.Topological.type -> topology_structure.Topological.type
 
 matrix_matrix__canonical__topology_structure_Topological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_Topological
@@ -341,7 +347,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 53, characters 0-118
 ">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="matrix_matrix__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_3" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="matrix_matrix__canonical__topology_structure_Topological" class="" title="matrix_matrix__canonical__topology_structure_Topological :
-nat -> nat -> topologicalType -> topologicalType
+nat ->
+nat ->
+topology_structure.Topological.type -> topology_structure.Topological.type
 
 matrix_matrix__canonical__topology_structure_Topological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_Topological
@@ -352,7 +360,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 53, characters 0-118
 "> _</a></span></span></span></span><span id="matrix_matrix__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_3" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="matrix_matrix__canonical__topology_structure_Topological" class="" title="matrix_matrix__canonical__topology_structure_Topological :
-nat -> nat -> topologicalType -> topologicalType
+nat ->
+nat ->
+topology_structure.Topological.type -> topology_structure.Topological.type
 
 matrix_matrix__canonical__topology_structure_Topological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_Topological
@@ -363,7 +373,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 53, characters 0-118
 "> :=</a></span></span></span></span><span id="matrix_matrix__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_3" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="matrix_matrix__canonical__topology_structure_Topological" class="" title="matrix_matrix__canonical__topology_structure_Topological :
-nat -> nat -> topologicalType -> topologicalType
+nat ->
+nat ->
+topology_structure.Topological.type -> topology_structure.Topological.type
 
 matrix_matrix__canonical__topology_structure_Topological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_Topological
@@ -385,7 +397,8 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 53, characters 0
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> A</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">'M[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_Uniform.T">T</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">]_</a></span>(<span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_Uniform.m">m</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_Uniform.n">n</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">'M[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_Uniform.T">T</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">]_</a></span>(<span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_Uniform.m">m</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_Uniform.n">n</a></span>)).<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="mx_ent" class="id"><a name="mx_ent" class="" title="mx_ent :
-forall (m n : nat) (T : uniformType), set_system ('M_(m, n) * 'M_(m, n))
+forall (m n : nat) (T : uniformType),
+filter.set_system ('M_(m, n) * 'M_(m, n))
 
 mx_ent is not universe polymorphic
 Arguments mx_ent (m n)%_nat_scope T _
@@ -398,7 +411,8 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 64, characters 1
 &nbsp;&nbsp;(<span class="gallina-kwd">fun</span><span class="id"> </span><span id="P:34" class="id"><a name="P:34" class="">P</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span id="MN:35" class="id"><a name="MN:35" class="">MN</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> :</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">'M[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_Uniform.T">T</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">]_</a></span>(<span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_Uniform.m">m</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_Uniform.n">n</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">'M[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_Uniform.T">T</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">]_</a></span>(<span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_Uniform.m">m</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_Uniform.n">n</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> |</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:36" class="id"><a name="i:36" class="">i</a></span><span class="id"> </span><span id="j:37" class="id"><a name="j:37" class="">j</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#P:34">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#i:36">i</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#j:37">j</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#MN:35">MN</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'"> i</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#j:37">j</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#MN:35">MN</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'"> i</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#j:37">j</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">]</a></span>).<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="mx_ent_filter" class="id"><a name="mx_ent_filter" class="" title="mx_ent_filter : forall (m n : nat) (T : uniformType), Filter (mx_ent m n T)
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="mx_ent_filter" class="id"><a name="mx_ent_filter" class="" title="mx_ent_filter :
+forall (m n : nat) (T : uniformType), filter.Filter (mx_ent m n T)
 
 mx_ent_filter is not universe polymorphic
 Arguments mx_ent_filter (m n)%_nat_scope T
@@ -486,7 +500,7 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 90, characters 6
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mx_ent_nbhsE" class="id"><a name="mx_ent_nbhsE" class="" title="mx_ent_nbhsE :
-forall (m n : nat) (T : uniformType), nbhs = nbhs_ (mx_ent m n T)
+forall (m n : nat) (T : uniformType), filter.nbhs = nbhs_ (mx_ent m n T)
 
 mx_ent_nbhsE is not universe polymorphic
 Arguments mx_ent_nbhsE (m n)%_nat_scope T
@@ -574,13 +588,18 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 120, characters 
 <span class="vernacular">End</span><span class="id"> matrix_Uniform</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_mx_entourageP" class="id"><a name="cvg_mx_entourageP" class="" title="cvg_mx_entourageP :
-forall (T : puniformType) (m n : nat) (F : set_system 'M_(m, n)),
-Filter F ->
+forall (T : puniformType) (m n : nat) (F : filter.set_system 'M_(m, n)),
+filter.Filter F ->
 forall M : 'M_(m, n),
-(F --> M)%classic <->
+filter.cvg_to (filter.nbhs F) (filter.nbhs M) <->
 (forall A : set (T * T),
  entourage A ->
- \near F, forall (i : 'I_m) (j : 'I_n), (M i j, (F : 'M_(m, n)) i j) \in A)
+ filter.prop_near1 F
+   (P:=fun N : 'M_(m, n) =>
+       forall (i : 'I_m) (j : 'I_n), (M i j, N i j) \in A)
+   (inPhantom
+      (forall (N : 'M_(m, n)) (i : 'I_m) (j : 'I_n),
+       (M i j, (N : 'M_(m, n)) i j) \in A)))
 
 cvg_mx_entourageP is not universe polymorphic
 Arguments cvg_mx_entourageP T (m n)%_nat_scope F FF M%_ring_scope
@@ -614,7 +633,10 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 125, characters 
 <span class="vernacular">Section</span><span class="id"> matrix_PointedTopology</span>.<br/>
 <span class="vernacular">Variables</span> (<span id="matrix_PointedTopology.m" class="id"><a name="matrix_PointedTopology.m" class="">m</a></span><span class="id"> </span><span id="matrix_PointedTopology.n" class="id"><a name="matrix_PointedTopology.n" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>) .<br/>
 <span id="matrix_matrix__canonical__topology_structure_PointedTopological" class="id"><span id="matrix_matrix__canonical__filter_PointedNbhs" class="id"><span id="matrix_matrix__canonical__filter_PointedFiltered" class="id"><span id="filter_Filtered__to__filter_isFiltered" class="id"><span id="filter_Filtered__to__eqtype_hasDecEq" class="id"><span id="filter_Filtered__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_9" class="id"><span id="matrix_PointedTopology.hb_instance_8.T" class="id"><a name="matrix_matrix__canonical__topology_structure_PointedTopological" class="" title="matrix_matrix__canonical__topology_structure_PointedTopological :
-nat -> nat -> ptopologicalType -> ptopologicalType
+nat ->
+nat ->
+topology_structure.PointedTopological.type ->
+topology_structure.PointedTopological.type
 
 matrix_matrix__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_PointedTopological
@@ -625,7 +647,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 147, characters 0-76
 ">HB</a></span></span></span></span></span></span></span></span>.<span id="matrix_matrix__canonical__topology_structure_PointedTopological" class="id"><span id="matrix_matrix__canonical__filter_PointedNbhs" class="id"><span id="matrix_matrix__canonical__filter_PointedFiltered" class="id"><span id="filter_Filtered__to__filter_isFiltered" class="id"><span id="filter_Filtered__to__eqtype_hasDecEq" class="id"><span id="filter_Filtered__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_9" class="id"><span id="matrix_PointedTopology.hb_instance_8.T" class="id"><a name="matrix_matrix__canonical__topology_structure_PointedTopological" class="" title="matrix_matrix__canonical__topology_structure_PointedTopological :
-nat -> nat -> ptopologicalType -> ptopologicalType
+nat ->
+nat ->
+topology_structure.PointedTopological.type ->
+topology_structure.PointedTopological.type
 
 matrix_matrix__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_PointedTopological
@@ -636,7 +661,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 147, characters 0-76
 ">instance</a></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="matrix_matrix__canonical__topology_structure_PointedTopological" class="id"><span id="matrix_matrix__canonical__filter_PointedNbhs" class="id"><span id="matrix_matrix__canonical__filter_PointedFiltered" class="id"><span id="filter_Filtered__to__filter_isFiltered" class="id"><span id="filter_Filtered__to__eqtype_hasDecEq" class="id"><span id="filter_Filtered__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_9" class="id"><span id="matrix_PointedTopology.hb_instance_8.T" class="id"><a name="matrix_matrix__canonical__topology_structure_PointedTopological" class="" title="matrix_matrix__canonical__topology_structure_PointedTopological :
-nat -> nat -> ptopologicalType -> ptopologicalType
+nat ->
+nat ->
+topology_structure.PointedTopological.type ->
+topology_structure.PointedTopological.type
 
 matrix_matrix__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_PointedTopological
@@ -647,7 +675,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 147, characters 0-76
 "> _</a></span></span></span></span></span></span></span></span> (<span id="matrix_matrix__canonical__topology_structure_PointedTopological" class="id"><span id="matrix_matrix__canonical__filter_PointedNbhs" class="id"><span id="matrix_matrix__canonical__filter_PointedFiltered" class="id"><span id="filter_Filtered__to__filter_isFiltered" class="id"><span id="filter_Filtered__to__eqtype_hasDecEq" class="id"><span id="filter_Filtered__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_9" class="id"><span id="matrix_PointedTopology.hb_instance_8.T" class="id"><a name="matrix_matrix__canonical__topology_structure_PointedTopological" class="" title="matrix_matrix__canonical__topology_structure_PointedTopological :
-nat -> nat -> ptopologicalType -> ptopologicalType
+nat ->
+nat ->
+topology_structure.PointedTopological.type ->
+topology_structure.PointedTopological.type
 
 matrix_matrix__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_PointedTopological
@@ -658,7 +689,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 147, characters 0-76
 ">T</a></span></span></span></span></span></span></span></span><span id="matrix_matrix__canonical__topology_structure_PointedTopological" class="id"><span id="matrix_matrix__canonical__filter_PointedNbhs" class="id"><span id="matrix_matrix__canonical__filter_PointedFiltered" class="id"><span id="filter_Filtered__to__filter_isFiltered" class="id"><span id="filter_Filtered__to__eqtype_hasDecEq" class="id"><span id="filter_Filtered__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_9" class="id"><span id="matrix_PointedTopology.hb_instance_8.T" class="id"><a name="matrix_matrix__canonical__topology_structure_PointedTopological" class="" title="matrix_matrix__canonical__topology_structure_PointedTopological :
-nat -> nat -> ptopologicalType -> ptopologicalType
+nat ->
+nat ->
+topology_structure.PointedTopological.type ->
+topology_structure.PointedTopological.type
 
 matrix_matrix__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_PointedTopological
@@ -669,7 +703,10 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 147, characters 0-76
 "> :</a></span></span></span></span></span></span></span></span><span id="matrix_matrix__canonical__topology_structure_PointedTopological" class="id"><span id="matrix_matrix__canonical__filter_PointedNbhs" class="id"><span id="matrix_matrix__canonical__filter_PointedFiltered" class="id"><span id="filter_Filtered__to__filter_isFiltered" class="id"><span id="filter_Filtered__to__eqtype_hasDecEq" class="id"><span id="filter_Filtered__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_9" class="id"><span id="matrix_PointedTopology.hb_instance_8.T" class="id"><a name="matrix_matrix__canonical__topology_structure_PointedTopological" class="" title="matrix_matrix__canonical__topology_structure_PointedTopological :
-nat -> nat -> ptopologicalType -> ptopologicalType
+nat ->
+nat ->
+topology_structure.PointedTopological.type ->
+topology_structure.PointedTopological.type
 
 matrix_matrix__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments matrix_matrix__canonical__topology_structure_PointedTopological
@@ -742,8 +779,8 @@ Declared in
 library mathcomp.analysis.topology_theory.pseudometric_structure, line 391, characters 0-58
 "> ptopologicalType</a></span></span></span></span></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.on">Pointed</a></span>.<span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.on">on</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">'M[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#T:123">T</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">]_</a></span>(<span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_PointedTopology.m">m</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_PointedTopology.n">n</a></span>).<br/>
 <span id="filter_PointedFiltered__to__filter_isFiltered" class="id"><span id="filter_PointedFiltered__to__eqtype_hasDecEq" class="id"><span id="filter_PointedFiltered__to__choice_hasChoice" class="id"><span id="filter_PointedFiltered__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_19" class="id"><span id="matrix_PointedTopology.hb_instance_18.T" class="id"><a name="filter_PointedFiltered__to__filter_isFiltered" class="" title="filter_PointedFiltered__to__filter_isFiltered :
-forall (m n : nat) (T : ptopologicalType),
-isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
+forall (m n : nat) (T : topology_structure.PointedTopological.type),
+filter.isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
 
 filter_PointedFiltered__to__filter_isFiltered is not universe polymorphic
 Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%_nat_scope T
@@ -753,8 +790,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 149, characters 0-85
 ">HB</a></span></span></span></span></span></span>.<span id="filter_PointedFiltered__to__filter_isFiltered" class="id"><span id="filter_PointedFiltered__to__eqtype_hasDecEq" class="id"><span id="filter_PointedFiltered__to__choice_hasChoice" class="id"><span id="filter_PointedFiltered__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_19" class="id"><span id="matrix_PointedTopology.hb_instance_18.T" class="id"><a name="filter_PointedFiltered__to__filter_isFiltered" class="" title="filter_PointedFiltered__to__filter_isFiltered :
-forall (m n : nat) (T : ptopologicalType),
-isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
+forall (m n : nat) (T : topology_structure.PointedTopological.type),
+filter.isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
 
 filter_PointedFiltered__to__filter_isFiltered is not universe polymorphic
 Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%_nat_scope T
@@ -764,8 +801,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 149, characters 0-85
 ">instance</a></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="filter_PointedFiltered__to__filter_isFiltered" class="id"><span id="filter_PointedFiltered__to__eqtype_hasDecEq" class="id"><span id="filter_PointedFiltered__to__choice_hasChoice" class="id"><span id="filter_PointedFiltered__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_19" class="id"><span id="matrix_PointedTopology.hb_instance_18.T" class="id"><a name="filter_PointedFiltered__to__filter_isFiltered" class="" title="filter_PointedFiltered__to__filter_isFiltered :
-forall (m n : nat) (T : ptopologicalType),
-isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
+forall (m n : nat) (T : topology_structure.PointedTopological.type),
+filter.isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
 
 filter_PointedFiltered__to__filter_isFiltered is not universe polymorphic
 Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%_nat_scope T
@@ -775,8 +812,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 149, characters 0-85
 "> _</a></span></span></span></span></span></span> (<span id="filter_PointedFiltered__to__filter_isFiltered" class="id"><span id="filter_PointedFiltered__to__eqtype_hasDecEq" class="id"><span id="filter_PointedFiltered__to__choice_hasChoice" class="id"><span id="filter_PointedFiltered__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_19" class="id"><span id="matrix_PointedTopology.hb_instance_18.T" class="id"><a name="filter_PointedFiltered__to__filter_isFiltered" class="" title="filter_PointedFiltered__to__filter_isFiltered :
-forall (m n : nat) (T : ptopologicalType),
-isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
+forall (m n : nat) (T : topology_structure.PointedTopological.type),
+filter.isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
 
 filter_PointedFiltered__to__filter_isFiltered is not universe polymorphic
 Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%_nat_scope T
@@ -786,8 +823,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 149, characters 0-85
 ">T</a></span></span></span></span></span></span><span id="filter_PointedFiltered__to__filter_isFiltered" class="id"><span id="filter_PointedFiltered__to__eqtype_hasDecEq" class="id"><span id="filter_PointedFiltered__to__choice_hasChoice" class="id"><span id="filter_PointedFiltered__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_19" class="id"><span id="matrix_PointedTopology.hb_instance_18.T" class="id"><a name="filter_PointedFiltered__to__filter_isFiltered" class="" title="filter_PointedFiltered__to__filter_isFiltered :
-forall (m n : nat) (T : ptopologicalType),
-isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
+forall (m n : nat) (T : topology_structure.PointedTopological.type),
+filter.isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
 
 filter_PointedFiltered__to__filter_isFiltered is not universe polymorphic
 Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%_nat_scope T
@@ -797,8 +834,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 149, characters 0-85
 "> :</a></span></span></span></span></span></span><span id="filter_PointedFiltered__to__filter_isFiltered" class="id"><span id="filter_PointedFiltered__to__eqtype_hasDecEq" class="id"><span id="filter_PointedFiltered__to__choice_hasChoice" class="id"><span id="filter_PointedFiltered__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_19" class="id"><span id="matrix_PointedTopology.hb_instance_18.T" class="id"><a name="filter_PointedFiltered__to__filter_isFiltered" class="" title="filter_PointedFiltered__to__filter_isFiltered :
-forall (m n : nat) (T : ptopologicalType),
-isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
+forall (m n : nat) (T : topology_structure.PointedTopological.type),
+filter.isFiltered.axioms_ 'M_(m, n) 'M_(m, n)
 
 filter_PointedFiltered__to__filter_isFiltered is not universe polymorphic
 Arguments filter_PointedFiltered__to__filter_isFiltered (m n)%_nat_scope T
@@ -810,10 +847,26 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 149, characters 
 "> ptopologicalType</a></span></span></span></span></span></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#PointedFiltered.on">PointedFiltered</a></span>.<span class="id"><a href="mathcomp.classical.filter.html#PointedFiltered.on">on</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">'M[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#T:124">T</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">]_</a></span>(<span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_PointedTopology.m">m</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_PointedTopology.n">n</a></span>).<br/>
 <span id="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_PointedTopological__to__filter_isFiltered" class="id"><span id="topology_structure_PointedTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_PointedTopological__to__eqtype_hasDecEq" class="id"><span id="topology_structure_PointedTopological__to__choice_hasChoice" class="id"><span id="topology_structure_PointedTopological__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_25" class="id"><span id="matrix_PointedTopology.hb_instance_24.T" class="id"><a name="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological" class="" title="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological :
-forall (m n : nat) (T : ptopologicalType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+forall (m n : nat) (T : topology_structure.PointedTopological.type),
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T))
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T))
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T)))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T)))
 
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -825,10 +878,26 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 151, characters 0-88
 ">HB</a></span></span></span></span></span></span></span></span>.<span id="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_PointedTopological__to__filter_isFiltered" class="id"><span id="topology_structure_PointedTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_PointedTopological__to__eqtype_hasDecEq" class="id"><span id="topology_structure_PointedTopological__to__choice_hasChoice" class="id"><span id="topology_structure_PointedTopological__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_25" class="id"><span id="matrix_PointedTopology.hb_instance_24.T" class="id"><a name="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological" class="" title="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological :
-forall (m n : nat) (T : ptopologicalType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+forall (m n : nat) (T : topology_structure.PointedTopological.type),
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T))
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T))
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T)))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T)))
 
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -840,10 +909,26 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 151, characters 0-88
 ">instance</a></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_PointedTopological__to__filter_isFiltered" class="id"><span id="topology_structure_PointedTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_PointedTopological__to__eqtype_hasDecEq" class="id"><span id="topology_structure_PointedTopological__to__choice_hasChoice" class="id"><span id="topology_structure_PointedTopological__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_25" class="id"><span id="matrix_PointedTopology.hb_instance_24.T" class="id"><a name="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological" class="" title="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological :
-forall (m n : nat) (T : ptopologicalType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+forall (m n : nat) (T : topology_structure.PointedTopological.type),
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T))
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T))
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T)))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T)))
 
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -855,10 +940,26 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 151, characters 0-88
 "> _</a></span></span></span></span></span></span></span></span> (<span id="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_PointedTopological__to__filter_isFiltered" class="id"><span id="topology_structure_PointedTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_PointedTopological__to__eqtype_hasDecEq" class="id"><span id="topology_structure_PointedTopological__to__choice_hasChoice" class="id"><span id="topology_structure_PointedTopological__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_25" class="id"><span id="matrix_PointedTopology.hb_instance_24.T" class="id"><a name="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological" class="" title="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological :
-forall (m n : nat) (T : ptopologicalType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+forall (m n : nat) (T : topology_structure.PointedTopological.type),
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T))
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T))
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T)))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T)))
 
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -870,10 +971,26 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 151, characters 0-88
 ">T</a></span></span></span></span></span></span></span></span><span id="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_PointedTopological__to__filter_isFiltered" class="id"><span id="topology_structure_PointedTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_PointedTopological__to__eqtype_hasDecEq" class="id"><span id="topology_structure_PointedTopological__to__choice_hasChoice" class="id"><span id="topology_structure_PointedTopological__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_25" class="id"><span id="matrix_PointedTopology.hb_instance_24.T" class="id"><a name="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological" class="" title="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological :
-forall (m n : nat) (T : ptopologicalType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+forall (m n : nat) (T : topology_structure.PointedTopological.type),
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T))
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T))
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T)))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T)))
 
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -885,10 +1002,26 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 151, characters 0-88
 "> :</a></span></span></span></span></span></span></span></span><span id="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="topology_structure_PointedTopological__to__filter_isFiltered" class="id"><span id="topology_structure_PointedTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_PointedTopological__to__eqtype_hasDecEq" class="id"><span id="topology_structure_PointedTopological__to__choice_hasChoice" class="id"><span id="topology_structure_PointedTopological__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_25" class="id"><span id="matrix_PointedTopology.hb_instance_24.T" class="id"><a name="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological" class="" title="topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological :
-forall (m n : nat) (T : ptopologicalType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+forall (m n : nat) (T : topology_structure.PointedTopological.type),
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T))
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T))
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T)))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+           T)))
 
 topology_structure_PointedTopological__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -903,9 +1036,21 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 151, characters 
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#PointedTopological.on">PointedTopological</a></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#PointedTopological.on">on</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">'M[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#T:125">T</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">]_</a></span>(<span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_PointedTopology.m">m</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_PointedTopology.n">n</a></span>).<br/>
 <span id="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Uniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_Uniform__to__filter_isFiltered" class="id"><span id="uniform_structure_Uniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_Uniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_Uniform__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_33" class="id"><span id="matrix_PointedTopology.hb_instance_32.T" class="id"><a name="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="" title="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological :
 forall (m n : nat) (T : uniformType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        T)
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T))
 
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -918,9 +1063,21 @@ Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 153, characters 0-70
 ">HB</a></span></span></span></span></span></span></span></span>.<span id="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Uniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_Uniform__to__filter_isFiltered" class="id"><span id="uniform_structure_Uniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_Uniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_Uniform__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_33" class="id"><span id="matrix_PointedTopology.hb_instance_32.T" class="id"><a name="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="" title="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological :
 forall (m n : nat) (T : uniformType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        T)
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T))
 
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -933,9 +1090,21 @@ Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 153, characters 0-70
 ">instance</a></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Uniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_Uniform__to__filter_isFiltered" class="id"><span id="uniform_structure_Uniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_Uniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_Uniform__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_33" class="id"><span id="matrix_PointedTopology.hb_instance_32.T" class="id"><a name="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="" title="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological :
 forall (m n : nat) (T : uniformType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        T)
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T))
 
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -948,9 +1117,21 @@ Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 153, characters 0-70
 "> _</a></span></span></span></span></span></span></span></span> (<span id="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Uniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_Uniform__to__filter_isFiltered" class="id"><span id="uniform_structure_Uniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_Uniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_Uniform__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_33" class="id"><span id="matrix_PointedTopology.hb_instance_32.T" class="id"><a name="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="" title="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological :
 forall (m n : nat) (T : uniformType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        T)
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T))
 
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -963,9 +1144,21 @@ Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 153, characters 0-70
 ">T</a></span></span></span></span></span></span></span></span><span id="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Uniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_Uniform__to__filter_isFiltered" class="id"><span id="uniform_structure_Uniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_Uniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_Uniform__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_33" class="id"><span id="matrix_PointedTopology.hb_instance_32.T" class="id"><a name="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="" title="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological :
 forall (m n : nat) (T : uniformType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        T)
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T))
 
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -978,9 +1171,21 @@ Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 153, characters 0-70
 "> :</a></span></span></span></span></span></span></span></span><span id="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_Uniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_Uniform__to__filter_isFiltered" class="id"><span id="uniform_structure_Uniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_Uniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_Uniform__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_33" class="id"><span id="matrix_PointedTopology.hb_instance_32.T" class="id"><a name="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological" class="" title="uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological :
 forall (m n : nat) (T : uniformType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        T)
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T))
 
 uniform_structure_Uniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -1061,9 +1266,21 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 154, characters 
 "> puniformType</a></span></span></span></span></span></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.on">Pointed</a></span>.<span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.on">on</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">'M[</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#T:127">T</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">]_</a></span>(<span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_PointedTopology.m">m</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.matrix.html#9c0a062cce31174bb4a1f05fb9cee844"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.matrix_topology.html#matrix_PointedTopology.n">n</a></span>).<br/>
 <span id="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_PointedUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_PointedUniform__to__filter_isFiltered" class="id"><span id="uniform_structure_PointedUniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_PointedUniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_PointedUniform__to__choice_hasChoice" class="id"><span id="uniform_structure_PointedUniform__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_49" class="id"><span id="matrix_PointedTopology.hb_instance_48.T" class="id"><a name="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological" class="" title="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological :
 forall (m n : nat) (T : puniformType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        T)
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T))
 
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -1076,9 +1293,21 @@ Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 155, characters 0-78
 ">HB</a></span></span></span></span></span></span></span></span></span>.<span id="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_PointedUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_PointedUniform__to__filter_isFiltered" class="id"><span id="uniform_structure_PointedUniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_PointedUniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_PointedUniform__to__choice_hasChoice" class="id"><span id="uniform_structure_PointedUniform__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_49" class="id"><span id="matrix_PointedTopology.hb_instance_48.T" class="id"><a name="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological" class="" title="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological :
 forall (m n : nat) (T : puniformType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        T)
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T))
 
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -1091,9 +1320,21 @@ Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 155, characters 0-78
 ">instance</a></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_PointedUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_PointedUniform__to__filter_isFiltered" class="id"><span id="uniform_structure_PointedUniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_PointedUniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_PointedUniform__to__choice_hasChoice" class="id"><span id="uniform_structure_PointedUniform__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_49" class="id"><span id="matrix_PointedTopology.hb_instance_48.T" class="id"><a name="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological" class="" title="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological :
 forall (m n : nat) (T : puniformType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        T)
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T))
 
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -1106,9 +1347,21 @@ Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 155, characters 0-78
 "> _</a></span></span></span></span></span></span></span></span></span> (<span id="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_PointedUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_PointedUniform__to__filter_isFiltered" class="id"><span id="uniform_structure_PointedUniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_PointedUniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_PointedUniform__to__choice_hasChoice" class="id"><span id="uniform_structure_PointedUniform__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_49" class="id"><span id="matrix_PointedTopology.hb_instance_48.T" class="id"><a name="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological" class="" title="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological :
 forall (m n : nat) (T : puniformType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        T)
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T))
 
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -1121,9 +1374,21 @@ Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 155, characters 0-78
 ">T</a></span></span></span></span></span></span></span></span></span><span id="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_PointedUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_PointedUniform__to__filter_isFiltered" class="id"><span id="uniform_structure_PointedUniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_PointedUniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_PointedUniform__to__choice_hasChoice" class="id"><span id="uniform_structure_PointedUniform__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_49" class="id"><span id="matrix_PointedTopology.hb_instance_48.T" class="id"><a name="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological" class="" title="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological :
 forall (m n : nat) (T : puniformType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        T)
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T))
 
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -1136,9 +1401,21 @@ Declared in
 library mathcomp.analysis.topology_theory.matrix_topology, line 155, characters 0-78
 "> :</a></span></span></span></span></span></span></span></span></span><span id="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological" class="id"><span id="uniform_structure_PointedUniform__to__uniform_structure_Nbhs_isUniform_mixin" class="id"><span id="uniform_structure_PointedUniform__to__filter_isFiltered" class="id"><span id="uniform_structure_PointedUniform__to__filter_selfFiltered" class="id"><span id="uniform_structure_PointedUniform__to__eqtype_hasDecEq" class="id"><span id="uniform_structure_PointedUniform__to__choice_hasChoice" class="id"><span id="uniform_structure_PointedUniform__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_49" class="id"><span id="matrix_PointedTopology.hb_instance_48.T" class="id"><a name="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological" class="" title="uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological :
 forall (m n : nat) (T : puniformType),
-Nbhs_isTopological.axioms_ 'M_(m, n) (matrix.HB_unnamed_mixin_11 T m n)
-  (matrix.HB_unnamed_mixin_6 T m n) (filter.HB_unnamed_factory_30 m n T)
-  (filter.HB_unnamed_factory_27 m n T)
+topology_structure.Nbhs_isTopological.axioms_ 'M_(m, n)
+  (matrix.HB_unnamed_mixin_11
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__choice_Choice
+        T)
+     m n)
+  (matrix.HB_unnamed_mixin_6
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+        T)
+     m n)
+  (filter.HB_unnamed_factory_30 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T))
+  (filter.HB_unnamed_factory_27 m n
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T))
 
 uniform_structure_PointedUniform__to__topology_structure_Nbhs_isTopological is not universe polymorphic
 Arguments
@@ -1156,8 +1433,9 @@ library mathcomp.analysis.topology_theory.matrix_topology, line 155, characters 
 <span class="vernacular">Variables</span> (<span id="matrix_Complete.T" class="id"><a name="matrix_Complete.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#Complete.Exports.completeType">completeType</a></span>) (<span id="matrix_Complete.m" class="id"><a name="matrix_Complete.m" class="">m</a></span><span class="id"> </span><span id="matrix_Complete.n" class="id"><a name="matrix_Complete.n" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mx_complete" class="id"><a name="mx_complete" class="" title="mx_complete :
-forall (T : completeType) (m n : nat) (F : set_system 'M_(m, n)),
-ProperFilter F -> cauchy F -> cvg F
+forall (T : completeType) (m n : nat) (F : filter.set_system 'M_(m, n)),
+filter.ProperFilter F ->
+cauchy F -> filter.cvg_to (filter.nbhs F) (filter.nbhs (filter.lim F))
 
 mx_complete is not universe polymorphic
 Arguments mx_complete T (m n)%_nat_scope F _ _ t _

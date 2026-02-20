@@ -703,14 +703,19 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Theorem</span><span class="id"> </span><span id="dvg_sum_inv_prime_seq" class="id"><a name="dvg_sum_inv_prime_seq" class="" title="dvg_sum_inv_prime_seq :
 forall [R : realType],
-((\sum_(0 <= i < n) (((prime_seq i)%:R : R)^-1)%:E)%R @[n --> \oo] --> +oo%E)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap
+        (fun n : nat => (\sum_(0 <= i < n) (((prime_seq i)%:R : R)^-1)%:E)%R)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs +oo%E)
 
 dvg_sum_inv_prime_seq is not universe polymorphic
 Expanded type for implicit arguments
 dvg_sum_inv_prime_seq :
 forall [R : realType]
   [t : set constructive_ereal_extended__canonical__Algebra_BaseAddUMagma],
-nbhs +oo%E t ->
+filter.nbhs +oo%E t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i

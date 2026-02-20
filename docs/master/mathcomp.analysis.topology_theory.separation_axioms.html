@@ -291,7 +291,10 @@ properties like zero dimensional and perfect, and discrete.
 <span class="vernacular">Section</span><span class="id"> set_nbhs</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="set_nbhs.T" class="id"><a name="set_nbhs.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span> (<span id="set_nbhs.A" class="id"><a name="set_nbhs.A" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#T:1">T</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="set_nbhs" class="id"><a name="set_nbhs" class="" title="set_nbhs : forall {T : topologicalType}, set T -> set (set T)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="set_nbhs" class="id"><a name="set_nbhs" class="" title="set_nbhs :
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) ->
+set (set (topology_structure.Topological.sort T))
 
 set_nbhs is not universe polymorphic
 Arguments set_nbhs {T} A%_classical_set_scope _
@@ -320,9 +323,11 @@ Qed.</div></details>
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="set_nbhsP" class="id"><a name="set_nbhsP" class="" title="set_nbhsP :
-forall {T : topologicalType} (A B : set T),
+forall {T : topology_structure.Topological.type}
+  (A B : set (topology_structure.Topological.sort T)),
 set_nbhs A B <->
-(exists C : set T, [/\ open C, (A `<=` C)%classic & (C `<=` B)%classic])
+(exists C : set (topology_structure.Topological.sort T),
+   [/\ topology_structure.open C, (A `<=` C)%classic & (C `<=` B)%classic])
 
 set_nbhsP is not universe polymorphic
 Arguments set_nbhsP {T} (A B)%_classical_set_scope
@@ -352,7 +357,7 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> point_separation_axioms</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="point_separation_axioms.T" class="id"><a name="point_separation_axioms.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="kolmogorov_space" class="id"><a name="kolmogorov_space" class="" title="kolmogorov_space : topologicalType -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="kolmogorov_space" class="id"><a name="kolmogorov_space" class="" title="kolmogorov_space : topology_structure.Topological.type -> Prop
 
 kolmogorov_space is not universe polymorphic
 Arguments kolmogorov_space T
@@ -364,7 +369,7 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 102, character
 ">kolmogorov_space</a></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="x:11" class="id"><a name="x:11" class="">x</a></span><span class="id"> </span><span id="y:12" class="id"><a name="y:12" class="">y</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#x:11">x</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#y:12">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">exists</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="A:13" class="id"><a name="A:13" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#point_separation_axioms.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#A:13">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#x:11">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#y:12">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1">~`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#A:13">A</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#f031fe1957c4a4a8e217aa46af2b4e25"> \/</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#A:13">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#y:12">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#x:11">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1">~`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#A:13">A</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="accessible_space" class="id"><a name="accessible_space" class="" title="accessible_space : topologicalType -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="accessible_space" class="id"><a name="accessible_space" class="" title="accessible_space : topology_structure.Topological.type -> Prop
 
 accessible_space is not universe polymorphic
 Arguments accessible_space T
@@ -376,7 +381,7 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 105, character
 ">accessible_space</a></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="x:14" class="id"><a name="x:14" class="">x</a></span><span class="id"> </span><span id="y:15" class="id"><a name="y:15" class="">y</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#x:14">x</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#c385a484ee9d1b4e0615924561a9b75e"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#y:15">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">exists</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="A:16" class="id"><a name="A:16" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#point_separation_axioms.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">[/\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#A:16">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#x:14">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#A:16">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#y:15">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1">~`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#A:16">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">]</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="hausdorff_space" class="id"><a name="hausdorff_space" class="" title="hausdorff_space : topologicalType -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="hausdorff_space" class="id"><a name="hausdorff_space" class="" title="hausdorff_space : topology_structure.Topological.type -> Prop
 
 hausdorff_space is not universe polymorphic
 Arguments hausdorff_space T
@@ -388,14 +393,19 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 108, character
 ">hausdorff_space</a></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="p:17" class="id"><a name="p:17" class="">p</a></span><span class="id"> </span><span id="q:18" class="id"><a name="q:18" class="">q</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#point_separation_axioms.T">T</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cluster">cluster</a></span> (<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#p:17">p</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#q:18">q</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#p:17">p</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#q:18">q</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_closed" class="id"><a name="compact_closed" class="" title="compact_closed :
-forall {T : topologicalType} [A : set T],
-hausdorff_space T -> compact A -> closed A
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)],
+hausdorff_space T -> compact A -> topology_structure.closed A
 
 compact_closed is not universe polymorphic
 Expanded type for implicit arguments
 compact_closed :
-forall {T : topologicalType} [A : set T],
-hausdorff_space T -> compact A -> forall [t : T], closure A t -> A t
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)],
+hausdorff_space T ->
+compact A ->
+forall [t : topology_structure.Topological.sort T],
+topology_structure.closure A t -> A t
 
 Arguments compact_closed {T} [A]%_classical_set_scope _ _ [t] _
 compact_closed is opaque
@@ -413,21 +423,32 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 110, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_cluster_set1" class="id"><a name="compact_cluster_set1" class="" title="compact_cluster_set1 :
-forall {T : topologicalType} [x : T] [F : set_system T] [V : set T],
+forall {T : topology_structure.Topological.type}
+  [x : topology_structure.Topological.sort T]
+  [F : filter.set_system (topology_structure.Topological.sort T)]
+  [V : set (topology_structure.Topological.sort T)],
 hausdorff_space T ->
 compact V ->
-nbhs x V ->
-ProperFilter F -> F V -> cluster F = [set x]%classic -> (F --> x)%classic
+filter.nbhs x V ->
+filter.ProperFilter F ->
+F V ->
+cluster F = [set x]%classic -> filter.cvg_to (filter.nbhs F) (filter.nbhs x)
 
 compact_cluster_set1 is not universe polymorphic
 Expanded type for implicit arguments
 compact_cluster_set1 :
-forall {T : topologicalType} [x : T] [F : set_system T] [V : set T],
+forall {T : topology_structure.Topological.type}
+  [x : topology_structure.Topological.sort T]
+  [F : filter.set_system (topology_structure.Topological.sort T)]
+  [V : set (topology_structure.Topological.sort T)],
 hausdorff_space T ->
 compact V ->
-nbhs x V ->
-ProperFilter F ->
-F V -> cluster F = [set x]%classic -> forall [t : set T], nbhs x t -> F t
+filter.nbhs x V ->
+filter.ProperFilter F ->
+F V ->
+cluster F = [set x]%classic ->
+forall [t : set (topology_structure.Topological.sort T)],
+filter.nbhs x t -> F t
 
 Arguments compact_cluster_set1 {T} [x F] [V]%_classical_set_scope 
   _ _ _ _ _ _ [t] _
@@ -462,7 +483,8 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 117, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_precompact" class="id"><a name="compact_precompact" class="" title="compact_precompact :
-forall {T : topologicalType} [A : set T],
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)],
 hausdorff_space T -> compact A -> precompact A
 
 compact_precompact is not universe polymorphic
@@ -481,13 +503,16 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 140, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="open_hausdorff" class="id"><a name="open_hausdorff" class="" title="open_hausdorff :
-forall {T : topologicalType},
+forall {T : topology_structure.Topological.type},
 hausdorff_space T =
-(forall x y : T,
+(forall x y : topology_structure.Topological.sort T,
  x != y ->
- exists2 AB : set_predType T * set_predType T,
+ exists2
+   AB : set_predType (topology_structure.Topological.sort T) *
+        set_predType (topology_structure.Topological.sort T),
    x \in AB.1 /\ y \in AB.2 &
-   [/\ open AB.1, open AB.2 & (AB.1 `&` AB.2)%classic == set0])
+   [/\ topology_structure.open AB.1, topology_structure.open AB.2
+     & (AB.1 `&` AB.2)%classic == set0])
 
 open_hausdorff is not universe polymorphic
 Arguments open_hausdorff {T}
@@ -519,15 +544,21 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 146, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="hausdorff_accessible" class="id"><a name="hausdorff_accessible" class="" title="hausdorff_accessible :
-forall {T : topologicalType}, hausdorff_space T -> accessible_space T
+forall {T : topology_structure.Topological.type},
+hausdorff_space T -> accessible_space T
 
 hausdorff_accessible is not universe polymorphic
 Expanded type for implicit arguments
 hausdorff_accessible :
-forall {T : topologicalType},
+forall {T : topology_structure.Topological.type},
 hausdorff_space T ->
-forall [x y : T],
-x != y -> exists A : set T, [/\ open A, x \in A & y \in (~` A)%classic]
+forall
+  [x
+   y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+         T],
+x != y ->
+exists A : set (topology_structure.Topological.sort T),
+  [/\ topology_structure.open A, x \in A & y \in (~` A)%classic]
 
 Arguments hausdorff_accessible {T} _ [x y] _
 hausdorff_accessible is opaque
@@ -545,14 +576,18 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 166, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="accessible_closed_set1" class="id"><a name="accessible_closed_set1" class="" title="accessible_closed_set1 :
-forall {T : topologicalType},
-accessible_space T -> forall [x : T], closed [set x]
+forall {T : topology_structure.Topological.type},
+accessible_space T ->
+forall [x : topology_structure.Topological.sort T],
+topology_structure.closed [set x]
 
 accessible_closed_set1 is not universe polymorphic
 Expanded type for implicit arguments
 accessible_closed_set1 :
-forall {T : topologicalType},
-accessible_space T -> forall [x t : T], closure [set x] t -> t = x
+forall {T : topology_structure.Topological.type},
+accessible_space T ->
+forall [x t : topology_structure.Topological.sort T],
+topology_structure.closure [set x] t -> t = x
 
 Arguments accessible_closed_set1 {T} _ [x t] _
 accessible_closed_set1 is opaque
@@ -571,18 +606,23 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 173, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="accessible_kolmogorov" class="id"><a name="accessible_kolmogorov" class="" title="accessible_kolmogorov :
-forall {T : topologicalType}, accessible_space T -> kolmogorov_space T
+forall {T : topology_structure.Topological.type},
+accessible_space T -> kolmogorov_space T
 
 accessible_kolmogorov is not universe polymorphic
 Expanded type for implicit arguments
 accessible_kolmogorov :
-forall {T : topologicalType},
+forall {T : topology_structure.Topological.type},
 accessible_space T ->
-forall [x y : T],
+forall
+  [x
+   y : filter.Filtered.Exports.filter_Filtered__to__eqtype_Equality
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+            T)],
 x != y ->
-exists A : set T,
-  A \in nbhs x /\ y \in (~` A)%classic \/
-  A \in nbhs y /\ x \in (~` A)%classic
+exists A : set (topology_structure.Topological.sort T),
+  A \in filter.nbhs x /\ y \in (~` A)%classic \/
+  A \in filter.nbhs y /\ x \in (~` A)%classic
 
 Arguments accessible_kolmogorov {T} _ [x y] _
 accessible_kolmogorov is opaque
@@ -599,8 +639,10 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 181, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="accessible_finite_set_closed" class="id"><a name="accessible_finite_set_closed" class="" title="accessible_finite_set_closed :
-forall {T : topologicalType},
-accessible_space T <-> (forall A : set T, finite_set A -> closed A)
+forall {T : topology_structure.Topological.type},
+accessible_space T <->
+(forall A : set (topology_structure.Topological.sort T),
+ finite_set A -> topology_structure.closed A)
 
 accessible_finite_set_closed is not universe polymorphic
 Arguments accessible_finite_set_closed {T}
@@ -628,14 +670,18 @@ Qed.</div></details>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#kolmogorov_space">kolmogorov_space</a></span><span class="id"> :</span><span class="id"> clear</span><span class="id"> implicits</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="subspace_hausdorff" class="id"><a name="subspace_hausdorff" class="" title="subspace_hausdorff :
-forall {T : topologicalType} [A : set T],
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)],
 hausdorff_space T -> hausdorff_space (subspace A)
 
 subspace_hausdorff is not universe polymorphic
 Expanded type for implicit arguments
 subspace_hausdorff :
-forall {T : topologicalType} [A : set T],
-hausdorff_space T -> forall [p q : subspace A], cluster (nbhs p) q -> p = q
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)],
+hausdorff_space T ->
+forall [p q : topology_structure.Topological.sort (subspace A)],
+cluster (filter.nbhs p) q -> p = q
 
 Arguments subspace_hausdorff {T} [A]%_classical_set_scope _ [p q] _
 subspace_hausdorff is opaque
@@ -658,7 +704,9 @@ Qed.</div></details>
 discrete_hausdorff is not universe polymorphic
 Expanded type for implicit arguments
 discrete_hausdorff :
-forall {T : discreteTopologicalType} [p q : T], cluster (nbhs p) q -> p = q
+forall {T : discreteTopologicalType}
+  [p q : topology_structure.Topological.sort T],
+cluster (filter.nbhs p) q -> p = q
 
 Arguments discrete_hausdorff {T} [p q] _
 discrete_hausdorff is opaque
@@ -674,13 +722,14 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 211, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="order_hausdorff" class="id"><a name="order_hausdorff" class="" title="order_hausdorff :
-forall {d : Order.disp_t} {T : orderTopologicalType d}, hausdorff_space T
+forall {d : disp_t} {T : orderTopologicalType d}, hausdorff_space T
 
 order_hausdorff is not universe polymorphic
 Expanded type for implicit arguments
 order_hausdorff :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [p q : T],
-cluster (nbhs p) q -> p = q
+forall {d : disp_t} {T : orderTopologicalType d}
+  [p q : topology_structure.Topological.sort T],
+cluster (filter.nbhs p) q -> p = q
 
 Arguments order_hausdorff {d T} [p q] _
 order_hausdorff is opaque
@@ -755,7 +804,8 @@ Qed.</div></details>
 Rhausdorff is not universe polymorphic
 Expanded type for implicit arguments
 Rhausdorff :
-forall [R : realFieldType] [p q : R], cluster (nbhs p) q -> p = q
+forall [R : realFieldType] [p q : topology_structure.Topological.sort R],
+cluster (filter.nbhs p) q -> p = q
 
 Arguments Rhausdorff [R p q] _
 Rhausdorff is opaque
@@ -770,17 +820,23 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 259, character
 <span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#order_hausdorff">order_hausdorff</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="one_point_compactification_hausdorff" class="id"><a name="one_point_compactification_hausdorff" class="" title="one_point_compactification_hausdorff :
-forall {X : topologicalType},
-locally_compact [set: X] ->
-hausdorff_space X -> hausdorff_space (one_point_compactification X)
+forall {X : topology_structure.Topological.type},
+locally_compact [set: topology_structure.Topological.sort X] ->
+hausdorff_space X ->
+hausdorff_space
+  (one_point_compactification (topology_structure.Topological.sort X))
 
 one_point_compactification_hausdorff is not universe polymorphic
 Expanded type for implicit arguments
 one_point_compactification_hausdorff :
-forall {X : topologicalType},
-locally_compact [set: X] ->
+forall {X : topology_structure.Topological.type},
+locally_compact [set: topology_structure.Topological.sort X] ->
 hausdorff_space X ->
-forall [p q : one_point_compactification X], cluster (nbhs p) q -> p = q
+forall
+  [p
+   q : topology_structure.Topological.sort
+         (one_point_compactification (topology_structure.Topological.sort X))],
+cluster (filter.nbhs p) q -> p = q
 
 Arguments one_point_compactification_hausdorff {X} _ _ [p q] _
 one_point_compactification_hausdorff is opaque
@@ -817,7 +873,10 @@ Qed.</div></details>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> x</span><span class="id"> y</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#hausdorff_topologicalType.T">T</a></span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="close" class="id"><a name="close" class="" title="close : forall [T : topologicalType], T -> T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="close" class="id"><a name="close" class="" title="close :
+forall [T : topology_structure.Topological.type],
+topology_structure.Topological.sort T ->
+topology_structure.Topological.sort T -> Prop
 
 close is not universe polymorphic
 Arguments close [T] x y
@@ -829,7 +888,9 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 289, character
 ">close</a></span><span class="id"> </span><span id="x:52" class="id"><a name="x:52" class="">x</a></span><span class="id"> </span><span id="y:53" class="id"><a name="y:53" class="">y</a></span><span class="id"> :</span><span class="gallina-kwd"> Prop</span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="M:54" class="id"><a name="M:54" class="">M</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open_nbhs">open_nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#y:53">y</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#M:54">M</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#M:54">M</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#x:52">x</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closeEnbhs" class="id"><a name="closeEnbhs" class="" title="closeEnbhs :
-forall [T : topologicalType] (x : T), close (T:=T) x = cluster (nbhs x)
+forall [T : topology_structure.Topological.type]
+  (x : topology_structure.Topological.sort T),
+close (T:=T) x = cluster (filter.nbhs x)
 
 closeEnbhs is not universe polymorphic
 Arguments closeEnbhs [T] x
@@ -850,8 +911,10 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 291, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closeEonbhs" class="id"><a name="closeEonbhs" class="" title="closeEonbhs :
-forall [T : topologicalType] (x : T),
-close (T:=T) x = [set y | open_nbhs x `#` open_nbhs y]%classic
+forall [T : topology_structure.Topological.type]
+  (x : topology_structure.Topological.sort T),
+close (T:=T) x =
+[set y | topology_structure.open_nbhs x `#` topology_structure.open_nbhs y]%classic
 
 closeEonbhs is not universe polymorphic
 Arguments closeEonbhs [T] x
@@ -868,16 +931,21 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 300, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="close_sym" class="id"><a name="close_sym" class="" title="close_sym :
-forall [T : topologicalType] [x y : T], close (T:=T) x y -> close (T:=T) y x
+forall [T : topology_structure.Topological.type]
+  [x y : topology_structure.Topological.sort T],
+close (T:=T) x y -> close (T:=T) y x
 
 close_sym is not universe polymorphic
 Expanded type for implicit arguments
 close_sym :
-forall [T : topologicalType] [x y : T],
+forall [T : topology_structure.Topological.type]
+  [x y : topology_structure.Topological.sort T],
 close (T:=T) x y ->
-forall [M : set T],
-open_nbhs x M ->
-forall [B : set T], nbhs y B -> exists a : T, (M `&` B)%classic a
+forall [M : set (topology_structure.Topological.sort T)],
+topology_structure.open_nbhs x M ->
+forall [B : set (topology_structure.Topological.sort T)],
+filter.nbhs y B ->
+exists a : topology_structure.Topological.sort T, (M `&` B)%classic a
 
 Arguments close_sym [T x y] _ [M] _ [B] _
 close_sym is opaque
@@ -892,21 +960,27 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 305, character
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> !</span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#closeEnbhs">closeEnbhs</a></span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html#cluster">cluster</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#meetsC">meetsC</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_close" class="id"><a name="cvg_close" class="" title="cvg_close :
-forall [T : topologicalType] {F : set_system T},
-ProperFilter F ->
-forall [x y : T], (F --> x)%classic -> (F --> y)%classic -> close (T:=T) x y
+forall [T : topology_structure.Topological.type]
+  {F : filter.set_system (topology_structure.Topological.sort T)},
+filter.ProperFilter F ->
+forall [x y : topology_structure.Topological.sort T],
+filter.cvg_to (filter.nbhs F) (filter.nbhs x) ->
+filter.cvg_to (filter.nbhs F) (filter.nbhs y) -> close (T:=T) x y
 
 cvg_close is not universe polymorphic
 Expanded type for implicit arguments
 cvg_close :
-forall [T : topologicalType] {F : set_system T},
-ProperFilter F ->
-forall [x y : T],
-(F --> x)%classic ->
-(F --> y)%classic ->
-forall [M : set T],
-open_nbhs y M ->
-forall [B : set T], nbhs x B -> exists a : T, (M `&` B)%classic a
+forall [T : topology_structure.Topological.type]
+  {F : filter.set_system (topology_structure.Topological.sort T)},
+filter.ProperFilter F ->
+forall [x y : topology_structure.Topological.sort T],
+filter.cvg_to (filter.nbhs F) (filter.nbhs x) ->
+filter.cvg_to (filter.nbhs F) (filter.nbhs y) ->
+forall [M : set (topology_structure.Topological.sort T)],
+topology_structure.open_nbhs y M ->
+forall [B : set (topology_structure.Topological.sort T)],
+filter.nbhs x B ->
+exists a : topology_structure.Topological.sort T, (M `&` B)%classic a
 
 Arguments cvg_close [T] {F FF} [x y] _ _ [M] _ [B] _
 cvg_close is opaque
@@ -921,14 +995,21 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 308, character
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.classical_sets.html#sub_meets">sub_meets</a></span><span class="id"> sx</span><span class="id"> /sx;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#closeEnbhs">closeEnbhs</a></span><span class="id">;</span><span class="id"> apply;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.filter.html#proper_meetsxx">proper_meetsxx</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="close_refl" class="id"><a name="close_refl" class="" title="close_refl : forall [T : topologicalType] [x : T], close (T:=T) x x
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="close_refl" class="id"><a name="close_refl" class="" title="close_refl :
+forall [T : topology_structure.Topological.type]
+  [x : topology_structure.Topological.sort T],
+close (T:=T) x x
 
 close_refl is not universe polymorphic
 Expanded type for implicit arguments
 close_refl :
-forall [T : topologicalType] [x : T] [M : set T],
-open_nbhs x M ->
-forall [B : set T], nbhs x B -> exists a : T, (M `&` B)%classic a
+forall [T : topology_structure.Topological.type]
+  [x : topology_structure.Topological.sort T]
+  [M : set (topology_structure.Topological.sort T)],
+topology_structure.open_nbhs x M ->
+forall [B : set (topology_structure.Topological.sort T)],
+filter.nbhs x B ->
+exists a : topology_structure.Topological.sort T, (M `&` B)%classic a
 
 Arguments close_refl [T x M] _ [B] _
 close_refl is opaque
@@ -944,16 +1025,21 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 313, character
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> close_refl</span><span class="id"> :</span><span class="id"> core</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgx_close" class="id"><a name="cvgx_close" class="" title="cvgx_close :
-forall [T : topologicalType] [x y : T], (x --> y)%classic -> close (T:=T) x y
+forall [T : topology_structure.Topological.type]
+  [x y : topology_structure.Topological.sort T],
+filter.cvg_to (filter.nbhs x) (filter.nbhs y) -> close (T:=T) x y
 
 cvgx_close is not universe polymorphic
 Expanded type for implicit arguments
 cvgx_close :
-forall [T : topologicalType] [x y : T],
-(x --> y)%classic ->
-forall [M : set T],
-open_nbhs y M ->
-forall [B : set T], nbhs x B -> exists a : T, (M `&` B)%classic a
+forall [T : topology_structure.Topological.type]
+  [x y : topology_structure.Topological.sort T],
+filter.cvg_to (filter.nbhs x) (filter.nbhs y) ->
+forall [M : set (topology_structure.Topological.sort T)],
+topology_structure.open_nbhs y M ->
+forall [B : set (topology_structure.Topological.sort T)],
+filter.nbhs x B ->
+exists a : topology_structure.Topological.sort T, (M `&` B)%classic a
 
 Arguments cvgx_close [T x y] _ [M] _ [B] _
 cvgx_close is opaque
@@ -968,25 +1054,32 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 317, character
 <span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#cvg_close">cvg_close</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgi_close" class="id"><a name="cvgi_close" class="" title="cvgi_close :
-forall [T : topologicalType] [T' : Type] {F : set_system T'},
-ProperFilter F ->
-forall [f : T' -> set T] [l l' : T],
-{near F, is_fun f} ->
-(f x `@[x --> F] --> l)%classic ->
-(f x `@[x --> F] --> l')%classic -> close (T:=T) l l'
+forall [T : topology_structure.Topological.type] [T' : Type]
+  {F : filter.set_system T'},
+filter.ProperFilter F ->
+forall [f : T' -> set (topology_structure.Topological.sort T)]
+  [l l' : topology_structure.Topological.sort T],
+filter.prop_near1 F (P:=is_subset1 \o f) (inPhantom (is_fun f)) ->
+filter.cvg_to (filter.nbhs (filter.fmapi f (filter.nbhs F))) (filter.nbhs l) ->
+filter.cvg_to (filter.nbhs (filter.fmapi f (filter.nbhs F))) (filter.nbhs l') ->
+close (T:=T) l l'
 
 cvgi_close is not universe polymorphic
 Expanded type for implicit arguments
 cvgi_close :
-forall [T : topologicalType] [T' : Type] {F : set_system T'},
-ProperFilter F ->
-forall [f : T' -> set T] [l l' : T],
-{near F, is_fun f} ->
-(f x `@[x --> F] --> l)%classic ->
-(f x `@[x --> F] --> l')%classic ->
-forall [M : set T],
-open_nbhs l' M ->
-forall [B : set T], nbhs l B -> exists a : T, (M `&` B)%classic a
+forall [T : topology_structure.Topological.type] [T' : Type]
+  {F : filter.set_system T'},
+filter.ProperFilter F ->
+forall [f : T' -> set (topology_structure.Topological.sort T)]
+  [l l' : topology_structure.Topological.sort T],
+filter.prop_near1 F (P:=is_subset1 \o f) (inPhantom (is_fun f)) ->
+filter.cvg_to (filter.nbhs (filter.fmapi f (filter.nbhs F))) (filter.nbhs l) ->
+filter.cvg_to (filter.nbhs (filter.fmapi f (filter.nbhs F))) (filter.nbhs l') ->
+forall [M : set (topology_structure.Topological.sort T)],
+topology_structure.open_nbhs l' M ->
+forall [B : set (topology_structure.Topological.sort T)],
+filter.nbhs l B ->
+exists a : topology_structure.Topological.sort T, (M `&` B)%classic a
 
 Arguments cvgi_close [T] [T']%_type_scope {F FF} [f]%_function_scope 
   [l l'] _ _ _ [M] _ [B] _
@@ -1011,8 +1104,10 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 320, character
 <span class="vernacular">Hypothesis</span><span class="id"> </span><span id="hausdorff_topologicalType.sep" class="id"><a name="hausdorff_topologicalType.sep" class="">sep</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#hausdorff_space">hausdorff_space</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#hausdorff_topologicalType.T">T</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closeE" class="id"><a name="closeE" class="" title="closeE :
-forall [T : topologicalType],
-hausdorff_space T -> forall x y : T, close (T:=T) x y = (x = y)
+forall [T : topology_structure.Topological.type],
+hausdorff_space T ->
+forall x y : topology_structure.Topological.sort T,
+close (T:=T) x y = (x = y)
 
 closeE is not universe polymorphic
 Arguments closeE [T] sep x y
@@ -1030,8 +1125,10 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 333, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="close_eq" class="id"><a name="close_eq" class="" title="close_eq :
-forall [T : topologicalType],
-hausdorff_space T -> forall [x y : T], close (T:=T) x y -> x = y
+forall [T : topology_structure.Topological.type],
+hausdorff_space T ->
+forall [x y : topology_structure.Topological.sort T],
+close (T:=T) x y -> x = y
 
 close_eq is not universe polymorphic
 Arguments close_eq [T] sep [x y] _
@@ -1047,20 +1144,22 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 339, character
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#closeE">closeE</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_unique" class="id"><a name="cvg_unique" class="" title="cvg_unique :
-forall [T : topologicalType],
+forall [T : topology_structure.Topological.type],
 hausdorff_space T ->
-forall {F : set_system T},
-ProperFilter F -> is_subset1 [set x | (F --> x)%classic]
+forall {F : filter.set_system (topology_structure.Topological.sort T)},
+filter.ProperFilter F ->
+is_subset1 [set x | filter.cvg_to (filter.nbhs F) (filter.nbhs x)]
 
 cvg_unique is not universe polymorphic
 Expanded type for implicit arguments
 cvg_unique :
-forall [T : topologicalType],
+forall [T : topology_structure.Topological.type],
 hausdorff_space T ->
-forall {F : set_system T},
-ProperFilter F ->
-forall [x y : T],
-[set x0 | F --> x0]%classic x -> [set x0 | F --> x0]%classic y -> x = y
+forall {F : filter.set_system (topology_structure.Topological.sort T)},
+filter.ProperFilter F ->
+forall [x y : topology_structure.Topological.sort T],
+[set x0 | filter.cvg_to (filter.nbhs F) (filter.nbhs x0)]%classic x ->
+[set x0 | filter.cvg_to (filter.nbhs F) (filter.nbhs x0)]%classic y -> x = y
 
 Arguments cvg_unique [T] sep {F FF} [x y] _ _
 cvg_unique is opaque
@@ -1075,8 +1174,10 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 342, character
 <span class="id"> move=&gt;</span><span class="id"> Fx</span><span class="id"> Fy;</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#closeE">closeE</a></span><span class="id"> //;</span><span class="id"> exact:</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#cvg_close">cvg_close</a></span><span class="id"> F</span>). Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_eq" class="id"><a name="cvg_eq" class="" title="cvg_eq :
-forall [T : topologicalType],
-hausdorff_space T -> forall [x y : T], (x --> y)%classic -> x = y
+forall [T : topology_structure.Topological.type],
+hausdorff_space T ->
+forall [x y : topology_structure.Topological.sort T],
+filter.cvg_to (filter.nbhs x) (filter.nbhs y) -> x = y
 
 cvg_eq is not universe polymorphic
 Arguments cvg_eq [T] sep [x y] _
@@ -1092,25 +1193,33 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 345, character
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#closeE">closeE</a></span><span class="id"> //;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#cvg_close">cvg_close</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgi_unique" class="id"><a name="cvgi_unique" class="" title="cvgi_unique :
-forall [T : topologicalType],
+forall [T : topology_structure.Topological.type],
 hausdorff_space T ->
-forall {U : Type} {F : set_system U},
-ProperFilter F ->
-forall [f : U -> set T],
-{near F, is_fun f} -> is_subset1 [set x | (f x `@[x --> F] --> x)%classic]
+forall {U : Type} {F : filter.set_system U},
+filter.ProperFilter F ->
+forall [f : U -> set (topology_structure.Topological.sort T)],
+filter.prop_near1 F (P:=is_subset1 \o f) (inPhantom (is_fun f)) ->
+is_subset1
+  [set x | filter.cvg_to (filter.nbhs (filter.fmapi f (filter.nbhs F)))
+             (filter.nbhs x)]
 
 cvgi_unique is not universe polymorphic
 Expanded type for implicit arguments
 cvgi_unique :
-forall [T : topologicalType],
+forall [T : topology_structure.Topological.type],
 hausdorff_space T ->
-forall {U : Type} {F : set_system U},
-ProperFilter F ->
-forall [f : U -> set T],
-{near F, is_fun f} ->
-forall [x y : T],
-[set x0 | f x `@[x --> F] --> x0]%classic x ->
-[set x0 | f x `@[x --> F] --> x0]%classic y -> x = y
+forall {U : Type} {F : filter.set_system U},
+filter.ProperFilter F ->
+forall [f : U -> set (topology_structure.Topological.sort T)],
+filter.prop_near1 F (P:=is_subset1 \o f) (inPhantom (is_fun f)) ->
+forall [x y : topology_structure.Topological.sort T],
+[set x0 | filter.cvg_to (filter.nbhs (filter.fmapi f (filter.nbhs F)))
+            (filter.nbhs x0)]%classic
+  x ->
+[set x0 | filter.cvg_to (filter.nbhs (filter.fmapi f (filter.nbhs F)))
+            (filter.nbhs x0)]%classic
+  y ->
+x = y
 
 Arguments cvgi_unique [T] sep {U}%_type_scope {F FF} 
   [f]%_function_scope _ [x y] _ _
@@ -1133,14 +1242,15 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 348, character
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> x</span><span class="id"> y</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#hausdorff_ptopologicalType.T">T</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="close_cvg" class="id"><a name="close_cvg" class="" title="close_cvg :
-forall {T : ptopologicalType} (F1 F2 : set_system T),
-ProperFilter F2 ->
-(F1 --> F2)%classic ->
-(F2 --> F1)%classic ->
+forall {T : topology_structure.PointedTopological.type}
+  (F1 F2 : filter.set_system (topology_structure.PointedTopological.sort T)),
+filter.ProperFilter F2 ->
+filter.cvg_to (filter.nbhs F1) (filter.nbhs F2) ->
+filter.cvg_to (filter.nbhs F2) (filter.nbhs F1) ->
 close
-  (T:=join_topology_structure_PointedTopological_between_classical_sets_Pointed_and_topology_structure_Topological
+  (T:=topology_structure.PointedTopological.Exports.join_topology_structure_PointedTopological_between_classical_sets_Pointed_and_topology_structure_Topological
         T)
-  (lim F1) (lim F2)
+  (filter.lim F1) (filter.lim F2)
 
 close_cvg is not universe polymorphic
 Arguments close_cvg {T} F1 F2 {FF2} _ _ M _ B _
@@ -1164,8 +1274,12 @@ Qed.</div></details>
 <span class="vernacular">Hypothesis</span><span class="id"> </span><span id="hausdorff_ptopologicalType.sep" class="id"><a name="hausdorff_ptopologicalType.sep" class="">sep</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#hausdorff_space">hausdorff_space</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#hausdorff_ptopologicalType.T">T</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_id" class="id"><a name="lim_id" class="" title="lim_id :
-forall [T : ptopologicalType],
-hausdorff_space T -> forall x : T, lim (nbhs x) = x
+forall [T : topology_structure.PointedTopological.type],
+hausdorff_space
+  (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+     T) ->
+forall x : topology_structure.PointedTopological.sort T,
+filter.lim (filter.nbhs x) = x
 
 lim_id is not universe polymorphic
 Arguments lim_id [T] sep x
@@ -1181,12 +1295,16 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 370, character
 <span class="gallina-kwd"> by</span><span class="id"> apply/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#esym">esym</a></span><span class="id">/</span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#cvg_eq">cvg_eq</a></span><span class="id">/</span><span class="id"><a href="mathcomp.classical.filter.html#cvg_ex">cvg_ex</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="gallina-kwd"> exists</span><span class="id"> x</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_lim" class="id"><a name="cvg_lim" class="" title="cvg_lim :
-forall [T : ptopologicalType],
-hausdorff_space T ->
-forall {U : Type} {F : set_system U},
-ProperFilter F ->
-forall [f : U -> T] [l : T],
-(f x @[x --> F] --> l)%classic -> lim (f x @[x --> F])%classic = l
+forall [T : topology_structure.PointedTopological.type],
+hausdorff_space
+  (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+     T) ->
+forall {U : Type} {F : filter.set_system U},
+filter.ProperFilter F ->
+forall [f : U -> topology_structure.PointedTopological.sort T]
+  [l : topology_structure.PointedTopological.sort T],
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs l) ->
+filter.lim (filter.fmap f (filter.nbhs F)) = l
 
 cvg_lim is not universe polymorphic
 Arguments cvg_lim [T] sep {U}%_type_scope {F FF} [f]%_function_scope [l] _
@@ -1203,12 +1321,17 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 373, character
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#a686f16c7fee28a2e0daca8726c6780b">[dup]</a></span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.filter.html#cvgP">cvgP</a></span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#cvg_unique">cvg_unique</a></span><span class="id">;</span><span class="id"> apply</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_near_cst" class="id"><a name="lim_near_cst" class="" title="lim_near_cst :
-forall [T : ptopologicalType],
-hausdorff_space T ->
-forall {U : Type} {F : set_system U},
-ProperFilter F ->
-forall [l : T] [f : U -> T],
-(\near F, f F = l) -> lim (f x @[x --> F])%classic = l
+forall [T : topology_structure.PointedTopological.type],
+hausdorff_space
+  (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+     T) ->
+forall {U : Type} {F : filter.set_system U},
+filter.ProperFilter F ->
+forall [l : topology_structure.PointedTopological.sort T]
+  [f : U -> topology_structure.PointedTopological.sort T],
+filter.prop_near1 F (P:=fun x : U => f x = l)
+  (inPhantom (forall x : U, f x = l)) ->
+filter.lim (filter.fmap f (filter.nbhs F)) = l
 
 lim_near_cst is not universe polymorphic
 Arguments lim_near_cst [T] sep {U}%_type_scope {F FF} 
@@ -1226,10 +1349,14 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 377, character
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#cvg_near_cst">cvg_near_cst</a></span><span class="id">/</span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#cvg_lim">cvg_lim</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_cst" class="id"><a name="lim_cst" class="" title="lim_cst :
-forall [T : ptopologicalType],
-hausdorff_space T ->
-forall {U : Type} {F : set_system U},
-ProperFilter F -> forall k : T, lim (k @[_ --> F])%classic = k
+forall [T : topology_structure.PointedTopological.type],
+hausdorff_space
+  (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+     T) ->
+forall {U : Type} {F : filter.set_system U},
+filter.ProperFilter F ->
+forall k : topology_structure.PointedTopological.sort T,
+filter.lim (filter.fmap (fun=> k) (filter.nbhs F)) = k
 
 lim_cst is not universe polymorphic
 Arguments lim_cst [T] sep {U}%_type_scope {F FF} k
@@ -1246,13 +1373,17 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 381, character
 <span class="gallina-kwd"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#cvg_lim">cvg_lim</a></span><span class="id">;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#cvg_cst">cvg_cst</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgi_lim" class="id"><a name="cvgi_lim" class="" title="cvgi_lim :
-forall [T : ptopologicalType],
-hausdorff_space T ->
-forall {U : Type} {F : set_system U},
-ProperFilter F ->
-forall [f : U -> T -> Prop] [l : T],
+forall [T : topology_structure.PointedTopological.type],
+hausdorff_space
+  (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+     T) ->
+forall {U : Type} {F : filter.set_system U},
+filter.ProperFilter F ->
+forall [f : U -> topology_structure.PointedTopological.sort T -> Prop]
+  [l : topology_structure.PointedTopological.sort T],
 F (fun x : U => is_subset1 (f x)) ->
-(f x `@[x --> F] --> l)%classic -> lim (f x `@[x --> F])%classic = l
+filter.cvg_to (filter.nbhs (filter.fmapi f (filter.nbhs F))) (filter.nbhs l) ->
+filter.lim (filter.fmapi f (filter.nbhs F)) = l
 
 cvgi_lim is not universe polymorphic
 Arguments cvgi_lim [T] sep {U}%_type_scope {F FF} [f]%_function_scope [l] _ _
@@ -1315,9 +1446,11 @@ close_trans :
 forall {U : uniformType} [y x z : U],
 close (T:=U) x y ->
 close (T:=U) y z ->
-forall [M : set U],
-open_nbhs z M ->
-forall [B : set U], nbhs x B -> exists a : U, (M `&` B)%classic a
+forall [M : set (topology_structure.Topological.sort U)],
+topology_structure.open_nbhs z M ->
+forall [B : set (topology_structure.Topological.sort U)],
+filter.nbhs x B ->
+exists a : topology_structure.Topological.sort U, (M `&` B)%classic a
 
 Arguments close_trans {U} [y x z] _ _ [M] _ [B] _
 close_trans is opaque
@@ -1334,7 +1467,8 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 414, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="close_cvgxx" class="id"><a name="close_cvgxx" class="" title="close_cvgxx :
-forall {U : uniformType} [x y : U], close (T:=U) x y -> (x --> y)%classic
+forall {U : uniformType} [x y : U],
+close (T:=U) x y -> filter.cvg_to (filter.nbhs x) (filter.nbhs y)
 
 close_cvgxx is not universe polymorphic
 Expanded type for implicit arguments
@@ -1342,7 +1476,7 @@ close_cvgxx :
 forall {U : uniformType} [x y : U],
 close (T:=U) x y ->
 forall [t : set U],
-nbhs y t ->
+filter.nbhs y t ->
 (let (nbhs) :=
    Uniform.filter_isFiltered_mixin
      (let (sort, class) as record return (Uniform.axioms_ record) := U in
@@ -1366,14 +1500,14 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 420, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_closeP" class="id"><a name="cvg_closeP" class="" title="cvg_closeP :
-forall {U : puniformType} [F : set_system U] (l : U),
-ProperFilter F ->
-(F --> l)%classic <->
-[cvg F in U]%classic /\
+forall {U : puniformType} [F : filter.set_system U] (l : U),
+filter.ProperFilter F ->
+filter.cvg_to (filter.nbhs F) (filter.nbhs l) <->
+filter.cvg_to (filter.nbhs F) (filter.nbhs (filter.lim_in U (filter.nbhs F))) /\
 close
-  (T:=join_topology_structure_PointedTopological_between_classical_sets_Pointed_and_topology_structure_Topological
+  (T:=topology_structure.PointedTopological.Exports.join_topology_structure_PointedTopological_between_classical_sets_Pointed_and_topology_structure_Topological
         U)
-  (lim F) l
+  (filter.lim F) l
 
 cvg_closeP is not universe polymorphic
 Arguments cvg_closeP {U} [F] l _
@@ -1423,7 +1557,7 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> set_separations</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="set_separations.T" class="id"><a name="set_separations.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="normal_space" class="id"><a name="normal_space" class="" title="normal_space : topologicalType -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="normal_space" class="id"><a name="normal_space" class="" title="normal_space : topology_structure.Topological.type -> Prop
 
 normal_space is not universe polymorphic
 Arguments normal_space T
@@ -1436,7 +1570,7 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 454, character
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="A:138" class="id"><a name="A:138" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#set_separations.T">T</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#A:138">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#filter_from">filter_from</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#set_nbhs">set_nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#A:138">A</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"><a href="mathcomp.classical.filter.html#36a632122426b13e019327a9d6576f70"> `=&gt;`</a></span><span class="id"><a href="mathcomp.classical.filter.html#36a632122426b13e019327a9d6576f70"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#set_nbhs">set_nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#A:138">A</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="regular_space" class="id"><a name="regular_space" class="" title="regular_space : topologicalType -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="regular_space" class="id"><a name="regular_space" class="" title="regular_space : topology_structure.Topological.type -> Prop
 
 regular_space is not universe polymorphic
 Arguments regular_space T
@@ -1449,18 +1583,24 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 458, character
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="a:139" class="id"><a name="a:139" class="">a</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#set_separations.T">T</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#filter_from">filter_from</a></span> (<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#a:139">a</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#a:139">a</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_regular" class="id"><a name="compact_regular" class="" title="compact_regular :
-forall {T : topologicalType} [x : T] [V : set T],
-hausdorff_space T -> compact V -> nbhs x V -> {for x, regular_space T}
+forall {T : topology_structure.Topological.type}
+  [x : topology_structure.Topological.sort T]
+  [V : set (topology_structure.Topological.sort T)],
+hausdorff_space T -> compact V -> filter.nbhs x V -> {for x, regular_space T}
 
 compact_regular is not universe polymorphic
 Expanded type for implicit arguments
 compact_regular :
-forall {T : topologicalType} [x : T] [V : set T],
+forall {T : topology_structure.Topological.type}
+  [x : topology_structure.Topological.sort T]
+  [V : set (topology_structure.Topological.sort T)],
 hausdorff_space T ->
 compact V ->
-nbhs x V ->
-forall [t : set T],
-nbhs x t -> exists2 i : set T, nbhs x i & (closure i `<=` t)%classic
+filter.nbhs x V ->
+forall [t : set (topology_structure.Topological.sort T)],
+filter.nbhs x t ->
+exists2 i : set (topology_structure.Topological.sort T),
+  filter.nbhs x i & (topology_structure.closure i `<=` t)%classic
 
 Arguments compact_regular {T} [x] [V]%_classical_set_scope _ _ _ [t] _
 compact_regular is opaque
@@ -1493,22 +1633,27 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 461, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_normal_local" class="id"><a name="compact_normal_local" class="" title="compact_normal_local :
-forall {T : topologicalType} [K : set T],
+forall {T : topology_structure.Topological.type}
+  [K : set (topology_structure.Topological.sort T)],
 hausdorff_space T ->
 compact K ->
-forall [A : set T], (A `<=` K°)%classic -> {for A, normal_space T}
+forall [A : set (topology_structure.Topological.sort T)],
+(A `<=` topology_structure.interior K)%classic -> {for A, normal_space T}
 
 compact_normal_local is not universe polymorphic
 Expanded type for implicit arguments
 compact_normal_local :
-forall {T : topologicalType} [K : set T],
+forall {T : topology_structure.Topological.type}
+  [K : set (topology_structure.Topological.sort T)],
 hausdorff_space T ->
 compact K ->
-forall [A : set T],
-(A `<=` K°)%classic ->
-closed A ->
-forall [t : set T],
-set_nbhs A t -> exists2 i : set T, set_nbhs A i & (closure i `<=` t)%classic
+forall [A : set (topology_structure.Topological.sort T)],
+(A `<=` topology_structure.interior K)%classic ->
+topology_structure.closed A ->
+forall [t : set (topology_structure.Topological.sort T)],
+set_nbhs A t ->
+exists2 i : set (topology_structure.Topological.sort T),
+  set_nbhs A i & (topology_structure.closure i `<=` t)%classic
 
 Arguments compact_normal_local {T} [K]%_classical_set_scope 
   _ _ [A]%_classical_set_scope _ _ [t] _
@@ -1562,19 +1707,22 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 483, character
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_normal" class="id"><a name="compact_normal" class="" title="compact_normal :
-forall {T : topologicalType},
-hausdorff_space T -> compact [set: T] -> normal_space T
+forall {T : topology_structure.Topological.type},
+hausdorff_space T ->
+compact [set: topology_structure.Topological.sort T] -> normal_space T
 
 compact_normal is not universe polymorphic
 Expanded type for implicit arguments
 compact_normal :
-forall {T : topologicalType},
+forall {T : topology_structure.Topological.type},
 hausdorff_space T ->
-compact [set: T] ->
-forall [A : set T],
-closed A ->
-forall [t : set T],
-set_nbhs A t -> exists2 i : set T, set_nbhs A i & (closure i `<=` t)%classic
+compact [set: topology_structure.Topological.sort T] ->
+forall [A : set (topology_structure.Topological.sort T)],
+topology_structure.closed A ->
+forall [t : set (topology_structure.Topological.sort T)],
+set_nbhs A t ->
+exists2 i : set (topology_structure.Topological.sort T),
+  set_nbhs A i & (topology_structure.closure i `<=` t)%classic
 
 Arguments compact_normal {T} _ _ [A] _ [t] _
 compact_normal is opaque
@@ -1601,8 +1749,11 @@ Qed.</div></details>
 uniform_regular is not universe polymorphic
 Expanded type for implicit arguments
 uniform_regular :
-forall {T : uniformType} [a : T] [t : set T],
-nbhs a t -> exists2 i : set T, nbhs a i & (closure i `<=` t)%classic
+forall {T : uniformType} [a : topology_structure.Topological.sort T]
+  [t : set (topology_structure.Topological.sort T)],
+filter.nbhs a t ->
+exists2 i : set (topology_structure.Topological.sort T),
+  filter.nbhs a i & (topology_structure.closure i `<=` t)%classic
 
 Arguments uniform_regular {T} [a t] _
 uniform_regular is opaque
@@ -1632,7 +1783,9 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> totally_disconnected</span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> T</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="totally_disconnected" class="id"><a name="totally_disconnected" class="" title="totally_disconnected : forall {T : topologicalType}, set T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="totally_disconnected" class="id"><a name="totally_disconnected" class="" title="totally_disconnected :
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> Prop
 
 totally_disconnected is not universe polymorphic
 Arguments totally_disconnected {T} A%_classical_set_scope
@@ -1644,7 +1797,7 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 557, character
 ">totally_disconnected</a></span><span class="id"> {</span><span id="T:149" class="id"><a name="T:149" class="">T</a></span><span class="id">}</span> (<span id="A:150" class="id"><a name="A:150" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#T:149">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:151" class="id"><a name="x:151" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#A:150">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#x:151">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.connected.html#connected_component">connected_component</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#A:150">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#x:151">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#x:151">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="zero_dimensional" class="id"><a name="zero_dimensional" class="" title="zero_dimensional : topologicalType -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="zero_dimensional" class="id"><a name="zero_dimensional" class="" title="zero_dimensional : topology_structure.Topological.type -> Prop
 
 zero_dimensional is not universe polymorphic
 Arguments zero_dimensional T
@@ -1662,8 +1815,13 @@ forall {T : discreteTopologicalType}, zero_dimensional T
 discrete_zero_dimension is not universe polymorphic
 Expanded type for implicit arguments
 discrete_zero_dimension :
-forall {T : discreteTopologicalType} [x y : T],
-x != y -> exists U : set T, [/\ clopen U, U x & ~ U y]
+forall {T : discreteTopologicalType}
+  [x
+   y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+         T],
+x != y ->
+exists U : set (topology_structure.Topological.sort T),
+  [/\ topology_structure.clopen U, U x & ~ U y]
 
 Arguments discrete_zero_dimension {T} [x y] _
 discrete_zero_dimension is opaque
@@ -1680,16 +1838,19 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 563, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="zero_dimension_totally_disconnected" class="id"><a name="zero_dimension_totally_disconnected" class="" title="zero_dimension_totally_disconnected :
-forall {T : topologicalType},
-zero_dimensional T -> totally_disconnected [set: T]
+forall {T : topology_structure.Topological.type},
+zero_dimensional T ->
+totally_disconnected [set: topology_structure.Topological.sort T]
 
 zero_dimension_totally_disconnected is not universe polymorphic
 Expanded type for implicit arguments
 zero_dimension_totally_disconnected :
-forall {T : topologicalType},
+forall {T : topology_structure.Topological.type},
 zero_dimensional T ->
-forall [x : T],
-[set: T]%classic x -> connected_component [set: T] x = [set x]%classic
+forall [x : topology_structure.Topological.sort T],
+[set: topology_structure.Topological.sort T]%classic x ->
+connected_component [set: topology_structure.Topological.sort T] x =
+[set x]%classic
 
 Arguments zero_dimension_totally_disconnected {T} _ [x] _
 zero_dimension_totally_disconnected is opaque
@@ -1710,22 +1871,29 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 569, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="zero_dimensional_cvg" class="id"><a name="zero_dimensional_cvg" class="" title="zero_dimensional_cvg :
-forall {T : topologicalType} [x : T],
+forall {T : topology_structure.Topological.type}
+  [x : topology_structure.Topological.sort T],
 hausdorff_space T ->
 zero_dimensional T ->
-compact [set: T] -> (filter_from [set D | D x /\ clopen D] id --> x)%classic
+compact [set: topology_structure.Topological.sort T] ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.filter_from [set D | D x /\ topology_structure.clopen D] id))
+  (filter.nbhs x)
 
 zero_dimensional_cvg is not universe polymorphic
 Expanded type for implicit arguments
 zero_dimensional_cvg :
-forall {T : topologicalType} [x : T],
+forall {T : topology_structure.Topological.type}
+  [x : topology_structure.Topological.sort T],
 hausdorff_space T ->
 zero_dimensional T ->
-compact [set: T] ->
-forall [t : set T],
-nbhs x t ->
-exists2 i : set T,
-  [set D | D x /\ clopen D]%classic i & (id i `<=` t)%classic
+compact [set: topology_structure.Topological.sort T] ->
+forall [t : set (topology_structure.Topological.sort T)],
+filter.nbhs x t ->
+exists2 i : set (topology_structure.Topological.sort T),
+  [set D | D x /\ topology_structure.clopen D]%classic i &
+  (id i `<=` t)%classic
 
 Arguments zero_dimensional_cvg {T} [x] _ _ _ [t] _
 zero_dimensional_cvg is opaque
@@ -1762,11 +1930,13 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 579, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="zero_dimensional_ray" class="id"><a name="zero_dimensional_ray" class="" title="zero_dimensional_ray :
-forall {d : Order.disp_t} {T : orderTopologicalType d} [x y : T],
+forall {d : disp_t} {T : orderTopologicalType d} [x y : T],
 (x < y)%O ->
 zero_dimensional T ->
-exists U : set T,
-  [/\ clopen U, U y, ~ U x & forall l r : T, U r -> ~ U l -> (l < r)%O]
+exists U : set (topology_structure.Topological.sort T),
+  [/\ topology_structure.clopen U, U y, ~ U x
+    & forall l r : topology_structure.Topological.sort T,
+      U r -> ~ U l -> (l < r)%O]
 
 zero_dimensional_ray is not universe polymorphic
 Arguments zero_dimensional_ray {d T} [x y] _ _
@@ -2565,7 +2735,8 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 974, character
 <span class="vernacular">Section</span><span class="id"> entourage_gauge</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="gauge.gauge.entourage_gauge.T" class="id"><a name="gauge.gauge.entourage_gauge.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#Uniform.Exports.uniformType">uniformType</a></span><span class="id">}</span> (<span id="gauge.gauge.entourage_gauge.E" class="id"><a name="gauge.gauge.entourage_gauge.E" class="">E</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#T:290">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#T:290">T</a></span>)) (<span id="gauge.gauge.entourage_gauge.entE" class="id"><a name="gauge.gauge.entourage_gauge.entE" class="">entE</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#E:291">E</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="gauge.gauge" class="id"><a name="gauge.gauge" class="" title="gauge.gauge : forall {T : uniformType}, set (T * T) -> set_system (T * T)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="gauge.gauge" class="id"><a name="gauge.gauge" class="" title="gauge.gauge :
+forall {T : uniformType}, set (T * T) -> filter.set_system (T * T)
 
 gauge.gauge is not universe polymorphic
 Arguments gauge.gauge {T} E%_classical_set_scope _
@@ -2622,7 +2793,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="gauge.gauge_filter" class="id"><a name="gauge.gauge_filter" class="" title="gauge.gauge_filter :
 forall {T : uniformType} [E : set (T * T)],
-entourage E -> Filter (gauge.gauge E)
+entourage E -> filter.Filter (gauge.gauge E)
 
 gauge.gauge_filter is not universe polymorphic
 Arguments gauge.gauge_filter {T} [E]%_classical_set_scope entE
@@ -2901,7 +3072,9 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">T</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="perfect_set" class="id"><a name="perfect_set" class="" title="perfect_set : forall {T : topologicalType}, set T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="perfect_set" class="id"><a name="perfect_set" class="" title="perfect_set :
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> Prop
 
 perfect_set is not universe polymorphic
 Arguments perfect_set {T} A%_classical_set_scope
@@ -2913,8 +3086,10 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 1076, characte
 ">perfect_set</a></span><span class="id"> {</span><span id="T:308" class="id"><a name="T:308" class="">T</a></span><span class="id">}</span> (<span id="A:309" class="id"><a name="A:309" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#T:308">T</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#A:309">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#limit_point">limit_point</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#A:309">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#A:309">A</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="perfectP" class="id"><a name="perfectP" class="" title="perfectP :
-forall {T : topologicalType} (A : set T),
-perfect_set A <-> closed A /\ isolated A = set0
+forall {T : topology_structure.Topological.type}
+  (A : set (topology_structure.Topological.sort T)),
+perfect_set A <->
+topology_structure.closed A /\ topology_structure.isolated A = set0
 
 perfectP is not universe polymorphic
 Arguments perfectP {T} A%_classical_set_scope
@@ -2937,8 +3112,10 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 1078, characte
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="perfectTP" class="id"><a name="perfectTP" class="" title="perfectTP :
-forall {T : topologicalType},
-perfect_set [set: T] <-> (forall x : T, ~ open [set x]%classic)
+forall {T : topology_structure.Topological.type},
+perfect_set [set: topology_structure.Topological.sort T] <->
+(forall x : topology_structure.Topological.sort T,
+ ~ topology_structure.open [set x]%classic)
 
 perfectTP is not universe polymorphic
 Arguments perfectTP {T}
@@ -2964,10 +3141,12 @@ library mathcomp.analysis.topology_theory.separation_axioms, line 1089, characte
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="perfectTP_ex" class="id"><a name="perfectTP_ex" class="" title="perfectTP_ex :
-forall {T : topologicalType},
-perfect_set [set: T] <->
-(forall U : set T,
- open U -> (U !=set0)%classic -> exists x y : T, [/\ U x, U y & x != y])
+forall {T : topology_structure.Topological.type},
+perfect_set [set: topology_structure.Topological.sort T] <->
+(forall U : set (topology_structure.Topological.sort T),
+ topology_structure.open U ->
+ (U !=set0)%classic ->
+ exists x y : topology_structure.Topological.sort T, [/\ U x, U y & x != y])
 
 perfectTP_ex is not universe polymorphic
 Arguments perfectTP_ex {T}
@@ -2997,15 +3176,20 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="sigT_separations.I" class="id"><a name="sigT_separations.I" class="">I</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span><span class="id"> {</span><span id="sigT_separations.X" class="id"><a name="sigT_separations.X" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#I:320">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_hausdorff" class="id"><a name="sigT_hausdorff" class="" title="sigT_hausdorff :
-forall {I : choiceType} {X : I -> topologicalType},
-(forall i : I, hausdorff_space (X i)) -> hausdorff_space {i : I & X i}
+forall {I : choiceType} {X : I -> topology_structure.Topological.type},
+(forall i : I, hausdorff_space (X i)) ->
+hausdorff_space {i : I & topology_structure.Topological.sort (X i)}
 
 sigT_hausdorff is not universe polymorphic
 Expanded type for implicit arguments
 sigT_hausdorff :
-forall {I : choiceType} {X : I -> topologicalType},
+forall {I : choiceType} {X : I -> topology_structure.Topological.type},
 (forall i : I, hausdorff_space (X i)) ->
-forall [p q : {i : I & X i}], cluster (nbhs p) q -> p = q
+forall
+  [p
+   q : topology_structure.Topological.sort
+         {i : I & topology_structure.Topological.sort (X i)}],
+cluster (filter.nbhs p) q -> p = q
 
 Arguments sigT_hausdorff {I} {X}%_function_scope _%_function_scope [p q] _
 sigT_hausdorff is opaque

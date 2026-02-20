@@ -248,8 +248,9 @@
 <span class="vernacular">Context</span><span class="id"> {</span><span id="sigT_topology.I" class="id"><a name="sigT_topology.I" class="">I</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span><span class="id"> {</span><span id="sigT_topology.X" class="id"><a name="sigT_topology.X" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#I:1">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="sigT_nbhs" class="id"><a name="sigT_nbhs" class="" title="sigT_nbhs :
-forall {I : choiceType} {X : I -> topologicalType},
-{i : I & X i} -> set_system {i : I & X i}
+forall {I : choiceType} {X : I -> topology_structure.Topological.type},
+{i : I & topology_structure.Topological.sort (X i)} ->
+filter.set_system {i : I & topology_structure.Topological.sort (X i)}
 
 sigT_nbhs is not universe polymorphic
 Arguments sigT_nbhs {I} {X}%_function_scope x _
@@ -262,9 +263,13 @@ library mathcomp.analysis.topology_theory.sigT_topology, line 24, characters 11-
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#projT2">projT2</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#x:4">x</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_nbhsE" class="id"><a name="sigT_nbhsE" class="" title="sigT_nbhsE :
-forall {I : choiceType} {X : I -> topologicalType} (i : I) (x : X i),
-sigT_nbhs (existT (fun i0 : I => X i0) i x) =
-(existT (fun i0 : I => X i0) i x @[x --> nbhs x])%classic
+forall {I : choiceType} {X : I -> topology_structure.Topological.type}
+  (i : I) (x : topology_structure.Topological.sort (X i)),
+sigT_nbhs
+  (existT (fun i0 : I => topology_structure.Topological.sort (X i0)) i x) =
+filter.fmap
+  (existT (fun i0 : I => topology_structure.Topological.sort (X i0)) i)
+  (filter.nbhs (filter.nbhs x))
 
 sigT_nbhsE is not universe polymorphic
 Arguments sigT_nbhsE {I} {X}%_function_scope i x
@@ -281,7 +286,8 @@ library mathcomp.analysis.topology_theory.sigT_topology, line 27, characters 6-1
 <span class="gallina-kwd"> by</span><span class="id"> done</span>. Qed.</div></details>
 <br/>
 <span id="Specif_sigT__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="Specif_sigT__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Specif_sigT__canonical__filter_Nbhs" class="" title="Specif_sigT__canonical__filter_Nbhs :
-forall {I : choiceType}, (I -> topologicalType) -> nbhsType
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) -> filter.Nbhs.type
 
 Specif_sigT__canonical__filter_Nbhs is not universe polymorphic
 Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%_function_scope
@@ -291,7 +297,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.sigT_topology, line 31, characters 0-62
 ">HB</a></span></span></span></span></span></span></span>.<span id="Specif_sigT__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="Specif_sigT__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Specif_sigT__canonical__filter_Nbhs" class="" title="Specif_sigT__canonical__filter_Nbhs :
-forall {I : choiceType}, (I -> topologicalType) -> nbhsType
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) -> filter.Nbhs.type
 
 Specif_sigT__canonical__filter_Nbhs is not universe polymorphic
 Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%_function_scope
@@ -301,7 +308,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.sigT_topology, line 31, characters 0-62
 ">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="Specif_sigT__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="Specif_sigT__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Specif_sigT__canonical__filter_Nbhs" class="" title="Specif_sigT__canonical__filter_Nbhs :
-forall {I : choiceType}, (I -> topologicalType) -> nbhsType
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) -> filter.Nbhs.type
 
 Specif_sigT__canonical__filter_Nbhs is not universe polymorphic
 Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%_function_scope
@@ -311,7 +319,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.sigT_topology, line 31, characters 0-62
 "> _</a></span></span></span></span></span></span></span><span id="Specif_sigT__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="Specif_sigT__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Specif_sigT__canonical__filter_Nbhs" class="" title="Specif_sigT__canonical__filter_Nbhs :
-forall {I : choiceType}, (I -> topologicalType) -> nbhsType
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) -> filter.Nbhs.type
 
 Specif_sigT__canonical__filter_Nbhs is not universe polymorphic
 Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%_function_scope
@@ -321,7 +330,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.sigT_topology, line 31, characters 0-62
 "> :=</a></span></span></span></span></span></span></span><span id="Specif_sigT__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="Specif_sigT__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Specif_sigT__canonical__filter_Nbhs" class="" title="Specif_sigT__canonical__filter_Nbhs :
-forall {I : choiceType}, (I -> topologicalType) -> nbhsType
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) -> filter.Nbhs.type
 
 Specif_sigT__canonical__filter_Nbhs is not universe polymorphic
 Arguments Specif_sigT__canonical__filter_Nbhs {I} {X}%_function_scope
@@ -357,7 +367,9 @@ library mathcomp.analysis.topology_theory.sigT_topology, line 31, characters 0-6
 Qed.</div></details>
 <br/>
 <span id="Specif_sigT__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="Specif_sigT__canonical__topology_structure_Topological" class="" title="Specif_sigT__canonical__topology_structure_Topological :
-forall {I : choiceType}, (I -> topologicalType) -> topologicalType
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) ->
+topology_structure.Topological.type
 
 Specif_sigT__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Specif_sigT__canonical__topology_structure_Topological 
@@ -368,7 +380,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.sigT_topology, line 46, characters 0-121
 ">HB</a></span></span></span></span>.<span id="Specif_sigT__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="Specif_sigT__canonical__topology_structure_Topological" class="" title="Specif_sigT__canonical__topology_structure_Topological :
-forall {I : choiceType}, (I -> topologicalType) -> topologicalType
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) ->
+topology_structure.Topological.type
 
 Specif_sigT__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Specif_sigT__canonical__topology_structure_Topological 
@@ -379,7 +393,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.sigT_topology, line 46, characters 0-121
 ">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="Specif_sigT__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="Specif_sigT__canonical__topology_structure_Topological" class="" title="Specif_sigT__canonical__topology_structure_Topological :
-forall {I : choiceType}, (I -> topologicalType) -> topologicalType
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) ->
+topology_structure.Topological.type
 
 Specif_sigT__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Specif_sigT__canonical__topology_structure_Topological 
@@ -390,7 +406,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.sigT_topology, line 46, characters 0-121
 "> _</a></span></span></span></span><span id="Specif_sigT__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="Specif_sigT__canonical__topology_structure_Topological" class="" title="Specif_sigT__canonical__topology_structure_Topological :
-forall {I : choiceType}, (I -> topologicalType) -> topologicalType
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) ->
+topology_structure.Topological.type
 
 Specif_sigT__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Specif_sigT__canonical__topology_structure_Topological 
@@ -401,7 +419,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.sigT_topology, line 46, characters 0-121
 "> :=</a></span></span></span></span><span id="Specif_sigT__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="Specif_sigT__canonical__topology_structure_Topological" class="" title="Specif_sigT__canonical__topology_structure_Topological :
-forall {I : choiceType}, (I -> topologicalType) -> topologicalType
+forall {I : choiceType},
+(I -> topology_structure.Topological.type) ->
+topology_structure.Topological.type
 
 Specif_sigT__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Specif_sigT__canonical__topology_structure_Topological 
@@ -415,8 +435,16 @@ library mathcomp.analysis.topology_theory.sigT_topology, line 46, characters 0-1
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_nbhs_proper">sigT_nbhs_proper</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_nbhs_singleton">sigT_nbhs_singleton</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_nbhs_nbhs">sigT_nbhs_nbhs</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="existT_continuous" class="id"><a name="existT_continuous" class="" title="existT_continuous :
-forall {I : choiceType} {X : I -> topologicalType} (i : I),
-continuous (existT (fun x0 : I => X x0) i)
+forall {I : choiceType} {X : I -> topology_structure.Topological.type}
+  (i : I)
+  (x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            (X i))),
+filter.continuous_at
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        (X i))
+  (U:=Specif_sigT__canonical__filter_Nbhs) x
+  (existT (fun x0 : I => topology_structure.Topological.sort (X x0)) i)
 
 existT_continuous is not universe polymorphic
 Arguments existT_continuous {I} {X}%_function_scope i x t _
@@ -432,8 +460,12 @@ library mathcomp.analysis.topology_theory.sigT_topology, line 49, characters 6-2
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> ?</span><span class="id"> ?</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="existT_open_map" class="id"><a name="existT_open_map" class="" title="existT_open_map :
-forall {I : choiceType} {X : I -> topologicalType} (i : I) (A : set (X i)),
-open A -> open [set existT (fun x : I => X x) i x | x in A]%classic
+forall {I : choiceType} {X : I -> topology_structure.Topological.type}
+  (i : I) (A : set (topology_structure.Topological.sort (X i))),
+topology_structure.open A ->
+topology_structure.open
+  [set existT (fun x : I => topology_structure.Topological.sort (X x)) i x
+     | x in A]%classic
 
 existT_open_map is not universe polymorphic
 Arguments existT_open_map {I} {X}%_function_scope 
@@ -454,11 +486,14 @@ library mathcomp.analysis.topology_theory.sigT_topology, line 52, characters 6-2
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="existT_nbhs" class="id"><a name="existT_nbhs" class="" title="existT_nbhs :
-forall {I : choiceType} {X : I -> topologicalType} 
-  (i : I) (x : X i) (U : set (X i)),
-nbhs x U ->
-nbhs (existT (fun i0 : I => X i0) i x)
-  [set existT (fun i0 : I => X i0) i x | x in U]%classic
+forall {I : choiceType} {X : I -> topology_structure.Topological.type}
+  (i : I) (x : topology_structure.Topological.sort (X i))
+  (U : set (topology_structure.Topological.sort (X i))),
+filter.nbhs x U ->
+filter.nbhs
+  (existT (fun i0 : I => topology_structure.Topological.sort (X i0)) i x)
+  [set existT (fun i0 : I => topology_structure.Topological.sort (X i0)) i x
+     | x in U]%classic
 
 existT_nbhs is not universe polymorphic
 Arguments existT_nbhs {I} {X}%_function_scope i x U%_classical_set_scope _
@@ -475,9 +510,13 @@ library mathcomp.analysis.topology_theory.sigT_topology, line 60, characters 6-1
 <span class="id"> exact/</span><span class="id"><a href="mathcomp.classical.filter.html#filterS">filterS</a></span><span class="id">/</span><span class="id"><a href="mathcomp.classical.classical_sets.html#preimage_image">preimage_image</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_openP" class="id"><a name="sigT_openP" class="" title="sigT_openP :
-forall {I : choiceType} {X : I -> topologicalType} (U : set {i : I & X i}),
-open U <->
-(forall i : I, open (existT (fun i0 : I => X i0) i @^-1` U)%classic)
+forall {I : choiceType} {X : I -> topology_structure.Topological.type}
+  (U : set {i : I & topology_structure.Topological.sort (X i)}),
+topology_structure.open U <->
+(forall i : I,
+ topology_structure.open
+   (existT (fun i0 : I => topology_structure.Topological.sort (X i0)) i @^-1`
+    U)%classic)
 
 sigT_openP is not universe polymorphic
 Arguments sigT_openP {I} {X}%_function_scope U%_classical_set_scope
@@ -497,9 +536,26 @@ library mathcomp.analysis.topology_theory.sigT_topology, line 64, characters 6-1
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_continuous" class="id"><a name="sigT_continuous" class="" title="sigT_continuous :
-forall {I : choiceType} {X : I -> topologicalType} 
-  {Z : topologicalType} (f : forall i : I, X i -> Z),
-(forall i : I, continuous (f i)) -> continuous (unstable.sigT_fun f)
+forall {I : choiceType} {X : I -> topology_structure.Topological.type}
+  {Z : topology_structure.Topological.type}
+  (f : forall i : I,
+       topology_structure.Topological.sort (X i) ->
+       topology_structure.Topological.sort Z),
+(forall (i : I)
+   (x : filter.Nbhs.sort
+          (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+             (X i))),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         (X i))
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         Z)
+   x (f i)) ->
+forall x : filter.Nbhs.sort Specif_sigT__canonical__filter_Nbhs,
+filter.continuous_at (T:=Specif_sigT__canonical__filter_Nbhs)
+  (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        Z)
+  x (sigT_fun f)
 
 sigT_continuous is not universe polymorphic
 Arguments sigT_continuous {I} {X}%_function_scope 
@@ -517,8 +573,8 @@ library mathcomp.analysis.topology_theory.sigT_topology, line 72, characters 6-2
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> ctsf</span><span class="id"> []</span><span class="id"> i</span><span class="id"> x</span><span class="id"> U</span><span class="id"> nU;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#existT_continuous">existT_continuous</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> ctsf</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_setUE" class="id"><a name="sigT_setUE" class="" title="sigT_setUE :
-forall {I : choiceType} {X : I -> topologicalType},
-[set: {i : I & X i}]%classic =
+forall {I : choiceType} {X : I -> topology_structure.Topological.type},
+[set: {i : I & topology_structure.Topological.sort (X i)}]%classic =
 (\bigcup_i range (existT (fun i0 : I => let (sort, _) := X i0 in sort) i))%classic
 
 sigT_setUE is not universe polymorphic
@@ -535,9 +591,10 @@ library mathcomp.analysis.topology_theory.sigT_topology, line 76, characters 6-1
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#eqEsubset">eqEsubset</a></span><span class="id">;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> [[i</span><span class="id"> x]</span><span class="id"> _|[]//];</span><span class="gallina-kwd"> exists</span><span class="id"> i</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sigT_compact" class="id"><a name="sigT_compact" class="" title="sigT_compact :
-forall {I : choiceType} {X : I -> topologicalType},
+forall {I : choiceType} {X : I -> topology_structure.Topological.type},
 finite_set [set: I] ->
-(forall i : I, compact [set: X i]) -> compact [set: {i : I & X i}]
+(forall i : I, compact [set: topology_structure.Topological.sort (X i)]) ->
+compact [set: {i : I & topology_structure.Topological.sort (X i)}]
 
 sigT_compact is not universe polymorphic
 Arguments sigT_compact {I} {X}%_function_scope _ _%_function_scope F _ _

@@ -256,8 +256,14 @@ Product `(T * U)%type` are endowed with the structures of:
 <span class="vernacular">Let</span><span class="id"> </span><span id="Prod_Topology.prod_nbhs" class="id"><a name="Prod_Topology.prod_nbhs" class="">prod_nbhs</a></span> (<span id="p:3" class="id"><a name="p:3" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.U">U</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#filter_prod">filter_prod</a></span> (<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#p:3">p</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span>) (<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#p:3">p</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="prod_nbhs_filter" class="id"><a name="prod_nbhs_filter" class="" title="prod_nbhs_filter :
-forall {T U : topologicalType} (p : T * U),
-ProperFilter ((fun p0 : T * U => filter_prod (nbhs p0.1) (nbhs p0.2)) p)
+forall {T U : topology_structure.Topological.type}
+  (p : topology_structure.Topological.sort T *
+       topology_structure.Topological.sort U),
+filter.ProperFilter
+  ((fun
+      p0 : topology_structure.Topological.sort T *
+           topology_structure.Topological.sort U =>
+    filter.filter_prod (filter.nbhs p0.1) (filter.nbhs p0.2)) p)
 
 prod_nbhs_filter is not universe polymorphic
 Arguments prod_nbhs_filter {T U} p
@@ -273,8 +279,17 @@ library mathcomp.analysis.topology_theory.product_topology, line 32, characters 
 <span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#filter_prod_proper">filter_prod_proper</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="prod_nbhs_singleton" class="id"><a name="prod_nbhs_singleton" class="" title="prod_nbhs_singleton :
-forall {T U : topologicalType} [p : T * U] [A : set (T * U)],
-(fun p0 : T * U => filter_prod (nbhs p0.1) (nbhs p0.2)) p A -> A p
+forall {T U : topology_structure.Topological.type}
+  [p : topology_structure.Topological.sort T *
+       topology_structure.Topological.sort U]
+  [A : set
+         (topology_structure.Topological.sort T *
+          topology_structure.Topological.sort U)],
+(fun
+   p0 : topology_structure.Topological.sort T *
+        topology_structure.Topological.sort U =>
+ filter.filter_prod (filter.nbhs p0.1) (filter.nbhs p0.2)) p A ->
+A p
 
 prod_nbhs_singleton is not universe polymorphic
 Arguments prod_nbhs_singleton {T U} [p] [A]%_classical_set_scope _
@@ -291,10 +306,24 @@ library mathcomp.analysis.topology_theory.product_topology, line 35, characters 
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="prod_nbhs_nbhs" class="id"><a name="prod_nbhs_nbhs" class="" title="prod_nbhs_nbhs :
-forall {T U : topologicalType} [p : T * U] [A : set (T * U)],
-(fun p0 : T * U => filter_prod (nbhs p0.1) (nbhs p0.2)) p A ->
-(fun p0 : T * U => filter_prod (nbhs p0.1) (nbhs p0.2)) p
-  ((fun p0 : T * U => filter_prod (nbhs p0.1) (nbhs p0.2))^~ A)
+forall {T U : topology_structure.Topological.type}
+  [p : topology_structure.Topological.sort T *
+       topology_structure.Topological.sort U]
+  [A : set
+         (topology_structure.Topological.sort T *
+          topology_structure.Topological.sort U)],
+(fun
+   p0 : topology_structure.Topological.sort T *
+        topology_structure.Topological.sort U =>
+ filter.filter_prod (filter.nbhs p0.1) (filter.nbhs p0.2)) p A ->
+(fun
+   p0 : topology_structure.Topological.sort T *
+        topology_structure.Topological.sort U =>
+ filter.filter_prod (filter.nbhs p0.1) (filter.nbhs p0.2)) p
+  ((fun
+      p0 : topology_structure.Topological.sort T *
+           topology_structure.Topological.sort U =>
+    filter.filter_prod (filter.nbhs p0.1) (filter.nbhs p0.2))^~ A)
 
 prod_nbhs_nbhs is not universe polymorphic
 Arguments prod_nbhs_nbhs {T U} [p] [A]%_classical_set_scope _
@@ -313,59 +342,105 @@ library mathcomp.analysis.topology_theory.product_topology, line 40, characters 
 Qed.</div></details>
 <br/>
 <span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="filter_hasNbhs__to__filter_isFiltered" class="" title="filter_hasNbhs__to__filter_isFiltered :
-forall P : choiceType,
-isFiltered.axioms_ (principal_filter_type P) (principal_filter_type P)
+forall {T U : topology_structure.Topological.type},
+filter.isFiltered.axioms_
+  (topology_structure.Topological.sort T *
+   topology_structure.Topological.sort U)
+  (filter.Filtered.sort
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T) *
+   filter.Filtered.sort
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        U))
 
 filter_hasNbhs__to__filter_isFiltered is not universe polymorphic
-Arguments filter_hasNbhs__to__filter_isFiltered P
+Arguments filter_hasNbhs__to__filter_isFiltered {T U}
 filter_hasNbhs__to__filter_isFiltered is transparent
 Expands to: Constant
-            mathcomp.classical.filter.filter_hasNbhs__to__filter_isFiltered
-Declared in library mathcomp.classical.filter, line 1326, characters 0-104
+            mathcomp.analysis.topology_theory.product_topology.filter_hasNbhs__to__filter_isFiltered
+Declared in
+library mathcomp.analysis.topology_theory.product_topology, line 47, characters 0-65
 ">HB</a></span></span></span>.<span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="filter_hasNbhs__to__filter_isFiltered" class="" title="filter_hasNbhs__to__filter_isFiltered :
-forall P : choiceType,
-isFiltered.axioms_ (principal_filter_type P) (principal_filter_type P)
+forall {T U : topology_structure.Topological.type},
+filter.isFiltered.axioms_
+  (topology_structure.Topological.sort T *
+   topology_structure.Topological.sort U)
+  (filter.Filtered.sort
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T) *
+   filter.Filtered.sort
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        U))
 
 filter_hasNbhs__to__filter_isFiltered is not universe polymorphic
-Arguments filter_hasNbhs__to__filter_isFiltered P
+Arguments filter_hasNbhs__to__filter_isFiltered {T U}
 filter_hasNbhs__to__filter_isFiltered is transparent
 Expands to: Constant
-            mathcomp.classical.filter.filter_hasNbhs__to__filter_isFiltered
-Declared in library mathcomp.classical.filter, line 1326, characters 0-104
+            mathcomp.analysis.topology_theory.product_topology.filter_hasNbhs__to__filter_isFiltered
+Declared in
+library mathcomp.analysis.topology_theory.product_topology, line 47, characters 0-65
 ">instance</a></span></span></span><span class="vernacular"> Definition</span><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="filter_hasNbhs__to__filter_isFiltered" class="" title="filter_hasNbhs__to__filter_isFiltered :
-forall P : choiceType,
-isFiltered.axioms_ (principal_filter_type P) (principal_filter_type P)
+forall {T U : topology_structure.Topological.type},
+filter.isFiltered.axioms_
+  (topology_structure.Topological.sort T *
+   topology_structure.Topological.sort U)
+  (filter.Filtered.sort
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T) *
+   filter.Filtered.sort
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        U))
 
 filter_hasNbhs__to__filter_isFiltered is not universe polymorphic
-Arguments filter_hasNbhs__to__filter_isFiltered P
+Arguments filter_hasNbhs__to__filter_isFiltered {T U}
 filter_hasNbhs__to__filter_isFiltered is transparent
 Expands to: Constant
-            mathcomp.classical.filter.filter_hasNbhs__to__filter_isFiltered
-Declared in library mathcomp.classical.filter, line 1326, characters 0-104
+            mathcomp.analysis.topology_theory.product_topology.filter_hasNbhs__to__filter_isFiltered
+Declared in
+library mathcomp.analysis.topology_theory.product_topology, line 47, characters 0-65
 "> _</a></span></span></span><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="filter_hasNbhs__to__filter_isFiltered" class="" title="filter_hasNbhs__to__filter_isFiltered :
-forall P : choiceType,
-isFiltered.axioms_ (principal_filter_type P) (principal_filter_type P)
+forall {T U : topology_structure.Topological.type},
+filter.isFiltered.axioms_
+  (topology_structure.Topological.sort T *
+   topology_structure.Topological.sort U)
+  (filter.Filtered.sort
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T) *
+   filter.Filtered.sort
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        U))
 
 filter_hasNbhs__to__filter_isFiltered is not universe polymorphic
-Arguments filter_hasNbhs__to__filter_isFiltered P
+Arguments filter_hasNbhs__to__filter_isFiltered {T U}
 filter_hasNbhs__to__filter_isFiltered is transparent
 Expands to: Constant
-            mathcomp.classical.filter.filter_hasNbhs__to__filter_isFiltered
-Declared in library mathcomp.classical.filter, line 1326, characters 0-104
+            mathcomp.analysis.topology_theory.product_topology.filter_hasNbhs__to__filter_isFiltered
+Declared in
+library mathcomp.analysis.topology_theory.product_topology, line 47, characters 0-65
 "> :=</a></span></span></span><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="filter_hasNbhs__to__filter_isFiltered" class="" title="filter_hasNbhs__to__filter_isFiltered :
-forall P : choiceType,
-isFiltered.axioms_ (principal_filter_type P) (principal_filter_type P)
+forall {T U : topology_structure.Topological.type},
+filter.isFiltered.axioms_
+  (topology_structure.Topological.sort T *
+   topology_structure.Topological.sort U)
+  (filter.Filtered.sort
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        T) *
+   filter.Filtered.sort
+     (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+        U))
 
 filter_hasNbhs__to__filter_isFiltered is not universe polymorphic
-Arguments filter_hasNbhs__to__filter_isFiltered P
+Arguments filter_hasNbhs__to__filter_isFiltered {T U}
 filter_hasNbhs__to__filter_isFiltered is transparent
 Expands to: Constant
-            mathcomp.classical.filter.filter_hasNbhs__to__filter_isFiltered
-Declared in library mathcomp.classical.filter, line 1326, characters 0-104
+            mathcomp.analysis.topology_theory.product_topology.filter_hasNbhs__to__filter_isFiltered
+Declared in
+library mathcomp.analysis.topology_theory.product_topology, line 47, characters 0-65
 "> hasNbhs</a></span></span></span>.<span class="id"><a href="mathcomp.classical.filter.html#hasNbhs.Build">Build</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.U">U</a></span>)<span class="id">%type</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#Prod_Topology.prod_nbhs">prod_nbhs</a></span>.<br/>
 <br/>
 <span id="Datatypes_prod__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_4" class="id"><a name="Datatypes_prod__canonical__topology_structure_Topological" class="" title="Datatypes_prod__canonical__topology_structure_Topological :
-topologicalType -> topologicalType -> topologicalType
+topology_structure.Topological.type ->
+topology_structure.Topological.type -> topology_structure.Topological.type
 
 Datatypes_prod__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Datatypes_prod__canonical__topology_structure_Topological {T U}
@@ -375,7 +450,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.product_topology, line 49, characters 0-124
 ">HB</a></span></span></span></span>.<span id="Datatypes_prod__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_4" class="id"><a name="Datatypes_prod__canonical__topology_structure_Topological" class="" title="Datatypes_prod__canonical__topology_structure_Topological :
-topologicalType -> topologicalType -> topologicalType
+topology_structure.Topological.type ->
+topology_structure.Topological.type -> topology_structure.Topological.type
 
 Datatypes_prod__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Datatypes_prod__canonical__topology_structure_Topological {T U}
@@ -385,7 +461,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.product_topology, line 49, characters 0-124
 ">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="Datatypes_prod__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_4" class="id"><a name="Datatypes_prod__canonical__topology_structure_Topological" class="" title="Datatypes_prod__canonical__topology_structure_Topological :
-topologicalType -> topologicalType -> topologicalType
+topology_structure.Topological.type ->
+topology_structure.Topological.type -> topology_structure.Topological.type
 
 Datatypes_prod__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Datatypes_prod__canonical__topology_structure_Topological {T U}
@@ -395,7 +472,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.product_topology, line 49, characters 0-124
 "> _</a></span></span></span></span><span id="Datatypes_prod__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_4" class="id"><a name="Datatypes_prod__canonical__topology_structure_Topological" class="" title="Datatypes_prod__canonical__topology_structure_Topological :
-topologicalType -> topologicalType -> topologicalType
+topology_structure.Topological.type ->
+topology_structure.Topological.type -> topology_structure.Topological.type
 
 Datatypes_prod__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Datatypes_prod__canonical__topology_structure_Topological {T U}
@@ -405,7 +483,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.product_topology, line 49, characters 0-124
 "> :=</a></span></span></span></span><span id="Datatypes_prod__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_4" class="id"><a name="Datatypes_prod__canonical__topology_structure_Topological" class="" title="Datatypes_prod__canonical__topology_structure_Topological :
-topologicalType -> topologicalType -> topologicalType
+topology_structure.Topological.type ->
+topology_structure.Topological.type -> topology_structure.Topological.type
 
 Datatypes_prod__canonical__topology_structure_Topological is not universe polymorphic
 Arguments Datatypes_prod__canonical__topology_structure_Topological {T U}
@@ -420,8 +499,12 @@ library mathcomp.analysis.topology_theory.product_topology, line 49, characters 
 <span class="vernacular">End</span><span class="id"> Prod_Topology</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="fst_open" class="id"><a name="fst_open" class="" title="fst_open :
-forall {U V : topologicalType} [A : set (U * V)],
-open A -> open [set x.1 | x in A]%classic
+forall {U V : topology_structure.Topological.type}
+  [A : set
+         (topology_structure.Topological.sort U *
+          topology_structure.Topological.sort V)],
+topology_structure.open A ->
+topology_structure.open [set x.1 | x in A]%classic
 
 fst_open is not universe polymorphic
 Arguments fst_open {U V} [A]%_classical_set_scope _
@@ -441,8 +524,12 @@ library mathcomp.analysis.topology_theory.product_topology, line 54, characters 
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="snd_open" class="id"><a name="snd_open" class="" title="snd_open :
-forall {U V : topologicalType} [A : set (U * V)],
-open A -> open [set x.2 | x in A]%classic
+forall {U V : topology_structure.Topological.type}
+  [A : set
+         (topology_structure.Topological.sort U *
+          topology_structure.Topological.sort V)],
+topology_structure.open A ->
+topology_structure.open [set x.2 | x in A]%classic
 
 snd_open is not universe polymorphic
 Arguments snd_open {U V} [A]%_classical_set_scope _
@@ -505,7 +592,7 @@ library mathcomp.analysis.topology_theory.product_topology, line 82, characters 
 <span class="gallina-kwd">by</span><span class="gallina-kwd"> exists</span> ((<span class="id">xy</span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id">xy</span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span>(<span class="id">xy</span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id">xy</span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span>))<span class="id">;</span><span class="id"> rewrite</span><span class="id"> /=</span><span class="id"> -!</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#surjective_pairing">surjective_pairing</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="prod_ent_filter" class="id"><a name="prod_ent_filter" class="" title="prod_ent_filter : forall {U V : uniformType}, Filter prod_ent
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="prod_ent_filter" class="id"><a name="prod_ent_filter" class="" title="prod_ent_filter : forall {U V : uniformType}, filter.Filter prod_ent
 
 prod_ent_filter is not universe polymorphic
 Arguments prod_ent_filter {U V}
@@ -606,7 +693,7 @@ library mathcomp.analysis.topology_theory.product_topology, line 121, characters
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> -!</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#surjective_pairing">surjective_pairing</a></span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id">&lt;-</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="prod_ent_nbhsE" class="id"><a name="prod_ent_nbhsE" class="" title="prod_ent_nbhsE : forall {U V : uniformType}, nbhs = nbhs_ prod_ent
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="prod_ent_nbhsE" class="id"><a name="prod_ent_nbhsE" class="" title="prod_ent_nbhsE : forall {U V : uniformType}, filter.nbhs = nbhs_ prod_ent
 
 prod_ent_nbhsE is not universe polymorphic
 Arguments prod_ent_nbhsE {U V}
@@ -859,13 +946,17 @@ library mathcomp.analysis.topology_theory.product_topology, line 192, characters
 <span class="vernacular">Section</span><span class="id"> Nbhs_fct2</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Nbhs_fct2.T" class="id"><a name="Nbhs_fct2.T" class="">T</a></span><span class="id"> :</span><span class="id"> Type}</span><span class="id"> {</span><span id="Nbhs_fct2.R" class="id"><a name="Nbhs_fct2.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span><span class="id">}</span><span class="id"> {</span><span id="Nbhs_fct2.U" class="id"><a name="Nbhs_fct2.U" class="">U</a></span><span class="id"> </span><span id="Nbhs_fct2.V" class="id"><a name="Nbhs_fct2.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#PseudoMetric.Exports.pseudoMetricType">pseudoMetricType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#R:52">R</a></span><span class="id">}</span>.<br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="fcvg_ball2P" class="id"><a name="fcvg_ball2P" class="" title="fcvg_ball2P :
-forall {R : numDomainType} {U V : pseudoMetricType R} 
-  {F : set_system U} {G : set_system V},
-Filter F ->
-Filter G ->
+forall {R : numDomainType} {U V : pseudoMetricType R}
+  {F : filter.set_system U} {G : filter.set_system V},
+filter.Filter F ->
+filter.Filter G ->
 forall (y : U) (z : V),
-((F, G) --> (y, z))%classic <->
-(forall eps : R, (0 < eps)%R -> \near F & G, ball y eps F /\ ball z eps G)
+filter.cvg_to (filter.nbhs (F, G)) (filter.nbhs (y, z)) <->
+(forall eps : R,
+ (0 < eps)%R ->
+ filter.prop_near2 F G
+   (P:=fun (y' : U) (z' : V) => ball y eps y' /\ ball z eps z')
+   (inPhantom (forall (y' : U) (z' : V), ball y eps y' /\ ball z eps z')))
 
 fcvg_ball2P is not universe polymorphic
 Arguments fcvg_ball2P {R U V F G FF FG} y z
@@ -886,13 +977,18 @@ library mathcomp.analysis.topology_theory.product_topology, line 199, characters
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_ball2P" class="id"><a name="cvg_ball2P" class="" title="cvg_ball2P :
 forall {R : numDomainType} {U V : pseudoMetricType R} 
-  {I J : Type} {F : set_system I} {G : set_system J},
-Filter F ->
-Filter G ->
+  {I J : Type} {F : filter.set_system I} {G : filter.set_system J},
+filter.Filter F ->
+filter.Filter G ->
 forall (f : I -> U) (g : J -> V) (y : U) (z : V),
-((f x @[x --> F], g x @[x --> G]) --> (y, z))%classic <->
+filter.cvg_to
+  (filter.nbhs (filter.fmap f (filter.nbhs F), filter.fmap g (filter.nbhs G)))
+  (filter.nbhs (y, z)) <->
 (forall eps : R,
- (0 < eps)%R -> \near F & G, ball y eps (f F) /\ ball z eps (g G))
+ (0 < eps)%R ->
+ filter.prop_near2 F G
+   (P:=fun (i : I) (j : J) => ball y eps (f i) /\ ball z eps (g j))
+   (inPhantom (forall (i : I) (j : J), ball y eps (f i) /\ ball z eps (g j))))
 
 cvg_ball2P is not universe polymorphic
 Arguments cvg_ball2P {R U V} {I J}%_type_scope {F G FF FG}
@@ -918,20 +1014,28 @@ Qed.</div></details>
 <span class="vernacular">End</span><span class="id"> Nbhs_fct2</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_setX" class="id"><a name="compact_setX" class="" title="compact_setX :
-forall {U V : topologicalType} [P : set U] [Q : set V],
+forall {U V : topology_structure.Topological.type}
+  [P : set (topology_structure.Topological.sort U)]
+  [Q : set (topology_structure.Topological.sort V)],
 compact P -> compact Q -> compact (P `*` Q)
 
 compact_setX is not universe polymorphic
 Expanded type for implicit arguments
 compact_setX :
-forall {U V : topologicalType} [P : set U] [Q : set V],
+forall {U V : topology_structure.Topological.type}
+  [P : set (topology_structure.Topological.sort U)]
+  [Q : set (topology_structure.Topological.sort V)],
 compact P ->
 compact Q ->
 forall
-  [F : set_system Datatypes_prod__canonical__topology_structure_Topological],
-ProperFilter F ->
+  [F : filter.set_system
+         (topology_structure.Topological.sort
+            Datatypes_prod__canonical__topology_structure_Topological)],
+filter.ProperFilter F ->
 F (P `*` Q)%classic ->
-exists a : Datatypes_prod__canonical__topology_structure_Topological,
+exists
+  a : topology_structure.Topological.sort
+        Datatypes_prod__canonical__topology_structure_Topological,
   (P `*` Q `&` cluster F)%classic a
 
 Arguments compact_setX {U V} [P Q]%_classical_set_scope _ _ [F] _ _
@@ -956,18 +1060,75 @@ library mathcomp.analysis.topology_theory.product_topology, line 219, characters
 <span class="gallina-kwd">by</span><span class="id"> apply:</span> (<span class="id">ngPr</span> (<span class="id">b</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id">a</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id">i</span>))<span class="id">;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> exact:</span><span class="id"> N1N2N</span>.<br/>
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="swap_continuous" class="id"><a name="swap_continuous" class="" title="swap_continuous : forall {X Y : topologicalType}, continuous unstable.swap
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="swap_continuous" class="id"><a name="swap_continuous" class="" title="swap_continuous :
+forall {X Y : topology_structure.Topological.type}
+  [x : filter.Nbhs.sort
+         (filter.Datatypes_prod__canonical__filter_Nbhs
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               X)
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               Y))],
+filter.continuous_at
+  (T:=filter.Datatypes_prod__canonical__filter_Nbhs
+        (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+           X)
+        (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+           Y))
+  (U:=filter.Datatypes_prod__canonical__filter_Nbhs
+        (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+           Y)
+        (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+           X))
+  x swap
 
 swap_continuous is not universe polymorphic
 Expanded type for implicit arguments
 swap_continuous :
-forall {X Y : topologicalType}
-  [x : Datatypes_prod__canonical__filter_Nbhs X Y]
-  [t : set (Datatypes_prod__canonical__filter_Nbhs Y X)],
-nbhs (unstable.swap x) t ->
-exists2 i : set X * set Y,
-  (fun P : set X * set Y => nbhs x.1 P.1 /\ nbhs x.2 P.2) i &
-  ((fun P : set X * set Y => P.1 `*` P.2) i `<=` unstable.swap @^-1` t)%classic
+forall {X Y : topology_structure.Topological.type}
+  [x : filter.Nbhs.sort
+         (filter.Datatypes_prod__canonical__filter_Nbhs
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               X)
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               Y))]
+  [t : set
+         (filter.Nbhs.sort
+            (filter.Datatypes_prod__canonical__filter_Nbhs
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  Y)
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  X)))],
+filter.nbhs (swap x) t ->
+exists2
+  i : set
+        (filter.Nbhs.sort
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              X)) *
+      set
+        (filter.Nbhs.sort
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              Y)),
+  (fun
+     P : set
+           (filter.Nbhs.sort
+              (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                 X)) *
+         set
+           (filter.Nbhs.sort
+              (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                 Y)) =>
+   filter.nbhs x.1 P.1 /\ filter.nbhs x.2 P.2) i &
+  ((fun
+      P : set
+            (filter.Nbhs.sort
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  X)) *
+          set
+            (filter.Nbhs.sort
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  Y)) =>
+    P.1 `*` P.2) i
+   `<=` swap @^-1` t)%classic
 
 Arguments swap_continuous {X Y} [x t] _
 swap_continuous is opaque
@@ -987,24 +1148,98 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="reassociate_continuous.X" class="id"><a name="reassociate_continuous.X" class="">X</a></span><span class="id"> </span><span id="reassociate_continuous.Y" class="id"><a name="reassociate_continuous.Y" class="">Y</a></span><span class="id"> </span><span id="reassociate_continuous.Z" class="id"><a name="reassociate_continuous.Z" class="">Z</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="prodA_continuous" class="id"><a name="prodA_continuous" class="" title="prodA_continuous :
-forall {X Y Z : topologicalType}, continuous unstable.prodA
+forall {X Y Z : topology_structure.Topological.type}
+  [x : filter.Nbhs.sort
+         (filter.Datatypes_prod__canonical__filter_Nbhs
+            (filter.Datatypes_prod__canonical__filter_Nbhs
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  X)
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  Y))
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               Z))],
+filter.continuous_at
+  (T:=filter.Datatypes_prod__canonical__filter_Nbhs
+        (filter.Datatypes_prod__canonical__filter_Nbhs
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              X)
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              Y))
+        (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+           Z))
+  (U:=filter.Datatypes_prod__canonical__filter_Nbhs
+        (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+           X)
+        (filter.Datatypes_prod__canonical__filter_Nbhs
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              Y)
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              Z)))
+  x prodA
 
 prodA_continuous is not universe polymorphic
 Expanded type for implicit arguments
 prodA_continuous :
-forall {X Y Z : topologicalType}
-  [x : Datatypes_prod__canonical__filter_Nbhs
-         (Datatypes_prod__canonical__filter_Nbhs X Y) Z]
+forall {X Y Z : topology_structure.Topological.type}
+  [x : filter.Nbhs.sort
+         (filter.Datatypes_prod__canonical__filter_Nbhs
+            (filter.Datatypes_prod__canonical__filter_Nbhs
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  X)
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  Y))
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               Z))]
   [t : set
-         (Datatypes_prod__canonical__filter_Nbhs X
-            (Datatypes_prod__canonical__filter_Nbhs Y Z))],
-nbhs (unstable.prodA x) t ->
-exists2 i : set (Datatypes_prod__canonical__filter_Nbhs X Y) * set Z,
-  (fun P : set (Datatypes_prod__canonical__filter_Nbhs X Y) * set Z =>
-   nbhs x.1 P.1 /\ nbhs x.2 P.2) i &
-  ((fun P : set (Datatypes_prod__canonical__filter_Nbhs X Y) * set Z =>
+         (filter.Nbhs.sort
+            (filter.Datatypes_prod__canonical__filter_Nbhs
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  X)
+               (filter.Datatypes_prod__canonical__filter_Nbhs
+                  (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                     Y)
+                  (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                     Z))))],
+filter.nbhs (prodA x) t ->
+exists2
+  i : set
+        (filter.Nbhs.sort
+           (filter.Datatypes_prod__canonical__filter_Nbhs
+              (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                 X)
+              (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                 Y))) *
+      set
+        (filter.Nbhs.sort
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              Z)),
+  (fun
+     P : set
+           (filter.Nbhs.sort
+              (filter.Datatypes_prod__canonical__filter_Nbhs
+                 (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                    X)
+                 (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                    Y))) *
+         set
+           (filter.Nbhs.sort
+              (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                 Z)) =>
+   filter.nbhs x.1 P.1 /\ filter.nbhs x.2 P.2) i &
+  ((fun
+      P : set
+            (filter.Nbhs.sort
+               (filter.Datatypes_prod__canonical__filter_Nbhs
+                  (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                     X)
+                  (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                     Y))) *
+          set
+            (filter.Nbhs.sort
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  Z)) =>
     P.1 `*` P.2) i
-   `<=` unstable.prodA @^-1` t)%classic
+   `<=` prodA @^-1` t)%classic
 
 Arguments prodA_continuous {X Y Z} [x t] _
 prodA_continuous is opaque
@@ -1025,24 +1260,98 @@ library mathcomp.analysis.topology_theory.product_topology, line 242, characters
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="prodAr_continuous" class="id"><a name="prodAr_continuous" class="" title="prodAr_continuous :
-forall {X Y Z : topologicalType}, continuous unstable.prodAr
+forall {X Y Z : topology_structure.Topological.type}
+  [x : filter.Nbhs.sort
+         (filter.Datatypes_prod__canonical__filter_Nbhs
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               X)
+            (filter.Datatypes_prod__canonical__filter_Nbhs
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  Y)
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  Z)))],
+filter.continuous_at
+  (T:=filter.Datatypes_prod__canonical__filter_Nbhs
+        (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+           X)
+        (filter.Datatypes_prod__canonical__filter_Nbhs
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              Y)
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              Z)))
+  (U:=filter.Datatypes_prod__canonical__filter_Nbhs
+        (filter.Datatypes_prod__canonical__filter_Nbhs
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              X)
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              Y))
+        (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+           Z))
+  x prodAr
 
 prodAr_continuous is not universe polymorphic
 Expanded type for implicit arguments
 prodAr_continuous :
-forall {X Y Z : topologicalType}
-  [x : Datatypes_prod__canonical__filter_Nbhs X
-         (Datatypes_prod__canonical__filter_Nbhs Y Z)]
+forall {X Y Z : topology_structure.Topological.type}
+  [x : filter.Nbhs.sort
+         (filter.Datatypes_prod__canonical__filter_Nbhs
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               X)
+            (filter.Datatypes_prod__canonical__filter_Nbhs
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  Y)
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  Z)))]
   [t : set
-         (Datatypes_prod__canonical__filter_Nbhs
-            (Datatypes_prod__canonical__filter_Nbhs X Y) Z)],
-nbhs (unstable.prodAr x) t ->
-exists2 i : set X * set (Datatypes_prod__canonical__filter_Nbhs Y Z),
-  (fun P : set X * set (Datatypes_prod__canonical__filter_Nbhs Y Z) =>
-   nbhs x.1 P.1 /\ nbhs x.2 P.2) i &
-  ((fun P : set X * set (Datatypes_prod__canonical__filter_Nbhs Y Z) =>
+         (filter.Nbhs.sort
+            (filter.Datatypes_prod__canonical__filter_Nbhs
+               (filter.Datatypes_prod__canonical__filter_Nbhs
+                  (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                     X)
+                  (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                     Y))
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  Z)))],
+filter.nbhs (prodAr x) t ->
+exists2
+  i : set
+        (filter.Nbhs.sort
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              X)) *
+      set
+        (filter.Nbhs.sort
+           (filter.Datatypes_prod__canonical__filter_Nbhs
+              (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                 Y)
+              (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                 Z))),
+  (fun
+     P : set
+           (filter.Nbhs.sort
+              (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                 X)) *
+         set
+           (filter.Nbhs.sort
+              (filter.Datatypes_prod__canonical__filter_Nbhs
+                 (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                    Y)
+                 (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                    Z))) =>
+   filter.nbhs x.1 P.1 /\ filter.nbhs x.2 P.2) i &
+  ((fun
+      P : set
+            (filter.Nbhs.sort
+               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                  X)) *
+          set
+            (filter.Nbhs.sort
+               (filter.Datatypes_prod__canonical__filter_Nbhs
+                  (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                     Y)
+                  (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+                     Z))) =>
     P.1 `*` P.2) i
-   `<=` unstable.prodAr @^-1` t)%classic
+   `<=` prodAr @^-1` t)%classic
 
 Arguments prodAr_continuous {X Y Z} [x t] _
 prodAr_continuous is opaque

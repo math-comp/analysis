@@ -272,7 +272,8 @@ Declared in library mathcomp.analysis.ess_sup_inf, line 34, characters 11-18
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ess_supEae" class="id"><a name="ess_supEae" class="" title="ess_supEae :
 forall [d : measure_display] {T : semiRingOfSetsType d} 
   {R : realType} (mu : measure T R) (f : T -> \bar R),
-ess_sup mu f = ereal_inf (R:=R) [set y | (\forall x \ae mu, (f x <= y)%E)]
+ess_sup mu f =
+ereal.ereal_inf (R:=R) [set y | (\forall x \ae mu, (f x <= y)%E)]
 
 ess_supEae is not universe polymorphic
 Arguments ess_supEae [d]%_measure_display_scope {T R} mu f%_function_scope
@@ -334,7 +335,7 @@ measurable_fun (T:=T)
         R)
   [set: T] f ->
 ess_sup mu f =
-ereal_inf (R:=R) [set y | mu (f @^-1` `]y, +oo[)%classic = 0%R]
+ereal.ereal_inf (R:=R) [set y | mu (f @^-1` `]y, +oo[)%classic = 0%R]
 
 ess_supEmu0 is not universe polymorphic
 Arguments ess_supEmu0 [d]%_measure_display_scope {T R} 
@@ -605,7 +606,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ess_supD" class="id"><a name="ess_supD" class="" title="ess_supD :
 forall [d : measure_display] {T : measurableType d} 
   {R : realType} (mu : measure T R) (f g : T -> \bar R),
-(ess_sup mu (f \+ g) <= ess_sup mu f + ess_sup mu g)%E
+(ess_sup mu (f \+ g) <= (ess_sup mu f + ess_sup mu g)%R)%E
 
 ess_supD is not universe polymorphic
 Arguments ess_supD [d]%_measure_display_scope {T R} mu (f g)%_function_scope
@@ -623,7 +624,7 @@ Declared in library mathcomp.analysis.ess_sup_inf, line 158, characters 6-14
 forall [d : measure_display] {T : measurableType d} 
   {R : realType} (mu : measure T R) (f g : T -> \bar R),
 (ess_sup mu (abse \o (f \+ g)) <=
- ess_sup mu (abse \o f) + ess_sup mu (abse \o g))%E
+ (ess_sup mu (abse \o f) + ess_sup mu (abse \o g))%R)%E
 
 ess_sup_absD is not universe polymorphic
 Arguments ess_sup_absD [d]%_measure_display_scope 
@@ -777,7 +778,7 @@ Declared in library mathcomp.analysis.ess_sup_inf, line 217, characters 6-18
 forall [d : measure_display] {T : measurableType d} 
   {R : realType} (mu : measure T R) (f : T -> R)
   (g : T -> GRing.BaseAddMagma.sort R),
-(ess_supr mu (f \+ g) <= ess_supr mu f + ess_supr mu g)%E
+(ess_supr mu (f \+ g) <= (ess_supr mu f + ess_supr mu g)%R)%E
 
 ess_suprD is not universe polymorphic
 Arguments ess_suprD [d]%_measure_display_scope {T R} mu (f g)%_function_scope
@@ -795,7 +796,7 @@ forall [d : measure_display] {T : measurableType d}
   {R : realType} (mu : measure T R) (f : T -> R)
   (g : T -> GRing.BaseAddMagma.sort R),
 (ess_supr mu (normr \o (f \+ g)) <=
- ess_supr mu (normr \o f) + ess_supr mu (normr \o g))%E
+ (ess_supr mu (normr \o f) + ess_supr mu (normr \o g))%R)%E
 
 ess_sup_normD is not universe polymorphic
 Arguments ess_sup_normD [d]%_measure_display_scope 
@@ -835,7 +836,8 @@ Declared in library mathcomp.analysis.ess_sup_inf, line 238, characters 11-18
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ess_infEae" class="id"><a name="ess_infEae" class="" title="ess_infEae :
 forall [d : measure_display] {T : semiRingOfSetsType d} 
   {R : realType} (mu : measure T R) (f : T -> \bar R),
-ess_inf mu f = ereal_sup (R:=R) [set y | (\forall x \ae mu, (y <= f x)%E)]
+ess_inf mu f =
+ereal.ereal_sup (R:=R) [set y | (\forall x \ae mu, (y <= f x)%E)]
 
 ess_infEae is not universe polymorphic
 Arguments ess_infEae [d]%_measure_display_scope {T R} mu f%_function_scope
@@ -1122,7 +1124,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ess_infD" class="id"><a name="ess_infD" class="" title="ess_infD :
 forall [d : measure_display] {T : measurableType d} 
   {R : realType} (mu : measure T R) (f g : T -> \bar R),
-(ess_inf mu f + ess_inf mu g <= ess_inf mu (f \+ g))%E
+((ess_inf mu f + ess_inf mu g)%R <= ess_inf mu (f \+ g))%E
 
 ess_infD is not universe polymorphic
 Arguments ess_infD [d]%_measure_display_scope {T R} mu (f g)%_function_scope

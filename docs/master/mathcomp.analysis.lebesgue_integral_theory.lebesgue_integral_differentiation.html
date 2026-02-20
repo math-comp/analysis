@@ -337,9 +337,21 @@ forall [rT : realType]
 (lebesgue_measure E < +oo)%E ->
 lebesgue_measure.-integrable E (EFin \o f) ->
 exists g_ : (rT -> rT) ^nat,
-  [/\ forall n : nat, continuous (g_ n),
+  [/\ forall (n : nat)
+        (x : filter.Nbhs.sort
+               (numFieldTopology.Real_sort__canonical__filter_Nbhs rT)),
+      filter.continuous_at
+        (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs rT)
+        (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs rT) x 
+        (g_ n),
       forall n : nat, lebesgue_measure.-integrable E (EFin \o g_ n)
-    & ((\int[lebesgue_measure]_(z in E) `|(f z - g_ n z)%:E|)%E @[n --> \oo] --> 0%R)%classic]
+    & filter.cvg_to
+        (filter.nbhs
+           (filter.fmap
+              (fun n : nat =>
+               (\int[lebesgue_measure]_(z in E) `|(f z - g_ n z)%:E|)%E)
+              (filter.nbhs filter.eventually)))
+        (filter.nbhs 0%R)]
 
 approximation_continuous_integrable is not universe polymorphic
 Arguments approximation_continuous_integrable [rT] 
@@ -462,24 +474,41 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lebesgue_differentiation_continuous" class="id"><a name="lebesgue_differentiation_continuous" class="" title="lebesgue_differentiation_continuous :
 forall [rT : realType] [f : measurableTypeR rT -> rT^o]
   [A : set (measurableTypeR rT)] [x : measurableTypeR rT],
-open A ->
+topology_structure.open A ->
 lebesgue_measure.-integrable A (EFin \o f) ->
-{for x, continuous f} ->
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs rT),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs rT)
+    (U:=GRing_regular__canonical__filter_Nbhs rT) x0 f} ->
 A x ->
-(((r *+ 2)^-1 * \int[lebesgue_measure]_(z in ball x r) f z)%R @[r --> 0^'+] --> 
- (f x : (measurableTypeR rT)^o))%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap
+        (fun r : rT =>
+         ((r *+ 2)^-1 * \int[lebesgue_measure]_(z in ball x r) f z)%R)
+        (filter.nbhs (0^'+)%classic)))
+  (filter.nbhs (f x : (measurableTypeR rT)^o))
 
 lebesgue_differentiation_continuous is not universe polymorphic
 Expanded type for implicit arguments
 lebesgue_differentiation_continuous :
 forall [rT : realType] [f : measurableTypeR rT -> rT^o]
   [A : set (measurableTypeR rT)] [x : measurableTypeR rT],
-open A ->
+topology_structure.open A ->
 lebesgue_measure.-integrable A (EFin \o f) ->
-{for x, continuous f} ->
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs rT),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs rT)
+    (U:=GRing_regular__canonical__filter_Nbhs rT) x0 f} ->
 A x ->
 forall [t : set rT],
-nbhs (f x : (measurableTypeR rT)^o) t ->
+filter.nbhs (f x : (measurableTypeR rT)^o) t ->
 exists2 i : rT,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] 0%R i
@@ -590,7 +619,7 @@ library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentia
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="open_integrable_locally" class="id"><a name="open_integrable_locally" class="" title="open_integrable_locally :
 forall {R : realType} [D : set R] [f : R -> R],
-open D ->
+topology_structure.open D ->
 lebesgue_measure.-integrable D (EFin \o f) -> locally_integrable D f
 
 open_integrable_locally is not universe polymorphic
@@ -691,7 +720,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="locally_integrable_indic" class="id"><a name="locally_integrable_indic" class="" title="locally_integrable_indic :
 forall {R : realType} [D A : set R],
-open D -> 'measurable%classic A -> locally_integrable D (\1_A)%R
+topology_structure.open D ->
+'measurable%classic A -> locally_integrable D (\1_A)%R
 
 locally_integrable_indic is not universe polymorphic
 Arguments locally_integrable_indic {R} [D A]%_classical_set_scope _ _
@@ -869,7 +899,7 @@ measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R) A f ->
 measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R) A g ->
-(iavg (f \+ g)%R A <= iavg f A + iavg g A)%E
+(iavg (f \+ g)%R A <= (iavg f A + iavg g A)%R)%E
 
 iavgD is not universe polymorphic
 Arguments iavgD {R} [f g]%_function_scope [A]%_classical_set_scope _ _ _ _
@@ -995,18 +1025,21 @@ lower_semicontinuous_HL_maximal :
 forall {R : realType} [f : R -> R],
 locally_integrable [set: R] f ->
 forall
-  [x : numFieldTopology.Real_sort__canonical__topology_structure_Topological
-         R]
+  [x : topology_structure.Topological.sort
+         (numFieldTopology.Real_sort__canonical__topology_structure_Topological
+            R)]
   [a : R],
 (a%:E < HL_maximal f x)%E ->
 exists2
   V : set
-        (numFieldTopology.Real_sort__canonical__topology_structure_Topological
-           R),
-  nbhs x V &
+        (topology_structure.Topological.sort
+           (numFieldTopology.Real_sort__canonical__topology_structure_Topological
+              R)),
+  filter.nbhs x V &
   forall
-    y : numFieldTopology.Real_sort__canonical__topology_structure_Topological
-          R,
+    y : topology_structure.Topological.sort
+          (numFieldTopology.Real_sort__canonical__topology_structure_Topological
+             R),
   V y -> (a%:E < HL_maximal f y)%E
 
 Arguments lower_semicontinuous_HL_maximal {R} [f]%_function_scope _ [x a] _
@@ -1319,8 +1352,10 @@ Qed.</div></details>
 forall {R : realType} (f : R -> R) [a : itv_bound R] [x u : R],
 (x < u)%R ->
 (a < BRight x)%E ->
-\forall r \near (0^'+)%classic, davg f x r =
-                                davg (f \_ [set` Interval a (BRight u)]) x r
+filter.prop_near1 (0^'+)%classic
+  (P:=fun r : R => davg f x r = davg (f \_ [set` Interval a (BRight u)]) x r)
+  (inPhantom
+     (forall r : R, davg f x r = davg (f \_ [set` Interval a (BRight u)]) x r))
 
 near_davg is not universe polymorphic
 Arguments near_davg {R} f%_function_scope [a x] [u]%_ring_scope _ _
@@ -1405,23 +1440,37 @@ library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentia
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_cvg_davg" class="id"><a name="continuous_cvg_davg" class="" title="continuous_cvg_davg :
 forall {R : realType} [f : R -> R] [x : R] [U : set R],
-open_nbhs x U ->
+topology_structure.open_nbhs x U ->
 'measurable%classic U ->
 measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R) U f ->
-{for x, continuous f} -> (davg f x r @[r --> 0%R] --> 0%R)%classic
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 f} ->
+filter.cvg_to (filter.nbhs (filter.fmap [eta davg f x] (filter.nbhs 0%R)))
+  (filter.nbhs 0%R)
 
 continuous_cvg_davg is not universe polymorphic
 Expanded type for implicit arguments
 continuous_cvg_davg :
 forall {R : realType} [f : R -> R] [x : R] [U : set R],
-open_nbhs x U ->
+topology_structure.open_nbhs x U ->
 'measurable%classic U ->
 measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R) U f ->
-{for x, continuous f} ->
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 f} ->
 forall [t : set \bar R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] 0%R i `<=` [eta davg f x] @^-1` t)%classic
@@ -1501,10 +1550,11 @@ library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentia
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_sup_davg_le" class="id"><a name="lim_sup_davg_le" class="" title="lim_sup_davg_le :
 forall {R : realType} [f g : R -> R]
-  [x : numFieldTopology.Real_sort__canonical__topology_structure_Topological
-         R]
+  [x : topology_structure.Topological.sort
+         (numFieldTopology.Real_sort__canonical__topology_structure_Topological
+            R)]
   [U : set R],
-open_nbhs x U ->
+topology_structure.open_nbhs x U ->
 'measurable%classic U ->
 measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R) U f ->
@@ -1540,14 +1590,22 @@ library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentia
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_lim_sup_davg" class="id"><a name="continuous_lim_sup_davg" class="" title="continuous_lim_sup_davg :
 forall {R : realType} [f : R -> R]
-  [x : numFieldTopology.Real_sort__canonical__topology_structure_Topological
-         R]
+  [x : topology_structure.Topological.sort
+         (numFieldTopology.Real_sort__canonical__topology_structure_Topological
+            R)]
   [U : set R],
-open_nbhs x U ->
+topology_structure.open_nbhs x U ->
 'measurable%classic U ->
 measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R) U f ->
-{for x, continuous f} -> lim_sup_davg f x = 0%R
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 f} ->
+lim_sup_davg f x = 0%R
 
 continuous_lim_sup_davg is not universe polymorphic
 Arguments continuous_lim_sup_davg {R} [f]%_function_scope 
@@ -1569,14 +1627,21 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_sup_davgB" class="id"><a name="lim_sup_davgB" class="" title="lim_sup_davgB :
 forall {R : realType} [f g : R -> R]
-  [x : numFieldTopology.Real_sort__canonical__topology_structure_Topological
-         R]
+  [x : topology_structure.Topological.sort
+         (numFieldTopology.Real_sort__canonical__topology_structure_Topological
+            R)]
   [U : set R],
-open_nbhs x U ->
+topology_structure.open_nbhs x U ->
 'measurable%classic U ->
 measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R) U f ->
-{for x, continuous g} ->
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 g} ->
 locally_integrable [set: R] g -> lim_sup_davg (f \- g)%R x = lim_sup_davg f x
 
 lim_sup_davgB is not universe polymorphic
@@ -1628,7 +1693,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_sup_davgT_HL_maximal" class="id"><a name="lim_sup_davgT_HL_maximal" class="" title="lim_sup_davgT_HL_maximal :
 forall {R : realType} [f : R -> R] (x : R),
 locally_integrable [set: R] f ->
-(lim_sup_davg f x <= HL_maximal f x + `|f x|%:E)%E
+(lim_sup_davg f x <= (HL_maximal f x + `|f x|%:E)%R)%E
 
 lim_sup_davgT_HL_maximal is not universe polymorphic
 Arguments lim_sup_davgT_HL_maximal {R} [f]%_function_scope x%_ring_scope _
@@ -1693,29 +1758,44 @@ library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentia
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_lebesgue_pt" class="id"><a name="continuous_lebesgue_pt" class="" title="continuous_lebesgue_pt :
 forall {R : realType} [f : R -> R]
-  [x : numFieldTopology.Real_sort__canonical__topology_structure_Topological
-         R]
+  [x : topology_structure.Topological.sort
+         (numFieldTopology.Real_sort__canonical__topology_structure_Topological
+            R)]
   [U : set R],
-open_nbhs x U ->
+topology_structure.open_nbhs x U ->
 'measurable%classic U ->
 measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R) U f ->
-{for x, continuous f} -> lebesgue_pt f x
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 f} ->
+lebesgue_pt f x
 
 continuous_lebesgue_pt is not universe polymorphic
 Expanded type for implicit arguments
 continuous_lebesgue_pt :
 forall {R : realType} [f : R -> R]
-  [x : numFieldTopology.Real_sort__canonical__topology_structure_Topological
-         R]
+  [x : topology_structure.Topological.sort
+         (numFieldTopology.Real_sort__canonical__topology_structure_Topological
+            R)]
   [U : set R],
-open_nbhs x U ->
+topology_structure.open_nbhs x U ->
 'measurable%classic U ->
 measurable_fun (T:=Real_sort__canonical__measurable_structure_SigmaRing R)
   (U:=Real_sort__canonical__measurable_structure_SigmaRing R) U f ->
-{for x, continuous f} ->
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 f} ->
 forall [t : set \bar R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] (0%R : R) i
@@ -1755,7 +1835,7 @@ forall {R : realType} [f : R -> R] [a : itv_bound R] [x u : R],
 (a < BRight x)%E ->
 lebesgue_pt f x ->
 forall [t : set \bar R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] (0%R : R) i
@@ -2052,9 +2132,14 @@ library mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentia
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lebesgue_density" class="id"><a name="lebesgue_density" class="" title="lebesgue_density :
 forall {R : realType} [A : set R],
 'measurable%classic A ->
-\forall x \ae lebesgue_measure, ((lebesgue_measure (A `&` ball x r) /
-                                  lebesgue_measure (ball x r))%E @[r --> 0^'+] --> 
-                                 (\1_A x)%:E)%classic
+\forall x \ae lebesgue_measure, filter.cvg_to
+                                  (filter.nbhs
+                                     (filter.fmap
+                                        (fun r : R =>
+                                         (lebesgue_measure (A `&` ball x r) /
+                                          lebesgue_measure (ball x r))%E)
+                                        (filter.nbhs (0^'+)%classic)))
+                                  (filter.nbhs (\1_A x)%:E)
 
 lebesgue_density is not universe polymorphic
 Arguments lebesgue_density {R} [A]%_classical_set_scope _
@@ -2229,9 +2314,14 @@ forall [f : R -> R],
 locally_integrable [set: R] f ->
 forall [x : R],
 lebesgue_pt f x ->
-(((lebesgue_measure (E x n))^-1 *
-  \int[lebesgue_measure]_(y in E x n) (f y)%:E)%E @[n --> \oo] --> 
- (f x)%:E)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap
+        (fun n : nat =>
+         ((lebesgue_measure (E x n))^-1 *
+          \int[lebesgue_measure]_(y in E x n) (f y)%:E)%E)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (f x)%:E)
 
 nice_lebesgue_differentiation is not universe polymorphic
 Expanded type for implicit arguments
@@ -2243,7 +2333,7 @@ locally_integrable [set: R] f ->
 forall [x : R],
 lebesgue_pt f x ->
 forall [t : set \bar R],
-nbhs (f x)%:E t ->
+filter.nbhs (f x)%:E t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i

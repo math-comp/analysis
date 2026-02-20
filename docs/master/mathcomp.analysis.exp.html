@@ -307,18 +307,40 @@ Declared in library mathcomp.analysis.exp, line 60, characters 11-18
 <br/>
 <span class="vernacular">Fact</span><span class="id"> </span><span id="is_cvg_pseries_inside_norm" class="id"><a name="is_cvg_pseries_inside_norm" class="" title="is_cvg_pseries_inside_norm :
 forall [R : realType] [f : nat -> R] [x z : R],
-cvgn (pseries (R:=R) f x) ->
-(`|z| < `|x|)%R -> cvgn (pseries (R:=R) (fun i : nat => `|f i|%R) z)
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (pseries (R:=R) f x) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (pseries (R:=R) f x) (filter.nbhs filter.eventually)))) ->
+(`|z| < `|x|)%R ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (pseries (R:=R) (fun i : nat => `|f i|%R) z)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (pseries (R:=R) (fun i : nat => `|f i|%R) z)
+           (filter.nbhs filter.eventually))))
 
 is_cvg_pseries_inside_norm is not universe polymorphic
 Expanded type for implicit arguments
 is_cvg_pseries_inside_norm :
 forall [R : realType] [f : nat -> R] [x z : R],
-cvgn (pseries (R:=R) f x) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (pseries (R:=R) f x) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (pseries (R:=R) f x) (filter.nbhs filter.eventually)))) ->
 (`|z| < `|x|)%R ->
 forall
   [t : set (join_GRing_PzRing_between_GRing_PzSemiRing_and_Algebra_Zmodule R)],
-nbhs (limn (pseries (R:=R) (fun i : nat => `|f i|%R) z)) t ->
+filter.nbhs
+  (filter.lim
+     (filter.fmap (pseries (R:=R) (fun i : nat => `|f i|%R) z)
+        (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -353,17 +375,37 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Fact</span><span class="id"> </span><span id="is_cvg_pseries_inside" class="id"><a name="is_cvg_pseries_inside" class="" title="is_cvg_pseries_inside :
 forall [R : realType] [f : nat -> R] [x z : R],
-cvgn (pseries (R:=R) f x) -> (`|z| < `|x|)%R -> cvgn (pseries (R:=R) f z)
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (pseries (R:=R) f x) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (pseries (R:=R) f x) (filter.nbhs filter.eventually)))) ->
+(`|z| < `|x|)%R ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (pseries (R:=R) f z) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (pseries (R:=R) f z) (filter.nbhs filter.eventually))))
 
 is_cvg_pseries_inside is not universe polymorphic
 Expanded type for implicit arguments
 is_cvg_pseries_inside :
 forall [R : realType] [f : nat -> R] [x z : R],
-cvgn (pseries (R:=R) f x) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (pseries (R:=R) f x) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (pseries (R:=R) f x) (filter.nbhs filter.eventually)))) ->
 (`|z| < `|x|)%R ->
 forall
   [t : set (join_GRing_PzRing_between_GRing_PzSemiRing_and_Algebra_Zmodule R)],
-nbhs (limn (pseries (R:=R) f z)) t ->
+filter.nbhs
+  (filter.lim
+     (filter.fmap (pseries (R:=R) f z) (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` pseries (R:=R) f z @^-1` t)%classic
@@ -430,7 +472,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pseries_diffs_sumE" class="id"><a name="pseries_diffs_sumE" class="" title="pseries_diffs_sumE :
 forall [R : realType] (n : nat) (f : nat -> R) (x : R),
 (\sum_(0 <= i < n) pseries_diffs (R:=R) f i * x ^+ i)%R =
-((\sum_(0 <= i < n) i%:R * f i * x ^+ i.-1)%R + (n%:R * f n * x ^+ n.-1)%R)%E
+(\sum_(0 <= i < n) i%:R * f i * x ^+ i.-1 + n%:R * f n * x ^+ n.-1)%R
 
 pseries_diffs_sumE is not universe polymorphic
 Arguments pseries_diffs_sumE [R] n%_nat_scope f%_function_scope x%_ring_scope
@@ -451,18 +493,41 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pseries_diffs_equiv" class="id"><a name="pseries_diffs_equiv" class="" title="pseries_diffs_equiv :
 forall [R : realType] [f : nat -> R] [x : R],
 let s := fun i : nat => (i%:R * f i * x ^+ i.-1)%R in
-cvgn (pseries (R:=R) (pseries_diffs (R:=R) f) x) ->
-(series s x @[x --> \oo] --> limn (pseries (R:=R) (pseries_diffs (R:=R) f) x))%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (pseries (R:=R) (pseries_diffs (R:=R) f) x)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (pseries (R:=R) (pseries_diffs (R:=R) f) x)
+           (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap (series s) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (pseries (R:=R) (pseries_diffs (R:=R) f) x)
+           (filter.nbhs filter.eventually))))
 
 pseries_diffs_equiv is not universe polymorphic
 Expanded type for implicit arguments
 pseries_diffs_equiv :
 forall [R : realType] [f : nat -> R] [x : R],
 let s := fun i : nat => (i%:R * f i * x ^+ i.-1)%R in
-cvgn (pseries (R:=R) (pseries_diffs (R:=R) f) x) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (pseries (R:=R) (pseries_diffs (R:=R) f) x)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (pseries (R:=R) (pseries_diffs (R:=R) f) x)
+           (filter.nbhs filter.eventually)))) ->
 forall
   [t : set (join_GRing_PzRing_between_GRing_PzSemiRing_and_Algebra_Zmodule R)],
-nbhs (limn (pseries (R:=R) (pseries_diffs (R:=R) f) x)) t ->
+filter.nbhs
+  (filter.lim
+     (filter.fmap (pseries (R:=R) (pseries_diffs (R:=R) f) x)
+        (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i `<=` series s @^-1` t)%classic
@@ -488,17 +553,42 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="is_cvg_pseries_diffs_equiv" class="id"><a name="is_cvg_pseries_diffs_equiv" class="" title="is_cvg_pseries_diffs_equiv :
 forall [R : realType] [f : nat -> R] [x : R],
-cvgn (pseries (R:=R) (pseries_diffs (R:=R) f) x) ->
-cvgn [series i%:R * f i * x ^+ i.-1]_i%R
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (pseries (R:=R) (pseries_diffs (R:=R) f) x)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (pseries (R:=R) (pseries_diffs (R:=R) f) x)
+           (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [series i%:R * f i * x ^+ i.-1]_i%R
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap [series i%:R * f i * x ^+ i.-1]_i%R
+           (filter.nbhs filter.eventually))))
 
 is_cvg_pseries_diffs_equiv is not universe polymorphic
 Expanded type for implicit arguments
 is_cvg_pseries_diffs_equiv :
 forall [R : realType] [f : nat -> R] [x : R],
-cvgn (pseries (R:=R) (pseries_diffs (R:=R) f) x) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (pseries (R:=R) (pseries_diffs (R:=R) f) x)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (pseries (R:=R) (pseries_diffs (R:=R) f) x)
+           (filter.nbhs filter.eventually)))) ->
 forall
   [t : set (join_GRing_PzRing_between_GRing_PzSemiRing_and_Algebra_Zmodule R)],
-nbhs (limn [series i%:R * f i * x ^+ i.-1]_i%R) t ->
+filter.nbhs
+  (filter.lim
+     (filter.fmap [series i%:R * f i * x ^+ i.-1]_i%R
+        (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -583,16 +673,40 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pseries_snd_diffs" class="id"><a name="pseries_snd_diffs" class="" title="pseries_snd_diffs :
 forall [R : realType] [c : R ^nat] [K : R]
   [x : numFieldNormedType.Real_sort__canonical__normed_module_NormedModule R],
-cvgn (pseries (R:=R) c K) ->
-cvgn (pseries (R:=R) (pseries_diffs (R:=R) c) K) ->
-cvgn (pseries (R:=R) (pseries_diffs (R:=R) (pseries_diffs (R:=R) c)) K) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (pseries (R:=R) c K) (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (pseries (R:=R) c K) (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (pseries (R:=R) (pseries_diffs (R:=R) c) K)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (pseries (R:=R) (pseries_diffs (R:=R) c) K)
+           (filter.nbhs filter.eventually)))) ->
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap
+        (pseries (R:=R) (pseries_diffs (R:=R) (pseries_diffs (R:=R) c)) K)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap
+           (pseries (R:=R) (pseries_diffs (R:=R) (pseries_diffs (R:=R) c)) K)
+           (filter.nbhs filter.eventually)))) ->
 (`|x| < `|K|)%R ->
 is_derive x (1%R : R)
   (fun
      x0 : numFieldNormedType.Real_sort__canonical__normed_module_NormedModule
             R =>
-   limn (pseries (R:=R) c x0))
-  (limn (pseries (R:=R) (pseries_diffs (R:=R) c) x))
+   filter.lim
+     (filter.fmap (pseries (R:=R) c x0) (filter.nbhs filter.eventually)))
+  (filter.lim
+     (filter.fmap (pseries (R:=R) (pseries_diffs (R:=R) c) x)
+        (filter.nbhs filter.eventually)))
 
 pseries_snd_diffs is not universe polymorphic
 Arguments pseries_snd_diffs [R c] [K]%_ring_scope [x] _ _ _ _
@@ -743,7 +857,7 @@ Declared in library mathcomp.analysis.exp, line 311, characters 6-11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expR_ge1Dxn" class="id"><a name="expR_ge1Dxn" class="" title="expR_ge1Dxn :
 forall [R : realType] [x : R] (n : nat),
-(0 <= x)%R -> ((1%R + (x ^+ n.+1 / (n.+1)`!%:R)%R)%E <= expR x)%R
+(0 <= x)%R -> (1 + x ^+ n.+1 / (n.+1)`!%:R <= expR x)%R
 
 expR_ge1Dxn is not universe polymorphic
 Arguments expR_ge1Dxn [R] [x]%_ring_scope n%_nat_scope _
@@ -800,7 +914,10 @@ Declared in library mathcomp.analysis.exp, line 345, characters 6-16
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expRE" class="id"><a name="expRE" class="" title="expRE :
 forall R : realType,
 expR =
-(fun x : R => limn (pseries (R:=R) [eta fun n0 : nat => n0`!%:R^-1%R] x))
+(fun x : R =>
+ filter.lim
+   (filter.fmap (pseries (R:=R) [eta fun n0 : nat => n0`!%:R^-1%R] x)
+      (filter.nbhs filter.eventually)))
 
 expRE is not universe polymorphic
 Arguments expRE R
@@ -841,21 +958,25 @@ forall [R : realType] [x : R]
   [t : set
          (numFieldNormedType.Real_sort__canonical__normed_module_NormedModule
             R)],
-nbhs
-  (lim
-     ((h^-1 *: ((expR \o shift x) h%:A - expR x))%R @[h --> (0%R)^'])%classic)
+filter.nbhs
+  (filter.lim
+     (filter.fmap
+        (fun h : R => (h^-1 *: ((expR \o shift x) h%:A - expR x))%R)
+        (filter.nbhs (topology_structure.dnbhs 0%R))))
   t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] 0%R i
    `<=` (fun
-           t0 : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+           t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
          (fun
-            y : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+            y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
           is_true (y != 0%R)) t0 ->
          ((fun h : R => (h^-1 *: ((expR \o shift x) h%:A - expR x))%R) @^-1`
           t) t0))%classic
@@ -883,15 +1004,24 @@ Declared in library mathcomp.analysis.exp, line 374, characters 6-17
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#funext">funext</a></span><span class="id"> =&gt;</span><span class="id"> r</span><span class="id"> /=;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html#derive_val">derive_val</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_expR" class="id"><a name="continuous_expR" class="" title="continuous_expR : forall [R : realType], continuous expR
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_expR" class="id"><a name="continuous_expR" class="" title="continuous_expR :
+forall [R : realType]
+  [x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+filter.continuous_at
+  (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+  (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x expR
 
 continuous_expR is not universe polymorphic
 Expanded type for implicit arguments
 continuous_expR :
 forall [R : realType]
-  [x : numFieldTopology.Real_sort__canonical__filter_Nbhs R]
-  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-nbhs (expR x) t ->
+  [x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)]
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs (expR x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` expR @^-1` t)%classic
@@ -908,7 +1038,7 @@ Declared in library mathcomp.analysis.exp, line 377, characters 6-21
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expRxDyMexpx" class="id"><a name="expRxDyMexpx" class="" title="expRxDyMexpx :
-forall [R : realType] (x y : R), (expR (x + y)%E * expR (- x))%R = expR y
+forall [R : realType] (x y : R), (expR (x + y) * expR (- x))%R = expR y
 
 expRxDyMexpx is not universe polymorphic
 Arguments expRxDyMexpx [R] (x y)%_ring_scope
@@ -1025,7 +1155,7 @@ Declared in library mathcomp.analysis.exp, line 416, characters 6-11
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.exp.html#expRxMexpNx_1">expRxMexpNx_1</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulfV">mulfV</a></span><span class="id"> //</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.lt0r_neq0">lt0r_neq0</a></span> (<span class="id"><a href="mathcomp.analysis.exp.html#expR_gt0">expR_gt0</a></span><span class="id"> x</span>)).<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="expRD" class="id"><a name="expRD" class="" title="expRD : forall [R : realType] (x y : R), expR (x + y)%E = (expR x * expR y)%R
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="expRD" class="id"><a name="expRD" class="" title="expRD : forall [R : realType] (x y : R), expR (x + y) = (expR x * expR y)%R
 
 expRD is not universe polymorphic
 Arguments expRD [R] (x y)%_ring_scope
@@ -1182,8 +1312,7 @@ Declared in library mathcomp.analysis.exp, line 474, characters 6-14
 <span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TotalTheory.leNgt">leNgt</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.exp.html#ltr_expR">ltr_expR</a></span><span class="id"> yLx</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="expR_gt1Dx" class="id"><a name="expR_gt1Dx" class="" title="expR_gt1Dx :
-forall [R : realType] [x : R], x != 0%R -> ((1%R + x)%E < expR x)%R
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="expR_gt1Dx" class="id"><a name="expR_gt1Dx" class="" title="expR_gt1Dx : forall [R : realType] [x : R], x != 0%R -> (1 + x < expR x)%R
 
 expR_gt1Dx is not universe polymorphic
 Arguments expR_gt1Dx [R] [x]%_ring_scope _
@@ -1209,7 +1338,7 @@ Declared in library mathcomp.analysis.exp, line 482, characters 6-16
 &nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.addrC">addrC</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ltrD2r">ltrD2r</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ltr_pMl">ltr_pMl</a></span><span class="id">//</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.exp.html#expR0">expR0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.exp.html#ltr_expR">ltr_expR</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="expR_ge1Dx" class="id"><a name="expR_ge1Dx" class="" title="expR_ge1Dx : forall [R : realType] (x : R), ((1%R + x)%E <= expR x)%R
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="expR_ge1Dx" class="id"><a name="expR_ge1Dx" class="" title="expR_ge1Dx : forall [R : realType] (x : R), (1 + x <= expR x)%R
 
 expR_ge1Dx is not universe polymorphic
 Arguments expR_ge1Dx [R] x%_ring_scope
@@ -1224,13 +1353,16 @@ Declared in library mathcomp.analysis.exp, line 499, characters 6-16
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgr_expR" class="id"><a name="cvgr_expR" class="" title="cvgr_expR :
-forall [R : realType], (expR (- x) @[x --> +oo%R] --> 0%R)%classic
+forall [R : realType],
+filter.cvg_to
+  (filter.nbhs (filter.fmap (fun x : R => expR (- x)) (filter.nbhs +oo%R)))
+  (filter.nbhs 0%R)
 
 cvgr_expR is not universe polymorphic
 Expanded type for implicit arguments
 cvgr_expR :
 forall [R : realType] [t : set R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists M : R,
   M \is Num.real /\
   (forall x : R, (M < x)%R -> ((fun x0 : R => expR (- x0)) @^-1` t)%classic x)
@@ -1251,13 +1383,18 @@ Declared in library mathcomp.analysis.exp, line 504, characters 6-15
 <span class="id">Unshelve</span>. <span class="id">end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvgn_expR" class="id"><a name="cvgn_expR" class="" title="cvgn_expR :
-forall [R : realType], (expR (1 *- n) @[n --> \oo] --> 0%R)%classic
+forall [R : realType],
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => expR (1 *- n))
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs 0%R)
 
 cvgn_expR is not universe polymorphic
 Expanded type for implicit arguments
 cvgn_expR :
 forall [R : realType] [t : set R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -1299,7 +1436,7 @@ forall [R : realType] [x : R],
 exists
   y : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
         R,
-  [/\ (0 <= y)%R, ((1%R + y)%E <= x)%R & expR y = x]
+  [/\ (0 <= y)%R, (1 + y <= x)%R & expR y = x]
 
 expR_total_gt1 is not universe polymorphic
 Arguments expR_total_gt1 [R] [x]%_ring_scope _
@@ -1541,7 +1678,7 @@ Declared in library mathcomp.analysis.exp, line 628, characters 6-15
 <span class="gallina-kwd"> by</span><span class="id"> case:</span><span class="id"> x</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expeRD" class="id"><a name="expeRD" class="" title="expeRD :
-forall {R : realType} (x y : \bar R), expeR (x + y) = (expeR x * expeR y)%E
+forall {R : realType} (x y : \bar R), expeR (x + y)%R = (expeR x * expeR y)%E
 
 expeRD is not universe polymorphic
 Arguments expeRD {R} (x y)%_ereal_scope
@@ -1561,7 +1698,7 @@ Declared in library mathcomp.analysis.exp, line 631, characters 6-12
 &nbsp;&nbsp;<span class="id">+</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#mulyy">mulyy</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="expeR_ge1Dx" class="id"><a name="expeR_ge1Dx" class="" title="expeR_ge1Dx : forall {R : realType} (x : \bar R), (1 + x <= expeR x)%E
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="expeR_ge1Dx" class="id"><a name="expeR_ge1Dx" class="" title="expeR_ge1Dx : forall {R : realType} (x : \bar R), ((1%E + x)%R <= expeR x)%E
 
 expeR_ge1Dx is not universe polymorphic
 Arguments expeR_ge1Dx {R} x%_ereal_scope
@@ -1747,7 +1884,7 @@ Declared in library mathcomp.analysis.exp, line 716, characters 6-9
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lnM" class="id"><a name="lnM" class="" title="lnM :
 forall [R : realType],
-{in Num.pos &, {morph ln (R:=R) : x y / (x * y)%R >-> (x + y)%E}}
+{in Num.pos &, {morph ln (R:=R) : x y / (x * y)%R >-> (x + y)%R}}
 
 lnM is not universe polymorphic
 Expanded type for implicit arguments
@@ -1896,7 +2033,7 @@ Declared in library mathcomp.analysis.exp, line 746, characters 6-10
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="le_ln1Dx" class="id"><a name="le_ln1Dx" class="" title="le_ln1Dx :
-forall [R : realType] [x : R], (-1 < x)%R -> (ln (R:=R) (1%R + x)%E <= x)%R
+forall [R : realType] [x : R], (-1 < x)%R -> (ln (R:=R) (1 + x) <= x)%R
 
 le_ln1Dx is not universe polymorphic
 Arguments le_ln1Dx [R] [x]%_ring_scope _
@@ -2002,15 +2139,27 @@ Declared in library mathcomp.analysis.exp, line 784, characters 6-12
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_ln" class="id"><a name="continuous_ln" class="" title="continuous_ln :
-forall [R : realType] [x : R], (0 < x)%R -> {for x, continuous (ln (R:=R))}
+forall [R : realType] [x : R],
+(0 < x)%R ->
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (numFieldTopology.Real_sort__canonical__filter_Nbhs R),
+  filter.continuous_at
+    (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x0 
+    (ln (R:=R))}
 
 continuous_ln is not universe polymorphic
 Expanded type for implicit arguments
 continuous_ln :
 forall [R : realType] [x : R],
 (0 < x)%R ->
-forall [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-nbhs (ln (R:=R) x) t ->
+forall
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs (ln (R:=R) x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` ln (R:=R) @^-1` t)%classic
@@ -2060,13 +2209,17 @@ Declared in library mathcomp.analysis.exp, line 807, characters 6-16
 Qed.</div></details>
 <span class="vernacular">Local</span><span class="vernacular"> Close</span><span class="vernacular"> Scope</span><span class="id"> convex_scope</span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="lnNy" class="id"><a name="lnNy" class="" title="lnNy : forall [R : realType], (ln (R:=R) x @[x --> 0^'+] --> -oo%R)%classic
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="lnNy" class="id"><a name="lnNy" class="" title="lnNy :
+forall [R : realType],
+filter.cvg_to
+  (filter.nbhs (filter.fmap [eta ln (R:=R)] (filter.nbhs (0^'+)%classic)))
+  (filter.nbhs -oo%R)
 
 lnNy is not universe polymorphic
 Expanded type for implicit arguments
 lnNy :
 forall [R : realType] [t : set R],
-nbhs -oo%R t ->
+filter.nbhs -oo%R t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] 0%R i
@@ -2536,7 +2689,7 @@ Declared in library mathcomp.analysis.exp, line 964, characters 6-12
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="powRD" class="id"><a name="powRD" class="" title="powRD :
 forall [R : realType] [x r s : R],
-((r + s)%E == 0%R) ==> (x != 0%R) -> (x `^ (r + s)%E)%R = (x `^ r * x `^ s)%R
+((r + s)%R == 0%R) ==> (x != 0%R) -> (x `^ (r + s))%R = (x `^ r * x `^ s)%R
 
 powRD is not universe polymorphic
 Arguments powRD [R] [x r s]%_ring_scope _
@@ -2748,8 +2901,7 @@ forall [R : realType] [a : R]
 (0 <= a)%R ->
 (0 <= b)%R ->
 (0 < p)%R ->
-(0 < q)%R ->
-(p^-1%R + q^-1%R)%E = 1%R -> (a * b <= ((a `^ p / p)%R + (b `^ q / q)%R)%E)%R
+(0 < q)%R -> (p^-1 + q^-1)%R = 1%R -> (a * b <= a `^ p / p + b `^ q / q)%R
 
 conjugate_powR is not universe polymorphic
 Arguments conjugate_powR [R] [a]%_ring_scope [b p q] _ _ _ _ _
@@ -2831,7 +2983,10 @@ Declared in library mathcomp.analysis.exp, line 1079, characters 10-19
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="powR_cvg0" class="id"><a name="powR_cvg0" class="" title="powR_cvg0 :
 forall [R : realType] [x : R],
-(0 < x)%R -> ((a `^ x)%R @[a --> 0^'+] --> 0%R)%classic
+(0 < x)%R ->
+filter.cvg_to
+  (filter.nbhs (filter.fmap ((powR (R:=R))^~ x) (filter.nbhs (0^'+)%classic)))
+  (filter.nbhs 0%R)
 
 powR_cvg0 is not universe polymorphic
 Expanded type for implicit arguments
@@ -2839,7 +2994,7 @@ powR_cvg0 :
 forall [R : realType] [x : R],
 (0 < x)%R ->
 forall [t : set R],
-nbhs 0%R t ->
+filter.nbhs 0%R t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] 0%R i
@@ -2887,23 +3042,27 @@ forall
   [t : set
          (numFieldNormedType.Real_sort__canonical__normed_module_NormedModule
             R)],
-nbhs
-  (lim
-     ((h^-1 *:
-       (((powR (R:=R))^~ x \o shift x0) (h *: v) - ((powR (R:=R))^~ x) x0))%R @[h --> 
-      (0%R)^'])%classic)
+filter.nbhs
+  (filter.lim
+     (filter.fmap
+        (fun h : R =>
+         (h^-1 *:
+          (((powR (R:=R))^~ x \o shift x0) (h *: v) - ((powR (R:=R))^~ x) x0))%R)
+        (filter.nbhs (topology_structure.dnbhs 0%R))))
   t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] 0%R i
    `<=` (fun
-           t0 : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+           t0 : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
          (fun
-            y : join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
-                  (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
-                     R) =>
+            y : topology_structure.Topological.Exports.topology_structure_Topological__to__eqtype_Equality
+                  (join_tvs_PreTopologicalNmodule_between_Algebra_BaseAddUMagma_and_topology_structure_Topological
+                     (numFieldNormedType.NumField_sort__canonical__tvs_PreTopologicalNmodule
+                        R)) =>
           is_true (y != 0%R)) t0 ->
          ((fun h : R =>
            (h^-1 *:
@@ -3132,7 +3291,7 @@ Declared in library mathcomp.analysis.exp, line 1183, characters 6-10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lneM" class="id"><a name="lneM" class="" title="lneM :
 forall [R : realType],
-{in `]0, +oo%E]%R &, {morph lne (R:=R) : x y / (x * y)%E >-> (x + y)%E}}
+{in `]0, +oo%E]%R &, {morph lne (R:=R) : x y / (x * y)%E >-> (x + y)%R}}
 
 lneM is not universe polymorphic
 Expanded type for implicit arguments
@@ -3288,7 +3447,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="le_lne1Dx" class="id"><a name="le_lne1Dx" class="" title="le_lne1Dx :
 forall [R : realType] [x : \bar R],
-(-1 <= x)%E -> (lne (R:=R) (1 + x) <= x)%E
+(-1 <= x)%E -> (lne (R:=R) (1%E + x)%R <= x)%E
 
 le_lne1Dx is not universe polymorphic
 Arguments le_lne1Dx [R] [x]%_ereal_scope _
@@ -3833,7 +3992,7 @@ Declared in library mathcomp.analysis.exp, line 1399, characters 11-21
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="poweRD_defE" class="id"><a name="poweRD_defE" class="" title="poweRD_defE :
 forall {R : realType} (x : \bar R) (r s : R),
 poweRD_def x r s =
-((r + s)%E == 0%R) ==>
+((r + s)%R == 0%R) ==>
 (x != 0%R) && ((x \isn't a fin_num) ==> (r == 0%R) && (s == 0%R))
 
 poweRD_defE is not universe polymorphic
@@ -3870,7 +4029,7 @@ Declared in library mathcomp.analysis.exp, line 1408, characters 6-17
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="add_neq0_poweRD_def" class="id"><a name="add_neq0_poweRD_def" class="" title="add_neq0_poweRD_def :
 forall {R : realType} (x : \bar R) [r s : R],
-(r + s)%E != 0%R -> poweRD_def x r s
+(r + s)%R != 0%R -> poweRD_def x r s
 
 add_neq0_poweRD_def is not universe polymorphic
 Arguments add_neq0_poweRD_def {R} x%_ereal_scope [r s]%_ring_scope _
@@ -3934,7 +4093,7 @@ Declared in library mathcomp.analysis.exp, line 1427, characters 6-26
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="poweRD" class="id"><a name="poweRD" class="" title="poweRD :
 forall {R : realType} [x : \bar R] [r s : R],
-poweRD_def x r s -> (x `^ (r + s)%E)%E = (x `^ r * x `^ s)%E
+poweRD_def x r s -> (x `^ (r + s))%E = (x `^ r * x `^ s)%E
 
 poweRD is not universe polymorphic
 Arguments poweRD {R} [x]%_ereal_scope [r s]%_ring_scope _
@@ -4022,7 +4181,16 @@ Declared in library mathcomp.analysis.exp, line 1463, characters 6-18
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="dvg_riemannR" class="id"><a name="dvg_riemannR" class="" title="dvg_riemannR :
 forall [R : realType] [a : R],
-(0 <= a <= 1)%R -> ~ cvgn (series (riemannR (R:=R) a))
+(0 <= a <= 1)%R ->
+~
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (series (riemannR (R:=R) a))
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (series (riemannR (R:=R) a))
+           (filter.nbhs filter.eventually))))
 
 dvg_riemannR is not universe polymorphic
 Arguments dvg_riemannR [R] [a]%_ring_scope _ _

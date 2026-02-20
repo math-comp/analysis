@@ -327,7 +327,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="expn_prod" class="id"><a name="expn_prod" class="" title="expn_prod :
 forall [I : eqType] (r : seq I) (P : {pred I}) (F : I -> nat) (n : nat),
-(\prod_(i <- r | P i) F i) ^ n = \prod_(i <- r | P i) F i ^ n
+((\prod_(i <- r | P i) F i) ^ n)%N = \prod_(i <- r | P i) F i ^ n
 
 expn_prod is not universe polymorphic
 Arguments expn_prod [I] r%_seq_scope P F%_function_scope n%_nat_scope
@@ -455,9 +455,10 @@ Qed.</div></details>
 <span class="vernacular">Variables</span> (<span id="bigmax_seq.r" class="id"><a name="bigmax_seq.r" class="">r</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#seq">seq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html#bigmax_seq.I">I</a></span>) (<span id="bigmax_seq.i0" class="id"><a name="bigmax_seq.i0" class="">i0</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html#bigmax_seq.I">I</a></span>) (<span id="bigmax_seq.P" class="id"><a name="bigmax_seq.P" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html#bigmax_seq.I">I</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="le_bigmax_seq" class="id"><a name="le_bigmax_seq" class="" title="le_bigmax_seq :
-forall {disp : disp_t} {T : orderType disp} {I : eqType} 
-  {r : seq I} (x : T) (i0 : I) (P : pred I) (F : I -> T),
-i0 \in r -> P i0 -> (F i0 <= \big[Def.max/x]_(i <- r | P i) F i)%O
+forall {disp : Order.disp_t} {T : orderType disp} 
+  {I : eqType} {r : seq I} (x : T) (i0 : I) (P : pred I) 
+  (F : I -> T),
+i0 \in r -> P i0 -> (F i0 <= \big[Order.Def.max/x]_(i <- r | P i) F i)%O
 
 le_bigmax_seq is not universe polymorphic
 Arguments le_bigmax_seq {disp T I} {r}%_seq_scope 
@@ -476,11 +477,11 @@ Declared in library mathcomp.order.order, line 3212, characters 6-19
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigmax_sup_seq" class="id"><a name="bigmax_sup_seq" class="" title="bigmax_sup_seq :
-forall {disp : disp_t} {T : orderType disp} {I : eqType} 
-  {r : seq I} (x : T) (i0 : I) (P : pred I) (t : T) 
-  (F : I -> T),
+forall {disp : Order.disp_t} {T : orderType disp} 
+  {I : eqType} {r : seq I} (x : T) (i0 : I) (P : pred I) 
+  (t : T) (F : I -> T),
 i0 \in r ->
-P i0 -> (t <= F i0)%O -> (t <= \big[Def.max/x]_(i <- r | P i) F i)%O
+P i0 -> (t <= F i0)%O -> (t <= \big[Order.Def.max/x]_(i <- r | P i) F i)%O
 
 bigmax_sup_seq is not universe polymorphic
 Arguments bigmax_sup_seq {disp T I} {r}%_seq_scope 
@@ -519,7 +520,7 @@ Declared in library mathcomp.classical.unstable, line 159, characters 6-18
 Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="monotonic" class="id"><a name="monotonic" class="" title="monotonic :
-forall [d : disp_t] [T : porderType d] [d' : disp_t] 
+forall [d : Order.disp_t] [T : porderType d] [d' : Order.disp_t]
   [T' : porderType d'] [pT : predType T],
 pT -> (T -> T') -> Prop
 
@@ -533,7 +534,7 @@ Declared in library mathcomp.classical.unstable, line 169, characters 11-20
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="mathcomp.classical.unstable.html#A:97">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> &amp;,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.nondecreasing">nondecreasing</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html#f:98">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#f031fe1957c4a4a8e217aa46af2b4e25"> \/</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#f031fe1957c4a4a8e217aa46af2b4e25"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="mathcomp.classical.unstable.html#A:97">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> &amp;,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#f8cf26e2692dd049d0bd6938a7e7b8c0">{homo</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#f8cf26e2692dd049d0bd6938a7e7b8c0"> </a></span><span class="id"><a href="mathcomp.classical.unstable.html#f:98">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#f8cf26e2692dd049d0bd6938a7e7b8c0"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#f8cf26e2692dd049d0bd6938a7e7b8c0"> </a></span><span id="x:101" class="id"><span id="x:100" class="id"><a name="x:101" class="">x</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#f8cf26e2692dd049d0bd6938a7e7b8c0"> </a></span><span id="y:102" class="id"><span id="y:99" class="id"><a name="y:102" class="">y</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#f8cf26e2692dd049d0bd6938a7e7b8c0"> /~</a></span> (<span class="id"><a href="mathcomp.classical.unstable.html#x:100">x</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#4a718365fe6d60a4322f996a7adbd575"> &lt;=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#4a718365fe6d60a4322f996a7adbd575"> </a></span><span class="id"><a href="mathcomp.classical.unstable.html#y:99">y</a></span>)<span class="id">%O</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#f8cf26e2692dd049d0bd6938a7e7b8c0">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">}</a></span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="strict_monotonic" class="id"><a name="strict_monotonic" class="" title="strict_monotonic :
-forall [d : disp_t] [T : porderType d] [d' : disp_t] 
+forall [d : Order.disp_t] [T : porderType d] [d' : Order.disp_t]
   [T' : porderType d'] [pT : predType T],
 pT -> (T -> T') -> Prop
 
@@ -547,7 +548,7 @@ Declared in library mathcomp.classical.unstable, line 173, characters 11-27
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="mathcomp.classical.unstable.html#A:108">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> &amp;,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#a5aeb8c3f096bffee5d65fb0b6810e02">{homo</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#a5aeb8c3f096bffee5d65fb0b6810e02"> </a></span><span class="id"><a href="mathcomp.classical.unstable.html#f:109">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#a5aeb8c3f096bffee5d65fb0b6810e02"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#a5aeb8c3f096bffee5d65fb0b6810e02"> </a></span><span id="x:112" class="id"><span id="x:110" class="id"><a name="x:112" class="">x</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#a5aeb8c3f096bffee5d65fb0b6810e02"> </a></span><span id="y:113" class="id"><span id="y:111" class="id"><a name="y:113" class="">y</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#a5aeb8c3f096bffee5d65fb0b6810e02"> /</a></span> (<span class="id"><a href="mathcomp.classical.unstable.html#x:110">x</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.PreOSyntax.::order_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.PreOSyntax.::order_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.unstable.html#y:111">y</a></span>)<span class="id">%O</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#a5aeb8c3f096bffee5d65fb0b6810e02">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#f031fe1957c4a4a8e217aa46af2b4e25"> \/</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#f031fe1957c4a4a8e217aa46af2b4e25"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="mathcomp.classical.unstable.html#A:108">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> &amp;,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#f8cf26e2692dd049d0bd6938a7e7b8c0">{homo</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#f8cf26e2692dd049d0bd6938a7e7b8c0"> </a></span><span class="id"><a href="mathcomp.classical.unstable.html#f:109">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#f8cf26e2692dd049d0bd6938a7e7b8c0"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#f8cf26e2692dd049d0bd6938a7e7b8c0"> </a></span><span id="x:116" class="id"><span id="x:115" class="id"><a name="x:116" class="">x</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#f8cf26e2692dd049d0bd6938a7e7b8c0"> </a></span><span id="y:117" class="id"><span id="y:114" class="id"><a name="y:117" class="">y</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#f8cf26e2692dd049d0bd6938a7e7b8c0"> /~</a></span> (<span class="id"><a href="mathcomp.classical.unstable.html#x:115">x</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.PreOSyntax.::order_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.PreOSyntax.::order_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.unstable.html#y:114">y</a></span>)<span class="id">%O</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#f8cf26e2692dd049d0bd6938a7e7b8c0">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">}</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="strict_monotonicW" class="id"><a name="strict_monotonicW" class="" title="strict_monotonicW :
-forall [d : disp_t] [T : orderType d] [d' : disp_t] 
+forall [d : Order.disp_t] [T : orderType d] [d' : Order.disp_t]
   [T' : porderType d'] [pT : predType T] [A : pT] 
   [f : T -> T'],
 strict_monotonic (T:=T) (T':=T') (pT:=pT) A f ->
@@ -588,7 +589,7 @@ Qed.</div></details>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">a</span><span class="id"> b</span><span class="id"> c</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html#path_lt.T">T</a></span>) (<span class="id">s</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#seq">seq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html#path_lt.T">T</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="last_filterP" class="id"><a name="last_filterP" class="" title="last_filterP :
-forall {d : disp_t} {T : orderType d} {a : T} (P : pred T) (s : seq T),
+forall {d : Order.disp_t} {T : orderType d} {a : T} (P : pred T) (s : seq T),
 P a -> P (last a [seq x <- s | P x])
 
 last_filterP is not universe polymorphic
@@ -605,7 +606,7 @@ Declared in library mathcomp.classical.unstable, line 195, characters 6-18
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="path_lt_filter0" class="id"><a name="path_lt_filter0" class="" title="path_lt_filter0 :
-forall [d : disp_t] {T : orderType d} [a : T] [s : seq T],
+forall [d : Order.disp_t] {T : orderType d} [a : T] [s : seq T],
 path <%O a s -> [seq x <- s | (x < a)%O] = [::]
 
 path_lt_filter0 is not universe polymorphic
@@ -623,7 +624,7 @@ Declared in library mathcomp.classical.unstable, line 201, characters 6-21
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="path_lt_filterT" class="id"><a name="path_lt_filterT" class="" title="path_lt_filterT :
-forall [d : disp_t] {T : orderType d} [a : T] [s : seq T],
+forall [d : Order.disp_t] {T : orderType d} [a : T] [s : seq T],
 path <%O a s -> [seq x <- s | (a < x)%O] = s
 
 path_lt_filterT is not universe polymorphic
@@ -640,7 +641,7 @@ Declared in library mathcomp.classical.unstable, line 208, characters 6-21
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="path_lt_head" class="id"><a name="path_lt_head" class="" title="path_lt_head :
-forall [d : disp_t] {T : orderType d} [a b : T] [s : seq T],
+forall [d : Order.disp_t] {T : orderType d} [a b : T] [s : seq T],
 (a < b)%O -> path <%O b s -> path <%O a s
 
 path_lt_head is not universe polymorphic
@@ -656,7 +657,7 @@ Declared in library mathcomp.classical.unstable, line 214, characters 6-18
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="path_lt_last_filter" class="id"><a name="path_lt_last_filter" class="" title="path_lt_last_filter :
-forall [d : disp_t] {T : orderType d} [a b c : T] [s : seq T],
+forall [d : Order.disp_t] {T : orderType d} [a b c : T] [s : seq T],
 (a < c)%O ->
 (c < b)%O ->
 path <%O a s -> last a s = b -> last c [seq x <- s | (c < x)%O] = b
@@ -680,7 +681,7 @@ Declared in library mathcomp.classical.unstable, line 220, characters 6-25
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="path_lt_le_last" class="id"><a name="path_lt_le_last" class="" title="path_lt_le_last :
-forall [d : disp_t] {T : orderType d} [a : T] [s : seq T],
+forall [d : Order.disp_t] {T : orderType d} [a : T] [s : seq T],
 path <%O a s -> (a <= last a s)%O
 
 path_lt_le_last is not universe polymorphic
@@ -1063,7 +1064,7 @@ Declared in library mathcomp.classical.unstable, line 360, characters 11-18
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html#inv_fun">inv_fun</a></span><span class="id"> {T</span><span class="id"> R}</span><span class="id"> _</span><span class="id"> _</span><span class="id"> /</span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="bound_side" class="id"><a name="bound_side" class="" title="bound_side :
-forall [d : disp_t] [T : porderType d], bool -> itv_bound T -> bool
+forall [d : Order.disp_t] [T : porderType d], bool -> itv_bound T -> bool
 
 bound_side is not universe polymorphic
 Arguments bound_side [d T] c%_bool_scope x
@@ -1176,8 +1177,8 @@ Declared in library mathcomp.classical.unstable, line 393, characters 11-19
 <span class="vernacular">Variables</span> (<span id="order_min.d" class="id"><a name="order_min.d" class="">d</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.disp_t">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.disp_t">disp_t</a></span>) (<span id="order_min.T" class="id"><a name="order_min.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.Total.Exports.orderType">orderType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html#d:239">d</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lt_min_lt" class="id"><a name="lt_min_lt" class="" title="lt_min_lt :
-forall [d : disp_t] [T : orderType d] [x y z : T],
-(Def.min x z < Def.min y z)%O -> (x < y)%O
+forall [d : Order.disp_t] [T : orderType d] [x y z : T],
+(Order.Def.min x z < Order.Def.min y z)%O -> (x < y)%O
 
 lt_min_lt is not universe polymorphic
 Arguments lt_min_lt [d T x y z] _
@@ -1238,15 +1239,15 @@ Declared in library mathcomp.classical.unstable, line 418, characters 6-17
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mem_inc_segment" class="id"><a name="mem_inc_segment" class="" title="mem_inc_segment :
-forall [d : disp_t] [T : porderType d] [a b : T] [f : T -> T],
-{in `[a, b]%R &, increasing_fun f} ->
+forall [d : Order.disp_t] [T : porderType d] [a b : T] [f : T -> T],
+{in `[a, b]%R &, {mono f : x y / (x <= y)%O}} ->
 {homo f : x / x \in `[a, b]%R >-> x \in `[f a, f b]%R}
 
 mem_inc_segment is not universe polymorphic
 Expanded type for implicit arguments
 mem_inc_segment :
-forall [d : disp_t] [T : porderType d] [a b : T] [f : T -> T],
-{in `[a, b]%R &, increasing_fun f} ->
+forall [d : Order.disp_t] [T : porderType d] [a b : T] [f : T -> T],
+{in `[a, b]%R &, {mono f : x y / (x <= y)%O}} ->
 forall [x : T],
 (fun x0 : T => is_true (x0 \in `[a, b]%R)) x ->
 (f x \in `[f a, f b]%R) = true
@@ -1266,14 +1267,14 @@ Declared in library mathcomp.classical.unstable, line 426, characters 6-21
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mem_dec_segment" class="id"><a name="mem_dec_segment" class="" title="mem_dec_segment :
-forall [d : disp_t] [T : porderType d] [a b : T] [f : T -> T],
+forall [d : Order.disp_t] [T : porderType d] [a b : T] [f : T -> T],
 {in `[a, b]%R &, {mono f : x y /~ (x <= y)%O}} ->
 {homo f : x / x \in `[a, b]%R >-> x \in `[f b, f a]%R}
 
 mem_dec_segment is not universe polymorphic
 Expanded type for implicit arguments
 mem_dec_segment :
-forall [d : disp_t] [T : porderType d] [a b : T] [f : T -> T],
+forall [d : Order.disp_t] [T : porderType d] [a b : T] [f : T -> T],
 {in `[a, b]%R &, {mono f : x y /~ (x <= y)%O}} ->
 forall [x : T],
 (fun x0 : T => is_true (x0 \in `[a, b]%R)) x ->

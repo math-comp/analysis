@@ -508,8 +508,7 @@ Declared in library mathcomp.analysis.esum, line 126, characters 6-13
 forall [R : realType] [T : choiceType] [I : set T] [a b : T -> \bar R],
 (forall i : T, I i -> (0%R <= a i)%E) ->
 (forall i : T, I i -> (0%R <= b i)%E) ->
-(\esum_(i in I) (a i + b i)%E)%R =
-((\esum_(i in I) a i)%R + (\esum_(i in I) b i)%R)%E
+(\esum_(i in I) (a i + b i))%R = (\esum_(i in I) a i + \esum_(i in I) b i)%R
 
 esumD is not universe polymorphic
 Arguments esumD [R T] [I]%_classical_set_scope [a b]%_function_scope
@@ -624,7 +623,7 @@ Qed.</div></details>
 forall {R : realType} {I : choiceType} (B A : set I) (F : I -> \bar R),
 (forall i : I, A i -> (0%R <= F i)%E) ->
 (\esum_(i in A) F i)%R =
-((\esum_(i in A `&` B) F i)%R + (\esum_(i in A `&` ~` B) F i)%R)%E
+(\esum_(i in A `&` B) F i + \esum_(i in A `&` ~` B) F i)%R
 
 esumID is not universe polymorphic
 Arguments esumID {R I} (B A)%_classical_set_scope (F _)%_function_scope
@@ -1287,7 +1286,11 @@ forall [R : realType] [P : pred nat] [f : (\bar R) ^nat],
 (forall i : nat, P i -> (0%R <= f i)%E) ->
 summable (T:=Datatypes_nat__canonical__choice_Choice) (R:=R)
   (fun x : Datatypes_nat__canonical__choice_Choice => P x) f ->
-cvgn (fun n : nat => (\sum_(0 <= k < n | P k) fine (f k))%R)
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (fun n : nat => (\sum_(0 <= k < n | P k) fine (f k))%R)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs (\big[+%R/0%R]_(0 <= k <oo | P k) fine (f k)))
 
 summable_cvg is not universe polymorphic
 Expanded type for implicit arguments
@@ -1297,7 +1300,7 @@ forall [R : realType] [P : pred nat] [f : (\bar R) ^nat],
 summable (T:=Datatypes_nat__canonical__choice_Choice) (R:=R)
   (fun x : Datatypes_nat__canonical__choice_Choice => P x) f ->
 forall [t : set R],
-nbhs (\big[+%R/0%R]_(0 <= k <oo | P k) fine (f k)) t ->
+filter.nbhs (\big[+%R/0%R]_(0 <= k <oo | P k) fine (f k)) t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i

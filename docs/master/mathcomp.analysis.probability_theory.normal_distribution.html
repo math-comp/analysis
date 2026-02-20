@@ -530,16 +530,28 @@ library mathcomp.analysis.probability_theory.normal_distribution, line 108, char
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf">normal_pdf</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifP">ifP</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_normal_pdf" class="id"><a name="continuous_normal_pdf" class="" title="continuous_normal_pdf :
-forall {R : realType} [m s : R], s != 0%R -> continuous (normal_pdf m s)
+forall {R : realType} [m s : R],
+s != 0%R ->
+forall
+  [x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
+filter.continuous_at
+  (T:=numFieldTopology.Real_sort__canonical__filter_Nbhs R)
+  (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x
+  (normal_pdf m s)
 
 continuous_normal_pdf is not universe polymorphic
 Expanded type for implicit arguments
 continuous_normal_pdf :
 forall {R : realType} [m s : R],
 s != 0%R ->
-forall [x : numFieldTopology.Real_sort__canonical__filter_Nbhs R]
-  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-nbhs (normal_pdf m s x) t ->
+forall
+  [x : filter.Nbhs.sort
+         (numFieldTopology.Real_sort__canonical__filter_Nbhs R)]
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs (normal_pdf m s x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` normal_pdf m s @^-1` t)%classic

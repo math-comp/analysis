@@ -539,7 +539,7 @@ Qed.</div></details>
 forall [d : measure_display] [T : measurableType d] 
   [R : realType] (m : measure T R) (f g : {nnsfun T >-> R}),
 sintegral (R:=R) m (f \+ g)%R =
-(sintegral (R:=R) m f + sintegral (R:=R) m g)%E
+(sintegral (R:=R) m f + sintegral (R:=R) m g)%R
 
 sintegralD is not universe polymorphic
 Arguments sintegralD [d]%_measure_display_scope [T R] m f g
@@ -705,7 +705,14 @@ forall [d : measure_display] [T : measurableType d]
 (forall x : T,
  {homo (fun x0 : nat => f x0 x) : n m0 / n <= m0 >-> 
  (n <= m0)%R}) ->
-cvgn (sintegral (R:=R) m \o (fun x : nat => f x))
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap (sintegral (R:=R) m \o (fun x : nat => f x))
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap (sintegral (R:=R) m \o (fun x : nat => f x))
+           (filter.nbhs filter.eventually))))
 
 is_cvg_sintegral is not universe polymorphic
 Expanded type for implicit arguments
@@ -716,7 +723,11 @@ forall [d : measure_display] [T : measurableType d]
  {homo (fun x0 : nat => f x0 x) : n m0 / n <= m0 >-> 
  (n <= m0)%R}) ->
 forall [t : set (GRing.BaseAddUMagma.sort \bar R)],
-nbhs (limn (sintegral (R:=R) m \o (fun x : nat => f x))) t ->
+filter.nbhs
+  (filter.lim
+     (filter.fmap (sintegral (R:=R) m \o (fun x : nat => f x))
+        (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -815,8 +826,20 @@ forall [d : measure_display] [T : measurableType d]
   [f : {nnsfun T >-> R}],
 (forall x : T, {homo (fun x0 : nat => g x0 x) : n m / n <= m >-> (n <= m)%R}) ->
 (forall x : T,
- cvgn (fun x0 : nat => g x0 x) -> (f x <= limn (fun x0 : nat => g x0 x))%R) ->
-(sintegral (R:=R) mu f <= limn (sintegral (R:=R) mu \o (fun x : nat => g x)))%E
+ filter.cvg_to
+   (filter.nbhs
+      (filter.fmap (fun x0 : nat => g x0 x) (filter.nbhs filter.eventually)))
+   (filter.nbhs
+      (filter.lim
+         (filter.fmap (fun x0 : nat => g x0 x)
+            (filter.nbhs filter.eventually)))) ->
+ (f x <=
+  filter.lim
+    (filter.fmap (fun x0 : nat => g x0 x) (filter.nbhs filter.eventually)))%R) ->
+(sintegral (R:=R) mu f <=
+ filter.lim
+   (filter.fmap (sintegral (R:=R) mu \o (fun x : nat => g x))
+      (filter.nbhs filter.eventually)))%E
 
 nd_sintegral_lim_lemma is not universe polymorphic
 Arguments nd_sintegral_lim_lemma [d]%_measure_display_scope 
@@ -907,8 +930,15 @@ forall [d : measure_display] [T : measurableType d]
   [R : realType] (mu : measure T R) [g : {nnsfun T >-> R} ^nat]
   [f : {nnsfun T >-> R}],
 (forall x : T, {homo (fun x0 : nat => g x0 x) : n m / n <= m >-> (n <= m)%R}) ->
-(forall x : T, (g x0 x @[x0 --> \oo] --> f x)%classic) ->
-sintegral (R:=R) mu f = limn (sintegral (R:=R) mu \o (fun x : nat => g x))
+(forall x : T,
+ filter.cvg_to
+   (filter.nbhs
+      (filter.fmap (fun x0 : nat => g x0 x) (filter.nbhs filter.eventually)))
+   (filter.nbhs (f x))) ->
+sintegral (R:=R) mu f =
+filter.lim
+  (filter.fmap (sintegral (R:=R) mu \o (fun x : nat => g x))
+     (filter.nbhs filter.eventually))
 
 nd_sintegral_lim is not universe polymorphic
 Arguments nd_sintegral_lim [d]%_measure_display_scope 
@@ -1029,7 +1059,7 @@ forall [d : measure_display] [T : measurableType d]
 (forall x : T, D x -> (0%R <= f x)%E) ->
 (\int[mu]_(x in D) f x)%E =
 (fun (mu0 : set T -> \bar R) (f0 : T -> \bar R) =>
- ereal_sup (R:=R)
+ ereal.ereal_sup (R:=R)
    [set sintegral (R:=R) mu0 h
       | h in [set h | (forall x : T, ((h x)%:E <= f0 x)%E)]])
   mu (f \_ D)
@@ -1060,7 +1090,7 @@ forall [d : measure_display] [T : measurableType d]
 (forall x : T, (0%R <= f x)%E) ->
 (\int[mu]_x f x)%E =
 (fun (mu0 : set T -> \bar R) (f0 : T -> \bar R) =>
- ereal_sup (R:=R)
+ ereal.ereal_sup (R:=R)
    [set sintegral (R:=R) mu0 h
       | h in [set h | (forall x : T, ((h x)%:E <= f0 x)%E)]])
   mu f

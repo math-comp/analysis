@@ -280,7 +280,8 @@ library mathcomp.analysis.topology_theory.initial_topology, line 40, characters 
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="W" class="id"><a name="W" class="">W</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_topology">initial_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#Initial_Topology.f">f</a></span>).<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="wopen" class="id"><a name="wopen" class="" title="wopen :
-forall [S : choiceType] [T : topologicalType], (S -> T) -> set (set S)
+forall [S : choiceType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) -> set (set S)
 
 wopen is not universe polymorphic
 Arguments wopen [S T] f%_function_scope _
@@ -323,7 +324,8 @@ Qed.</div></details>
 Qed.</div></details>
 <br/>
 <span id="initial_topology_initial_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="initial_topology_initial_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="initial_topology_initial_topology__canonical__choice_Choice" class="" title="initial_topology_initial_topology__canonical__choice_Choice :
-forall [S : choiceType] [T : topologicalType], (S -> T) -> choiceType
+forall [S : choiceType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) -> choiceType
 
 initial_topology_initial_topology__canonical__choice_Choice is not universe polymorphic
 Arguments initial_topology_initial_topology__canonical__choice_Choice 
@@ -334,7 +336,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.initial_topology, line 71, characters 0-40
 ">HB</a></span></span></span></span></span></span></span>.<span id="initial_topology_initial_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="initial_topology_initial_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="initial_topology_initial_topology__canonical__choice_Choice" class="" title="initial_topology_initial_topology__canonical__choice_Choice :
-forall [S : choiceType] [T : topologicalType], (S -> T) -> choiceType
+forall [S : choiceType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) -> choiceType
 
 initial_topology_initial_topology__canonical__choice_Choice is not universe polymorphic
 Arguments initial_topology_initial_topology__canonical__choice_Choice 
@@ -345,7 +348,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.initial_topology, line 71, characters 0-40
 ">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="initial_topology_initial_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="initial_topology_initial_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="initial_topology_initial_topology__canonical__choice_Choice" class="" title="initial_topology_initial_topology__canonical__choice_Choice :
-forall [S : choiceType] [T : topologicalType], (S -> T) -> choiceType
+forall [S : choiceType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) -> choiceType
 
 initial_topology_initial_topology__canonical__choice_Choice is not universe polymorphic
 Arguments initial_topology_initial_topology__canonical__choice_Choice 
@@ -356,7 +360,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.initial_topology, line 71, characters 0-40
 "> _</a></span></span></span></span></span></span></span><span id="initial_topology_initial_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="initial_topology_initial_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="initial_topology_initial_topology__canonical__choice_Choice" class="" title="initial_topology_initial_topology__canonical__choice_Choice :
-forall [S : choiceType] [T : topologicalType], (S -> T) -> choiceType
+forall [S : choiceType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) -> choiceType
 
 initial_topology_initial_topology__canonical__choice_Choice is not universe polymorphic
 Arguments initial_topology_initial_topology__canonical__choice_Choice 
@@ -367,7 +372,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.initial_topology, line 71, characters 0-40
 "> :=</a></span></span></span></span></span></span></span><span id="initial_topology_initial_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="initial_topology_initial_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="initial_topology_initial_topology__canonical__choice_Choice" class="" title="initial_topology_initial_topology__canonical__choice_Choice :
-forall [S : choiceType] [T : topologicalType], (S -> T) -> choiceType
+forall [S : choiceType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) -> choiceType
 
 initial_topology_initial_topology__canonical__choice_Choice is not universe polymorphic
 Arguments initial_topology_initial_topology__canonical__choice_Choice 
@@ -379,7 +385,9 @@ Declared in
 library mathcomp.analysis.topology_theory.initial_topology, line 71, characters 0-40
 "> Choice</a></span></span></span></span></span></span></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.on">on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#W">W</a></span>.<br/>
 <span id="initial_topology_initial_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="initial_topology_initial_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="initial_topology_initial_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="topology_structure_isOpenTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="initial_topology_initial_topology__canonical__topology_structure_Topological" class="" title="initial_topology_initial_topology__canonical__topology_structure_Topological :
-forall [S : choiceType] [T : topologicalType], (S -> T) -> topologicalType
+forall [S : choiceType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) ->
+topology_structure.Topological.type
 
 initial_topology_initial_topology__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -391,7 +399,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.initial_topology, line 72, characters 0-75
 ">HB</a></span></span></span></span></span></span></span></span></span></span>.<span id="initial_topology_initial_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="initial_topology_initial_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="initial_topology_initial_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="topology_structure_isOpenTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="initial_topology_initial_topology__canonical__topology_structure_Topological" class="" title="initial_topology_initial_topology__canonical__topology_structure_Topological :
-forall [S : choiceType] [T : topologicalType], (S -> T) -> topologicalType
+forall [S : choiceType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) ->
+topology_structure.Topological.type
 
 initial_topology_initial_topology__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -403,7 +413,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.initial_topology, line 72, characters 0-75
 ">instance</a></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="initial_topology_initial_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="initial_topology_initial_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="initial_topology_initial_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="topology_structure_isOpenTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="initial_topology_initial_topology__canonical__topology_structure_Topological" class="" title="initial_topology_initial_topology__canonical__topology_structure_Topological :
-forall [S : choiceType] [T : topologicalType], (S -> T) -> topologicalType
+forall [S : choiceType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) ->
+topology_structure.Topological.type
 
 initial_topology_initial_topology__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -415,7 +427,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.initial_topology, line 72, characters 0-75
 "> _</a></span></span></span></span></span></span></span></span></span></span><span id="initial_topology_initial_topology__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_12" class="id"><span id="initial_topology_initial_topology__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="initial_topology_initial_topology__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="topology_structure_isOpenTopological__to__filter_selfFiltered" class="id"><span id="topology_structure_isOpenTopological__to__filter_isFiltered" class="id"><span id="topology_structure_isOpenTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="initial_topology_initial_topology__canonical__topology_structure_Topological" class="" title="initial_topology_initial_topology__canonical__topology_structure_Topological :
-forall [S : choiceType] [T : topologicalType], (S -> T) -> topologicalType
+forall [S : choiceType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) ->
+topology_structure.Topological.type
 
 initial_topology_initial_topology__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -430,22 +444,39 @@ library mathcomp.analysis.topology_theory.initial_topology, line 72, characters 
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#isOpenTopological.Build">isOpenTopological</a></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#isOpenTopological.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#W">W</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#wopT">wopT</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#wopI">wopI</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#wop_bigU">wop_bigU</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="initial_continuous" class="id"><a name="initial_continuous" class="" title="initial_continuous :
-forall [S : choiceType] [T : topologicalType] [f : S -> T],
-continuous (f : initial_topology f -> T)
+forall [S : choiceType] [T : topology_structure.Topological.type]
+  [f : S -> topology_structure.Topological.sort T]
+  [x : filter.Nbhs.sort
+         (initial_topology_initial_topology__canonical__filter_Nbhs (S:=S)
+            (T:=T) f)],
+filter.continuous_at
+  (T:=initial_topology_initial_topology__canonical__filter_Nbhs (S:=S) (T:=T)
+        f)
+  (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T)
+  x (f : initial_topology f -> topology_structure.Topological.sort T)
 
 initial_continuous is not universe polymorphic
 Expanded type for implicit arguments
 initial_continuous :
-forall [S : choiceType] [T : topologicalType] [f : S -> T]
-  [x : initial_topology_initial_topology__canonical__filter_Nbhs (S:=S)
-         (T:=T) f]
-  [t : set T],
-nbhs ((f : initial_topology f -> T) x) t ->
+forall [S : choiceType] [T : topology_structure.Topological.type]
+  [f : S -> topology_structure.Topological.sort T]
+  [x : filter.Nbhs.sort
+         (initial_topology_initial_topology__canonical__filter_Nbhs (S:=S)
+            (T:=T) f)]
+  [t : set
+         (filter.Nbhs.sort
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               T))],
+filter.nbhs
+  ((f : initial_topology f -> topology_structure.Topological.sort T) x) t ->
 exists B : set (initial_topology f),
-  [/\ isOpenTopological.op
+  [/\ topology_structure.isOpenTopological.op
         (initial_topology.HB_unnamed_factory_6 (S:=S) (T:=T) f) B,
       B x
-    & (B `<=` (f : initial_topology f -> T) @^-1` t)%classic]
+    & (B
+       `<=` (f : initial_topology f -> topology_structure.Topological.sort T) @^-1`
+            t)%classic]
 
 Arguments initial_continuous [S T] [f]%_function_scope [x t] _
 initial_continuous is opaque
@@ -460,12 +491,18 @@ library mathcomp.analysis.topology_theory.initial_topology, line 75, characters 
 <span class="gallina-kwd"> by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#continuousP">continuousP</a></span><span class="id"> =&gt;</span><span class="id"> A</span><span class="id"> ?;</span><span class="gallina-kwd"> exists</span><span class="id"> A</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_image" class="id"><a name="cvg_image" class="" title="cvg_image :
-forall [S : choiceType] [T : topologicalType] [f : S -> T] 
-  [F : set_system S] (s : S),
-Filter F ->
-range f = [set: T]%classic ->
-(F --> (s : initial_topology f))%classic <->
-(([set [set f x | x in A] | A in F] : set_system T) --> f s)%classic
+forall [S : choiceType] [T : topology_structure.Topological.type]
+  [f : S -> topology_structure.Topological.sort T] 
+  [F : filter.set_system S] (s : S),
+filter.Filter F ->
+range f = [set: topology_structure.Topological.sort T]%classic ->
+filter.cvg_to (filter.nbhs F) (filter.nbhs (s : initial_topology f)) <->
+filter.cvg_to
+  (filter.nbhs
+     ([set [set f x | x in A] | A in F]%classic
+      :
+      filter.set_system (topology_structure.Topological.sort T)))
+  (filter.nbhs (f s))
 
 cvg_image is not universe polymorphic
 Arguments cvg_image [S T] [f]%_function_scope [F] s _ _
@@ -494,7 +531,9 @@ Qed.</div></details>
 <span class="vernacular">End</span><span class="id"> Initial_Topology</span>.<br/>
 <br/>
 <span id="initial_topology_initial_topology__canonical__topology_structure_PointedTopological" class="id"><span id="initial_topology_initial_topology__canonical__filter_PointedNbhs" class="id"><span id="initial_topology_initial_topology__canonical__filter_PointedFiltered" class="id"><span id="initial_topology_initial_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.S" class="id"><a name="initial_topology_initial_topology__canonical__topology_structure_PointedTopological" class="" title="initial_topology_initial_topology__canonical__topology_structure_PointedTopological :
-forall [S : pointedType] [T : topologicalType], (S -> T) -> ptopologicalType
+forall [S : pointedType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) ->
+topology_structure.PointedTopological.type
 
 initial_topology_initial_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -506,7 +545,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.initial_topology, line 95, characters 0-115
 ">HB</a></span></span></span></span></span></span></span></span></span></span></span></span>.<span id="initial_topology_initial_topology__canonical__topology_structure_PointedTopological" class="id"><span id="initial_topology_initial_topology__canonical__filter_PointedNbhs" class="id"><span id="initial_topology_initial_topology__canonical__filter_PointedFiltered" class="id"><span id="initial_topology_initial_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.S" class="id"><a name="initial_topology_initial_topology__canonical__topology_structure_PointedTopological" class="" title="initial_topology_initial_topology__canonical__topology_structure_PointedTopological :
-forall [S : pointedType] [T : topologicalType], (S -> T) -> ptopologicalType
+forall [S : pointedType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) ->
+topology_structure.PointedTopological.type
 
 initial_topology_initial_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -518,7 +559,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.initial_topology, line 95, characters 0-115
 ">instance</a></span></span></span></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="initial_topology_initial_topology__canonical__topology_structure_PointedTopological" class="id"><span id="initial_topology_initial_topology__canonical__filter_PointedNbhs" class="id"><span id="initial_topology_initial_topology__canonical__filter_PointedFiltered" class="id"><span id="initial_topology_initial_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.S" class="id"><a name="initial_topology_initial_topology__canonical__topology_structure_PointedTopological" class="" title="initial_topology_initial_topology__canonical__topology_structure_PointedTopological :
-forall [S : pointedType] [T : topologicalType], (S -> T) -> ptopologicalType
+forall [S : pointedType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) ->
+topology_structure.PointedTopological.type
 
 initial_topology_initial_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -530,7 +573,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.initial_topology, line 95, characters 0-115
 "> _</a></span></span></span></span></span></span></span></span></span></span></span></span> (<span id="initial_topology_initial_topology__canonical__topology_structure_PointedTopological" class="id"><span id="initial_topology_initial_topology__canonical__filter_PointedNbhs" class="id"><span id="initial_topology_initial_topology__canonical__filter_PointedFiltered" class="id"><span id="initial_topology_initial_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.S" class="id"><a name="initial_topology_initial_topology__canonical__topology_structure_PointedTopological" class="" title="initial_topology_initial_topology__canonical__topology_structure_PointedTopological :
-forall [S : pointedType] [T : topologicalType], (S -> T) -> ptopologicalType
+forall [S : pointedType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) ->
+topology_structure.PointedTopological.type
 
 initial_topology_initial_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -542,7 +587,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.initial_topology, line 95, characters 0-115
 ">S</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="initial_topology_initial_topology__canonical__topology_structure_PointedTopological" class="id"><span id="initial_topology_initial_topology__canonical__filter_PointedNbhs" class="id"><span id="initial_topology_initial_topology__canonical__filter_PointedFiltered" class="id"><span id="initial_topology_initial_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.S" class="id"><a name="initial_topology_initial_topology__canonical__topology_structure_PointedTopological" class="" title="initial_topology_initial_topology__canonical__topology_structure_PointedTopological :
-forall [S : pointedType] [T : topologicalType], (S -> T) -> ptopologicalType
+forall [S : pointedType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) ->
+topology_structure.PointedTopological.type
 
 initial_topology_initial_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -554,7 +601,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.initial_topology, line 95, characters 0-115
 "> :</a></span></span></span></span></span></span></span></span></span></span></span></span><span id="initial_topology_initial_topology__canonical__topology_structure_PointedTopological" class="id"><span id="initial_topology_initial_topology__canonical__filter_PointedNbhs" class="id"><span id="initial_topology_initial_topology__canonical__filter_PointedFiltered" class="id"><span id="initial_topology_initial_topology__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_mixin_18" class="id"><span id="classical_sets_Pointed__to__eqtype_hasDecEq" class="id"><span id="classical_sets_Pointed__to__choice_hasChoice" class="id"><span id="classical_sets_Pointed__to__classical_sets_isPointed" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="hb_instance_13.f" class="id"><span id="hb_instance_13.T" class="id"><span id="hb_instance_13.S" class="id"><a name="initial_topology_initial_topology__canonical__topology_structure_PointedTopological" class="" title="initial_topology_initial_topology__canonical__topology_structure_PointedTopological :
-forall [S : pointedType] [T : topologicalType], (S -> T) -> ptopologicalType
+forall [S : pointedType] [T : topology_structure.Topological.type],
+(S -> topology_structure.Topological.sort T) ->
+topology_structure.PointedTopological.type
 
 initial_topology_initial_topology__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -576,7 +625,7 @@ library mathcomp.analysis.topology_theory.initial_topology, line 95, characters 
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="initial_ent" class="id"><a name="initial_ent" class="" title="initial_ent :
 forall [pS : choiceType] [U : uniformType] [f : pS -> U],
-set_system (initial_topology f * initial_topology f)
+filter.set_system (initial_topology f * initial_topology f)
 
 initial_ent is not universe polymorphic
 Arguments initial_ent [pS U] [f]%_function_scope _
@@ -932,9 +981,9 @@ library mathcomp.analysis.topology_theory.initial_topology, line 195, characters
 <span class="vernacular">Let</span><span class="id"> </span><span id="initial_order_refine.InitialU" class="id"><a name="initial_order_refine.InitialU" class="">InitialU</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_topology">initial_topology</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#sub_type">sub_type</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_order_refine.Y">Y</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_order_refine.X">X</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#val">val</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="open_order_initial" class="id"><a name="open_order_initial" class="" title="open_order_initial :
-forall {d : Order.disp_t} {X : orderTopologicalType d} 
-  {Y : subType (T:=X) X} [U : set Y],
-open U -> open U
+forall {d : disp_t} {X : orderTopologicalType d} {Y : subType (T:=X) X}
+  [U : set Y],
+topology_structure.open U -> topology_structure.open U
 
 open_order_initial is not universe polymorphic
 Arguments open_order_initial {d X Y} [U]%_classical_set_scope _
@@ -964,24 +1013,63 @@ Qed.</div></details>
 <span class="vernacular">End</span><span class="id"> initial_order_refine</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_comp_initial" class="id"><a name="continuous_comp_initial" class="" title="continuous_comp_initial :
-forall {Y : choiceType} {X Z : topologicalType} [w : Y -> Z]
-  [f : X -> initial_topology w],
-continuous (w \o f) -> continuous f
+forall {Y : choiceType} {X Z : topology_structure.Topological.type}
+  [w : Y -> topology_structure.Topological.sort Z]
+  [f : topology_structure.Topological.sort X -> initial_topology w],
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         X)
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         Z)
+   x (w \o f)) ->
+forall
+  [x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X)],
+filter.continuous_at
+  (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        X)
+  (U:=initial_topology_initial_topology__canonical__filter_Nbhs (S:=Y) (T:=Z)
+        w)
+  x f
 
 continuous_comp_initial is not universe polymorphic
 Expanded type for implicit arguments
 continuous_comp_initial :
-forall {Y : choiceType} {X Z : topologicalType} [w : Y -> Z]
-  [f : X -> initial_topology w],
-continuous (w \o f) ->
-forall [x : X]
+forall {Y : choiceType} {X Z : topology_structure.Topological.type}
+  [w : Y -> topology_structure.Topological.sort Z]
+  [f : topology_structure.Topological.sort X -> initial_topology w],
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         X)
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         Z)
+   x (w \o f)) ->
+forall
+  [x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X)]
   [t : set
-         (initial_topology_initial_topology__canonical__filter_Nbhs (S:=Y)
-            (T:=Z) w)],
-nbhs (f x) t ->
+         (filter.Nbhs.sort
+            (initial_topology_initial_topology__canonical__filter_Nbhs (S:=Y)
+               (T:=Z) w))],
+filter.nbhs (f x) t ->
 (let (nbhs) :=
-   Topological.filter_isFiltered_mixin
-     (let (sort, class) as record return (Topological.axioms_ record) := X in
+   topology_structure.Topological.filter_isFiltered_mixin
+     (let
+        (sort, class) as record
+         return
+           (topology_structure.Topological.axioms_
+              (topology_structure.Topological.sort record)) :=
+        X in
       class) in
  nbhs) x (f @^-1` t)%classic
 

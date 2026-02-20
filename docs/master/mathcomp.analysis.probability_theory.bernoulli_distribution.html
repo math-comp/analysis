@@ -663,8 +663,7 @@ Qed.</div></details>
 forall {R : realType} [p : R],
 (0 <= p <= 1)%R ->
 forall A : set bool,
-bernoulli_prob p A =
-(p%:E * (\d_true)%R A + (unstable.onem p)%:E * (\d_false)%R A)%E
+bernoulli_prob p A = ((p%:E * \d_true A)%E + ((p.~)%:E * \d_false A)%E)%R
 
 bernoulli_probE is not universe polymorphic
 Arguments bernoulli_probE {R} [p]%_ring_scope p01 A%_classical_set_scope
@@ -686,7 +685,7 @@ forall {R : realType} [p : R],
 forall [f : bool -> \bar R],
 (forall x : bool, (0%R <= f x)%E) ->
 (\int[bernoulli_prob p]_y f y)%E =
-(p%:E * f true + (unstable.onem p)%:E * f false)%E
+((p%:E * f true)%E + ((p.~)%:E * f false)%E)%R
 
 integral_bernoulli_prob is not universe polymorphic
 Arguments integral_bernoulli_prob {R} [p]%_ring_scope 

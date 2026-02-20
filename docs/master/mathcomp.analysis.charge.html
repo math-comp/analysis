@@ -620,7 +620,7 @@ forall [A B : set T],
 d.-measurable%classic A ->
 d.-measurable%classic B ->
 d.-measurable%classic (A `|` B) ->
-(A `&` B)%classic = set0 -> nu (A `|` B)%classic = (nu A + nu B)%E
+(A `&` B)%classic = set0 -> nu (A `|` B)%classic = (nu A + nu B)%R
 
 Arguments charge_semi_additiveW [d]%_measure_display_scope 
   [T R nu] _ _ [A B] _ _ _ _
@@ -678,7 +678,7 @@ forall [d : measure_display] [T : ringOfSetsType d]
 d.-measurable%classic A ->
 d.-measurable%classic B ->
 d.-measurable%classic (A `|` B) ->
-(A `&` B)%classic = set0 -> nu (A `|` B)%classic = (nu A + nu B)%E
+(A `&` B)%classic = set0 -> nu (A `|` B)%classic = (nu A + nu B)%R
 
 Arguments charge_semi_additive2 [d]%_measure_display_scope 
   [T R] nu [A B] _ _ _ _
@@ -706,7 +706,7 @@ forall [d : measure_display] [T : ringOfSetsType d]
   [A B : set T],
 d.-measurable%classic A ->
 d.-measurable%classic B ->
-(A `&` B)%classic = set0 -> nu (A `|` B)%classic = (nu A + nu B)%E
+(A `&` B)%classic = set0 -> nu (A `|` B)%classic = (nu A + nu B)%R
 
 Arguments chargeU [d]%_measure_display_scope [T R] nu [A B] _ _ _
 chargeU is opaque
@@ -724,7 +724,7 @@ forall [d : measure_display] [T : ringOfSetsType d]
   [A B : set T],
 d.-measurable%classic A ->
 d.-measurable%classic B ->
-nu A = (nu (A `\` B)%classic + nu (A `&` B)%classic)%E
+nu A = (nu (A `\` B)%classic + nu (A `&` B)%classic)%R
 
 chargeDI is not universe polymorphic
 Arguments chargeDI [d]%_measure_display_scope [T R] 
@@ -754,7 +754,7 @@ d.-measurable%classic P ->
 d.-measurable%classic N ->
 (P `|` N)%classic = [set: T]%classic ->
 (P `&` N)%classic = set0 ->
-nu S = (nu (S `&` P)%classic + nu (S `&` N)%classic)%E
+nu S = (nu (S `&` P)%classic + nu (S `&` N)%classic)%R
 
 charge_partition is not universe polymorphic
 Arguments charge_partition [d]%_measure_display_scope 
@@ -3946,7 +3946,8 @@ trivIset (T:=T) [set: nat] F ->
 d.-measurable%classic (\bigcup_n F n) ->
 forall
   [t : set constructive_ereal_extended__canonical__Algebra_BaseAddUMagma],
-nbhs (((integral (T:=T) (R:=R) mu)^~ [eta f]) (\bigcup_n F n)%classic) t ->
+filter.nbhs (((integral (T:=T) (R:=R) mu)^~ [eta f]) (\bigcup_n F n)%classic)
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n | N <= n]) i
@@ -4592,7 +4593,14 @@ Declared in library mathcomp.analysis.charge, line 1421, characters 6-25
 forall [d : measure_display] [T : measurableType d] 
   [R : realType] [mu : measure T R] [nu : {finite_measure set T -> \bar R}%R]
   [n : T],
-cvgn ((approxRN_seq.max_approxRN_seq (T:=T) mu nu)^~ n)
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap ((approxRN_seq.max_approxRN_seq (T:=T) mu nu)^~ n)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap ((approxRN_seq.max_approxRN_seq (T:=T) mu nu)^~ n)
+           (filter.nbhs filter.eventually))))
 
 approxRN_seq.is_cvg_max_approxRN_seq is not universe polymorphic
 Expanded type for implicit arguments
@@ -4600,7 +4608,11 @@ approxRN_seq.is_cvg_max_approxRN_seq :
 forall [d : measure_display] [T : measurableType d] 
   [R : realType] [mu : measure T R] [nu : {finite_measure set T -> \bar R}%R]
   [n : T] [t : set \bar R],
-nbhs (limn ((approxRN_seq.max_approxRN_seq (T:=T) mu nu)^~ n)) t ->
+filter.nbhs
+  (filter.lim
+     (filter.fmap ((approxRN_seq.max_approxRN_seq (T:=T) mu nu)^~ n)
+        (filter.nbhs filter.eventually)))
+  t ->
 exists2 i : nat,
   [set: nat]%classic i &
   ((fun N : nat => [set n0 | N <= n0]) i
@@ -4623,9 +4635,18 @@ forall [d : measure_display] [T : measurableType d]
   [R : realType] [mu : measure T R] [nu : {finite_measure set T -> \bar R}%R]
   [A : set T],
 d.-measurable%classic A ->
-cvgn
-  (fun n : nat =>
-   (\int[mu]_(x in A) approxRN_seq.max_approxRN_seq (T:=T) mu nu n x)%E)
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap
+        (fun n : nat =>
+         (\int[mu]_(x in A) approxRN_seq.max_approxRN_seq (T:=T) mu nu n x)%E)
+        (filter.nbhs filter.eventually)))
+  (filter.nbhs
+     (filter.lim
+        (filter.fmap
+           (fun n : nat =>
+            (\int[mu]_(x in A) approxRN_seq.max_approxRN_seq (T:=T) mu nu n x)%E)
+           (filter.nbhs filter.eventually))))
 
 approxRN_seq.is_cvg_int_max_approxRN_seq is not universe polymorphic
 Expanded type for implicit arguments
@@ -4638,10 +4659,12 @@ forall
   [t : set
          (GRing.BaseAddMagma.sort
             constructive_ereal_extended__canonical__Algebra_BaseAddMagma)],
-nbhs
-  (limn
-     (fun n : nat =>
-      (\int[mu]_(x in A) approxRN_seq.max_approxRN_seq (T:=T) mu nu n x)%E))
+filter.nbhs
+  (filter.lim
+     (filter.fmap
+        (fun n : nat =>
+         (\int[mu]_(x in A) approxRN_seq.max_approxRN_seq (T:=T) mu nu n x)%E)
+        (filter.nbhs filter.eventually)))
   t ->
 exists2 i : nat,
   [set: nat]%classic i &
@@ -4837,7 +4860,10 @@ Qed.</div></details>
 forall [d : measure_display] [T : measurableType d] [R : realType],
 {finite_measure set T -> \bar R}%R ->
 {finite_measure set T -> \bar R}%R ->
-T -> constructive_ereal_extended__canonical__filter_PointedNbhs
+T ->
+filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointed
+  (filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_PointedFiltered
+     ereal.constructive_ereal_extended__canonical__filter_PointedNbhs)
 
 lim_max_approxRN_seq.fRN is not universe polymorphic
 Arguments lim_max_approxRN_seq.fRN [d]%_measure_display_scope [T R] mu nu x
@@ -5077,7 +5103,7 @@ d.-measurable%classic A ->
 (\int[mu]_(x in A) lim_max_approxRN_seq.fRN (T:=T) mu nu x < nu A)%E ->
 {eps : {posnum R}%R
 | (\int[mu]_(x in A)
-      (lim_max_approxRN_seq.fRN (T:=T) mu nu x + (eps%:num)%:E) <
+      (lim_max_approxRN_seq.fRN (T:=T) mu nu x + (eps%:num)%:E)%R <
    nu A)%E}
 
 lim_max_approxRN_seq.epsRN_ex is not universe polymorphic

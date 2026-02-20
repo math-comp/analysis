@@ -362,8 +362,9 @@ forall {R : realFieldType} [T : metricType R], hausdorff_space T
 metric_hausdorff is not universe polymorphic
 Expanded type for implicit arguments
 metric_hausdorff :
-forall {R : realFieldType} [T : metricType R] [p q : T],
-cluster (nbhs p) q -> p = q
+forall {R : realFieldType} [T : metricType R]
+  [p q : topology_structure.Topological.sort T],
+cluster (filter.nbhs p) q -> p = q
 
 Arguments metric_hausdorff {R} [T p q] _
 metric_hausdorff is opaque
@@ -412,7 +413,8 @@ Qed.</div></details>
 forall [M : Type],
 hasChoice.axioms_ M ->
 Equality.mixin_of M ->
-selfFiltered.axioms_ M -> isFiltered.axioms_ M M -> nbhsType
+filter.selfFiltered.axioms_ M ->
+filter.isFiltered.axioms_ M M -> filter.Nbhs.type
 
 Builders_1.Builders_1_M__canonical__filter_Nbhs is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__filter_Nbhs 
@@ -427,7 +429,8 @@ library mathcomp.analysis.topology_theory.pseudometric_structure, line 96, chara
 forall [M : Type],
 hasChoice.axioms_ M ->
 Equality.mixin_of M ->
-selfFiltered.axioms_ M -> isFiltered.axioms_ M M -> nbhsType
+filter.selfFiltered.axioms_ M ->
+filter.isFiltered.axioms_ M M -> filter.Nbhs.type
 
 Builders_1.Builders_1_M__canonical__filter_Nbhs is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__filter_Nbhs 
@@ -442,7 +445,8 @@ library mathcomp.analysis.topology_theory.pseudometric_structure, line 96, chara
 forall [M : Type],
 hasChoice.axioms_ M ->
 Equality.mixin_of M ->
-selfFiltered.axioms_ M -> isFiltered.axioms_ M M -> nbhsType
+filter.selfFiltered.axioms_ M ->
+filter.isFiltered.axioms_ M M -> filter.Nbhs.type
 
 Builders_1.Builders_1_M__canonical__filter_Nbhs is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__filter_Nbhs 
@@ -457,7 +461,8 @@ library mathcomp.analysis.topology_theory.pseudometric_structure, line 96, chara
 forall [M : Type],
 hasChoice.axioms_ M ->
 Equality.mixin_of M ->
-selfFiltered.axioms_ M -> isFiltered.axioms_ M M -> nbhsType
+filter.selfFiltered.axioms_ M ->
+filter.isFiltered.axioms_ M M -> filter.Nbhs.type
 
 Builders_1.Builders_1_M__canonical__filter_Nbhs is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__filter_Nbhs 
@@ -472,7 +477,8 @@ library mathcomp.analysis.topology_theory.pseudometric_structure, line 96, chara
 forall [M : Type],
 hasChoice.axioms_ M ->
 Equality.mixin_of M ->
-selfFiltered.axioms_ M -> isFiltered.axioms_ M M -> nbhsType
+filter.selfFiltered.axioms_ M ->
+filter.isFiltered.axioms_ M M -> filter.Nbhs.type
 
 Builders_1.Builders_1_M__canonical__filter_Nbhs is not universe polymorphic
 Arguments Builders_1.Builders_1_M__canonical__filter_Nbhs 
@@ -515,8 +521,8 @@ Qed.</div></details>
 forall [R : numFieldType] [M : Type]
   [local_mixin_choice_hasChoice : hasChoice.axioms_ M]
   [local_mixin_eqtype_hasDecEq : Equality.mixin_of M]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ M]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ M M],
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ M]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ M M],
 Nbhs_isPseudoMetric.phant_axioms R (m:=local_mixin_choice_hasChoice)
   (m0:=local_mixin_eqtype_hasDecEq) (m1:=local_mixin_filter_selfFiltered)
   (m2:=local_mixin_filter_isFiltered) id_phant
@@ -525,10 +531,11 @@ Nbhs_isPseudoMetric.phant_axioms R (m:=local_mixin_choice_hasChoice)
         local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
   id_phant
   (c:={|
-        Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-        Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-        Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
-        Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+        filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+        filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+        filter.Nbhs.filter_selfFiltered_mixin :=
+          local_mixin_filter_selfFiltered;
+        filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
       |})
   id_phant (m3:=local_mixin_choice_hasChoice) id_phant
   (m4:=local_mixin_eqtype_hasDecEq) id_phant
@@ -539,9 +546,11 @@ Nbhs_isPseudoMetric.phant_axioms R (m:=local_mixin_choice_hasChoice)
          local_mixin_filter_isFiltered)
   id_phant
   (c0:={|
-         Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-         Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-         Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+         filter.Filtered.choice_hasChoice_mixin :=
+           local_mixin_choice_hasChoice;
+         filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+         filter.Filtered.filter_isFiltered_mixin :=
+           local_mixin_filter_isFiltered
        |})
   id_phant (m7:=local_mixin_choice_hasChoice) id_phant
   (m8:=local_mixin_eqtype_hasDecEq) id_phant
@@ -564,8 +573,8 @@ library mathcomp.analysis.topology_theory.pseudometric_structure, line 142, char
 forall [R : numFieldType] [M : Type]
   [local_mixin_choice_hasChoice : hasChoice.axioms_ M]
   [local_mixin_eqtype_hasDecEq : Equality.mixin_of M]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ M]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ M M],
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ M]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ M M],
 Nbhs_isPseudoMetric.phant_axioms R (m:=local_mixin_choice_hasChoice)
   (m0:=local_mixin_eqtype_hasDecEq) (m1:=local_mixin_filter_selfFiltered)
   (m2:=local_mixin_filter_isFiltered) id_phant
@@ -574,10 +583,11 @@ Nbhs_isPseudoMetric.phant_axioms R (m:=local_mixin_choice_hasChoice)
         local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
   id_phant
   (c:={|
-        Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-        Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-        Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
-        Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+        filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+        filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+        filter.Nbhs.filter_selfFiltered_mixin :=
+          local_mixin_filter_selfFiltered;
+        filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
       |})
   id_phant (m3:=local_mixin_choice_hasChoice) id_phant
   (m4:=local_mixin_eqtype_hasDecEq) id_phant
@@ -588,9 +598,11 @@ Nbhs_isPseudoMetric.phant_axioms R (m:=local_mixin_choice_hasChoice)
          local_mixin_filter_isFiltered)
   id_phant
   (c0:={|
-         Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-         Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-         Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+         filter.Filtered.choice_hasChoice_mixin :=
+           local_mixin_choice_hasChoice;
+         filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+         filter.Filtered.filter_isFiltered_mixin :=
+           local_mixin_filter_isFiltered
        |})
   id_phant (m7:=local_mixin_choice_hasChoice) id_phant
   (m8:=local_mixin_eqtype_hasDecEq) id_phant
@@ -613,8 +625,8 @@ library mathcomp.analysis.topology_theory.pseudometric_structure, line 142, char
 forall [R : numFieldType] [M : Type]
   [local_mixin_choice_hasChoice : hasChoice.axioms_ M]
   [local_mixin_eqtype_hasDecEq : Equality.mixin_of M]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ M]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ M M],
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ M]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ M M],
 Nbhs_isPseudoMetric.phant_axioms R (m:=local_mixin_choice_hasChoice)
   (m0:=local_mixin_eqtype_hasDecEq) (m1:=local_mixin_filter_selfFiltered)
   (m2:=local_mixin_filter_isFiltered) id_phant
@@ -623,10 +635,11 @@ Nbhs_isPseudoMetric.phant_axioms R (m:=local_mixin_choice_hasChoice)
         local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
   id_phant
   (c:={|
-        Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-        Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-        Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
-        Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+        filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+        filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+        filter.Nbhs.filter_selfFiltered_mixin :=
+          local_mixin_filter_selfFiltered;
+        filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
       |})
   id_phant (m3:=local_mixin_choice_hasChoice) id_phant
   (m4:=local_mixin_eqtype_hasDecEq) id_phant
@@ -637,9 +650,11 @@ Nbhs_isPseudoMetric.phant_axioms R (m:=local_mixin_choice_hasChoice)
          local_mixin_filter_isFiltered)
   id_phant
   (c0:={|
-         Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-         Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-         Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+         filter.Filtered.choice_hasChoice_mixin :=
+           local_mixin_choice_hasChoice;
+         filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+         filter.Filtered.filter_isFiltered_mixin :=
+           local_mixin_filter_isFiltered
        |})
   id_phant (m7:=local_mixin_choice_hasChoice) id_phant
   (m8:=local_mixin_eqtype_hasDecEq) id_phant
@@ -662,8 +677,8 @@ library mathcomp.analysis.topology_theory.pseudometric_structure, line 142, char
 forall [R : numFieldType] [M : Type]
   [local_mixin_choice_hasChoice : hasChoice.axioms_ M]
   [local_mixin_eqtype_hasDecEq : Equality.mixin_of M]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ M]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ M M],
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ M]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ M M],
 Nbhs_isPseudoMetric.phant_axioms R (m:=local_mixin_choice_hasChoice)
   (m0:=local_mixin_eqtype_hasDecEq) (m1:=local_mixin_filter_selfFiltered)
   (m2:=local_mixin_filter_isFiltered) id_phant
@@ -672,10 +687,11 @@ Nbhs_isPseudoMetric.phant_axioms R (m:=local_mixin_choice_hasChoice)
         local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
   id_phant
   (c:={|
-        Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-        Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-        Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
-        Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+        filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+        filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+        filter.Nbhs.filter_selfFiltered_mixin :=
+          local_mixin_filter_selfFiltered;
+        filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
       |})
   id_phant (m3:=local_mixin_choice_hasChoice) id_phant
   (m4:=local_mixin_eqtype_hasDecEq) id_phant
@@ -686,9 +702,11 @@ Nbhs_isPseudoMetric.phant_axioms R (m:=local_mixin_choice_hasChoice)
          local_mixin_filter_isFiltered)
   id_phant
   (c0:={|
-         Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-         Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-         Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+         filter.Filtered.choice_hasChoice_mixin :=
+           local_mixin_choice_hasChoice;
+         filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+         filter.Filtered.filter_isFiltered_mixin :=
+           local_mixin_filter_isFiltered
        |})
   id_phant (m7:=local_mixin_choice_hasChoice) id_phant
   (m8:=local_mixin_eqtype_hasDecEq) id_phant
@@ -711,8 +729,8 @@ library mathcomp.analysis.topology_theory.pseudometric_structure, line 142, char
 forall [R : numFieldType] [M : Type]
   [local_mixin_choice_hasChoice : hasChoice.axioms_ M]
   [local_mixin_eqtype_hasDecEq : Equality.mixin_of M]
-  [local_mixin_filter_selfFiltered : selfFiltered.axioms_ M]
-  [local_mixin_filter_isFiltered : isFiltered.axioms_ M M],
+  [local_mixin_filter_selfFiltered : filter.selfFiltered.axioms_ M]
+  [local_mixin_filter_isFiltered : filter.isFiltered.axioms_ M M],
 Nbhs_isPseudoMetric.phant_axioms R (m:=local_mixin_choice_hasChoice)
   (m0:=local_mixin_eqtype_hasDecEq) (m1:=local_mixin_filter_selfFiltered)
   (m2:=local_mixin_filter_isFiltered) id_phant
@@ -721,10 +739,11 @@ Nbhs_isPseudoMetric.phant_axioms R (m:=local_mixin_choice_hasChoice)
         local_mixin_filter_selfFiltered local_mixin_filter_isFiltered)
   id_phant
   (c:={|
-        Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-        Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-        Nbhs.filter_selfFiltered_mixin := local_mixin_filter_selfFiltered;
-        Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+        filter.Nbhs.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
+        filter.Nbhs.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+        filter.Nbhs.filter_selfFiltered_mixin :=
+          local_mixin_filter_selfFiltered;
+        filter.Nbhs.filter_isFiltered_mixin := local_mixin_filter_isFiltered
       |})
   id_phant (m3:=local_mixin_choice_hasChoice) id_phant
   (m4:=local_mixin_eqtype_hasDecEq) id_phant
@@ -735,9 +754,11 @@ Nbhs_isPseudoMetric.phant_axioms R (m:=local_mixin_choice_hasChoice)
          local_mixin_filter_isFiltered)
   id_phant
   (c0:={|
-         Filtered.choice_hasChoice_mixin := local_mixin_choice_hasChoice;
-         Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
-         Filtered.filter_isFiltered_mixin := local_mixin_filter_isFiltered
+         filter.Filtered.choice_hasChoice_mixin :=
+           local_mixin_choice_hasChoice;
+         filter.Filtered.eqtype_hasDecEq_mixin := local_mixin_eqtype_hasDecEq;
+         filter.Filtered.filter_isFiltered_mixin :=
+           local_mixin_filter_isFiltered
        |})
   id_phant (m7:=local_mixin_choice_hasChoice) id_phant
   (m8:=local_mixin_eqtype_hasDecEq) id_phant
@@ -1045,7 +1066,7 @@ library mathcomp.analysis.topology_theory.metric_structure, line 176, characters
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="metricType_numDomainType.nbhs_nbhs_mdist" class="id"><a name="metricType_numDomainType.nbhs_nbhs_mdist" class="" title="metricType_numDomainType.nbhs_nbhs_mdist :
 forall {K : numDomainType} {V : metricType K},
 nbhs_ball_ (fun (x : V) (d : K) => [set y | (mdist x y < d)%R]%classic) =
-nbhs
+filter.nbhs
 
 metricType_numDomainType.nbhs_nbhs_mdist is not universe polymorphic
 Arguments metricType_numDomainType.nbhs_nbhs_mdist {K V}
@@ -1065,8 +1086,9 @@ library mathcomp.analysis.topology_theory.metric_structure, line 181, characters
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="metricType_numDomainType.nbhs_mdistP" class="id"><a name="metricType_numDomainType.nbhs_mdistP" class="" title="metricType_numDomainType.nbhs_mdistP :
-forall {K : numDomainType} {V : metricType K} (x : V) (P : V -> Prop),
-(\near x, P x) <->
+forall {K : numDomainType} {V : metricType K} (x : filter.Filtered.sort V)
+  (P : V -> Prop),
+filter.prop_near1 x (P:=P) (inPhantom (forall x0 : V, P x0)) <->
 nbhs_ball_ (fun (x0 : V) (d : K) => [set y | (mdist x0 y < d)%R]%classic) x P
 
 metricType_numDomainType.nbhs_mdistP is not universe polymorphic
@@ -1084,9 +1106,9 @@ library mathcomp.analysis.topology_theory.metric_structure, line 189, characters
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="metricType_numDomainType.filter_from_mdist_nbhs" class="id"><a name="metricType_numDomainType.filter_from_mdist_nbhs" class="" title="metricType_numDomainType.filter_from_mdist_nbhs :
 forall {K : numDomainType} {V : metricType K} (y : V),
-filter_from (fun i : K => (0 < i)%R)
+filter.filter_from (fun i : K => (0 < i)%R)
   (fun (i : K) (y' : V) => (mdist y y' < i)%R) =
-nbhs y
+filter.nbhs y
 
 metricType_numDomainType.filter_from_mdist_nbhs is not universe polymorphic
 Arguments metricType_numDomainType.filter_from_mdist_nbhs {K V} y
@@ -1109,14 +1131,16 @@ Qed.</div></details>
 <span class="vernacular">Let</span><span class="id"> </span><span id="metricType_numDomainType.metricType_numDomainType.nbhs_simpl" class="id"><a name="metricType_numDomainType.metricType_numDomainType.nbhs_simpl" class="">nbhs_simpl</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#NbhsBall.nbhs_simpl">nbhs_simpl</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.metric_structure.html#metricType_numDomainType.nbhs_nbhs_mdist">nbhs_nbhs_mdist</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.metric_structure.html#metricType_numDomainType.filter_from_mdist_nbhs">filter_from_mdist_nbhs</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="metricType_numDomainType.fcvgrPdist_lt" class="id"><a name="metricType_numDomainType.fcvgrPdist_lt" class="" title="metricType_numDomainType.fcvgrPdist_lt :
-forall {K : numDomainType} {V : metricType K} {F : set_system V},
-Filter F ->
+forall {K : numDomainType} {V : metricType K} {F : filter.set_system V},
+filter.Filter F ->
 forall y : V,
-(F --> y)%classic <->
+filter.cvg_to (filter.nbhs F) (filter.nbhs y) <->
 (forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F, (mdist y F < eps)%R)
+ (0 < eps)%R ->
+ filter.prop_near1 F (P:=fun y' : V => (mdist y y' < eps)%R)
+   (inPhantom (forall y' : V, (mdist y y' < eps)%R)))
 
 metricType_numDomainType.fcvgrPdist_lt is not universe polymorphic
 Arguments metricType_numDomainType.fcvgrPdist_lt {K V F FF} y
@@ -1133,14 +1157,17 @@ library mathcomp.analysis.topology_theory.metric_structure, line 203, characters
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.classical.filter.html#filter_fromP">filter_fromP</a></span><span class="id">/=</span><span class="id"> !</span><span class="id"><a href="mathcomp.analysis.topology_theory.metric_structure.html#metricType_numDomainType.metricType_numDomainType.nbhs_simpl">nbhs_simpl</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="metricType_numDomainType.cvgrPdist_lt" class="id"><a name="metricType_numDomainType.cvgrPdist_lt" class="" title="metricType_numDomainType.cvgrPdist_lt :
-forall {K : numDomainType} {V : metricType K} {T : Type} {F : set_system T},
-Filter F ->
+forall {K : numDomainType} {V : metricType K} {T : Type}
+  {F : filter.set_system T},
+filter.Filter F ->
 forall (f : T -> V) (y : V),
-(f x @[x --> F] --> y)%classic <->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) <->
 (forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F, (mdist y (f F) < eps)%R)
+ (0 < eps)%R ->
+ filter.prop_near1 F (P:=fun t : T => (mdist y (f t) < eps)%R)
+   (inPhantom (forall t : T, (mdist y (f t) < eps)%R)))
 
 metricType_numDomainType.cvgrPdist_lt is not universe polymorphic
 Arguments metricType_numDomainType.cvgrPdist_lt {K V} 
@@ -1158,14 +1185,17 @@ library mathcomp.analysis.topology_theory.metric_structure, line 207, characters
 <span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.metric_structure.html#metricType_numDomainType.fcvgrPdist_lt">fcvgrPdist_lt</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="metricType_numDomainType.cvgr_dist_lt" class="id"><a name="metricType_numDomainType.cvgr_dist_lt" class="" title="metricType_numDomainType.cvgr_dist_lt :
-forall {K : numDomainType} {V : metricType K} {T : Type} {F : set_system T},
-Filter F ->
+forall {K : numDomainType} {V : metricType K} {T : Type}
+  {F : filter.set_system T},
+filter.Filter F ->
 forall [f : T -> V] [y : V],
-(f x @[x --> F] --> y)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
 forall
   [eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K],
-(0 < eps)%R -> \near F, (mdist y (f F) < eps)%R
+(0 < eps)%R ->
+filter.prop_near1 F (P:=fun t : T => (mdist y (f t) < eps)%R)
+  (inPhantom (forall t : T, (mdist y (f t) < eps)%R))
 
 metricType_numDomainType.cvgr_dist_lt is not universe polymorphic
 Arguments metricType_numDomainType.cvgr_dist_lt {K V} 
@@ -1184,14 +1214,17 @@ library mathcomp.analysis.topology_theory.metric_structure, line 211, characters
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.metric_structure.html#metricType_numDomainType.cvgrPdist_lt">cvgrPdist_lt</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="metricType_numDomainType.cvgr_dist_le" class="id"><a name="metricType_numDomainType.cvgr_dist_le" class="" title="metricType_numDomainType.cvgr_dist_le :
-forall {K : numDomainType} {V : metricType K} {T : Type} {F : set_system T},
-Filter F ->
+forall {K : numDomainType} {V : metricType K} {T : Type}
+  {F : filter.set_system T},
+filter.Filter F ->
 forall [f : T -> V] [y : V],
-(f x @[x --> F] --> y)%classic ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) ->
 forall
   [eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K],
-(0 < eps)%R -> \near F, (mdist y (f F) <= eps)%R
+(0 < eps)%R ->
+filter.prop_near1 F (P:=fun t : T => (mdist y (f t) <= eps)%R)
+  (inPhantom (forall t : T, (mdist y (f t) <= eps)%R))
 
 metricType_numDomainType.cvgr_dist_le is not universe polymorphic
 Arguments metricType_numDomainType.cvgr_dist_le {K V} 
@@ -1216,9 +1249,12 @@ library mathcomp.analysis.topology_theory.metric_structure, line 215, characters
 <span class="vernacular">Variables</span> (<span id="metricType_numDomainType.at_left_right_metricType.R" class="id"><a name="metricType_numDomainType.at_left_right_metricType.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.NumField.Exports.numFieldType">numFieldType</a></span>) (<span id="metricType_numDomainType.at_left_right_metricType.V" class="id"><a name="metricType_numDomainType.at_left_right_metricType.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.metric_structure.html#Metric.Exports.metricType">metricType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.metric_structure.html#R:120">R</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="metricType_numDomainType.nbhsr0P" class="id"><a name="metricType_numDomainType.nbhsr0P" class="" title="metricType_numDomainType.nbhsr0P :
-forall [R : numFieldType] [V : metricType R] (P : set V) (x : V),
-(\near x, P x) <->
-(\forall e \near (0^'+)%classic, forall y : V, (mdist x y <= e)%R -> P y)
+forall [R : numFieldType] [V : metricType R] (P : set V)
+  (x : filter.Filtered.sort V),
+filter.prop_near1 x (P:=P) (inPhantom (forall y : V, P y)) <->
+filter.prop_near1 (0^'+)%classic
+  (P:=fun e : R => forall y : V, (mdist x y <= e)%R -> P y)
+  (inPhantom (forall (e : R) (y : V), (mdist x y <= e)%R -> P y))
 
 metricType_numDomainType.nbhsr0P is not universe polymorphic
 Arguments metricType_numDomainType.nbhsr0P [R V] P%_classical_set_scope x
@@ -1268,14 +1304,17 @@ Qed.</div></details>
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="metricType_numDomainType.cvgrPdist_le" class="id"><a name="metricType_numDomainType.cvgrPdist_le" class="" title="metricType_numDomainType.cvgrPdist_le :
-forall [R : numFieldType] [V : metricType R] {T : Type} {F : set_system T},
-Filter F ->
+forall [R : numFieldType] [V : metricType R] {T : Type}
+  {F : filter.set_system T},
+filter.Filter F ->
 forall (f : T -> V) (y : V),
-(f x @[x --> F] --> y)%classic <->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs y) <->
 (forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            R,
- (0 < eps)%R -> \near F, (mdist y (f F) <= eps)%R)
+ (0 < eps)%R ->
+ filter.prop_near1 F (P:=fun t : T => (mdist y (f t) <= eps)%R)
+   (inPhantom (forall t : T, (mdist y (f t) <= eps)%R)))
 
 metricType_numDomainType.cvgrPdist_le is not universe polymorphic
 Arguments metricType_numDomainType.cvgrPdist_le [R V] 
@@ -1303,9 +1342,16 @@ library mathcomp.analysis.topology_theory.metric_structure, line 268, characters
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_nbhsP" class="id"><a name="cvg_nbhsP" class="" title="cvg_nbhsP :
 forall [R : realType] [V : metricType R] (f : V -> V) (p l : V),
-(f x @[x --> p] --> l)%classic <->
+filter.cvg_to (filter.nbhs (filter.fmap [eta f] (filter.nbhs p)))
+  (filter.nbhs l) <->
 (forall u : nat -> V,
- (u n @[n --> \oo] --> p)%classic -> (f (u n) @[n --> \oo] --> l)%classic)
+ filter.cvg_to
+   (filter.nbhs (filter.fmap [eta u] (filter.nbhs filter.eventually)))
+   (filter.nbhs p) ->
+ filter.cvg_to
+   (filter.nbhs
+      (filter.fmap (fun n : nat => f (u n)) (filter.nbhs filter.eventually)))
+   (filter.nbhs l))
 
 cvg_nbhsP is not universe polymorphic
 Arguments cvg_nbhsP [R V] f%_function_scope p l

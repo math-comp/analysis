@@ -548,14 +548,17 @@ Declared in library mathcomp.analysis.landau, line 298, characters 6-11
 <br/>
 <span id="landau_littleo_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="Domination.hb_instance_1.g" class="id"><span id="Domination.hb_instance_1.F" class="id"><a name="landau_littleo_type__canonical__eqtype_SubType" class="" title="landau_littleo_type__canonical__eqtype_SubType :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
+   `[< (fun (F0 : filter.set_system T) (f : T -> V) (g0 : T -> W) =>
         forall
           eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                   K,
-        (0 < eps)%R -> \near F0, (`|f F0| <= eps * `|g0 F0|)%R) F x g >])
+        (0 < eps)%R ->
+        filter.prop_near1 F0 (P:=fun x0 : T => (`|f x0| <= eps * `|g0 x0|)%R)
+          (inPhantom (forall x0 : T, (`|f x0| <= eps * `|g0 x0|)%R)))
+         F x g >])
 
 landau_littleo_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_littleo_type__canonical__eqtype_SubType 
@@ -566,14 +569,17 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 313, characters 0-91
 ">HB</a></span></span></span></span>.<span id="landau_littleo_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="Domination.hb_instance_1.g" class="id"><span id="Domination.hb_instance_1.F" class="id"><a name="landau_littleo_type__canonical__eqtype_SubType" class="" title="landau_littleo_type__canonical__eqtype_SubType :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
+   `[< (fun (F0 : filter.set_system T) (f : T -> V) (g0 : T -> W) =>
         forall
           eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                   K,
-        (0 < eps)%R -> \near F0, (`|f F0| <= eps * `|g0 F0|)%R) F x g >])
+        (0 < eps)%R ->
+        filter.prop_near1 F0 (P:=fun x0 : T => (`|f x0| <= eps * `|g0 x0|)%R)
+          (inPhantom (forall x0 : T, (`|f x0| <= eps * `|g0 x0|)%R)))
+         F x g >])
 
 landau_littleo_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_littleo_type__canonical__eqtype_SubType 
@@ -584,14 +590,17 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 313, characters 0-91
 ">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="landau_littleo_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="Domination.hb_instance_1.g" class="id"><span id="Domination.hb_instance_1.F" class="id"><a name="landau_littleo_type__canonical__eqtype_SubType" class="" title="landau_littleo_type__canonical__eqtype_SubType :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
+   `[< (fun (F0 : filter.set_system T) (f : T -> V) (g0 : T -> W) =>
         forall
           eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                   K,
-        (0 < eps)%R -> \near F0, (`|f F0| <= eps * `|g0 F0|)%R) F x g >])
+        (0 < eps)%R ->
+        filter.prop_near1 F0 (P:=fun x0 : T => (`|f x0| <= eps * `|g0 x0|)%R)
+          (inPhantom (forall x0 : T, (`|f x0| <= eps * `|g0 x0|)%R)))
+         F x g >])
 
 landau_littleo_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_littleo_type__canonical__eqtype_SubType 
@@ -602,14 +611,17 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 313, characters 0-91
 "> _</a></span></span></span></span> (<span id="landau_littleo_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="Domination.hb_instance_1.g" class="id"><span id="Domination.hb_instance_1.F" class="id"><a name="landau_littleo_type__canonical__eqtype_SubType" class="" title="landau_littleo_type__canonical__eqtype_SubType :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
+   `[< (fun (F0 : filter.set_system T) (f : T -> V) (g0 : T -> W) =>
         forall
           eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                   K,
-        (0 < eps)%R -> \near F0, (`|f F0| <= eps * `|g0 F0|)%R) F x g >])
+        (0 < eps)%R ->
+        filter.prop_near1 F0 (P:=fun x0 : T => (`|f x0| <= eps * `|g0 x0|)%R)
+          (inPhantom (forall x0 : T, (`|f x0| <= eps * `|g0 x0|)%R)))
+         F x g >])
 
 landau_littleo_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_littleo_type__canonical__eqtype_SubType 
@@ -620,14 +632,17 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 313, characters 0-91
 ">F</a></span></span></span></span><span id="landau_littleo_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="Domination.hb_instance_1.g" class="id"><span id="Domination.hb_instance_1.F" class="id"><a name="landau_littleo_type__canonical__eqtype_SubType" class="" title="landau_littleo_type__canonical__eqtype_SubType :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
+   `[< (fun (F0 : filter.set_system T) (f : T -> V) (g0 : T -> W) =>
         forall
           eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                   K,
-        (0 < eps)%R -> \near F0, (`|f F0| <= eps * `|g0 F0|)%R) F x g >])
+        (0 < eps)%R ->
+        filter.prop_near1 F0 (P:=fun x0 : T => (`|f x0| <= eps * `|g0 x0|)%R)
+          (inPhantom (forall x0 : T, (`|f x0| <= eps * `|g0 x0|)%R)))
+         F x g >])
 
 landau_littleo_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_littleo_type__canonical__eqtype_SubType 
@@ -638,14 +653,17 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 313, characters 0-91
 "> :</a></span></span></span></span><span id="landau_littleo_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="Domination.hb_instance_1.g" class="id"><span id="Domination.hb_instance_1.F" class="id"><a name="landau_littleo_type__canonical__eqtype_SubType" class="" title="landau_littleo_type__canonical__eqtype_SubType :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
+   `[< (fun (F0 : filter.set_system T) (f : T -> V) (g0 : T -> W) =>
         forall
           eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                   K,
-        (0 < eps)%R -> \near F0, (`|f F0| <= eps * `|g0 F0|)%R) F x g >])
+        (0 < eps)%R ->
+        filter.prop_near1 F0 (P:=fun x0 : T => (`|f x0| <= eps * `|g0 x0|)%R)
+          (inPhantom (forall x0 : T, (`|f x0| <= eps * `|g0 x0|)%R)))
+         F x g >])
 
 landau_littleo_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_littleo_type__canonical__eqtype_SubType 
@@ -659,12 +677,15 @@ Declared in library mathcomp.analysis.landau, line 313, characters 0-91
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="littleo_class" class="id"><a name="littleo_class" class="" title="littleo_class :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : set_system T] [g : T -> W] (f : {o_F g}),
-`[< (fun (F0 : set_system T) (f0 : T -> V) (g0 : T -> W) =>
+  [F : filter.set_system T] [g : T -> W] (f : {o_F g}),
+`[< (fun (F0 : filter.set_system T) (f0 : T -> V) (g0 : T -> W) =>
      forall
        eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                K,
-     (0 < eps)%R -> \near F0, (`|f0 F0| <= eps * `|g0 F0|)%R) F f g >]
+     (0 < eps)%R ->
+     filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= eps * `|g0 x|)%R)
+       (inPhantom (forall x : T, (`|f0 x| <= eps * `|g0 x|)%R)))
+      F f g >]
 
 littleo_class is not universe polymorphic
 Arguments littleo_class {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
@@ -681,12 +702,17 @@ Declared in library mathcomp.analysis.landau, line 316, characters 6-19
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="littleo_clone" class="id"><a name="littleo_clone" class="" title="littleo_clone :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : set_system T] [g : T -> W] [f : T -> V] [fT : {o_F g}]
-  [c : `[< (fun (F0 : set_system T) (f0 : T -> V) (g0 : T -> W) =>
+  [F : filter.set_system T] [g : T -> W] [f : T -> V] 
+  [fT : {o_F g}]
+  [c : `[< (fun (F0 : filter.set_system T) (f0 : T -> V) (g0 : T -> W) =>
             forall
               eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                       K,
-            (0 < eps)%R -> \near F0, (`|f0 F0| <= eps * `|g0 F0|)%R) F f g >]],
+            (0 < eps)%R ->
+            filter.prop_near1 F0
+              (P:=fun x : T => (`|f0 x| <= eps * `|g0 x|)%R)
+              (inPhantom (forall x : T, (`|f0 x| <= eps * `|g0 x|)%R)))
+             F f g >]],
 phant_id (littleo_class fT) c -> {o_F g}
 
 littleo_clone is not universe polymorphic
@@ -702,21 +728,23 @@ Declared in library mathcomp.analysis.landau, line 321, characters 11-24
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="littleo0_subproof" class="id"><a name="littleo0_subproof" class="" title="littleo0_subproof :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : set_system T] (g : T -> W),
-Filter F ->
-(fun (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
+  [F : filter.set_system T] (g : T -> W),
+filter.Filter F ->
+(fun (F0 : filter.set_system T) (f : T -> V) (g0 : T -> W) =>
  forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F0, (`|f F0| <= eps * `|g0 F0|)%R) F 
-  (0%R : T -> V) g
+ (0 < eps)%R ->
+ filter.prop_near1 F0 (P:=fun x : T => (`|f x| <= eps * `|g0 x|)%R)
+   (inPhantom (forall x : T, (`|f x| <= eps * `|g0 x|)%R)))
+  F (0%R : T -> V) g
 
 littleo0_subproof is not universe polymorphic
 Expanded type for implicit arguments
 littleo0_subproof :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : set_system T] (g : T -> W),
-Filter F ->
+  [F : filter.set_system T] (g : T -> W),
+filter.Filter F ->
 forall
   [eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K],
@@ -738,8 +766,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="littleo0" class="id"><a name="littleo0" class="" title="littleo0 :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (g : T -> W),
-{o_F g}
+  (F : filter.filter_on T) (g : T -> W),
+{o_(filter.filter F) g}
 
 littleo0 is not universe polymorphic
 Arguments littleo0 {K} {T}%_type_scope {V W} F g%_function_scope
@@ -752,8 +780,9 @@ Declared in library mathcomp.analysis.landau, line 333, characters 10-18
 <span class="vernacular">Definition</span><span class="id"> </span><span id="the_littleo" class="id"><a name="the_littleo" class="" title="the_littleo :
 forall {K : numDomainType} {T : Type} {V W : normedModType K},
 unit ->
-forall F : filter_on T,
-phantom (set_system T) F -> (T -> V) -> (T -> W) -> T -> V
+forall F : filter.filter_on T,
+phantom (filter.set_system T) (filter.filter F) ->
+(T -> V) -> (T -> W) -> T -> V
 
 the_littleo is not universe polymorphic
 Arguments the_littleo {K} {T}%_type_scope {V W} _ 
@@ -805,18 +834,21 @@ Declared in library mathcomp.analysis.landau, line 336, characters 11-22
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="littleoP" class="id"><a name="littleoP" class="" title="littleoP :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : set_system T] [g : T -> W] (f : {o_F g}),
-(fun (F0 : set_system T) (f0 : T -> V) (g0 : T -> W) =>
+  [F : filter.set_system T] [g : T -> W] (f : {o_F g}),
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g0 : T -> W) =>
  forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F0, (`|f0 F0| <= eps * `|g0 F0|)%R) F f g
+ (0 < eps)%R ->
+ filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= eps * `|g0 x|)%R)
+   (inPhantom (forall x : T, (`|f0 x| <= eps * `|g0 x|)%R)))
+  F f g
 
 littleoP is not universe polymorphic
 Expanded type for implicit arguments
 littleoP :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : set_system T] [g : T -> W] (f : {o_F g})
+  [F : filter.set_system T] [g : T -> W] (f : {o_F g})
   [eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K],
 (0 < eps)%R -> F (fun x : T => (`|f x| <= eps * `|g x|)%R)
@@ -838,13 +870,17 @@ Declared in library mathcomp.analysis.landau, line 381, characters 6-14
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="littleoE" class="id"><a name="littleoE" class="" title="littleoE :
 forall {K : numDomainType} {T : Type} {V W : normedModType K} 
-  (tag : unit) [F : filter_on T] (phF : phantom (set_system T) F)
+  (tag : unit) [F : filter.filter_on T]
+  (phF : phantom (filter.set_system T) (filter.filter F)) 
   [f : T -> V] [h : T -> W],
-(fun (F0 : set_system T) (f0 : T -> V) (g : T -> W) =>
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g : T -> W) =>
  forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F0, (`|f0 F0| <= eps * `|g F0|)%R) F f h ->
+ (0 < eps)%R ->
+ filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= eps * `|g x|)%R)
+   (inPhantom (forall x : T, (`|f0 x| <= eps * `|g x|)%R)))
+  (filter.filter F) f h ->
 ('o) h = f
 
 littleoE is not universe polymorphic
@@ -863,14 +899,18 @@ Declared in library mathcomp.analysis.landau, line 388, characters 6-14
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="littleoE0" class="id"><a name="littleoE0" class="" title="littleoE0 :
 forall {K : numDomainType} {T : Type} {V W : normedModType K} 
-  (tag : unit) [F : filter_on T] (phF : phantom (set (set T)) F) 
+  (tag : unit) [F : filter.filter_on T]
+  (phF : phantom (set (set T)) (filter.filter F)) 
   [f : T -> V] [h : T -> W],
 ~
-(fun (F0 : set_system T) (f0 : T -> V) (g : T -> W) =>
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g : T -> W) =>
  forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F0, (`|f0 F0| <= eps * `|g F0|)%R) F f h ->
+ (0 < eps)%R ->
+ filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= eps * `|g x|)%R)
+   (inPhantom (forall x : T, (`|f0 x| <= eps * `|g x|)%R)))
+  (filter.filter F) f h ->
 ('o) h = 0%R
 
 littleoE0 is not universe polymorphic
@@ -890,8 +930,9 @@ Declared in library mathcomp.analysis.landau, line 393, characters 6-15
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="the_littleo_littleo" class="id"><a name="the_littleo_littleo" class="" title="the_littleo_littleo :
 forall {K : numDomainType} {T : Type} {V W : normedModType K},
 unit ->
-forall [F : filter_on T],
-phantom (set_system T) F -> (T -> V) -> forall h : T -> W, {o_F h}
+forall [F : filter.filter_on T],
+phantom (filter.set_system T) (filter.filter F) ->
+(T -> V) -> forall h : T -> W, {o_(filter.filter F) h}
 
 the_littleo_littleo is not universe polymorphic
 Arguments the_littleo_littleo {K} {T}%_type_scope 
@@ -907,7 +948,7 @@ Declared in library mathcomp.analysis.landau, line 398, characters 10-29
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="littleo" class="id"><a name="littleo" class="" title="littleo :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : set_system T] [g : T -> W] (f : {o_F g}),
+  [F : filter.set_system T] [g : T -> W] (f : {o_F g}),
 littleo_spec F g f
 
 littleo is not universe polymorphic
@@ -923,19 +964,21 @@ Declared in library mathcomp.analysis.landau, line 404, characters 6-13
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="opp_littleo_subproof" class="id"><a name="opp_littleo_subproof" class="" title="opp_littleo_subproof :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W] (df : {o_F e}),
-(fun (F0 : set_system T) (f : T -> V) (g : T -> W) =>
+  [F : filter.filter_on T] [e : T -> W] (df : {o_(filter.filter F) e}),
+(fun (F0 : filter.set_system T) (f : T -> V) (g : T -> W) =>
  forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F0, (`|f F0| <= eps * `|g F0|)%R) F 
-  (- (df : T -> V))%R e
+ (0 < eps)%R ->
+ filter.prop_near1 F0 (P:=fun x : T => (`|f x| <= eps * `|g x|)%R)
+   (inPhantom (forall x : T, (`|f x| <= eps * `|g x|)%R)))
+  (filter.filter F) (- (df : T -> V))%R e
 
 opp_littleo_subproof is not universe polymorphic
 Expanded type for implicit arguments
 opp_littleo_subproof :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W] (df : {o_F e})
+  [F : filter.filter_on T] [e : T -> W] (df : {o_(filter.filter F) e})
   [eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K],
 (0 < eps)%R ->
@@ -957,8 +1000,8 @@ Declared in library mathcomp.analysis.landau, line 407, characters 6-26
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="opp_littleo" class="id"><a name="opp_littleo" class="" title="opp_littleo :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W],
-{o_F e} -> {o_F e}
+  [F : filter.filter_on T] [e : T -> W],
+{o_(filter.filter F) e} -> {o_(filter.filter F) e}
 
 opp_littleo is not universe polymorphic
 Arguments opp_littleo {K} {T}%_type_scope {V W} [F] [e]%_function_scope df
@@ -970,8 +1013,8 @@ Declared in library mathcomp.analysis.landau, line 413, characters 10-21
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="oppo" class="id"><a name="oppo" class="" title="oppo :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (f : T -> V) (e : T -> W),
-(- 'o_F e)%R = 'o_F e 
+  (F : filter.filter_on T) (f : T -> V) (e : T -> W),
+(- 'o_(filter.filter F) e)%R = 'o_(filter.filter F) e 
 
 oppo is not universe polymorphic
 Arguments oppo {K} {T}%_type_scope {V W} F (f e)%_function_scope
@@ -986,8 +1029,9 @@ Declared in library mathcomp.analysis.landau, line 416, characters 6-10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="oppox" class="id"><a name="oppox" class="" title="oppox :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (f : T -> V) (e : T -> W) (x : T),
-(- 'o_F e x)%R = 'o_F e x
+  (F : filter.filter_on T) (f : T -> V) (e : T -> W) 
+  (x : T),
+(- 'o_(filter.filter F) e x)%R = 'o_(filter.filter F) e x
 
 oppox is not universe polymorphic
 Arguments oppox {K} {T}%_type_scope {V W} F (f e)%_function_scope x
@@ -1003,21 +1047,25 @@ Declared in library mathcomp.analysis.landau, line 419, characters 6-11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqadd_some_oP" class="id"><a name="eqadd_some_oP" class="" title="eqadd_some_oP :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f g : T -> V] [e : T -> W] [h : T -> V],
-f = (g + 'o_F e)%E ->
-(fun (F0 : set_system T) (f0 : T -> V) (g0 : T -> W) =>
+  [F : filter.filter_on T] [f g : T -> V] [e : T -> W] 
+  [h : T -> V],
+f = (g + 'o_(filter.filter F) e)%R ->
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g0 : T -> W) =>
  forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F0, (`|f0 F0| <= eps * `|g0 F0|)%R) F 
-  (f - g)%R e
+ (0 < eps)%R ->
+ filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= eps * `|g0 x|)%R)
+   (inPhantom (forall x : T, (`|f0 x| <= eps * `|g0 x|)%R)))
+  (filter.filter F) (f - g)%R e
 
 eqadd_some_oP is not universe polymorphic
 Expanded type for implicit arguments
 eqadd_some_oP :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f g : T -> V] [e : T -> W] [h : T -> V],
-f = (g + 'o_F e)%E ->
+  [F : filter.filter_on T] [f g : T -> V] [e : T -> W] 
+  [h : T -> V],
+f = (g + 'o_(filter.filter F) e)%R ->
 forall
   [eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K],
@@ -1043,14 +1091,16 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqaddoP" class="id"><a name="eqaddoP" class="" title="eqaddoP :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (f g : T -> V) (e : T -> W),
-f = (g + 'o_F e )%E <->
-(fun (F0 : set_system T) (f0 : T -> V) (g0 : T -> W) =>
+  (F : filter.filter_on T) (f g : T -> V) (e : T -> W),
+f = (g + 'o_(filter.filter F) e )%R <->
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g0 : T -> W) =>
  forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F0, (`|f0 F0| <= eps * `|g0 F0|)%R) F 
-  (f - g)%R e
+ (0 < eps)%R ->
+ filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= eps * `|g0 x|)%R)
+   (inPhantom (forall x : T, (`|f0 x| <= eps * `|g0 x|)%R)))
+  (filter.filter F) (f - g)%R e
 
 eqaddoP is not universe polymorphic
 Arguments eqaddoP {K} {T}%_type_scope {V W} F (f g e)%_function_scope
@@ -1067,13 +1117,16 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqoP" class="id"><a name="eqoP" class="" title="eqoP :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (e : T -> W) (f : T -> V),
-f = 'o_F e  <->
-(fun (F0 : set_system T) (f0 : T -> V) (g : T -> W) =>
+  (F : filter.filter_on T) (e : T -> W) (f : T -> V),
+f = 'o_(filter.filter F) e  <->
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g : T -> W) =>
  forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F0, (`|f0 F0| <= eps * `|g F0|)%R) F f e
+ (0 < eps)%R ->
+ filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= eps * `|g x|)%R)
+   (inPhantom (forall x : T, (`|f0 x| <= eps * `|g x|)%R)))
+  (filter.filter F) f e
 
 eqoP is not universe polymorphic
 Arguments eqoP {K} {T}%_type_scope {V W} F (e f)%_function_scope
@@ -1089,20 +1142,23 @@ Declared in library mathcomp.analysis.landau, line 438, characters 6-10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_some_oP" class="id"><a name="eq_some_oP" class="" title="eq_some_oP :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W] [f h : T -> V],
-f = 'o_F e ->
-(fun (F0 : set_system T) (f0 : T -> V) (g : T -> W) =>
+  [F : filter.filter_on T] [e : T -> W] [f h : T -> V],
+f = 'o_(filter.filter F) e ->
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g : T -> W) =>
  forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F0, (`|f0 F0| <= eps * `|g F0|)%R) F f e
+ (0 < eps)%R ->
+ filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= eps * `|g x|)%R)
+   (inPhantom (forall x : T, (`|f0 x| <= eps * `|g x|)%R)))
+  (filter.filter F) f e
 
 eq_some_oP is not universe polymorphic
 Expanded type for implicit arguments
 eq_some_oP :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W] [f h : T -> V],
-f = 'o_F e ->
+  [F : filter.filter_on T] [e : T -> W] [f h : T -> V],
+f = 'o_(filter.filter F) e ->
 forall
   [eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K],
@@ -1123,8 +1179,8 @@ Declared in library mathcomp.analysis.landau, line 442, characters 6-16
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqaddoE" class="id"><a name="eqaddoE" class="" title="eqaddoE :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f g h : T -> V] [e : T -> W],
-f = (g + 'a_o_F e )%E -> f = (g + 'o_F e )%E
+  [F : filter.filter_on T] [f g h : T -> V] [e : T -> W],
+f = (g + 'a_o_(filter.filter F) e )%R -> f = (g + 'o_(filter.filter F) e )%R
 
 eqaddoE is not universe polymorphic
 Arguments eqaddoE {K} {T}%_type_scope {V W} [F] [f g h e]%_function_scope _
@@ -1140,8 +1196,8 @@ Declared in library mathcomp.analysis.landau, line 448, characters 6-13
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqoE" class="id"><a name="eqoE" class="" title="eqoE :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f h : T -> V] [e : T -> W],
-f = 'a_o_F e  -> f = 'o_F e 
+  [F : filter.filter_on T] [f h : T -> V] [e : T -> W],
+f = 'a_o_(filter.filter F) e  -> f = 'o_(filter.filter F) e 
 
 eqoE is not universe polymorphic
 Arguments eqoE {K} {T}%_type_scope {V W} [F] [f h e]%_function_scope _
@@ -1157,8 +1213,9 @@ Declared in library mathcomp.analysis.landau, line 452, characters 6-10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqoEx" class="id"><a name="eqoEx" class="" title="eqoEx :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f h : T -> V] [e : T -> W],
-(forall x : T, f x = 'a_o_F e  x) -> forall x : T, f x = 'o_F [eta e]  x
+  [F : filter.filter_on T] [f h : T -> V] [e : T -> W],
+(forall x : T, f x = 'a_o_(filter.filter F) e  x) ->
+forall x : T, f x = 'o_(filter.filter F) [eta e]  x
 
 eqoEx is not universe polymorphic
 Arguments eqoEx {K} {T}%_type_scope {V W} [F] [f h e]%_function_scope
@@ -1176,9 +1233,9 @@ Declared in library mathcomp.analysis.landau, line 456, characters 6-11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqaddoEx" class="id"><a name="eqaddoEx" class="" title="eqaddoEx :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f g h : T -> V] [e : T -> W],
-(forall x : T, f x = (g x + 'a_o_F e  x)%E) ->
-forall x : T, f x = (g x + 'o_F [eta e]  x)%E
+  [F : filter.filter_on T] [f g h : T -> V] [e : T -> W],
+(forall x : T, f x = (g x + 'a_o_(filter.filter F) e  x)%R) ->
+forall x : T, f x = (g x + 'o_(filter.filter F) [eta e]  x)%R
 
 eqaddoEx is not universe polymorphic
 Arguments eqaddoEx {K} {T}%_type_scope {V W} [F] [f g h e]%_function_scope
@@ -1196,8 +1253,8 @@ Declared in library mathcomp.analysis.landau, line 461, characters 6-14
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="littleo_eqo" class="id"><a name="littleo_eqo" class="" title="littleo_eqo :
 forall {K : numDomainType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [g : T -> W] (f : {o_F g}),
-(f : T -> V) = 'o_F g 
+  [F : filter.filter_on T] [g : T -> W] (f : {o_(filter.filter F) g}),
+(f : T -> V) = 'o_(filter.filter F) g 
 
 littleo_eqo is not universe polymorphic
 Arguments littleo_eqo {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
@@ -1224,16 +1281,30 @@ Declared in library mathcomp.analysis.landau, line 466, characters 6-17
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigO_exP" class="id"><a name="bigO_exP" class="" title="bigO_exP :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : set_system T] (f : T -> V) (g : T -> W),
-Filter F ->
-(fun (F0 : set_system T) (f0 : T -> V) (g0 : T -> W) =>
+  [F : filter.set_system T] (f : T -> V) (g : T -> W),
+filter.Filter F ->
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g0 : T -> W) =>
  exists2
    k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
          K,
-   (0 < k)%R & \near F0, (`|f0 F0| <= k * `|g0 F0|)%R)
+   (0 < k)%R &
+   filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g0 x|)%R)
+     (inPhantom (forall x : T, (`|f0 x| <= k * `|g0 x|)%R)))
   F f g <->
-(fun (F0 : set_system T) (f0 : T -> V) (g0 : T -> W) =>
- \forall k \near +oo%R, \near F0, (`|f0 F0| <= k * `|g0 F0|)%R) F f g
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g0 : T -> W) =>
+ filter.prop_near1 +oo%R
+   (P:=fun
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K =>
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g0 x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g0 x|)%R)))
+   (inPhantom
+      (forall
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K,
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g0 x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g0 x|)%R)))))
+  F f g
 
 bigO_exP is not universe polymorphic
 Arguments bigO_exP {K} {T}%_type_scope {V W} [F] (f g)%_function_scope _
@@ -1262,11 +1333,25 @@ Declared in library mathcomp.analysis.landau, line 481, characters 6-14
 <br/>
 <span id="landau_bigO_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_5" class="id"><span id="Domination_numFieldType.hb_instance_4.g" class="id"><span id="Domination_numFieldType.hb_instance_4.F" class="id"><a name="landau_bigO_type__canonical__eqtype_SubType" class="" title="landau_bigO_type__canonical__eqtype_SubType :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
-        \forall k \near +oo%R, \near F0, (`|f F0| <= k * `|g0 F0|)%R) F x g >])
+   `[< (fun (F0 : filter.set_system T) (f : T -> V) (g0 : T -> W) =>
+        filter.prop_near1 +oo%R
+          (P:=fun
+                k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                      K =>
+              filter.prop_near1 F0
+                (P:=fun x0 : T => (`|f x0| <= k * `|g0 x0|)%R)
+                (inPhantom (forall x0 : T, (`|f x0| <= k * `|g0 x0|)%R)))
+          (inPhantom
+             (forall
+                k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                      K,
+              filter.prop_near1 F0
+                (P:=fun x0 : T => (`|f x0| <= k * `|g0 x0|)%R)
+                (inPhantom (forall x0 : T, (`|f x0| <= k * `|g0 x0|)%R)))))
+         F x g >])
 
 landau_bigO_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigO_type__canonical__eqtype_SubType 
@@ -1277,11 +1362,25 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 499, characters 0-88
 ">HB</a></span></span></span></span>.<span id="landau_bigO_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_5" class="id"><span id="Domination_numFieldType.hb_instance_4.g" class="id"><span id="Domination_numFieldType.hb_instance_4.F" class="id"><a name="landau_bigO_type__canonical__eqtype_SubType" class="" title="landau_bigO_type__canonical__eqtype_SubType :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
-        \forall k \near +oo%R, \near F0, (`|f F0| <= k * `|g0 F0|)%R) F x g >])
+   `[< (fun (F0 : filter.set_system T) (f : T -> V) (g0 : T -> W) =>
+        filter.prop_near1 +oo%R
+          (P:=fun
+                k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                      K =>
+              filter.prop_near1 F0
+                (P:=fun x0 : T => (`|f x0| <= k * `|g0 x0|)%R)
+                (inPhantom (forall x0 : T, (`|f x0| <= k * `|g0 x0|)%R)))
+          (inPhantom
+             (forall
+                k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                      K,
+              filter.prop_near1 F0
+                (P:=fun x0 : T => (`|f x0| <= k * `|g0 x0|)%R)
+                (inPhantom (forall x0 : T, (`|f x0| <= k * `|g0 x0|)%R)))))
+         F x g >])
 
 landau_bigO_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigO_type__canonical__eqtype_SubType 
@@ -1292,11 +1391,25 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 499, characters 0-88
 ">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="landau_bigO_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_5" class="id"><span id="Domination_numFieldType.hb_instance_4.g" class="id"><span id="Domination_numFieldType.hb_instance_4.F" class="id"><a name="landau_bigO_type__canonical__eqtype_SubType" class="" title="landau_bigO_type__canonical__eqtype_SubType :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
-        \forall k \near +oo%R, \near F0, (`|f F0| <= k * `|g0 F0|)%R) F x g >])
+   `[< (fun (F0 : filter.set_system T) (f : T -> V) (g0 : T -> W) =>
+        filter.prop_near1 +oo%R
+          (P:=fun
+                k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                      K =>
+              filter.prop_near1 F0
+                (P:=fun x0 : T => (`|f x0| <= k * `|g0 x0|)%R)
+                (inPhantom (forall x0 : T, (`|f x0| <= k * `|g0 x0|)%R)))
+          (inPhantom
+             (forall
+                k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                      K,
+              filter.prop_near1 F0
+                (P:=fun x0 : T => (`|f x0| <= k * `|g0 x0|)%R)
+                (inPhantom (forall x0 : T, (`|f x0| <= k * `|g0 x0|)%R)))))
+         F x g >])
 
 landau_bigO_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigO_type__canonical__eqtype_SubType 
@@ -1307,11 +1420,25 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 499, characters 0-88
 "> _</a></span></span></span></span> (<span id="landau_bigO_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_5" class="id"><span id="Domination_numFieldType.hb_instance_4.g" class="id"><span id="Domination_numFieldType.hb_instance_4.F" class="id"><a name="landau_bigO_type__canonical__eqtype_SubType" class="" title="landau_bigO_type__canonical__eqtype_SubType :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
-        \forall k \near +oo%R, \near F0, (`|f F0| <= k * `|g0 F0|)%R) F x g >])
+   `[< (fun (F0 : filter.set_system T) (f : T -> V) (g0 : T -> W) =>
+        filter.prop_near1 +oo%R
+          (P:=fun
+                k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                      K =>
+              filter.prop_near1 F0
+                (P:=fun x0 : T => (`|f x0| <= k * `|g0 x0|)%R)
+                (inPhantom (forall x0 : T, (`|f x0| <= k * `|g0 x0|)%R)))
+          (inPhantom
+             (forall
+                k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                      K,
+              filter.prop_near1 F0
+                (P:=fun x0 : T => (`|f x0| <= k * `|g0 x0|)%R)
+                (inPhantom (forall x0 : T, (`|f x0| <= k * `|g0 x0|)%R)))))
+         F x g >])
 
 landau_bigO_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigO_type__canonical__eqtype_SubType 
@@ -1322,11 +1449,25 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 499, characters 0-88
 ">F</a></span></span></span></span><span id="landau_bigO_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_5" class="id"><span id="Domination_numFieldType.hb_instance_4.g" class="id"><span id="Domination_numFieldType.hb_instance_4.F" class="id"><a name="landau_bigO_type__canonical__eqtype_SubType" class="" title="landau_bigO_type__canonical__eqtype_SubType :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
-        \forall k \near +oo%R, \near F0, (`|f F0| <= k * `|g0 F0|)%R) F x g >])
+   `[< (fun (F0 : filter.set_system T) (f : T -> V) (g0 : T -> W) =>
+        filter.prop_near1 +oo%R
+          (P:=fun
+                k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                      K =>
+              filter.prop_near1 F0
+                (P:=fun x0 : T => (`|f x0| <= k * `|g0 x0|)%R)
+                (inPhantom (forall x0 : T, (`|f x0| <= k * `|g0 x0|)%R)))
+          (inPhantom
+             (forall
+                k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                      K,
+              filter.prop_near1 F0
+                (P:=fun x0 : T => (`|f x0| <= k * `|g0 x0|)%R)
+                (inPhantom (forall x0 : T, (`|f x0| <= k * `|g0 x0|)%R)))))
+         F x g >])
 
 landau_bigO_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigO_type__canonical__eqtype_SubType 
@@ -1337,11 +1478,25 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 499, characters 0-88
 "> :</a></span></span></span></span><span id="landau_bigO_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_5" class="id"><span id="Domination_numFieldType.hb_instance_4.g" class="id"><span id="Domination_numFieldType.hb_instance_4.F" class="id"><a name="landau_bigO_type__canonical__eqtype_SubType" class="" title="landau_bigO_type__canonical__eqtype_SubType :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
-        \forall k \near +oo%R, \near F0, (`|f F0| <= k * `|g0 F0|)%R) F x g >])
+   `[< (fun (F0 : filter.set_system T) (f : T -> V) (g0 : T -> W) =>
+        filter.prop_near1 +oo%R
+          (P:=fun
+                k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                      K =>
+              filter.prop_near1 F0
+                (P:=fun x0 : T => (`|f x0| <= k * `|g0 x0|)%R)
+                (inPhantom (forall x0 : T, (`|f x0| <= k * `|g0 x0|)%R)))
+          (inPhantom
+             (forall
+                k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                      K,
+              filter.prop_near1 F0
+                (P:=fun x0 : T => (`|f x0| <= k * `|g0 x0|)%R)
+                (inPhantom (forall x0 : T, (`|f x0| <= k * `|g0 x0|)%R)))))
+         F x g >])
 
 landau_bigO_type__canonical__eqtype_SubType is not universe polymorphic
 Arguments landau_bigO_type__canonical__eqtype_SubType 
@@ -1355,9 +1510,21 @@ Declared in library mathcomp.analysis.landau, line 499, characters 0-88
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigO_class" class="id"><a name="bigO_class" class="" title="bigO_class :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : set_system T] [g : T -> W] (f : {O_F g}),
-`[< (fun (F0 : set_system T) (f0 : T -> V) (g0 : T -> W) =>
-     \forall k \near +oo%R, \near F0, (`|f0 F0| <= k * `|g0 F0|)%R) F f g >]
+  [F : filter.set_system T] [g : T -> W] (f : {O_F g}),
+`[< (fun (F0 : filter.set_system T) (f0 : T -> V) (g0 : T -> W) =>
+     filter.prop_near1 +oo%R
+       (P:=fun
+             k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                   K =>
+           filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g0 x|)%R)
+             (inPhantom (forall x : T, (`|f0 x| <= k * `|g0 x|)%R)))
+       (inPhantom
+          (forall
+             k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                   K,
+           filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g0 x|)%R)
+             (inPhantom (forall x : T, (`|f0 x| <= k * `|g0 x|)%R)))))
+      F f g >]
 
 bigO_class is not universe polymorphic
 Arguments bigO_class {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
@@ -1374,10 +1541,24 @@ Declared in library mathcomp.analysis.landau, line 502, characters 6-16
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="bigO_clone" class="id"><a name="bigO_clone" class="" title="bigO_clone :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : set_system T] [g : T -> W] [f : T -> V] [fT : {O_F g}]
-  [c : `[< (fun (F0 : set_system T) (f0 : T -> V) (g0 : T -> W) =>
-            \forall k \near +oo%R, \near F0, (`|f0 F0| <= k * `|g0 F0|)%R) F
-             f g >]],
+  [F : filter.set_system T] [g : T -> W] [f : T -> V] 
+  [fT : {O_F g}]
+  [c : `[< (fun (F0 : filter.set_system T) (f0 : T -> V) (g0 : T -> W) =>
+            filter.prop_near1 +oo%R
+              (P:=fun
+                    k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                          K =>
+                  filter.prop_near1 F0
+                    (P:=fun x : T => (`|f0 x| <= k * `|g0 x|)%R)
+                    (inPhantom (forall x : T, (`|f0 x| <= k * `|g0 x|)%R)))
+              (inPhantom
+                 (forall
+                    k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+                          K,
+                  filter.prop_near1 F0
+                    (P:=fun x : T => (`|f0 x| <= k * `|g0 x|)%R)
+                    (inPhantom (forall x : T, (`|f0 x| <= k * `|g0 x|)%R)))))
+             F f g >]],
 phant_id (bigO_class fT) c -> {O_F g}
 
 bigO_clone is not universe polymorphic
@@ -1393,11 +1574,22 @@ Declared in library mathcomp.analysis.landau, line 507, characters 11-21
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigO0_subproof" class="id"><a name="bigO0_subproof" class="" title="bigO0_subproof :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : set_system T] (g : T -> W),
-Filter F ->
-(fun (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
- \forall k \near +oo%R, \near F0, (`|f F0| <= k * `|g0 F0|)%R) F
-  (0%R : T -> V) g
+  [F : filter.set_system T] (g : T -> W),
+filter.Filter F ->
+(fun (F0 : filter.set_system T) (f : T -> V) (g0 : T -> W) =>
+ filter.prop_near1 +oo%R
+   (P:=fun
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K =>
+       filter.prop_near1 F0 (P:=fun x : T => (`|f x| <= k * `|g0 x|)%R)
+         (inPhantom (forall x : T, (`|f x| <= k * `|g0 x|)%R)))
+   (inPhantom
+      (forall
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K,
+       filter.prop_near1 F0 (P:=fun x : T => (`|f x| <= k * `|g0 x|)%R)
+         (inPhantom (forall x : T, (`|f x| <= k * `|g0 x|)%R)))))
+  F (0%R : T -> V) g
 
 bigO0_subproof is not universe polymorphic
 Arguments bigO0_subproof {K} {T}%_type_scope {V W} [F] g%_function_scope _
@@ -1414,8 +1606,8 @@ Declared in library mathcomp.analysis.landau, line 512, characters 6-20
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="bigO0" class="id"><a name="bigO0" class="" title="bigO0 :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (g : T -> W),
-{O_F g}
+  (F : filter.filter_on T) (g : T -> W),
+{O_(filter.filter F) g}
 
 bigO0 is not universe polymorphic
 Arguments bigO0 {K} {T}%_type_scope {V W} F g%_function_scope
@@ -1427,8 +1619,9 @@ Declared in library mathcomp.analysis.landau, line 518, characters 10-15
 <span class="vernacular">Definition</span><span class="id"> </span><span id="the_bigO" class="id"><a name="the_bigO" class="" title="the_bigO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K},
 unit ->
-forall F : filter_on T,
-phantom (set_system T) F -> (T -> V) -> (T -> W) -> T -> V
+forall F : filter.filter_on T,
+phantom (filter.set_system T) (filter.filter F) ->
+(T -> V) -> (T -> W) -> T -> V
 
 the_bigO is not universe polymorphic
 Arguments the_bigO {K} {T}%_type_scope {V W} u F phF 
@@ -1480,9 +1673,21 @@ Declared in library mathcomp.analysis.landau, line 520, characters 11-19
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigOP" class="id"><a name="bigOP" class="" title="bigOP :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : set_system T] [g : T -> W] (f : {O_F g}),
-(fun (F0 : set_system T) (f0 : T -> V) (g0 : T -> W) =>
- \forall k \near +oo%R, \near F0, (`|f0 F0| <= k * `|g0 F0|)%R) F f g
+  [F : filter.set_system T] [g : T -> W] (f : {O_F g}),
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g0 : T -> W) =>
+ filter.prop_near1 +oo%R
+   (P:=fun
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K =>
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g0 x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g0 x|)%R)))
+   (inPhantom
+      (forall
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K,
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g0 x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g0 x|)%R)))))
+  F f g
 
 bigOP is not universe polymorphic
 Arguments bigOP {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
@@ -1501,10 +1706,23 @@ Declared in library mathcomp.analysis.landau, line 566, characters 6-11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigOE" class="id"><a name="bigOE" class="" title="bigOE :
 forall {K : numFieldType} {T : Type} {V W : normedModType K} 
-  (tag : unit) [F : filter_on T] (phF : phantom (set_system T) F)
+  (tag : unit) [F : filter.filter_on T]
+  (phF : phantom (filter.set_system T) (filter.filter F)) 
   [f : T -> V] [h : T -> W],
-(fun (F0 : set_system T) (f0 : T -> V) (g : T -> W) =>
- \forall k \near +oo%R, \near F0, (`|f0 F0| <= k * `|g F0|)%R) F f h ->
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g : T -> W) =>
+ filter.prop_near1 +oo%R
+   (P:=fun
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K =>
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g x|)%R)))
+   (inPhantom
+      (forall
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K,
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g x|)%R)))))
+  (filter.filter F) f h ->
 ('O) h = f
 
 bigOE is not universe polymorphic
@@ -1522,8 +1740,9 @@ Declared in library mathcomp.analysis.landau, line 573, characters 6-11
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="the_bigO_bigO" class="id"><a name="the_bigO_bigO" class="" title="the_bigO_bigO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K},
 unit ->
-forall [F : filter_on T],
-phantom (set_system T) F -> (T -> V) -> forall h : T -> W, {O_F h}
+forall [F : filter.filter_on T],
+phantom (filter.set_system T) (filter.filter F) ->
+(T -> V) -> forall h : T -> W, {O_(filter.filter F) h}
 
 the_bigO_bigO is not universe polymorphic
 Arguments the_bigO_bigO {K} {T}%_type_scope {V W} 
@@ -1541,8 +1760,8 @@ Declared in library mathcomp.analysis.landau, line 577, characters 10-23
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigO" class="id"><a name="bigO" class="" title="bigO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (g : T -> W) (f : {O_F g}),
-bigO_spec F g f
+  (F : filter.filter_on T) (g : T -> W) (f : {O_(filter.filter F) g}),
+bigO_spec (filter.filter F) g f
 
 bigO is not universe polymorphic
 Arguments bigO {K} {T}%_type_scope {V W} F g%_function_scope f
@@ -1557,10 +1776,21 @@ Declared in library mathcomp.analysis.landau, line 585, characters 6-10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="opp_bigO_subproof" class="id"><a name="opp_bigO_subproof" class="" title="opp_bigO_subproof :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W] (df : {O_F e}),
-(fun (F0 : set_system T) (f : T -> V) (g : T -> W) =>
- \forall k \near +oo%R, \near F0, (`|f F0| <= k * `|g F0|)%R) F
-  (- (df : T -> V))%R e
+  [F : filter.filter_on T] [e : T -> W] (df : {O_(filter.filter F) e}),
+(fun (F0 : filter.set_system T) (f : T -> V) (g : T -> W) =>
+ filter.prop_near1 +oo%R
+   (P:=fun
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K =>
+       filter.prop_near1 F0 (P:=fun x : T => (`|f x| <= k * `|g x|)%R)
+         (inPhantom (forall x : T, (`|f x| <= k * `|g x|)%R)))
+   (inPhantom
+      (forall
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K,
+       filter.prop_near1 F0 (P:=fun x : T => (`|f x| <= k * `|g x|)%R)
+         (inPhantom (forall x : T, (`|f x| <= k * `|g x|)%R)))))
+  (filter.filter F) (- (df : T -> V))%R e
 
 opp_bigO_subproof is not universe polymorphic
 Arguments opp_bigO_subproof {K} {T}%_type_scope {V W} 
@@ -1579,8 +1809,8 @@ Declared in library mathcomp.analysis.landau, line 588, characters 6-23
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="Opp_bigO" class="id"><a name="Opp_bigO" class="" title="Opp_bigO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W],
-{O_F e} -> {O_F e}
+  [F : filter.filter_on T] [e : T -> W],
+{O_(filter.filter F) e} -> {O_(filter.filter F) e}
 
 Opp_bigO is not universe polymorphic
 Arguments Opp_bigO {K} {T}%_type_scope {V W} [F] [e]%_function_scope df
@@ -1592,8 +1822,8 @@ Declared in library mathcomp.analysis.landau, line 595, characters 10-18
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="oppO" class="id"><a name="oppO" class="" title="oppO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (f : T -> V) (e : T -> W),
-(- 'O_F e)%R = 'O_F e 
+  (F : filter.filter_on T) (f : T -> V) (e : T -> W),
+(- 'O_(filter.filter F) e)%R = 'O_(filter.filter F) e 
 
 oppO is not universe polymorphic
 Arguments oppO {K} {T}%_type_scope {V W} F (f e)%_function_scope
@@ -1608,8 +1838,9 @@ Declared in library mathcomp.analysis.landau, line 598, characters 6-10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="oppOx" class="id"><a name="oppOx" class="" title="oppOx :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (f : T -> V) (e : T -> W) (x : T),
-(- 'O_F e x)%R = 'O_F e x
+  (F : filter.filter_on T) (f : T -> V) (e : T -> W) 
+  (x : T),
+(- 'O_(filter.filter F) e x)%R = 'O_(filter.filter F) e x
 
 oppOx is not universe polymorphic
 Arguments oppOx {K} {T}%_type_scope {V W} F (f e)%_function_scope x
@@ -1625,10 +1856,21 @@ Declared in library mathcomp.analysis.landau, line 601, characters 6-11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="add_bigO_subproof" class="id"><a name="add_bigO_subproof" class="" title="add_bigO_subproof :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W] (df dg : {O_F e}),
-(fun (F0 : set_system T) (f : T -> V) (g : T -> W) =>
- \forall k \near +oo%R, \near F0, (`|f F0| <= k * `|g F0|)%R) F 
-  (df \+ dg)%R e
+  [F : filter.filter_on T] [e : T -> W] (df dg : {O_(filter.filter F) e}),
+(fun (F0 : filter.set_system T) (f : T -> V) (g : T -> W) =>
+ filter.prop_near1 +oo%R
+   (P:=fun
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K =>
+       filter.prop_near1 F0 (P:=fun x : T => (`|f x| <= k * `|g x|)%R)
+         (inPhantom (forall x : T, (`|f x| <= k * `|g x|)%R)))
+   (inPhantom
+      (forall
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K,
+       filter.prop_near1 F0 (P:=fun x : T => (`|f x| <= k * `|g x|)%R)
+         (inPhantom (forall x : T, (`|f x| <= k * `|g x|)%R)))))
+  (filter.filter F) (df \+ dg)%R e
 
 add_bigO_subproof is not universe polymorphic
 Arguments add_bigO_subproof {K} {T}%_type_scope {V W} 
@@ -1648,8 +1890,8 @@ Declared in library mathcomp.analysis.landau, line 605, characters 6-23
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="add_bigO" class="id"><a name="add_bigO" class="" title="add_bigO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W],
-{O_F e} -> {O_F e} -> {O_F e}
+  [F : filter.filter_on T] [e : T -> W],
+{O_(filter.filter F) e} -> {O_(filter.filter F) e} -> {O_(filter.filter F) e}
 
 add_bigO is not universe polymorphic
 Arguments add_bigO {K} {T}%_type_scope {V W} [F] [e]%_function_scope df dg
@@ -1660,8 +1902,8 @@ Declared in library mathcomp.analysis.landau, line 613, characters 10-18
 &nbsp;&nbsp;<span class="id">@</span><span class="id"><a href="mathcomp.analysis.landau.html#BigO">BigO</a></span><span class="id"> _</span><span class="id"> _</span> (_<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span>_) (<span class="id"><a href="mathcomp.classical.boolp.html#asboolT">asboolT</a></span> (<span class="id"><a href="mathcomp.analysis.landau.html#add_bigO_subproof">add_bigO_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#df:238">df</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#dg:239">dg</a></span>)).<br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="addfun_bigO" class="id"><a name="addfun_bigO" class="" title="addfun_bigO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W],
-{O_F e} -> {O_F e} -> {O_F e}
+  [F : filter.filter_on T] [e : T -> W],
+{O_(filter.filter F) e} -> {O_(filter.filter F) e} -> {O_(filter.filter F) e}
 
 addfun_bigO is not universe polymorphic
 Arguments addfun_bigO {K} {T}%_type_scope {V W} [F] [e]%_function_scope df dg
@@ -1673,8 +1915,8 @@ Declared in library mathcomp.analysis.landau, line 615, characters 10-21
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="addO" class="id"><a name="addO" class="" title="addO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (f g : T -> V) (e : T -> W),
-('O_F e + 'O_F e)%E = 'O_F e 
+  (F : filter.filter_on T) (f g : T -> V) (e : T -> W),
+('O_(filter.filter F) e + 'O_(filter.filter F) e)%R = 'O_(filter.filter F) e 
 
 addO is not universe polymorphic
 Arguments addO {K} {T}%_type_scope {V W} F (f g e)%_function_scope
@@ -1690,8 +1932,10 @@ Declared in library mathcomp.analysis.landau, line 618, characters 6-10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="addOx" class="id"><a name="addOx" class="" title="addOx :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (f g : T -> V) (e : T -> W) (x : T),
-('O_F e x + 'O_F e x)%E = 'O_F e x
+  (F : filter.filter_on T) (f g : T -> V) (e : T -> W) 
+  (x : T),
+('O_(filter.filter F) e x + 'O_(filter.filter F) e x)%R =
+'O_(filter.filter F) e x
 
 addOx is not universe polymorphic
 Arguments addOx {K} {T}%_type_scope {V W} F (f g e)%_function_scope x
@@ -1708,11 +1952,23 @@ Declared in library mathcomp.analysis.landau, line 622, characters 6-11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqadd_some_OP" class="id"><a name="eqadd_some_OP" class="" title="eqadd_some_OP :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f g : T -> V] [e : T -> W] [h : T -> V],
-f = (g + 'O_F e)%E ->
-(fun (F0 : set_system T) (f0 : T -> V) (g0 : T -> W) =>
- \forall k \near +oo%R, \near F0, (`|f0 F0| <= k * `|g0 F0|)%R) F 
-  (f - g)%R e
+  [F : filter.filter_on T] [f g : T -> V] [e : T -> W] 
+  [h : T -> V],
+f = (g + 'O_(filter.filter F) e)%R ->
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g0 : T -> W) =>
+ filter.prop_near1 +oo%R
+   (P:=fun
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K =>
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g0 x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g0 x|)%R)))
+   (inPhantom
+      (forall
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K,
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g0 x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g0 x|)%R)))))
+  (filter.filter F) (f - g)%R e
 
 eqadd_some_OP is not universe polymorphic
 Arguments eqadd_some_OP {K} {T}%_type_scope {V W} 
@@ -1733,11 +1989,22 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqaddOP" class="id"><a name="eqaddOP" class="" title="eqaddOP :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (f g : T -> V) (e : T -> W),
-f = (g + 'O_F e )%E <->
-(fun (F0 : set_system T) (f0 : T -> V) (g0 : T -> W) =>
- \forall k \near +oo%R, \near F0, (`|f0 F0| <= k * `|g0 F0|)%R) F 
-  (f - g)%R e
+  (F : filter.filter_on T) (f g : T -> V) (e : T -> W),
+f = (g + 'O_(filter.filter F) e )%R <->
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g0 : T -> W) =>
+ filter.prop_near1 +oo%R
+   (P:=fun
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K =>
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g0 x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g0 x|)%R)))
+   (inPhantom
+      (forall
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K,
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g0 x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g0 x|)%R)))))
+  (filter.filter F) (f - g)%R e
 
 eqaddOP is not universe polymorphic
 Arguments eqaddOP {K} {T}%_type_scope {V W} F (f g e)%_function_scope
@@ -1753,10 +2020,22 @@ Declared in library mathcomp.analysis.landau, line 636, characters 6-13
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqOP" class="id"><a name="eqOP" class="" title="eqOP :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (e : T -> W) (f : T -> V),
-f = 'O_F e  <->
-(fun (F0 : set_system T) (f0 : T -> V) (g : T -> W) =>
- \forall k \near +oo%R, \near F0, (`|f0 F0| <= k * `|g F0|)%R) F f e
+  (F : filter.filter_on T) (e : T -> W) (f : T -> V),
+f = 'O_(filter.filter F) e  <->
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g : T -> W) =>
+ filter.prop_near1 +oo%R
+   (P:=fun
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K =>
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g x|)%R)))
+   (inPhantom
+      (forall
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K,
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g x|)%R)))))
+  (filter.filter F) f e
 
 eqOP is not universe polymorphic
 Arguments eqOP {K} {T}%_type_scope {V W} F (e f)%_function_scope
@@ -1772,14 +2051,16 @@ Declared in library mathcomp.analysis.landau, line 640, characters 6-10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqO_exP" class="id"><a name="eqO_exP" class="" title="eqO_exP :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (e : T -> W) (f : T -> V),
-f = 'O_F e  <->
-(fun (F0 : set_system T) (f0 : T -> V) (g : T -> W) =>
+  (F : filter.filter_on T) (e : T -> W) (f : T -> V),
+f = 'O_(filter.filter F) e  <->
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g : T -> W) =>
  exists2
    k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
          K,
-   (0 < k)%R & \near F0, (`|f0 F0| <= k * `|g F0|)%R)
-  F f e
+   (0 < k)%R &
+   filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g x|)%R)
+     (inPhantom (forall x : T, (`|f0 x| <= k * `|g x|)%R)))
+  (filter.filter F) f e
 
 eqO_exP is not universe polymorphic
 Arguments eqO_exP {K} {T}%_type_scope {V W} F (e f)%_function_scope
@@ -1795,10 +2076,22 @@ Declared in library mathcomp.analysis.landau, line 644, characters 6-13
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_some_OP" class="id"><a name="eq_some_OP" class="" title="eq_some_OP :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W] [f h : T -> V],
-f = 'O_F e ->
-(fun (F0 : set_system T) (f0 : T -> V) (g : T -> W) =>
- \forall k \near +oo%R, \near F0, (`|f0 F0| <= k * `|g F0|)%R) F f e
+  [F : filter.filter_on T] [e : T -> W] [f h : T -> V],
+f = 'O_(filter.filter F) e ->
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g : T -> W) =>
+ filter.prop_near1 +oo%R
+   (P:=fun
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K =>
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g x|)%R)))
+   (inPhantom
+      (forall
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K,
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g x|)%R)))))
+  (filter.filter F) f e
 
 eq_some_OP is not universe polymorphic
 Arguments eq_some_OP {K} {T}%_type_scope {V W} [F] [e f h]%_function_scope _
@@ -1814,8 +2107,8 @@ Declared in library mathcomp.analysis.landau, line 648, characters 6-16
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigO_eqO" class="id"><a name="bigO_eqO" class="" title="bigO_eqO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [g : T -> W] (f : {O_F g}),
-(f : T -> V) = 'O_F g 
+  [F : filter.filter_on T] [g : T -> W] (f : {O_(filter.filter F) g}),
+(f : T -> V) = 'O_(filter.filter F) g 
 
 bigO_eqO is not universe polymorphic
 Arguments bigO_eqO {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
@@ -1831,10 +2124,22 @@ Declared in library mathcomp.analysis.landau, line 652, characters 6-14
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqO_bigO" class="id"><a name="eqO_bigO" class="" title="eqO_bigO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W] [f : T -> V],
-f = 'O_F e  ->
-(fun (F0 : set_system T) (f0 : T -> V) (g : T -> W) =>
- \forall k \near +oo%R, \near F0, (`|f0 F0| <= k * `|g F0|)%R) F f e
+  [F : filter.filter_on T] [e : T -> W] [f : T -> V],
+f = 'O_(filter.filter F) e  ->
+(fun (F0 : filter.set_system T) (f0 : T -> V) (g : T -> W) =>
+ filter.prop_near1 +oo%R
+   (P:=fun
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K =>
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g x|)%R)))
+   (inPhantom
+      (forall
+         k : join_Num_NumDomain_between_Num_POrderedZmodule_and_GRing_PzSemiRing
+               K,
+       filter.prop_near1 F0 (P:=fun x : T => (`|f0 x| <= k * `|g x|)%R)
+         (inPhantom (forall x : T, (`|f0 x| <= k * `|g x|)%R)))))
+  (filter.filter F) f e
 
 eqO_bigO is not universe polymorphic
 Arguments eqO_bigO {K} {T}%_type_scope {V W} [F] [e f]%_function_scope _
@@ -1850,8 +2155,8 @@ Declared in library mathcomp.analysis.landau, line 656, characters 6-14
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqaddOE" class="id"><a name="eqaddOE" class="" title="eqaddOE :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f g h : T -> V] [e : T -> W],
-f = (g + 'a_O_F e )%E -> f = (g + 'O_F e )%E
+  [F : filter.filter_on T] [f g h : T -> V] [e : T -> W],
+f = (g + 'a_O_(filter.filter F) e )%R -> f = (g + 'O_(filter.filter F) e )%R
 
 eqaddOE is not universe polymorphic
 Arguments eqaddOE {K} {T}%_type_scope {V W} [F] [f g h e]%_function_scope _
@@ -1867,8 +2172,8 @@ Declared in library mathcomp.analysis.landau, line 662, characters 6-13
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqOE" class="id"><a name="eqOE" class="" title="eqOE :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f h : T -> V] [e : T -> W],
-f = 'a_O_F e  -> f = 'O_F e 
+  [F : filter.filter_on T] [f h : T -> V] [e : T -> W],
+f = 'a_O_(filter.filter F) e  -> f = 'O_(filter.filter F) e 
 
 eqOE is not universe polymorphic
 Arguments eqOE {K} {T}%_type_scope {V W} [F] [f h e]%_function_scope _
@@ -1884,8 +2189,9 @@ Declared in library mathcomp.analysis.landau, line 666, characters 6-10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqOEx" class="id"><a name="eqOEx" class="" title="eqOEx :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f h : T -> V] [e : T -> W],
-(forall x : T, f x = 'a_O_F e  x) -> forall x : T, f x = 'O_F [eta e]  x
+  [F : filter.filter_on T] [f h : T -> V] [e : T -> W],
+(forall x : T, f x = 'a_O_(filter.filter F) e  x) ->
+forall x : T, f x = 'O_(filter.filter F) [eta e]  x
 
 eqOEx is not universe polymorphic
 Arguments eqOEx {K} {T}%_type_scope {V W} [F] [f h e]%_function_scope
@@ -1903,9 +2209,9 @@ Declared in library mathcomp.analysis.landau, line 670, characters 6-11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqaddOEx" class="id"><a name="eqaddOEx" class="" title="eqaddOEx :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f g h : T -> V] [e : T -> W],
-(forall x : T, f x = (g x + 'a_O_F e  x)%E) ->
-forall x : T, f x = (g x + 'O_F [eta e]  x)%E
+  [F : filter.filter_on T] [f g h : T -> V] [e : T -> W],
+(forall x : T, f x = (g x + 'a_O_(filter.filter F) e  x)%R) ->
+forall x : T, f x = (g x + 'O_(filter.filter F) [eta e]  x)%R
 
 eqaddOEx is not universe polymorphic
 Arguments eqaddOEx {K} {T}%_type_scope {V W} [F] [f g h e]%_function_scope
@@ -1927,8 +2233,8 @@ Declared in library mathcomp.analysis.landau, line 675, characters 6-14
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqoO" class="id"><a name="eqoO" class="" title="eqoO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (f : T -> V) (e : T -> W),
-'o_F e = 'O_F e 
+  (F : filter.filter_on T) (f : T -> V) (e : T -> W),
+'o_(filter.filter F) e = 'O_(filter.filter F) e 
 
 eqoO is not universe polymorphic
 Arguments eqoO {K} {T}%_type_scope {V W} F (f e)%_function_scope
@@ -1947,8 +2253,8 @@ Declared in library mathcomp.analysis.landau, line 687, characters 6-10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="littleo_eqO" class="id"><a name="littleo_eqO" class="" title="littleo_eqO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W] (f : {o_F e}),
-(f : T -> V) = 'O_F e 
+  [F : filter.filter_on T] [e : T -> W] (f : {o_(filter.filter F) e}),
+(f : T -> V) = 'O_(filter.filter F) e 
 
 littleo_eqO is not universe polymorphic
 Arguments littleo_eqO {K} {T}%_type_scope {V W} [F] [e]%_function_scope f
@@ -1964,8 +2270,8 @@ Declared in library mathcomp.analysis.landau, line 695, characters 6-17
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="littleo_is_bigO" class="id"><a name="littleo_is_bigO" class="" title="littleo_is_bigO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W],
-{o_F e} -> {O_F e}
+  [F : filter.filter_on T] [e : T -> W],
+{o_(filter.filter F) e} -> {O_(filter.filter F) e}
 
 littleo_is_bigO is not universe polymorphic
 Arguments littleo_is_bigO {K} {T}%_type_scope {V W} [F] [e]%_function_scope f
@@ -1977,8 +2283,9 @@ Declared in library mathcomp.analysis.landau, line 699, characters 10-25
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="the_littleo_bigO" class="id"><a name="the_littleo_bigO" class="" title="the_littleo_bigO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K},
 unit ->
-forall [F : filter_on T],
-phantom (set_system T) F -> (T -> V) -> forall h : T -> W, {O_F h}
+forall [F : filter.filter_on T],
+phantom (filter.set_system T) (filter.filter F) ->
+(T -> V) -> forall h : T -> W, {O_(filter.filter F) h}
 
 the_littleo_bigO is not universe polymorphic
 Arguments the_littleo_bigO {K} {T}%_type_scope {V W} 
@@ -2113,19 +2420,21 @@ Declared in library mathcomp.analysis.landau, line 701, characters 10-26
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="add_littleo_subproof" class="id"><a name="add_littleo_subproof" class="" title="add_littleo_subproof :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W] (df dg : {o_F e}),
-(fun (F0 : set_system T) (f : T -> V) (g : T -> W) =>
+  [F : filter.filter_on T] [e : T -> W] (df dg : {o_(filter.filter F) e}),
+(fun (F0 : filter.set_system T) (f : T -> V) (g : T -> W) =>
  forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F0, (`|f F0| <= eps * `|g F0|)%R) F 
-  (df \+ dg)%R e
+ (0 < eps)%R ->
+ filter.prop_near1 F0 (P:=fun x : T => (`|f x| <= eps * `|g x|)%R)
+   (inPhantom (forall x : T, (`|f x| <= eps * `|g x|)%R)))
+  (filter.filter F) (df \+ dg)%R e
 
 add_littleo_subproof is not universe polymorphic
 Expanded type for implicit arguments
 add_littleo_subproof :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W] (df dg : {o_F e})
+  [F : filter.filter_on T] [e : T -> W] (df dg : {o_(filter.filter F) e})
   [eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K],
 (0 < eps)%R ->
@@ -2149,8 +2458,8 @@ Declared in library mathcomp.analysis.landau, line 835, characters 6-26
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="add_littleo" class="id"><a name="add_littleo" class="" title="add_littleo :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W],
-{o_F e} -> {o_F e} -> {o_F e}
+  [F : filter.filter_on T] [e : T -> W],
+{o_(filter.filter F) e} -> {o_(filter.filter F) e} -> {o_(filter.filter F) e}
 
 add_littleo is not universe polymorphic
 Arguments add_littleo {K} {T}%_type_scope {V W} [F] [e]%_function_scope df dg
@@ -2161,8 +2470,8 @@ Declared in library mathcomp.analysis.landau, line 843, characters 10-21
 &nbsp;&nbsp;<span class="id">@</span><span class="id"><a href="mathcomp.analysis.landau.html#Littleo">Littleo</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span> (_<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span>_) (<span class="id"><a href="mathcomp.classical.boolp.html#asboolT">asboolT</a></span> (<span class="id"><a href="mathcomp.analysis.landau.html#add_littleo_subproof">add_littleo_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#df:376">df</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#dg:377">dg</a></span>)).<br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="addfun_littleo" class="id"><a name="addfun_littleo" class="" title="addfun_littleo :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W],
-{o_F e} -> {o_F e} -> {o_F e}
+  [F : filter.filter_on T] [e : T -> W],
+{o_(filter.filter F) e} -> {o_(filter.filter F) e} -> {o_(filter.filter F) e}
 
 addfun_littleo is not universe polymorphic
 Arguments addfun_littleo {K} {T}%_type_scope {V W} 
@@ -2175,8 +2484,8 @@ Declared in library mathcomp.analysis.landau, line 845, characters 10-24
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="addo" class="id"><a name="addo" class="" title="addo :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (f g : T -> V) (e : T -> W),
-([o_F e of f] + [o_F e of g])%E =o_F e
+  (F : filter.filter_on T) (f g : T -> V) (e : T -> W),
+([o_F e of f] + [o_F e of g])%R =o_F e
 
 addo is not universe polymorphic
 Arguments addo {K} {T}%_type_scope {V W} F (f g e)%_function_scope
@@ -2192,9 +2501,10 @@ Declared in library mathcomp.analysis.landau, line 848, characters 6-10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="addox" class="id"><a name="addox" class="" title="addox :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (f g : T -> V) (e : T -> W) (x : T),
-([o_(x \near F) (e x) of f x] + [o_(x \near F) (e x) of g x])%E =
-[o_(x \near F) (e x) of ([o_F e of f] + [o_F e of g])%E x]
+  (F : filter.filter_on T) (f g : T -> V) (e : T -> W) 
+  (x : T),
+([o_(x \near F) (e x) of f x] + [o_(x \near F) (e x) of g x])%R =
+[o_(x \near F) (e x) of ([o_F e of f] + [o_F e of g])%R x]
 
 addox is not universe polymorphic
 Arguments addox {K} {T}%_type_scope {V W} F (f g e)%_function_scope x
@@ -2213,19 +2523,23 @@ Declared in library mathcomp.analysis.landau, line 852, characters 6-11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="scale_littleo_subproof" class="id"><a name="scale_littleo_subproof" class="" title="scale_littleo_subproof :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W] (df : {o_F e}) (a : K),
-(fun (F0 : set_system T) (f : T -> V) (g : T -> W) =>
+  [F : filter.filter_on T] [e : T -> W] (df : {o_(filter.filter F) e})
+  (a : K),
+(fun (F0 : filter.set_system T) (f : T -> V) (g : T -> W) =>
  forall
    eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K,
- (0 < eps)%R -> \near F0, (`|f F0| <= eps * `|g F0|)%R) F
-  (a *: (df : T -> V))%R e
+ (0 < eps)%R ->
+ filter.prop_near1 F0 (P:=fun x : T => (`|f x| <= eps * `|g x|)%R)
+   (inPhantom (forall x : T, (`|f x| <= eps * `|g x|)%R)))
+  (filter.filter F) (a *: (df : T -> V))%R e
 
 scale_littleo_subproof is not universe polymorphic
 Expanded type for implicit arguments
 scale_littleo_subproof :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W] (df : {o_F e}) (a : K)
+  [F : filter.filter_on T] [e : T -> W] (df : {o_(filter.filter F) e})
+  (a : K)
   [eps : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
            K],
 (0 < eps)%R ->
@@ -2251,8 +2565,8 @@ Declared in library mathcomp.analysis.landau, line 860, characters 6-28
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="scale_littleo" class="id"><a name="scale_littleo" class="" title="scale_littleo :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [e : T -> W],
-K -> {o_F e} -> {o_F e}
+  [F : filter.filter_on T] [e : T -> W],
+K -> {o_(filter.filter F) e} -> {o_(filter.filter F) e}
 
 scale_littleo is not universe polymorphic
 Arguments scale_littleo {K} {T}%_type_scope {V W} 
@@ -2265,7 +2579,7 @@ Declared in library mathcomp.analysis.landau, line 869, characters 10-23
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="scaleo" class="id"><a name="scaleo" class="" title="scaleo :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (a : K) (f : T -> V) (e : T -> W),
+  (F : filter.filter_on T) (a : K) (f : T -> V) (e : T -> W),
 (a *: [o_F e of f])%R = [o_F e of (a *: [o_F e of f])%R]
 
 scaleo is not universe polymorphic
@@ -2283,7 +2597,7 @@ Declared in library mathcomp.analysis.landau, line 872, characters 6-12
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="scaleox" class="id"><a name="scaleox" class="" title="scaleox :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (a : K) (f : T -> V) (e : T -> W) 
+  (F : filter.filter_on T) (a : K) (f : T -> V) (e : T -> W) 
   (x : T),
 (a *: [o_(x \near F) (e x) of f x])%R =
 [o_(x \near F) (e x) of (a *: [o_F e of f])%R x]
@@ -2305,7 +2619,7 @@ Declared in library mathcomp.analysis.landau, line 876, characters 6-13
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="scaleolx" class="id"><a name="scaleolx" class="" title="scaleolx :
 forall [K : numFieldType] [V W : normedModType K] 
-  {T : Type} (F : filter_on T) (a : W) (k : T -> K^o) 
+  {T : Type} (F : filter.filter_on T) (a : W) (k : T -> K^o) 
   (e : T -> V) (x : T),
 ([o_(x \near F) (e x) of k x] *: a)%R = 'o_(x \near F) (e x)
 
@@ -2334,9 +2648,10 @@ Declared in library mathcomp.analysis.landau, line 883, characters 6-14
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Limit.K" class="id"><a name="Limit.K" class="">K</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.NumField.Exports.numFieldType">numFieldType</a></span><span class="id">}</span><span class="id"> {</span><span id="Limit.T" class="id"><a name="Limit.T" class="">T</a></span><span class="id"> :</span><span class="id"> Type}</span><span class="id"> {</span><span id="Limit.V" class="id"><a name="Limit.V" class="">V</a></span><span class="id"> </span><span id="Limit.W" class="id"><a name="Limit.W" class="">W</a></span><span class="id"> </span><span id="Limit.X" class="id"><a name="Limit.X" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.normed_module.html#NormedModule.Exports.normedModType">normedModType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#K:418">K</a></span><span class="id">}</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqolimP" class="id"><a name="eqolimP" class="" title="eqolimP :
-forall {K : numFieldType} {T : Type} {V : normedModType K} 
-  (F : filter_on T) (f : T -> V) (l : V),
-(f x @[x --> F] --> l)%classic <-> f = cst l +o_F cst (1%R : K^o)
+forall {K : numFieldType} {T : Type} {V : normedModType K}
+  (F : filter.filter_on T) (f : T -> V) (l : V),
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs l) <->
+f = cst l +o_F cst (1%R : K^o)
 
 eqolimP is not universe polymorphic
 Arguments eqolimP {K} {T}%_type_scope {V} F f%_function_scope l
@@ -2360,18 +2675,19 @@ Declared in library mathcomp.analysis.landau, line 900, characters 6-13
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqolim" class="id"><a name="eqolim" class="" title="eqolim :
-forall {K : numFieldType} {T : Type} {V : normedModType K} 
-  [F : filter_on T] [f : T -> V] [l : V] [e : T -> V],
-f = (cst l + [o_F cst (1%R : K^o) of e])%E -> (f x @[x --> F] --> l)%classic
+forall {K : numFieldType} {T : Type} {V : normedModType K}
+  [F : filter.filter_on T] [f : T -> V] [l : V] [e : T -> V],
+f = (cst l + [o_F cst (1 : K^o) of e])%R ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F))) (filter.nbhs l)
 
 eqolim is not universe polymorphic
 Expanded type for implicit arguments
 eqolim :
-forall {K : numFieldType} {T : Type} {V : normedModType K} 
-  [F : filter_on T] [f : T -> V] [l : V] [e : T -> V],
-f = (cst l + [o_F cst (1%R : K^o) of e])%E ->
+forall {K : numFieldType} {T : Type} {V : normedModType K}
+  [F : filter.filter_on T] [f : T -> V] [l : V] [e : T -> V],
+f = (cst l + [o_F cst (1 : K^o) of e])%R ->
 forall [t : set V],
-nbhs l t -> (let (filter, _) := F in filter) (f @^-1` t)%classic
+filter.nbhs l t -> (let (filter, _) := F in filter) (f @^-1` t)%classic
 
 Arguments eqolim {K} {T}%_type_scope {V} [F] [f]%_function_scope 
   [l] [e]%_function_scope _ [t] _
@@ -2386,9 +2702,11 @@ Declared in library mathcomp.analysis.landau, line 914, characters 6-12
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.landau.html#eqaddoE">eqaddoE</a></span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.landau.html#eqolimP">eqolimP</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqolim0P" class="id"><a name="eqolim0P" class="" title="eqolim0P :
-forall {K : numFieldType} {T : Type} {V : normedModType K} 
-  (F : filter_on T) (f : T -> V),
-(f x @[x --> F] --> (0%R : V))%classic <-> f =o_F cst (1%R : K^o)
+forall {K : numFieldType} {T : Type} {V : normedModType K}
+  (F : filter.filter_on T) (f : T -> V),
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (0%R : V)) <->
+f =o_F cst (1%R : K^o)
 
 eqolim0P is not universe polymorphic
 Arguments eqolim0P {K} {T}%_type_scope {V} F f%_function_scope
@@ -2403,18 +2721,21 @@ Declared in library mathcomp.analysis.landau, line 918, characters 6-14
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#eqolimP">eqolimP</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.add0r">add0r</a></span><span class="id"> -[f</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#0bb5d11fe8761db1e6494d75cb45a3cb"> \-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#0bb5d11fe8761db1e6494d75cb45a3cb"> </a></span><span class="id"><a href="mathcomp.classical.functions.html#cst">cst</a></span><span class="id"> 0]/</span>(<span class="id">f</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id">0</span>)<span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.subr0">subr0</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqolim0" class="id"><a name="eqolim0" class="" title="eqolim0 :
-forall {K : numFieldType} {T : Type} {V : normedModType K} 
-  [F : filter_on T] [f : T -> V],
-f =o_F cst (1%R : K^o) -> (f x @[x --> F] --> (0%R : V))%classic
+forall {K : numFieldType} {T : Type} {V : normedModType K}
+  [F : filter.filter_on T] [f : T -> V],
+f =o_F cst (1%R : K^o) ->
+filter.cvg_to (filter.nbhs (filter.fmap f (filter.nbhs F)))
+  (filter.nbhs (0%R : V))
 
 eqolim0 is not universe polymorphic
 Expanded type for implicit arguments
 eqolim0 :
-forall {K : numFieldType} {T : Type} {V : normedModType K} 
-  [F : filter_on T] [f : T -> V],
+forall {K : numFieldType} {T : Type} {V : normedModType K}
+  [F : filter.filter_on T] [f : T -> V],
 f =o_F cst (1%R : K^o) ->
 forall [t : set V],
-nbhs (0%R : V) t -> (let (filter, _) := F in filter) (f @^-1` t)%classic
+filter.nbhs (0%R : V) t ->
+(let (filter, _) := F in filter) (f @^-1` t)%classic
 
 Arguments eqolim0 {K} {T}%_type_scope {V} [F] [f]%_function_scope _ [t] _
 eqolim0 is opaque
@@ -2430,7 +2751,8 @@ Declared in library mathcomp.analysis.landau, line 922, characters 6-13
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="littleo_bigO_eqo" class="id"><a name="littleo_bigO_eqo" class="" title="littleo_bigO_eqo :
 forall {K : numFieldType} {T : Type} {V W X : normedModType K}
-  {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X),
+  {F : filter.filter_on T} (g : T -> W) (f : T -> V) 
+  (h : T -> X),
 f =O_F g -> [o_F f of h] =o_F g
 
 littleo_bigO_eqo is not universe polymorphic
@@ -2454,7 +2776,8 @@ Declared in library mathcomp.analysis.landau, line 930, characters 6-22
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigO_littleo_eqo" class="id"><a name="bigO_littleo_eqo" class="" title="bigO_littleo_eqo :
 forall {K : numFieldType} {T : Type} {V W X : normedModType K}
-  {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X),
+  {F : filter.filter_on T} (g : T -> W) (f : T -> V) 
+  (h : T -> X),
 f =o_F g -> [O_F f of h] =o_F g
 
 bigO_littleo_eqo is not universe polymorphic
@@ -2476,8 +2799,8 @@ Declared in library mathcomp.analysis.landau, line 941, characters 6-22
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="add2o" class="id"><a name="add2o" class="" title="add2o :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f g : T -> V] [e : T -> W],
-f =o_F e -> g =o_F e -> (f + g)%E =o_F e
+  [F : filter.filter_on T] [f g : T -> V] [e : T -> W],
+f =o_F e -> g =o_F e -> (f + g)%R =o_F e
 
 add2o is not universe polymorphic
 Arguments add2o {K} {T}%_type_scope {V W} [F] [f g e]%_function_scope _ _
@@ -2493,8 +2816,9 @@ Declared in library mathcomp.analysis.landau, line 950, characters 6-11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="addfo" class="id"><a name="addfo" class="" title="addfo :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] (h : T -> V) [f : T -> V] [e : T -> W],
-f =o_F e -> (f + [o_F e of h])%E =o_F e
+  [F : filter.filter_on T] (h : T -> V) [f : T -> V] 
+  [e : T -> W],
+f =o_F e -> (f + [o_F e of h])%R =o_F e
 
 addfo is not universe polymorphic
 Arguments addfo {K} {T}%_type_scope {V W} [F] h%_function_scope
@@ -2511,7 +2835,7 @@ Declared in library mathcomp.analysis.landau, line 954, characters 6-11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="oppfo" class="id"><a name="oppfo" class="" title="oppfo :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T],
+  [F : filter.filter_on T],
 (T -> V) -> forall [f : T -> V] [e : T -> W], f =o_F e -> (- f)%R =o_F e
 
 oppfo is not universe polymorphic
@@ -2529,8 +2853,8 @@ Declared in library mathcomp.analysis.landau, line 958, characters 6-11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="add2O" class="id"><a name="add2O" class="" title="add2O :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f g : T -> V] [e : T -> W],
-f =O_F e -> g =O_F e -> (f + g)%E =O_F e
+  [F : filter.filter_on T] [f g : T -> V] [e : T -> W],
+f =O_F e -> g =O_F e -> (f + g)%R =O_F e
 
 add2O is not universe polymorphic
 Arguments add2O {K} {T}%_type_scope {V W} [F] [f g e]%_function_scope _ _
@@ -2546,8 +2870,9 @@ Declared in library mathcomp.analysis.landau, line 962, characters 6-11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="addfO" class="id"><a name="addfO" class="" title="addfO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] (h : T -> V) [f : T -> V] [e : T -> W],
-f =O_F e -> (f + [O_F e of h])%E =O_F e
+  [F : filter.filter_on T] (h : T -> V) [f : T -> V] 
+  [e : T -> W],
+f =O_F e -> (f + [O_F e of h])%R =O_F e
 
 addfO is not universe polymorphic
 Arguments addfO {K} {T}%_type_scope {V W} [F] h%_function_scope
@@ -2564,7 +2889,7 @@ Declared in library mathcomp.analysis.landau, line 966, characters 6-11
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="oppfO" class="id"><a name="oppfO" class="" title="oppfO :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T],
+  [F : filter.filter_on T],
 (T -> V) -> forall [f : T -> V] [e : T -> W], f =O_F e -> (- f)%R =O_F e
 
 oppfO is not universe polymorphic
@@ -2581,8 +2906,8 @@ Declared in library mathcomp.analysis.landau, line 970, characters 6-11
 <span class="gallina-kwd"> by</span><span class="id"> move-&gt;;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#oppO">oppO</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="idO" class="id"><a name="idO" class="" title="idO :
-forall {K : numFieldType} {T : Type} {W : normedModType K} 
-  (F : filter_on T) (e : T -> W),
+forall {K : numFieldType} {T : Type} {W : normedModType K}
+  (F : filter.filter_on T) (e : T -> W),
 e =O_F e
 
 idO is not universe polymorphic
@@ -2598,7 +2923,8 @@ Declared in library mathcomp.analysis.landau, line 974, characters 6-9
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="littleo_littleo" class="id"><a name="littleo_littleo" class="" title="littleo_littleo :
 forall {K : numFieldType} {T : Type} {V W X : normedModType K}
-  [F : filter_on T] [f : T -> V] [g : T -> W] (h : T -> X),
+  [F : filter.filter_on T] [f : T -> V] [g : T -> W] 
+  (h : T -> X),
 f =o_F g -> [o_F f of h] =o_F g
 
 littleo_littleo is not universe polymorphic
@@ -2624,7 +2950,8 @@ Declared in library mathcomp.analysis.landau, line 977, characters 6-21
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigO_bigO_eqO" class="id"><a name="bigO_bigO_eqO" class="" title="bigO_bigO_eqO :
 forall {K : realFieldType} {T : Type} {V W X : normedModType K}
-  {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X),
+  {F : filter.filter_on T} (g : T -> W) (f : T -> V) 
+  (h : T -> X),
 f =O_F g -> ([O_F f of h] : T -> X) =O_F g
 
 bigO_bigO_eqO is not universe polymorphic
@@ -2656,8 +2983,9 @@ Declared in library mathcomp.analysis.landau, line 989, characters 6-19
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqaddo_trans" class="id"><a name="eqaddo_trans" class="" title="eqaddo_trans :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f g h fg gh : T -> V] [e : T -> W],
-f = (g + [o_F e of fg])%E -> g = (h + [o_F e of gh])%E -> f = h +o_F e
+  [F : filter.filter_on T] [f g h fg gh : T -> V] 
+  [e : T -> W],
+f = (g + [o_F e of fg])%R -> g = (h + [o_F e of gh])%R -> f = h +o_F e
 
 eqaddo_trans is not universe polymorphic
 Arguments eqaddo_trans {K} {T}%_type_scope {V W} [F]
@@ -2679,8 +3007,9 @@ Declared in library mathcomp.analysis.landau, line 1008, characters 6-18
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqaddO_trans" class="id"><a name="eqaddO_trans" class="" title="eqaddO_trans :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f g h fg gh : T -> V] [e : T -> W],
-f = (g + [O_F e of fg])%E -> g = (h + [O_F e of gh])%E -> f = h +O_F e
+  [F : filter.filter_on T] [f g h fg gh : T -> V] 
+  [e : T -> W],
+f = (g + [O_F e of fg])%R -> g = (h + [O_F e of gh])%R -> f = h +O_F e
 
 eqaddO_trans is not universe polymorphic
 Arguments eqaddO_trans {K} {T}%_type_scope {V W} [F]
@@ -2697,8 +3026,9 @@ Declared in library mathcomp.analysis.landau, line 1017, characters 6-18
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqaddoO_trans" class="id"><a name="eqaddoO_trans" class="" title="eqaddoO_trans :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f g h fg gh : T -> V] [e : T -> W],
-f = (g + [o_F e of fg])%E -> g = (h + [O_F e of gh])%E -> f = h +O_F e
+  [F : filter.filter_on T] [f g h fg gh : T -> V] 
+  [e : T -> W],
+f = (g + [o_F e of fg])%R -> g = (h + [O_F e of gh])%R -> f = h +O_F e
 
 eqaddoO_trans is not universe polymorphic
 Arguments eqaddoO_trans {K} {T}%_type_scope {V W} 
@@ -2715,8 +3045,9 @@ Declared in library mathcomp.analysis.landau, line 1021, characters 6-19
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqaddOo_trans" class="id"><a name="eqaddOo_trans" class="" title="eqaddOo_trans :
 forall {K : numFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [f g h fg gh : T -> V] [e : T -> W],
-f = (g + [O_F e of fg])%E -> g = (h + [o_F e of gh])%E -> f = h +O_F e
+  [F : filter.filter_on T] [f g h fg gh : T -> V] 
+  [e : T -> W],
+f = (g + [O_F e of fg])%R -> g = (h + [o_F e of gh])%R -> f = h +O_F e
 
 eqaddOo_trans is not universe polymorphic
 Arguments eqaddOo_trans {K} {T}%_type_scope {V W} 
@@ -2733,7 +3064,7 @@ Declared in library mathcomp.analysis.landau, line 1025, characters 6-19
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqo_trans" class="id"><a name="eqo_trans" class="" title="eqo_trans :
 forall {K : numFieldType} {T : Type} {V W Z : normedModType K}
-  [F : filter_on T] [f f' : T -> V] [g g' : T -> W] 
+  [F : filter.filter_on T] [f f' : T -> V] [g g' : T -> W] 
   [h : T -> Z],
 f = [o_F g of f'] -> g = [o_F h of g'] -> f =o_F h
 
@@ -2752,7 +3083,7 @@ Declared in library mathcomp.analysis.landau, line 1029, characters 6-15
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqOo_trans" class="id"><a name="eqOo_trans" class="" title="eqOo_trans :
 forall {K : numFieldType} {T : Type} {V W Z : normedModType K}
-  [F : filter_on T] [f f' : T -> V] [g g' : T -> W] 
+  [F : filter.filter_on T] [f f' : T -> V] [g g' : T -> W] 
   [h : T -> Z],
 f = [O_F g of f'] -> g = [o_F h of g'] -> f =o_F h
 
@@ -2771,7 +3102,7 @@ Declared in library mathcomp.analysis.landau, line 1033, characters 6-16
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqoO_trans" class="id"><a name="eqoO_trans" class="" title="eqoO_trans :
 forall {K : numFieldType} {T : Type} {V W Z : normedModType K}
-  [F : filter_on T] [f f' : T -> V] [g g' : T -> W] 
+  [F : filter.filter_on T] [f f' : T -> V] [g g' : T -> W] 
   [h : T -> Z],
 f = [o_F g of f'] -> g = [O_F h of g'] -> f =o_F h
 
@@ -2795,7 +3126,7 @@ Declared in library mathcomp.analysis.landau, line 1037, characters 6-16
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqO_trans" class="id"><a name="eqO_trans" class="" title="eqO_trans :
 forall {K : realFieldType} {T : Type} {V W Z : normedModType K}
-  [F : filter_on T] [f f' : T -> V] [g g' : T -> W] 
+  [F : filter.filter_on T] [f f' : T -> V] [g g' : T -> W] 
   [h : T -> Z],
 f = [O_F g of f'] -> g = [O_F h of g'] -> f =O_F h
 
@@ -2818,7 +3149,7 @@ Declared in library mathcomp.analysis.landau, line 1046, characters 6-15
 <span class="vernacular">Variables</span> (<span id="rule_of_products_rcfType.R" class="id"><a name="rule_of_products_rcfType.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.RealClosedField.Exports.rcfType">rcfType</a></span>) (<span id="rule_of_products_rcfType.pT" class="id"><a name="rule_of_products_rcfType.pT" class="">pT</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.Exports.pointedType">pointedType</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mulo" class="id"><a name="mulo" class="" title="mulo :
-forall [R : rcfType] [pT : pointedType] (F : filter_on pT)
+forall [R : rcfType] [pT : pointedType] (F : filter.filter_on pT)
   (h1 h2 f g : pT -> R^o),
 ([o_F h1 of f] * [o_F h2 of g])%R =o_F (h1 * h2)%R
 
@@ -2839,7 +3170,7 @@ Declared in library mathcomp.analysis.landau, line 1056, characters 6-10
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mulO" class="id"><a name="mulO" class="" title="mulO :
-forall [R : rcfType] [pT : pointedType] (F : filter_on pT)
+forall [R : rcfType] [pT : pointedType] (F : filter.filter_on pT)
   (h1 h2 f g : pT -> R^o),
 ([O_F h1 of f] * [O_F h2 of g])%R =O_F (h1 * h2)%R
 
@@ -2867,7 +3198,7 @@ Declared in library mathcomp.analysis.landau, line 1065, characters 6-10
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mulo_numClosedFieldType" class="id"><a name="mulo_numClosedFieldType" class="" title="mulo_numClosedFieldType :
 forall [R : numClosedFieldType] [pT : pointedType] 
-  (F : filter_on pT) (h1 h2 f g : pT -> R^o),
+  (F : filter.filter_on pT) (h1 h2 f g : pT -> R^o),
 ([o_F h1 of f] * [o_F h2 of g])%R =o_F (h1 * h2)%R
 
 mulo_numClosedFieldType is not universe polymorphic
@@ -2888,7 +3219,7 @@ Declared in library mathcomp.analysis.landau, line 1081, characters 6-29
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mulO_numClosedFieldType" class="id"><a name="mulO_numClosedFieldType" class="" title="mulO_numClosedFieldType :
 forall [R : numClosedFieldType] [pT : pointedType] 
-  (F : filter_on pT) (h1 h2 f g : pT -> R^o),
+  (F : filter.filter_on pT) (h1 h2 f g : pT -> R^o),
 ([O_F h1 of f] * [O_F h2 of g])%R =O_F (h1 * h2)%R
 
 mulO_numClosedFieldType is not universe polymorphic
@@ -2921,7 +3252,17 @@ Declared in library mathcomp.analysis.landau, line 1090, characters 6-29
 forall {R : realFieldType} {U V : normedModType R} {s : GRing.Scale.law R V},
 (forall (k : R) (x : V), `|s k x|%R = (`|k| * `|x|)%R) ->
 forall f : {linear U -> V | s},
-(f : U -> V) =O_(0%R : U) cst (1%R : R^o) -> continuous f
+(f : U -> V) =O_(0%R : U) cst (1%R : R^o) ->
+forall
+  x : filter.Nbhs.sort
+        (join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
+           (join_tvs_NbhsLmodule_between_GRing_LSemiModule_and_tvs_NbhsNmodule
+              U)),
+filter.continuous_at
+  (T:=join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
+        (join_tvs_NbhsLmodule_between_GRing_LSemiModule_and_tvs_NbhsNmodule U))
+  (U:=join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs V) x
+  f
 
 linear_for_continuous is not universe polymorphic
 Arguments linear_for_continuous {R U V s} {normm_s}%_function_scope f _ x t _
@@ -2964,7 +3305,17 @@ Declared in library mathcomp.analysis.landau, line 1114, characters 6-27
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="linear_continuous" class="id"><a name="linear_continuous" class="" title="linear_continuous :
 forall [R : realFieldType] [U V : normedModType R] [f : {linear U -> V}],
-(f : U -> V) =O_(0%R : U) cst (1%R : R^o) -> continuous f
+(f : U -> V) =O_(0%R : U) cst (1%R : R^o) ->
+forall
+  [x : filter.Nbhs.sort
+         (join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
+            (join_tvs_NbhsLmodule_between_GRing_LSemiModule_and_tvs_NbhsNmodule
+               U))],
+filter.continuous_at
+  (T:=join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
+        (join_tvs_NbhsLmodule_between_GRing_LSemiModule_and_tvs_NbhsNmodule U))
+  (U:=join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs V) x
+  f
 
 linear_continuous is not universe polymorphic
 Expanded type for implicit arguments
@@ -2972,13 +3323,15 @@ linear_continuous :
 forall [R : realFieldType] [U V : normedModType R] [f : {linear U -> V}],
 (f : U -> V) =O_(0%R : U) cst (1%R : R^o) ->
 forall
-  [x : join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
-         (join_tvs_NbhsLmodule_between_GRing_LSemiModule_and_tvs_NbhsNmodule
-            U)]
-  [t : set
+  [x : filter.Nbhs.sort
          (join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
-            V)],
-nbhs (f x) t ->
+            (join_tvs_NbhsLmodule_between_GRing_LSemiModule_and_tvs_NbhsNmodule
+               U))]
+  [t : set
+         (filter.Nbhs.sort
+            (join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
+               V))],
+filter.nbhs (f x) t ->
 (let (nbhs) :=
    NormedModule.filter_isFiltered_mixin
      (let (sort, class) as record return (NormedModule.axioms_ R record) :=
@@ -3000,7 +3353,18 @@ Declared in library mathcomp.analysis.landau, line 1146, characters 6-23
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="linear_for_mul_continuous" class="id"><a name="linear_for_mul_continuous" class="" title="linear_for_mul_continuous :
 forall [R : realFieldType] [U : normedModType R] [f : {scalar U}],
-(f : U -> R^o) =O_(0%R : U) cst (1%R : R^o) -> continuous f
+(f : U -> R^o) =O_(0%R : U) cst (1%R : R^o) ->
+forall
+  [x : filter.Nbhs.sort
+         (join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
+            (join_tvs_NbhsLmodule_between_GRing_LSemiModule_and_tvs_NbhsNmodule
+               U))],
+filter.continuous_at
+  (T:=join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
+        (join_tvs_NbhsLmodule_between_GRing_LSemiModule_and_tvs_NbhsNmodule U))
+  (U:=join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
+        (GRing_regular__canonical__tvs_NbhsNmodule R))
+  x f
 
 linear_for_mul_continuous is not universe polymorphic
 Expanded type for implicit arguments
@@ -3008,13 +3372,15 @@ linear_for_mul_continuous :
 forall [R : realFieldType] [U : normedModType R] [f : {scalar U}],
 (f : U -> R^o) =O_(0%R : U) cst (1%R : R^o) ->
 forall
-  [x : join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
-         (join_tvs_NbhsLmodule_between_GRing_LSemiModule_and_tvs_NbhsNmodule
-            U)]
-  [t : set
+  [x : filter.Nbhs.sort
          (join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
-            (GRing_regular__canonical__tvs_NbhsNmodule R))],
-nbhs (f x) t ->
+            (join_tvs_NbhsLmodule_between_GRing_LSemiModule_and_tvs_NbhsNmodule
+               U))]
+  [t : set
+         (filter.Nbhs.sort
+            (join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
+               (GRing_regular__canonical__tvs_NbhsNmodule R)))],
+filter.nbhs (f x) t ->
 (let (nbhs) :=
    NormedModule.filter_isFiltered_mixin
      (let (sort, class) as record return (NormedModule.axioms_ R record) :=
@@ -3043,8 +3409,8 @@ Declared in library mathcomp.analysis.landau, line 1151, characters 6-31
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> F</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#filter_on">filter_on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#asymptotic_equivalence.T">T</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="equivOLR" class="id"><a name="equivOLR" class="" title="equivOLR :
-forall {K : realFieldType} {T : Type} {V : normedModType K} 
-  [F : filter_on T] [f g : T -> V],
+forall {K : realFieldType} {T : Type} {V : normedModType K}
+  [F : filter.filter_on T] [f g : T -> V],
 f ~_F g -> f =O_F g
 
 equivOLR is not universe polymorphic
@@ -3073,8 +3439,8 @@ Declared in library mathcomp.boot.generic_quotient, line 418, characters 6-16
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="equivoRL" class="id"><a name="equivoRL" class="" title="equivoRL :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W' : normedModType K] [F : filter_on T] [f g : T -> V] 
-  (h : T -> W'),
+  [W' : normedModType K] [F : filter.filter_on T] 
+  [f g : T -> V] (h : T -> W'),
 f ~_F g -> [o_F g of h] =o_F f
 
 equivoRL is not universe polymorphic
@@ -3114,8 +3480,8 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="equivoLR" class="id"><a name="equivoLR" class="" title="equivoLR :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W' : normedModType K] [F : filter_on T] [f g : T -> V] 
-  (h : T -> W'),
+  [W' : normedModType K] [F : filter.filter_on T] 
+  [f g : T -> V] (h : T -> W'),
 f ~_F g -> [o_F f of h] =o_F g
 
 equivoLR is not universe polymorphic
@@ -3132,8 +3498,8 @@ Declared in library mathcomp.analysis.landau, line 1188, characters 6-14
 <span class="gallina-kwd"> by</span><span class="id"> move/</span><span class="id"><a href="mathcomp.analysis.landau.html#equiv_sym">equiv_sym</a></span><span class="id">/</span><span class="id"><a href="mathcomp.analysis.landau.html#equivoRL">equivoRL</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="equivORL" class="id"><a name="equivORL" class="" title="equivORL :
-forall {K : realFieldType} {T : Type} {V : normedModType K} 
-  [F : filter_on T] [f g : T -> V],
+forall {K : realFieldType} {T : Type} {V : normedModType K}
+  [F : filter.filter_on T] [f g : T -> V],
 f ~_F g -> g =O_F f
 
 equivORL is not universe polymorphic
@@ -3149,9 +3515,9 @@ Declared in library mathcomp.analysis.landau, line 1192, characters 6-14
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqoaddo" class="id"><a name="eqoaddo" class="" title="eqoaddo :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W' : normedModType K] (F : filter_on T) (f g : T -> V) 
-  (h : T -> W'),
-[o_F (f + [o_F f of g])%E of h] =o_F f
+  [W' : normedModType K] (F : filter.filter_on T) 
+  (f g : T -> V) (h : T -> W'),
+[o_F (f + [o_F f of g])%R of h] =o_F f
 
 eqoaddo is not universe polymorphic
 Arguments eqoaddo {K} {T}%_type_scope {V} [W'] F (f g h)%_function_scope
@@ -3184,7 +3550,8 @@ Declared in library mathcomp.boot.generic_quotient, line 420, characters 6-17
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> -&gt;</span><span class="id"> -&gt;;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#eqaddoE">eqaddoE</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#eqoaddo">eqoaddo</a></span><span class="id"> -</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.addrA">addrA</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#addo">addo</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="equivalence_rel_equiv" class="id"><a name="equivalence_rel_equiv" class="" title="equivalence_rel_equiv :
-forall {K : realFieldType} {T : Type} {V : normedModType K} (F : filter_on T),
+forall {K : realFieldType} {T : Type} {V : normedModType K}
+  (F : filter.filter_on T),
 equivalence_rel (T:=T -> V) (SimplRel (fun f g : T -> V => f ~~_F g))
 
 equivalence_rel_equiv is not universe polymorphic
@@ -3220,15 +3587,18 @@ Qed.</div></details>
 <br/>
 <span id="landau_bigOmega_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_8" class="id"><span id="big_omega.hb_instance_7.g" class="id"><span id="big_omega.hb_instance_7.F" class="id"><span id="big_omega.hb_instance_7.W" class="id"><a name="landau_bigOmega_type__canonical__eqtype_SubType" class="" title="landau_bigOmega_type__canonical__eqtype_SubType :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W : normedModType K] (F : set_system T) (g : T -> W),
+  [W : normedModType K] (F : filter.set_system T) 
+  (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+   `[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
           (f : T -> V) (g0 : T -> W0) =>
         exists2
           k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                 K,
-          (0 < k)%R & \near F0, (k * `|g0 F0| <= `|f F0|)%R)
+          (0 < k)%R &
+          filter.prop_near1 F0 (P:=fun x0 : T => (k * `|g0 x0| <= `|f x0|)%R)
+            (inPhantom (forall x0 : T, (k * `|g0 x0| <= `|f x0|)%R)))
          W F x g >])
 
 landau_bigOmega_type__canonical__eqtype_SubType is not universe polymorphic
@@ -3240,15 +3610,18 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 1226, characters 0-98
 ">HB</a></span></span></span></span></span>.<span id="landau_bigOmega_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_8" class="id"><span id="big_omega.hb_instance_7.g" class="id"><span id="big_omega.hb_instance_7.F" class="id"><span id="big_omega.hb_instance_7.W" class="id"><a name="landau_bigOmega_type__canonical__eqtype_SubType" class="" title="landau_bigOmega_type__canonical__eqtype_SubType :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W : normedModType K] (F : set_system T) (g : T -> W),
+  [W : normedModType K] (F : filter.set_system T) 
+  (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+   `[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
           (f : T -> V) (g0 : T -> W0) =>
         exists2
           k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                 K,
-          (0 < k)%R & \near F0, (k * `|g0 F0| <= `|f F0|)%R)
+          (0 < k)%R &
+          filter.prop_near1 F0 (P:=fun x0 : T => (k * `|g0 x0| <= `|f x0|)%R)
+            (inPhantom (forall x0 : T, (k * `|g0 x0| <= `|f x0|)%R)))
          W F x g >])
 
 landau_bigOmega_type__canonical__eqtype_SubType is not universe polymorphic
@@ -3260,15 +3633,18 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 1226, characters 0-98
 ">instance</a></span></span></span></span></span><span class="vernacular"> Definition</span><span id="landau_bigOmega_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_8" class="id"><span id="big_omega.hb_instance_7.g" class="id"><span id="big_omega.hb_instance_7.F" class="id"><span id="big_omega.hb_instance_7.W" class="id"><a name="landau_bigOmega_type__canonical__eqtype_SubType" class="" title="landau_bigOmega_type__canonical__eqtype_SubType :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W : normedModType K] (F : set_system T) (g : T -> W),
+  [W : normedModType K] (F : filter.set_system T) 
+  (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+   `[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
           (f : T -> V) (g0 : T -> W0) =>
         exists2
           k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                 K,
-          (0 < k)%R & \near F0, (k * `|g0 F0| <= `|f F0|)%R)
+          (0 < k)%R &
+          filter.prop_near1 F0 (P:=fun x0 : T => (k * `|g0 x0| <= `|f x0|)%R)
+            (inPhantom (forall x0 : T, (k * `|g0 x0| <= `|f x0|)%R)))
          W F x g >])
 
 landau_bigOmega_type__canonical__eqtype_SubType is not universe polymorphic
@@ -3280,15 +3656,18 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 1226, characters 0-98
 "> _</a></span></span></span></span></span><span id="landau_bigOmega_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_8" class="id"><span id="big_omega.hb_instance_7.g" class="id"><span id="big_omega.hb_instance_7.F" class="id"><span id="big_omega.hb_instance_7.W" class="id"><a name="landau_bigOmega_type__canonical__eqtype_SubType" class="" title="landau_bigOmega_type__canonical__eqtype_SubType :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W : normedModType K] (F : set_system T) (g : T -> W),
+  [W : normedModType K] (F : filter.set_system T) 
+  (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+   `[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
           (f : T -> V) (g0 : T -> W0) =>
         exists2
           k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                 K,
-          (0 < k)%R & \near F0, (k * `|g0 F0| <= `|f F0|)%R)
+          (0 < k)%R &
+          filter.prop_near1 F0 (P:=fun x0 : T => (k * `|g0 x0| <= `|f x0|)%R)
+            (inPhantom (forall x0 : T, (k * `|g0 x0| <= `|f x0|)%R)))
          W F x g >])
 
 landau_bigOmega_type__canonical__eqtype_SubType is not universe polymorphic
@@ -3300,15 +3679,18 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 1226, characters 0-98
 "> {W}</a></span></span></span></span></span> (<span id="landau_bigOmega_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_8" class="id"><span id="big_omega.hb_instance_7.g" class="id"><span id="big_omega.hb_instance_7.F" class="id"><span id="big_omega.hb_instance_7.W" class="id"><a name="landau_bigOmega_type__canonical__eqtype_SubType" class="" title="landau_bigOmega_type__canonical__eqtype_SubType :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W : normedModType K] (F : set_system T) (g : T -> W),
+  [W : normedModType K] (F : filter.set_system T) 
+  (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+   `[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
           (f : T -> V) (g0 : T -> W0) =>
         exists2
           k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                 K,
-          (0 < k)%R & \near F0, (k * `|g0 F0| <= `|f F0|)%R)
+          (0 < k)%R &
+          filter.prop_near1 F0 (P:=fun x0 : T => (k * `|g0 x0| <= `|f x0|)%R)
+            (inPhantom (forall x0 : T, (k * `|g0 x0| <= `|f x0|)%R)))
          W F x g >])
 
 landau_bigOmega_type__canonical__eqtype_SubType is not universe polymorphic
@@ -3320,15 +3702,18 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 1226, characters 0-98
 ">F</a></span></span></span></span></span><span id="landau_bigOmega_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_8" class="id"><span id="big_omega.hb_instance_7.g" class="id"><span id="big_omega.hb_instance_7.F" class="id"><span id="big_omega.hb_instance_7.W" class="id"><a name="landau_bigOmega_type__canonical__eqtype_SubType" class="" title="landau_bigOmega_type__canonical__eqtype_SubType :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W : normedModType K] (F : set_system T) (g : T -> W),
+  [W : normedModType K] (F : filter.set_system T) 
+  (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+   `[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
           (f : T -> V) (g0 : T -> W0) =>
         exists2
           k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                 K,
-          (0 < k)%R & \near F0, (k * `|g0 F0| <= `|f F0|)%R)
+          (0 < k)%R &
+          filter.prop_near1 F0 (P:=fun x0 : T => (k * `|g0 x0| <= `|f x0|)%R)
+            (inPhantom (forall x0 : T, (k * `|g0 x0| <= `|f x0|)%R)))
          W F x g >])
 
 landau_bigOmega_type__canonical__eqtype_SubType is not universe polymorphic
@@ -3340,15 +3725,18 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 1226, characters 0-98
 "> :</a></span></span></span></span></span><span id="landau_bigOmega_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_8" class="id"><span id="big_omega.hb_instance_7.g" class="id"><span id="big_omega.hb_instance_7.F" class="id"><span id="big_omega.hb_instance_7.W" class="id"><a name="landau_bigOmega_type__canonical__eqtype_SubType" class="" title="landau_bigOmega_type__canonical__eqtype_SubType :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W : normedModType K] (F : set_system T) (g : T -> W),
+  [W : normedModType K] (F : filter.set_system T) 
+  (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+   `[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
           (f : T -> V) (g0 : T -> W0) =>
         exists2
           k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                 K,
-          (0 < k)%R & \near F0, (k * `|g0 F0| <= `|f F0|)%R)
+          (0 < k)%R &
+          filter.prop_near1 F0 (P:=fun x0 : T => (k * `|g0 x0| <= `|f x0|)%R)
+            (inPhantom (forall x0 : T, (k * `|g0 x0| <= `|f x0|)%R)))
          W F x g >])
 
 landau_bigOmega_type__canonical__eqtype_SubType is not universe polymorphic
@@ -3363,13 +3751,15 @@ Declared in library mathcomp.analysis.landau, line 1226, characters 0-98
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigOmega_class" class="id"><a name="bigOmega_class" class="" title="bigOmega_class :
 forall {K : realFieldType} {T : Type} {V W : normedModType K}
-  [F : set_system T] [g : T -> W] (f : {Omega_F g}),
-`[< (fun (W0 : normedModType K) (F0 : set_system T) 
+  [F : filter.set_system T] [g : T -> W] (f : {Omega_F g}),
+`[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
        (f0 : T -> V) (g0 : T -> W0) =>
      exists2
        k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
              K,
-       (0 < k)%R & \near F0, (k * `|g0 F0| <= `|f0 F0|)%R)
+       (0 < k)%R &
+       filter.prop_near1 F0 (P:=fun x : T => (k * `|g0 x| <= `|f0 x|)%R)
+         (inPhantom (forall x : T, (k * `|g0 x| <= `|f0 x|)%R)))
       W F f g >]
 
 bigOmega_class is not universe polymorphic
@@ -3387,13 +3777,17 @@ Declared in library mathcomp.analysis.landau, line 1229, characters 6-20
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="bigOmega_clone" class="id"><a name="bigOmega_clone" class="" title="bigOmega_clone :
 forall {K : realFieldType} {T : Type} {V W : normedModType K}
-  [F : set_system T] [g : T -> W] [f : T -> V] [fT : {Omega_F g}]
-  [c : `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+  [F : filter.set_system T] [g : T -> W] [f : T -> V] 
+  [fT : {Omega_F g}]
+  [c : `[< (fun (W0 : normedModType K) (F0 : filter.set_system T)
               (f0 : T -> V) (g0 : T -> W0) =>
             exists2
               k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                     K,
-              (0 < k)%R & \near F0, (k * `|g0 F0| <= `|f0 F0|)%R)
+              (0 < k)%R &
+              filter.prop_near1 F0
+                (P:=fun x : T => (k * `|g0 x| <= `|f0 x|)%R)
+                (inPhantom (forall x : T, (k * `|g0 x| <= `|f0 x|)%R)))
              W F f g >]],
 phant_id (bigOmega_class fT) c -> {Omega_F g}
 
@@ -3410,13 +3804,16 @@ Declared in library mathcomp.analysis.landau, line 1234, characters 11-25
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigOmega_refl_subproof" class="id"><a name="bigOmega_refl_subproof" class="" title="bigOmega_refl_subproof :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [F : set_system T] (g : T -> V),
-Filter F ->
-(fun (W : normedModType K) (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
+  [F : filter.set_system T] (g : T -> V),
+filter.Filter F ->
+(fun (W : normedModType K) (F0 : filter.set_system T) 
+   (f : T -> V) (g0 : T -> W) =>
  exists2
    k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
          K,
-   (0 < k)%R & \near F0, (k * `|g0 F0| <= `|f F0|)%R)
+   (0 < k)%R &
+   filter.prop_near1 F0 (P:=fun x : T => (k * `|g0 x| <= `|f x|)%R)
+     (inPhantom (forall x : T, (k * `|g0 x| <= `|f x|)%R)))
   V F g g
 
 bigOmega_refl_subproof is not universe polymorphic
@@ -3433,9 +3830,9 @@ Declared in library mathcomp.analysis.landau, line 1239, characters 6-28
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="bigOmega_refl" class="id"><a name="bigOmega_refl" class="" title="bigOmega_refl :
-forall {K : realFieldType} {T : Type} {V : normedModType K} 
-  (F : filter_on T) (g : T -> V),
-{Omega_F g}
+forall {K : realFieldType} {T : Type} {V : normedModType K}
+  (F : filter.filter_on T) (g : T -> V),
+{Omega_(filter.filter F) g}
 
 bigOmega_refl is not universe polymorphic
 Arguments bigOmega_refl {K} {T}%_type_scope {V} F g%_function_scope
@@ -3448,8 +3845,9 @@ Declared in library mathcomp.analysis.landau, line 1244, characters 11-24
 <span class="vernacular">Definition</span><span class="id"> </span><span id="the_bigOmega" class="id"><a name="the_bigOmega" class="" title="the_bigOmega :
 forall {K : realFieldType} {T : Type} {V : normedModType K},
 unit ->
-forall [F : filter_on T],
-phantom (set_system T) F -> (T -> V) -> (T -> V) -> T -> V
+forall [F : filter.filter_on T],
+phantom (filter.set_system T) (filter.filter F) ->
+(T -> V) -> (T -> V) -> T -> V
 
 the_bigOmega is not universe polymorphic
 Arguments the_bigOmega {K} {T}%_type_scope {V} u [F] 
@@ -3468,7 +3866,7 @@ Declared in library mathcomp.analysis.landau, line 1247, characters 11-23
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="is_bigOmega" class="id"><a name="is_bigOmega" class="" title="is_bigOmega :
 forall {K : realFieldType} {T : Type} {V W : normedModType K},
-set_system T -> (T -> W) -> qualifier 0 (T -> V)
+filter.set_system T -> (T -> W) -> qualifier 0 (T -> V)
 
 is_bigOmega is not universe polymorphic
 Arguments is_bigOmega {K} {T}%_type_scope {V W} F g%_function_scope
@@ -3479,7 +3877,7 @@ Declared in library mathcomp.analysis.landau, line 1256, characters 11-22
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b50d92024da60589454a60411692fbf2">[qualify</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b50d92024da60589454a60411692fbf2"> </a></span><span id="f:675" class="id"><a name="f:675" class="">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b50d92024da60589454a60411692fbf2"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b50d92024da60589454a60411692fbf2"> </a></span><span class="id"><a href="mathcomp.analysis.landau.html#big_omega.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.landau.html#big_omega.V">V</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b50d92024da60589454a60411692fbf2"> |</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b50d92024da60589454a60411692fbf2"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> </a></span><span class="id"><a href="mathcomp.analysis.landau.html#big_omega.bigOmega_def">bigOmega_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#F:673">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#f:675">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#g:674">g</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> &gt;]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b50d92024da60589454a60411692fbf2"> ]</a></span>.<br/>
 <span class="vernacular">Fact</span><span class="id"> </span><span id="is_bigOmega_key" class="id"><a name="is_bigOmega_key" class="" title="is_bigOmega_key :
 forall {K : realFieldType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 pred_key (T:=T -> V) 'Omega_F(g)
 
 is_bigOmega_key is not universe polymorphic
@@ -3494,7 +3892,7 @@ Declared in library mathcomp.analysis.landau, line 1258, characters 5-20
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="is_bigOmega_keyed" class="id"><a name="is_bigOmega_keyed" class="" title="is_bigOmega_keyed :
 forall {K : realFieldType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 keyed_qualifier (q:='Omega_F(g)) (is_bigOmega_key F g)
 
 is_bigOmega_keyed is not universe polymorphic
@@ -3508,12 +3906,15 @@ Declared in library mathcomp.analysis.landau, line 1260, characters 10-27
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigOmegaP" class="id"><a name="bigOmegaP" class="" title="bigOmegaP :
 forall {K : realFieldType} {T : Type} {V W : normedModType K}
-  [F : set_system T] [g : T -> W] (f : {Omega_F g}),
-(fun (W0 : normedModType K) (F0 : set_system T) (f0 : T -> V) (g0 : T -> W0) =>
+  [F : filter.set_system T] [g : T -> W] (f : {Omega_F g}),
+(fun (W0 : normedModType K) (F0 : filter.set_system T) 
+   (f0 : T -> V) (g0 : T -> W0) =>
  exists2
    k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
          K,
-   (0 < k)%R & \near F0, (k * `|g0 F0| <= `|f0 F0|)%R)
+   (0 < k)%R &
+   filter.prop_near1 F0 (P:=fun x : T => (k * `|g0 x| <= `|f0 x|)%R)
+     (inPhantom (forall x : T, (k * `|g0 x| <= `|f0 x|)%R)))
   W F f g
 
 bigOmegaP is not universe polymorphic
@@ -3537,8 +3938,9 @@ Declared in library mathcomp.analysis.landau, line 1264, characters 6-15
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="the_bigOmega_bigOmega" class="id"><a name="the_bigOmega_bigOmega" class="" title="the_bigOmega_bigOmega :
 forall {K : realFieldType} {T : Type} {V : normedModType K},
 unit ->
-forall [F : filter_on T],
-phantom (set_system T) F -> (T -> V) -> forall h : T -> V, {Omega_F h}
+forall [F : filter.filter_on T],
+phantom (filter.set_system T) (filter.filter F) ->
+(T -> V) -> forall h : T -> V, {Omega_(filter.filter F) h}
 
 the_bigOmega_bigOmega is not universe polymorphic
 Arguments the_bigOmega_bigOmega {K} {T}%_type_scope 
@@ -3556,8 +3958,8 @@ Declared in library mathcomp.analysis.landau, line 1274, characters 10-31
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigOmega" class="id"><a name="bigOmega" class="" title="bigOmega :
 forall {K : realFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (g : T -> W) (f : {Omega_F g}),
-bigOmega_spec F g f
+  (F : filter.filter_on T) (g : T -> W) (f : {Omega_(filter.filter F) g}),
+bigOmega_spec (filter.filter F) g f
 
 bigOmega is not universe polymorphic
 Arguments bigOmega {K} {T}%_type_scope {V W} F g%_function_scope f
@@ -3574,8 +3976,8 @@ Declared in library mathcomp.analysis.landau, line 1282, characters 6-14
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqOmegaO" class="id"><a name="eqOmegaO" class="" title="eqOmegaO :
 forall {K : realFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (f : T -> V) (e : T -> W),
-(f \is 'Omega_F(e)) = (e =O_F f)
+  (F : filter.filter_on T) (f : T -> V) (e : T -> W),
+(f \is 'Omega_(filter.filter F)(e)) = (e =O_F f)
 
 eqOmegaO is not universe polymorphic
 Arguments eqOmegaO {K} {T}%_type_scope {V W} F (f e)%_function_scope
@@ -3596,9 +3998,9 @@ Declared in library mathcomp.analysis.landau, line 1288, characters 6-14
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqOmegaE" class="id"><a name="eqOmegaE" class="" title="eqOmegaE :
-forall {K : realFieldType} {T : Type} {V : normedModType K} 
-  (F : filter_on T) (f e : T -> V),
-(f =Omega_F e) = (f \is 'Omega_F(e))
+forall {K : realFieldType} {T : Type} {V : normedModType K}
+  (F : filter.filter_on T) (f e : T -> V),
+(f =Omega_F e) = (f \is 'Omega_(filter.filter F)(e))
 
 eqOmegaE is not universe polymorphic
 Arguments eqOmegaE {K} {T}%_type_scope {V} F (f e)%_function_scope
@@ -3616,8 +4018,8 @@ Declared in library mathcomp.analysis.landau, line 1299, characters 6-14
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqOmega_trans" class="id"><a name="eqOmega_trans" class="" title="eqOmega_trans :
-forall {K : realFieldType} {T : Type} {V : normedModType K} 
-  [F : filter_on T] [f g h : T -> V],
+forall {K : realFieldType} {T : Type} {V : normedModType K}
+  [F : filter.filter_on T] [f g h : T -> V],
 f =Omega_F g -> g =Omega_F h -> f =Omega_F h
 
 eqOmega_trans is not universe polymorphic
@@ -3649,10 +4051,10 @@ Declared in library mathcomp.analysis.landau, line 1307, characters 6-19
 <span class="vernacular">Variable</span><span class="id"> </span><span id="big_omega_in_R.pT" class="id"><a name="big_omega_in_R.pT" class="">pT</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.Exports.pointedType">pointedType</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="addOmega" class="id"><a name="addOmega" class="" title="addOmega :
-forall [pT : pointedType] [R : realFieldType] [F : filter_on pT]
+forall [pT : pointedType] [R : realFieldType] [F : filter.filter_on pT]
   [f g h : pT -> R^o],
 (forall x : pT, (0 <= f x)%R) ->
-(forall x : pT, (0 <= g x)%R) -> f =Omega_F h -> (f + g)%E =Omega_F h
+(forall x : pT, (0 <= g x)%R) -> f =Omega_F h -> (f + g)%R =Omega_F h
 
 addOmega is not universe polymorphic
 Arguments addOmega [pT R F] [f g h]%_function_scope
@@ -3672,7 +4074,7 @@ Declared in library mathcomp.analysis.landau, line 1326, characters 6-14
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mulOmega" class="id"><a name="mulOmega" class="" title="mulOmega :
-forall [pT : pointedType] [R : realFieldType] (F : filter_on pT)
+forall [pT : pointedType] [R : realFieldType] (F : filter.filter_on pT)
   (h1 h2 f g : pT -> R^o),
 ([Omega_F h1 of f] * [Omega_F h2 of g])%R =Omega_F 
 (h1 * h2)%R
@@ -3717,10 +4119,11 @@ Declared in library mathcomp.analysis.landau, line 1335, characters 6-14
 <br/>
 <span id="landau_bigTheta_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_11" class="id"><span id="big_theta.hb_instance_10.g" class="id"><span id="big_theta.hb_instance_10.F" class="id"><span id="big_theta.hb_instance_10.W" class="id"><a name="landau_bigTheta_type__canonical__eqtype_SubType" class="" title="landau_bigTheta_type__canonical__eqtype_SubType :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W : normedModType K] (F : set_system T) (g : T -> W),
+  [W : normedModType K] (F : filter.set_system T) 
+  (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+   `[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
           (f : T -> V) (g0 : T -> W0) =>
         exists2
           k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
@@ -3728,8 +4131,14 @@ subType (T:=T -> V)
               join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                 K,
           (0 < k.1)%R && (0 < k.2)%R &
-          \near F0, (k.1 * `|g0 F0| <= `|f F0|)%R /\
-                    (`|f F0| <= k.2 * `|g0 F0|)%R)
+          filter.prop_near1 F0
+            (P:=fun x0 : T =>
+                (k.1 * `|g0 x0| <= `|f x0|)%R /\
+                (`|f x0| <= k.2 * `|g0 x0|)%R)
+            (inPhantom
+               (forall x0 : T,
+                (k.1 * `|g0 x0| <= `|f x0|)%R /\
+                (`|f x0| <= k.2 * `|g0 x0|)%R)))
          W F x g >])
 
 landau_bigTheta_type__canonical__eqtype_SubType is not universe polymorphic
@@ -3741,10 +4150,11 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 1366, characters 0-98
 ">HB</a></span></span></span></span></span>.<span id="landau_bigTheta_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_11" class="id"><span id="big_theta.hb_instance_10.g" class="id"><span id="big_theta.hb_instance_10.F" class="id"><span id="big_theta.hb_instance_10.W" class="id"><a name="landau_bigTheta_type__canonical__eqtype_SubType" class="" title="landau_bigTheta_type__canonical__eqtype_SubType :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W : normedModType K] (F : set_system T) (g : T -> W),
+  [W : normedModType K] (F : filter.set_system T) 
+  (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+   `[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
           (f : T -> V) (g0 : T -> W0) =>
         exists2
           k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
@@ -3752,8 +4162,14 @@ subType (T:=T -> V)
               join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                 K,
           (0 < k.1)%R && (0 < k.2)%R &
-          \near F0, (k.1 * `|g0 F0| <= `|f F0|)%R /\
-                    (`|f F0| <= k.2 * `|g0 F0|)%R)
+          filter.prop_near1 F0
+            (P:=fun x0 : T =>
+                (k.1 * `|g0 x0| <= `|f x0|)%R /\
+                (`|f x0| <= k.2 * `|g0 x0|)%R)
+            (inPhantom
+               (forall x0 : T,
+                (k.1 * `|g0 x0| <= `|f x0|)%R /\
+                (`|f x0| <= k.2 * `|g0 x0|)%R)))
          W F x g >])
 
 landau_bigTheta_type__canonical__eqtype_SubType is not universe polymorphic
@@ -3765,10 +4181,11 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 1366, characters 0-98
 ">instance</a></span></span></span></span></span><span class="vernacular"> Definition</span><span id="landau_bigTheta_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_11" class="id"><span id="big_theta.hb_instance_10.g" class="id"><span id="big_theta.hb_instance_10.F" class="id"><span id="big_theta.hb_instance_10.W" class="id"><a name="landau_bigTheta_type__canonical__eqtype_SubType" class="" title="landau_bigTheta_type__canonical__eqtype_SubType :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W : normedModType K] (F : set_system T) (g : T -> W),
+  [W : normedModType K] (F : filter.set_system T) 
+  (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+   `[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
           (f : T -> V) (g0 : T -> W0) =>
         exists2
           k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
@@ -3776,8 +4193,14 @@ subType (T:=T -> V)
               join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                 K,
           (0 < k.1)%R && (0 < k.2)%R &
-          \near F0, (k.1 * `|g0 F0| <= `|f F0|)%R /\
-                    (`|f F0| <= k.2 * `|g0 F0|)%R)
+          filter.prop_near1 F0
+            (P:=fun x0 : T =>
+                (k.1 * `|g0 x0| <= `|f x0|)%R /\
+                (`|f x0| <= k.2 * `|g0 x0|)%R)
+            (inPhantom
+               (forall x0 : T,
+                (k.1 * `|g0 x0| <= `|f x0|)%R /\
+                (`|f x0| <= k.2 * `|g0 x0|)%R)))
          W F x g >])
 
 landau_bigTheta_type__canonical__eqtype_SubType is not universe polymorphic
@@ -3789,10 +4212,11 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 1366, characters 0-98
 "> _</a></span></span></span></span></span><span id="landau_bigTheta_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_11" class="id"><span id="big_theta.hb_instance_10.g" class="id"><span id="big_theta.hb_instance_10.F" class="id"><span id="big_theta.hb_instance_10.W" class="id"><a name="landau_bigTheta_type__canonical__eqtype_SubType" class="" title="landau_bigTheta_type__canonical__eqtype_SubType :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W : normedModType K] (F : set_system T) (g : T -> W),
+  [W : normedModType K] (F : filter.set_system T) 
+  (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+   `[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
           (f : T -> V) (g0 : T -> W0) =>
         exists2
           k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
@@ -3800,8 +4224,14 @@ subType (T:=T -> V)
               join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                 K,
           (0 < k.1)%R && (0 < k.2)%R &
-          \near F0, (k.1 * `|g0 F0| <= `|f F0|)%R /\
-                    (`|f F0| <= k.2 * `|g0 F0|)%R)
+          filter.prop_near1 F0
+            (P:=fun x0 : T =>
+                (k.1 * `|g0 x0| <= `|f x0|)%R /\
+                (`|f x0| <= k.2 * `|g0 x0|)%R)
+            (inPhantom
+               (forall x0 : T,
+                (k.1 * `|g0 x0| <= `|f x0|)%R /\
+                (`|f x0| <= k.2 * `|g0 x0|)%R)))
          W F x g >])
 
 landau_bigTheta_type__canonical__eqtype_SubType is not universe polymorphic
@@ -3813,10 +4243,11 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 1366, characters 0-98
 "> {W}</a></span></span></span></span></span> (<span id="landau_bigTheta_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_11" class="id"><span id="big_theta.hb_instance_10.g" class="id"><span id="big_theta.hb_instance_10.F" class="id"><span id="big_theta.hb_instance_10.W" class="id"><a name="landau_bigTheta_type__canonical__eqtype_SubType" class="" title="landau_bigTheta_type__canonical__eqtype_SubType :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W : normedModType K] (F : set_system T) (g : T -> W),
+  [W : normedModType K] (F : filter.set_system T) 
+  (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+   `[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
           (f : T -> V) (g0 : T -> W0) =>
         exists2
           k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
@@ -3824,8 +4255,14 @@ subType (T:=T -> V)
               join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                 K,
           (0 < k.1)%R && (0 < k.2)%R &
-          \near F0, (k.1 * `|g0 F0| <= `|f F0|)%R /\
-                    (`|f F0| <= k.2 * `|g0 F0|)%R)
+          filter.prop_near1 F0
+            (P:=fun x0 : T =>
+                (k.1 * `|g0 x0| <= `|f x0|)%R /\
+                (`|f x0| <= k.2 * `|g0 x0|)%R)
+            (inPhantom
+               (forall x0 : T,
+                (k.1 * `|g0 x0| <= `|f x0|)%R /\
+                (`|f x0| <= k.2 * `|g0 x0|)%R)))
          W F x g >])
 
 landau_bigTheta_type__canonical__eqtype_SubType is not universe polymorphic
@@ -3837,10 +4274,11 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 1366, characters 0-98
 ">F</a></span></span></span></span></span><span id="landau_bigTheta_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_11" class="id"><span id="big_theta.hb_instance_10.g" class="id"><span id="big_theta.hb_instance_10.F" class="id"><span id="big_theta.hb_instance_10.W" class="id"><a name="landau_bigTheta_type__canonical__eqtype_SubType" class="" title="landau_bigTheta_type__canonical__eqtype_SubType :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W : normedModType K] (F : set_system T) (g : T -> W),
+  [W : normedModType K] (F : filter.set_system T) 
+  (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+   `[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
           (f : T -> V) (g0 : T -> W0) =>
         exists2
           k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
@@ -3848,8 +4286,14 @@ subType (T:=T -> V)
               join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                 K,
           (0 < k.1)%R && (0 < k.2)%R &
-          \near F0, (k.1 * `|g0 F0| <= `|f F0|)%R /\
-                    (`|f F0| <= k.2 * `|g0 F0|)%R)
+          filter.prop_near1 F0
+            (P:=fun x0 : T =>
+                (k.1 * `|g0 x0| <= `|f x0|)%R /\
+                (`|f x0| <= k.2 * `|g0 x0|)%R)
+            (inPhantom
+               (forall x0 : T,
+                (k.1 * `|g0 x0| <= `|f x0|)%R /\
+                (`|f x0| <= k.2 * `|g0 x0|)%R)))
          W F x g >])
 
 landau_bigTheta_type__canonical__eqtype_SubType is not universe polymorphic
@@ -3861,10 +4305,11 @@ Expands to: Constant
 Declared in library mathcomp.analysis.landau, line 1366, characters 0-98
 "> :</a></span></span></span></span></span><span id="landau_bigTheta_type__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_11" class="id"><span id="big_theta.hb_instance_10.g" class="id"><span id="big_theta.hb_instance_10.F" class="id"><span id="big_theta.hb_instance_10.W" class="id"><a name="landau_bigTheta_type__canonical__eqtype_SubType" class="" title="landau_bigTheta_type__canonical__eqtype_SubType :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [W : normedModType K] (F : set_system T) (g : T -> W),
+  [W : normedModType K] (F : filter.set_system T) 
+  (g : T -> W),
 subType (T:=T -> V)
   (fun x : T -> V =>
-   `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+   `[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
           (f : T -> V) (g0 : T -> W0) =>
         exists2
           k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
@@ -3872,8 +4317,14 @@ subType (T:=T -> V)
               join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                 K,
           (0 < k.1)%R && (0 < k.2)%R &
-          \near F0, (k.1 * `|g0 F0| <= `|f F0|)%R /\
-                    (`|f F0| <= k.2 * `|g0 F0|)%R)
+          filter.prop_near1 F0
+            (P:=fun x0 : T =>
+                (k.1 * `|g0 x0| <= `|f x0|)%R /\
+                (`|f x0| <= k.2 * `|g0 x0|)%R)
+            (inPhantom
+               (forall x0 : T,
+                (k.1 * `|g0 x0| <= `|f x0|)%R /\
+                (`|f x0| <= k.2 * `|g0 x0|)%R)))
          W F x g >])
 
 landau_bigTheta_type__canonical__eqtype_SubType is not universe polymorphic
@@ -3888,8 +4339,8 @@ Declared in library mathcomp.analysis.landau, line 1366, characters 0-98
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigTheta_class" class="id"><a name="bigTheta_class" class="" title="bigTheta_class :
 forall {K : realFieldType} {T : Type} {V W : normedModType K}
-  [F : set_system T] [g : T -> W] (f : {Theta_ T V} F g),
-`[< (fun (W0 : normedModType K) (F0 : set_system T) 
+  [F : filter.set_system T] [g : T -> W] (f : {Theta_ T V} F g),
+`[< (fun (W0 : normedModType K) (F0 : filter.set_system T) 
        (f0 : T -> V) (g0 : T -> W0) =>
      exists2
        k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
@@ -3897,8 +4348,12 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
            join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
              K,
        (0 < k.1)%R && (0 < k.2)%R &
-       \near F0, (k.1 * `|g0 F0| <= `|f0 F0|)%R /\
-                 (`|f0 F0| <= k.2 * `|g0 F0|)%R)
+       filter.prop_near1 F0
+         (P:=fun x : T =>
+             (k.1 * `|g0 x| <= `|f0 x|)%R /\ (`|f0 x| <= k.2 * `|g0 x|)%R)
+         (inPhantom
+            (forall x : T,
+             (k.1 * `|g0 x| <= `|f0 x|)%R /\ (`|f0 x| <= k.2 * `|g0 x|)%R)))
       W F f g >]
 
 bigTheta_class is not universe polymorphic
@@ -3916,8 +4371,9 @@ Declared in library mathcomp.analysis.landau, line 1369, characters 6-20
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="bigTheta_clone" class="id"><a name="bigTheta_clone" class="" title="bigTheta_clone :
 forall {K : realFieldType} {T : Type} {V W : normedModType K}
-  [F : set_system T] [g : T -> W] [f : T -> V] [fT : {Theta_ T V} F g]
-  [c : `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+  [F : filter.set_system T] [g : T -> W] [f : T -> V] 
+  [fT : {Theta_ T V} F g]
+  [c : `[< (fun (W0 : normedModType K) (F0 : filter.set_system T)
               (f0 : T -> V) (g0 : T -> W0) =>
             exists2
               k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
@@ -3925,8 +4381,14 @@ forall {K : realFieldType} {T : Type} {V W : normedModType K}
                   join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
                     K,
               (0 < k.1)%R && (0 < k.2)%R &
-              \near F0, (k.1 * `|g0 F0| <= `|f0 F0|)%R /\
-                        (`|f0 F0| <= k.2 * `|g0 F0|)%R)
+              filter.prop_near1 F0
+                (P:=fun x : T =>
+                    (k.1 * `|g0 x| <= `|f0 x|)%R /\
+                    (`|f0 x| <= k.2 * `|g0 x|)%R)
+                (inPhantom
+                   (forall x : T,
+                    (k.1 * `|g0 x| <= `|f0 x|)%R /\
+                    (`|f0 x| <= k.2 * `|g0 x|)%R)))
              W F f g >]],
 phant_id (bigTheta_class fT) c -> {Theta_ T V} F g
 
@@ -3943,16 +4405,22 @@ Declared in library mathcomp.analysis.landau, line 1374, characters 11-25
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigTheta_refl_subproof" class="id"><a name="bigTheta_refl_subproof" class="" title="bigTheta_refl_subproof :
 forall {K : realFieldType} {T : Type} {V : normedModType K}
-  [F : set_system T] (g : T -> V),
-Filter F ->
-(fun (W : normedModType K) (F0 : set_system T) (f : T -> V) (g0 : T -> W) =>
+  [F : filter.set_system T] (g : T -> V),
+filter.Filter F ->
+(fun (W : normedModType K) (F0 : filter.set_system T) 
+   (f : T -> V) (g0 : T -> W) =>
  exists2
    k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
          K *
        join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
          K,
    (0 < k.1)%R && (0 < k.2)%R &
-   \near F0, (k.1 * `|g0 F0| <= `|f F0|)%R /\ (`|f F0| <= k.2 * `|g0 F0|)%R)
+   filter.prop_near1 F0
+     (P:=fun x : T =>
+         (k.1 * `|g0 x| <= `|f x|)%R /\ (`|f x| <= k.2 * `|g0 x|)%R)
+     (inPhantom
+        (forall x : T,
+         (k.1 * `|g0 x| <= `|f x|)%R /\ (`|f x| <= k.2 * `|g0 x|)%R)))
   V F g g
 
 bigTheta_refl_subproof is not universe polymorphic
@@ -3969,9 +4437,9 @@ Declared in library mathcomp.analysis.landau, line 1379, characters 6-28
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="bigTheta_refl" class="id"><a name="bigTheta_refl" class="" title="bigTheta_refl :
-forall {K : realFieldType} {T : Type} {V : normedModType K} 
-  (F : filter_on T) (g : T -> V),
-{Theta_ T V} F g
+forall {K : realFieldType} {T : Type} {V : normedModType K}
+  (F : filter.filter_on T) (g : T -> V),
+{Theta_ T V} (filter.filter F) g
 
 bigTheta_refl is not universe polymorphic
 Arguments bigTheta_refl {K} {T}%_type_scope {V} F g%_function_scope
@@ -3984,8 +4452,9 @@ Declared in library mathcomp.analysis.landau, line 1384, characters 11-24
 <span class="vernacular">Definition</span><span class="id"> </span><span id="the_bigTheta" class="id"><a name="the_bigTheta" class="" title="the_bigTheta :
 forall {K : realFieldType} {T : Type} {V : normedModType K},
 unit ->
-forall [F : filter_on T],
-phantom (set_system T) F -> (T -> V) -> (T -> V) -> T -> V
+forall [F : filter.filter_on T],
+phantom (filter.set_system T) (filter.filter F) ->
+(T -> V) -> (T -> V) -> T -> V
 
 the_bigTheta is not universe polymorphic
 Arguments the_bigTheta {K} {T}%_type_scope {V} u [F] 
@@ -4004,7 +4473,7 @@ Declared in library mathcomp.analysis.landau, line 1387, characters 11-23
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="is_bigTheta" class="id"><a name="is_bigTheta" class="" title="is_bigTheta :
 forall {K : realFieldType} {T : Type} {V W : normedModType K},
-set_system T -> (T -> W) -> qualifier 0 (T -> V)
+filter.set_system T -> (T -> W) -> qualifier 0 (T -> V)
 
 is_bigTheta is not universe polymorphic
 Arguments is_bigTheta {K} {T}%_type_scope {V W} F g%_function_scope
@@ -4015,7 +4484,7 @@ Declared in library mathcomp.analysis.landau, line 1396, characters 11-22
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b50d92024da60589454a60411692fbf2">[qualify</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b50d92024da60589454a60411692fbf2"> </a></span><span id="f:771" class="id"><a name="f:771" class="">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b50d92024da60589454a60411692fbf2"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b50d92024da60589454a60411692fbf2"> </a></span><span class="id"><a href="mathcomp.analysis.landau.html#big_theta.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.landau.html#big_theta.V">V</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b50d92024da60589454a60411692fbf2"> |</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b50d92024da60589454a60411692fbf2"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> </a></span><span class="id"><a href="mathcomp.analysis.landau.html#big_theta.bigTheta_def">bigTheta_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#F:769">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#f:771">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#g:770">g</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> &gt;]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b50d92024da60589454a60411692fbf2"> ]</a></span>.<br/>
 <span class="vernacular">Fact</span><span class="id"> </span><span id="is_bigTheta_key" class="id"><a name="is_bigTheta_key" class="" title="is_bigTheta_key :
 forall {K : realFieldType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 pred_key (T:=T -> V) 'Theta_F(g)
 
 is_bigTheta_key is not universe polymorphic
@@ -4030,7 +4499,7 @@ Declared in library mathcomp.analysis.landau, line 1398, characters 5-20
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="is_bigTheta_keyed" class="id"><a name="is_bigTheta_keyed" class="" title="is_bigTheta_keyed :
 forall {K : realFieldType} {T : Type} {V W : normedModType K}
-  (F : set_system T) (g : T -> W),
+  (F : filter.set_system T) (g : T -> W),
 keyed_qualifier (q:='Theta_F(g)) (is_bigTheta_key F g)
 
 is_bigTheta_keyed is not universe polymorphic
@@ -4044,15 +4513,21 @@ Declared in library mathcomp.analysis.landau, line 1400, characters 10-27
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigThetaP" class="id"><a name="bigThetaP" class="" title="bigThetaP :
 forall {K : realFieldType} {T : Type} {V W : normedModType K}
-  [F : set_system T] [g : T -> W] (f : {Theta_ T V} F g),
-(fun (W0 : normedModType K) (F0 : set_system T) (f0 : T -> V) (g0 : T -> W0) =>
+  [F : filter.set_system T] [g : T -> W] (f : {Theta_ T V} F g),
+(fun (W0 : normedModType K) (F0 : filter.set_system T) 
+   (f0 : T -> V) (g0 : T -> W0) =>
  exists2
    k : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
          K *
        join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
          K,
    (0 < k.1)%R && (0 < k.2)%R &
-   \near F0, (k.1 * `|g0 F0| <= `|f0 F0|)%R /\ (`|f0 F0| <= k.2 * `|g0 F0|)%R)
+   filter.prop_near1 F0
+     (P:=fun x : T =>
+         (k.1 * `|g0 x| <= `|f0 x|)%R /\ (`|f0 x| <= k.2 * `|g0 x|)%R)
+     (inPhantom
+        (forall x : T,
+         (k.1 * `|g0 x| <= `|f0 x|)%R /\ (`|f0 x| <= k.2 * `|g0 x|)%R)))
   W F f g
 
 bigThetaP is not universe polymorphic
@@ -4074,8 +4549,9 @@ Declared in library mathcomp.analysis.landau, line 1404, characters 6-15
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="the_bigTheta_bigTheta" class="id"><a name="the_bigTheta_bigTheta" class="" title="the_bigTheta_bigTheta :
 forall {K : realFieldType} {T : Type} {V : normedModType K},
 unit ->
-forall [F : filter_on T],
-phantom (set_system T) F -> (T -> V) -> forall h : T -> V, {Theta_ T V} F h
+forall [F : filter.filter_on T],
+phantom (filter.set_system T) (filter.filter F) ->
+(T -> V) -> forall h : T -> V, {Theta_ T V} (filter.filter F) h
 
 the_bigTheta_bigTheta is not universe polymorphic
 Arguments the_bigTheta_bigTheta {K} {T}%_type_scope 
@@ -4094,8 +4570,9 @@ Declared in library mathcomp.analysis.landau, line 1412, characters 10-31
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigTheta" class="id"><a name="bigTheta" class="" title="bigTheta :
 forall {K : realFieldType} {T : Type} {V W : normedModType K}
-  [F : filter_on T] [g : T -> W] (f : {Theta_ T V} F g),
-bigTheta_spec F g f
+  [F : filter.filter_on T] [g : T -> W]
+  (f : {Theta_ T V} (filter.filter F) g),
+bigTheta_spec (filter.filter F) g f
 
 bigTheta is not universe polymorphic
 Arguments bigTheta {K} {T}%_type_scope {V W} [F] [g]%_function_scope f
@@ -4115,8 +4592,9 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bigThetaE" class="id"><a name="bigThetaE" class="" title="bigThetaE :
 forall {K : realFieldType} {T : Type} {V W : normedModType K}
-  (F : filter_on T) (f : T -> V) (g : T -> W),
-(f \is 'Theta_F(g)) = (f =O_F g /\ f \is 'Omega_F(g))
+  (F : filter.filter_on T) (f : T -> V) (g : T -> W),
+(f \is 'Theta_(filter.filter F)(g)) =
+(f =O_F g /\ f \is 'Omega_(filter.filter F)(g))
 
 bigThetaE is not universe polymorphic
 Arguments bigThetaE {K} {T}%_type_scope {V W} F (f g)%_function_scope
@@ -4138,9 +4616,9 @@ Declared in library mathcomp.analysis.landau, line 1430, characters 6-15
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqThetaE" class="id"><a name="eqThetaE" class="" title="eqThetaE :
-forall {K : realFieldType} {T : Type} {V : normedModType K} 
-  (F : filter_on T) (f e : T -> V),
-(f =Theta_F e) = (f \is 'Theta_F(e))
+forall {K : realFieldType} {T : Type} {V : normedModType K}
+  (F : filter.filter_on T) (f e : T -> V),
+(f =Theta_F e) = (f \is 'Theta_(filter.filter F)(e))
 
 eqThetaE is not universe polymorphic
 Arguments eqThetaE {K} {T}%_type_scope {V} F (f e)%_function_scope
@@ -4158,8 +4636,8 @@ Declared in library mathcomp.analysis.landau, line 1442, characters 6-14
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqThetaO" class="id"><a name="eqThetaO" class="" title="eqThetaO :
-forall {K : realFieldType} {T : Type} {V : normedModType K} 
-  (F : filter_on T) (f g : T -> V),
+forall {K : realFieldType} {T : Type} {V : normedModType K}
+  (F : filter.filter_on T) (f g : T -> V),
 [Theta_F g of f] =O_F g
 
 eqThetaO is not universe polymorphic
@@ -4174,8 +4652,8 @@ Declared in library mathcomp.analysis.landau, line 1450, characters 6-14
 <span class="gallina-kwd"> by</span><span class="id"> have</span><span class="id"> [T1</span><span class="id"> k1</span><span class="id"> k2</span><span class="id"> ?</span><span class="id"> ?]</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#bigTheta">bigTheta</a></span><span class="id">;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.landau.html#eqO_exP">eqO_exP</a></span><span class="id">;</span><span class="gallina-kwd"> exists</span><span class="id"> k2</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="idTheta" class="id"><a name="idTheta" class="" title="idTheta :
-forall {K : realFieldType} {T : Type} {V : normedModType K} 
-  (F : filter_on T) (f : T -> V),
+forall {K : realFieldType} {T : Type} {V : normedModType K}
+  (F : filter.filter_on T) (f : T -> V),
 f =Theta_F f
 
 idTheta is not universe polymorphic
@@ -4190,8 +4668,8 @@ Declared in library mathcomp.analysis.landau, line 1453, characters 6-13
 <span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#eqThetaE">eqThetaE</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#bigThetaE">bigThetaE</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#eqOmegaO">eqOmegaO</a></span><span class="id">;</span><span class="id"> split;</span><span class="id"> exact/</span><span class="id"><a href="mathcomp.analysis.landau.html#idO">idO</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Theta_sym" class="id"><a name="Theta_sym" class="" title="Theta_sym :
-forall {K : realFieldType} {T : Type} {V : normedModType K} 
-  (F : filter_on T) (f g : T -> V),
+forall {K : realFieldType} {T : Type} {V : normedModType K}
+  (F : filter.filter_on T) (f g : T -> V),
 (f =Theta_F g) = (g =Theta_F f)
 
 Theta_sym is not universe polymorphic
@@ -4207,8 +4685,8 @@ Declared in library mathcomp.analysis.landau, line 1456, characters 6-15
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> !</span><span class="id"><a href="mathcomp.analysis.landau.html#eqThetaE">eqThetaE</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#propeqE">propeqE</a></span><span class="id"> !</span><span class="id"><a href="mathcomp.analysis.landau.html#bigThetaE">bigThetaE</a></span><span class="id"> !</span><span class="id"><a href="mathcomp.analysis.landau.html#eqOmegaO">eqOmegaO</a></span><span class="id">;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> -[]</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eqTheta_trans" class="id"><a name="eqTheta_trans" class="" title="eqTheta_trans :
-forall {K : realFieldType} {T : Type} {V : normedModType K} 
-  [F : filter_on T] [f g h : T -> V],
+forall {K : realFieldType} {T : Type} {V : normedModType K}
+  [F : filter.filter_on T] [f g h : T -> V],
 f =Theta_F g -> g =Theta_F h -> f =Theta_F h
 
 eqTheta_trans is not universe polymorphic
@@ -4242,12 +4720,12 @@ Qed.</div></details>
 <span class="vernacular">Variables</span> (<span id="big_theta_in_R.R" class="id"><a name="big_theta_in_R.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numfield.html#Num.RealClosedField.Exports.rcfType">rcfType</a></span> ) (<span id="big_theta_in_R.pT" class="id"><a name="big_theta_in_R.pT" class="">pT</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.Exports.pointedType">pointedType</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="addTheta" class="id"><a name="addTheta" class="" title="addTheta :
-forall [R : rcfType] [pT : pointedType] (F : filter_on pT)
+forall [R : rcfType] [pT : pointedType] (F : filter.filter_on pT)
   [f g h : pT -> R^o],
 (forall x : pT, (0 <= f x)%R) ->
 (forall x : pT, (0 <= g x)%R) ->
 (forall x : pT, (0 <= h x)%R) ->
-([Theta_F h of f] + [O_F h of g])%E =Theta_F h
+([Theta_F h of f] + [O_F h of g])%R =Theta_F h
 
 addTheta is not universe polymorphic
 Arguments addTheta [R pT] F [f g h]%_function_scope
@@ -4271,7 +4749,7 @@ Declared in library mathcomp.analysis.landau, line 1482, characters 6-14
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mulTheta" class="id"><a name="mulTheta" class="" title="mulTheta :
-forall [R : rcfType] [pT : pointedType] (F : filter_on pT)
+forall [R : rcfType] [pT : pointedType] (F : filter.filter_on pT)
   (h1 h2 f g : pT -> R^o),
 ([Theta_F h1 of f] * [Theta_F h2 of g])%R =Theta_F 
 (h1 * h2)%R

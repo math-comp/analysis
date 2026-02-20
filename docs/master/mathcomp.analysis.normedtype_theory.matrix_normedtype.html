@@ -255,26 +255,41 @@ vectors in $\bar{R}^n$ is compact and various lemmas about compact sets.
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="coord_continuous" class="id"><a name="coord_continuous" class="" title="coord_continuous :
-forall {K : numFieldType} [m n : nat] [i : 'I_m] [j : 'I_n],
-continuous (fun M : 'M_(m, n) => M i j)
+forall {K : numFieldType} [m n : nat] [i : 'I_m] [j : 'I_n]
+  [x : filter.Nbhs.sort
+         (filter.matrix_matrix__canonical__filter_Nbhs m n
+            (numFieldTopology.NumField_sort__canonical__filter_Nbhs K))],
+filter.continuous_at
+  (T:=filter.matrix_matrix__canonical__filter_Nbhs m n
+        (numFieldTopology.NumField_sort__canonical__filter_Nbhs K))
+  (U:=numFieldTopology.NumField_sort__canonical__filter_Nbhs K) x
+  (fun M : 'M_(m, n) => M i j)
 
 coord_continuous is not universe polymorphic
 Expanded type for implicit arguments
 coord_continuous :
 forall {K : numFieldType} [m n : nat] [i : 'I_m] [j : 'I_n]
-  [x : matrix_matrix__canonical__filter_Nbhs m n
-         (numFieldTopology.NumField_sort__canonical__filter_Nbhs K)]
-  [t : set (numFieldTopology.NumField_sort__canonical__filter_Nbhs K)],
-nbhs ((fun M : 'M_(m, n) => M i j) x) t ->
+  [x : filter.Nbhs.sort
+         (filter.matrix_matrix__canonical__filter_Nbhs m n
+            (numFieldTopology.NumField_sort__canonical__filter_Nbhs K))]
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.NumField_sort__canonical__filter_Nbhs K))],
+filter.nbhs ((fun M : 'M_(m, n) => M i j) x) t ->
 exists2
   i0 : 'I_m ->
-       'I_n -> set (numFieldTopology.NumField_sort__canonical__filter_Nbhs K),
-  [set P | (forall (i1 : 'I_m) (j0 : 'I_n), nbhs (x i1 j0) (P i1 j0))]%classic
+       'I_n ->
+       set
+         (filter.Nbhs.sort
+            (numFieldTopology.NumField_sort__canonical__filter_Nbhs K)),
+  [set P | (forall (i1 : 'I_m) (j0 : 'I_n), filter.nbhs (x i1 j0) (P i1 j0))]%classic
     i0 &
   ((fun
       P : 'I_m ->
           'I_n ->
-          set (numFieldTopology.NumField_sort__canonical__filter_Nbhs K) =>
+          set
+            (filter.Nbhs.sort
+               (numFieldTopology.NumField_sort__canonical__filter_Nbhs K)) =>
     [set my | (forall (i1 : 'I_m) (j0 : 'I_n), P i1 j0 (my i1 j0))]) i0
    `<=` (fun M : 'M_(m, n) => M i j) @^-1` t)%classic
 
@@ -355,21 +370,30 @@ Qed.</div></details>
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="rV_compact" class="id"><a name="rV_compact" class="" title="rV_compact :
-forall [T : ptopologicalType] [n : nat] [A : 'I_n -> set T],
+forall [T : topology_structure.PointedTopological.type] 
+  [n : nat] [A : 'I_n -> set (topology_structure.PointedTopological.sort T)],
 (forall i : 'I_n, compact (A i)) ->
 compact [set v | (forall i : 'I_n, A i (v ord0 i))]
 
 rV_compact is not universe polymorphic
 Expanded type for implicit arguments
 rV_compact :
-forall [T : ptopologicalType] [n : nat] [A : 'I_n -> set T],
+forall [T : topology_structure.PointedTopological.type] 
+  [n : nat] [A : 'I_n -> set (topology_structure.PointedTopological.sort T)],
 (forall i : 'I_n, compact (A i)) ->
 forall
-  [F : set_system
-         (matrix_matrix__canonical__topology_structure_Topological 1 n T)],
-ProperFilter F ->
+  [F : filter.set_system
+         (topology_structure.Topological.sort
+            (matrix_matrix__canonical__topology_structure_Topological 1 n
+               (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+                  T)))],
+filter.ProperFilter F ->
 F [set v | (forall i : 'I_n, A i (v ord0 i))]%classic ->
-exists a : matrix_matrix__canonical__topology_structure_Topological 1 n T,
+exists
+  a : topology_structure.Topological.sort
+        (matrix_matrix__canonical__topology_structure_Topological 1 n
+           (topology_structure.PointedTopological.Exports.topology_structure_PointedTopological__to__topology_structure_Topological
+              T)),
   ([set v | (forall i : 'I_n, A i (v ord0 i))] `&` cluster F)%classic a
 
 Arguments rV_compact [T] [n]%_nat_scope [A]%_function_scope 
@@ -773,25 +797,27 @@ library mathcomp.analysis.normedtype_theory.matrix_normedtype, line 215, charact
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="bounded_closed_compact" class="id"><a name="bounded_closed_compact" class="" title="bounded_closed_compact :
 forall [R : realType] [n : nat] [A : set 'rV_n],
-bounded_set A -> closed A -> compact A
+bounded_set A -> topology_structure.closed A -> compact A
 
 bounded_closed_compact is not universe polymorphic
 Expanded type for implicit arguments
 bounded_closed_compact :
 forall [R : realType] [n : nat] [A : set 'rV_n],
 bounded_set A ->
-closed A ->
+topology_structure.closed A ->
 forall
-  [F : set_system
-         (matrix_matrix__canonical__topology_structure_Topological 1 n
-            (numFieldTopology.Real_sort__canonical__topology_structure_Topological
-               R))],
-ProperFilter F ->
+  [F : filter.set_system
+         (topology_structure.Topological.sort
+            (matrix_matrix__canonical__topology_structure_Topological 1 n
+               (numFieldTopology.Real_sort__canonical__topology_structure_Topological
+                  R)))],
+filter.ProperFilter F ->
 F A ->
 exists
-  a : matrix_matrix__canonical__topology_structure_Topological 1 n
-        (numFieldTopology.Real_sort__canonical__topology_structure_Topological
-           R),
+  a : topology_structure.Topological.sort
+        (matrix_matrix__canonical__topology_structure_Topological 1 n
+           (numFieldTopology.Real_sort__canonical__topology_structure_Topological
+              R)),
   (A `&` cluster F)%classic a
 
 Arguments bounded_closed_compact [R] [n]%_nat_scope 

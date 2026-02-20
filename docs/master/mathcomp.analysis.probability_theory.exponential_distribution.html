@@ -394,7 +394,16 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="in_continuous_exponential_pdf" class="id"><a name="in_continuous_exponential_pdf" class="" title="in_continuous_exponential_pdf :
 forall {R : realType} [rate : R],
-{in `]0, +oo[%R, continuous (exponential_pdf rate)}
+{in `]0, +oo[%R,
+  forall
+    x : filter.Nbhs.sort
+          (join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
+             (Real_sort__canonical__tvs_NbhsNmodule R)),
+  filter.continuous_at
+    (T:=join_tvs_NbhsNmodule_between_Algebra_BaseAddUMagma_and_filter_Nbhs
+          (Real_sort__canonical__tvs_NbhsNmodule R))
+    (U:=numFieldTopology.Real_sort__canonical__filter_Nbhs R) x
+    (exponential_pdf rate)}
 
 in_continuous_exponential_pdf is not universe polymorphic
 Expanded type for implicit arguments
@@ -403,8 +412,11 @@ forall {R : realType} [rate : R]
   [x : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_POrder
          R],
 x \in `]0, +oo[%R ->
-forall [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-nbhs (exponential_pdf rate x) t ->
+forall
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs (exponential_pdf rate x) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
   (ball_ [eta normr] x i `<=` exponential_pdf rate @^-1` t)%classic
@@ -435,15 +447,18 @@ within_continuous_exponential_pdf is not universe polymorphic
 Expanded type for implicit arguments
 within_continuous_exponential_pdf :
 forall {R : realType} [rate : R]
-  [x : subspace_topology_subspace__canonical__filter_Nbhs `[0%R, +oo[]
-  [t : set (numFieldTopology.Real_sort__canonical__filter_Nbhs R)],
-nbhs (from_subspace `[0%R, +oo[ (exponential_pdf rate) x) t ->
+  [x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs `[0%R, +oo[)]
+  [t : set
+         (filter.Nbhs.sort
+            (numFieldTopology.Real_sort__canonical__filter_Nbhs R))],
+filter.nbhs (from_subspace `[0%R, +oo[ (exponential_pdf rate) x) t ->
 (if
   if if pselect (`[0%R, +oo[%classic x) then true else false
   then true
   else false
- then within `[0%R, +oo[ (nbhs x)
- else globally [set x])
+ then filter.within `[0%R, +oo[ (filter.nbhs x)
+ else filter.globally [set x])
   (from_subspace `[0%R, +oo[ (exponential_pdf rate) @^-1` t)%classic
 
 Arguments within_continuous_exponential_pdf {R} [rate]%_ring_scope [x t] _
@@ -497,7 +512,10 @@ library mathcomp.analysis.probability_theory.exponential_distribution, line 91, 
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="derive1_exponential_pdf" class="id"><a name="derive1_exponential_pdf" class="" title="derive1_exponential_pdf :
 forall {R : realType} (rate : R),
 {in `]0, +oo[%R,
-  (fun x : R => (- expR (- rate * x))%R)^`()%classic =1 exponential_pdf rate}
+  derive.derive1 (R:=R)
+    (V:=Real_sort__canonical__normed_module_NormedModule R)
+    (fun x : R => (- expR (- rate * x))%R) =1
+  exponential_pdf rate}
 
 derive1_exponential_pdf is not universe polymorphic
 Expanded type for implicit arguments
@@ -506,7 +524,8 @@ forall {R : realType} (rate : R)
   [x : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_POrder
          R],
 x \in `]0, +oo[%R ->
-(fun x0 : R => (- expR (- rate * x0))%R)^`()%classic x =
+derive.derive1 (R:=R) (V:=Real_sort__canonical__normed_module_NormedModule R)
+  (fun x0 : R => (- expR (- rate * x0))%R) x =
 exponential_pdf rate x
 
 Arguments derive1_exponential_pdf {R} rate%_ring_scope [x] _

@@ -293,8 +293,9 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 46, characters
 <span class="vernacular">Section</span><span class="id"> Subspace</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Subspace.T" class="id"><a name="Subspace.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span> (<span id="Subspace.A" class="id"><a name="Subspace.A" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#T:6">T</a></span>).<br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="nbhs_subspace" class="id"><a name="nbhs_subspace" class="" title="nbhs_subspace :
-forall {T : topologicalType} [A : set T],
-subspace A -> set_system (subspace A)
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)],
+subspace A -> filter.set_system (subspace A)
 
 nbhs_subspace is not universe polymorphic
 Arguments nbhs_subspace {T} [A]%_classical_set_scope x _
@@ -313,7 +314,9 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 50, characters
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181">~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#Subspace.A">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#x:9">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#nbhs_subspace_spec:10">nbhs_subspace_spec</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#x:9">x</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#False">False</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#True">True</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span> (<span class="id"><a href="mathcomp.classical.filter.html#globally">globally</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#x:9">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_subspaceP_subproof" class="id"><a name="nbhs_subspaceP_subproof" class="" title="nbhs_subspaceP_subproof :
-forall {T : topologicalType} (A : set T) (x : T),
+forall {T : topology_structure.Topological.type}
+  (A : set (topology_structure.Topological.sort T))
+  (x : topology_structure.Topological.sort T),
 nbhs_subspace_spec A x (A x) (~ A x) (x \in A) (nbhs_subspace (A:=A) x)
 
 nbhs_subspaceP_subproof is not universe polymorphic
@@ -334,8 +337,10 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 59, characters
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_subspace_in" class="id"><a name="nbhs_subspace_in" class="" title="nbhs_subspace_in :
-forall {T : topologicalType} [A : set T] [x : T],
-A x -> within A (nbhs x) = nbhs_subspace (A:=A) x
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
+A x -> filter.within A (filter.nbhs x) = nbhs_subspace (A:=A) x
 
 nbhs_subspace_in is not universe polymorphic
 Arguments nbhs_subspace_in {T} [A]%_classical_set_scope [x] _
@@ -351,8 +356,10 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 67, characters
 <span class="gallina-kwd"> by</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#nbhs_subspaceP_subproof">nbhs_subspaceP_subproof</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_subspace_out" class="id"><a name="nbhs_subspace_out" class="" title="nbhs_subspace_out :
-forall {T : topologicalType} [A : set T] [x : T],
-~ A x -> globally [set x] = nbhs_subspace (A:=A) x
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
+~ A x -> filter.globally [set x] = nbhs_subspace (A:=A) x
 
 nbhs_subspace_out is not universe polymorphic
 Arguments nbhs_subspace_out {T} [A]%_classical_set_scope [x] _
@@ -368,8 +375,10 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 70, characters
 <span class="gallina-kwd"> by</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#nbhs_subspaceP_subproof">nbhs_subspaceP_subproof</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_subspace_filter" class="id"><a name="nbhs_subspace_filter" class="" title="nbhs_subspace_filter :
-forall {T : topologicalType} [A : set T] (x : subspace A),
-ProperFilter (nbhs_subspace (A:=A) x)
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)] 
+  (x : subspace A),
+filter.ProperFilter (nbhs_subspace (A:=A) x)
 
 nbhs_subspace_filter is not universe polymorphic
 Arguments nbhs_subspace_filter {T} [A]%_classical_set_scope x
@@ -387,7 +396,8 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 73, characters
 Qed.</div></details>
 <br/>
 <span id="subspace_topology_subspace__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="subspace_topology_subspace__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="subspace_topology_subspace__canonical__choice_Choice" class="" title="subspace_topology_subspace__canonical__choice_Choice :
-forall {T : topologicalType}, set T -> choiceType
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> choiceType
 
 subspace_topology_subspace__canonical__choice_Choice is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__choice_Choice 
@@ -398,7 +408,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 79, characters 0-55
 ">HB</a></span></span></span></span></span></span></span>.<span id="subspace_topology_subspace__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="subspace_topology_subspace__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="subspace_topology_subspace__canonical__choice_Choice" class="" title="subspace_topology_subspace__canonical__choice_Choice :
-forall {T : topologicalType}, set T -> choiceType
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> choiceType
 
 subspace_topology_subspace__canonical__choice_Choice is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__choice_Choice 
@@ -409,7 +420,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 79, characters 0-55
 ">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="subspace_topology_subspace__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="subspace_topology_subspace__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="subspace_topology_subspace__canonical__choice_Choice" class="" title="subspace_topology_subspace__canonical__choice_Choice :
-forall {T : topologicalType}, set T -> choiceType
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> choiceType
 
 subspace_topology_subspace__canonical__choice_Choice is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__choice_Choice 
@@ -420,7 +432,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 79, characters 0-55
 "> _</a></span></span></span></span></span></span></span><span id="subspace_topology_subspace__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="subspace_topology_subspace__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="subspace_topology_subspace__canonical__choice_Choice" class="" title="subspace_topology_subspace__canonical__choice_Choice :
-forall {T : topologicalType}, set T -> choiceType
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> choiceType
 
 subspace_topology_subspace__canonical__choice_Choice is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__choice_Choice 
@@ -431,7 +444,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 79, characters 0-55
 "> :=</a></span></span></span></span></span></span></span><span id="subspace_topology_subspace__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="subspace_topology_subspace__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="subspace_topology_subspace__canonical__choice_Choice" class="" title="subspace_topology_subspace__canonical__choice_Choice :
-forall {T : topologicalType}, set T -> choiceType
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> choiceType
 
 subspace_topology_subspace__canonical__choice_Choice is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__choice_Choice 
@@ -444,7 +458,8 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 79, characters
 "> Choice</a></span></span></span></span></span></span></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.copy">copy</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#subspace">subspace</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#Subspace.A">A</a></span>)<span class="id"> _</span>.<br/>
 <br/>
 <span id="subspace_topology_subspace__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="subspace_topology_subspace__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="subspace_topology_subspace__canonical__filter_Nbhs" class="" title="subspace_topology_subspace__canonical__filter_Nbhs :
-forall {T : topologicalType}, set T -> nbhsType
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> filter.Nbhs.type
 
 subspace_topology_subspace__canonical__filter_Nbhs is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__filter_Nbhs 
@@ -455,7 +470,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 81, characters 0-69
 ">HB</a></span></span></span></span></span></span></span>.<span id="subspace_topology_subspace__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="subspace_topology_subspace__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="subspace_topology_subspace__canonical__filter_Nbhs" class="" title="subspace_topology_subspace__canonical__filter_Nbhs :
-forall {T : topologicalType}, set T -> nbhsType
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> filter.Nbhs.type
 
 subspace_topology_subspace__canonical__filter_Nbhs is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__filter_Nbhs 
@@ -466,7 +482,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 81, characters 0-69
 ">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="subspace_topology_subspace__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="subspace_topology_subspace__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="subspace_topology_subspace__canonical__filter_Nbhs" class="" title="subspace_topology_subspace__canonical__filter_Nbhs :
-forall {T : topologicalType}, set T -> nbhsType
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> filter.Nbhs.type
 
 subspace_topology_subspace__canonical__filter_Nbhs is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__filter_Nbhs 
@@ -477,7 +494,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 81, characters 0-69
 "> _</a></span></span></span></span></span></span></span><span id="subspace_topology_subspace__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="subspace_topology_subspace__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="subspace_topology_subspace__canonical__filter_Nbhs" class="" title="subspace_topology_subspace__canonical__filter_Nbhs :
-forall {T : topologicalType}, set T -> nbhsType
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> filter.Nbhs.type
 
 subspace_topology_subspace__canonical__filter_Nbhs is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__filter_Nbhs 
@@ -488,7 +506,8 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 81, characters 0-69
 "> :=</a></span></span></span></span></span></span></span><span id="subspace_topology_subspace__canonical__filter_Nbhs" class="id"><span id="HB_unnamed_mixin_10" class="id"><span id="subspace_topology_subspace__canonical__filter_Filtered" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="filter_hasNbhs__to__filter_isFiltered" class="id"><span id="filter_hasNbhs__to__filter_selfFiltered" class="id"><span id="HB_unnamed_factory_6" class="id"><a name="subspace_topology_subspace__canonical__filter_Nbhs" class="" title="subspace_topology_subspace__canonical__filter_Nbhs :
-forall {T : topologicalType}, set T -> nbhsType
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) -> filter.Nbhs.type
 
 subspace_topology_subspace__canonical__filter_Nbhs is not universe polymorphic
 Arguments subspace_topology_subspace__canonical__filter_Nbhs 
@@ -501,8 +520,10 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 81, characters
 "> hasNbhs</a></span></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.classical.filter.html#hasNbhs.Build">Build</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#subspace">subspace</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#Subspace.A">A</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#nbhs_subspace">nbhs_subspace</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_subspaceP" class="id"><a name="nbhs_subspaceP" class="" title="nbhs_subspaceP :
-forall {T : topologicalType} (A : set T) (x : subspace A),
-nbhs_subspace_spec A x (A x) (~ A x) (x \in A) (nbhs x)
+forall {T : topology_structure.Topological.type}
+  (A : set (topology_structure.Topological.sort T)) 
+  (x : subspace A),
+nbhs_subspace_spec A x (A x) (~ A x) (x \in A) (filter.nbhs x)
 
 nbhs_subspaceP is not universe polymorphic
 Arguments nbhs_subspaceP {T} A%_classical_set_scope x
@@ -519,9 +540,10 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 83, characters
 <span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#nbhs_subspaceP_subproof">nbhs_subspaceP_subproof</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_subspace_singleton" class="id"><a name="nbhs_subspace_singleton" class="" title="nbhs_subspace_singleton :
-forall {T : topologicalType} [A : set T] [p : subspace A]
-  [B : set (subspace A)],
-nbhs p B -> B p
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)] 
+  [p : subspace A] [B : set (subspace A)],
+filter.nbhs p B -> B p
 
 nbhs_subspace_singleton is not universe polymorphic
 Arguments nbhs_subspace_singleton {T} [A]%_classical_set_scope 
@@ -538,9 +560,10 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 87, characters
 <span class="gallina-kwd"> by</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#nbhs_subspaceP">nbhs_subspaceP</a></span><span class="id"> =&gt;</span><span class="id"> ?</span><span class="id"> =&gt;</span><span class="id"> [/</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#nbhs_singleton">nbhs_singleton</a></span><span class="id">|];</span><span class="id"> apply</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_subspace_nbhs" class="id"><a name="nbhs_subspace_nbhs" class="" title="nbhs_subspace_nbhs :
-forall {T : topologicalType} [A : set T] [p : subspace A]
-  [B : set (subspace A)],
-nbhs p B -> nbhs p (nbhs^~ B)
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)] 
+  [p : subspace A] [B : set (subspace A)],
+filter.nbhs p B -> filter.nbhs p (filter.nbhs^~ B)
 
 nbhs_subspace_nbhs is not universe polymorphic
 Arguments nbhs_subspace_nbhs {T} [A]%_classical_set_scope 
@@ -560,7 +583,9 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 90, characters
 Qed.</div></details>
 <br/>
 <span id="subspace_topology_subspace__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="subspace_topology_subspace__canonical__topology_structure_Topological" class="" title="subspace_topology_subspace__canonical__topology_structure_Topological :
-forall {T : topologicalType}, set T -> topologicalType
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) ->
+topology_structure.Topological.type
 
 subspace_topology_subspace__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -572,7 +597,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 97, characters 0-136
 ">HB</a></span></span></span></span>.<span id="subspace_topology_subspace__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="subspace_topology_subspace__canonical__topology_structure_Topological" class="" title="subspace_topology_subspace__canonical__topology_structure_Topological :
-forall {T : topologicalType}, set T -> topologicalType
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) ->
+topology_structure.Topological.type
 
 subspace_topology_subspace__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -584,7 +611,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 97, characters 0-136
 ">instance</a></span></span></span></span><span class="vernacular"> Definition</span><span id="subspace_topology_subspace__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="subspace_topology_subspace__canonical__topology_structure_Topological" class="" title="subspace_topology_subspace__canonical__topology_structure_Topological :
-forall {T : topologicalType}, set T -> topologicalType
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) ->
+topology_structure.Topological.type
 
 subspace_topology_subspace__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -596,7 +625,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 97, characters 0-136
 "> _</a></span></span></span></span><span id="subspace_topology_subspace__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="subspace_topology_subspace__canonical__topology_structure_Topological" class="" title="subspace_topology_subspace__canonical__topology_structure_Topological :
-forall {T : topologicalType}, set T -> topologicalType
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) ->
+topology_structure.Topological.type
 
 subspace_topology_subspace__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -608,7 +639,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 97, characters 0-136
 "> :=</a></span></span></span></span><span id="subspace_topology_subspace__canonical__topology_structure_Topological" class="id"><span id="HB_unnamed_mixin_13" class="id"><span id="topology_structure_Nbhs_isNbhsTopological__to__topology_structure_Nbhs_isTopological" class="id"><span id="HB_unnamed_factory_11" class="id"><a name="subspace_topology_subspace__canonical__topology_structure_Topological" class="" title="subspace_topology_subspace__canonical__topology_structure_Topological :
-forall {T : topologicalType}, set T -> topologicalType
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) ->
+topology_structure.Topological.type
 
 subspace_topology_subspace__canonical__topology_structure_Topological is not universe polymorphic
 Arguments
@@ -623,9 +656,14 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 97, characters
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#nbhs_subspace_filter">nbhs_subspace_filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#nbhs_subspace_singleton">nbhs_subspace_singleton</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#nbhs_subspace_nbhs">nbhs_subspace_nbhs</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="subspace_cvgP" class="id"><a name="subspace_cvgP" class="" title="subspace_cvgP :
-forall {T : topologicalType} [A : set T] [F : set_system T] [x : T],
-Filter F ->
-A x -> (F --> (x : subspace A))%classic <-> (F --> within A (nbhs x))%classic
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  [F : filter.set_system (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
+filter.Filter F ->
+A x ->
+filter.cvg_to (filter.nbhs F) (filter.nbhs (x : subspace A)) <->
+filter.cvg_to (filter.nbhs F) (filter.nbhs (filter.within A (filter.nbhs x)))
 
 subspace_cvgP is not universe polymorphic
 Arguments subspace_cvgP {T} [A]%_classical_set_scope [F x] _ _
@@ -642,9 +680,25 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 100, character
 <span class="gallina-kwd"> by</span><span class="id"> case:</span><span class="id"> _</span><span class="id"> /</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#nbhs_subspaceP">nbhs_subspaceP</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="subspace_continuousP" class="id"><a name="subspace_continuousP" class="" title="subspace_continuousP :
-forall {T : topologicalType} (A : set T) {S : topologicalType} (f : T -> S),
-continuous (f : subspace A -> S) <->
-(forall x : T, A x -> (f x @[x --> within A (nbhs x)] --> f x)%classic)
+forall {T : topology_structure.Topological.type}
+  (A : set (topology_structure.Topological.sort T))
+  {S : topology_structure.Topological.type}
+  (f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort S),
+(forall
+   x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs A),
+ filter.continuous_at
+   (T:=subspace_topology_subspace__canonical__filter_Nbhs A)
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         S)
+   x (f : subspace A -> topology_structure.Topological.sort S)) <->
+(forall x : topology_structure.Topological.sort T,
+ A x ->
+ filter.cvg_to
+   (filter.nbhs
+      (filter.fmap f (filter.nbhs (filter.within A (filter.nbhs x)))))
+   (filter.nbhs (f x)))
 
 subspace_continuousP is not universe polymorphic
 Arguments subspace_continuousP {T} A%_classical_set_scope 
@@ -668,22 +722,55 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 104, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="subspace_eq_continuous" class="id"><a name="subspace_eq_continuous" class="" title="subspace_eq_continuous :
-forall {T : topologicalType} [A : set T] {S : topologicalType}
-  [f g : subspace A -> S],
-{in A, f =1 g} -> continuous f -> continuous g
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  {S : topology_structure.Topological.type}
+  [f g : subspace A -> topology_structure.Topological.sort S],
+{in A, f =1 g} ->
+(forall
+   x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs A),
+ filter.continuous_at
+   (T:=subspace_topology_subspace__canonical__filter_Nbhs A)
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         S)
+   x f) ->
+forall
+  [x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs A)],
+filter.continuous_at
+  (T:=subspace_topology_subspace__canonical__filter_Nbhs A)
+  (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        S)
+  x g
 
 subspace_eq_continuous is not universe polymorphic
 Expanded type for implicit arguments
 subspace_eq_continuous :
-forall {T : topologicalType} [A : set T] {S : topologicalType}
-  [f g : subspace A -> S],
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  {S : topology_structure.Topological.type}
+  [f g : subspace A -> topology_structure.Topological.sort S],
 {in A, f =1 g} ->
-continuous f ->
-forall [x : subspace_topology_subspace__canonical__filter_Nbhs A] [t : set S],
-nbhs (g x) t ->
+(forall
+   x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs A),
+ filter.continuous_at
+   (T:=subspace_topology_subspace__canonical__filter_Nbhs A)
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         S)
+   x f) ->
+forall
+  [x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs A)]
+  [t : set
+         (filter.Nbhs.sort
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               S))],
+filter.nbhs (g x) t ->
 (if if if pselect (A x) then true else false then true else false
- then within A (nbhs x)
- else globally [set x]) (g @^-1` t)%classic
+ then filter.within A (filter.nbhs x)
+ else filter.globally [set x]) (g @^-1` t)%classic
 
 Arguments subspace_eq_continuous {T} [A]%_classical_set_scope 
   {S} [f g]%_function_scope _ _%_function_scope [x t] 
@@ -703,9 +790,27 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 115, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_subspace_in" class="id"><a name="continuous_subspace_in" class="" title="continuous_subspace_in :
-forall {T : topologicalType} [A : set T] {U : topologicalType}
-  (f : subspace A -> U),
-continuous f = {in A, continuous f}
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  {U : topology_structure.Topological.type}
+  (f : subspace A -> topology_structure.Topological.sort U),
+(forall
+   x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs A),
+ filter.continuous_at
+   (T:=subspace_topology_subspace__canonical__filter_Nbhs A)
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         U)
+   x f) =
+{in A,
+  forall
+    x : filter.Nbhs.sort
+          (subspace_topology_subspace__canonical__filter_Nbhs A),
+  filter.continuous_at
+    (T:=subspace_topology_subspace__canonical__filter_Nbhs A)
+    (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          U)
+    x f}
 
 continuous_subspace_in is not universe polymorphic
 Arguments continuous_subspace_in {T} [A]%_classical_set_scope 
@@ -726,8 +831,11 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 122, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_subspace_interior" class="id"><a name="nbhs_subspace_interior" class="" title="nbhs_subspace_interior :
-forall {T : topologicalType} [A : set T] [x : T],
-A°%classic x -> nbhs x = nbhs (x : subspace A)
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
+topology_structure.interior A x ->
+filter.nbhs x = filter.nbhs (x : subspace A)
 
 nbhs_subspace_interior is not universe polymorphic
 Arguments nbhs_subspace_interior {T} [A]%_classical_set_scope [x] _
@@ -746,10 +854,15 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 130, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_subspace_ex" class="id"><a name="nbhs_subspace_ex" class="" title="nbhs_subspace_ex :
-forall {T : topologicalType} [A : set T] (U : set T) [x : T],
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  (U : set (topology_structure.Topological.sort T))
+  [x : topology_structure.Topological.sort T],
 A x ->
-nbhs (x : subspace A) U <->
-(exists2 V : set T, nbhs (x : T) V & (U `&` A)%classic = (V `&` A)%classic)
+filter.nbhs (x : subspace A) U <->
+(exists2 V : set (topology_structure.Topological.sort T),
+   filter.nbhs (x : topology_structure.Topological.sort T) V &
+   (U `&` A)%classic = (V `&` A)%classic)
 
 nbhs_subspace_ex is not universe polymorphic
 Arguments nbhs_subspace_ex {T} [A]%_classical_set_scope
@@ -768,18 +881,31 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 137, character
 <span class="gallina-kwd"> by</span><span class="id"> case:</span> (<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> _</span>)<span class="id"> /</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#nbhs_subspaceP">nbhs_subspaceP</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> //</span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#withinE">withinE</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="incl_subspace_continuous" class="id"><a name="incl_subspace_continuous" class="" title="incl_subspace_continuous :
-forall {T : topologicalType} [A : set T], continuous incl_subspace
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  [x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs A)],
+filter.continuous_at
+  (T:=subspace_topology_subspace__canonical__filter_Nbhs A)
+  (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+        T)
+  x incl_subspace
 
 incl_subspace_continuous is not universe polymorphic
 Expanded type for implicit arguments
 incl_subspace_continuous :
-forall {T : topologicalType} [A : set T]
-  [x : subspace_topology_subspace__canonical__filter_Nbhs A] 
-  [t : set T],
-nbhs (incl_subspace x) t ->
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  [x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs A)]
+  [t : set
+         (filter.Nbhs.sort
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               T))],
+filter.nbhs (incl_subspace x) t ->
 (if if if pselect (A x) then true else false then true else false
- then within A (nbhs x)
- else globally [set x]) (incl_subspace @^-1` t)%classic
+ then filter.within A (filter.nbhs x)
+ else filter.globally [set x]) (incl_subspace @^-1` t)%classic
 
 Arguments incl_subspace_continuous {T} [A]%_classical_set_scope [x t] _
 incl_subspace_continuous is opaque
@@ -796,19 +922,23 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 142, character
 <span class="vernacular">Section</span><span class="id"> SubspaceOpen</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="open_subspace1out" class="id"><a name="open_subspace1out" class="" title="open_subspace1out :
-forall {T : topologicalType} [A : set T] [x : subspace A],
-~ A x -> open [set x]%classic
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)] 
+  [x : subspace A],
+~ A x -> topology_structure.open [set x]%classic
 
 open_subspace1out is not universe polymorphic
 Expanded type for implicit arguments
 open_subspace1out :
-forall {T : topologicalType} [A : set T] [x : subspace A],
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)] 
+  [x : subspace A],
 ~ A x ->
 forall [t : subspace A],
 [set x]%classic t ->
 (if if if pselect (A t) then true else false then true else false
- then within A (nbhs t)
- else globally [set t]) [set x]%classic
+ then filter.within A (filter.nbhs t)
+ else filter.globally [set t]) [set x]%classic
 
 Arguments open_subspace1out {T} [A]%_classical_set_scope [x] _ [t] _
 open_subspace1out is opaque
@@ -826,19 +956,23 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 147, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="open_subspace_out" class="id"><a name="open_subspace_out" class="" title="open_subspace_out :
-forall {T : topologicalType} [A : set T] [U : set (subspace A)],
-(U `<=` ~` A)%classic -> open U
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)] 
+  [U : set (subspace A)],
+(U `<=` ~` A)%classic -> topology_structure.open U
 
 open_subspace_out is not universe polymorphic
 Expanded type for implicit arguments
 open_subspace_out :
-forall {T : topologicalType} [A : set T] [U : set (subspace A)],
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)] 
+  [U : set (subspace A)],
 (U `<=` ~` A)%classic ->
 forall [t : subspace A],
 U t ->
 (if if if pselect (A t) then true else false then true else false
- then within A (nbhs t)
- else globally [set t]) U
+ then filter.within A (filter.nbhs t)
+ else filter.globally [set t]) U
 
 Arguments open_subspace_out {T} [A U]%_classical_set_scope _ [t] _
 open_subspace_out is opaque
@@ -856,16 +990,20 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 154, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="open_subspaceT" class="id"><a name="open_subspaceT" class="" title="open_subspaceT :
-forall {T : topologicalType} [A : set T], open (A : set (subspace A))
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)],
+topology_structure.open (A : set (subspace A))
 
 open_subspaceT is not universe polymorphic
 Expanded type for implicit arguments
 open_subspaceT :
-forall {T : topologicalType} [A : set T] [t : subspace A],
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)] 
+  [t : subspace A],
 (A : set (subspace A)) t ->
 (if if if pselect (A t) then true else false then true else false
- then within A (nbhs t)
- else globally [set t]) (A : set (subspace A))
+ then filter.within A (filter.nbhs t)
+ else filter.globally [set t]) (A : set (subspace A))
 
 Arguments open_subspaceT {T} [A]%_classical_set_scope [t] _
 open_subspaceT is opaque
@@ -880,8 +1018,10 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 161, character
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> ?;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#nbhs_subspaceP">nbhs_subspaceP</a></span><span class="id"> =&gt;</span><span class="id"> //=</span><span class="id"> ?</span><span class="id"> ?;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#withinT">withinT</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="open_subspaceIT" class="id"><a name="open_subspaceIT" class="" title="open_subspaceIT :
-forall {T : topologicalType} [A : set T] (U : set (subspace A)),
-open (U `&` A)%classic = open U
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)] 
+  (U : set (subspace A)),
+topology_structure.open (U `&` A)%classic = topology_structure.open U
 
 open_subspaceIT is not universe polymorphic
 Arguments open_subspaceIT {T} [A]%_classical_set_scope U%_classical_set_scope
@@ -902,8 +1042,11 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 164, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="open_subspaceTI" class="id"><a name="open_subspaceTI" class="" title="open_subspaceTI :
-forall {T : topologicalType} [A : set T] (U : set (subspace A)),
-open ((A `&` U)%classic : set (subspace A)) = open U
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)] 
+  (U : set (subspace A)),
+topology_structure.open ((A `&` U)%classic : set (subspace A)) =
+topology_structure.open U
 
 open_subspaceTI is not universe polymorphic
 Arguments open_subspaceTI {T} [A]%_classical_set_scope U%_classical_set_scope
@@ -920,15 +1063,19 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 173, character
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setIC">setIC</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#open_subspaceIT">open_subspaceIT</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closed_subspaceT" class="id"><a name="closed_subspaceT" class="" title="closed_subspaceT :
-forall {T : topologicalType} [A : set T], closed (A : set (subspace A))
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)],
+topology_structure.closed (A : set (subspace A))
 
 closed_subspaceT is not universe polymorphic
 Expanded type for implicit arguments
 closed_subspaceT :
-forall {T : topologicalType} [A : set T]
-  [t : subspace_topology_subspace__canonical__topology_structure_Topological
-         A],
-closure (A : set (subspace A)) t -> A t
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  [t : topology_structure.Topological.sort
+         (subspace_topology_subspace__canonical__topology_structure_Topological
+            A)],
+topology_structure.closure (A : set (subspace A)) t -> A t
 
 Arguments closed_subspaceT {T} [A]%_classical_set_scope [t] _
 closed_subspaceT is opaque
@@ -945,9 +1092,12 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 177, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="open_subspaceP" class="id"><a name="open_subspaceP" class="" title="open_subspaceP :
-forall {T : topologicalType} (A U : set T),
-open (U : set (subspace A)) <->
-(exists V : set T, open (V : set T) /\ (V `&` A)%classic = (U `&` A)%classic)
+forall {T : topology_structure.Topological.type}
+  (A U : set (topology_structure.Topological.sort T)),
+topology_structure.open (U : set (subspace A)) <->
+(exists V : set (topology_structure.Topological.sort T),
+   topology_structure.open (V : set (topology_structure.Topological.sort T)) /\
+   (V `&` A)%classic = (U `&` A)%classic)
 
 open_subspaceP is not universe polymorphic
 Arguments open_subspaceP {T} (A U)%_classical_set_scope
@@ -991,10 +1141,13 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 183, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closed_subspaceP" class="id"><a name="closed_subspaceP" class="" title="closed_subspaceP :
-forall {T : topologicalType} (A U : set T),
-closed (U : set (subspace A)) <->
-(exists V : set T,
-   closed (V : set T) /\ (V `&` A)%classic = (U `&` A)%classic)
+forall {T : topology_structure.Topological.type}
+  (A U : set (topology_structure.Topological.sort T)),
+topology_structure.closed (U : set (subspace A)) <->
+(exists V : set (topology_structure.Topological.sort T),
+   topology_structure.closed
+     (V : set (topology_structure.Topological.sort T)) /\
+   (V `&` A)%classic = (U `&` A)%classic)
 
 closed_subspaceP is not universe polymorphic
 Arguments closed_subspaceP {T} (A U)%_classical_set_scope
@@ -1016,19 +1169,22 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 215, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="open_subspaceW" class="id"><a name="open_subspaceW" class="" title="open_subspaceW :
-forall {T : topologicalType} [A U : set T],
-open (U : set T) -> open (U : set (subspace A))
+forall {T : topology_structure.Topological.type}
+  [A U : set (topology_structure.Topological.sort T)],
+topology_structure.open (U : set (topology_structure.Topological.sort T)) ->
+topology_structure.open (U : set (subspace A))
 
 open_subspaceW is not universe polymorphic
 Expanded type for implicit arguments
 open_subspaceW :
-forall {T : topologicalType} [A U : set T],
-open (U : set T) ->
+forall {T : topology_structure.Topological.type}
+  [A U : set (topology_structure.Topological.sort T)],
+topology_structure.open (U : set (topology_structure.Topological.sort T)) ->
 forall [t : subspace A],
 (U : set (subspace A)) t ->
 (if if if pselect (A t) then true else false then true else false
- then within A (nbhs t)
- else globally [set t]) (U : set (subspace A))
+ then filter.within A (filter.nbhs t)
+ else filter.globally [set t]) (U : set (subspace A))
 
 Arguments open_subspaceW {T} [A U]%_classical_set_scope _ [t] _
 open_subspaceW is opaque
@@ -1044,18 +1200,22 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 225, character
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> oU;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#open_subspaceP">open_subspaceP</a></span><span class="id">;</span><span class="gallina-kwd"> exists</span><span class="id"> U</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closed_subspaceW" class="id"><a name="closed_subspaceW" class="" title="closed_subspaceW :
-forall {T : topologicalType} [A U : set T],
-closed (U : set T) -> closed (U : set (subspace A))
+forall {T : topology_structure.Topological.type}
+  [A U : set (topology_structure.Topological.sort T)],
+topology_structure.closed (U : set (topology_structure.Topological.sort T)) ->
+topology_structure.closed (U : set (subspace A))
 
 closed_subspaceW is not universe polymorphic
 Expanded type for implicit arguments
 closed_subspaceW :
-forall {T : topologicalType} [A U : set T],
-closed (U : set T) ->
+forall {T : topology_structure.Topological.type}
+  [A U : set (topology_structure.Topological.sort T)],
+topology_structure.closed (U : set (topology_structure.Topological.sort T)) ->
 forall
-  [t : subspace_topology_subspace__canonical__topology_structure_Topological
-         A],
-closure (U : set (subspace A)) t -> U t
+  [t : topology_structure.Topological.sort
+         (subspace_topology_subspace__canonical__topology_structure_Topological
+            A)],
+topology_structure.closure (U : set (subspace A)) t -> U t
 
 Arguments closed_subspaceW {T} [A U]%_classical_set_scope _ [t] _
 closed_subspaceW is opaque
@@ -1071,8 +1231,13 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 229, character
  <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed_openC">closed_openC</a></span><span class="id">/</span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#open_subspaceW">open_subspaceW</a></span><span class="id">/</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open_closedC">open_closedC</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setCK">setCK</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="open_setIS" class="id"><a name="open_setIS" class="" title="open_setIS :
-forall {T : topologicalType} [A : set T] (U : set (subspace A)),
-open A -> open ((U `&` A)%classic : set T) = open U
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)] 
+  (U : set (subspace A)),
+topology_structure.open A ->
+topology_structure.open
+  ((U `&` A)%classic : set (topology_structure.Topological.sort T)) =
+topology_structure.open U
 
 open_setIS is not universe polymorphic
 Arguments open_setIS {T} [A]%_classical_set_scope U%_classical_set_scope _
@@ -1092,8 +1257,11 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 233, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="open_setSI" class="id"><a name="open_setSI" class="" title="open_setSI :
-forall {T : topologicalType} [A : set T] (U : set (subspace A)),
-open A -> open (A `&` U)%classic = open U
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)] 
+  (U : set (subspace A)),
+topology_structure.open A ->
+topology_structure.open (A `&` U)%classic = topology_structure.open U
 
 open_setSI is not universe polymorphic
 Arguments open_setSI {T} [A]%_classical_set_scope U%_classical_set_scope _
@@ -1109,8 +1277,13 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 241, character
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> oA;</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.classical.classical_sets.html#setIC">setIC</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#open_setIS">open_setIS</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closed_setIS" class="id"><a name="closed_setIS" class="" title="closed_setIS :
-forall {T : topologicalType} [A : set T] (U : set (subspace A)),
-closed A -> closed ((U `&` A)%classic : set T) = closed U
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)] 
+  (U : set (subspace A)),
+topology_structure.closed A ->
+topology_structure.closed
+  ((U `&` A)%classic : set (topology_structure.Topological.sort T)) =
+topology_structure.closed U
 
 closed_setIS is not universe polymorphic
 Arguments closed_setIS {T} [A]%_classical_set_scope U%_classical_set_scope _
@@ -1130,8 +1303,11 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 244, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closed_setSI" class="id"><a name="closed_setSI" class="" title="closed_setSI :
-forall {T : topologicalType} [A : set T] (U : set (subspace A)),
-closed A -> closed (A `&` U) = closed U
+forall {T : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)] 
+  (U : set (subspace A)),
+topology_structure.closed A ->
+topology_structure.closed (A `&` U) = topology_structure.closed U
 
 closed_setSI is not universe polymorphic
 Arguments closed_setSI {T} [A]%_classical_set_scope U%_classical_set_scope _
@@ -1148,9 +1324,12 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 252, character
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> oA;</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.classical.classical_sets.html#setIC">setIC</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#closed_setIS">closed_setIS</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closure_subspaceW" class="id"><a name="closure_subspaceW" class="" title="closure_subspaceW :
-forall {T : topologicalType} [A U : set T],
+forall {T : topology_structure.Topological.type}
+  [A U : set (topology_structure.Topological.sort T)],
 (U `<=` A)%classic ->
-closure (U : set (subspace A)) = (closure (U : set T) `&` A)%classic
+topology_structure.closure (U : set (subspace A)) =
+(topology_structure.closure (U : set (topology_structure.Topological.sort T))
+ `&` A)%classic
 
 closure_subspaceW is not universe polymorphic
 Arguments closure_subspaceW {T} [A U]%_classical_set_scope _
@@ -1178,9 +1357,10 @@ Qed.</div></details>
 <span class="vernacular">End</span><span class="id"> SubspaceOpen</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="compact_subspaceIP" class="id"><a name="compact_subspaceIP" class="" title="compact_subspaceIP :
-forall {T : topologicalType} (A U : set T),
+forall {T : topology_structure.Topological.type}
+  (A U : set (topology_structure.Topological.sort T)),
 compact ((U `&` A)%classic : set (subspace A)) <->
-compact ((U `&` A)%classic : set T)
+compact ((U `&` A)%classic : set (topology_structure.Topological.sort T))
 
 compact_subspaceIP is not universe polymorphic
 Arguments compact_subspaceIP {T} (A U)%_classical_set_scope
@@ -1205,10 +1385,12 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 272, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="clopen_connectedP" class="id"><a name="clopen_connectedP" class="" title="clopen_connectedP :
-forall {T : topologicalType} (A : set T),
+forall {T : topology_structure.Topological.type}
+  (A : set (topology_structure.Topological.sort T)),
 connected A <->
-(forall U : set (subspace A),
- clopen U -> (U `<=` A)%classic -> (U !=set0)%classic -> U = A)
+(forall U : set (topology_structure.Topological.sort (subspace A)),
+ topology_structure.clopen U ->
+ (U `<=` A)%classic -> (U !=set0)%classic -> U = A)
 
 clopen_connectedP is not universe polymorphic
 Arguments clopen_connectedP {T} A%_classical_set_scope
@@ -1238,7 +1420,9 @@ Qed.</div></details>
 <span class="vernacular">End</span><span class="id"> Subspace</span>.<br/>
 <br/>
 <span id="subspace_topology_subspace__canonical__topology_structure_PointedTopological" class="id"><span id="subspace_topology_subspace__canonical__filter_PointedNbhs" class="id"><span id="subspace_topology_subspace__canonical__filter_PointedFiltered" class="id"><span id="subspace_topology_subspace__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_15" class="id"><span id="hb_instance_14.A" class="id"><span id="hb_instance_14.T" class="id"><a name="subspace_topology_subspace__canonical__topology_structure_PointedTopological" class="" title="subspace_topology_subspace__canonical__topology_structure_PointedTopological :
-forall [T : ptopologicalType], set T -> ptopologicalType
+forall [T : topology_structure.PointedTopological.type],
+set (topology_structure.PointedTopological.sort T) ->
+topology_structure.PointedTopological.type
 
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -1250,7 +1434,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 303, characters 0-100
 ">HB</a></span></span></span></span></span></span></span>.<span id="subspace_topology_subspace__canonical__topology_structure_PointedTopological" class="id"><span id="subspace_topology_subspace__canonical__filter_PointedNbhs" class="id"><span id="subspace_topology_subspace__canonical__filter_PointedFiltered" class="id"><span id="subspace_topology_subspace__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_15" class="id"><span id="hb_instance_14.A" class="id"><span id="hb_instance_14.T" class="id"><a name="subspace_topology_subspace__canonical__topology_structure_PointedTopological" class="" title="subspace_topology_subspace__canonical__topology_structure_PointedTopological :
-forall [T : ptopologicalType], set T -> ptopologicalType
+forall [T : topology_structure.PointedTopological.type],
+set (topology_structure.PointedTopological.sort T) ->
+topology_structure.PointedTopological.type
 
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -1262,7 +1448,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 303, characters 0-100
 ">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="subspace_topology_subspace__canonical__topology_structure_PointedTopological" class="id"><span id="subspace_topology_subspace__canonical__filter_PointedNbhs" class="id"><span id="subspace_topology_subspace__canonical__filter_PointedFiltered" class="id"><span id="subspace_topology_subspace__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_15" class="id"><span id="hb_instance_14.A" class="id"><span id="hb_instance_14.T" class="id"><a name="subspace_topology_subspace__canonical__topology_structure_PointedTopological" class="" title="subspace_topology_subspace__canonical__topology_structure_PointedTopological :
-forall [T : ptopologicalType], set T -> ptopologicalType
+forall [T : topology_structure.PointedTopological.type],
+set (topology_structure.PointedTopological.sort T) ->
+topology_structure.PointedTopological.type
 
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -1274,7 +1462,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 303, characters 0-100
 "> _</a></span></span></span></span></span></span></span><span id="subspace_topology_subspace__canonical__topology_structure_PointedTopological" class="id"><span id="subspace_topology_subspace__canonical__filter_PointedNbhs" class="id"><span id="subspace_topology_subspace__canonical__filter_PointedFiltered" class="id"><span id="subspace_topology_subspace__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_15" class="id"><span id="hb_instance_14.A" class="id"><span id="hb_instance_14.T" class="id"><a name="subspace_topology_subspace__canonical__topology_structure_PointedTopological" class="" title="subspace_topology_subspace__canonical__topology_structure_PointedTopological :
-forall [T : ptopologicalType], set T -> ptopologicalType
+forall [T : topology_structure.PointedTopological.type],
+set (topology_structure.PointedTopological.sort T) ->
+topology_structure.PointedTopological.type
 
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -1286,7 +1476,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 303, characters 0-100
 "> {T</a></span></span></span></span></span></span></span><span id="subspace_topology_subspace__canonical__topology_structure_PointedTopological" class="id"><span id="subspace_topology_subspace__canonical__filter_PointedNbhs" class="id"><span id="subspace_topology_subspace__canonical__filter_PointedFiltered" class="id"><span id="subspace_topology_subspace__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_15" class="id"><span id="hb_instance_14.A" class="id"><span id="hb_instance_14.T" class="id"><a name="subspace_topology_subspace__canonical__topology_structure_PointedTopological" class="" title="subspace_topology_subspace__canonical__topology_structure_PointedTopological :
-forall [T : ptopologicalType], set T -> ptopologicalType
+forall [T : topology_structure.PointedTopological.type],
+set (topology_structure.PointedTopological.sort T) ->
+topology_structure.PointedTopological.type
 
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -1298,7 +1490,9 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.topology_theory.subspace_topology, line 303, characters 0-100
 "> :</a></span></span></span></span></span></span></span><span id="subspace_topology_subspace__canonical__topology_structure_PointedTopological" class="id"><span id="subspace_topology_subspace__canonical__filter_PointedNbhs" class="id"><span id="subspace_topology_subspace__canonical__filter_PointedFiltered" class="id"><span id="subspace_topology_subspace__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_15" class="id"><span id="hb_instance_14.A" class="id"><span id="hb_instance_14.T" class="id"><a name="subspace_topology_subspace__canonical__topology_structure_PointedTopological" class="" title="subspace_topology_subspace__canonical__topology_structure_PointedTopological :
-forall [T : ptopologicalType], set T -> ptopologicalType
+forall [T : topology_structure.PointedTopological.type],
+set (topology_structure.PointedTopological.sort T) ->
+topology_structure.PointedTopological.type
 
 subspace_topology_subspace__canonical__topology_structure_PointedTopological is not universe polymorphic
 Arguments
@@ -1344,23 +1538,27 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 314, character
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">U</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span>) (<span class="id">A</span><span class="id"> B</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#SubspaceRelative.T">T</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_subspace_subset" class="id"><a name="nbhs_subspace_subset" class="" title="nbhs_subspace_subset :
-forall {T : topologicalType} [A B : set T] [x : T],
+forall {T : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
 (A `<=` B)%classic ->
-(nbhs (x : subspace B) `<=` nbhs (x : subspace A))%classic
+(filter.nbhs (x : subspace B) `<=` filter.nbhs (x : subspace A))%classic
 
 nbhs_subspace_subset is not universe polymorphic
 Expanded type for implicit arguments
 nbhs_subspace_subset :
-forall {T : topologicalType} [A B : set T] [x : T],
+forall {T : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort T)]
+  [x : topology_structure.Topological.sort T],
 (A `<=` B)%classic ->
 forall [t : set (subspace B)],
-nbhs (x : subspace B) t ->
+filter.nbhs (x : subspace B) t ->
 (if
   if if pselect (A (x : subspace A)) then true else false
   then true
   else false
- then within A (nbhs (x : subspace A))
- else globally [set x  : subspace A]) t
+ then filter.within A (filter.nbhs (x : subspace A))
+ else filter.globally [set x  : subspace A]) t
 
 Arguments nbhs_subspace_subset {T} [A B]%_classical_set_scope [x] _ [t] _
 nbhs_subspace_subset is opaque
@@ -1381,21 +1579,33 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 327, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_subspaceW" class="id"><a name="continuous_subspaceW" class="" title="continuous_subspaceW :
-forall {T U : topologicalType} [A B : set T] [f : T -> U],
+forall {T U : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort T)]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U],
 (A `<=` B)%classic ->
 {within B, continuous f}%classic -> {within A, continuous f}%classic
 
 continuous_subspaceW is not universe polymorphic
 Expanded type for implicit arguments
 continuous_subspaceW :
-forall {T U : topologicalType} [A B : set T] [f : T -> U],
+forall {T U : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort T)]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U],
 (A `<=` B)%classic ->
 {within B, continuous f}%classic ->
-forall [x : subspace_topology_subspace__canonical__filter_Nbhs A] [t : set U],
-nbhs (from_subspace A f x) t ->
+forall
+  [x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs A)]
+  [t : set
+         (filter.Nbhs.sort
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               U))],
+filter.nbhs (from_subspace A f x) t ->
 (if if if pselect (A x) then true else false then true else false
- then within A (nbhs x)
- else globally [set x]) (from_subspace A f @^-1` t)%classic
+ then filter.within A (filter.nbhs x)
+ else filter.globally [set x]) (from_subspace A f @^-1` t)%classic
 
 Arguments continuous_subspaceW {T U} [A B]%_classical_set_scope
   [f]%_function_scope _ _%_function_scope [x t] _
@@ -1414,7 +1624,10 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 337, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_subspaceT" class="id"><a name="nbhs_subspaceT" class="" title="nbhs_subspaceT :
-forall {T : topologicalType} (x : T), nbhs (x : subspace [set: T]) = nbhs x
+forall {T : topology_structure.Topological.type}
+  (x : topology_structure.Topological.sort T),
+filter.nbhs (x : subspace [set: topology_structure.Topological.sort T]) =
+filter.nbhs x
 
 nbhs_subspaceT is not universe polymorphic
 Arguments nbhs_subspaceT {T} x
@@ -1433,20 +1646,63 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 344, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_subspaceT_for" class="id"><a name="continuous_subspaceT_for" class="" title="continuous_subspaceT_for :
-forall {T U : topologicalType} [A : set T] [f : T -> U] [x : T],
-A x -> {for x, continuous f} -> {for x, continuous (f : subspace A -> U)}
+forall {T U : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U]
+  [x : topology_structure.Topological.sort T],
+A x ->
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              T),
+  filter.continuous_at
+    (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          T)
+    (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          U)
+    x0 f} ->
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (subspace_topology_subspace__canonical__filter_Nbhs A),
+  filter.continuous_at
+    (T:=subspace_topology_subspace__canonical__filter_Nbhs A)
+    (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          U)
+    x0 (f : subspace A -> topology_structure.Topological.sort U)}
 
 continuous_subspaceT_for is not universe polymorphic
 Expanded type for implicit arguments
 continuous_subspaceT_for :
-forall {T U : topologicalType} [A : set T] [f : T -> U] [x : T],
+forall {T U : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U]
+  [x : topology_structure.Topological.sort T],
 A x ->
-{for x, continuous f} ->
-forall [t : set U],
-nbhs ((f : subspace A -> U) x) t ->
+{for x,
+  forall
+    x0 : filter.Nbhs.sort
+           (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+              T),
+  filter.continuous_at
+    (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          T)
+    (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          U)
+    x0 f} ->
+forall
+  [t : set
+         (filter.Nbhs.sort
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               U))],
+filter.nbhs ((f : subspace A -> topology_structure.Topological.sort U) x) t ->
 (if if if pselect (A x) then true else false then true else false
- then within A (nbhs x)
- else globally [set x]) ((f : subspace A -> U) @^-1` t)%classic
+ then filter.within A (filter.nbhs x)
+ else filter.globally [set x])
+  ((f : subspace A -> topology_structure.Topological.sort U) @^-1` t)%classic
 
 Arguments continuous_subspaceT_for {T U} [A]%_classical_set_scope
   [f]%_function_scope [x] _ _ [t] _
@@ -1466,19 +1722,52 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 351, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_in_subspaceT" class="id"><a name="continuous_in_subspaceT" class="" title="continuous_in_subspaceT :
-forall {T U : topologicalType} [A : set T] [f : T -> U],
-{in A, continuous f} -> {within A, continuous f}%classic
+forall {T U : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U],
+{in A,
+  forall
+    x : filter.Nbhs.sort
+          (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+             T),
+  filter.continuous_at
+    (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          T)
+    (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          U)
+    x f} ->
+{within A, continuous f}%classic
 
 continuous_in_subspaceT is not universe polymorphic
 Expanded type for implicit arguments
 continuous_in_subspaceT :
-forall {T U : topologicalType} [A : set T] [f : T -> U],
-{in A, continuous f} ->
-forall [x : subspace_topology_subspace__canonical__filter_Nbhs A] [t : set U],
-nbhs (from_subspace A f x) t ->
+forall {T U : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U],
+{in A,
+  forall
+    x : filter.Nbhs.sort
+          (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+             T),
+  filter.continuous_at
+    (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          T)
+    (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          U)
+    x f} ->
+forall
+  [x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs A)]
+  [t : set
+         (filter.Nbhs.sort
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               U))],
+filter.nbhs (from_subspace A f x) t ->
 (if if if pselect (A x) then true else false then true else false
- then within A (nbhs x)
- else globally [set x]) (from_subspace A f @^-1` t)%classic
+ then filter.within A (filter.nbhs x)
+ else filter.globally [set x]) (from_subspace A f @^-1` t)%classic
 
 Arguments continuous_in_subspaceT {T U} [A]%_classical_set_scope
   [f]%_function_scope _ [x t] _
@@ -1497,19 +1786,50 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 359, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_subspaceT" class="id"><a name="continuous_subspaceT" class="" title="continuous_subspaceT :
-forall {T U : topologicalType} [A : set T] [f : T -> U],
-continuous f -> {within A, continuous f}%classic
+forall {T U : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U],
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            T),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         T)
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         U)
+   x f) ->
+{within A, continuous f}%classic
 
 continuous_subspaceT is not universe polymorphic
 Expanded type for implicit arguments
 continuous_subspaceT :
-forall {T U : topologicalType} [A : set T] [f : T -> U],
-continuous f ->
-forall [x : subspace_topology_subspace__canonical__filter_Nbhs A] [t : set U],
-nbhs (from_subspace A f x) t ->
+forall {T U : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U],
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            T),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         T)
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         U)
+   x f) ->
+forall
+  [x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs A)]
+  [t : set
+         (filter.Nbhs.sort
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               U))],
+filter.nbhs (from_subspace A f x) t ->
 (if if if pselect (A x) then true else false then true else false
- then within A (nbhs x)
- else globally [set x]) (from_subspace A f @^-1` t)%classic
+ then filter.within A (filter.nbhs x)
+ else filter.globally [set x]) (from_subspace A f @^-1` t)%classic
 
 Arguments continuous_subspaceT {T U} [A]%_classical_set_scope
   [f]%_function_scope _%_function_scope [x t] _
@@ -1528,8 +1848,23 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 366, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_open_subspace" class="id"><a name="continuous_open_subspace" class="" title="continuous_open_subspace :
-forall {T U : topologicalType} [A : set T] (f : T -> U),
-open A -> {within A, continuous f}%classic = {in A, continuous f}
+forall {T U : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  (f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U),
+topology_structure.open A ->
+{within A, continuous f}%classic =
+{in A,
+  forall
+    x : filter.Nbhs.sort
+          (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+             T),
+  filter.continuous_at
+    (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          T)
+    (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          U)
+    x f}
 
 continuous_open_subspace is not universe polymorphic
 Arguments continuous_open_subspace {T U} [A]%_classical_set_scope
@@ -1550,10 +1885,25 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 373, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_inP" class="id"><a name="continuous_inP" class="" title="continuous_inP :
-forall {T U : topologicalType} [A : set T] (f : T -> U),
-open A ->
-{in A, continuous f} <->
-(forall X : set U, open X -> open (A `&` f @^-1` X)%classic)
+forall {T U : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  (f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U),
+topology_structure.open A ->
+{in A,
+  forall
+    x : filter.Nbhs.sort
+          (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+             T),
+  filter.continuous_at
+    (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          T)
+    (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          U)
+    x f} <->
+(forall X : set (topology_structure.Topological.sort U),
+ topology_structure.open X ->
+ topology_structure.open (A `&` f @^-1` X)%classic)
 
 continuous_inP is not universe polymorphic
 Arguments continuous_inP {T U} [A]%_classical_set_scope f%_function_scope _
@@ -1572,29 +1922,40 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 381, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="withinU_continuous" class="id"><a name="withinU_continuous" class="" title="withinU_continuous :
-forall {T U : topologicalType} [A B : set T] [f : T -> U],
-closed A ->
-closed B ->
+forall {T U : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort T)]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U],
+topology_structure.closed A ->
+topology_structure.closed B ->
 {within A, continuous f}%classic ->
 {within B, continuous f}%classic -> {within A `|` B, continuous f}%classic
 
 withinU_continuous is not universe polymorphic
 Expanded type for implicit arguments
 withinU_continuous :
-forall {T U : topologicalType} [A B : set T] [f : T -> U],
-closed A ->
-closed B ->
+forall {T U : topology_structure.Topological.type}
+  [A B : set (topology_structure.Topological.sort T)]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U],
+topology_structure.closed A ->
+topology_structure.closed B ->
 {within A, continuous f}%classic ->
 {within B, continuous f}%classic ->
-forall [x : subspace_topology_subspace__canonical__filter_Nbhs (A `|` B)]
-  [t : set U],
-nbhs (from_subspace (A `|` B) f x) t ->
+forall
+  [x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs (A `|` B))]
+  [t : set
+         (filter.Nbhs.sort
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               U))],
+filter.nbhs (from_subspace (A `|` B) f x) t ->
 (if
   if if pselect ((A `|` B)%classic x) then true else false
   then true
   else false
- then within (A `|` B) (nbhs x)
- else globally [set x]) (from_subspace (A `|` B) f @^-1` t)%classic
+ then filter.within (A `|` B) (filter.nbhs x)
+ else filter.globally [set x]) (from_subspace (A `|` B) f @^-1` t)%classic
 
 Arguments withinU_continuous {T U} [A B]%_classical_set_scope
   [f]%_function_scope _ _ (_ _)%_function_scope [x t] 
@@ -1621,20 +1982,38 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 389, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="subspaceT_continuous" class="id"><a name="subspaceT_continuous" class="" title="subspaceT_continuous :
-forall {T U : topologicalType} [A : set T] [B : set U] [f : {fun A >-> B}],
-{within A, continuous f}%classic -> continuous (f : subspace A -> subspace B)
+forall {T U : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  [B : set (topology_structure.Topological.sort U)] 
+  [f : {fun A >-> B}],
+{within A, continuous f}%classic ->
+forall
+  [x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs A)],
+filter.continuous_at
+  (T:=subspace_topology_subspace__canonical__filter_Nbhs A)
+  (U:=subspace_topology_subspace__canonical__filter_Nbhs B) x
+  (f : subspace A -> subspace B)
 
 subspaceT_continuous is not universe polymorphic
 Expanded type for implicit arguments
 subspaceT_continuous :
-forall {T U : topologicalType} [A : set T] [B : set U] [f : {fun A >-> B}],
+forall {T U : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort T)]
+  [B : set (topology_structure.Topological.sort U)] 
+  [f : {fun A >-> B}],
 {within A, continuous f}%classic ->
-forall [x : subspace_topology_subspace__canonical__filter_Nbhs A]
-  [t : set (subspace_topology_subspace__canonical__filter_Nbhs B)],
-nbhs ((f : subspace A -> subspace B) x) t ->
+forall
+  [x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs A)]
+  [t : set
+         (filter.Nbhs.sort
+            (subspace_topology_subspace__canonical__filter_Nbhs B))],
+filter.nbhs ((f : subspace A -> subspace B) x) t ->
 (if if if pselect (A x) then true else false then true else false
- then within A (nbhs x)
- else globally [set x]) ((f : subspace A -> subspace B) @^-1` t)%classic
+ then filter.within A (filter.nbhs x)
+ else filter.globally [set x])
+  ((f : subspace A -> subspace B) @^-1` t)%classic
 
 Arguments subspaceT_continuous {T U} [A B]%_classical_set_scope 
   [f] _%_function_scope [x t] _
@@ -1657,19 +2036,27 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 403, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_subspace0" class="id"><a name="continuous_subspace0" class="" title="continuous_subspace0 :
-forall {T U : topologicalType} [f : T -> U],
+forall {T U : topology_structure.Topological.type}
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U],
 {within set0, continuous f}%classic
 
 continuous_subspace0 is not universe polymorphic
 Expanded type for implicit arguments
 continuous_subspace0 :
-forall {T U : topologicalType} [f : T -> U]
-  [x : subspace_topology_subspace__canonical__filter_Nbhs set0] 
-  [t : set U],
-nbhs (from_subspace set0 f x) t ->
+forall {T U : topology_structure.Topological.type}
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U]
+  [x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs set0)]
+  [t : set
+         (filter.Nbhs.sort
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               U))],
+filter.nbhs (from_subspace set0 f x) t ->
 (if if if pselect (set0 x) then true else false then true else false
- then within set0 (nbhs x)
- else globally [set x]) (from_subspace set0 f @^-1` t)%classic
+ then filter.within set0 (filter.nbhs x)
+ else filter.globally [set x]) (from_subspace set0 f @^-1` t)%classic
 
 Arguments continuous_subspace0 {T U} [f]%_function_scope [x t] _
 continuous_subspace0 is opaque
@@ -1686,20 +2073,30 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 414, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_subspace1" class="id"><a name="continuous_subspace1" class="" title="continuous_subspace1 :
-forall {T U : topologicalType} [a : T] [f : T -> U],
+forall {T U : topology_structure.Topological.type}
+  [a : topology_structure.Topological.sort T]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U],
 {within [set a], continuous f}%classic
 
 continuous_subspace1 is not universe polymorphic
 Expanded type for implicit arguments
 continuous_subspace1 :
-forall {T U : topologicalType} [a : T] [f : T -> U]
-  [x : subspace_topology_subspace__canonical__filter_Nbhs [set a]]
-  [t : set U],
-nbhs (from_subspace [set a] f x) t ->
+forall {T U : topology_structure.Topological.type}
+  [a : topology_structure.Topological.sort T]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U]
+  [x : filter.Nbhs.sort
+         (subspace_topology_subspace__canonical__filter_Nbhs [set a])]
+  [t : set
+         (filter.Nbhs.sort
+            (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+               U))],
+filter.nbhs (from_subspace [set a] f x) t ->
 (if
   if if pselect ([set a]%classic x) then true else false then true else false
- then within [set a] (nbhs x)
- else globally [set x]) (from_subspace [set a] f @^-1` t)%classic
+ then filter.within [set a] (filter.nbhs x)
+ else filter.globally [set x]) (from_subspace [set a] f @^-1` t)%classic
 
 Arguments continuous_subspace1 {T U} [a] [f]%_function_scope [x t] _
 continuous_subspace1 is opaque
@@ -1723,7 +2120,7 @@ Qed.</div></details>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> relation_scope</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="SubspaceUniform.X" class="id"><a name="SubspaceUniform.X" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#Uniform.Exports.uniformType">uniformType</a></span><span class="id">}</span> (<span id="SubspaceUniform.A" class="id"><a name="SubspaceUniform.A" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#X:114">X</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="subspace_ent" class="id"><a name="subspace_ent" class="" title="subspace_ent : forall {X : uniformType}, set X -> set_system (X * X)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="subspace_ent" class="id"><a name="subspace_ent" class="" title="subspace_ent : forall {X : uniformType}, set X -> filter.set_system (X * X)
 
 subspace_ent is not universe polymorphic
 Arguments subspace_ent {X} A%_classical_set_scope _
@@ -2035,21 +2432,25 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 561, character
 <span class="vernacular">Variables</span> (<span id="SubspaceInitial.f" class="id"><a name="SubspaceInitial.f" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#SubspaceInitial.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#SubspaceInitial.T">T</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="initial_subspace_open" class="id"><a name="initial_subspace_open" class="" title="initial_subspace_open :
-forall {T : topologicalType} {U : choiceType} [f : U -> T]
+forall {T : topology_structure.Topological.type} {U : choiceType}
+  [f : U -> topology_structure.Topological.sort T]
   [A : set (initial_topology f)],
-open A -> open ([set f x | x in A]%classic : set (subspace (range f)))
+topology_structure.open A ->
+topology_structure.open
+  ([set f x | x in A]%classic : set (subspace (range f)))
 
 initial_subspace_open is not universe polymorphic
 Expanded type for implicit arguments
 initial_subspace_open :
-forall {T : topologicalType} {U : choiceType} [f : U -> T]
+forall {T : topology_structure.Topological.type} {U : choiceType}
+  [f : U -> topology_structure.Topological.sort T]
   [A : set (initial_topology f)],
-open A ->
+topology_structure.open A ->
 forall [t : subspace (range f)],
 ([set f x | x in A]%classic : set (subspace (range f))) t ->
 (if if if pselect (range f t) then true else false then true else false
- then within (range f) (nbhs t)
- else globally [set t])
+ then filter.within (range f) (filter.nbhs t)
+ else filter.globally [set t])
   ([set f x | x in A]%classic : set (subspace (range f)))
 
 Arguments initial_subspace_open {T U} [f]%_function_scope
@@ -2072,19 +2473,26 @@ Qed.</div></details>
 <span class="vernacular">End</span><span class="id"> SubspaceInitial</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_compact" class="id"><a name="continuous_compact" class="" title="continuous_compact :
-forall {T U : topologicalType} [f : T -> U] [A : set T],
+forall {T U : topology_structure.Topological.type}
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U]
+  [A : set (topology_structure.Topological.sort T)],
 {within A, continuous f}%classic -> compact A -> compact [set f x | x in A]
 
 continuous_compact is not universe polymorphic
 Expanded type for implicit arguments
 continuous_compact :
-forall {T U : topologicalType} [f : T -> U] [A : set T],
+forall {T U : topology_structure.Topological.type}
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U]
+  [A : set (topology_structure.Topological.sort T)],
 {within A, continuous f}%classic ->
 compact A ->
-forall [F : set_system U],
-ProperFilter F ->
+forall [F : filter.set_system (topology_structure.Topological.sort U)],
+filter.ProperFilter F ->
 F [set f x | x in A]%classic ->
-exists a : U, ([set f x | x in A] `&` cluster F)%classic a
+exists a : topology_structure.Topological.sort U,
+  ([set f x | x in A] `&` cluster F)%classic a
 
 Arguments continuous_compact {T U} [f]%_function_scope
   [A]%_classical_set_scope _%_function_scope _ [F] 
@@ -2114,20 +2522,28 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 581, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="connected_continuous_connected" class="id"><a name="connected_continuous_connected" class="" title="connected_continuous_connected :
-forall [T U : topologicalType] [A : set T] [f : T -> U],
+forall [T U : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U],
 connected A ->
 {within A, continuous f}%classic -> connected [set f x | x in A]
 
 connected_continuous_connected is not universe polymorphic
 Expanded type for implicit arguments
 connected_continuous_connected :
-forall [T U : topologicalType] [A : set T] [f : T -> U],
+forall [T U : topology_structure.Topological.type]
+  [A : set (topology_structure.Topological.sort T)]
+  [f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U],
 connected A ->
 {within A, continuous f}%classic ->
-forall [B : set U],
+forall [B : set (topology_structure.Topological.sort U)],
 (B !=set0)%classic ->
-(exists2 C : set U, open C & B = ([set f x | x in A] `&` C)%classic) ->
-(exists2 C : set U, closed C & B = ([set f x | x in A] `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort U),
+   topology_structure.open C & B = ([set f x | x in A] `&` C)%classic) ->
+(exists2 C : set (topology_structure.Topological.sort U),
+   topology_structure.closed C & B = ([set f x | x in A] `&` C)%classic) ->
 B = [set f x | x in A]%classic
 
 Arguments connected_continuous_connected [T U] [A]%_classical_set_scope
@@ -2184,10 +2600,26 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 598, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_localP" class="id"><a name="continuous_localP" class="" title="continuous_localP :
-forall {X Y : topologicalType} (f : X -> Y),
-continuous f <->
-(forall x : X,
- \forall U \near powerset_filter_from (nbhs x), {within U, continuous f}%classic)
+forall {X Y : topology_structure.Topological.type}
+  (f : topology_structure.Topological.sort X ->
+       topology_structure.Topological.sort Y),
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            X),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         X)
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         Y)
+   x f) <->
+(forall x : topology_structure.Topological.sort X,
+ filter.prop_near1 (filter.powerset_filter_from (filter.nbhs x))
+   (P:=fun U : set (topology_structure.Topological.sort X) =>
+       {within U, continuous f}%classic)
+   (inPhantom
+      (forall U : set (topology_structure.Topological.sort X),
+       {within U, continuous f}%classic)))
 
 continuous_localP is not universe polymorphic
 Arguments continuous_localP {X Y} f%_function_scope
@@ -2214,8 +2646,20 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 641, character
 <span class="id">Unshelve</span>. <span class="id">end_near</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_subspace_setT" class="id"><a name="continuous_subspace_setT" class="" title="continuous_subspace_setT :
-forall {T U : topologicalType} (f : T -> U),
-continuous f <-> {within [set: T], continuous f}%classic
+forall {T U : topology_structure.Topological.type}
+  (f : topology_structure.Topological.sort T ->
+       topology_structure.Topological.sort U),
+(forall
+   x : filter.Nbhs.sort
+         (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+            T),
+ filter.continuous_at
+   (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         T)
+   (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+         U)
+   x f) <->
+{within [set: topology_structure.Topological.sort T], continuous f}%classic
 
 continuous_subspace_setT is not universe polymorphic
 Arguments continuous_subspace_setT {T U} f%_function_scope
@@ -2235,8 +2679,12 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 656, character
 <span class="vernacular">Context</span><span class="id"> {</span><span id="subspace_product.X" class="id"><a name="subspace_product.X" class="">X</a></span><span class="id"> </span><span id="subspace_product.Y" class="id"><a name="subspace_product.Y" class="">Y</a></span><span class="id"> </span><span id="subspace_product.Z" class="id"><a name="subspace_product.Z" class="">Z</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span> (<span id="subspace_product.A" class="id"><a name="subspace_product.A" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#X:177">X</a></span>) (<span id="subspace_product.B" class="id"><a name="subspace_product.B" class="">B</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#Y:178">Y</a></span>) .<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nbhs_prodX_subspace_inE" class="id"><a name="nbhs_prodX_subspace_inE" class="" title="nbhs_prodX_subspace_inE :
-forall {X Y : topologicalType} [A : set X] [B : set Y] [x : X * Y],
-(A `*` B)%classic x -> nbhs (x : subspace (A `*` B)) = nbhs x
+forall {X Y : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort X)]
+  [B : set (topology_structure.Topological.sort Y)]
+  [x : topology_structure.Topological.sort X *
+       topology_structure.Topological.sort Y],
+(A `*` B)%classic x -> filter.nbhs (x : subspace (A `*` B)) = filter.nbhs x
 
 nbhs_prodX_subspace_inE is not universe polymorphic
 Arguments nbhs_prodX_subspace_inE {X Y} [A B]%_classical_set_scope [x] _
@@ -2264,8 +2712,25 @@ library mathcomp.analysis.topology_theory.subspace_topology, line 663, character
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_subspace_prodP" class="id"><a name="continuous_subspace_prodP" class="" title="continuous_subspace_prodP :
-forall {X Y Z : topologicalType} (A : set X) (B : set Y) (f : X * Y -> Z),
-{in (A `*` B)%classic, continuous (f : subspace A * subspace B -> Z)} <->
+forall {X Y Z : topology_structure.Topological.type}
+  (A : set (topology_structure.Topological.sort X))
+  (B : set (topology_structure.Topological.sort Y))
+  (f : topology_structure.Topological.sort X *
+       topology_structure.Topological.sort Y ->
+       topology_structure.Topological.sort Z),
+{in (A `*` B)%classic,
+  forall
+    x : filter.Nbhs.sort
+          (filter.Datatypes_prod__canonical__filter_Nbhs
+             (subspace_topology_subspace__canonical__filter_Nbhs A)
+             (subspace_topology_subspace__canonical__filter_Nbhs B)),
+  filter.continuous_at
+    (T:=filter.Datatypes_prod__canonical__filter_Nbhs
+          (subspace_topology_subspace__canonical__filter_Nbhs A)
+          (subspace_topology_subspace__canonical__filter_Nbhs B))
+    (U:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+          Z)
+    x (f : subspace A * subspace B -> topology_structure.Topological.sort Z)} <->
 {within A `*` B, continuous f}%classic
 
 continuous_subspace_prodP is not universe polymorphic
@@ -2306,96 +2771,101 @@ Qed.</div></details>
 Qed.</div></details>
 <br/>
 <span id="HB_unnamed_factory_21" class="id"><a name="HB_unnamed_factory_21" class="" title="HB_unnamed_factory_21 :
-forall {d : Order.disp_t} {K : nat -> bPOrderType d},
-Order.hasBottom.axioms_ d (big_lexi_order (fun x : nat => K x))
-  (classical_orders.HB_unnamed_mixin_6
-     (fun x : nat =>
-      (fun x0 : nat => Order_BPOrder__to__Order_POrder (K x0)) x))
-  (classical_orders.HB_unnamed_mixin_5
-     (fun x : nat =>
-      (fun x0 : nat => Order_BPOrder__to__Order_POrder (K x0)) x))
-  classical_orders.HB_unnamed_mixin_10
+forall {X Y Z : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort X)]
+  [B : set (topology_structure.Topological.sort Y)]
+  [C : set (topology_structure.Topological.sort Z)]
+  {f : continuousFunType (X:=X) (Y:=Y) A B}
+  {g : continuousFunType (X:=Y) (Y:=Z) B C},
+topology_structure.isContinuous.axioms_ (subspace A)
+  (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+     Z)
+  (g \o f)
 
 HB_unnamed_factory_21 is not universe polymorphic
-Arguments HB_unnamed_factory_21 {d} {K}%_function_scope
+Arguments HB_unnamed_factory_21 {X Y Z} [A B C]%_classical_set_scope {f g}
 HB_unnamed_factory_21 is transparent
 Expands to: Constant
-            mathcomp.classical.classical_orders.HB_unnamed_factory_21
+            mathcomp.analysis.topology_theory.subspace_topology.HB_unnamed_factory_21
 Declared in
-library mathcomp.classical.classical_orders, line 235, characters 0-88
+library mathcomp.analysis.topology_theory.subspace_topology, line 703, characters 0-99
 ">HB</a></span>.<span id="HB_unnamed_factory_21" class="id"><a name="HB_unnamed_factory_21" class="" title="HB_unnamed_factory_21 :
-forall {d : Order.disp_t} {K : nat -> bPOrderType d},
-Order.hasBottom.axioms_ d (big_lexi_order (fun x : nat => K x))
-  (classical_orders.HB_unnamed_mixin_6
-     (fun x : nat =>
-      (fun x0 : nat => Order_BPOrder__to__Order_POrder (K x0)) x))
-  (classical_orders.HB_unnamed_mixin_5
-     (fun x : nat =>
-      (fun x0 : nat => Order_BPOrder__to__Order_POrder (K x0)) x))
-  classical_orders.HB_unnamed_mixin_10
+forall {X Y Z : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort X)]
+  [B : set (topology_structure.Topological.sort Y)]
+  [C : set (topology_structure.Topological.sort Z)]
+  {f : continuousFunType (X:=X) (Y:=Y) A B}
+  {g : continuousFunType (X:=Y) (Y:=Z) B C},
+topology_structure.isContinuous.axioms_ (subspace A)
+  (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+     Z)
+  (g \o f)
 
 HB_unnamed_factory_21 is not universe polymorphic
-Arguments HB_unnamed_factory_21 {d} {K}%_function_scope
+Arguments HB_unnamed_factory_21 {X Y Z} [A B C]%_classical_set_scope {f g}
 HB_unnamed_factory_21 is transparent
 Expands to: Constant
-            mathcomp.classical.classical_orders.HB_unnamed_factory_21
+            mathcomp.analysis.topology_theory.subspace_topology.HB_unnamed_factory_21
 Declared in
-library mathcomp.classical.classical_orders, line 235, characters 0-88
+library mathcomp.analysis.topology_theory.subspace_topology, line 703, characters 0-99
 ">instance</a></span><span class="vernacular"> Definition</span><span id="HB_unnamed_factory_21" class="id"><a name="HB_unnamed_factory_21" class="" title="HB_unnamed_factory_21 :
-forall {d : Order.disp_t} {K : nat -> bPOrderType d},
-Order.hasBottom.axioms_ d (big_lexi_order (fun x : nat => K x))
-  (classical_orders.HB_unnamed_mixin_6
-     (fun x : nat =>
-      (fun x0 : nat => Order_BPOrder__to__Order_POrder (K x0)) x))
-  (classical_orders.HB_unnamed_mixin_5
-     (fun x : nat =>
-      (fun x0 : nat => Order_BPOrder__to__Order_POrder (K x0)) x))
-  classical_orders.HB_unnamed_mixin_10
+forall {X Y Z : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort X)]
+  [B : set (topology_structure.Topological.sort Y)]
+  [C : set (topology_structure.Topological.sort Z)]
+  {f : continuousFunType (X:=X) (Y:=Y) A B}
+  {g : continuousFunType (X:=Y) (Y:=Z) B C},
+topology_structure.isContinuous.axioms_ (subspace A)
+  (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+     Z)
+  (g \o f)
 
 HB_unnamed_factory_21 is not universe polymorphic
-Arguments HB_unnamed_factory_21 {d} {K}%_function_scope
+Arguments HB_unnamed_factory_21 {X Y Z} [A B C]%_classical_set_scope {f g}
 HB_unnamed_factory_21 is transparent
 Expands to: Constant
-            mathcomp.classical.classical_orders.HB_unnamed_factory_21
+            mathcomp.analysis.topology_theory.subspace_topology.HB_unnamed_factory_21
 Declared in
-library mathcomp.classical.classical_orders, line 235, characters 0-88
+library mathcomp.analysis.topology_theory.subspace_topology, line 703, characters 0-99
 "> _</a></span><span id="HB_unnamed_factory_21" class="id"><a name="HB_unnamed_factory_21" class="" title="HB_unnamed_factory_21 :
-forall {d : Order.disp_t} {K : nat -> bPOrderType d},
-Order.hasBottom.axioms_ d (big_lexi_order (fun x : nat => K x))
-  (classical_orders.HB_unnamed_mixin_6
-     (fun x : nat =>
-      (fun x0 : nat => Order_BPOrder__to__Order_POrder (K x0)) x))
-  (classical_orders.HB_unnamed_mixin_5
-     (fun x : nat =>
-      (fun x0 : nat => Order_BPOrder__to__Order_POrder (K x0)) x))
-  classical_orders.HB_unnamed_mixin_10
+forall {X Y Z : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort X)]
+  [B : set (topology_structure.Topological.sort Y)]
+  [C : set (topology_structure.Topological.sort Z)]
+  {f : continuousFunType (X:=X) (Y:=Y) A B}
+  {g : continuousFunType (X:=Y) (Y:=Z) B C},
+topology_structure.isContinuous.axioms_ (subspace A)
+  (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+     Z)
+  (g \o f)
 
 HB_unnamed_factory_21 is not universe polymorphic
-Arguments HB_unnamed_factory_21 {d} {K}%_function_scope
+Arguments HB_unnamed_factory_21 {X Y Z} [A B C]%_classical_set_scope {f g}
 HB_unnamed_factory_21 is transparent
 Expands to: Constant
-            mathcomp.classical.classical_orders.HB_unnamed_factory_21
+            mathcomp.analysis.topology_theory.subspace_topology.HB_unnamed_factory_21
 Declared in
-library mathcomp.classical.classical_orders, line 235, characters 0-88
+library mathcomp.analysis.topology_theory.subspace_topology, line 703, characters 0-99
 "> :=</a></span><br/>
 &nbsp;&nbsp;<span id="HB_unnamed_factory_21" class="id"><a name="HB_unnamed_factory_21" class="" title="HB_unnamed_factory_21 :
-forall {d : Order.disp_t} {K : nat -> bPOrderType d},
-Order.hasBottom.axioms_ d (big_lexi_order (fun x : nat => K x))
-  (classical_orders.HB_unnamed_mixin_6
-     (fun x : nat =>
-      (fun x0 : nat => Order_BPOrder__to__Order_POrder (K x0)) x))
-  (classical_orders.HB_unnamed_mixin_5
-     (fun x : nat =>
-      (fun x0 : nat => Order_BPOrder__to__Order_POrder (K x0)) x))
-  classical_orders.HB_unnamed_mixin_10
+forall {X Y Z : topology_structure.Topological.type}
+  [A : set (topology_structure.Topological.sort X)]
+  [B : set (topology_structure.Topological.sort Y)]
+  [C : set (topology_structure.Topological.sort Z)]
+  {f : continuousFunType (X:=X) (Y:=Y) A B}
+  {g : continuousFunType (X:=Y) (Y:=Z) B C},
+topology_structure.isContinuous.axioms_ (subspace A)
+  (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
+     Z)
+  (g \o f)
 
 HB_unnamed_factory_21 is not universe polymorphic
-Arguments HB_unnamed_factory_21 {d} {K}%_function_scope
+Arguments HB_unnamed_factory_21 {X Y Z} [A B C]%_classical_set_scope {f g}
 HB_unnamed_factory_21 is transparent
 Expands to: Constant
-            mathcomp.classical.classical_orders.HB_unnamed_factory_21
+            mathcomp.analysis.topology_theory.subspace_topology.HB_unnamed_factory_21
 Declared in
-library mathcomp.classical.classical_orders, line 235, characters 0-88
+library mathcomp.analysis.topology_theory.subspace_topology, line 703, characters 0-99
 ">@isContinuous</a></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#isContinuous.Build">Build</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#subspace">subspace</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#continuous_fun_comp.A">A</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#continuous_fun_comp.Z">Z</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#continuous_fun_comp.g">g</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#continuous_fun_comp.f">f</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#continuous_comp_subproof">continuous_comp_subproof</a></span>.<br/>
 <br/>
 <span class="vernacular">End</span><span class="id"> continuous_fun_comp</span>.<br/>
