@@ -24,7 +24,7 @@ In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the fol
 
 - [Authors](AUTHORS.md)
 - License: [CeCILL-C](LICENSE)
-- Compatible Rocq versions: Coq 8.20, Rocq 9.0 (or dev)
+- Compatible Rocq versions: Rocq 9.0 and 9.1 (or dev)
 - Additional dependencies:
   - [MathComp ssreflect 2.4.0 or later](https://math-comp.github.io)
   - [MathComp fingroup 2.4.0 or later](https://math-comp.github.io)
