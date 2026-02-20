@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra all_classical.
+From mathcomp Require Import all_ssreflect_compat all_algebra all_classical.
 From mathcomp Require Import reals topology_structure uniform_structure compact.
 From mathcomp Require Import pseudometric_structure connected initial_topology.
 From mathcomp Require Import product_topology subspace_topology.

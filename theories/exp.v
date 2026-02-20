@@ -1,5 +1,5 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.

@@ -3,7 +3,7 @@ From Coq Require Import ZArith Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
 From Coq Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
 From Coq Require Import Rtrigo1 Reals.
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg poly ssrnum archimedean.
+From mathcomp Require Import all_ssreflect_compat ssralg poly ssrnum archimedean.
 
 
 (**md**************************************************************************)

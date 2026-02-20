@@ -7,7 +7,7 @@
 (* SSReflect hierarchy (see reals.v)                                    *)
 
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect_compat all_algebra.
 From Coq Require Import Setoid.
 
 (* -------------------------------------------------------------------- *)

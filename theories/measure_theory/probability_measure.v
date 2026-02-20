@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect_compat all_algebra.
 From mathcomp Require Import boolp classical_sets functions cardinality reals.
 From mathcomp Require Import interval_inference ereal topology normedtype.
 From mathcomp Require Import measurable_structure measure_function dirac_measure.

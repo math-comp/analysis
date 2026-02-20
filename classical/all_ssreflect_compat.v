@@ -1,0 +1,21 @@
+(* Remove this file and use all_boot/all_order when requiring MC >= 2.5.0 *)
+From mathcomp Require Export ssreflect.
+From mathcomp Require Export ssrbool.
+From mathcomp Require Export ssrfun.
+From mathcomp Require Export eqtype.
+From mathcomp Require Export ssrnat.
+From mathcomp Require Export seq.
+From mathcomp Require Export choice.
+From mathcomp Require Export path.
+From mathcomp Require Export div.
+From mathcomp Require Export fintype.
+From mathcomp Require Export fingraph.
+From mathcomp Require Export tuple.
+From mathcomp Require Export finfun.
+From mathcomp Require Export bigop.
+From mathcomp Require Export prime.
+From mathcomp Require Export finset.
+From mathcomp Require Export binomial.
+From mathcomp Require Export generic_quotient.
+From mathcomp Require Export ssrAC.
+From mathcomp Require Export order.

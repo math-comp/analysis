@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect ssralg ssrnum interval.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum interval.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From HB Require Import structures.
 From mathcomp Require Import functions set_interval.

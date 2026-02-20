@@ -1,5 +1,5 @@
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra boolp classical_sets.
+From mathcomp Require Import all_ssreflect_compat all_algebra boolp classical_sets.
 From mathcomp Require Import fsbigop functions reals topology separation_axioms.
 From mathcomp Require Import ereal sequences numfun measure measurable_realfun.
 From mathcomp Require Import lebesgue_measure lebesgue_integral.
