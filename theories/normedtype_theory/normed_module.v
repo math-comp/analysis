@@ -763,6 +763,18 @@ Context {I} {F : set_system I} {FF : Filter F} {R : realFieldType}.
 Implicit Types f g u v : I -> \bar R.
 Local Open Scope ereal_scope.
 
+Lemma EFin_continuous : continuous (@EFin R).
+Proof.
+suff cC0 : continuous (fun x : R => contract x%:E) => x.
+  apply/cvg_ballP => e e0.
+  by move: cC0 => /(_ x) /cvg_ballP-/(_ e e0).
+apply: cvgM; first exact: cvg_id.
+apply: cvgV.
+  by apply: lt0r_neq0; apply: (lt_le_trans ltr01); rewrite lerDl normr_ge0.
+apply: cvgD; first exact: cvg_cst.
+apply: norm_continuous.
+Qed.
+
 Lemma cvgeD f g a b :
   a +? b -> f @ F --> a -> g @ F --> b -> f \+ g @ F --> a + b.
 Proof.

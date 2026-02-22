@@ -644,13 +644,13 @@ rewrite -EFinB -cE -GbFbc /G /Rintegral/= fineK//.
 exact: integrable_fin_num.
 Unshelve. all: by end_near. Qed.
 
-Lemma ge0_continuous_FTC2y (f F : R -> R) a (l : R) :
+Lemma ge0_continuous_FTC2y (f F : R -> R) a (l : \bar R) :
   (forall x, a <= x -> 0 <= f x)%R ->
   {within `[a, +oo[, continuous f} ->
-  F x @[x --> +oo%R] --> l ->
+  (F x)%:E @[x --> +oo%R] --> l ->
   (forall x, a < x -> derivable F x 1)%R -> F x @[x --> a^'+] --> F a ->
   {in `]a, +oo[, F^`() =1 f} ->
-  (\int[mu]_(x in `[a, +oo[) (f x)%:E = l%:E - (F a)%:E)%E.
+  (\int[mu]_(x in `[a, +oo[) (f x)%:E = l - (F a)%:E)%E.
 Proof.
 move=> f_ge0 cf Fxl dF Fa dFE.
 have mf : measurable_fun `]a, +oo[ f.
@@ -666,11 +666,10 @@ have dFEn n : {in `]a + n%:R, a + n.+1%:R[, F^`() =1 f}.
   apply: in1_subset_itv dFE.
   apply: subset_trans (subset_itvl _) (subset_itvr _) => //=.
   by rewrite bnd_simp lerDl.
-have liml : limn (EFin \o (fun k => F (a + k%:R))) = l%:E.
+have liml : limn (EFin \o (fun k => F (a + k%:R))) = l.
   apply/cvg_lim => //.
-  apply: cvg_EFin; first exact: nearW.
-  apply/((cvg_pinftyP F l).1 Fxl)/cvgryPge => r.
-  by near do rewrite -lerBlDl; exact: nbhs_infty_ger.
+  apply: (cvg_comp _ _ _ Fxl); apply: (cvg_comp _ _ _ (cvg_addrl _)).
+  exact: cvgr_idn.
 transitivity (\sum_(0 <= i <oo) ((F (a + i.+1%:R))%:E - (F (a + i%:R))%:E)).
   transitivity (\sum_(0 <= i <oo)
       \int[mu]_(x in seqDU (fun k => `]a, (a + k%:R)]%classic) i.+1) (f x)%:E).
@@ -715,29 +714,28 @@ transitivity (\sum_(0 <= i <oo) ((F (a + i.+1%:R))%:E - (F (a + i%:R))%:E)).
     suff: (a + n%:R + 2^-1 < a + n.+1%:R)%R by move=> /[swap] /[apply] => -[].
     by rewrite -[in ltRHS]natr1 addrA ltrD2l invf_lt1// ltr1n.
 rewrite nondecreasing_telescope_sumey.
-- by rewrite addr0 EFinN; congr (_ - _).
-- by rewrite liml.
-- apply/nondecreasing_seqP => n; rewrite -subr_ge0.
-  have isdF (x : R) : x \in `]a + n%:R, a + n.+1%:R[ -> is_derive x 1%R F (f x).
-    rewrite in_itv/= => /andP[anx _].
-    rewrite -dFE; last by rewrite in_itv/= andbT (le_lt_trans _ anx)// lerDl.
-    rewrite derive1E.
-    by apply/derivableP/dF; rewrite (le_lt_trans _ anx)// lerDl.
-  have [| |r ranaSn ->] := MVT _ isdF.
-  + by rewrite ltrD2l ltr_nat.
-  + move : n isdF => [_ |n _].
-    + have : {within `[a, +oo[, continuous F}.
-        apply/continuous_within_itvcyP; split => // x.
-        rewrite in_itv/= andbT => ax.
-        by apply: differentiable_continuous; exact/derivable1_diffP/dF.
-      by apply: continuous_subspaceW; rewrite addr0; exact: subset_itvl.
-    + apply: @derivable_within_continuous => x.
-      rewrite in_itv/= => /andP[aSnx _].
-      by apply: dF; rewrite (lt_le_trans _ aSnx)// ltrDl.
-  + move: ranaSn; rewrite in_itv/= => /andP[/ltW anr _].
-    rewrite mulr_ge0//; last by rewrite subr_ge0 lerD2l ler_nat.
-    by rewrite f_ge0// (le_trans _ anr)// lerDl.
-Unshelve. end_near. Qed.
+  by rewrite addr0 EFinN; congr (_ - _).
+apply/nondecreasing_seqP => n; rewrite -subr_ge0.
+have isdF (x : R) : x \in `]a + n%:R, a + n.+1%:R[ -> is_derive x 1%R F (f x).
+  rewrite in_itv/= => /andP[anx _].
+  rewrite -dFE; last by rewrite in_itv/= andbT (le_lt_trans _ anx)// lerDl.
+  rewrite derive1E.
+  by apply/derivableP/dF; rewrite (le_lt_trans _ anx)// lerDl.
+have [| |r ranaSn ->] := MVT _ isdF.
++ by rewrite ltrD2l ltr_nat.
++ move : n isdF => [_ |n _].
+  + have : {within `[a, +oo[, continuous F}.
+      apply/continuous_within_itvcyP; split => // x.
+      rewrite in_itv/= andbT => ax.
+      by apply: differentiable_continuous; exact/derivable1_diffP/dF.
+    by apply: continuous_subspaceW; rewrite addr0; exact: subset_itvl.
+  + apply: @derivable_within_continuous => x.
+    rewrite in_itv/= => /andP[aSnx _].
+    by apply: dF; rewrite (lt_le_trans _ aSnx)// ltrDl.
++ move: ranaSn; rewrite in_itv/= => /andP[/ltW anr _].
+  rewrite mulr_ge0//; last by rewrite subr_ge0 lerD2l ler_nat.
+  by rewrite f_ge0// (le_trans _ anr)// lerDl.
+Qed.
 
 Lemma Rintegral_ge0_continuous_FTC2y (f F : R -> R) a (l : R) :
   (forall x, a <= x -> 0 <= f x)%R ->
@@ -747,7 +745,7 @@ Lemma Rintegral_ge0_continuous_FTC2y (f F : R -> R) a (l : R) :
   {in `]a, +oo[, F^`() =1 f} ->
   (\int[mu]_(x in `[a, +oo[) (f x) = l - F a)%R.
 Proof.
-move=> f_ge0 cf Fxl dF Fa dFE.
+move=> f_ge0 cf /((cvg_comp F _)^~ (@EFin_continuous R _)) Fxl dF Fa dFE.
 by rewrite /Rintegral (ge0_continuous_FTC2y f_ge0 cf Fxl dF Fa dFE) -EFinD.
 Qed.
 
@@ -767,13 +765,14 @@ move=> f_ge0 cf Fl Fa dF dFE; rewrite -[LHS]oppeK -integralN/=; last first.
     by rewrite funeposE -EFin_max; congr EFin; exact/max_idPr/f_ge0.
   apply: integral_ge0 => /= x; rewrite in_itv/= => /andP[ax _].
   by rewrite funenegE -fine_max// lee_fin le_max lexx orbT.
-rewrite (@ge0_continuous_FTC2y (- f)%R (- F)%R _ (- l)%R).
+rewrite (@ge0_continuous_FTC2y (- f)%R (- F)%R _ (- l)%:E).
 - by rewrite oppeB// EFinN oppeK.
 - by move=> x ax; rewrite oppr_ge0 f_ge0.
 - move: cf => /continuous_within_itvcyP[cf fa].
   rewrite continuous_within_itvcyP; split; last exact: cvgN.
   by move=> x ax; exact/continuousN/cf.
-- exact: cvgN.
+- apply: cvg_comp; last exact: EFin_continuous.
+  exact: cvgN.
 - by move=> x ax; exact/derivableN/dF.
 - exact: cvgN.
 - move=> x ax; rewrite derive1E deriveN.

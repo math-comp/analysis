@@ -1292,7 +1292,8 @@ Qed.
 Lemma integral0y_oneDsqr :
   (\int[mu]_(x in `[0%R, +oo[) (oneDsqr x)^-1%:E = (pi / 2)%:E)%E.
 Proof.
-rewrite (ge0_continuous_FTC2y _ _ cvgy_atan)/=.
+rewrite (ge0_continuous_FTC2y _ _
+          (cvg_comp _ _ cvgy_atan (@EFin_continuous _ _)))/=.
 - by rewrite atan0 oppr0 addr0.
 - by move=> x _; rewrite invr_ge0.
 - apply/continuous_within_itvcyP; split.

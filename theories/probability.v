@@ -1833,7 +1833,8 @@ rewrite (@ge0_continuous_FTC2y _ _
 - by rewrite mulr0 expR0 EFinN oppeK add0e.
 - by move=> x _; apply: exponential_pdf_ge0.
 - exact: within_continuous_exponential_pdf.
-- rewrite -oppr0; apply: (@cvgN _ R^o).
+- apply: cvg_comp; last exact: EFin_continuous.
+  rewrite -oppr0; apply: (@cvgN _ R^o).
   rewrite (_ : (fun x => expR (- rate * x)) =
                (fun z => expR (- z)) \o (fun z => rate * z)); last first.
     by apply: eq_fun => x; rewrite mulNr.

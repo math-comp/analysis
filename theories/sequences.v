@@ -1494,11 +1494,10 @@ Lemma congr_lim (R : numFieldType) (f g : nat -> \bar R) :
 Proof. by move=> ->. Qed.
 
 Lemma nondecreasing_telescope_sumey (R : realType) n (f : nat -> R) :
-  limn (EFin \o f) \is a fin_num ->
   {homo f : x y / (x <= y)%N >-> (x <= y)%R} ->
   \sum_(n <= k <oo) ((f k.+1)%:E - (f k)%:E) = limn (EFin \o f) - (f n)%:E.
 Proof.
-move=> fin_limf ndf.
+move=> ndf.
 have nd_sumf : {homo (fun i => \sum_(n <= k < i) ((f k.+1)%:E - (f k)%:E)) :
     k m / (k <= m)%N >-> k <= m}.
   apply/nondecreasing_seqP => m; apply: lee_sum_nneg_natr => // k _ _.
