@@ -218,6 +218,8 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Declare Scope classical_set_scope.
+Declare Scope relation_scope.
+Delimit Scope relation_scope with relation.
 
 Reserved Notation "[ 'set' x : T | P ]" (only parsing).
 Reserved Notation "[ 'set' x | P ]" (format "[ 'set'  x  |  P ]").
@@ -3339,14 +3341,12 @@ Proof. by apply/seteqP; split; move=> x/=; rewrite /ysection/= inE. Qed.
 
 End section.
 
-Declare Scope relation_scope.
-Delimit Scope relation_scope with relation.
-
 Notation "B \; A" :=
   ([set xy | exists2 z, A (xy.1, z) & B (z, xy.2)]) : relation_scope.
 
 Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : relation_scope.
 
+Section relation.
 Local Open Scope relation_scope.
 
 Lemma set_compose_subset {X Y : Type} (A C : set (X * Y)) (B D : set (Y * X)) :
@@ -3370,4 +3370,57 @@ Definition diagonal {T : Type} := [set x : T * T | x.1 = x.2].
 Lemma diagonalP {T : Type} (x y : T) : diagonal (x, y) <-> x = y.
 Proof. by []. Qed.
 
-Local Close Scope relation_scope.
+End relation.
+
+Lemma powerset0 {T : Type} :
+  [set X | X `<=` set0] = [set set0] :> set (set T).
+Proof. by apply/funext => X /=; rewrite subset0. Qed.
+
+Lemma powerset1 {T : Type} (a : T) :
+  [set X | X `<=` [set a]] = [set set0; [set a]].
+Proof. by apply/seteqP; split => X/=; [move/subset_set1|case=> ->]. Qed.
+
+Lemma powerset2 {T : Type} (a b : T) :
+  [set X | X `<=` [set a; b]] = [set set0; [set a]; [set b]; [set a; b]].
+Proof.
+apply/seteqP; split => X/=; first by move/subset_set2; rewrite or4E !orA.
+by move=> [[[]|]|] ->.
+Qed.
+
+Lemma powersetS {T : Type} (A B : set T) :
+  (A `<=` B) = ([set X | X `<=` A] `<=` [set X | X `<=` B]).
+Proof.
+apply: propext; split; first by move=> AB X/= /subset_trans; apply.
+by move=> + a Aa => /(_ [set a])/= /(_ _ a); apply => // ? ->.
+Qed.
+
+Lemma setorder_itv_setUl_image {T : Type} (A B : set T) :
+  A `<=` B ->
+  `[A, B]%classic = (setU A) @` [set X | X `<=` B `\` A].
+Proof.
+move=> AB; apply/seteqP; split => Y/=.
+  rewrite in_itv/= => /andP[]; rewrite !subsetEset => AY YB.
+  by exists (Y `\` A); [exact: setSD | rewrite setDUK].
+case=> X XBA <-; rewrite in_itv/= Order.JoinTheory.leUl/=.
+by rewrite -(setDUK AB) Order.JoinTheory.leU2// subsetEset.
+Qed.
+
+Lemma setorder_itv_setUr_image {T : Type} (A B : set T) :
+  A `<=` B ->
+  `[A, B]%classic = (setU^~ A) @` [set X | X `<=` B `\` A].
+Proof.
+by (under eq_imagel do rewrite setUC); exact: setorder_itv_setUl_image.
+Qed.
+
+Lemma setorder_itv_setDl_image {T : Type} (A B : set T) :
+  A `<=` B ->
+  `[A, B]%classic = (setD B) @` [set X | X `<=` B `\` A].
+Proof.
+move=> AB; apply/seteqP; split => Y/=.
+  rewrite in_itv/= => /andP[]; rewrite !subsetEset => AY YB.
+  by exists (B `\` Y); [exact: setDS | rewrite setDD setIidr].
+case=> X XBA <-; rewrite in_itv/= Order.MeetTheory.leIl andbT.
+rewrite (@Order.POrderTheory.le_trans _ _ (B `\` (B `\` A)))//; last first.
+  by rewrite subsetEset; exact: setDS.
+by rewrite setDD setIidr.
+Qed.

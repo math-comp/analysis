@@ -1,7 +1,10 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
-From mathcomp Require Import interval_inference reals topology_structure.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
+From mathcomp Require Import interval_inference reals real_interval.
+From mathcomp Require Import topology_structure.
 From mathcomp Require Import uniform_structure pseudometric_structure.
 From mathcomp Require Import order_topology matrix_topology.
 
@@ -488,3 +491,264 @@ move=> u A /nbhs_ballP[e /= e0 eA].
 apply/nbhs_ballP; exists e => //= v [_ uv]; apply: eA; split => // i j.
 by apply: (le_lt_trans _ (uv i (lshift n2 j))); rewrite !mxE.
 Qed.
+
+(* An internal theory prepared for the next section (realField_topology).     *)
+(* This module itself is all about order_topology and says nothing specific   *)
+(* to num_topology.                                                           *)
+Module EndlessDenseOrderTopologyTheory.
+Import unstable.EndlessDenseOrderTheory.
+
+Section theory.
+
+Local Open Scope order_scope.
+Local Open Scope classical_set_scope.
+Context {d} {T : orderTopologicalType d}.
+Implicit Types x y : T.
+
+Lemma open_itv_open_ends (i : interval T) :
+  is_endless_porderType T -> is_dense_porderType T -> neitv i ->
+  open [set` i] -> itv_open_ends i.
+Proof.
+move=> T_endless T_dense.
+case: i => l r /neitv_lt_bnd/= lr.
+rewrite openE /interior/=.
+(under [X in X -> _]eq_forall do rewrite itv_nbhsE/=) => i_open.
+apply/negbNE/negP; case/(itv_open_endsPn lr) => x lrx.
+have: x \in Interval l r.
+  move: lr; case: lrx => ->; rewrite itv_boundlr lexx ?leBRight_ltBLeft//.
+  by rewrite ltBRight_leBLeft => ->.
+case/i_open => -[l' r'] [] + xj; rewrite -subset_itvP => /[swap].
+have := xj; rewrite itv_boundlr => /andP[l'x xr'].
+rewrite -subitvP//; last exact: xj.
+rewrite subitvE => /andP[] ll' r'r.
+apply/negP/itv_open_endsPn; [exact: (itv_boundlr_lt xj) | exists x].
+move: l'x xr' ll' r'r.
+by case: lrx => <-; [left|right]; apply/le_anti/andP; split.
+Qed.
+
+Lemma closed_itv_closed_ends (i : interval T) :
+  is_endless_porderType T -> is_dense_porderType T -> neitv i ->
+  closed [set` i] -> itv_closed_ends i.
+Proof.
+move=> T_endless T_dense.
+case: i => l r /neitv_lt_bnd/= lr.
+rewrite closedE/= /prop_near1/=.
+(under [X in X -> _]eq_forall do rewrite itv_nbhsE/=) => i_closed.
+apply/negbNE/negP; case/(itv_closed_endsPn lr) => x lrx.
+have: ~ (x \in Interval l r).
+  by case: lrx => ->; rewrite itv_boundlr !bnd_simp// andbF.
+apply; apply: i_closed => -[[l' r'][]] /itv_open_ends_boundlr -> /andP[] l'x xr'.
+move: lr; case: lrx => -> => [xr|lx].
+  have : BRight x < Order.min r r' by rewrite lt_min xr xr'.
+  case/itv_bound_half_dense => // y /andP[] xy yr /(_ y); apply.
+    rewrite /= itv_boundlr.
+    have := yr; rewrite lt_min -!leBRight_ltBLeft => /andP[] _ ->.
+    by rewrite andbT (le_trans _ xy)// ltW// ltBRight_leBLeft ltW.
+  rewrite itv_boundlr xy/= leBRight_ltBLeft.
+  by have := yr; rewrite lt_min => /andP[].
+have : Order.max l l' < BLeft x by rewrite gt_max lx l'x.
+case/itv_bound_half_dense => // y /andP[] ly yx /(_ y); apply.
+  rewrite /= itv_boundlr.
+  have := ly; rewrite ge_max => /andP[] _ -> /=.
+  by rewrite leBRight_ltBLeft (lt_trans yx)// -leBRight_ltBLeft ltW.
+rewrite itv_boundlr leBRight_ltBLeft yx andbT.
+by have := ly; rewrite ge_max => /andP[].
+Qed.
+
+Let itvoo_closureE (x y : T) :
+  is_endless_porderType T -> is_dense_porderType T -> neitv `]x, y[%O ->
+  closure `]x, y[ = `[x, y].
+Proof.
+move=> T_endless T_dense /neitv_lt_bnd/= /[!bnd_simp] xy.
+have ineq0 bb1 bb2 : neitv (Interval (BSide bb1 x) (BSide bb2 y)).
+  have[z /andP[xz zy]]:= T_dense x y xy.
+  apply/set0P; exists z; rewrite /= in_itv/=.
+  by case: bb1; case: bb2; apply/andP; split; rewrite /= ?ltW.
+have subcc : `]x, y[ `<=` `[x, y] by apply: subset_itv; rewrite !bnd_simp.
+apply/seteqP; split.
+  by rewrite (closure_id `[x, y]).1; [exact: closure_subset|exact: itv_closed].
+rewrite (closureEbigcap_itvcc `[x, y])//; last exact: itv_closed.
+rewrite setorder_itv_setDl_image// setDitvoo//.
+rewrite powerset2 !image_setU !image_set1 setD0 setDitv1l setDitv1r setDitv2.
+rewrite setIC !setIUl => /= z ? i -[[[]|]|] []->// ci.
+all: exfalso; move/closed_itv_closed_ends: ci.
+all: cbn; rewrite falseE; apply => //.
+all: exact: ineq0.
+Qed.
+
+Lemma fin_itv_closureE (x y : T) b1 b2 :
+  is_endless_porderType T -> is_dense_porderType T ->
+  neitv (Interval (BSide b1 x) (BSide b2 y)) ->
+  closure [set` Interval (BSide b1 x) (BSide b2 y)] = `[x, y].
+Proof.
+move=> T_endless T_dense /neitv_lt_bnd/=  bxy.
+have : x <= y by move: bxy; case: b1; case: b2; rewrite bnd_simp// => /ltW.
+rewrite le_eqVlt => /orP[/eqP xy| xy].
+  move: b1 b2 bxy; rewrite xy => -[][]; rewrite !bnd_simp// => _.
+  by rewrite -((closure_id `[y,y]).1)//; exact: itv_closed.
+apply/seteqP; split.
+  rewrite (closure_id `[x, y]).1; last exact: itv_closed.
+  by apply/closure_subset/subset_itv; rewrite !bnd_simp.
+rewrite -itvoo_closureE//.
+  by apply/closure_subset/subset_itv; rewrite !bnd_simp.
+have[z /andP[xz zy]]:= T_dense x y xy.
+by apply/set0P; exists z; rewrite /= in_itv/= xz zy.
+Qed.
+
+Let itvoy_closureE (x : T) :
+  is_endless_porderType T -> is_dense_porderType T ->
+  closure `]x, +oo[ = `[x, +oo[.
+Proof.
+move=> T_endless T_dense.
+have subcy : `]x, +oo[ `<=` `[x, +oo[.
+  by apply: subset_itv => //; rewrite !bnd_simp.
+apply/seteqP; split.
+  rewrite (closure_id `[x, +oo[).1; first exact: closure_subset.
+  exact: rray_closed.
+rewrite (closureEbigcap_itvcc `[x, +oo[)//; last exact: rray_closed.
+rewrite setorder_itv_setDl_image// setDcitvy; last first.
+  by apply/set0P; exists x; rewrite /= in_itv/= lexx.
+rewrite powerset1 image_setU !image_set1 setD0 setDitv1l setIC setIUl.
+move=> /= z/= zx /= i [] [] -> // ci; exfalso.
+move/closed_itv_closed_ends: ci; cbn; rewrite falseE; apply => //.
+have[_ [y xy]]:= T_endless x.
+by apply/set0P; exists y; rewrite /= in_itv/= xy.
+Qed.
+
+Lemma rinfty_itv_closureE (x : T) b :
+  is_endless_porderType T -> is_dense_porderType T ->
+  closure [set` Interval (BSide b x) +oo] = `[x, +oo[.
+Proof.
+move=> T_endless T_dense.
+have subcy: [set` Interval (BSide b x) +oo] `<=` `[x, +oo[.
+  by apply: subset_itv => //; rewrite !bnd_simp.
+apply/seteqP; split.
+  rewrite (closure_id `[x, +oo[).1; first exact: closure_subset.
+  exact: rray_closed.
+rewrite -itvoy_closureE//.
+by apply/closure_subset/subset_itv => //; rewrite !bnd_simp.
+Qed.
+
+Let itvNyo_closureE (x : T) :
+  is_endless_porderType T -> is_dense_porderType T ->
+  closure `]-oo, x[ = `]-oo, x].
+Proof.
+move=> T_endless T_dense.
+have subcy : `]-oo, x[ `<=` `]-oo, x].
+  by apply: subset_itv => //; rewrite !bnd_simp.
+apply/seteqP; split.
+  rewrite (closure_id `]-oo, x]).1; first exact: closure_subset.
+  exact: lray_closed.
+rewrite (closureEbigcap_itvcc `]-oo, x])//; last exact: lray_closed.
+rewrite setorder_itv_setDl_image// setDcitvNy; last first.
+  by apply/set0P; exists x; rewrite /= in_itv/= lexx.
+rewrite powerset1 image_setU !image_set1 setD0 setDitv1r setIC setIUl.
+move=> /= z/= zx /= i [] [] -> // ci; exfalso.
+move/closed_itv_closed_ends: ci; cbn; rewrite falseE; apply => //.
+have[[y yx] _]:= T_endless x.
+by apply/set0P; exists y; rewrite /= in_itv/= yx.
+Qed.
+
+Lemma linfty_itv_closureE (x : T) b :
+  is_endless_porderType T -> is_dense_porderType T ->
+  closure [set` Interval -oo (BSide b x)] = `]-oo, x].
+Proof.
+move=> T_endless T_dense.
+have subNyc: [set` Interval -oo (BSide b x)] `<=` `]-oo, x].
+  by apply: subset_itv => //; rewrite !bnd_simp.
+apply/seteqP; split.
+  rewrite (closure_id `]-oo, x]).1; first exact: closure_subset.
+  exact: lray_closed.
+rewrite -itvNyo_closureE//.
+by apply/closure_subset/subset_itv => //; rewrite !bnd_simp.
+Qed.
+
+Lemma rinfty_itv_interiorE (x : T) b :
+  is_endless_porderType T -> is_dense_porderType T ->
+  [set` Interval (BSide b x) +oo]° = `]x, +oo[.
+Proof.
+move=> T_endless T_dense.
+by apply: setC_inj; rewrite -closure_setC !setCitvr linfty_itv_closureE.
+Qed.
+
+Lemma linfty_itv_interiorE (x : T) b :
+  is_endless_porderType T -> is_dense_porderType T ->
+  [set` Interval -oo (BSide b x)]° = `]-oo, x[.
+Proof.
+move=> T_endless T_dense.
+by apply: setC_inj; rewrite -closure_setC !setCitvl rinfty_itv_closureE.
+Qed.
+
+Lemma fin_itv_interiorE (x y : T) b1 b2 :
+  is_endless_porderType T -> is_dense_porderType T ->
+  [set` Interval (BSide b1 x) (BSide b2 y)]° = `]x, y[.
+Proof.
+move=> T_endless T_dense.
+apply: setC_inj.
+rewrite -closure_setC !setCitv/= closureU.
+by rewrite linfty_itv_closureE// rinfty_itv_closureE.
+Qed.
+
+Lemma itv_closureE (l r : itv_bound T) :
+  is_endless_porderType T -> is_dense_porderType T -> neitv (Interval l r) ->
+  closure [set` Interval l r] =
+    [set` Interval
+        (match l with BSide _ x => BLeft x  | BInfty _ => l end)
+        (match r with BSide _ y => BRight y | BInfty _ => r end)].
+Proof.
+move=> T_endless T_dense.
+case: l => [b1 x | b1]; case: r => [b2 y | b2]; case: b1; case: b2 => ineq0.
+all: rewrite ?set_itv_infty_set0 ?closure0//.
+all: rewrite ?set_itvNyy ?closureT//.
+all: by rewrite (fin_itv_closureE, rinfty_itv_closureE, linfty_itv_closureE).
+Qed.
+
+Lemma itv_interiorE (l r : itv_bound T) :
+  is_endless_porderType T -> is_dense_porderType T ->
+  [set` Interval l r]° =
+    [set` Interval
+        (match l with BSide _ x => BRight x  | BInfty _ => l end)
+        (match r with BSide _ y => BLeft y | BInfty _ => r end)].
+Proof.
+move=> T_endless T_dense.
+case: l => [b1 x | b1]; case: r => [b2 y | b2]; case: b1; case: b2.
+all: rewrite ?set_itv_infty_set0 ?interior0//.
+all: rewrite ?set_itvNyy ?interiorT//.
+all: by rewrite (fin_itv_interiorE, rinfty_itv_interiorE, linfty_itv_interiorE).
+Qed.
+
+End theory.
+
+End EndlessDenseOrderTopologyTheory.
+
+Section realField_topology.
+Variable R : realFieldType.
+Local Open Scope order_scope.
+
+Let real_is_endless := @EndlessDenseOrderTheory.numDomain_is_endless R.
+Let real_is_dense := @EndlessDenseOrderTheory.numField_is_dense R.
+
+Lemma open_itv_open_ends (i : interval R) :
+  neitv i -> open [set` i] -> itv_open_ends i.
+Proof. exact: EndlessDenseOrderTopologyTheory.open_itv_open_ends. Qed.
+
+Lemma closed_itv_closed_ends (i : interval R) :
+  neitv i -> closed [set` i] -> itv_closed_ends i.
+Proof. exact: EndlessDenseOrderTopologyTheory.closed_itv_closed_ends. Qed.
+
+Lemma itv_closureE (l r : itv_bound R) :
+  neitv (Interval l r) ->
+  closure [set` Interval l r] =
+    [set` Interval
+        (match l with BSide _ x => BLeft x  | BInfty _ => l end)
+        (match r with BSide _ y => BRight y | BInfty _ => r end)].
+Proof. exact: EndlessDenseOrderTopologyTheory.itv_closureE. Qed.
+
+Lemma itv_interiorE (l r : itv_bound R) :
+  [set` Interval l r]° =
+    [set` Interval
+        (match l with BSide _ x => BRight x  | BInfty _ => l end)
+        (match r with BSide _ y => BLeft y | BInfty _ => r end)].
+Proof. exact: EndlessDenseOrderTopologyTheory.itv_interiorE. Qed.
+
+End realField_topology.
