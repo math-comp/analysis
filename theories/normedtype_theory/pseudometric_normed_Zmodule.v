@@ -1105,7 +1105,9 @@ Lemma is_cvgMn f n : cvg (f @ F) -> cvg (((@GRing.natmul _)^~n \o f) @ F).
 Proof. by move=> /cvgMn /cvgP. Qed.
 
 Lemma cvgD f g a b : f @ F --> a -> g @ F --> b -> (f + g) @ F --> a + b.
-Proof. by move=> ? ?; apply: continuous2_cvg => //; apply add_continuous. Qed.
+Proof.
+by move=> *; apply: continuous2_cvg => //; exact: (@add_continuous _ _ (a, b)).
+Qed.
 
 Lemma is_cvgD f g : cvg (f @ F) -> cvg (g @ F) -> cvg (f + g @ F).
 Proof. by have := cvgP _ (cvgD _ _); apply. Qed.
