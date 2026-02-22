@@ -142,13 +142,13 @@ Qed.
 
 Lemma cardG (R : realType) (k N : nat) :
   (\big[+%R/0%R]_(k <= k0 <oo) ((prime_seq k0)%:R^-1 : R)%:E < (2^-1)%:E)%E
-  -> k <= N.+1 -> ~~ odd N -> N > 0 -> (#|G k N| < (N./2)).
+  -> N > 0 -> (#|G k N|%:R < (N%:R / 2) :> R)%R.
 Proof.
 set E := fun i => [set n : 'I_N.+1 | (prime_seq i) \in (primes n)].
 set Parts := fun i => [set ([set x in [seq (insubd ord0 x : 'I_N.+1) |
   x <- (iota ((val y).+1 - (prime_seq i)) (prime_seq i))]]
   : {set 'I_N.+1}) | y in (E i)]%SET.
-move=> Rklthalf kleqN1 evenN Nneq0.
+move=> Rklthalf Nneq0.
 suff cardEi: forall i, k <= i ->
     ((#|E i|)%:R <= (N%:R / (prime_seq i)%:R):>R)%R => [|i klti].
   have -> : G k N = (\bigcup_(k <= i < N.+1) E i).
@@ -172,23 +172,17 @@ suff cardEi: forall i, k <= i ->
     exists (Ordinal ileqN) => /=; first by rewrite -prime_seq_incr.
     rewrite inE mem_primes. apply /andP. split; last exact /andP.
     by rewrite -mem_prime_seq inE.
-  apply: (leq_ltn_trans (card_big_setU _ _ E)).
-  rewrite -(ltr_nat R).
+  apply: (le_lt_trans (ler_wpMn2l ler01 (card_big_setU _ _ E))).
   apply: (@le_lt_trans _ _ (N%:R * (\sum_(k <= i < N.+1) ((prime_seq i)%:R^-1)%R)%R)%R).
     rewrite mulr_sumr raddf_sum /=. apply: ler_sum_nat => i /andP [] + _.
     exact: cardEi.
-  have SnleqlimSn: ((\sum_(k <= i < N.+1)  (prime_seq i)%:R^-1)%:E <=
-      \big[+%R/0%R]_(k <= i <oo) ((prime_seq i)%:R^-1 : R)%:E)%E.
-    rewrite (nneseries_split _ (N.+1 - k)) => [|i leqi]; last first.
-      by rewrite lee_fin invr_ge0.
-    rewrite subnKC // raddf_sum. apply /leeDl /nneseries_ge0 => n _ _.
-    by rewrite lee_fin invr_ge0.
   rewrite -lte_fin.
   apply: (@le_lt_trans _ _ (N%:R%:E * \big[+%R/0%R]_(k <= i <oo)  ((prime_seq i)%:R^-1)%:E)%E).
     rewrite EFinM. apply: lee_pmul => //; first by rewrite lee_fin.
-    rewrite lee_fin. apply: sumr_ge0 => i _.
-    by rewrite invr_ge0.
-  rewrite -divn2 natf_div; last by rewrite dvdn2.
+      rewrite lee_fin. apply: sumr_ge0 => i _.
+      by rewrite invr_ge0.
+    rewrite raddf_sum. apply: nneseries_lim_ge => n _ _.
+    by rewrite lee_fin invr_ge0.
   rewrite EFinM -lte_pdivrMl; last by rewrite ltr0n.
   rewrite muleA -EFinM mulVf; first by rewrite mul1e.
   by rewrite pnatr_eq0 -lt0n.
@@ -204,37 +198,28 @@ have Eigtpi : forall x3, x3 \in E i -> prime_seq i - x3.+1 = 0.
   move: x3inEi. rewrite /E inE.
   by rewrite mem_primes -mem_prime_seq mem_range; case: (x3 > 0).
 have: finset.trivIset (Parts i).
-  apply /finset.trivIsetP => A B /imsetP [] x xinEi + /imsetP [] y yinEi.
-  wlog xley: x y xinEi yinEi A B / x <= y.
-    move: (leq_total x y) => /orP [xley Hw| ylex Hw Adef Bdef].
+  apply /finset.trivIsetP => _ _ /imsetP [] x xinEi -> /imsetP [] y yinEi ->.
+  wlog: x y xinEi yinEi / x <= y.
+    move: (leq_total x y) => /orP [xley Hw| ylex Hw].
       exact: (Hw x y).
     by rewrite eq_sym disjoint_sym; apply: (Hw y x).
-  case: (eqVneq x y) => [-> <- ->| xneqy]; first by rewrite eqxx.
-  rewrite -setI_eq0 => -> -> AneqB /=. rewrite -finset.subset0.
-  apply /fintype.subsetP. rewrite /sub_mem => x0.
-  rewrite finset.in_setI => /andP. rewrite finset.inE => -[].
-  rewrite finset.inE => /mapP -[] x1 x1iniota ->
-    /mapP -[] x2 x2iniota /(congr1 val).
-  rewrite !val_insubd. move: x1iniota x2iniota.
+  rewrite -[x <= y]/(x <= y)%O.
+  rewrite le_eqVlt => /orP[/eqP ->|xy _]; first by rewrite eqxx.
+  rewrite -setI_eq0 -finset.subset0.
+  apply /fintype.subsetP => x0.
+  rewrite finset.in_setI !inE => /andP[] /mapP[]/= x1 x1x -> /mapP[]/= x2 x2y.
+  move=> /(congr1 val). rewrite !val_insubd. move: x1x x2y.
   rewrite !mem_iota !addnCB (Eigtpi x) // (Eigtpi y) // !addn0.
-  move=> /andP [] x1ge x1lt /andP [] x2ge x2lt.
-  have -[] : x1 < N.+1 /\ x2 < N.+1 => [|x1ltN x2ltN /=].
-    split; first exact: (leq_ltn_trans _ (ltn_ord x)).
-    exact: (leq_ltn_trans _ (ltn_ord y)).
-  rewrite !ifT => // x1eqx2.
-  have: y.+1 - (prime_seq i) >= x.+1.
-    rewrite -(leq_add2r (prime_seq i)) -(@leq_sub2rE x.+1); last first.
-      by rewrite addnCB (Eigtpi y) // addn0. 
-    rewrite addnCB (Eigtpi y) // addn0 -addnBAC // subnn add0n subSS.
-    apply: dvdn_leq; first by rewrite subn_gt0 ltn_neqAle; apply /andP.
-    have pidvdEi : forall x3, x3 \in E i -> prime_seq i %| x3 => [x3|].
-      rewrite /E inE mem_primes -mem_prime_seq mem_range.
-      by case: (x3 > 0).
-    apply: dvdn_sub; first exact: (pidvdEi y).
-    exact: (pidvdEi x).
-  suff ympiltx : y.+1 - (prime_seq i) < x.+1 by rewrite ltn_geF.
-  apply: (leq_ltn_trans _ x1lt).
-  by rewrite x1eqx2 in x2ge *.
+  have xiN (a : 'I_N.+1) (b : nat) : b < a.+1 -> b < N.+1.
+    by move=> /leq_trans; apply.
+  move=> /andP [] _ /[dup] + /xiN -> /andP [] + /xiN -> x1eqx2.
+  rewrite -x1eqx2 => /(leq_ltn_trans _)/[apply].
+  rewrite -(ltn_add2r (prime_seq i)) addnCB Eigtpi// addn0.
+  rewrite -(@ltn_sub2rE x.+1); last by rewrite ltnS; apply/ltnW.
+  rewrite subDnCA// subnn addn0 subSS ltnNge dvdn_leq// ?subn_gt0//.
+  have dvdni z : z \in E i -> prime_seq i %| z.
+    by rewrite inE mem_primes => /andP[] _ /andP[].
+  by apply: dvdn_sub; apply: dvdni.
 set i1toN := [set : 'I_N.+1] :\ ord0.
 have cardNeqN: #|i1toN| = N.
   rewrite /i1toN. apply /eqP.
@@ -244,8 +229,7 @@ have cardNeqN: #|i1toN| = N.
   by rewrite -(cardsD1 ord0 [set: 'I_N.+1]) cardsT card_ord.
 rewrite -[X in (_ <= X%:R)%R]cardNeqN /finset.trivIset => /eqP.
 have cardeltPi: forall X, X \in Parts i -> #|X| = (prime_seq i) => [X|].
-  rewrite /(Parts i) => /finset.imsetP [] x /Eigtpi/eqP.
-  rewrite subn_eq0 => ix -> {X}.
+  rewrite /(Parts i) => /finset.imsetP [] x /Eigtpi/eqP ix -> {X}.
   rewrite cardsE.
   suff /card_uniqP -> : uniq ([seq insubd ord0 x0 |
       x0 <- iota ((\val x).+1 - prime_seq i) (prime_seq i)] : seq 'I_N.+1).
@@ -359,7 +343,7 @@ split => [Fidvdn i ilek|Fidvdn i iord _]; last exact: Fidvdn.
 exact: (Fidvdn (Ordinal ilek)).
 Qed.
 
-Lemma exmnMn_bigprod
+Lemma expnMn_bigprod
   (I : eqType) (r : seq I) (P : {pred I}) (F : I -> nat) (n : nat) :
   (\prod_(i <- r | P i) F i) ^ n = \prod_(i <- r | P i) (F i) ^ n.
 Proof.
@@ -372,45 +356,43 @@ Lemma cardP (R : realType) (k : nat) :
   #|P k (2 ^ (2 * k + 2))| <= (2 ^ (2 * k + 1)).+1.
 Proof.
 set N := 2 ^ (2 * k + 2).
-set P' := fun k N => P k N :\ ord0.
+pose P' k N := P k N :\ ord0.
 set A := k.-tuple bool.
 set B := 'I_(2 ^ (k + 1)).+1.
-set a := fun n i => odd (logn (prime_seq i) n).
+pose a n i := odd (logn (prime_seq i) n).
 have eqseq: forall n k, n < k ->
-    [seq i <- [seq prime_seq i  | i <- index_iota 0 k]  | i  \in primes n]
-    = primes n => [n k0|].
-  case: n => [|n nlek]; first by rewrite filter_pred0.
-  apply: lt_sorted_eq => [||elt].
-  - apply: lt_sorted_filter.
-    rewrite sorted_map.
+    [seq i <- [seq prime_seq i | i <- index_iota 0 k] | i \in primes n]
+    = primes n.
+  case=> [k0|n k0 nlek]; first by rewrite filter_pred0.
+  apply: lt_sorted_eq => [||/= elt].
+  - apply: lt_sorted_filter. rewrite sorted_map.
     apply: (@sub_sorted _ ltn); last exact: iota_ltn_sorted.
-    rewrite ltEnat => i j /=.
-    by rewrite (leqW_mono prime_seq_incr). 
+    by rewrite ltEnat => i j /=; rewrite (leqW_mono prime_seq_incr). 
   - exact: sorted_primes.
-  rewrite mem_filter. apply: andb_idr => eltinprimesn.
-  suff: prime elt /\ elt < prime_seq k0 => [[]|].
-    rewrite -mem_prime_seq inE => /= -[] i _ <- pilepk.
-    rewrite map_comp. apply: map_f.
-    rewrite map_id_in // mem_iota /= add0n subn0.
-    by rewrite -(leqW_mono prime_seq_incr).
-  split.
-    by apply /(@allP _ _ (primes n.+1)); first exact: all_prime_primes.
-  apply: (@leq_ltn_trans n.+1). 
-    apply: dvdn_leq => //.
-    move: eltinprimesn.
-    by rewrite mem_primes => /andP [] _ /andP [].
-  apply: (@leq_ltn_trans k0.-1); first by rewrite ltn_predRL.
-  rewrite -(ltn_add2r 1) !addn1 (ltn_predK nlek) ltnS.
-  exact /mono_ext /prime_seq_incr.
+  rewrite mem_filter. apply: andb_idr.
+  rewrite mem_primes -mem_prime_seq => /andP[].
+  rewrite inE => -[] i _ <- /andP[] _ /dvdn_leq/wrap[]// idn.
+  apply: map_f; rewrite mem_iota leq0n/= add0n subn0.
+  exact/(leq_ltn_trans _ nlek)/(leq_trans _ idn)/mono_ext /prime_seq_incr.
 have binB: forall n : 'I_N.+1,
     (\prod_(i < k) (prime_seq i) ^ (logn (prime_seq i) n)./2) <
     (2 ^ (k + 1)).+1.
+    (* TODO: refactor.
+       case: n => /= -[_|n nN].
+    under eq_bigr do rewrite logn0 -divn2 div0n expn0.
+    by rewrite big1_eq ltnS expn_gt0.
+  rewrite -ltn_sqr expnMn_bigprod.
+  under eq_bigr do rewrite -expnM muln2 halfK.
+  apply: (@leq_ltn_trans n.+1); last first.
+    by apply: (leq_trans nN); rewrite /N -(mulnDr 2 _ 1) mulnC expnM ltn_sqr.
+  rewrite [leqRHS]prod_prime_decomp; last by rewrite lt0n.
+       rewrite prime_decompE big_map /=. *)
   move=> n.
   case: (boolP (n == ord0)) => [/eqP -> /=|nneq0].
     under eq_bigr => i _. rewrite logn0 -divn2 div0n expn0. over.
     rewrite big1_eq -[X in _ < X]addn1 -[X in X < _]add0n.
     by rewrite ltn_add2r expn_gt0; apply /orP; left.
-  rewrite -ltn_sqr exmnMn_bigprod.
+  rewrite -ltn_sqr expnMn_bigprod.
   under eq_bigr => i _. rewrite -expnM muln2 halfK. over.
   apply: (@leq_ltn_trans
       (\prod_(i < k) prime_seq i ^ (logn (prime_seq i) n))).
@@ -429,16 +411,11 @@ have binB: forall n : 'I_N.+1,
     (prime_seq i) ^ logn (prime_seq i) n)) -(big_map prime_seq predT
     (fun i => i ^ logn i n)) /=.
   rewrite (bigID (fun i : nat => i \in primes n)) /=.
-  rewrite [X in _ * X]big1 => [|i inotinprimesn]; last first.
-    case: (boolP ((i == 0) || (i == 1))).
-      by move=> /orP [] /eqP ->.
-    move=> /norP [] ineq0 ineq1.
-    rewrite -(expn0 i). apply /eqP.
-    rewrite eqn_exp2l.
-      apply /eqP. move: inotinprimesn.
-      by rewrite -logn_gt0 lt0n => /negPn /eqP.
-    rewrite ltn_neqAle. apply /andP. split; first by rewrite eq_sym.
-    by rewrite lt0n.
+  rewrite [X in _ * X]big1 => [|[//|][//|] i ip]; last first.
+    rewrite -(expn0 i.+2). apply /eqP.
+    rewrite eqn_exp2l//.
+    apply /eqP. move: ip.
+    by rewrite -logn_gt0 lt0n => /negPn /eqP.
   rewrite muln1 -big_filter.
   case: (boolP (n < k)) => [nltk|]; first by rewrite (eqseq n).
   rewrite -leqNgt => klen.
@@ -452,13 +429,13 @@ set f : 'I_N.+1 -> A * B := fun n =>
   ([tuple a n i  | i < k], Ordinal (binB n)).
 set g : A * B -> nat := fun c => let (a, b) := c in
   b ^ 2 * \prod_(i < k) (prime_seq i) ^ (tnth a i).
-have finj: forall x y, x \in P' k N -> y \in P' k N -> f x = f y -> x = y
+have finj: {in P' k N &, forall x y, f x = f y -> x = y}
     => [x y xinPkN yinPkN /(congr1 g)|].
   suff: forall x, x \in P' k N -> g (f x) = x
       => [gfid|{yinPkN y} {}x {}xinPkN /=].
     rewrite (gfid x) // (gfid y) //.
     exact: val_inj.
-  rewrite exmnMn_bigprod.
+  rewrite expnMn_bigprod.
   under eq_bigr => i _. rewrite -expnM muln2 halfK. over.
   rewrite -big_split /=.
   under eq_bigr => i _. rewrite -expnD tnth_mktuple /a subnK. over.
@@ -527,7 +504,7 @@ have /llimnSn : `](l - (1/2)%R)%:E, (l + (1/2)%R)%:E[ \in nbhs (l%:E).
   rewrite inE. exists (1/2)%R => /=.
     exact: divr_gt0.
   exact /subset_ball_prop_in_itv.
-rewrite inE => -[] k /= + nbhslim. apply: True_ind.
+rewrite inE => -[] k /= _ nbhslim.
 set N := 2^(2*k + 2).
 set PN := P k N. set GN := G k N.
 move: nbhslim => /subsetP nbhslim. move: (nbhslim k).
@@ -537,59 +514,26 @@ rewrite lte_subel_addl; last by rewrite leqlimnSn.
 rewrite -lteBlDr; last exact/sum_fin_numP.
 rewrite (nneseries_split _ k) => [|k0 ]; last exact: unpos.
 rewrite /Sn add0n addrAC subee; last exact/sum_fin_numP.
-rewrite add0e => Rklthalf.
+rewrite add0e div1r => Rklthalf.
 suff: N.+1 < N.+1 by rewrite ltnn.
 rewrite -[X in X < _](cardPcardG k N). 
 have Neq: N./2 + (2 ^ (2 * k + 1)).+1 = N.+1.
-  rewrite addnC addSn /N -divn2.
-  rewrite -[X in _ %/ X]expn1 -expnB //; last by rewrite addn2.
-  rewrite -addnBA /subn //= addnn.
-  by rewrite -mul2n -expnS -[X in 2 ^ X]addn1 -addnA /addn.
+  by rewrite /N 2!addnS expnS mul2n doubleK addnn.
 rewrite -[X in _ < X]Neq -addSn.
 apply: leq_add; last exact: cardP.
-apply: (@cardG R).
-- by move: Rklthalf; rewrite /un div1r.
-- rewrite /N. apply /leqW /(leq_trans (ltnW (ltn_expl k (ltnSn 1)))).
-  rewrite leq_exp2l // mul2n -addnn -[X in X <= _]addn0.
-  by rewrite -addnA leq_add2l.
-- by rewrite /N addn2 expnS mul2n odd_double.
-by rewrite /N expn_gt0; apply /orP; left.
-Qed.
-
-Lemma Abel_discrete0 (R : comPzRingType) (a b : nat -> R) (n : nat) : n > 0 ->
-  let A := fun n => (\sum_(0 <= k < n.+1) a k)%R in
-  (\sum_(0 <= k < n.+1) (a k) * (b k) = a 0 * b 0 - A 0 * b 1 + A n * b n +
-  \sum_(1 <= k < n) A k * (b k - b k.+1))%R.
-Proof.
-move=> ngt0 A. 
-rewrite big_nat_recl // [in LHS](pred_Sn n).
-rewrite -(big_add1 _ _ _ _ predT (fun i => (a i * b i)%R)).
-have telesum: forall k, k > 0 -> (a k = A k - A k.-1)%R => [k kgt0|].
-  rewrite /A (ltn_predK kgt0) // big_nat_recl // -addrA.
-  rewrite -sumrN -big_split /= telescope_sumr // addrC -addrA.
-  by rewrite [X in (_ + X)%E]addrC subrr addr0.
-rewrite big_nat_cond.
-under eq_bigr => j /andP [] /andP [] jinseq _ _.
-  rewrite (telesum j) // mulrBl. over.
-rewrite big_split sumrN /= [X in (_ - X)%R]big_add1 -pred_Sn.
-under [X in (_ - X)%R]eq_bigr => i _. rewrite -pred_Sn. over.
-rewrite -!big_nat_cond.
-rewrite -[in X in (_ - X)%R](prednK ngt0) [in X in (_ - X)%R]big_nat_recl //.
-rewrite big_nat_recr //=.
-rewrite -(big_add1 _ _ _ _ predT (fun i => (A i * b i.+1)%R)).
-rewrite opprD [in LHS](AC (1*(2*2)) ((1*4)*3*(2*5))) /=.
-rewrite -sumrN -big_split /=.
-by under eq_bigr do rewrite -mulrBr.
+rewrite -(ltr_nat R).
+have ->: (N./2%:R = N%:R / 2 :> R)%R.
+  rewrite /N addnS expnS [in LHS]mul2n doubleK natrM mulrC mulKf//.
+  by rewrite pnatr_eq0.
+by apply: (@cardG R) => //; rewrite /N expn_gt0.
 Qed.
 
 Lemma Abel_discretep (R : comPzRingType) (a b : nat -> R) (n p : nat) :
     n > p -> let A n := (\sum_(0 <= k < n.+1) a k)%R in
-    (\sum_(p <= k < n.+1) (a k) * (b k) = a p * b p - A p * b p.+1 +
-    A n * b n + \sum_(p.+1 <= k < n) A k * (b k - b k.+1))%R.
+    (\sum_(p.+1 <= k < n.+1) (a k) * (b k) = A n * b n - A p * b p.+1
+      + \sum_(p.+1 <= k < n) A k * (b k - b k.+1))%R.
 Proof.
 move=> ngtp A.
-rewrite big_nat_recl; last exact: ltnW.
-rewrite [in LHS](pred_Sn n) -(big_add1 _ _ _ _ predT (fun i => (a i * b i)%R)).
 have telesum: forall k, k > 0 -> (a k = A k - A k.-1)%R => [k kgt0|].
   rewrite /A (ltn_predK kgt0) // big_nat_recl // -addrA.
   rewrite -sumrN -big_split /= telescope_sumr // addrC -addrA.
@@ -598,18 +542,19 @@ rewrite big_nat_cond.
 under eq_bigr => j /andP [] /andP [] jinseq _ _.
   rewrite (telesum j); last exact: (leq_ltn_trans _ jinseq).
   rewrite mulrBl. over.
-rewrite big_split sumrN /= [X in (_ - X)%R]big_add1 -pred_Sn.
-under [X in (_ - X)%R]eq_bigr => i _. rewrite -pred_Sn. over.
-rewrite -!big_nat_cond.
-rewrite -[in X in (_ - X)%R](prednK (leq_ltn_trans (leq0n p) ngtp)).
-rewrite [in X in (_ - X)%R]big_nat_recl; last first.
-  by rewrite -ltnS (prednK (leq_ltn_trans (leq0n p) ngtp)) ngtp.
-rewrite big_nat_recr //=.
-rewrite -(big_add1 _ _ _ _ predT (fun i => (A i * b i.+1)%R)).
-rewrite opprD [in LHS](AC (1*(2*2)) ((1*4)*3*(2*5))) /=.
-rewrite -sumrN -big_split /=.
-by under eq_bigr do rewrite -mulrBr.
+rewrite -big_nat_cond.
+under [in RHS]eq_bigr do rewrite mulrBr.
+rewrite !big_split !sumrN /= [X in (_ - X)%R]big_add1 -pred_Sn.
+under [X in (_ - X)%R]eq_bigr do rewrite -pred_Sn.
+by rewrite [RHS](AC (2*2) ((3*1)*(2*4)))/= -big_nat_recr//= -opprD -big_ltn.
 Qed.
+
+(* TOTHINK: Is this useful? *)
+Lemma Abel_discrete0 (R : comPzRingType) (a b : nat -> R) (n : nat) : n > 0 ->
+  let A := fun n => (\sum_(0 <= k < n.+1) a k)%R in
+  (\sum_(1 <= k < n.+1) (a k) * (b k) = A n * b n - A 0 * b 1 + 
+  \sum_(1 <= k < n) A k * (b k - b k.+1))%R.
+Proof. exact: Abel_discretep. Qed.
 
 Lemma measurable_fun_bigsetU [d1 d2 : measure_display] [T1 : sigmaRingType d1]
     [T2 : sigmaRingType d2] [I : eqType] [F : I -> set T1] (f : T1 -> T2)
@@ -642,21 +587,23 @@ Notation "\int_( x 'in' D ) F" := (\int[lebesgue_measure]_(x in D) F)
   (at level 36, F at level 36, x, D at level 50).
 
 Lemma Abel_continuous (R : realType) (x y : R^o) (f : R^o -> R^o)
-    (a : nat -> R) : (0 < y < x)%R -> derivable_oo_continuous_bnd f y x ->
+    (a : nat -> R) : (0 <= y <= x)%R -> derivable_oo_continuous_bnd f y x ->
   {within `[y, x] : set R^o, continuous f^`()} ->
   let A := fun x : R => (\sum_(0 <= n < `|floor x|.+1) a n)%R in
   ((\sum_(`|floor y|.+1 <= n < `|floor x|.+1) a n * f n%:R)%R%:E =
   (A x * f x - A y * f y)%:E - \int_(t in `[y, x]) (A t * f^`() t)%:E)%E.
 Proof.
-move=> /andP [] ypos xgty fderivable fC1 A.
+move=> /andP [] ypos.
+rewrite le_eqVlt => /orP[/eqP <-|xgty] fderivable fC1 A.
+  by rewrite big_geq// subrr set_itv1 integral_set1 sube0.
 set p := `|floor y|; set q := `|floor x|.
 have pleq: p <= q.
-  rewrite /p /q. apply: lez_abs2; first by rewrite floor_ge0; apply: ltW.
+  rewrite /p /q. apply: lez_abs2; first by rewrite floor_ge0.
   by rewrite le_floor //; apply: ltW.
 move: pleq. rewrite leq_eqVlt => /orP [/eqP peqq|pltq].
   rewrite peqq big_geq; last exact: ltnSn.
   have AteqAx: forall t, t \in `[y, x] -> A t = A x => [t|].
-    have floorypos: (0 <= floor y)%R by rewrite floor_ge0; apply: ltW.
+    have floorypos: (0 <= floor y)%R by rewrite floor_ge0.
     rewrite set_itvcc inE /= => /andP [] /le_floor flyleflt.
     have floortpos: (0 <= floor t)%R by apply: (le_trans floorypos).
     move: flyleflt => /(lez_abs2 floorypos). move: peqq.
@@ -667,33 +614,28 @@ move: pleq. rewrite leq_eqVlt => /orP [/eqP peqq|pltq].
     apply: AteqAx. rewrite set_itvcc inE /=.
     by rewrite lexx; apply: ltW.
   rewrite -mulrBr.
-  rewrite (@eq_integral _ _ _ lebesgue_measure _ (fun t => ((A x)%:E * (f^`() t)%:E)%E))/=; last first.
-    by move=> t tininterval; rewrite (AteqAx t tininterval).
+  under eq_integral => t tyx. rewrite AteqAx// EFinM. over.
   rewrite integralZl //=; last first.
     apply: continuous_compact_integrable => //.
     exact: segment_compact.
   rewrite EFinM -muleBr // (continuous_FTC2 _ _ fderivable) //.
   by rewrite EFinB subee // mule0.
-have ->: ((\sum_(p.+1 <= n < q.+1)  a n * f n%:R)%R =
-    (\sum_(p.+1 <= n < q)  A n%:R * (f n%:R - f n.+1%:R))%R +
-    (A q%:R * f q%:R - A p%:R * f p.+1%:R)%R)%E.
-  apply: (addrI (a p * f p%:R)%R).
-  rewrite big_add1 -pred_Sn.
-  rewrite -(big_nat_recl _ _ (fun i => (a i * f i%:R)%R)); last exact: ltnW.
-  rewrite Abel_discretep //.
-  rewrite [in LHS](AC 4 (1*(4*(3*2)))) /A /=.
+have ->: ((\sum_(p.+1 <= n < q.+1) a n * f n%:R)%R =
+    (A q%:R * f q%:R - A p%:R * f p.+1%:R)%R -
+    (\sum_(p.+1 <= n < q)  A n%:R * (f n.+1%:R - f n%:R)))%R.
+  rewrite Abel_discretep// -sumrN /A.
   have flneqn: forall n : nat, `|floor (n%:R : R)| = n => [n|].
     apply: (can_inj absz_nat).
     rewrite gez0_abs; last by rewrite real_floor_ge0.
     by apply /(@intr_inj R) /eqP; rewrite -[_ == _]intrEfloor.
-  rewrite !flneqn.
-  by under [X in (_ = _ + (X + _))%E]eq_bigr do rewrite flneqn.
+  rewrite !flneqn; congr (_ + _)%E.
+  by under [RHS]eq_bigr do rewrite flneqn -mulrN opprB.
 have fcontinuous: {in `]y, x[ : set R^o, continuous f}.
   rewrite -continuous_open_subspace //. apply: derivable_within_continuous.
   by case: fderivable.
 have tfct1t2 : forall t1 t2, (y <= t1)%R -> (t1 <= t2)%R -> (t2 <= x)%R ->
-    ((f t2 - f t1)%:E = \int_(x in `[t1, t2]) (f^`() x)%:E)%E
-    => [t1 t2 ylet1 |].
+    ((f t2 - f t1)%:E = \int_(x in `[t1, t2]) (f^`() x)%:E)%E.
+  move=> t1 t2 ylet1.
   rewrite le_eqVlt => /orP [/eqP ->|t1ltt2 t2lex].
     by rewrite subrr set_itv1 (integral_Sset1 t2).
   rewrite (@continuous_FTC2 _ _ f) //.
@@ -717,11 +659,6 @@ have tfct1t2 : forall t1 t2, (y <= t1)%R -> (t1 <= t2)%R -> (t2 <= x)%R ->
     - apply: cvg_at_left_filter. apply: fcontinuous.
       rewrite inE set_itvoo /=. apply /andP. split => //. 
       exact: (le_lt_trans ylet1).
-have tfcnn1 : forall n : nat, (y <= n%:R)%R -> (n.+1%:R <= x)%R ->
-    ((f n%:R - f n.+1%:R)%:E = - \int_(x in `[n%:R, n.+1%:R]) (f^`() x)%:E)%E
-    => [n ylen n1lex|].
-  rewrite -tfct1t2 //; first by rewrite -opprB.
-  by rewrite ler_nat.
 have AteqAn: forall n t, (n%:R <= t < n.+1%:R)%R -> A t = A n%:R
     => [n t /andP [] tb1 tb2|].
   have: floor t = n.
@@ -729,7 +666,6 @@ have AteqAn: forall n t, (n%:R <= t < n.+1%:R)%R -> A t = A n%:R
     by rewrite -natz natr1 mulrz_nat.
   suff: floor n%:R = n => [|t0]; first by rewrite /A => -> ->.
   by apply /(@intr_inj t0) /eqP; rewrite -[_ == _]intrEfloor.
-rewrite EFinD -sumEFin big_nat.
 have ylei: forall i, p < i -> (y <= i%:R)%R => [i plti|].
   move: plti. rewrite -(ler_nat R). apply: le_trans.
   apply: (le_trans (ltW (floorD1_gt y))).
@@ -741,7 +677,7 @@ have i1lex: forall i, i < q -> (i.+1%:R <= x)%R => [i iltq|].
   apply: (le_trans _ (floor_le_tmp x)).
   rewrite /q natr_absz ler_int le_eqVlt. apply /orP. left.
   apply /eqP. apply /gez0_abs. rewrite floor_ge0. apply: ltW.
-  exact: (lt_trans ypos).
+  exact: (le_lt_trans ypos).
 have qlex: (q%:R <= x)%R.
   rewrite -[X in (X%:R <= _)%R]prednK; last exact: (leq_ltn_trans _ pltq).
   apply: i1lex. rewrite ltn_predL.
@@ -763,11 +699,16 @@ have measfxii1: forall i, p < i -> i < q ->
   rewrite set_itvoo inE => /= /andP [] x0b1 x0b2.
   rewrite (AteqAn i) //. apply /andP. split => //.
   exact: ltW.
-under eq_bigr => i /andP [] plti iltq. rewrite EFinM tfcnn1.
-  rewrite muleN -integralZl //=.
+rewrite EFinD EFinN -sumEFin big_nat.
+under eq_bigr => i /andP [] plti iltq. rewrite EFinM tfct1t2.
+  rewrite -integralZl //=.
   rewrite (eq_integral_itv_bounded _ _
     (measfii1 i plti iltq) (measfxii1 i plti iltq)).
+  rewrite integral_itv_bndoo.
+  rewrite integral_itv_obnd_cbnd.
   over.
+- exact: measfxii1.
+- exact: measfxii1.
 - move=> x0 x0ininterval. move: (subset_itv_oo_co x0ininterval) => x0ini.
   by rewrite (AteqAn i).
 - apply: continuous_compact_integrable; first exact: segment_compact.
@@ -776,28 +717,8 @@ under eq_bigr => i /andP [] plti iltq. rewrite EFinM tfcnn1.
   apply /andP. split; first exact: (le_trans (ylei i plti)).
   exact: (le_trans _ (i1lex i iltq)).
 - exact: ylei.
+- by rewrite ler_nat.
 - exact: i1lex.
-under eq_bigr => i /andP [] plti iltq. rewrite integral_itv_bndoo. over.
-  exact: measfxii1.
-rewrite sumeN => [|i j]; last first.
-  rewrite !unfold_in => /andP [] plti iltq _.
-  apply /fin_num_adde_defr /integral_fune_fin_num => //.
-  apply: (@eq_integrable _ _ _ lebesgue_measure _ _
-      (fun x => (A i%:R * f^`() x)%:E)) => // [x0|].
-    rewrite set_itvoo inE => /= /andP [] x0b1 x0b2.
-    rewrite (AteqAn i) //. apply /andP. split => //.
-    exact: ltW.
-  apply: (@integrableS _ _ _ lebesgue_measure
-    (`[i%:R, i.+1%:R] : set R^o)) => //; first exact: subset_itvW.
-  apply: continuous_compact_integrable => [|x0]; first exact: segment_compact.
-  (* FIXME: second order shenanigans without giving the argument. *)
-  apply: (continuousM (@cst_continuous _ _ (A i%:R : R^o) _)).
-  apply: (continuous_subspaceW _ fC1) => {}x0.
-  rewrite !set_itvcc => /= /andP [] x0b1 x0b2. apply /andP. split.
-    exact: (le_trans (ylei i plti)).
-  exact: (le_trans _ (i1lex i iltq)).
-under eq_bigr => i /andP [] plti iltq. rewrite integral_itv_obnd_cbnd. over.
-  exact: measfxii1.
 rewrite -big_nat => /=.
 have p1qitvU: \big[setU/set0]_(p.+1 <= i < q)  `[i%:R, i.+1%:R[ =
     (`[p.+1%:R, q%:R[ : set R^o).
@@ -849,13 +770,11 @@ have measfyp1: measurable_fun (`[y, p.+1%:R[ : set R^o)
     apply: (le_trans _ x0b1). rewrite /p.
     apply: (le_trans _ (floor_le_tmp y)).
     rewrite natr_absz ler_int le_eqVlt. apply /orP. left.
-    apply /eqP /gez0_abs. rewrite floor_ge0.
-    exact: ltW.
+    by apply /eqP /gez0_abs; rewrite floor_ge0.
   rewrite -setU1itv; last first.
     rewrite /p -natr1 natr_absz intrD1.
     suff ->: `|floor y|%R = floor y by apply: floorD1_gt.
-    rewrite -[RHS]gez0_abs // floor_ge0.
-    exact: ltW.
+    by rewrite -[RHS]gez0_abs // floor_ge0.
   rewrite measurable_funU //. split; first exact: measurable_fun_set1.
   apply: open_continuous_measurable_fun => // x0.
   rewrite set_itvoo inE => /andP [] x0b1 x0b2.
@@ -874,7 +793,7 @@ have measfqx: measurable_fun (`[q%:R, x[ : set R^o)
     rewrite -natr1 natr_absz intrD1.
     suff ->: `|floor x|%R = floor x by apply: floorD1_gt.
     rewrite -[RHS]gez0_abs // floor_ge0.
-    exact: (le_trans (ltW ypos) (ltW xgty)).
+    exact: (le_trans ypos (ltW xgty)).
   move: qlex. rewrite le_eqVlt => /orP [/eqP <-|qltx].
     by rewrite set_itvco0; apply: measurable_fun_set0.
   rewrite -setU1itv // measurable_funU //.
@@ -903,70 +822,20 @@ rewrite -integral_bigsetU_EFin //=; last first.
   by rewrite ltn_neqAle => /andP [].
 - exact: iota_uniq.
 rewrite p1qitvU.
-have itvyx: `[y, x[ = `[y, p.+1%:R[ `|` `[p.+1%:R, q%:R[ `|` `[q%:R, x[.
-  rewrite -!itv_bndbnd_setU //.
-  - exact: ylei.
-  - exact: ylei.
-  - by move: pltq; rewrite -(ler_nat R).
 have itvyq: `[y, p.+1%:R[ `|` `[p.+1%:R, q%:R[ = `[y, q%:R[.
-  rewrite seteqP !set_itvco. split => x0 /= => [[] /andP [] x0b1 x0b2|].
-  - apply /andP. split=> //. apply: (lt_le_trans x0b2).
-    by rewrite ler_nat.
-  - apply /andP. split=> //.
-    exact: (le_trans (ylei p.+1 (ltnSn p)) x0b1).
-  - case: (boolP (x0 < p.+1%:R)%R) => [_ /andP [] ylex0 _|].
-    - by left; rewrite ylex0.
-    - by rewrite -real_leNgt => //= -> /andP [] _ x0ltq; right.
-have ->: (\int_(t in `[p.+1%:R, q%:R[) (A t * f^`() t)%:E =
-    (- \int_(t in `[y, p.+1%:R[) (A t * f^`() t)%:E) +
-    \int_(t in `[y, x[) (A t * f^`() t)%:E -
+  rewrite -itv_bndbnd_setU//; first exact: ylei.
+  by move: pltq; rewrite -(ler_nat R).
+have itvyx: `[y, x[ = `[y, p.+1%:R[ `|` `[p.+1%:R, q%:R[ `|` `[q%:R, x[.
+  by rewrite itvyq -itv_bndbnd_setU //; apply: ylei.
+have ->:
+  (\int_(t in `[y, x]) (A t * f^`() t)%:E)%E =
+    (\int_(t in `[y, p.+1%:R[) (A t * f^`() t)%:E +
+    \int_(t in `[p.+1%:R, q%:R[) (A t * f^`() t)%:E +
     \int_(t in `[q%:R, x[) (A t * f^`() t)%:E)%E.
+  rewrite -integral_itv_bndo_bndc; last first.
+    rewrite itvyx; apply/measurable_funU => //; first by rewrite itvyq.
+    by split=> //; apply/measurable_funU.
   rewrite itvyx !integral_setU_EFin //=.
-  - rewrite [in RHS](AC (1*3*1) ((2*1)*3*(4*5))) /= !subee.
-    + by rewrite add0e adde0.
-    + apply: integral_fune_fin_num => //.
-      apply: (@eq_integrable _ _ _ lebesgue_measure _ _
-          (fun x0 => (A q%:R * f^`() x0)%:E)) => // [x0|].
-        rewrite set_itvco inE => /= /andP [] x0b1 x0b2.
-        rewrite (AteqAn q) //. apply /andP. split => //.
-        apply: (lt_trans x0b2). rewrite /q.
-        rewrite -natr1 natr_absz intrD1.
-        suff ->: `|floor x|%R = floor x by apply: floorD1_gt.
-        rewrite -[RHS]gez0_abs // floor_ge0.
-        exact /ltW /(lt_trans ypos xgty).
-      apply: (@integrableS _ _ _ lebesgue_measure `[q%:R, x]) => //.
-        move=> x0; rewrite set_itvco set_itvcc => /= /andP [] x0b1 x0b2.
-        apply /andP. split => //.
-        exact: ltW.
-      apply: continuous_compact_integrable => [|x0].
-        exact: segment_compact.
-      apply: (continuousM (@cst_continuous _ _ ((A q%:R) : R^o) _)).
-      apply: (continuous_subspaceW _ fC1) => // {}x0.
-      rewrite !set_itvcc => /= /andP [] x0b1 x0b2.
-      apply /andP. split => //. apply: (le_trans _ x0b1).
-      exact: ylei.
-    + apply: integral_fune_fin_num => //.
-      apply: (@eq_integrable _ _ _ lebesgue_measure _ _
-          (fun x0 => (A p%:R * f^`() x0)%:E)) => // [x0|].
-        rewrite set_itvco inE => /= /andP [] x0b1 x0b2.
-        rewrite (AteqAn p) //. apply /andP. split => //.
-        apply: (le_trans _ x0b1). rewrite /p.
-        apply: (le_trans _ (floor_le_tmp y)).
-        rewrite natr_absz ler_int le_eqVlt. apply /orP. left.
-        apply /eqP /gez0_abs. rewrite floor_ge0.
-        exact: ltW.
-      apply: (@integrableS _ _ _ lebesgue_measure `[y, p.+1%:R])
-          => // [x0|].
-        rewrite set_itvco set_itvcc => /= /andP [] x0b1 x0b2.
-        apply /andP. split => //.
-        exact: ltW.
-      apply: continuous_compact_integrable => [|x0].
-        exact: segment_compact.
-      apply: (continuousM (@cst_continuous _ _ ((A p%:R) : R^o) _)).
-      apply: (continuous_subspaceW _ fC1) => // {}x0.
-      rewrite !set_itvcc => /= /andP [] x0b1 x0b2.
-      apply /andP. split => //.
-      exact /(le_trans x0b2) /i1lex.
   - by rewrite measurable_funU.
   - apply /disj_setPS
       => x0 /= [] /andP [] ylex0 x0ltp1 /andP [] p1lex0 x0ltq.
@@ -978,24 +847,26 @@ have ->: (\int_(t in `[p.+1%:R, q%:R[) (A t * f^`() t)%:E =
     rewrite itvyq => /= -[] /andP [] _ x0ltq /andP [] qlex0 _.
     suff: (x0 < x0)%R by rewrite ltxx.
     exact: (lt_le_trans x0ltq qlex0).
-rewrite (@eq_integral _ _ _ lebesgue_measure _
-    (fun t => ((A p%:R)%:E * (f^`() t)%:E)%E)) => /= [|t]; last first.
-  rewrite set_itvco inE => /= /andP [] ylet tltp1.
-  rewrite (AteqAn p) //. apply /andP. split => //.
+under [in RHS]eq_integral => t.
+  rewrite set_itvco inE => /= /andP [] ylet tltp1; rewrite (AteqAn p) //.
+  rewrite EFinM.
+  over.
+  apply /andP. split => //.
   apply: (le_trans _ ylet).  rewrite /p.
   apply: (le_trans _ (floor_le_tmp y)).
   rewrite natr_absz ler_int le_eqVlt. apply /orP. left.
-  apply /eqP /gez0_abs. rewrite floor_ge0.
-  exact: ltW.
-rewrite [X in (_ + _ - X)%E](@eq_integral _ _ _ lebesgue_measure _
-    (fun t => ((A q%:R)%:E * (f^`() t)%:E)%E)) => /= [|t]; last first.
-  rewrite set_itvco inE => /= /andP [] ylet tltp1.
-  rewrite (AteqAn q) //. apply /andP. split => //.
+  by apply /eqP /gez0_abs; rewrite floor_ge0.
+under [X in (_ + _ + X)%E]eq_integral => t.
+  rewrite set_itvco inE => /= /andP [] ylet tltp1; rewrite (AteqAn q) //.
+  rewrite EFinM.
+  over.
+  apply /andP. split => //.
   apply: (lt_trans tltp1). rewrite /q.
   rewrite -natr1 natr_absz intrD1.
   suff ->: `|floor x|%R = floor x by apply: floorD1_gt.
   rewrite -[RHS]gez0_abs // floor_ge0.
-  exact /ltW /(lt_trans ypos xgty).
+  exact /ltW /(le_lt_trans ypos xgty).
+  rewrite /=.
 rewrite !integralZl //=; last first.
 - apply: (@integrableS _ _ _ lebesgue_measure `[y, p.+1%:R]) => // [x0|].
     by rewrite set_itvco set_itvcc => /= /andP [] -> /ltW.
@@ -1013,12 +884,11 @@ rewrite !integralZl //=; last first.
   rewrite !set_itvcc => /= /andP [] x0b1 x0b2.
   apply /andP. split => //. apply: (le_trans _ x0b1).
   exact: ylei.
-rewrite !integral_itv_bndo_bndc; last first.
-- rewrite -setU1itv; last first.
+rewrite [in RHS]integral_itv_bndo_bndc; last first.
+  rewrite -setU1itv; last first.
     rewrite /p -natr1 natr_absz intrD1.
     suff ->: `|floor y|%R = floor y by apply: floorD1_gt.
-    rewrite -[RHS]gez0_abs // floor_ge0.
-    exact: ltW.
+    by rewrite -[RHS]gez0_abs // floor_ge0.
   apply/measurable_funU => //.
   split; first exact: measurable_fun_set1.
   apply: open_continuous_measurable_fun => // x0.
@@ -1027,8 +897,8 @@ rewrite !integral_itv_bndo_bndc; last first.
   apply /andP. split=> //. 
   apply: (lt_le_trans x0b2).
   exact: i1lex.
-- by rewrite itvyx !measurable_funU // itvyq.
-- move: qlex.
+rewrite [X in ((A q%:R)%:E * X)%E]integral_itv_bndo_bndc; last first.
+  move: qlex.
   rewrite le_eqVlt => /orP [/eqP <-|qltx].
     by rewrite set_itvco0; apply: measurable_fun_set0.
   rewrite -setU1itv // measurable_funU //.
@@ -1043,21 +913,20 @@ rewrite -!tfct1t2 //; last first.
 - exact: i1lex.
 - exact: ylei.
 - exact: ylei.
-rewrite -!EFinM !mulrBr !EFinB. rewrite ![in LHS]oppeB //; last first.
-  exact: fin_num_adde_defl.
-rewrite oppeD // oppeD //.
-rewrite [in LHS](AC (3*2*2) (4*2*3*(7*1)*(6*5))) /=.
-rewrite subee // subee // !adde0.
+rewrite addeAC/= -!EFinM -EFinD [in RHS]oppeD/=; last first.
+  by rewrite adde_defC; apply: fin_num_adde_defl.
+rewrite addeA -EFinD; congr (_%:E + _)%E.
+rewrite opprD (AC (2*2) ((1*4)*(2*3)))/= -!mulrN !opprB.
 rewrite -(AteqAn _ x); last first.
   rewrite /q -natr1 natr_absz intrD1.
   suff ->: `|floor x|%R = floor x by apply: floor_itv.
   rewrite -[RHS]gez0_abs // floor_ge0.
-  exact /ltW /(lt_trans ypos xgty).
-rewrite -(AteqAn _ y) //.
-rewrite /p -natr1 natr_absz intrD1.
-suff ->: `|floor y|%R = floor y by apply: floor_itv.
-rewrite -[RHS]gez0_abs // floor_ge0.
-exact: ltW.
+  exact /ltW /(le_lt_trans ypos xgty).
+rewrite -(AteqAn _ y); last first.
+  rewrite /p -natr1 natr_absz intrD1.
+  suff ->: `|floor y|%R = floor y by apply: floor_itv.
+  by rewrite -[RHS]gez0_abs // floor_ge0.
+by rewrite -!mulrDr addrCA subrr addrA addNr addr0 add0r.
 Qed.
 
 Lemma ltr_powR (R : realType) (a : R) : (1 < a)%R -> {homo powR a : x y / (x < y)%R}.
@@ -1073,210 +942,6 @@ elim: r => [|a l HI allcoprimem].
 rewrite big_cons.
 case: (boolP (P a)) => [Pa|_]; last exact: HI.
 by rewrite [X in _ * X]mulnC mulnA (Gauss_dvdl _ (allcoprimem a Pa)) HI.
-Qed.
-
-Lemma sumlogpleCx (R : realType) (x : R) : (x >= 1)%R ->
-    ((\sum_(2 <= p < `|floor x|.+1 | prime p) ln p%:R)%R <= 4 * ln 2 * x)%R.
-Proof.
-move=> xge1.
-set theta := fun x : R =>
-  (\sum_(1 <= p < `|floor x|.+1 | prime p) ln p%:R)%R : R.
-suff: (theta x <= 4 * ln 2 * x)%R.
-  congr (_ <= _)%R.
-  by rewrite /theta big_ltn_cond//= ltnS absz_gt0 lt0r_neq0// floor_gt0.
-set k := `|floor (ln x / ln 2)|.+1.
-set y := 2 ^ k.
-have: (2 ^ k.-1 <= x < y%:R)%R => [|/andP [] xb1 xb2].
-  apply/andP. split.
-    rewrite /k -pred_Sn -powR_intmul // gez0_abs; last first.
-      rewrite floor_ge0. apply: divr_ge0.
-        exact: ln_ge0.
-      by apply: ln_ge0; rewrite ler1n.
-    apply: (le_trans (ler_powR _ (floor_le_tmp _))).
-      by rewrite ler1n.
-    rewrite -[X in (X <= _)%R]lnK; last by rewrite posrE; apply: powR_gt0.
-    rewrite ln_powR -mulrA mulVf; last exact /lt0r_neq0 /ln_gt0 /ltr1n.
-    rewrite mulr1 lnK // posrE.
-    exact: (lt_le_trans _ xge1).
-  rewrite /y /k -[X in _ ^ X]addn1 natrX -powR_mulrn // natrD.
-  have ->: `|floor (ln x / ln 2)|%:R = (floor (ln x / ln 2))%:~R => [t|].
-  rewrite -mulrz_nat natz gez0_abs // floor_ge0.
-    apply: divr_ge0; first exact: ln_ge0.
-    by apply: ln_ge0; rewrite ler1n.
-  rewrite intrD1.
-  apply: (le_lt_trans _ (ltr_powR (ltr1n _ 2) (floorD1_gt _))).
-  rewrite -[X in (_ <= X)%R]lnK; last by rewrite posrE; apply: powR_gt0.
-  rewrite ln_powR -mulrA mulVf; last exact /lt0r_neq0 /ln_gt0 /ltr1n.
-  rewrite mulr1 lnK // posrE.
-  exact: (lt_le_trans _ xge1).
-have yle2x: (y%:R <= 2 * x)%R.
-  by rewrite /y -[X in 2 ^ X]prednK // expnS natrM ler_wpM2l // natrX exprnP.
-have theta_incr (x0 y0 : R) : (1 <= x0)%R -> (x0 <= y0)%R ->
-    (theta x0 <= theta y0)%R => [x0ge1 x0ley0|].
-  have flx0lefly0: `|floor x0|.+1 <= `|floor y0|.+1.
-    rewrite ltnS. apply: lez_abs2; last exact: le_floor.
-    by rewrite floor_ge0; apply: (le_trans _ x0ge1).
-  rewrite /theta (big_cat_nat _ flx0lefly0) //= lerDl.
-  apply: sumr_ge0 => p primep. apply: ln_ge0. rewrite ler1n.
-  exact: prime_gt0.
-apply: (le_trans (theta_incr x y%:R xge1 (ltW xb2))).
-apply: (@le_trans _ _ (2 * ln 2 * y%:R)%R); last first.
-  rewrite mulrC -ler_pdivlMr; last first.
-    apply: mulr_gt0 => //. 
-    exact /ln_gt0 /ltr1n.
-  rewrite -mulrA -mulf_div [X in (_ * (X / _))%R]mulrC.
-  rewrite -[X in (_ / _ * X)%R]mulrA -natr1 -natr1 -addrA -!mulr2n.
-  rewrite -[X in (X / _ * _)%R]mulr_natr -[X in (X * _)%R]mulrA.
-  rewrite !divff ?lt0r_neq0 //; first by rewrite !mulr1.
-  exact /ln_gt0 /ltr1n.
-suff theta2n_m_thetan_le_2nln2: forall n,
-    (2 * n%:R * ln 2 >= theta (2 * n%:R) - theta n%:R)%R => [|n].
-  have: (theta (y %/ 2 ^ k)%:R = 0)%R.
-    rewrite /y divnn expn_gt0 /= /theta floor1 absz1 big_nat_cond big1 //.
-    move=> i /andP [] /andP [] igt0 ilt2 primei.
-    move: (prime_gt1 primei) => igt1.
-    by have: 2 < 2 by apply: (leq_trans _ ilt2); rewrite ltnS.
-  rewrite -[X in (X <= _)%R]subr0 => <-.
-  rewrite -[X in theta X%:R]divn1 -[X in (y %/ X)%:R](expn0 2) -opprB.
-  rewrite -(telescope_sumr (fun i => theta (y %/ 2 ^ i)%:R)) // -sumrN.
-  under eq_bigr => i _. rewrite opprB. over.
-  suff: ((\sum_(0 <= i < k) (1 / (2 ^ i)%:R)%R) * ln 2 * y%:R <=
-      (2 * ln 2 * y%:R : R))%R.
-    apply: le_trans. rewrite !mulr_suml !big_nat.
-    apply: ler_sum => i /andP [] _ iltk2.
-    rewrite [X in (_ <= X)%R](AC 4 (1*4*2*3)) /= mul1r -natr_div; last first.
-    - by rewrite unitrE divff // pnatr_eq0 -lt0n expn_gt0; apply /orP; left.
-    - by rewrite dvdn_Pexp2l //; apply: ltnW.
-    rewrite -[X in (theta X%:R - _)%R](@divnK 2); last first.
-      rewrite /y -expnB //; last by rewrite ltnW.
-      by apply: (dvdn_exp _ (dvdnn 2)); rewrite subn_gt0.
-    rewrite mulnC -divnMA -expnSr -[X in (X%:R * ln 2)%R](@divnK 2).
-      by rewrite [in X in (_ <= X)%R]mulnC -divnMA -expnSr natrM.
-    rewrite /y -expnB //; last by rewrite ltnW.
-    by apply: (dvdn_exp _ (dvdnn 2)); rewrite subn_gt0.
-  rewrite -!mulrA. apply: ler_wpM2r.
-    apply: mulr_ge0; first by apply /ln_ge0 /ltW; rewrite mulr2n ltrDl.
-    exact /ltW /(le_lt_trans (le_trans _ xge1) xb2).
-  under eq_bigr => i _.
-    rewrite natrX -[X in (X / _)%R](expr1n _ i) -expr_div_n. over.
-  suff ->: (\sum_(0 <= i < k) (1 / 2) ^+ i = (2 - 1 / 2 ^ k.-1 : R))%R.
-    by rewrite gerBl; apply /divr_ge0 /exprz_ge0.
-  apply: (@mulfI _ (1/2 - 1)).
-    apply: ltr0_neq0.
-    by rewrite subr_lt0 ltr_pdivrMr // mulr_natr mulr2n ltrDl.
-  rewrite big_mkord -subrX1 mulrBr !mulrBl !mul1r mulVf; last first.
-    exact: lt0r_neq0.
-  rewrite opprB [RHS]addrC -[X in (X - _ / _)%R]mul1r -mulrBl.
-  rewrite -[X in (X - 2^-1)%R](@mulfV _ 2); last exact: lt0r_neq0.
-  rewrite -[X in (2 / 2 - X)%R]div1r -mulrBl -[in X in (X / 2)%R]natr1.
-  rewrite -addrA subrr addr0 -[X in (_ = _ + (_ - X)%R)%R]natr1 opprD.
-  rewrite [X in (_ / _ + X)%R]addrA subrr add0r div1r -invrM; last first.
-  - by rewrite unitrE divff //; apply: lt0r_neq0.
-  - by rewrite unitrE divff //; apply /lt0r_neq0 /exprz_gt0.
-  by rewrite -exprnP -exprSr exprVn prednK.
-rewrite -ler_expR -ln_powR lnK; last by rewrite posrE powR_gt0.
-have flnlefl2n: `|floor (n%:R : R)|.+1 <= `|floor (2 * n%:R : R)|.+1.
-  rewrite ltnS. apply: lez_abs2; first by rewrite floor_ge0.
-  exact /le_floor /ler_peMl /ler1n.
-rewrite /theta (big_cat_nat _ flnlefl2n) //=.
-have flneqn: forall n, `|floor (n%:R : R)| = n => [n0|].
-  apply: (can_inj absz_nat).
-  rewrite gez0_abs; last by rewrite real_floor_ge0.
-  by apply /(@intr_inj R) /eqP; rewrite -[_ == _]intrEfloor.
-rewrite -natrM !flneqn [X in expR X](AC 3 (2*(1*3))) /= subrr addr0.
-rewrite -(big_morph_in _ _ _ _ (@lnM _) (ln1 _))
-    => [|x0 y0||i primei]; rewrite ?posrE //; last first.
-- by rewrite ltr0n prime_gt0.
-- exact: mulr_gt0.
-rewrite lnK; last first.
-  rewrite posrE. apply: prodr_gt0 => i primei.
-  by rewrite ltr0n prime_gt0.
-apply: (@le_trans _ _ 'C(2 * n, n)%:R); last first.
-  rewrite powR_mulrn // -natrX ler_nat -[X in X ^ _]addn1.
-  rewrite expnDn. under eq_bigr => i _. rewrite !exp1n !muln1. over.
-  have nlt2n1: n < (2 * n).+1 by rewrite ltnS leq_pmull.
-  by rewrite (bigD1_ord (Ordinal nlt2n1)) //= leq_addr.
-rewrite -natr_prod ler_nat bin_ffactd ffact_prod -(big_mkord predT).
-rewrite [in X in _ <= X](bigID (fun i => prime (2 * n - i))) /=.
-have pp2nmidvd: \prod_(0 <= i < n | prime (2 * n - i))  (2 * n - i) %| (2 * n) ^_ n.
-  rewrite ffact_prod.
-  apply /Gauss_dvd_bigprod => [|i]; last first.
-    rewrite mem_index_iota => /andP [] _ iltn prime_fi.
-    rewrite (Euclid_dvd_prod _ _ _ prime_fi) big_has.
-    by apply /hasP; exists (Ordinal iltn).
-  apply /(pairwiseP 0) => i j /= ilt jlt iltj.
-  rewrite prime_coprime; last first.
-    move: (mem_nth 0 ilt).
-    by rewrite -filter_map mem_filter => /andP [].
-  rewrite dvdn_prime2; last first.
-  - move: (mem_nth 0 jlt).
-    by rewrite -filter_map mem_filter => /andP [].
-  - move: (mem_nth 0 ilt).
-    by rewrite -filter_map mem_filter => /andP [].
-  have /uniqP nthinj: uniq [seq 2 * n - i0  | i0 <- index_iota 0
-      n  & prime (2 * n - i0)].
-    rewrite map_inj_in_uniq => [|i0 j0]; first exact/filter_uniq/iota_uniq.
-    rewrite !mem_filter !mem_index_iota.
-    move=> /andP [] _ /andP [] _ i0ltn /andP [] _ /andP [] _ j0ltn /eqP.
-    rewrite eqn_sub2lE => [/eqP //||].
-      exact: (leq_trans (ltnW _) (leq_pmull _ (ltn0Sn _))).
-    exact: (leq_trans (ltnW _) (leq_pmull _ (ltn0Sn _))).
-  apply /eqP. move: (nthinj 0 i j ilt jlt) => nthinj2.
-  apply /(contra_not nthinj2) /eqP. rewrite neq_ltn. 
-  by apply /orP; left.
-have ->: \prod_(0 <= i < n | ~~ prime (2 * n - i))  (2 * n - i) =
-    (2 * n) ^_ n %/ \prod_(0 <= i < n | prime (2 * n - i)) (2 * n - i).
-  apply /eqP. rewrite eqn_div; last exact pp2nmidvd.
-    rewrite [X in _ * X]big_nat_cond big_nat_cond mulnC -bigID /=.
-    by rewrite -big_nat ffact_prod big_mkord.
-  rewrite big_nat_cond.
-  apply: prodn_cond_gt0 => i /andP [] /andP [] _ iltn _.
-  by rewrite subn_gt0; apply: (leq_trans iltn (leq_pmull _ (ltn0Sn _))).
-rewrite muln_divA // mulKn; last first.
-  rewrite big_nat_cond.
-  apply: prodn_cond_gt0 => i /andP [] /andP [] _ iltn _.
-  by rewrite subn_gt0; apply: (leq_trans iltn (leq_pmull _ (ltn0Sn _))).
-rewrite (leq_divRL _ _ (fact_gt0 n)).
-apply: dvdn_leq; first by rewrite ffact_gt0; apply: (leq_pmull _ (ltn0Sn _)).
-suff eqprod: \prod_(n.+1 <= i < (2 * n).+1 | prime i) i =
-    \prod_(0 <= i < n | prime (2 * n - i)) (2 * n - i).
-  rewrite mulnC -dvdn_divRL; last by rewrite eqprod.
-  rewrite -(@Gauss_dvdl_bigprod _ (index_iota n.+1 (2 * n).+1)
-      (fun i => (n.+1 <= i < (2 * n).+1) && prime i) id)
-      => [|i /andP [] /andP [] nlti _ primei].
-    rewrite -big_nat_cond divnK; last by rewrite eqprod.
-    by rewrite -bin_ffact; apply /dvdn_mull /dvdnn.
-  rewrite coprime_sym (prime_coprime _ primei) -[X in _ %| X]mul1n.
-  rewrite fact_prod big_nat Gauss_dvdl_bigprod.
-    by rewrite Euclid_dvd1.
-  move=> m /andP[] mgt0 mltn1.
-  rewrite (prime_coprime _ primei). apply: (contraNN (dvdn_leq mgt0)).
-  by rewrite -ltnNge; apply: (leq_trans _ nlti).
-rewrite big_add1 -pred_Sn big_nat_rev /= -[X in index_iota X _]add0n.
-rewrite big_addn [in X in index_iota _ X]mul2n -addnn.
-rewrite (subDnAC _ (leqnn n)) subnn add0n.
-have inlt3n: forall i, 0 <= i < n -> i + n < n + 2 * n.
-  move=> i /andP [] _ iltn.
-  rewrite addnC ltn_add2l. 
-  exact: (leq_trans iltn (leq_pmull _ (ltn0Sn _))).
-rewrite big_mkcond /=.
-under eq_big_seq => i. rewrite mem_index_iota => iinbounds.
-  rewrite (subnSK (inlt3n i iinbounds)) subnDAC.
-  rewrite (subDnCA _ (leqnn n)) subnn addn0. over.
-by rewrite -big_mkcond.
-Qed.
-
-Lemma invr_measurable (R : realType) (D : set R) : measurable_fun D (@GRing.inv R^o).
-Proof.
-apply: measurable_funTS.
-rewrite -[[set: R]%classic](@setD1K _ 0%R)// setTD.
-have ? := @measurable_set1 R 0%R.
-apply/measurable_funU => //; first exact: measurableC.
-split; first exact: measurable_fun_set1.
-apply: (@open_continuous_measurable_fun R^o) => // [|x].
-  exact/closed_openC/accessible_closed_set1/hausdorff_accessible/Rhausdorff.
-rewrite in_setC/= -set_itv1 mem_setE in_itv/= -eq_le eq_sym => x0.
-exact: inv_continuous.
 Qed.
 
 Lemma intr_divn (R : realType) (a b : nat) :
@@ -1301,10 +966,134 @@ rewrite -natr1 natr_absz [`|_|%R]gez0_abs ?floor_ge0// -(@intrD _ _ 1).
 exact: floorD1_gt.
 Qed.
 
-Lemma Mertens1 (R : realType) (x : R) : (1 < x)%R ->
+Lemma sumlogpleCx (R : realType) (x : R) : (x >= 0)%R ->
+    ((\sum_(2 <= p < `|floor x|.+1 | prime p) ln p%:R)%R <= 4 * ln 2 * x)%R.
+Proof.
+have lt12: (1 < 2 :> R)%R by rewrite (ltr_nat _ 1 2).
+case: (Order.TotalTheory.leP (1%R : R) x) => [xge1 _|x1 x0]; last first.
+  rewrite big_geq; last first.
+    by rewrite ltnS -(ler_nat R); apply/(le_trans (floorN_ler x0))/ltW.
+  apply: mulr_ge0 => //; apply: mulr_ge0 => //; apply: ln_ge0.
+  exact: ltW.
+set theta := fun x : R =>
+  (\sum_(1 <= p < `|floor x|.+1 | prime p) ln p%:R)%R : R.
+suff: (theta x <= 4 * ln 2 * x)%R.
+  congr (_ <= _)%R.
+  by rewrite /theta big_ltn_cond//= ltnS absz_gt0 lt0r_neq0// floor_gt0.
+set k := `|floor (ln x / ln 2)|.+1.
+set y := 2 ^ k.
+have /andP[[] xb1 xb2]: ((2 ^ k.-1)%N%:R <= x < y%:R)%R.
+  rewrite /y /k -pred_Sn !natrX -!powR_mulrn// -[`|_|.+1%:R]natr1.
+  rewrite -ler_ln; first last.
+  - exact: (lt_le_trans _ xge1).
+  - exact: powR_gt0.
+  rewrite -ltr_ln; first last.
+  - exact: powR_gt0.
+  - exact: (lt_le_trans _ xge1).
+  rewrite !ln_powR -ler_pdivlMr// -?ltr_pdivrMr ?ln_gt0//.
+  by rewrite natr1 floorN_ler ?floorND1_gtr//;
+    apply: divr_ge0; apply: ln_ge0 => //; apply: ltW.
+have yle2x: (y%:R <= 2 * x)%R.
+  by rewrite /y -[X in 2 ^ X]prednK // expnS natrM ler_wpM2l // natrX exprnP.
+have theta_incr (x0 y0 : R) : (1 <= x0)%R -> (x0 <= y0)%R ->
+    (theta x0 <= theta y0)%R => [x0ge1 x0ley0|].
+  have flx0lefly0: `|floor x0|.+1 <= `|floor y0|.+1.
+    rewrite ltnS. apply: lez_abs2; last exact: le_floor.
+    by rewrite floor_ge0; apply: (le_trans _ x0ge1).
+  rewrite /theta (big_cat_nat _ flx0lefly0) //= lerDl.
+  by apply: sumr_ge0 => p /prime_gt0 p0; apply: ln_ge0; rewrite ler1n.
+apply: (le_trans (theta_incr x y%:R xge1 (ltW xb2))).
+apply: (@le_trans _ _ (2 * ln 2 * y%:R)%R); last first.
+  rewrite -[leRHS]mulrA -[4]/(2 * 2) natrM mulrACA; apply: ler_pM => //.
+  by apply: mulr_ge0 => //; apply/ln_ge0/ltW.
+suff theta2n_m_thetan_le_2nln2 n :
+    (2 * n%:R * ln 2 >= theta (2 * n%:R) - theta n%:R)%R.
+  have: (theta (y %/ 2 ^ k)%:R = 0)%R.
+    rewrite /y divnn expn_gt0 /= /theta floor1 absz1 big_nat_cond big1 //.
+    by case=> [//|] [_|i /andP[]/andP[]//]; apply: ln1.
+  rewrite -[theta y%:R]subr0 => <-.
+  rewrite -[X in theta X%:R]divn1 -[X in (y %/ X)%:R](expn0 2) -opprB.
+  rewrite -(telescope_sumr (fun i => theta (y %/ 2 ^ i)%:R)) // -sumrN.
+  rewrite big_nat.
+  under eq_bigr => i /= ik.
+    rewrite opprB /y -!expnB//; last exact: ltnW.
+    rewrite -(@prednK (k - i)) ?subn_gt0// subnS expnS natrM.
+    over.
+  rewrite -big_nat.
+  apply: (le_trans (ler_sum _
+    (fun i _ => theta2n_m_thetan_le_2nln2 (2 ^ (k - i).-1)))).
+  rewrite -mulr_suml -mulr_sumr -natr_sum mulrAC.
+  under eq_bigr do rewrite -subnS -(add0n k).
+  rewrite -(big_nat_rev _ _ _ _ xpredT (fun i => 2 ^ i))/=.
+  rewrite -[bigop _ _ _]mul1n big_mkord -(predn_exp 2).
+  apply: ler_pM => //; last by rewrite ler_nat; apply: leq_pred.
+  by apply: mulr_ge0 => //; apply/ln_ge0/ltW.
+rewrite -ler_expR -ln_powR lnK; last by rewrite posrE powR_gt0.
+have flnlefl2n: `|floor (n%:R : R)|.+1 <= `|floor (2 * n%:R : R)|.+1.
+  rewrite ltnS. apply: lez_abs2; first by rewrite floor_ge0.
+  exact /le_floor /ler_peMl /ler1n.
+rewrite /theta (big_cat_nat _ flnlefl2n) //=.
+have flneqn: forall n, `|floor (n%:R : R)| = n => [n0|].
+  apply: (can_inj absz_nat).
+  rewrite gez0_abs; last by rewrite real_floor_ge0.
+  by apply /(@intr_inj R) /eqP; rewrite -[_ == _]intrEfloor.
+rewrite -natrM !flneqn addrAC subrr add0r.
+rewrite -(big_morph_in _ _ _ _ (@lnM _) (ln1 _))
+    => [|x0 y0||i primei]; rewrite ?posrE //; last first.
+- by rewrite ltr0n prime_gt0.
+- exact: mulr_gt0.
+rewrite lnK; last first.
+  rewrite posrE. apply: prodr_gt0 => i primei.
+  by rewrite ltr0n prime_gt0.
+apply: (@le_trans _ _ 'C(2 * n, n)%:R); last first.
+  rewrite powR_mulrn // -natrX ler_nat -[X in X ^ _]addn1.
+  rewrite expnDn. under eq_bigr do rewrite !exp1n !muln1.
+  have nlt2n1: n < (2 * n).+1 by rewrite ltnS leq_pmull.
+  by rewrite (bigD1_ord (Ordinal nlt2n1)) //= leq_addr.
+rewrite -natr_prod ler_nat; apply: dvdn_leq.
+  by rewrite bin_gt0; apply: leq_pmull.
+apply /Gauss_dvd_bigprod => [|i]; last first.
+  rewrite mem_index_iota ltnS => /andP [] ni iltn prime_fi.
+  rewrite bin_ffactd dvdn_divRL; last by rewrite -bin_ffact dvdn_mull.
+  rewrite Gauss_dvd; last first.
+    rewrite prime_coprime// fact_prod Euclid_dvd_prod// big_has -all_predC.
+    apply/allP => j; rewrite mem_index_iota/= ltnS => /andP[] j0 jn.
+    by apply/negP => /dvdn_leq-/(_ j0)/(leq_trans ni); rewrite ltnNge jn.
+  apply/andP; split; last by rewrite -bin_ffact dvdn_mull.
+  rewrite ffact_prod Euclid_dvd_prod// big_has.
+  have nin : (2 * n - i < n) by rewrite ltn_subLR// mul2n -addnn ltn_add2r.
+  by apply/hasP; exists (Ordinal nin) => //; rewrite subKn.
+rewrite map_id.
+apply /(pairwiseP 0) => i j /= ilt jlt.
+rewrite ltn_neqAle => /andP[] iltj _.
+have iprime m : m < size [seq i <- index_iota n.+1 (2 * n).+1 | prime i]
+    -> prime (nth 0 [seq i <- index_iota n.+1 (2 * n).+1 | prime i] m).
+  by move=> /(mem_nth 0); rewrite mem_filter => /andP [].
+rewrite prime_coprime; last exact: iprime.
+by rewrite dvdn_prime2 ?iprime// nth_uniq//; apply/filter_uniq/iota_uniq.
+Qed.
+
+Lemma invr_measurable (R : realType) (D : set R) : measurable_fun D (@GRing.inv R^o).
+Proof.
+apply: measurable_funTS.
+rewrite -[[set: R]%classic](@setD1K _ 0%R)// setTD.
+have ? := @measurable_set1 R 0%R.
+apply/measurable_funU => //; first exact: measurableC.
+split; first exact: measurable_fun_set1.
+apply: (@open_continuous_measurable_fun R^o) => // [|x].
+  exact/closed_openC/accessible_closed_set1/hausdorff_accessible/Rhausdorff.
+rewrite in_setC/= -set_itv1 mem_setE in_itv/= -eq_le eq_sym => x0.
+exact: inv_continuous.
+Qed.
+
+Lemma Mertens1 (R : realType) (x : R) : (1 <= x)%R ->
   (`|(\sum_(2 <= p < `|floor x|.+1 | prime p) ln (p%:R) / p%:R) - ln x| <=
       11 / 2 * ln 2 + 4)%R.
 Proof.
+rewrite le_eqVlt => /orP[/eqP <-|].
+  rewrite floor1 absz1 big_geq// ln1 subrr normr0.
+  apply: addr_ge0 => //; apply: mulr_ge0; first exact: divr_ge0.
+  by apply: ln_ge0; rewrite (ler_nat _ 1 2).
 set N := `|floor x|.
 move=> x2.
 have x0 := (lt_trans ltr01 x2).
@@ -1370,7 +1159,7 @@ rewrite (@Abel_continuous _ _ _ (@ln R) (fun=> 1%R)); first last.
   + exact/cvg_at_right_filter/continuous_ln.
   move=> a; rewrite in_itv/= => /andP[] a1 _.
   exact/ex_derive/is_derive1_ln/(lt_trans _ a1).
-- exact/andP.
+- by apply/andP; split; last exact: ltW.
 rewrite ln1 mulr0 subr0 sumr_const_nat subn0.
 under eq_integral => t.
   rewrite inE/= in_itv/= => /andP[] t1 _.
@@ -1406,9 +1195,9 @@ have f_measurable : measurable_fun `[1%R, x] (EFin \o f).
   apply/anti_leq/andP; split; rewrite -ltnS -(@ltr_nat R).
     exact: (le_lt_trans _ (floorND1_gtr a0)).
   exact: (le_lt_trans (floorN_ler a0)).
-have f_ge0 : forall x, (0 <= x)%R -> (0 <= f x)%R.
-  move=> a a0; apply: divr_ge0 => //; apply/ltW.
-  by rewrite subr_gt0; apply: floorND1_gtr.
+have f_ge0 : forall x, (0 < x)%R -> (0 <= f x)%R.
+  move=> a a0; apply: divr_ge0 => //; apply/ltW => //.
+  by rewrite subr_gt0; apply/floorND1_gtr/ltW.
 have f_le_inv : forall x, (0 < x)%R -> (f x <= x^-1)%R.
   move=> a a0; rewrite ler_pdivrMr// mulrC divff; last exact: (lt0r_neq0 a0).
   rewrite lerBlDl -addn1 natrD lerD2r.
@@ -1416,7 +1205,7 @@ have f_le_inv : forall x, (0 < x)%R -> (f x <= x^-1)%R.
 have f_integrable : lebesgue_measure.-integrable `[1%R, x] (EFin \o f).
   apply: (@le_integrable _ _ _ lebesgue_measure _ _ _ (EFin \o @GRing.inv R)) => //.
     move=> a/=; rewrite in_itv/= => /andP[] /(lt_le_trans ltr01) a0 _.
-    rewrite ger0_norm; last exact/f_ge0/ltW.
+    rewrite ger0_norm; last exact/f_ge0.
     rewrite ger0_norm; last by rewrite invr_ge0; apply/ltW.
     exact/lee_tofin/f_le_inv.
   apply: continuous_compact_integrable; first exact: segment_compact.
@@ -1426,17 +1215,15 @@ have f_integrable : lebesgue_measure.-integrable `[1%R, x] (EFin \o f).
 rewrite integralD => //=; first last.
   apply: continuous_compact_integrable; first exact: segment_compact.
   exact: cst_continuous.
-rewrite integral_cst//= mul1e lebesgue_measure_itv/= lte_fin x2 EFinN.
-rewrite /= -[X in (X * _)%R]addr0 -{1}(subrr x) addrCA mulrDl !EFinD -addrA.
-have /[apply]: forall (a b c : R) (d : \bar R),
-    (a%:E + d = b%:E + c%:E -> (a - b)%:E = c%:E - d)%E.
-  move=> a b c []// d; rewrite -!EFinD.
-  move=> H; move: {H} (EFin_inj H) => /(canRL (@addrK R _)).
-  by rewrite -addrA addrC => /(canLR (@addrK R _)) ->.
-rewrite -mulrBr EFinM.
+rewrite integral_cst//= mul1e lebesgue_measure_itv/= lte_fin x2.
 move IE: (\int_(t in _) _) => I; case: I IE => // I IE.
-rewrite -EFinB -EFinM => /(@EFin_inj _ _ _).
-rewrite mulrC => /(congr1 (GRing.mul^~ x^-1)%R).
+rewrite -EFinB => /(@EFin_inj _ _ _).
+rewrite /= -[X in (X * _)%R]addr0 -{1}(subrr x) addrCA mulrDl -addrA.
+have /[apply]: forall (a b c d : R),
+    (a + d = b + c -> a - b = c - d)%R.
+  move=> a b c d => /(canRL (@addrK R _)).
+  by rewrite -addrA addrC => /(canLR (@addrK R _)) ->.
+rewrite -mulrBr mulrC => /(congr1 (GRing.mul^~ x^-1)%R).
 rewrite -[LHS]mulrA divrr// mulr1 => /(congr1 GRing.opp).
 rewrite opprB => ->.
 rewrite normrN normrM normrV// [`|x|%R]ger0_norm; last exact/ltW.
@@ -1462,21 +1249,25 @@ rewrite -lerBrDr addrA.
 rewrite -[X in (_ * x - X)%R]mul1r -mulrBl -[in leRHS]addrA.
 rewrite -(natrB _ (_ : 1 <= 4))//=.
 apply: (le_trans (ler_normD _ _)).
-rewrite [`|x-1|%R]ger0_norm; last by rewrite subr_ge0; apply: ltW.
-rewrite -lerBrDr opprB addrCA.
-rewrite -[X in (_ * x - X)%R]mul1r -mulrBl -[in leRHS]addrA.
+have: (`|x - 1|%R <= x)%R.
+  rewrite [`|x-1|%R]ger0_norm; last by rewrite subr_ge0; apply: ltW.
+  by rewrite lerBlDl lerDr.
+move=> /(lerD (lexx _))/le_trans; apply.
+rewrite -lerBrDr -[X in (_ * x - X)%R]mul1r -mulrBl -[in leRHS]addrA.
 rewrite -(natrB _ (_ : 1 <= 3))//=.
 apply: (le_trans (ler_normD _ _)).
-have: (`|I| <= x - 1)%R.
+have: (`|I| <= x)%R.
+  apply: (le_trans _ (_ : x - 1 <= x)%R); last first.
+    by rewrite lerBlDl lerDr.
   apply: (le_trans _ (@le_ln1Dx _ (x - 1)%R _)); last by rewrite ltrBrDl subrr.
   rewrite addrCA subrr addr0.
   rewrite ger0_norm; last first.
     rewrite -lee_fin -IE integral_ge0//= => t.
-    by rewrite in_itv/= => /andP[] /(le_trans ler01) /f_ge0.
+    by rewrite in_itv/= => /andP[] /(lt_le_trans ltr01) /f_ge0.
   rewrite -lee_fin -IE.
   apply: (@le_trans _ _ (\int_(t in `[1%R, x]) (t^-1)%:E)).
     apply: ge0_le_integral => //=.
-    - by move=> t; rewrite in_itv/= => /andP[] /(le_trans ler01) /f_ge0.
+    - by move=> t; rewrite in_itv/= => /andP[] /(lt_le_trans ltr01) /f_ge0.
     - move=> a; rewrite in_itv/= => /andP[] /(le_trans ler01) a0 _.
       by apply: lee_tofin; rewrite invr_ge0.
     - apply: (measurableT_comp (@EFin_measurable _ _)).
@@ -1499,8 +1290,8 @@ have: (`|I| <= x - 1)%R.
   move=> a; rewrite in_itv/= derive1E.
   by move=> /andP[] /(lt_trans ltr01) /is_derive1_ln /@derive_val.
 move=> /(lerD (lexx _))/le_trans; apply.
-rewrite -lerBrDr opprB addrCA !addrA -(natrD _ 1 1)/= -addrA.
-rewrite -[X in (_ * x - X)%R]mul1r -mulrBl -[in leRHS]addrA subrr addr0.
+rewrite -lerBrDr -[X in (_ * x - X)%R]mul1r -mulrBl -[in leRHS]addrA.
+rewrite -(natrB _ (_ : 1 <= 2))//=.
 apply: (le_trans (ler_norm_sum _ _ _)).
 apply: (le_trans (@ler_sum _ _ _ _ _ _ (fun i _ => ler_normD _ _))).
 have ln_nat_ge0 : forall i : nat, (0 <= ln i%:R :> R)%R.
@@ -1522,11 +1313,11 @@ have /ler_sum: forall i, prime i -> (ln i%:R * (x / i%:R - (floor (x / i%:R))%:~
   by move: (floor_itv (x / j%:R)%R) => /andP[] _ /ltW.
 move=> /(_ _)/le_trans; apply.
 apply: (le_trans (sumlogpleCx _)); first exact: ltW.
-rewrite [in leRHS]mulrDl lerBrDr [leRHS]addrC mul1r (natrD _ 8 3).
-rewrite 3![in leRHS]mulrDl -!addrA (natrM _ 4 2) mulfK; last exact: lt0r_neq0.
-rewrite lerD2l.
-have /ler_sum: forall i, prime i -> (ln i%:R * (\sum_(2 <= i0 < N.+1) (floor (x / (i ^ i0)%:R))%:~R) <= ln i%:R * x / (i%:R * (i%:R - 1)) :> R)%R.
-  case=> [|[|i]] _; first by rewrite ln0// !mul0r.
+rewrite (natrD _ 8 3) 2![in X in ((X + _) * x)%R]mulrDl -addrA [in leRHS]mulrDl.
+rewrite (natrM _ 4 2) mulfK; last exact: lt0r_neq0.
+rewrite lerBrDr lerD2l.
+have /ler_sum: forall p, prime p -> (ln p%:R * (\sum_(2 <= i0 < N.+1) (floor (x / (p ^ i0)%:R))%:~R) <= ln p%:R * x / (p%:R * (p%:R - 1)) :> R)%R.
+  case=> [|[|p]] _; first by rewrite ln0// !mul0r.
     by rewrite ln1 !mul0r.
   rewrite -mulrA ler_pM2l; last by apply: ln_gt0; rewrite (ltr_nat _ 1%R).
   apply: (le_trans (ler_sum _ (fun j _ => floor_le_tmp _))).
@@ -1534,7 +1325,7 @@ have /ler_sum: forall i, prime i -> (ln i%:R * (\sum_(2 <= i0 < N.+1) (floor (x 
   rewrite 2!big_add1/=.
   under eq_bigr do rewrite natrX -exprVn 2!exprS mulrA -expr2.
   rewrite -mulr_sumr big_mkord.
-  move: (subrX1 (i.+2%:R^-1 : R) N.-1).
+  move: (subrX1 (p.+2%:R^-1 : R) N.-1).
   move=> /(canLR (mulKr _))-/(_ _)/wrap[|<-].
     by apply: unitf_lt0; rewrite subr_lt0 invf_lt1// (ltr_nat _ 1%R).
   rewrite mulrA exprVn -invrM; first last.
@@ -1566,10 +1357,11 @@ move=> /(_ _)/le_trans; apply.
 case: N N0 => // -[|N] _.
   rewrite big_nat big_pred0; last first.
     by move=> i; apply/negP => /andP[] i1 /(leq_trans i1).
-  apply: addr_ge0; last by apply: addr_ge0; first exact: ltW.
   apply: mulr_ge0; last exact: ltW.
-  by apply: mulr_ge0 => //; apply: divr_ge0.
-rewrite -mulr_sumr -ler_pdivlMl ?mulr_gt0//.
+  by apply: addr_ge0 => //; apply: mulr_ge0 => //; apply: divr_ge0.
+rewrite -mulr_sumr mulrAC -ler_pdivlMr ?mulr_gt0//.
+rewrite -[leRHS]mulrA divff; last exact: lt0r_neq0.
+rewrite mulr1 -ler_pdivlMl//.
 rewrite big_ltn//= big_add1/= -lerBrDl big_nat.
 have /ler_sum: forall i, (1 < i < N.+2) ->
     (ln i.+1%:R / i.+1%:R ^+ 2 <= (ln i%:R + 1) / i%:R - (ln i.+1%:R + 1) / i.+1%:R :> R)%R.
@@ -1643,13 +1435,12 @@ rewrite sumrN -big_nat telescope_sumr// opprB.
 have gerBl (a b : R) : (0 <= a)%R -> (b - a <= b)%R by rewrite gerBl.
 apply: (le_trans (gerBl _ _ _)).
   by apply: divr_ge0 => //; apply: addr_ge0.
-rewrite lerBrDr ler_pdivlMl; last exact: mulr_gt0.
+rewrite lerBrDr ler_pdivlMl//.
 have unit2: (2 : R)%R \is a GRing.unit by apply: unitf_gt0.
 rewrite expr2 invrM// mulrA.
 rewrite mulrAC mulrDr 2![(2 * (_ / _))%R]mulrCA divrr// !mulr1 addrAC.
-rewrite -[ln 2]mulr1 -mulrA -mulrDr -[X in (X + _ / _)%R](divrr unit2).
-rewrite -mulrDl -(natrD _ 2 1) mulr1 [(ln 2 * _)%R]mulrC mulrDl lerD2l mul1r.
-by rewrite lerDl.
+rewrite lerD2r mulrAC -(@ler_pM2r _ 2)// mulrDl -!mulrA mulVr//.
+by rewrite -mulrDr mulrC -(natrD _ 2 1) mulr1.
 Qed.
 
 Lemma big_ltn_cond (R : Type) (idx : R) (op : R -> R -> R) (m n : nat) 
@@ -1705,221 +1496,281 @@ Qed.
 Lemma derivable_ln (R : realType) (x : R) : (0 < x)%R -> derivable (@ln R) x 1.
 Proof. by move=> x0; apply/ex_derive/is_derive1_ln. Qed.
 
+Lemma cvgMy (R : realType) (f g : R^o -> R^o) :
+  f x @[x --> +oo%R] --> +oo%R -> g x @[x --> +oo%R] --> +oo%R ->
+  (f \* g)%R x @[x --> +oo%R] --> +oo%R.
+Proof.
+move=> fy gy S [] M [] _ MS.
+set N := maxr M 0%R.
+case: (fy `]N, +oo[) => [|A [] _ fA].
+  by exists N; split=> //= y; rewrite in_itv/= andbT.
+case: (gy `]1%R, +oo[) => [|B [] _ gB].
+  by exists 1%R; split=> //= y; rewrite in_itv/= andbT.
+exists (maxr A B); split; first exact: num_real.
+move=> x; rewrite gt_max => /andP[] /fA/= + /gB/=.
+rewrite !in_itv/= !andbT => xN x1.
+apply/MS/(@le_lt_trans _ _ N); first by rewrite le_max lexx.
+rewrite -[N]mulr1; apply: ltr_pM => //.
+by rewrite le_max lexx orbT.
+Qed.
+
 Import Order.LexiSyntax Order.DefaultProdLexiOrder.
 
-Lemma bertrand_integrable (R : realType) (a b : R) : ((1, 1)%R <^l (a, b))%O ->
+Lemma bertrand_integrable (R : realType) (a b : R) :
   lebesgue_measure.-integrable `[2%R, +oo[
-  (fun x : R^o => (expR (- (a * ln x + b * ln (ln x))))%:E)%R.
+    (fun x : R^o => (expR (- (a * ln x + b * ln (ln x))))%:E)%R
+  = ((1, 1)%R <^l (a, b))%O.
 Proof.
-move=> ab.
-have fm D: measurable_fun D 
-    (fun x : R^o => (expR (- ((a * ln x)%R + (b * ln (ln x))%R)%E))%:E).
+have mid: forall (a b : R), (a < b)%R -> exists2 c, (a < c)%R & (c < b)%R.
+  by move=> {}a {}b; exists ((a + b) / 2)%R;
+    rewrite -(@ltr_pM2r _ 2)// -mulrA mulVf ?lt0r_neq0//
+      mulr1 mulr_natr mulr2n (ltrD2l, ltrD2r).
+have ln_small : forall (a b : R), (0 < a)%R -> 
+    ((expR (- a * ln x + b * ln (ln x))) @[x --> +oo] --> 0)%R.
+  move=> {}a {}b a0.
+  apply: cvg_comp; last exact: expRNy.
+  (* TOTHINK: Is there a shorter way using landau notations? *)
+  apply: (cvg_comp _ (fun x => - a * x + b * ln x)%R (@lny _)).
+  apply: (cvg_trans (@near_eq_cvg R^o R^o _ _ (fun x => - (a * expR (ln x) - b * ln x))%R _ _)).
+    by near=> x; rewrite opprD opprK mulNr lnK// unfold_in/=.
+  apply/cvgNrNy.
+  apply: (cvg_comp _ (fun x => a * expR x - b * x)%R (@lny _)).
+  apply: (@ger_cvgy _ _ _ _ (fun x => (a / 2) * x ^+ 2 - b * x)%R).
+    near=> x.
+    rewrite lerD2r -mulrA ler_pM2l// mulrC.
+    have x0 : (0 <= x)%R by [].
+    by apply: (le_trans _ (expR_ge1Dxn 1 x0)); rewrite lerDr.
+  apply: (@ger_cvgy _ _ _ _ (fun x => x)) => //.
+  near=> x.
+  have x0 : (0 < x)%R by [].
+  rewrite mulrA -mulrBl -[leLHS]mul1r ler_pM2r//.
+  by rewrite lerBrDl -ler_pdivrMl// divr_gt0.
+have Ny10 : nbhs (0%R : R^o) `]-oo, 1%R].
+  by exists 1%R => //= x/=; rewrite add0r normrN in_itv/= => /ltW/ler_normlW.
+have itv2My (M : R) : `[2%R, +oo[ = `[2%R, (maxr (M + 1) 2)%R[ `|` `[(maxr (M + 1) 2)%R, +oo[.
+  apply/seteqP; (split=> x/=; rewrite !in_itv/= !andbT) => [-> /=|].
+    by apply/orP; rewrite ltNge orNb.
+  by rewrite ge_max => -[|] /andP[].
+have itv2My0 (M : R) : [disjoint `[2%R, (maxr (M + 1) 2)%R[ & `[(maxr (M + 1) 2)%R, +oo[ ].
+  apply/eqP; rewrite -subset0 => x/=; rewrite !in_itv/= andbT.
+  by move=> [] /andP[] _ xN /(lt_le_trans xN); rewrite ltxx.
+pose f (a b : R) : R^o -> R^o :=
+  fun x : R^o => (expR (- ((a * ln x)%R + (b * ln (ln x))%R)%E)).
+rewrite -[X in _ _ X = _]/(fun x => (f a b x)%:E).
+have fD1 (x : R^o) : forall a b, (2 <= x)%R ->
+    is_derive x 1%R (f a b) (- (a + (b / ln x)%R)%E * f (a + 1%R)%E b x)%R.
+  move=> {}a {}b x2.
+  have x0: (0 < x)%R by apply: (lt_le_trans _ x2).
+(* The `id` tag is to prevent the typeclass solver from trying (and failing)
+   to find the derivative automatically, which takes a stupidly long amount of
+   time. *)
+  apply: (@trigger_derive R^o _ _ _ _ (_ : id (is_derive _ _ _ _)) _).
+  apply: (is_derive1_comp _ (_ : id (is_derive _ _ _ _))).
+  apply: (is_deriveN (_ : id (is_derive _ _ _ _))).
+  apply: (is_deriveD (_ : id (is_derive _ _ _ _)) (_ : id (is_derive _ _ _ _))).
+    by apply: is_deriveZ; apply: is_derive1_ln.
+  apply: is_deriveZ.
+  apply: (is_derive1_comp (_ : id (is_derive _ _ _ _)) (_ : id (is_derive _ _ _ _)));
+    apply: is_derive1_ln => //.
+  by apply: ln_gt0; apply: (lt_le_trans _ x2); rewrite (ltr_nat _ 1 2).
+  rewrite [b *: _]mulrA mulrN -mulrDl mulrCA -[X in (_ * (_ / X))%R](lnK x0).
+  rewrite -expRB -opprD addrAC -[X in (_ + X + _)%R]mul1r -mulrDl.
+  by rewrite -[expR _]/(f _ _ _) -mulNr.
+have fC0 : forall a b, {in `[2%R, +oo[, continuous (f a b)}.
+  move=> {}a {}b x; rewrite inE/= in_itv/= andbT.
+  by move=> /(fD1 _ a b)/@ex_derive/derivable1_diffP/differentiable_continuous.
+have fI M: lebesgue_measure.-integrable `[2%R, M] (fun x : R^o => (f a b x)%:E).
+  apply: continuous_compact_integrable.
+    exact: segment_compact.
+  apply: (continuous_subspaceW _ (continuous_in_subspaceT (fC0 a b))).
+  exact: subset_itvl.
+have fm D: forall a b, measurable_fun D (fun x : R^o => (f a b x)%:E).
+  move=> {}a {}b {fI}.
   apply/measurable_EFinP.
   apply: (measurable_funS _ (subsetT _)) => //.
   apply: measurableT_comp => //.
   apply: measurableT_comp => //.
   apply: measurable_funD; apply: measurable_funM => //.
   exact: measurableT_comp.
-apply/integrableP; split; first exact: fm.
-under eq_integral => x _.
-  rewrite abse_EFin ger0_norm; last exact: expR_ge0.
-  over.
-move: ab => /andP[] /=; rewrite le_eqVlt => /orP[/eqP/esym ->|a1 _].
-  rewrite lexx/= => b1.
-  under eq_integral => x.
-    rewrite inE/= in_itv/= andbT => x0.
-    rewrite opprD expRD expRN.
-    rewrite mul1r lnK; last first.
-      by apply: (lt_le_trans _ x0); rewrite (ltr_nat _ 0 2).
-    over.
-  have d1 x : (2 < x)%R -> is_derive (x : R^o) 1%R (fun x0 : R^o => expR ((1 - b) * ln (ln x0))) ((1 - b) * expR (- b * ln (ln x)) / x)%R.
-    move=> x2.
-    (* @reviewer, please do not mind me, this is for performance reasons. *)
-    apply: (@trigger_derive R^o _ _ _ _ (_ : id (is_derive _ _ _ _))).
-      apply: (is_derive1_comp _ (_ : id (is_derive _ _ _ _))).
-      apply: (is_deriveM _ (_ : id (is_derive _ _ _ _))).
-      apply: is_derive1_comp; apply: is_derive1_ln; last first.
-        exact: (lt_trans _ x2).
-      by apply/ln_gt0/(lt_trans _ x2); rewrite (ltr_nat _ 1 2).
-    rewrite /= scaler0 addr0 [LHS]mulrCA -[RHS]mulrA; congr GRing.mul.
-    rewrite mulrA; congr GRing.mul.
-    have x0: (0 < ln x)%R.
-      by apply/ln_gt0/(lt_trans _ x2); rewrite (ltr_nat _ 1 2).
-    rewrite mulrBl mul1r expRD lnK//.
-    rewrite mulrAC mulNr divff ?mul1r//.
-    exact: lt0r_neq0.
-  rewrite (@ge0_continuous_FTC2y R^o _ (fun x => expR ((1 - b) * ln (ln x)) / (1 - b))%R _ 0%R).
-  - by rewrite -EFinB ltry.
-  - move=> x x2; apply: mulr_ge0; last exact: expR_ge0.
-    by rewrite invr_ge0; apply: (le_trans _ x2).
-  - apply: (@continuous_in_subspaceT R^o R^o) => x.
-    rewrite inE/= in_itv/= andbT => x2.
-    apply: (@continuousM R^o R^o).
-      exact/inv_continuous/lt0r_neq0/(lt_le_trans _ x2).
-    apply: (@continuous_comp R^o R^o R^o); last exact: continuous_expR.
-    apply: (@continuous_comp R^o R^o R^o); last exact: oppr_continuous.
-    apply: (@continuousM R^o R^o); first exact: (@cst_continuous R^o R^o).
-    apply: (@continuous_comp R^o R^o R^o).
-      exact/continuous_ln/(lt_le_trans _ x2).
-    by apply/continuous_ln/ln_gt0/(lt_le_trans _ x2); rewrite (ltr_nat _ 1 2).
-  - rewrite -[0%R](mul0r ((1 - b)^-1)%R).
-    apply: cvgM; last exact: (@cvg_cst R^o).
-    apply: cvg_comp; last exact: expRNy.
-    apply/cvgNry.
-    under eq_cvg do rewrite functions.opprfctE -mulNr opprB.
-    apply: gt0_cvgMry; first by rewrite subr_gt0.
-    by apply: cvg_comp; apply: lny.
-  - move=> x x2.
-    apply: derivableM; last exact: derivable_cst.
-    exact: (@ex_derive _ _ _ _ _ _ _ (d1 _ x2)).
-  - apply: (@cvg_at_right_filter R^o R^o) => /=.
-    apply: cvgM; last exact: (@cvg_cst R^o).
-    apply: cvg_comp; last exact: continuous_expR.
-    apply: cvgM; first exact: (@cvg_cst R^o).
-    apply: cvg_comp; first exact: continuous_ln.
-    by apply/continuous_ln/ln_gt0; rewrite (ltr_nat _ 1 2).
-  move=> x; rewrite in_itv/= andbT => x2.
-  rewrite derive1Mr; last first.
-    exact: (@ex_derive _ _ _ _ _ _ _ (d1 _ x2)).
-  rewrite derive1E.
-  rewrite (@derive_val _ _ _ _ _ _ _ (d1 _ x2)).
-  rewrite mulrC !mulrA mulVf; first by rewrite mul1r mulrC mulNr.
-  rewrite -oppr_eq0 opprB.
-  by apply: lt0r_neq0; rewrite subr_gt0.
-set c := ((a - 1) / 2)%R.
-have c0 : (0 < c)%R by apply: divr_gt0 => //; rewrite subr_gt0.
-have: (expR (- ((c * ln x)%R + (b * ln (ln x))%R)%E) @[x --> +oo] --> (nbhs 0))%R.
-  apply: cvg_comp; last exact: expRNy.
-  apply/cvgNrNy.
-  (* TOTHINK: Is there a shorter way using landau notations? *)
-  apply: (@cvg_comp _ _ _ _ (fun x => c * x + b * ln x)%R); first exact: lny.
-  apply: (cvg_trans (@near_eq_cvg R^o R^o _ _ (fun x => c * expR (ln x) + b * ln x)%R _ _)).
-    near=> x.
-    rewrite lnK// unfold_in//=.
-  apply: (@cvg_comp _ _ _ _ (fun x => c * expR x + b * x)%R); first exact: lny.
-  apply: (@ger_cvgy _ _ _ _ (fun x => (c / 2) * x ^+ 2 + b * x)%R).
-    near=> x.
-    rewrite mulrAC lerD2r -ler_pdivrMl//.
-    rewrite 2!mulrA mulVf; last exact/lt0r_neq0.
-    rewrite mul1r.
-    have x0 : (0 <= x)%R by [].
-    apply: (le_trans _ (expR_ge1Dxn 1 x0)).
-    by rewrite lerDr.
-  under eq_cvg do rewrite mulrA -mulrDl.
-  (* TOTHINK: Is this interesting enough to be backported. *)
-  have cvgyM (f g : R^o -> R^o) : f x @[x --> +oo%R] --> +oo%R 
-      -> g x @[x --> +oo%R] --> +oo%R
-      -> (f \* g)%R x @[x --> +oo%R] --> +oo%R.
-    move=> fy gy S [] M [] _ MS.
-    set N := maxr M 0%R.
-    case: (fy `]N, +oo[) => [|A [] _ fA].
-      by exists N; split=> //= y; rewrite in_itv/= andbT.
-    case: (gy `]1%R, +oo[) => [|B [] _ gB].
-      by exists 1%R; split=> //= y; rewrite in_itv/= andbT.
-    exists (maxr A B); split; first exact: num_real.
-    move=> x; rewrite gt_max => /andP[] /fA/= + /gB/=.
-    rewrite !in_itv/= !andbT => xN x1.
-    apply/MS/(@le_lt_trans _ _ N); first by rewrite le_max lexx.
-    rewrite -[N]mulr1; apply: ltr_pM => //.
-    by rewrite le_max lexx orbT.
-  apply: cvgyM => //.
-  have {}c0 : (0 < c / 2)%R by apply: divr_gt0.
-  rewrite (@eq_cvg _ _ _ _ (fun x => c / 2 * (x + ((c / 2)^-1 * b)))%R).
-    by apply: gt0_cvgMry => //; apply: cvg_addrr.
-  move=> x; rewrite mulrDr mulrA divff; last exact: lt0r_neq0.
-  by rewrite mul1r.
-move=> /(_ `]-oo, 1%R] _)/wrap[|[] M [] _ gtM].
-  by exists 1%R => //= x/=; rewrite add0r normrN in_itv/= => /ltW/ler_normlW.
-set N := (maxr (M + 1) 2)%R.
-have N2: (2 <= N)%R by rewrite le_max lexx orbT.
-have ->: `[2%R, +oo[ = `[2%R, N%R[ `|` `[N%R, +oo[.
-  apply/seteqP; split=> x/=; rewrite !in_itv/= !andbT.
-    by move=> -> /=; apply/orP; rewrite ltNge orNb.
-  by move=> [/andP[]|/(le_trans N2)].
-rewrite ge0_integral_setU//; first last.
-- apply/eqP; rewrite -subset0 => x/=; rewrite !in_itv/= andbT.
-  by move=> [] /andP[] _ xN /(lt_le_trans xN); rewrite ltxx.
-- by move=> x _; rewrite lee_fin expR_ge0.
-- exact: fm.
-apply: lte_add_pinfty.
-  have: `[2%R, N[ `<=` `[2%R, N] by apply: subset_itvl; rewrite bnd_simp.
-  move=> /(@ge0_subset_integral _ _ _ (@lebesgue_measure R))/le_lt_trans; apply=> //.
-  - exact: fm.
+have dd (x y : R) : (+%R x)^`() y = 1%R.
+  by rewrite derive1E deriveD// derive_cst derive_id add0r.
+rewrite (sameP (integrableP _ _ _) (andPP (asboolP _) idP)).
+move: (fm `[2%R, +oo[ a b) => /asboolP -> /=.
+under eq_integral do rewrite ger0_norm ?expR_ge0//.
+rewrite [RHS]/(_ && _)/=; case: (ltgtP a 1%R) => [a1|a1|->].
+- apply/negP.
+  have [c ac c1] := mid _ _ a1. 
+  move: (ln_small (c - a) b)%R; rewrite subr_gt0 => /(_ ac).
+  move=> /(_ _ Ny10) [] M [] _ gtM.
+  rewrite (itv2My M).
+  set N := (maxr (M + 1) 2)%R.
+  have N2: (2 <= N)%R by rewrite le_max lexx orbT.
+  rewrite ge0_integral_setU//; first last.
+  - exact: itv2My0.
   - by move=> x _; rewrite lee_fin expR_ge0.
-  apply: integrable_lty => //; apply: continuous_compact_integrable.
-    exact: segment_compact.
-  apply: (@continuous_in_subspaceT R^o R^o) => x.
-  rewrite inE/= in_itv/= => /andP[] x2 _.
-  apply: (@continuous_comp R^o R^o R^o); last exact: continuous_expR.
-  apply: (@continuous_comp R^o R^o R^o); last exact: oppr_continuous.
-  apply: continuousD; (apply: continuousM; first exact: (@cst_continuous _ R^o)).
-    exact/continuous_ln/(lt_le_trans _ x2).
-  apply: (@continuous_comp R^o R^o R^o).
-    exact/continuous_ln/(lt_le_trans _ x2).
-  by apply/continuous_ln/ln_gt0/(lt_le_trans _ x2); rewrite (ltr_nat _ 1 2).
-have: (\int_(x in `[N, +oo[) (expR (- (a - c) * ln x))%:E < +oo)%E.
-  have: (1 < a - c)%R.
-    by rewrite ltrBrDl -ltrBrDr ltr_pdivrMr// mulr_natr mulr2n ltrDl subr_gt0.
-  move: (a - c)%R => {c fm a1 c0 gtM}a a1.
-  have d1 x : (2 < x)%R -> is_derive (x : R^o) 1%R (fun x0 : R^o => expR ((1 - a) * ln x0)) ((1 - a) * expR (- a * ln x))%R.
-    move=> x2.
-    (* @reviewer, please do not mind me, this is for performance reasons. *)
-    apply: (@trigger_derive R^o _ _ _ _ (_ : id (is_derive _ _ _ _))).
-      apply: (is_derive1_comp _ (_ : id (is_derive _ _ _ _))).
-      apply: (is_deriveM _ (_ : id (is_derive _ _ _ _))).
-      by apply: is_derive1_ln; apply: (lt_trans _ x2).
-    rewrite /= scaler0 addr0 [LHS]mulrCA; congr GRing.mul.
-    have x0: (0 < x)%R by apply/(lt_trans _ x2).
-    rewrite mulrBl mul1r expRD lnK//.
-    rewrite mulrAC mulNr divff ?mul1r//.
-    exact: lt0r_neq0.
-  rewrite (@ge0_continuous_FTC2y R^o _ (fun x => expR ((1 - a) * ln x) / (1 - a))%R _ 0%R).
+  - exact: fm.
+  rewrite integral_itv_bndo_bndc; last by apply/measurable_EFinP; apply: fm.
+  move: (fI N) => /integrableP[_].
+  under [X in (X < +oo)%E]eq_integral do rewrite abse_EFin ger0_norm ?expR_ge0//.
+  move IE: (integral _ _ _) => I.
+  have: (0 <= I)%E.
+    by rewrite -IE; apply: integral_ge0 => x _; rewrite lee_fin expR_ge0.
+  case: I IE => // I _ _ _.
+  rewrite -lteBrDl//=.
+  have: (\int_(x in `[N, +oo[) (f c 0 x)%:E <= \int_(x in `[N, +oo[) (f a b x)%:E)%E.
+    apply: ge0_le_integral.
+    - by [].
+    - by move=> x _; rewrite lee_fin expR_ge0.
+    - exact: fm.
+    - by move=> x _; rewrite lee_fin expR_ge0.
+    - exact: fm.
+    move=> /= x; rewrite in_itv/= andbT ge_max => /andP[] Mx _.
+    have /gtM/=: (M < x)%R by apply: (lt_le_trans _ Mx); rewrite ltrDl.
+    rewrite in_itv/= lee_fin /f mul0r addr0 -[X in _ -> (_ <= X)%R]mul1r.
+    rewrite [X in (1 * X)%R]expRN ler_pdivlMr ?expR_gt0//; congr (_ <= _)%R.
+    rewrite !expRD mulrA; congr (_ * _)%R.
+    by rewrite mulNr mulrBl opprD opprK expRD.
+  move=> /le_lt_trans/[apply].
+  rewrite (@ge0_continuous_FTC2y _ _ (fun x => (f (c - 1) 0 x) / (1 - c))%R _ +oo%E).
+  - by [].
+  - by move=> x _; apply: expR_ge0.
+  - apply: (continuous_subspaceW _ (continuous_in_subspaceT (fC0 c 0%R))).
+    exact: subset_itvr.
+  - apply/cvgeryP.
+    apply: gt0_cvgMly; first by rewrite invr_gt0 subr_gt0.
+    apply: (cvg_comp _ _ _ (@expRy _)).
+    under eq_cvg do rewrite mul0r addr0 -mulNr.
+    apply: gt0_cvgMry; first by rewrite oppr_gt0 subr_lt0.
+    exact: lny.
+  - move=> x /(le_lt_trans N2)/ltW Nx.
+    apply: (@ex_derive _ _ _ _ _ _ _ (_ : id (is_derive _ _ _ _))).
+    apply: (is_deriveM (_ : id (is_derive _ _ _ _))).
+    exact: fD1.
+  - apply: (@cvg_at_right_filter _ R^o).
+    apply: cvgM; last exact: (@cvg_cst R^o).
+    by apply: fC0; rewrite inE/= in_itv/= N2.
+  - move=> x; rewrite in_itv/= andbT => /(le_lt_trans N2)/ltW Nx.
+    rewrite derive1E.
+    apply: (@derive_val _ _ _ _ _ _ _
+              (@trigger_derive R^o _ _ _ _ (_ : id (is_derive _ _ _ _)) _)).
+      apply: (is_deriveM (_ : id (is_derive _ _ _ _))).
+      exact: fD1.
+    rewrite /= scaler0 mul0r add0r addr0 -addrA addNr addr0 opprB.
+    by rewrite [_ *: _]mulrA mulVf ?mul1r// lt0r_neq0// subr_gt0.
+- rewrite implyFb.
+  have [c c1 ac] := mid _ _ a1.
+  move: (ln_small (a - c) (- b))%R; rewrite subr_gt0 => /(_ ac).
+  move=> /(_ _ Ny10) [] M [] _ gtM.
+  rewrite (itv2My M).
+  set N := (maxr (M + 1) 2)%R.
+  have N2: (2 <= N)%R by rewrite le_max lexx orbT.
+  rewrite ge0_integral_setU//; first last.
+  - exact: itv2My0.
+  - by move=> x _; rewrite lee_fin expR_ge0.
+  - exact: fm.
+  apply: lte_add_pinfty.
+    rewrite integral_itv_bndo_bndc; last by apply/measurable_EFinP; apply: fm.
+    move: (fI N) => /integrableP[_].
+    by under [X in (X < +oo)%E]eq_integral do rewrite abse_EFin ger0_norm ?expR_ge0//.
+  apply: (@le_lt_trans _ _ (\int_(x in `[N, +oo[) (f c 0 x)%:E)).
+    apply: ge0_le_integral.
+    - by [].
+    - by move=> x _; rewrite lee_fin expR_ge0.
+    - exact: fm.
+    - by move=> x _; rewrite lee_fin expR_ge0.
+    - exact: fm.
+    - move=> /= x; rewrite in_itv/= andbT ge_max => /andP[] Mx _.
+    have /gtM/=: (M < x)%R by apply: (lt_le_trans _ Mx); rewrite ltrDl.
+    rewrite in_itv/= lee_fin /f mul0r addr0 -[X in _ -> (_ <= X)%R]mul1r.
+    rewrite [X in (1 * X)%R]expRN ler_pdivlMr ?expR_gt0//; congr (_ <= _)%R.
+    by rewrite opprB mulrBl -addrA expRD mulrC opprD mulNr.
+  rewrite (@ge0_continuous_FTC2y R^o _ (fun x => f (c - 1) 0 x / (1 - c))%R _ 0%R).
   - by rewrite -EFinB ltry.
   - move=> x x2; apply: expR_ge0.
-  - apply: (@continuous_in_subspaceT R^o R^o) => x.
-    rewrite inE/= in_itv/= andbT => /(le_trans N2) x2.
-    apply: (@continuous_comp R^o R^o R^o); last exact: continuous_expR.
-    apply: (@continuousM R^o R^o); first exact: (@cst_continuous R^o R^o).
-    exact/continuous_ln/(lt_le_trans _ x2).
-  - rewrite -[0%R](mul0r ((1 - a)^-1)%R).
+  - apply: (continuous_subspaceW _ (continuous_in_subspaceT (fC0 c 0%R))).
+    exact: subset_itvr.
+  - apply: cvg_comp; last exact: EFin_continuous.
+    rewrite -[X in _ `=>` nbhs X](mul0r ((1 - c)^-1)%R).
     apply: cvgM; last exact: (@cvg_cst R^o).
-    apply: cvg_comp; last exact: expRNy.
-    apply/cvgNry.
-    under eq_cvg do rewrite functions.opprfctE -mulNr opprB.
+    apply: (cvg_comp _ _ _ (@expRNy _)).
+    under eq_cvg do rewrite mul0r addr0.
+    apply/cvgNrNy.
     apply: gt0_cvgMry; first by rewrite subr_gt0.
     exact: lny.
   - move=> x /(le_lt_trans N2) x2.
     apply: derivableM; last exact: derivable_cst.
-    exact: (@ex_derive _ _ _ _ _ _ _ (d1 _ x2)).
-  - apply: (@cvg_at_right_filter R^o R^o) => /=.
+    by apply: (@ex_derive _ _ _ _ _ _ _ (fD1 _ _ _ _)); apply: ltW.
+  - apply: (@cvg_at_right_filter R^o R^o).
     apply: cvgM; last exact: (@cvg_cst R^o).
     apply: cvg_comp; last exact: continuous_expR.
+    rewrite mul0r addr0 -mulNr.
+    under eq_cvg do rewrite mul0r addr0 -mulNr.
     apply: cvgM; first exact: (@cvg_cst R^o).
     exact/continuous_ln/(lt_le_trans _ N2).
   move=> x; rewrite in_itv/= andbT => /(le_lt_trans N2) x2.
   rewrite derive1Mr; last first.
-    exact: (@ex_derive _ _ _ _ _ _ _ (d1 _ x2)).
+    exact: (@ex_derive _ _ _ _ _ _ _ (fD1 _ _ _ (ltW x2))).
+  rewrite derive1E (@derive_val _ _ _ _ _ _ _ (fD1 _ _ _ (ltW x2))).
+  rewrite mul0r addr0 opprB -addrA addNr addr0 mulrAC divff ?mul1r//.
+  by apply: ltr0_neq0; rewrite subr_lt0.
+rewrite implyTb.
+have [->|b1] := eqVneq b 1%R.
+  rewrite (@ge0_continuous_FTC2y R^o _ (fun x => ln (ln x))%R _ +oo%E).
+  - by [].
+  - by move=> x _; apply: expR_ge0.
+  - exact: (continuous_in_subspaceT (fC0 _ _)).
+  - by apply/cvgeryP; apply: cvg_comp; apply: lny.
+  - move=> x x2.
+    apply: derivable_comp; apply: derivable_ln; first exact: (lt_trans _ x2).
+    by apply/ln_gt0/(lt_trans _ x2); rewrite (ltr_nat _ 1 2).
+  - apply: (@cvg_at_right_filter R^o R^o).
+    apply: cvg_comp; apply: continuous_ln => //.
+    by apply/ln_gt0; rewrite (ltr_nat _ 1 2).
+  - move=> x; rewrite in_itv/= andbT => x2.
+    have x0 : (0 < x)%R by apply: (lt_trans _ x2).
+    have lnx0 : (0 < ln x)%R.
+      by apply/ln_gt0/(lt_trans _ x2); rewrite (ltr_nat _ 1 2).
+    rewrite derive1E.
+    apply: (@derive_val _ _ _ _ _ _ _
+              (@trigger_derive R^o _ _ _ _ (_ : id (is_derive _ _ _ _)) _)).
+      by apply: (is_derive1_comp (_ : id (is_derive _ _ _ _)) (_ : id (is_derive _ _ _ _))); apply: is_derive1_ln.
+    by rewrite mulrC /f !mul1r opprD expRD !expRN !lnK// posrE.
+rewrite (@ge0_continuous_FTC2y R^o _ (fun x => (f 0 (b - 1) x) / (1 - b))%R _ (if (b < 1)%R then +oo%E else 0%E)).
+- by case: (ltgtP b 1%R) b1 => //= _ _; rewrite -EFinD// ltry.
+- by move=> x _; apply: expR_ge0.
+- exact: (continuous_in_subspaceT (fC0 _ _)).
+- case: (ltgtP b 1%R) b1 => // b1 _.
+    apply/cvgeryP.
+    apply: gt0_cvgMly; first by rewrite invr_gt0 subr_gt0.
+    apply: (cvg_comp _ _ _ (@expRy _)).
+    under eq_cvg do rewrite mul0r add0r -mulNr.
+    apply: gt0_cvgMry; first by rewrite oppr_gt0 subr_lt0.
+    by apply: cvg_comp; apply: lny.
+  apply: cvg_comp; last exact: EFin_continuous.
+  rewrite -[X in _ `=>` nbhs X](mul0r ((1 - b)^-1)%R).
+  apply: cvgM; last exact: (@cvg_cst R^o).
+  apply: cvg_comp; last exact: expRNy.
+  under eq_cvg do rewrite mul0r add0r.
+  apply/cvgNrNy.
+  apply: gt0_cvgMry; first by rewrite subr_gt0.
+  by apply: cvg_comp; apply: lny.
+- move=> x /ltW x2.
+  apply: (@ex_derive _ _ _ _ _ _ _ (_ : id (is_derive _ _ _ _))).
+  exact: (is_deriveM (fD1 _ _ _ x2)).
+- apply: (@cvg_at_right_filter R^o R^o).
+  apply: cvgM; last exact: (@cvg_cst R^o).
+  by apply: fC0; rewrite inE/= in_itv/= lexx.
+- move=> x; rewrite in_itv/= andbT => /ltW x2.
   rewrite derive1E.
-  rewrite (@derive_val _ _ _ _ _ _ _ (d1 _ x2)).
-  rewrite mulrAC divff ?mul1r//.
-  rewrite -oppr_eq0 opprB.
-  by apply: lt0r_neq0; rewrite subr_gt0.
-move=> /(le_lt_trans _); apply.
-apply: ge0_le_integral; first by []. 
-- by move=> x _; rewrite lee_fin expR_ge0.
-- exact: fm.
-- by move=> x _; rewrite lee_fin expR_ge0.
-- apply/measurable_EFinP.
-  apply: (measurable_funS _ (subsetT _)) => //.
-  apply: measurableT_comp => //.
-  exact: measurableT_comp.
-move=> x /=; rewrite in_itv/= andbT => Nx.
-rewrite lee_fin -[a in leLHS]addr0 -(subrr c) addrCA [(c + _)%R]addrC mulrDl.
-rewrite -addrA opprD expRD -mulNr.
-rewrite -ler_pdivlMl; last exact: expR_gt0.
-rewrite mulVf; last exact/lt0r_neq0/expR_gt0.
-have: (M < x)%R by apply: (lt_le_trans _ Nx); rewrite lt_max ltrDl ltr01.
-by move=> /gtM/=; rewrite in_itv/=.
+  apply: (@derive_val _ _ _ _ _ _ _
+            (@trigger_derive R^o _ _ _ _ (_ : id (is_derive _ _ _ _)) _)).
+    exact: (is_deriveM (fD1 _ _ _ x2)).
+  rewrite scaler0 /f !add0r mul1r -mulNr opprB.
+  rewrite [_ *: _]mulrA mulrA mulVf; last by rewrite subr_eq0 eq_sym.
+  have lnx: (0 < ln x)%R.
+    by apply/ln_gt0/(lt_le_trans _ x2); rewrite (ltr_nat _ 1 2).
+  rewrite mulrBl !mul1r addrA opprB expRD lnK ?posrE//.
+  by rewrite mulrA mulVf (mul1r, lt0r_neq0).
 Unshelve. all: end_near.
 Qed.
 
@@ -1989,7 +1840,7 @@ rewrite -Sfl2eq3 -big_nat EFinD (@Abel_continuous _ _ _ f u); last first.
   - apply: cvg_at_left_filter. apply: cvgV.
       by apply/lt0r_neq0/ln_gt0/(lt_trans _ xgt2); rewrite ltr1n.
     exact/continuous_ln/(lt_trans _ xgt2).
-- exact/andP.
+- by apply/andP; split=> //; apply: ltW.
 under eq_integral => t. rewrite set_itvcc inE => /= /andP [] tle2 _.
   rewrite -big_mkcond -derivef // mulrN EFinN. over.
 rewrite integral_ge0N => /= [|t /andP [] tge2 tltx]; last first.
@@ -2164,7 +2015,7 @@ have integrable_R0: lebesgue_measure.-integrable `[2%R, +oo[
   - rewrite in_itv/= andbT => tge2.
     rewrite lee_fin !normrM ler_wpM2r //.
     rewrite [X in (_ <= X)%R](ger0_norm (ltW Cgt0)).
-    exact /(Mertens1 (lt_le_trans _ tge2)) /ltr1n.
+    exact /(Mertens1 (le_trans _ tge2)) /ler1n.
   - under [X in integrable _ _ X]funext do rewrite EFinM.
     exact: integrableZl.
 have -> : (\int_(t in `[2%R, x]) (R0 t / (t * ln t ^+ 2))%:E -
@@ -2194,7 +2045,7 @@ apply: (le_trans (lee_abs_sub _ _)). rewrite EFinM abseM.
 apply: (le_trans (leeD (lee_wpmul2r _ (lee_tofin (Mertens1 _)))
     (le_abse_integral lebesgue_measure _ _))) => //.
 - exact: abse_ge0.
-- exact /(lt_trans _ xgt2) /ltr1n.
+- exact /ltW /(lt_trans _ xgt2) /ltr1n.
 - apply/measurable_EFinP.
   apply: (measurable_funS _ _ measurable_fun_R0') => // t /=.
   by rewrite !in_itv/= !andbT => /(lt_trans xgt2)/ltW.
