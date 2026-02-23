@@ -167,6 +167,9 @@ digraph depend {
 		"classical/internal_Eqdep_dec"	[URL="mathcomp.classical.internal_Eqdep_dec.html",
 			fillcolor=1,
 			label=internal_Eqdep_dec];
+		"classical/all_ssreflect_compat"	[URL="mathcomp.classical.all_ssreflect_compat.html",
+			fillcolor=1,
+			label=all_ssreflect_compat];
 		"classical/wochoice"	[URL="mathcomp.classical.wochoice.html",
 			fillcolor=1,
 			label=wochoice];
@@ -460,6 +463,9 @@ digraph depend {
 	"classical/set_interval" -> "classical/filter";
 	"classical/set_interval" -> "reals/reals";
 	"classical/internal_Eqdep_dec" -> "classical/boolp";
+	"classical/all_ssreflect_compat" -> "classical/mathcomp_extra";
+	"classical/all_ssreflect_compat" -> "classical/unstable";
+	"classical/all_ssreflect_compat" -> "experimental_reals/xfinmap";
 	"classical/wochoice" -> "classical/classical_sets";
 	"classical/unstable" -> "classical/functions";
 	"classical/unstable" -> "reals/signed";
