@@ -7,9 +7,19 @@ dev-repo: "git+https://github.com/math-comp/analysis.git"
 bug-reports: "https://github.com/math-comp/analysis/issues"
 license: "CECILL-C"
 
+synopsis: "An analysis library for mathematical components"
+description: """
+This package contains a library for real analysis for
+the Coq proof-assistant and using the Mathematical Components library."""
+
 build: [make "-C" "theories" "-j%{jobs}%"]
 install: [make "-C" "theories" "install"]
-depends: [ "rocq-mathcomp-analysis" { = version} ]
+depends: [
+  "rocq-mathcomp-reals" { = version}
+  "rocq-mathcomp-solvable"
+  "rocq-mathcomp-field"
+  "rocq-mathcomp-bigenough" { (>= "1.0.0") }
+]
 
 tags: [
   "category:Mathematics/Real Calculus and Topology"
@@ -48,5 +58,3 @@ authors: [
   "Pierre-Yves Strub"
   "Laurent Théry"
 ]
-
-synopsis: "Compatibility package for rocq-mathcomp-analysis"

@@ -1,5 +1,5 @@
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra all_classical all_reals.
+From mathcomp Require Import all_ssreflect_compat all_algebra all_classical all_reals.
 From mathcomp Require Import topology_structure uniform_structure.
 From mathcomp Require Import order_topology pseudometric_structure compact.
 

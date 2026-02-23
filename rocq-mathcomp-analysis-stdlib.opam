@@ -7,12 +7,21 @@ dev-repo: "git+https://github.com/math-comp/analysis.git"
 bug-reports: "https://github.com/math-comp/analysis/issues"
 license: "CECILL-C"
 
-build: [make "-C" "reals_stdlib" "-j%{jobs}%"]
-install: [make "-C" "reals_stdlib" "install"]
-depends: [ "rocq-mathcomp-reals-stdlib" { = version} ]
+synopsis: "A library to link real numbers from mathematical components and Stdlib"
+description: """
+This package contains a library to link real numbers for
+the Coq proof-assistant using the Mathematical Components library and Stdlib."""
+
+build: [make "-C" "analysis_stdlib" "-j%{jobs}%"]
+install: [make "-C" "analysis_stdlib" "install"]
+depends: [
+  "rocq-mathcomp-analysis" { = version}
+  "rocq-mathcomp-reals-stdlib"
+]
 
 tags: [
   "category:Mathematics/Real Numbers"
+  "category:Mathematics/Real Calculus and Topology"
   "keyword:real numbers"
   "keyword:reals"
   "logpath:mathcomp.reals_stdlib"
@@ -31,5 +40,3 @@ authors: [
   "Pierre-Yves Strub"
   "Laurent Théry"
 ]
-
-synopsis: "Compatibility package for rocq-mathcomp-reals-stdlib"

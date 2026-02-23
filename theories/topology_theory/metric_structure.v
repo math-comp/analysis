@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval_inference rat interval zmodp vector.
 From mathcomp Require Import fieldext falgebra archimedean finmap.
 #[warning="-warn-library-file-internal-analysis"]

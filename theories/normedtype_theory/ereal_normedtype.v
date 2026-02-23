@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrnum interval.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum interval.
 From mathcomp Require Import interval_inference.
 From mathcomp Require Import boolp classical_sets ereal reals topology.
 From mathcomp Require Import real_interval num_normedtype.

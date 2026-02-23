@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import classical_sets boolp topology.

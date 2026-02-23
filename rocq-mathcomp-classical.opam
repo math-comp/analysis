@@ -7,9 +7,22 @@ dev-repo: "git+https://github.com/math-comp/analysis.git"
 bug-reports: "https://github.com/math-comp/analysis/issues"
 license: "CECILL-C"
 
+synopsis: "A library for classical logic for mathematical components"
+description: """
+This repository contains a library for classical logic for
+the Coq proof-assistant and using the Mathematical Components library."""
+
 build: [make "-C" "classical" "-j%{jobs}%"]
 install: [make "-C" "classical" "install"]
-depends: [ "rocq-mathcomp-classical" { = version} ]
+depends: [
+  ("coq" {>= "8.20" & < "8.21~"}
+  | "rocq-core" { (>= "9.0" & < "9.2~") | (= "dev") })
+  "rocq-mathcomp-ssreflect" { (>= "2.4.0" & < "2.6~") | (= "dev") }
+  "rocq-mathcomp-fingroup"
+  "rocq-mathcomp-algebra"
+  "rocq-mathcomp-finmap" { (>= "2.1.0") }
+  "rocq-hierarchy-builder" { (>= "1.8.0") }
+]
 
 tags: [
   "category:Mathematics/Logic/Classical logic"
@@ -36,5 +49,3 @@ authors: [
   "Pierre-Yves Strub"
   "Laurent Théry"
 ]
-
-synopsis: "Compatibility package for rocq-mathcomp-classical"

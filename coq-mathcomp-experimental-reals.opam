@@ -7,20 +7,9 @@ dev-repo: "git+https://github.com/math-comp/analysis.git"
 bug-reports: "https://github.com/math-comp/analysis/issues"
 license: "CECILL-C"
 
-synopsis: "A library for alternative real numbers for mathematical components"
-description: """
-This package contains an experiment along real numbers
-made at the beginning of the MathComp-Analysis library
-(which now offers the coq-mathcomp-reals package).
-
-Beware that this still contains a few Admitted."""
-
 build: [make "-C" "experimental_reals" "-j%{jobs}%"]
 install: [make "-C" "experimental_reals" "install"]
-depends: [
-  "coq-mathcomp-reals" { = version}
-  "coq-mathcomp-bigenough" { (>= "1.0.0") }
-]
+depends: [ "rocq-mathcomp-experimental-reals" { = version} ]
 
 tags: [
   "category:Mathematics/Real Numbers"
@@ -42,3 +31,5 @@ authors: [
   "Pierre-Yves Strub"
   "Laurent Théry"
 ]
+
+synopsis: "Compatibility package for rocq-mathcomp-experimental-reals"

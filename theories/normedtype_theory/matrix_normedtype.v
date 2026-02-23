@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect finmap ssralg ssrnum matrix interval.
+From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum matrix interval.
 From mathcomp Require Import boolp classical_sets interval_inference reals.
 From mathcomp Require Import topology function_spaces prodnormedzmodule tvs.
 From mathcomp Require Import pseudometric_normed_Zmodule normed_module.

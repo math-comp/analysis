@@ -8,6 +8,7 @@
 -arg -w -arg -projection-no-head-constant
 
 internal_Eqdep_dec.v
+all_ssreflect_compat.v
 boolp.v
 contra.v
 wochoice.v

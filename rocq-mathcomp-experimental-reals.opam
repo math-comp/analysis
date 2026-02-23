@@ -7,15 +7,26 @@ dev-repo: "git+https://github.com/math-comp/analysis.git"
 bug-reports: "https://github.com/math-comp/analysis/issues"
 license: "CECILL-C"
 
-build: [make "-C" "reals_stdlib" "-j%{jobs}%"]
-install: [make "-C" "reals_stdlib" "install"]
-depends: [ "rocq-mathcomp-reals-stdlib" { = version} ]
+synopsis: "A library for alternative real numbers for mathematical components"
+description: """
+This package contains an experiment along real numbers
+made at the beginning of the MathComp-Analysis library
+(which now offers the coq-mathcomp-reals package).
+
+Beware that this still contains a few Admitted."""
+
+build: [make "-C" "experimental_reals" "-j%{jobs}%"]
+install: [make "-C" "experimental_reals" "install"]
+depends: [
+  "rocq-mathcomp-reals" { = version}
+  "rocq-mathcomp-bigenough" { (>= "1.0.0") }
+]
 
 tags: [
   "category:Mathematics/Real Numbers"
   "keyword:real numbers"
   "keyword:reals"
-  "logpath:mathcomp.reals_stdlib"
+  "logpath:mathcomp.experimental_reals"
 ]
 authors: [
   "Reynald Affeldt"
@@ -31,5 +42,3 @@ authors: [
   "Pierre-Yves Strub"
   "Laurent Théry"
 ]
-
-synopsis: "Compatibility package for rocq-mathcomp-reals-stdlib"

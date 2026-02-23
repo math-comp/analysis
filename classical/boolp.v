@@ -5,7 +5,7 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect.
+From mathcomp Require Import all_ssreflect_compat.
 From mathcomp Require Import mathcomp_extra.
 From mathcomp Require internal_Eqdep_dec.
 

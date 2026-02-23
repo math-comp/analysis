@@ -8,7 +8,7 @@ Require Import Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
 Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
 Require Import Rtrigo1 Reals.
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrnum archimedean.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum archimedean.
 From mathcomp Require Import boolp classical_sets reals interval_inference.
 From mathcomp Require Export Rstruct.
 From mathcomp Require Import topology.

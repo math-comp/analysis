@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrnum vector.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum vector.
 From mathcomp Require Import boolp classical_sets functions cardinality.
 From mathcomp Require Import set_interval reals interval_inference.
 From mathcomp Require Import topology function_spaces.

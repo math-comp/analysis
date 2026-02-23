@@ -10,7 +10,7 @@
    incorporate it into mathcomp proper where it could then be used for
    bounds of intervals*)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap.
+From mathcomp Require Import all_ssreflect_compat all_algebra finmap.
 From mathcomp Require Import mathcomp_extra interval_inference.
 
 (**md**************************************************************************)
