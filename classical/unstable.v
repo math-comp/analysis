@@ -37,6 +37,27 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
 
+Section IntervalNumDomain.
+Variable R : numDomainType.
+Implicit Types x : R.
+
+(* TODO: PR to num_domain.v *)
+Lemma oppr_itvNy ba bb (xa xb x : R) :
+  (- x \in Interval (BInfty _ ba) (BSide bb xb)) =
+  (x \in Interval (BSide (~~ bb) (- xb)) (BInfty _ (~~ ba))).
+Proof.
+by rewrite !itv_boundlr /<=%O /= !implybF if_neg lteifNl andbC.
+Qed.
+
+Lemma oppr_itvy ba bb (xa x : R) :
+  (- x \in Interval (BSide ba xa) (BInfty _ bb)) =
+  (x \in Interval (BInfty _ (~~ bb)) (BSide (~~ ba) (- xa))).
+Proof.
+by rewrite !itv_boundlr /<=%O /= !implybF if_neg lteifNr negbK andbC.
+Qed.
+
+End IntervalNumDomain.
+
 Lemma coprime_prodr (I : Type) (r : seq I) (P : {pred I}) (F : I -> nat) (a : I)
     (l : seq I) :
   all (coprime (F a)) [seq F i | i <- [seq i <- l | P i]] ->

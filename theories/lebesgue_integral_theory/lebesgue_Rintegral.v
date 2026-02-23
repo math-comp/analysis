@@ -206,7 +206,7 @@ Lemma Rintegral_itv_bndo_bndc (a : itv_bound R) (r : R) f :
    \int[mu]_(x in [set` Interval a (BRight r)]) (f x).
 Proof.
 move=> mf; rewrite /Rintegral integral_itv_bndo_bndc//.
-by apply/measurable_EFinP; exact: (measurable_int mu).
+exact: (measurable_int mu).
 Qed.
 
 Lemma Rintegral_itv_obnd_cbnd (r : R) (b : itv_bound R) f :
@@ -215,7 +215,7 @@ Lemma Rintegral_itv_obnd_cbnd (r : R) (b : itv_bound R) f :
   \int[mu]_(x in [set` Interval (BLeft r) b]) (f x).
 Proof.
 move=> mf; rewrite /Rintegral integral_itv_obnd_cbnd//.
-by apply/measurable_EFinP; exact: (measurable_int mu).
+exact: (measurable_int mu).
 Qed.
 
 Lemma Rintegral_set1 f (r : R) : \int[mu]_(x in [set r]) f x = 0.

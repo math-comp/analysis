@@ -510,16 +510,17 @@ Definition measurableTypeR (R : realType) :=
   g_sigma_algebraType R.-ocitv.-measurable.
 
 Section lebesgue_stieltjes_measure.
-Variable R : realType.
+Context {R : realType}.
+Variable f : cumulative R R.
 
-Lemma lebesgue_stieltjes_measure_unique (f : cumulative R R)
+Lemma lebesgue_stieltjes_measure_unique
     (mu : {measure set (measurableTypeR R) -> \bar R}) :
     (forall X, ocitv X -> lebesgue_stieltjes_measure f X = mu X) ->
-  forall X, measurable X -> lebesgue_stieltjes_measure f X = mu X.
+  forall A, measurable A -> lebesgue_stieltjes_measure f A = mu A.
 Proof.
-move=> muE X mX; apply: measure_extension_unique => //=.
+move=> muE A mA; apply: measure_extension_unique => //=.
   exact: wlength_sigma_finite.
-by move=> A mA; rewrite -muE// -measurable_mu_extE.
+by move=> X mX; rewrite -muE// -measurable_mu_extE.
 Qed.
 
 End lebesgue_stieltjes_measure.

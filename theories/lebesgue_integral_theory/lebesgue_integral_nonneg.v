@@ -568,6 +568,33 @@ Qed.
 
 End ge0_transfer.
 
+Section change_of_variable.
+Open Scope ereal_scope.
+Context {R : realType}.
+
+Local Notation mu := lebesgue_measure.
+
+Lemma lebesgue_measureN (A : set R) : measurable A ->
+  pushforward mu (-%R : _ -> measurableTypeR R) A = mu A.
+Proof.
+move=> mA; apply/esym/lebesgue_measure_unique => //= _ [[a b]] _ <-.
+rewrite /pushforward opp_preimage_itvbndbnd/= !lebesgue_measure_itv/=.
+by rewrite !lte_fin ltrN2 opprK addrC.
+Qed.
+
+Lemma ge0_integration_by_substitution0 (f : R -> \bar R) :
+  measurable_fun [set: R] f -> (forall r, 0 <= f r) ->
+  \int[mu]_(r in `[0%R, +oo[) f r = \int[mu]_(r in `]-oo, 0%R]) f (- r)%R.
+Proof.
+move=> mf f0; rewrite (_ : `]-oo, 0%R]%classic =
+    (-%R : _ -> measurableTypeR R) @^-1` `[0%R, +oo[); last first.
+  by rewrite opp_preimage_itvbndy oppr0.
+rewrite -ge0_integral_pushforward//=; last exact: measurable_funS mf.
+by apply: eq_measure_integral => //= A mA AS; exact/esym/lebesgue_measureN.
+Qed.
+
+End change_of_variable.
+
 Section integral_dirac.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (a : T) (R : realType).
@@ -907,31 +934,39 @@ by apply: ge0_subset_integral => //; exact: measurableT_comp.
 Qed.
 
 End subset_integral.
-#[deprecated(since="mathcomp-analysis 1.0.1", note="use `ge0_integral_setU` instead")]
-Notation integral_setU := ge0_integral_setU (only parsing).
 
 Section integral_setU_EFin.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType)
         (mu : {measure set T -> \bar R}).
 
-Lemma integral_setU_EFin (A B : set T) (f : T -> R) :
+Lemma integral_setU (A B : set T) (f : T -> \bar R) :
   measurable A -> measurable B ->
   measurable_fun (A `|` B) f ->
   [disjoint A & B] ->
-  \int[mu]_(x in (A `|` B)) (f x)%:E = \int[mu]_(x in A) (f x)%:E +
-                                       \int[mu]_(x in B) (f x)%:E.
+  \int[mu]_(x in (A `|` B)) f x = \int[mu]_(x in A) f x +
+                                  \int[mu]_(x in B) f x.
 Proof.
 move=> mA mB ABf AB.
 rewrite integralE/=.
-rewrite ge0_integral_setU//; last exact/measurable_funepos/measurable_EFinP.
-rewrite ge0_integral_setU//; last exact/measurable_funeneg/measurable_EFinP.
+rewrite ge0_integral_setU//; last exact/measurable_funepos.
+rewrite ge0_integral_setU//; last exact/measurable_funeneg.
 rewrite [X in _ = X + _]integralE/=.
 rewrite [X in _ = _ + X]integralE/=.
 set ap : \bar R := \int[mu]_(x in A) _; set an : \bar R := \int[mu]_(x in A) _.
 set bp : \bar R := \int[mu]_(x in B) _; set bn : \bar R := \int[mu]_(x in B) _.
 rewrite oppeD 1?addeACA//.
 by rewrite ge0_adde_def// inE integral_ge0.
+Qed.
+
+Lemma __deprecated__integral_setU_EFin (A B : set T) (f : T -> R) :
+  measurable A -> measurable B ->
+  measurable_fun (A `|` B) f ->
+  [disjoint A & B] ->
+  \int[mu]_(x in (A `|` B)) (f x)%:E = \int[mu]_(x in A) (f x)%:E +
+                                       \int[mu]_(x in B) (f x)%:E.
+Proof.
+by move=> mA mB ABf AB; apply: integral_setU => //; exact/measurable_EFinP.
 Qed.
 
 Lemma integral_bigsetU_EFin (I : eqType) (F : I -> set T) (f : T -> R)
@@ -944,7 +979,7 @@ Lemma integral_bigsetU_EFin (I : eqType) (F : I -> set T) (f : T -> R)
 Proof.
 move=> mF; elim: s => [|h t ih] us tF D mf.
   by rewrite /D 2!big_nil integral_set0.
-rewrite /D big_cons integral_setU_EFin//.
+rewrite /D big_cons __deprecated__integral_setU_EFin//.
 - rewrite big_cons ih//.
   + by move: us => /= /andP[].
   + by apply: sub_trivIset tF => /= i /= it; rewrite inE it orbT.
@@ -959,6 +994,8 @@ rewrite /D big_cons integral_setU_EFin//.
 Qed.
 
 End integral_setU_EFin.
+#[deprecated(since="mathcomp-analysis 1.16.0", note="use `integral_setU instead`")]
+Notation integral_setU_EFin := __deprecated__integral_setU_EFin (only parsing).
 
 Section ge0_integral_bigcup.
 Local Open Scope ereal_scope.
@@ -1351,11 +1388,11 @@ Proof.
 move=> mD mf mg f0 g0 [N [mN N0 subN]].
 rewrite integralEpatch// [RHS]integralEpatch//.
 rewrite (ge0_negligible_integral mN)//; last 2 first.
-  - by apply/measurable_restrict => //; rewrite setIidr.
-  - by move=> x Dx; rewrite /= patchE (mem_set Dx) f0.
+- by apply/measurable_restrict => //; rewrite setIidr.
+- by move=> x Dx; rewrite /= patchE (mem_set Dx) f0.
 rewrite [RHS](ge0_negligible_integral mN)//; last 2 first.
-  - by apply/measurable_restrict => //; rewrite setIidr.
-  - by move=> x Dx; rewrite /= patchE (mem_set Dx) g0.
+- by apply/measurable_restrict => //; rewrite setIidr.
+- by move=> x Dx; rewrite /= patchE (mem_set Dx) g0.
 apply: eq_integral => x;rewrite in_setD => /andP[_ xN].
 apply: contrapT; rewrite !patchE; case: ifPn => xD //.
 move: xN; rewrite notin_setE; apply: contra_not => fxgx; apply: subN => /=.
@@ -1368,10 +1405,10 @@ Lemma ae_eq_integral (D : set T) (g f : T -> \bar R) :
 Proof.
 move=> mD mf mg /ae_eq_funeposneg[Dfgp Dfgn].
 rewrite integralE// [in RHS]integralE//; congr (_ - _).
-  by apply: ge0_ae_eq_integral => //; [exact: measurable_funepos|
+- by apply: ge0_ae_eq_integral => //; [exact: measurable_funepos|
                                        exact: measurable_funepos].
-by apply: ge0_ae_eq_integral => //; [exact: measurable_funeneg|
-                                     exact: measurable_funeneg].
+- by apply: ge0_ae_eq_integral => //; [exact: measurable_funeneg|
+                                       exact: measurable_funeneg].
 Qed.
 
 End ae_eq_integral.
@@ -1493,41 +1530,41 @@ rewrite ge0_integral_setU//=.
 - by apply/disj_setPRL => x /[swap] ->; rewrite /ball/= subKr gtr0_norm// ltxx.
 Qed.
 
-Lemma integral_setD1_EFin (f : R -> R) r (D : set R) :
+Lemma integral_setD1 (f : R -> \bar R) r (D : set R) :
   measurable (D `\ r) -> measurable_fun (D `\ r) f ->
-  \int[mu]_(x in D `\ r) (f x)%:E = \int[mu]_(x in D) (f x)%:E.
+  \int[mu]_(x in D `\ r) f x = \int[mu]_(x in D) f x.
 Proof.
 move=> mD mfl; have [Dr|NDr] := pselect (D r); last by rewrite not_setD1.
-rewrite -[in RHS](@setD1K _ r D)// integral_setU_EFin//=.
+rewrite -[in RHS](@setD1K _ r D)// integral_setU//=.
 - by rewrite integral_set1// add0e.
 - by apply/measurable_funU => //; split => //; exact: measurable_fun_set1.
 - by rewrite disj_set2E setDIK.
 Qed.
 
-Lemma integral_itv_bndo_bndc (a : itv_bound R) (r : R) (f : R -> R) :
+Lemma integral_itv_bndo_bndc (a : itv_bound R) (r : R) (f : R -> \bar R) :
   measurable_fun [set` Interval a (BLeft r)] f ->
-   \int[mu]_(x in [set` Interval a (BLeft r)]) (f x)%:E =
-   \int[mu]_(x in [set` Interval a (BRight r)]) (f x)%:E.
+   \int[mu]_(x in [set` Interval a (BLeft r)]) f x =
+   \int[mu]_(x in [set` Interval a (BRight r)]) f x.
 Proof.
 move=> mf; have [ar|ar] := leP a (BLeft r).
-- by rewrite -[RHS](@integral_setD1_EFin _ r) ?setDitv1r.
+- by rewrite -[RHS](@integral_setD1 _ r) ?setDitv1r.
 - by rewrite !set_itv_ge// -leNgt// ltW.
 Qed.
 
-Lemma integral_itv_obnd_cbnd (r : R) (b : itv_bound R) (f : R -> R) :
+Lemma integral_itv_obnd_cbnd (r : R) (b : itv_bound R) (f : R -> \bar R) :
   measurable_fun [set` Interval (BRight r) b] f ->
-   \int[mu]_(x in [set` Interval (BRight r) b]) (f x)%:E =
-   \int[mu]_(x in [set` Interval (BLeft r) b]) (f x)%:E.
+   \int[mu]_(x in [set` Interval (BRight r) b]) f x =
+   \int[mu]_(x in [set` Interval (BLeft r) b]) f x.
 Proof.
 move=> mf; have [rb|rb] := leP (BRight r) b.
-- by rewrite -[RHS](@integral_setD1_EFin _ r) ?setDitv1l.
+- by rewrite -[RHS](@integral_setD1 _ r) ?setDitv1l.
 - by rewrite !set_itv_ge// -leNgt -?ltBRight_leBLeft// ltW.
 Qed.
 
-Lemma integral_itv_bndoo (x y : R) (f : R -> R) (b0 b1 : bool) :
+Lemma integral_itv_bndoo (x y : R) (f : R -> \bar R) (b0 b1 : bool) :
   measurable_fun `]x, y[ f ->
-  \int[mu]_(z in [set` Interval (BSide b0 x) (BSide b1 y)]) (f z)%:E =
-  \int[mu]_(z in `]x, y[) (f z)%:E.
+  \int[mu]_(z in [set` Interval (BSide b0 x) (BSide b1 y)]) f z =
+  \int[mu]_(z in `]x, y[) f z.
 Proof.
 have [xy|yx _|-> _] := ltgtP x y; last 2 first.
 - rewrite !set_itv_ge ?integral_set0//=.
@@ -1535,9 +1572,9 @@ have [xy|yx _|-> _] := ltgtP x y; last 2 first.
   + by move: b0 b1 => [|] [|]; rewrite bnd_simp ?lt_geF// le_gtF// ltW.
 - by move: b0 b1 => [|] [|]; rewrite !set_itvE ?integral_set0 ?integral_set1.
 move=> mf.
-transitivity (\int[mu]_(z in [set` Interval (BSide b0 x) (BLeft y)]) (f z)%:E).
+transitivity (\int[mu]_(z in [set` Interval (BSide b0 x) (BLeft y)]) f z).
   case: b1 => //; rewrite -integral_itv_bndo_bndc//.
-  by case: b0 => //; exact/measurable_fun_itv_obnd_cbndP.
+  by case: b0 => //; exact/emeasurable_fun_itv_obnd_cbndP.
 by case: b0 => //; rewrite -integral_itv_obnd_cbnd.
 Qed.
 
@@ -1548,12 +1585,15 @@ Lemma eq_integral_itv_bounded (x y : R) (g f : R -> R) (b0 b1 : bool) :
   \int[mu]_(z in [set` Interval (BSide b0 x) (BSide b1 y)]) (g z)%:E.
 Proof.
 move=> mf mg fg.
-rewrite integral_itv_bndoo// (@integral_itv_bndoo _ _ g)//.
+rewrite integral_itv_bndoo//; last exact/measurable_EFinP.
+rewrite (@integral_itv_bndoo _ _ (EFin \o g))//; last exact/measurable_EFinP.
 by apply: eq_integral => z; rewrite inE/= => zxy; congr EFin; exact: fg.
 Qed.
 
 End lebesgue_measure_integral.
 Arguments integral_Sset1 {R f A} r.
+#[deprecated(since="mathcomp-analysis 1.16.0", note="renamed_to `integral_setD1`")]
+Notation integral_setD1_EFin := integral_setD1 (only parsing).
 
 Section ge0_nondecreasing_set_cvg_integral.
 Context {d : measure_display} {T : measurableType d} {R : realType}.

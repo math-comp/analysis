@@ -505,6 +505,16 @@ rewrite predeqE => /= r; split => [[{}r + <-]|].
 by exists (- r); rewrite ?opprK// !in_itv/= ltrNl ltrNr andbC.
 Qed.
 
+Lemma opp_preimage_itvbndy (R : numDomainType) ba (a : R) (bb : bool):
+  -%R @^-1` [set` Interval (BSide ba a) (BInfty _ bb)] =
+  [set` Interval (BInfty _ (~~ bb)) (BSide (~~ ba) (- a))].
+Proof. by apply/seteqP; split => [x/=|x/=]; rewrite oppr_itvy. Qed.
+
+Lemma opp_preimage_itvbndbnd (R : numDomainType) ba (a : R) bb (b : R) :
+  -%R @^-1` [set` Interval (BSide ba a) (BSide bb b)] =
+  [set` Interval (BSide (~~ bb) (- b)) (BSide (~~ ba) (- a))].
+Proof. by apply/seteqP; split => [x/=|x/=]; rewrite oppr_itv. Qed.
+
 (** lemmas between itv and set-theoretic operations *)
 Section set_itv_porderType.
 Variables (d : Order.disp_t) (T : porderType d).

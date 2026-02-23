@@ -343,6 +343,12 @@ HB.instance Definition _ (R : realType) := Measure.on (@lebesgue_measure R).
 HB.instance Definition _ (R : realType) :=
   SigmaFiniteMeasure.on (@lebesgue_measure R).
 
+Lemma lebesgue_measure_unique {R : realType}
+    (mu : {measure set (measurableTypeR R) -> \bar R}) :
+    (forall X, ocitv X -> lebesgue_measure X = mu X) ->
+  forall A, measurable A -> lebesgue_measure A = mu A.
+Proof. exact: lebesgue_stieltjes_measure_unique. Qed.
+
 Definition completed_lebesgue_measure {R : realType} : set _ -> \bar R :=
   completed_lebesgue_stieltjes_measure idfun.
 HB.instance Definition _ (R : realType) :=

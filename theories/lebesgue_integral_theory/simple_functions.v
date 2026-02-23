@@ -33,7 +33,6 @@ From mathcomp Require Import function_spaces.
 (*       {nnsfun T >-> R} == type of non-negative simple functions            *)
 (*          indic_sfun mD := mindic _ mD                                      *)
 (*             cst_sfun r == constant simple function                         *)
-(*           max_sfun f g := f \max f                                         *)
 (*           cst_nnsfun r == constant simple function                         *)
 (*                nnsfun0 := cst_nnsfun 0                                     *)
 (*         add_nnsfun f g := f \+ g                                           *)
@@ -209,10 +208,6 @@ Definition indic_sfun (D : set aT) (mD : measurable D) : {sfun aT >-> rT} :=
 
 HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst_sfun k).
 Definition scale_sfun k f : {sfun aT >-> rT} := k \o* f.
-
-(* NB: already in `measurable_realfun.v` *)
-HB.instance Definition _ f g := max_mfun_subproof f g.
-Definition max_sfun f g : {sfun aT >-> _} := f \max g.
 
 End ring.
 Arguments indic_sfun {d aT rT} _.
