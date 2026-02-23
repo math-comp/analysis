@@ -582,7 +582,7 @@ rewrite /pushforward opp_preimage_itvbndbnd/= !lebesgue_measure_itv/=.
 by rewrite !lte_fin ltrN2 opprK addrC.
 Qed.
 
-Lemma ge0_integral_pushforwardN (f : R -> \bar R) :
+Lemma ge0_integration_by_substitution0 (f : R -> \bar R) :
   measurable_fun [set: R] f -> (forall r, 0 <= f r) ->
   \int[mu]_(r in `[0%R, +oo[) f r = \int[mu]_(r in `]-oo, 0%R]) f (- r)%R.
 Proof.
@@ -1388,11 +1388,11 @@ Proof.
 move=> mD mf mg f0 g0 [N [mN N0 subN]].
 rewrite integralEpatch// [RHS]integralEpatch//.
 rewrite (ge0_negligible_integral mN)//; last 2 first.
-  - by apply/measurable_restrict => //; rewrite setIidr.
-  - by move=> x Dx; rewrite /= patchE (mem_set Dx) f0.
+- by apply/measurable_restrict => //; rewrite setIidr.
+- by move=> x Dx; rewrite /= patchE (mem_set Dx) f0.
 rewrite [RHS](ge0_negligible_integral mN)//; last 2 first.
-  - by apply/measurable_restrict => //; rewrite setIidr.
-  - by move=> x Dx; rewrite /= patchE (mem_set Dx) g0.
+- by apply/measurable_restrict => //; rewrite setIidr.
+- by move=> x Dx; rewrite /= patchE (mem_set Dx) g0.
 apply: eq_integral => x;rewrite in_setD => /andP[_ xN].
 apply: contrapT; rewrite !patchE; case: ifPn => xD //.
 move: xN; rewrite notin_setE; apply: contra_not => fxgx; apply: subN => /=.
@@ -1405,10 +1405,10 @@ Lemma ae_eq_integral (D : set T) (g f : T -> \bar R) :
 Proof.
 move=> mD mf mg /ae_eq_funeposneg[Dfgp Dfgn].
 rewrite integralE// [in RHS]integralE//; congr (_ - _).
-  by apply: ge0_ae_eq_integral => //; [exact: measurable_funepos|
+- by apply: ge0_ae_eq_integral => //; [exact: measurable_funepos|
                                        exact: measurable_funepos].
-by apply: ge0_ae_eq_integral => //; [exact: measurable_funeneg|
-                                     exact: measurable_funeneg].
+- by apply: ge0_ae_eq_integral => //; [exact: measurable_funeneg|
+                                       exact: measurable_funeneg].
 Qed.
 
 End ae_eq_integral.

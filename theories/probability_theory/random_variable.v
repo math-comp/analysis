@@ -631,7 +631,7 @@ rewrite [X in measurable X](_ : _ = (<%R s) @^-1` [set true]).
 by apply: eq_set => r; rewrite in_itv/= s_ge0.
 Qed.
 
-Let ge0_expectation_prob_ge (X : {RV P >-> R}) : (forall x, 0 <= X x)%R ->
+Let ge0_expectation_preimage (X : {RV P >-> R}) : (forall x, 0 <= X x)%R ->
   'E_P[X] = \int[mu]_(r in `[0%R, +oo[) P (X @^-1` `[r, +oo[).
 Proof.
 have mPeqr : measurable_fun setT (fun r => P (X @^-1` [set r])).
@@ -676,7 +676,7 @@ transitivity (- 'E_P[Y]).
     by apply: eq_integral => x _; rewrite opprK.
   by rewrite lee_fin/= oppr_ge0.
 transitivity (- \int[mu]_(s in `]-oo, 0%R]) P (Y @^-1` `[(- s)%R, +oo[)).
-  rewrite ge0_expectation_prob_ge ?ge0_integral_pushforwardN//.
+  rewrite ge0_expectation_preimage ?ge0_integration_by_substitution0//.
   by apply: (eq_measurable_fun (fun r:R => (fine (P (Y @^-1` `[r, +oo[ )))%:E))
      => [r _|]; [rewrite fineK ?fin_num_measure | apply/measurable_EFinP].
 transitivity (- \int[mu]_(s in `]-oo, 0%R] `\ 0%R) P (Y @^-1` `[(- s)%R, +oo[)).
