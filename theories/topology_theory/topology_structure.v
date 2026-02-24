@@ -843,6 +843,9 @@ Implicit Types E A B U : set T.
 Lemma closureS A B : A `<=` B -> closure A `<=` closure B.
 Proof. by move=> ? ? CAx ?; move/CAx; exact/subsetI_neq0. Qed.
 
+#[deprecated(since="mathcomp-analysis 1.16.0", use=closureS)]
+Definition closure_subset := closureS.
+
 Lemma closureE A : closure A = smallest closed A.
 Proof.
 rewrite eqEsubset; split=> [x ? B [cB AB]|]; first exact/cB/(closureS AB).
