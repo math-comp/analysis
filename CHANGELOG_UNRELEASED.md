@@ -5,8 +5,6 @@
 ### Added
 - in order_topology.v
   + lemma `itv_closed_ends_closed`
-- in classical_sets.v
-  + lemma `in_set1_eq`
 
 - in set_interval.v
   + definitions `itv_is_closed_unbounded`, `itv_is_cc`, `itv_closed_ends`
@@ -165,7 +163,11 @@
 - moved from `convex.v` to `realfun.v`
   + lemma `second_derivative_convex`
 
+- in classical_sets.v
+  + lemma `in_set1` (statement changed)
+
 ### Renamed
+
 - in `set_interval.v`:
   + `itv_is_ray` -> `itv_is_open_unbounded`
   + `itv_is_bd_open` -> `itv_is_oo`
