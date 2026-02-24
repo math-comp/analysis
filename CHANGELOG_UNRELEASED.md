@@ -47,6 +47,11 @@
   + lemmas `emeasurable_fun_itv_obnd_cbndP`, `emeasurable_fun_itv_bndo_bndcP`,
     `emeasurable_fun_itv_cc`
 
+- in `pseudometric_normed_Zmodule.v`:
+  + lemmas `within_continuousB`, `within_continuousD`,
+    `within_continuous_comp`
+
+
 ### Changed
 - in set_interval.v
   + `itv_is_closed_unbounded` (fix the definition)

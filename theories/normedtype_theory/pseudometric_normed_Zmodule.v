@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint interval.
-From mathcomp Require Import archimedean.
+From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
+From mathcomp Require Import interval archimedean.
 From mathcomp Require Import boolp classical_sets functions cardinality.
 From mathcomp Require Import set_interval interval_inference ereal reals.
 From mathcomp Require Import topology function_spaces prodnormedzmodule tvs.
@@ -1158,6 +1158,32 @@ Lemma norm_cvg0 f : `|f x| @[x --> F] --> (0:K^o) -> f @ F --> 0.
 Proof. by rewrite norm_cvg0P. Qed.
 
 End cvg_composition_pseudometric.
+
+Lemma within_continuousB {T : topologicalType} {K : numFieldType}
+    {V : pseudoMetricNormedZmodType K} (A : set T) (f g : T -> V) :
+  {within A, continuous f} -> {within A, continuous g} ->
+  {within A, continuous (f - g)}.
+Proof. by move=> cf cg x; apply: cvgB; [exact: cf|exact: cg]. Qed.
+
+Lemma within_continuousD {T : topologicalType} {K : numFieldType}
+    {V : pseudoMetricNormedZmodType K} (A : set T) (f g : T -> V) :
+  {within A, continuous f} -> {within A, continuous g} ->
+  {within A, continuous (f + g)}.
+Proof. by move=> cf cg x; apply: cvgD; [exact: cf|exact: cg]. Qed.
+
+Lemma within_continuous_comp {U : topologicalType} {R : realFieldType}
+  (A : set R) (f : R -> U) (g : U -> R) :
+  {in f @` A, continuous g} ->
+  {within A, continuous f} ->
+  {within A, continuous (g \o f)}.
+Proof.
+move=> cg cf x.
+have [xA|xA] := nbhs_subspaceP A x.
+  apply: cvg_comp; first exact: cf.
+  exact/cg/image_f/mem_set.
+rewrite /continuous_at {2}/nbhs/= -(@nbhs_subspace_out R A x xA).
+by move=> B/= [e /= e0 + _ ->]; apply; exact: ballxx.
+Qed.
 
 Section Closed_Ball.
 
