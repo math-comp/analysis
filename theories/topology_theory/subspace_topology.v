@@ -257,7 +257,7 @@ Lemma closure_subspaceW (U : set T) :
   U `<=` A -> closure (U : set (subspace A)) = closure (U : set T) `&` A.
 Proof.
 have /closed_subspaceP := (@closed_closure _ (U : set (subspace A))).
-move=> [V] [clV VAclUA] /[dup] /(@closure_subset (subspace _)).
+move=> [V] [clV VAclUA] /[dup] /(@closureS (subspace _)).
 have /closure_id <- := closed_subspaceT => /setIidr <-; rewrite setIC.
 move=> UsubA; rewrite eqEsubset; split.
   apply: setSI; rewrite closureE; apply: smallest_sub (@subset_closure _ U).
@@ -628,7 +628,7 @@ have ? : f @` closure (AfE b) `<=` closure (E b).
   have /(@image_subset _ _ f) : closure (AfE b) `<=` f @^-1` closure (E b).
     have /closure_id -> : closed (f @^-1` closure (E b) : set (subspace A)).
       by apply: preimage_closed => //; exact: closed_closure.
-    apply: closure_subset.
+    apply: closureS.
     have /(@preimage_subset _ _ f) A0cA0 := @subset_closure _ (E b).
     by apply: subset_trans A0cA0; apply: subIset; right.
   by move/subset_trans; apply; exact: image_preimage_subset.

@@ -840,12 +840,12 @@ Section closure_lemmas.
 Variable T : topologicalType.
 Implicit Types E A B U : set T.
 
-Lemma closure_subset A B : A `<=` B -> closure A `<=` closure B.
+Lemma closureS A B : A `<=` B -> closure A `<=` closure B.
 Proof. by move=> ? ? CAx ?; move/CAx; exact/subsetI_neq0. Qed.
 
 Lemma closureE A : closure A = smallest closed A.
 Proof.
-rewrite eqEsubset; split=> [x ? B [cB AB]|]; first exact/cB/(closure_subset AB).
+rewrite eqEsubset; split=> [x ? B [cB AB]|]; first exact/cB/(closureS AB).
 exact: (smallest_sub (@closed_closure _ _) (@subset_closure _ _)).
 Qed.
 
@@ -885,6 +885,13 @@ Qed.
 (* TODO: rename to closureC after removing the deprecated one *)
 Lemma closure_setC A : closure (~` A) = ~` A°.
 Proof. by apply: setC_inj; rewrite -interiorC !setCK. Qed.
+
+Lemma interiorS A B : A `<=` B -> A° `<=` B°.
+Proof.
+move=> AB x.
+rewrite /interior nbhsE => -[] U oxU UA.
+exists U => //; move: UA AB; exact: subset_trans.
+Qed.
 
 Lemma interior_id A : open A <-> interior A = A.
 Proof.

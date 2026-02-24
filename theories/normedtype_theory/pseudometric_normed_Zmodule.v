@@ -1199,7 +1199,7 @@ Qed.
 
 Lemma le_closed_ball (R : numFieldType) (M : pseudoMetricType R)
   (x : M) (e1 e2 : R) : (e1 <= e2)%O -> closed_ball x e1 `<=` closed_ball x e2.
-Proof. by rewrite /closed_ball => le; apply/closure_subset/le_ball. Qed.
+Proof. by rewrite /closed_ball => le; apply/closureS/le_ball. Qed.
 
 End Closed_Ball.
 #[deprecated(since="mathcomp-analysis 1.14.0", note="renamed to `closure_ballE`")]

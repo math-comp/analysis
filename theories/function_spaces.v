@@ -1245,7 +1245,7 @@ have : compact (proj x @` (closure W)).
   exact: (@pointwise_cvg_compact_family _ _ (nbhs g)).
 move=> /[dup]/(compact_closed hsdf)/closure_id -> /subclosed_compact.
 apply; first exact: closed_closure.
-by apply/closure_subset/image_subset; exact: (@subset_closure _ W).
+by apply/closureS/image_subset; exact: (@subset_closure _ W).
 Qed.
 
 Lemma pointwise_cvg_entourage (x : X) (f : {ptws X -> Y}) E :

@@ -420,7 +420,7 @@ move=> _; split=> [|A [|]| | |].
 - move=> [z M'z] <-; exists z; split.
   + apply: subset_closure; apply: nbhs_singleton; apply: nbhs_interior.
       by rewrite -nbhs_entourageE; exists (split_ent E) => // t /xsectionP.
-  + by apply: closure_subset; exact: interior_subset.
+  + by apply: closureS; exact: interior_subset.
 - by case => ->; [exists t0 | exists t1]; split => // t ->;
     apply/subset_closure/xsectionP; exact: entourage_refl.
 - exists [set t0], [set t1]; split;[|split].
