@@ -422,10 +422,8 @@ Lemma nat_nonempty : [set: nat] !=set0. Proof. by exists 1%N. Qed.
 
 #[global] Hint Resolve nat_nonempty : core.
 
-Lemma in_set1_eq {T : eqType} (a : T) (x : T) : x \in [set a] = (x == a).
-Proof.
-by apply/(sameP _ idP)/(equivP idP); rewrite inE eq_opE.
-Qed.
+Lemma in_set1 {T : eqType} (a : T) (x : T) : x \in [set a] = (x == a).
+Proof. by apply/(sameP _ idP)/(equivP idP); rewrite inE eq_opE. Qed.
 
 Lemma itv_sub_in2 d (T : porderType d) (P : T -> T -> Prop) (i j : interval T) :
   [set` j] `<=` [set` i] ->
@@ -2200,9 +2198,6 @@ Lemma bigcap_seq (s : seq T) (f : T -> set U) :
 Proof. by apply: setC_inj; rewrite setC_bigcap setC_bigsetI bigcup_seq. Qed.
 
 End bigcup_seq.
-
-Lemma in_set1 [T : finType] (x y : T) : (x \in [set y]) = (x \in [set y]%SET).
-Proof. by apply/idP/idP; rewrite !inE /= => /eqP. Qed.
 
 Lemma bigcup_pred [T : finType] [U : Type] (P : {pred T}) (f : T -> set U) :
   \bigcup_(t in [set` P]) f t = \big[setU/set0]_(t in P) f t.

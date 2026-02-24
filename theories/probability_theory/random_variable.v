@@ -189,12 +189,12 @@ have [rS|nrS] := boolP (r \in [set h k | k in S]).
     move=> [Sk]; apply: contra_neq.
     by rewrite /kr => ->; rewrite pinvKV//; exact: (set_bij_inj h_bij).
   rewrite /sfun (@nneseriesD1 _ _ kr)//; last by rewrite inE; exact/invS/set_mem.
-  by rewrite eseries0 => [| k k_ge0 /andP/neqh]; rewrite indicE in_set1_eq;
+  by rewrite eseries0 => [| k k_ge0 /andP/neqh]; rewrite indicE in_set1;
     [rewrite pinvK// eqxx mulr1 addr0|move/negPf => ->; rewrite mulr0].
 - rewrite /sfun eseries0 => [|k k_ge0 Sk]/=.
     apply: le_anti; rewrite !lee_fin pmf_ge0/= leNgt; apply: contraNN nrS.
     by rewrite (surj_image_eq _ (set_bij_surj h_bij)) ?inE//; exact:set_bij_sub.
-  rewrite indicE in_set1_eq (_ : (r == h k) = false) ?mulr0//.
+  rewrite indicE in_set1 (_ : (r == h k) = false) ?mulr0//.
   by apply: contraNF nrS => /eqP ->; exact/image_f.
 Qed.
 
