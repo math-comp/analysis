@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat all_algebra all_classical.
 From mathcomp Require Import topology_structure uniform_structure compact.
@@ -627,7 +627,7 @@ have [fAfE cEIE] :
 have ? : f @` closure (AfE b) `<=` closure (E b).
   have /(@image_subset _ _ f) : closure (AfE b) `<=` f @^-1` closure (E b).
     have /closure_id -> : closed (f @^-1` closure (E b) : set (subspace A)).
-      by apply: closed_comp => //; exact: closed_closure.
+      by apply: preimage_closed => //; exact: closed_closure.
     apply: closure_subset.
     have /(@preimage_subset _ _ f) A0cA0 := @subset_closure _ (E b).
     by apply: subset_trans A0cA0; apply: subIset; right.

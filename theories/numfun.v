@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval finmap.
 #[warning="-warn-library-file-internal-analysis"]
@@ -1117,8 +1117,8 @@ Proof.
 move: M => _/posnumP[M] ctsf fA1.
 have [] := @urysohn_ext_itv (A `&` f @^-1` `]-oo, -(1/3) * M%:num])
     (A `&` f @^-1` `[1/3 * M%:num,+oo[) (-(1/3) * M%:num) (1/3 * M%:num).
-- by rewrite closed_setSI//; exact: closed_comp.
-- by rewrite closed_setSI//; apply: closed_comp => //; exact: interval_closed.
+- by rewrite closed_setSI//; exact: preimage_closed.
+- by rewrite closed_setSI//; apply: preimage_closed => //; exact: interval_closed.
 - rewrite setIACA -preimage_setI eqEsubset; split => z // [_ []].
   rewrite !set_itvE/= => /[swap] /le_trans /[apply].
   by rewrite leNgt mulNr gtrN// mulr_gt0// divr_gt0.

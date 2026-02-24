@@ -784,7 +784,7 @@ End Closed.
 #[deprecated(since="mathcomp-analysis 1.15.0", note="use `closure_limit_point_isolated` instead")]
 Notation closure_limit_point := __deprecated__closure_limit_point (only parsing).
 
-Lemma closed_comp {T U : topologicalType} (f : T -> U) (D : set U) :
+Lemma preimage_closed {T U : topologicalType} (f : T -> U) (D : set U) :
   {in ~` f @^-1` D, continuous f} -> closed D -> closed (f @^-1` D).
 Proof.
 rewrite !closedE=> f_continuous D_cl x /= xDf.
@@ -793,6 +793,8 @@ have NDfx : ~ D (f x).
   by move: fxD; rewrite -nbhs_nearE nbhsE => - [A [? ?]]; exact.
 by apply: f_continuous fxD; rewrite inE.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.16.0", note="renamed to `preimage_closed`")]
+Notation closed_comp := preimage_closed (only parsing).
 
 Lemma closed_cvg {T} {V : topologicalType} {F} {FF : ProperFilter F}
     (u_ : T -> V) (A : V -> Prop) :
@@ -1006,11 +1008,13 @@ Proof. by split; [exact: open0 | exact: closed0]. Qed.
 Lemma clopenT {T} : clopen [set: T].
 Proof. by split; [exact: openT | exact: closedT]. Qed.
 
-Lemma clopen_comp {T U : topologicalType} (f : T -> U) (A : set U) :
+Lemma preimage_clopen {T U : topologicalType} (f : T -> U) (A : set U) :
  clopen A -> continuous f -> clopen (f @^-1` A).
-Proof. by case=> ? ?; split; [ exact: open_comp | exact: closed_comp]. Qed.
+Proof. by case=> ? ?; split; [ exact: open_comp | exact: preimage_closed]. Qed.
 
 End ClopenSets.
+#[deprecated(since="mathcomp-analysis 1.16.0", note="renamed to `preimage_clopen`")]
+Notation clopen_comp := preimage_clopen (only parsing).
 
 HB.mixin Record isContinuous {X Y : nbhsType} (f : X -> Y):= {
   cts_fun : continuous f

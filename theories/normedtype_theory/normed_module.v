@@ -2018,7 +2018,7 @@ Lemma closed_closed_ball_ (R : realFieldType) (V : normedModType R)
   (x : V) (e : R) : closed (closed_ball_ normr x e).
 Proof.
 rewrite /closed_ball_ -/((normr \o (fun y => x - y)) @^-1` [set x | x <= e]).
-apply: (closed_comp _ (@closed_le _ _)) => y _.
+apply: (preimage_closed _ (@closed_le _ _)) => y _.
 apply: (continuous_comp _ (@norm_continuous _ _ _)).
 exact: (continuousB (@cst_continuous _ _ _ _)).
 Qed.
