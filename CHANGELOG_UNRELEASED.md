@@ -3,10 +3,15 @@
 ## [Unreleased]
 
 ### Added
-- in order_topology.v
-  + lemma `itv_closed_ends_closed`
+- in `topology_structure.v`
+  + lemma `interiorS`
 
-- in set_interval.v
+- in `order_topology.v`
+  + lemma `itv_closed_ends_closed`
+- in `classical_sets.v`
+  + lemma `in_set1_eq`
+
+- in `set_interval.v`
   + definitions `itv_is_closed_unbounded`, `itv_is_cc`, `itv_closed_ends`
 
 - in `Rstruct.v`:
@@ -46,10 +51,10 @@
     `emeasurable_fun_itv_cc`
 
 ### Changed
-- in set_interval.v
+- in `set_interval.v`
   + `itv_is_closed_unbounded` (fix the definition)
 
-- in set_interval.v
+- in `set_interval.v`
   + `itv_is_open_unbounded`, `itv_is_oo`, `itv_open_ends` (Prop to bool)
 
 - in `lebesgue_Rintegrable.v`:
@@ -167,6 +172,9 @@
   + lemma `in_set1` (statement changed)
 
 ### Renamed
+
+- in `topology_structure.v`
+  + `closure_subset` -> `closureS`
 
 - in `set_interval.v`:
   + `itv_is_ray` -> `itv_is_open_unbounded`

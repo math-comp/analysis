@@ -477,7 +477,7 @@ split; first by exists A => //; exact: open_nbhs_nbhs.
 apply/not_implyP; split; first exact: open_nbhs_nbhs.
 apply/set0P/negP; rewrite negbK; apply/eqP/disjoints_subset.
 have /closure_id -> : closed (~` B); first by exact: open_closedC.
-by apply/closure_subset/disjoints_subset; rewrite setIC.
+by apply/closureS/disjoints_subset; rewrite setIC.
 Qed.
 
 Lemma compact_normal_local (K : set T) : hausdorff_space T -> compact K ->
@@ -516,7 +516,7 @@ case/(_ _ _ _ _ cvP) : cvA => R /= [RA Rmono [U RU] RBx].
 have [V /set_nbhsP [W [oW cBW WV] clVU]] := RA _ RU; exists (~` W).
   apply/set_nbhsP; exists (~` closure W); split.
   - exact/closed_openC/closed_closure.
-  - by move=> y /(RBx _ RU) + Wy; apply; exact/clVU/(closure_subset WV).
+  - by move=> y /(RBx _ RU) + Wy; apply; exact/clVU/(closureS WV).
   - by apply: subsetC; exact/subset_closure.
 have : closed (~` W) by exact: open_closedC.
 by rewrite closure_id => <-; exact: subsetCl.

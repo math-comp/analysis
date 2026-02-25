@@ -261,7 +261,7 @@ rewrite propeqE; split=> [[B CsubB [cptB cB]]|]; last first.
   move=> clC; exists (closure C) => //; first exact: subset_closure.
   by split => //; exact: closed_closure.
 apply: (subclosed_compact _ cptB); first exact: closed_closure.
-by move/closure_id: cB => ->; exact: closure_subset.
+by move/closure_id: cB => ->; exact: closureS.
 Qed.
 
 Lemma precompact_subset (A B : set X) :

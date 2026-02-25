@@ -146,7 +146,7 @@ Lemma connected_closure A : connected A -> connected (closure A).
 Proof.
 move=> ctdA U U0 [C1 oC1 C1E] [C2 cC2 C2E]; rewrite eqEsubset C2E; split => //.
 suff : A `<=` U.
-  move/closure_subset; rewrite [_ `&` _](iffLR (closure_id _)) ?C2E//.
+  move/closureS; rewrite [_ `&` _](iffLR (closure_id _)) ?C2E//.
   by apply: closedI => //; exact: closed_closure.
 rewrite -setIidPl; apply: ctdA.
 - move: U0; rewrite C1E => -[z [clAx C1z]]; have [] := clAx C1.
@@ -217,7 +217,7 @@ rewrite closure_id eqEsubset; split; first exact: subset_closure.
 move=> z Axz; exists (closure (connected_component A x)) => //.
 split; first exact/subset_closure/connected_component_refl.
   rewrite [X in _ `<=` X](closure_id A).1//.
-  by apply: closure_subset; exact: connected_component_sub.
+  by apply: closureS; exact: connected_component_sub.
 by apply: connected_closure; exact: component_connected.
 Qed.
 
