@@ -1,6 +1,7 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat all_algebra finmap generic_quotient.
+From mathcomp Require Import all_ssreflect_compat all_algebra finmap.
+From mathcomp Require Import generic_quotient.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
@@ -291,7 +292,7 @@ Proof.
 move=> dctTI x y /eqP xneqy.
 have [i/eqP/dctTI [U [clU Ux nUy]]] : exists i, x i <> y i.
   by apply/existsNP=> W; exact/xneqy/functional_extensionality_dep.
-exists (proj i @^-1` U); split => //; apply: clopen_comp => //.
+exists (proj i @^-1` U); split => //; apply: preimage_clopen => //.
 exact/proj_continuous.
 Qed.
 

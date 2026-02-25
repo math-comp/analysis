@@ -197,6 +197,10 @@
 - in `lebesgue_integral_nonneg.v`:
   + `integral_setD1_EFin` -> `integral_setD1`
 
+- in `topology_structure.v`:
+  + `closed_comp` -> `preimage_closed`
+  + `clopen_comp` -> `preimage_clopen`
+
 ### Generalized
 
 - in `lebesgue_integral_nonneg.v`:
