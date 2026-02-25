@@ -1171,17 +1171,6 @@ Lemma within_continuousD {T : topologicalType} {K : numFieldType}
   {within A, continuous (f + g)}.
 Proof. by move=> cf cg x; apply: cvgD; [exact: cf|exact: cg]. Qed.
 
-Lemma within_continuous_comp {U V W : topologicalType}
-  (A : set V) (f : V -> U) (g : U -> W) :
-  {in f @` A, continuous g} ->
-  {within A, continuous f} ->
-  {within A, continuous (g \o f)}.
-Proof.
-move=> cg /subspace_sigL_continuousP cf; apply/subspace_sigL_continuousP.
-rewrite /sigL -compA => /= x; apply: continuous_comp; first exact: cf.
-by apply/cg/image_f; rewrite inE; exact/set_valP.
-Qed.
-
 Section Closed_Ball.
 
 Definition closed_ball_ (R : numDomainType) (V : zmodType) (norm : V -> R)

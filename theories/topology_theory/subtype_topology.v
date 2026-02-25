@@ -88,6 +88,17 @@ Proof. exact: (@subspace_valL_continuousP' _ point). Qed.
 
 End subspace_sig.
 
+Lemma within_continuous_comp {U V W : topologicalType}
+  (A : set V) (f : V -> U) (g : U -> W) :
+  {in f @` A, continuous g} ->
+  {within A, continuous f} ->
+  {within A, continuous (g \o f)}.
+Proof.
+move=> cg /subspace_sigL_continuousP cf; apply/subspace_sigL_continuousP.
+rewrite /sigL -compA => /= x; apply: continuous_comp; first exact: cf.
+by apply/cg/image_f; rewrite inE; exact/set_valP.
+Qed.
+
 Section subtype_setX.
 Context {X Y : topologicalType} (A : set X) (B : set Y).
 

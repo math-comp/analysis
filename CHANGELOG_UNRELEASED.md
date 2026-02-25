@@ -47,10 +47,11 @@
   + lemmas `emeasurable_fun_itv_obnd_cbndP`, `emeasurable_fun_itv_bndo_bndcP`,
     `emeasurable_fun_itv_cc`
 
-- in `pseudometric_normed_Zmodule.v`:
-  + lemmas `within_continuousB`, `within_continuousD`,
-    `within_continuous_comp`
+- in `subtype_topology.v`:
+  + lemma `within_continuous_comp`
 
+- in `pseudometric_normed_Zmodule.v`:
+  + lemmas `within_continuousB`, `within_continuousD`
 
 ### Changed
 - in set_interval.v
