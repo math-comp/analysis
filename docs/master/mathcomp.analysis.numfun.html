@@ -335,7 +335,7 @@ Qed.</div></details>
 <br/>
 <div class="doc">a :: s is a partition of the interval <code class="bracket"><span class="id">a</span>, <span class="id">b</span></code> </div>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partition" class="id"><a name="itv_partition" class="" title="itv_partition :
-forall {d : disp_t} {T : porderType d}, T -> T -> seq T -> Prop
+forall {d : Order.disp_t} {T : porderType d}, T -> T -> seq T -> Prop
 
 itv_partition is not universe polymorphic
 Arguments itv_partition {d T} a b s%_seq_scope
@@ -345,7 +345,7 @@ Declared in library mathcomp.analysis.numfun, line 86, characters 11-24
 ">itv_partition</a></span><span class="id"> </span><span id="a:28" class="id"><a name="a:28" class="">a</a></span><span class="id"> </span><span id="b:29" class="id"><a name="b:29" class="">b</a></span><span class="id"> </span><span id="s:30" class="id"><a name="s:30" class="">s</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#53e4c1e546d9b20e029d981f761726c2">[/\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#53e4c1e546d9b20e029d981f761726c2"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.path#path">path</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#17cb0bcdd8f53ccec523ce717893e976">&lt;%O</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#a:28">a</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#s:30">s</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#53e4c1e546d9b20e029d981f761726c2"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#53e4c1e546d9b20e029d981f761726c2"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#last">last</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#a:28">a</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#s:30">s</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> ==</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#b:29">b</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#53e4c1e546d9b20e029d981f761726c2">]</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_partition_nil" class="id"><a name="itv_partition_nil" class="" title="itv_partition_nil :
-forall {d : disp_t} {T : porderType d} [a b : T],
+forall {d : Order.disp_t} {T : porderType d} [a b : T],
 itv_partition a b [::] -> a = b
 
 itv_partition_nil is not universe polymorphic
@@ -360,7 +360,7 @@ Declared in library mathcomp.analysis.numfun, line 88, characters 6-23
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> [_</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id"> &lt;-]</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_partition_cons" class="id"><a name="itv_partition_cons" class="" title="itv_partition_cons :
-forall {d : disp_t} {T : porderType d} [a b x : T] [s : seq T],
+forall {d : Order.disp_t} {T : porderType d} [a b x : T] [s : seq T],
 itv_partition a b (x :: s) -> itv_partition x b s
 
 itv_partition_cons is not universe polymorphic
@@ -376,7 +376,7 @@ Declared in library mathcomp.analysis.numfun, line 91, characters 6-24
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.numfun.html#itv_partition">itv_partition</a></span><span class="id">/=</span><span class="id"> =&gt;</span><span class="id"> -[/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#andP">andP</a></span><span class="id">[]]</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_partition1" class="id"><a name="itv_partition1" class="" title="itv_partition1 :
-forall {d : disp_t} {T : porderType d} [a b : T],
+forall {d : Order.disp_t} {T : porderType d} [a b : T],
 (a < b)%O -> itv_partition a b [:: b]
 
 itv_partition1 is not universe polymorphic
@@ -391,7 +391,7 @@ Declared in library mathcomp.analysis.numfun, line 95, characters 6-20
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.numfun.html#itv_partition">itv_partition</a></span><span class="id"> /=</span><span class="id"> =&gt;</span><span class="id"> -&gt;</span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_partition_size_neq0" class="id"><a name="itv_partition_size_neq0" class="" title="itv_partition_size_neq0 :
-forall {d : disp_t} {T : porderType d} [a b : T] [s : seq T],
+forall {d : Order.disp_t} {T : porderType d} [a b : T] [s : seq T],
 0 < size s -> itv_partition a b s -> (a < b)%O
 
 itv_partition_size_neq0 is not universe polymorphic
@@ -411,7 +411,7 @@ Declared in library mathcomp.analysis.numfun, line 98, characters 6-29
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_partitionxx" class="id"><a name="itv_partitionxx" class="" title="itv_partitionxx :
-forall {d : disp_t} {T : porderType d} [a : T] [s : seq T],
+forall {d : Order.disp_t} {T : porderType d} [a : T] [s : seq T],
 itv_partition a a s -> s = [::]
 
 itv_partitionxx is not universe polymorphic
@@ -430,7 +430,7 @@ Declared in library mathcomp.analysis.numfun, line 107, characters 6-21
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_partition_le" class="id"><a name="itv_partition_le" class="" title="itv_partition_le :
-forall {d : disp_t} {T : porderType d} [a b : T] [s : seq T],
+forall {d : Order.disp_t} {T : porderType d} [a b : T] [s : seq T],
 itv_partition a b s -> (a <= b)%O
 
 itv_partition_le is not universe polymorphic
@@ -447,7 +447,7 @@ Declared in library mathcomp.analysis.numfun, line 115, characters 6-22
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_partition_cat" class="id"><a name="itv_partition_cat" class="" title="itv_partition_cat :
-forall {d : disp_t} {T : porderType d} [a b c : T] [s t : seq T],
+forall {d : Order.disp_t} {T : porderType d} [a b c : T] [s t : seq T],
 itv_partition a b s -> itv_partition b c t -> itv_partition a c (s ++ t)
 
 itv_partition_cat is not universe polymorphic
@@ -465,7 +465,7 @@ Declared in library mathcomp.analysis.numfun, line 121, characters 6-23
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_partition_nth_size" class="id"><a name="itv_partition_nth_size" class="" title="itv_partition_nth_size :
-forall {d : disp_t} {T : porderType d} (def : T) [a b : T] [s : seq T],
+forall {d : Order.disp_t} {T : porderType d} (def : T) [a b : T] [s : seq T],
 itv_partition a b s -> nth def (a :: s) (size s) = b
 
 itv_partition_nth_size is not universe polymorphic
@@ -482,7 +482,7 @@ Declared in library mathcomp.analysis.numfun, line 128, characters 6-28
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_partition_nth_ge" class="id"><a name="itv_partition_nth_ge" class="" title="itv_partition_nth_ge :
-forall {d : disp_t} {T : porderType d} [a b : T] [s : seq T] [m : nat],
+forall {d : Order.disp_t} {T : porderType d} [a b : T] [s : seq T] [m : nat],
 m < (size s).+1 -> itv_partition a b s -> (a <= nth b (a :: s) m)%O
 
 itv_partition_nth_ge is not universe polymorphic
@@ -501,7 +501,7 @@ Declared in library mathcomp.analysis.numfun, line 134, characters 6-26
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_partition_nth_le" class="id"><a name="itv_partition_nth_le" class="" title="itv_partition_nth_le :
-forall {d : disp_t} {T : porderType d} [a b : T] [s : seq T] [m : nat],
+forall {d : Order.disp_t} {T : porderType d} [a b : T] [s : seq T] [m : nat],
 m < (size s).+1 -> itv_partition a b s -> (nth b (a :: s) m <= b)%O
 
 itv_partition_nth_le is not universe polymorphic
@@ -519,7 +519,8 @@ Declared in library mathcomp.analysis.numfun, line 142, characters 6-26
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="nondecreasing_fun_itv_partition" class="id"><a name="nondecreasing_fun_itv_partition" class="" title="nondecreasing_fun_itv_partition :
-forall {d : disp_t} {T : porderType d} [a b : T] [f : T -> T] [s : seq T],
+forall {d : Order.disp_t} {T : porderType d} [a b : T] 
+  [f : T -> T] [s : seq T],
 {in `[a, b]%R &, {homo f : n m / (n <= m)%O}} ->
 itv_partition a b s ->
 let F := f \o nth b (a :: s) in
@@ -557,7 +558,8 @@ Declared in library mathcomp.analysis.numfun, line 149, characters 6-37
 Qed.</div></details>
 <br/>
 <div class="doc">given a partition of <code class="bracket"><span class="id">a</span>, <span class="id">b</span></code> and c, returns a partition of <code class="bracket"><span class="id">a</span>, <span class="id">c</span></code> </div>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partitionL" class="id"><a name="itv_partitionL" class="" title="itv_partitionL : forall {d : disp_t} {T : porderType d}, seq T -> T -> seq T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partitionL" class="id"><a name="itv_partitionL" class="" title="itv_partitionL :
+forall {d : Order.disp_t} {T : porderType d}, seq T -> T -> seq T
 
 itv_partitionL is not universe polymorphic
 Arguments itv_partitionL {d T} s%_seq_scope c
@@ -567,7 +569,8 @@ Declared in library mathcomp.analysis.numfun, line 172, characters 11-25
 ">itv_partitionL</a></span><span class="id"> </span><span id="s:70" class="id"><a name="s:70" class="">s</a></span><span class="id"> </span><span id="c:71" class="id"><a name="c:71" class="">c</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#rcons">rcons</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#3de67eb42556f00623e74d6756c5ab67">[seq</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#3de67eb42556f00623e74d6756c5ab67"> </a></span><span id="x:72" class="id"><a name="x:72" class="">x</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#3de67eb42556f00623e74d6756c5ab67"> &lt;-</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#3de67eb42556f00623e74d6756c5ab67"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#s:70">s</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#3de67eb42556f00623e74d6756c5ab67"> |</a></span> (<span class="id"><a href="mathcomp.analysis.numfun.html#x:72">x</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.PreOSyntax.::order_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.preorder#Order.PreOSyntax.::order_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#c:71">c</a></span>)<span class="id">%O</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#3de67eb42556f00623e74d6756c5ab67">]</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#c:71">c</a></span>.<br/>
 <br/>
 <div class="doc">given a partition of <code class="bracket"><span class="id">a</span>, <span class="id">b</span></code> and c, returns a partition of <code class="bracket"><span class="id">c</span>, <span class="id">b</span></code> </div>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partitionR" class="id"><a name="itv_partitionR" class="" title="itv_partitionR : forall {d : disp_t} {T : porderType d}, seq T -> T -> seq T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partitionR" class="id"><a name="itv_partitionR" class="" title="itv_partitionR :
+forall {d : Order.disp_t} {T : porderType d}, seq T -> T -> seq T
 
 itv_partitionR is not universe polymorphic
 Arguments itv_partitionR {d T} s%_seq_scope c
@@ -583,7 +586,7 @@ Declared in library mathcomp.analysis.numfun, line 175, characters 11-25
 <span class="vernacular">Implicit</span><span class="gallina-kwd"> Type</span> (<span class="id">a</span><span class="id"> b</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#interval_partition_orderType.T">T</a></span>) (<span class="id">s</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#seq">seq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#interval_partition_orderType.T">T</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_partitionLP" class="id"><a name="itv_partitionLP" class="" title="itv_partitionLP :
-forall {d : disp_t} {T : orderType d} [a b c : T] [s : seq T],
+forall {d : Order.disp_t} {T : orderType d} [a b c : T] [s : seq T],
 (a < c)%O ->
 (c < b)%O -> itv_partition a b s -> itv_partition a c (itv_partitionL s c)
 
@@ -605,7 +608,7 @@ Declared in library mathcomp.analysis.numfun, line 183, characters 6-21
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_partitionRP" class="id"><a name="itv_partitionRP" class="" title="itv_partitionRP :
-forall {d : disp_t} {T : orderType d} [a b c : T] [s : seq T],
+forall {d : Order.disp_t} {T : orderType d} [a b c : T] [s : seq T],
 (a < c)%O ->
 (c < b)%O -> itv_partition a b s -> itv_partition c b (itv_partitionR s c)
 
@@ -627,7 +630,7 @@ Declared in library mathcomp.analysis.numfun, line 193, characters 6-21
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="in_itv_partition" class="id"><a name="in_itv_partition" class="" title="in_itv_partition :
-forall {d : disp_t} {T : orderType d} [c : T] [s : seq T],
+forall {d : Order.disp_t} {T : orderType d} [c : T] [s : seq T],
 sorted <%O s -> c \in s -> s = itv_partitionL s c ++ itv_partitionR s c
 
 in_itv_partition is not universe polymorphic
@@ -653,7 +656,7 @@ Declared in library mathcomp.analysis.numfun, line 203, characters 6-22
 Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="notin_itv_partition" class="id"><a name="notin_itv_partition" class="" title="notin_itv_partition :
-forall {d : disp_t} {T : orderType d} [c : T] [s : seq T],
+forall {d : Order.disp_t} {T : orderType d} [c : T] [s : seq T],
 sorted <%O s ->
 c \notin s -> s = [seq x <- s | (x < c)%O] ++ itv_partitionR s c
 
@@ -902,7 +905,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="variation_le" class="id"><a name="variation_le" class="" title="variation_le :
 forall {R : numDomainType} (a b : R) (f g : R -> R) (s : seq R),
-(variation a b (f \+ g) s <= variation a b f s + variation a b g s)%R
+(variation a b (f \+ g) s <= (variation a b f s + variation a b g s)%E)%R
 
 variation_le is not universe polymorphic
 Arguments variation_le {R} (a b)%_ring_scope (f g)%_function_scope
@@ -969,7 +972,7 @@ forall {R : numDomainType} [c a b : R] (f : R -> R) [s t : seq R],
 (c <= b)%R ->
 itv_partition a c s ->
 itv_partition c b t ->
-variation a b f (s ++ t) = (variation a c f s + variation c b f t)%R
+variation a b f (s ++ t) = (variation a c f s + variation c b f t)%E
 
 variation_cat is not universe polymorphic
 Arguments variation_cat {R} [c] [a b]%_ring_scope 
@@ -1816,7 +1819,7 @@ Declared in library mathcomp.analysis.numfun, line 678, characters 6-21
 <span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><a name="funepos_unlock_subterm" class="" title="funepos_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   Def.max (f x) 0%R)
+   maxe (f x) 0%R)
 
 funepos_unlock_subterm is not universe polymorphic
 funepos_unlock_subterm is transparent
@@ -1825,7 +1828,7 @@ Declared in library mathcomp.analysis.numfun, line 684, characters 0-95
 ">HB</a></span></span></span></span></span></span></span></span>.<span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><a name="funepos_unlock_subterm" class="" title="funepos_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   Def.max (f x) 0%R)
+   maxe (f x) 0%R)
 
 funepos_unlock_subterm is not universe polymorphic
 funepos_unlock_subterm is transparent
@@ -1835,7 +1838,7 @@ Declared in library mathcomp.analysis.numfun, line 684, characters 0-95
 <span class="vernacular">Definition</span><span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><a name="funepos_unlock_subterm" class="" title="funepos_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   Def.max (f x) 0%R)
+   maxe (f x) 0%R)
 
 funepos_unlock_subterm is not universe polymorphic
 funepos_unlock_subterm is transparent
@@ -1844,7 +1847,7 @@ Declared in library mathcomp.analysis.numfun, line 684, characters 0-95
 "> funepos</a></span></span></span></span></span></span></span></span><span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><a name="funepos_unlock_subterm" class="" title="funepos_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   Def.max (f x) 0%R)
+   maxe (f x) 0%R)
 
 funepos_unlock_subterm is not universe polymorphic
 funepos_unlock_subterm is transparent
@@ -1855,7 +1858,7 @@ Declared in library mathcomp.analysis.numfun, line 684, characters 0-95
 <span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><a name="funeneg_unlock_subterm" class="" title="funeneg_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   Def.max (- f x)%E 0%R)
+   maxe (- f x)%E 0%R)
 
 funeneg_unlock_subterm is not universe polymorphic
 funeneg_unlock_subterm is transparent
@@ -1864,7 +1867,7 @@ Declared in library mathcomp.analysis.numfun, line 687, characters 0-102
 ">HB</a></span></span></span></span></span></span></span></span>.<span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><a name="funeneg_unlock_subterm" class="" title="funeneg_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   Def.max (- f x)%E 0%R)
+   maxe (- f x)%E 0%R)
 
 funeneg_unlock_subterm is not universe polymorphic
 funeneg_unlock_subterm is transparent
@@ -1874,7 +1877,7 @@ Declared in library mathcomp.analysis.numfun, line 687, characters 0-102
 <span class="vernacular">Definition</span><span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><a name="funeneg_unlock_subterm" class="" title="funeneg_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   Def.max (- f x)%E 0%R)
+   maxe (- f x)%E 0%R)
 
 funeneg_unlock_subterm is not universe polymorphic
 funeneg_unlock_subterm is transparent
@@ -1883,7 +1886,7 @@ Declared in library mathcomp.analysis.numfun, line 687, characters 0-102
 "> funeneg</a></span></span></span></span></span></span></span></span><span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><a name="funeneg_unlock_subterm" class="" title="funeneg_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   Def.max (- f x)%E 0%R)
+   maxe (- f x)%E 0%R)
 
 funeneg_unlock_subterm is not universe polymorphic
 funeneg_unlock_subterm is transparent
@@ -1902,7 +1905,7 @@ Declared in library mathcomp.analysis.numfun, line 687, characters 0-102
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="funeposE" class="id"><a name="funeposE" class="" title="funeposE :
 forall [T : Type] [R : realDomainType] (f : T -> \bar R) (x : T),
-f^\+%E x = Def.max (f x) 0%R
+f^\+%E x = maxe (f x) 0%R
 
 funeposE is not universe polymorphic
 Arguments funeposE [T]%_type_scope [R] f%_function_scope x
@@ -1917,7 +1920,7 @@ Declared in library mathcomp.analysis.numfun, line 699, characters 6-14
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="funenegE" class="id"><a name="funenegE" class="" title="funenegE :
 forall [T : Type] [R : realDomainType] (f : T -> \bar R) (x : T),
-f^\-%E x = Def.max (- f x)%E 0%R
+f^\-%E x = maxe (- f x)%E 0%R
 
 funenegE is not universe polymorphic
 Arguments funenegE [T]%_type_scope [R] f%_function_scope x
@@ -2784,24 +2787,19 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_indic" class="id"><a name="cvg_indic" class="" title="cvg_indic :
 forall {R : realFieldType} [x : R^o] [k : R],
-x \in (pseudometric_structure.ball 0%R k : set R^o) ->
-filter.cvg_to
-  (filter.nbhs
-     (filter.fmap [eta (\1_(pseudometric_structure.ball 0 k : set R^o))%R]
-        (filter.nbhs x)))
-  (filter.nbhs ((\1_(pseudometric_structure.ball 0 k))%R x : R))
+x \in (ball 0%R k : set R^o) ->
+((\1_(ball 0 k : set R^o))%R y @[y --> x] --> ((\1_(ball 0 k))%R x : R))%classic
 
 cvg_indic is not universe polymorphic
 Expanded type for implicit arguments
 cvg_indic :
 forall {R : realFieldType} [x : R^o] [k : R],
-x \in (pseudometric_structure.ball 0%R k : set R^o) ->
+x \in (ball 0%R k : set R^o) ->
 forall [t : set R],
-filter.nbhs ((\1_(pseudometric_structure.ball 0 k))%R x : R) t ->
+nbhs ((\1_(ball 0 k))%R x : R) t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
-  (pseudometric_structure.ball_ [eta normr] x i
-   `<=` [eta (\1_(pseudometric_structure.ball 0 k : set R^o))%R] @^-1` t)%classic
+  (ball_ [eta normr] x i `<=` [eta (\1_(ball 0 k : set R^o))%R] @^-1` t)%classic
 
 Arguments cvg_indic {R} [x] [k]%_ring_scope _ [t] _
 cvg_indic is opaque
@@ -3411,24 +3409,15 @@ Declared in library mathcomp.analysis.numfun, line 1080, characters 2-46
 <span class="vernacular">Hypothesis</span><span class="id"> </span><span id="Tietze.normalX" class="id"><a name="Tietze.normalX" class="">normalX</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.separation_axioms.html#normal_space">normal_space</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#Tietze.X">X</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="urysohn_ext_itv" class="id"><a name="urysohn_ext_itv" class="" title="urysohn_ext_itv :
-forall {X : topology_structure.Topological.type} {R : realType},
-separation_axioms.normal_space X ->
-forall [A B : set (topology_structure.Topological.sort X)] [x y : R],
-topology_structure.closed A ->
-topology_structure.closed B ->
+forall {X : topologicalType} {R : realType},
+normal_space X ->
+forall [A B : set X] [x y : R],
+closed A ->
+closed B ->
 (A `&` B)%classic = set0 ->
 (x < y)%R ->
-exists f : topology_structure.Topological.sort X -> R,
-  [/\ forall
-        x0 : filter.Nbhs.sort
-               (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
-                  X),
-      filter.continuous_at
-        (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
-              X)
-        (U:=num_topology.numFieldTopology.Real_sort__canonical__filter_Nbhs R)
-        x0 f,
-      ([set f x | x in A] `<=` [set x])%classic,
+exists f : X -> R,
+  [/\ continuous f, ([set f x | x in A] `<=` [set x])%classic,
       ([set f x | x in B] `<=` [set y])%classic
     & (range f `<=` `[x, y])%classic]
 
@@ -3475,8 +3464,8 @@ Qed.</div></details>
 <span class="id">move:</span><span class="id"> M</span><span class="id"> =&gt;</span><span class="id"> _/</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#posnumP">posnumP</a></span><span class="id">[M]</span><span class="id"> ctsf</span><span class="id"> fA1</span>.<br/>
 <span class="id">have</span><span class="id"> []</span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.analysis.numfun.html#urysohn_ext_itv">urysohn_ext_itv</a></span> (<span class="id"><a href="mathcomp.analysis.numfun.html#Tietze.A">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id">f</span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#5e1b04cba2ff8bb716094037c34db7ee">`]-oo,</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#5e1b04cba2ff8bb716094037c34db7ee"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x">-</a></span>(<span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b">/</a></span><span class="id">3</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id">M</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#5e1b04cba2ff8bb716094037c34db7ee">]</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.numfun.html#Tietze.A">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id">f</span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#15b7e1a0c6e4df0db66b48da271129e4">`[</a></span><span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b">/</a></span><span class="id">3</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id">M</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#15b7e1a0c6e4df0db66b48da271129e4">,+oo[</a></span>) (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x">-</a></span>(<span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b">/</a></span><span class="id">3</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id">M</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span>) (<span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b">/</a></span><span class="id">3</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id">M</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span>).<br/>
-<span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#closed_setSI">closed_setSI</a></span><span class="id">//;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed_comp">closed_comp</a></span>.<br/>
-<span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#closed_setSI">closed_setSI</a></span><span class="id">//;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed_comp">closed_comp</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html#interval_closed">interval_closed</a></span>.<br/>
+<span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#closed_setSI">closed_setSI</a></span><span class="id">//;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#preimage_closed">preimage_closed</a></span>.<br/>
+<span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.subspace_topology.html#closed_setSI">closed_setSI</a></span><span class="id">//;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#preimage_closed">preimage_closed</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html#interval_closed">interval_closed</a></span>.<br/>
 <span class="id">-</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#setIACA">setIACA</a></span><span class="id"> -</span><span class="id"><a href="mathcomp.classical.classical_sets.html#preimage_setI">preimage_setI</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#eqEsubset">eqEsubset</a></span><span class="id">;</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> z</span><span class="id"> //</span><span class="id"> [_</span><span class="id"> []]</span>.<br/>
 &nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> !</span><span class="id"><a href="mathcomp.classical.set_interval.html#set_itvE">set_itvE</a></span><span class="id">/=</span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#d18bf1e242aa8006719f115a8f44092e">[swap]</a></span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.le_trans">le_trans</a></span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#69f87318111a06c23cf3b6c947249a45">[apply]</a></span>.<br/>
 &nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TotalTheory.leNgt">leNgt</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulNr">mulNr</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.gtrN">gtrN</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.mulr_gt0">mulr_gt0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.divr_gt0">divr_gt0</a></span>.<br/>
@@ -3527,11 +3516,11 @@ Qed.</div></details>
 <br/>
 <div class="doc">Tietze's theorem: </div>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="continuous_bounded_extension" class="id"><a name="continuous_bounded_extension" class="" title="continuous_bounded_extension :
-forall {X : topology_structure.Topological.type} {R : realType},
-separation_axioms.normal_space X ->
-forall [A : set (topology_structure.Topological.sort X)],
-topology_structure.closed A ->
-forall [f : topology_structure.Topological.sort X -> R^o]
+forall {X : topologicalType} {R : realType},
+normal_space X ->
+forall [A : set X],
+closed A ->
+forall [f : X -> R^o]
   [M : join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
          {|
            Num.POrderedZmodule.sort := R;
@@ -3562,26 +3551,10 @@ forall [f : topology_structure.Topological.sort X -> R^o]
              |}
          |}],
 (0 < M)%R ->
-(forall
-   x : filter.Nbhs.sort
-         (subspace_topology.subspace_topology_subspace__canonical__filter_Nbhs
-            A),
- filter.continuous_at
-   (T:=subspace_topology.subspace_topology_subspace__canonical__filter_Nbhs A)
-   (U:=num_topology.GRing_regular__canonical__filter_Nbhs R) x
-   (subspace_topology.from_subspace A f)) ->
-(forall x : topology_structure.Topological.sort X, A x -> (`|f x| <= M)%R) ->
-exists g : topology_structure.Topological.sort X -> R^o,
-  [/\ {in A, f =1 g},
-      forall
-        x : filter.Nbhs.sort
-              (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
-                 X),
-      filter.continuous_at
-        (T:=topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Nbhs
-              X)
-        (U:=num_topology.GRing_regular__canonical__filter_Nbhs R) x g
-    & forall x : topology_structure.Topological.sort X, (`|g x| <= M)%R]
+{within A, continuous f}%classic ->
+(forall x : X, A x -> (`|f x| <= M)%R) ->
+exists g : X -> R^o,
+  [/\ {in A, f =1 g}, continuous g & forall x : X, (`|g x| <= M)%R]
 
 continuous_bounded_extension is not universe polymorphic
 Arguments continuous_bounded_extension {X R} normalX 
