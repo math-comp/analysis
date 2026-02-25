@@ -53,6 +53,9 @@
 - in `pseudometric_normed_Zmodule.v`:
   + lemmas `within_continuousB`, `within_continuousD`
 
+- in `normed_module.v`:
+  + lemma `within_continuous_compN`
+
 ### Changed
 - in set_interval.v
   + `itv_is_closed_unbounded` (fix the definition)

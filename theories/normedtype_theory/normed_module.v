@@ -230,6 +230,22 @@ Module Exports. Export numFieldTopology.Exports. HB.reexport. End Exports.
 End numFieldNormedType.
 Import numFieldNormedType.Exports.
 
+Lemma within_continuous_compN {R : realFieldType} {K : numDomainType}
+    {U : pseudoMetricNormedZmodType K} (f : R -> U) (a b : R) :
+  {within `[- b, - a], continuous f} -> {within `[a, b], continuous f \o -%R}.
+Proof.
+have [ab|ba _ |-> _] := ltgtP a b; last 2 first.
+  by rewrite set_itv_ge ?bnd_simp -?ltNge//; exact: continuous_subspace0.
+  by rewrite set_itv1; exact: continuous_subspace1.
+move/continuous_within_itvP; rewrite ltrN2 => /(_ ab)[cf fb fa].
+apply/(continuous_within_itvP _ ab); split.
+- move=> t tab.
+  apply: (@cvg_comp _ _ _ -%R f); first exact: oppr_continuous.
+  by apply: cf; rewrite oppr_itvoo !opprK.
+- by rewrite -{1}(opprK a); apply/cvg_at_leftNP; exact: fa.
+- by rewrite -{1}(opprK b); apply/cvg_at_rightNP; exact: fb.
+Qed.
+
 Definition pseudoMetric_normed (M : Type) : Type := M.
 
 HB.instance Definition _ (K : numFieldType) (M : normedZmodType K) :=
