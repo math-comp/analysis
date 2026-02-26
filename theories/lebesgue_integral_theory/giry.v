@@ -573,6 +573,12 @@ Context {d1} {d2} {X : measurableType d1} {Y : measurableType d2}
   {R : realType}.
 Variables (f : {mfun X >-> X'}) (g : {mfun Y >-> Y'}).
 
+Lemma measurable3 :  @measurable _ (X * (Y * Y'))%type =
+  <<s [set uvw : set (X * (Y * Y')%type) |
+    exists U V W, [/\ measurable U, measurable V, measurable W & uvw = U `*` (V `*` W)] ] >>.
+Proof.
+Abort.
+
 Lemma giry_monoidal_left (x : unit * giry Y R) :
   (giry_map snd \o (giry_prod \o (giry_ret \X id))) x ≡μ snd x.
 Proof.
@@ -613,25 +619,19 @@ Lemma monoidal_join (c : giry (giry X R) R * giry (giry Y R) R) :
 Proof.
 case: c => a b.
 move=> U mU.
-rewrite /giry_prod /giry_join /giry_join.
+rewrite /giry_prod /giry_join /giry_join. (* NB: don't /= here*)
 apply: product_measure_unique => //= A B mA mB.
-rewrite /giry_int.
-rewrite /giry_map.
-rewrite ge0_integral_pushforward//=; last first.
+rewrite /giry_int /giry_map ge0_integral_pushforward//=; last first.
   apply: measurable_giry_ev.
   exact: measurableX.
 rewrite fubini_tonelli1//; last first.
   have mAB : measurable (A `*` B) by apply: measurableX.
-  rewrite [X in measurable_fun _ X](_ : _ = (@mgiry_ev _ _ R _ mAB \o giry_prod)); last first.
-    done.
-  by apply: measurableT_comp => //=.
+  by rewrite [X in measurable_fun _ X](_ : _ = @mgiry_ev _ _ R _ mAB \o giry_prod).
 rewrite -ge0_integralZr//; last 2 first.
-  by apply: measurable_giry_ev.
-  by apply: integral_ge0 => x _.
+  exact: measurable_giry_ev.
+  exact: integral_ge0.
 apply: eq_integral => /= x _.
-rewrite /fubini_F/=.
-rewrite -ge0_integralZl//; last first.
-  by apply: measurable_giry_ev.
+rewrite /fubini_F/= -ge0_integralZl//; last exact: measurable_giry_ev.
 apply: eq_integral => /= y _.
 by rewrite product_measure1E.
 Qed.
@@ -667,17 +667,23 @@ Admitted.
 HB.instance Definition _ xyz U1 := isMeasure.Build _ _ _ (m2 xyz U1)
  (m2_measure0 xyz U1) (m2_measure_ge0 xyz U1) (@m2_measure_semi_sigma_additive xyz U1).*)
 
-
 Lemma giry_monoidal_assoc (xyz : (giry X R * giry Y R) * giry Y' R) :
   (giry_prod \o (id \X giry_prod) \o prodA) xyz ≡μ
   (giry_map prodA \o giry_prod \o (giry_prod \X id)) xyz.
 Proof.
+move: xyz => [[x y] z].
 move=> U mU.
 apply: product_measure_unique => // U1 U2 mU1 mU2.
-rewrite /giry_prod /prodA /pushforward.
-rewrite /preimage.
-rewrite /pushforward/=.
-rewrite -[RHS](product_measure1E xyz.1.1 (* TODO: pbm *)(product_subprobability (xyz.1.2, xyz.2)))//.
+rewrite /giry_prod /prodA.
+transitivity ((x \x (y \x z)) ((U1 `*` U2))); last first.
+  by rewrite (@product_measure1E _ _ _ _ _ x (product_subprobability (y, z)))//.
+rewrite /=.
+apply/esym.
+apply: (@product_measure_unique _ _ _ _ _ x (product_subprobability (y, z))) => //=; last first.
+  exact: measurableX.
+move=> A B mA mB.
+rewrite /pushforward.
+
 Abort.
 
 End proj_giry_prod.
