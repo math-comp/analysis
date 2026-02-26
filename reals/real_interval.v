@@ -1,6 +1,8 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Export set_interval.
 From mathcomp Require Import reals interval_inference constructive_ereal.
@@ -170,8 +172,8 @@ Lemma itvNybndEbigcup b x : [set` Interval -oo%O (BSide b x)] =
 Proof.
 rewrite predeqE => y; split=> /=; last first.
   by move=> [n _]/=; rewrite in_itv => /andP[ny yx]; rewrite in_itv.
-rewrite in_itv /= => yx; exists (truncn `|y|).+1 => //=; rewrite in_itv/=.
-by rewrite yx /= andbT ltrNl (le_lt_trans (ler_norm _))// normrN truncnS_gt.
+rewrite in_itv /= => yx; exists (Num.bound y) => //=; rewrite in_itv/=.
+by rewrite yx /= andbT ltrNl ltrNbound.
 Qed.
 
 Lemma itvoyEbigcup x :
@@ -354,10 +356,6 @@ Notation itv_infty_bnd_bigcup := itvNy_bnd_bigcup_BLeft (only parsing).
 Lemma bigcup_itvT {R : archiRealDomainType} b1 b2 :
   \bigcup_n [set` Interval (BSide b1 (- n%:R)) (BSide b2 n%:R)] = [set: R].
 Proof.
-rewrite -subTset => x _ /=; exists (truncn `|x|).+1 => //=.
-have := truncnS_gt `|x|; rewrite in_itv/=; move: b1 b2 => [] []/=.
-- by rewrite ltr_norml => /andP[/ltW ->].
-- by move/ltW; rewrite ler_norml => /andP[-> ->].
-- by rewrite ltr_norml => /andP[-> ->].
-- by rewrite ltr_norml => /andP[-> /ltW].
+rewrite -subTset => x _ /=; exists (Num.bound x) => //=.
+by rewrite in_itv lteifNl 2?lteifS// (ltr_bound, ltrNbound).
 Qed.

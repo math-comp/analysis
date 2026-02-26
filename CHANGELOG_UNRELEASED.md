@@ -26,6 +26,8 @@
 
 - in `unstable.v`:
   + lemmas `oppr_itvNy`, `oppr_itvy`
+  + lemmas `ltr_norm_bound`, `real_ltr_bound`, `real_ltrNbound`, `ltr_bound`,
+    `ltrNbound`
 
 - in `set_interval.v`:
   + lemmas `opp_preimage_itvbndy`, `opp_preimage_itvbndbnd`

@@ -1194,8 +1194,7 @@ Qed.
 Lemma is_cvg_series_exp_coeff_pos : cvgn (series (exp x)).
 Proof.
 rewrite /series; near \oo => N; have xN : x < N%:R.
-  near: N; exists (truncn x).+2 => // m/= xm.
-  by rewrite (lt_trans (truncnS_gt _))// ltr_nat.
+  by near: N; exists (truncn x).+1 => // m/= xm; rewrite -truncn_lt_nat// ltW.
 rewrite -(@is_cvg_series_restrict N.+1).
 by apply: (nondecreasing_is_cvgn (incr_S1 N)); eexists; exact: S1_sup.
 Unshelve. all: by end_near. Qed.
@@ -3287,7 +3286,7 @@ have O_infempty : O_inf = set0.
   rewrite -subset0 => x.
   have [M FxM] := BoundedF x; rewrite /O_inf /O /=.
   move=> /(_ (truncn M).+1 Logic.I)[f Ff]; apply/negP; rewrite -leNgt.
-  by rewrite (le_trans (FxM _ Ff))// ltW// truncnS_gt.
+  by apply/ltW; rewrite -truncn_le_nat le_truncn ?FxM.
 have ContraBaire : exists i, not (dense (O i)).
   have dOinf : ~ dense O_inf.
     rewrite /dense O_infempty ; apply /existsNP; exists setT; elim.

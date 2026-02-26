@@ -2,6 +2,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions fsbigop cardinality.
 From mathcomp Require Import reals ereal interval_inference topology numfun.
 From mathcomp Require Import normedtype sequences esum real_interval measure.
@@ -484,8 +486,7 @@ Lemma wlength_sigma_finite (f : R -> R) :
 Proof.
 exists (fun k => `](- k%:R), k%:R]%classic).
   apply/esym; rewrite -subTset => /= x _ /=.
-  exists (truncn `|x|).+1; rewrite //= in_itv/=.
-  by have := truncnS_gt `|x|; rewrite ltr_norml => /andP[-> /ltW->].
+  by exists (Num.bound x); rewrite //= in_itv/= ltrNl ltrNbound ltW// ltr_bound.
 move=> k; split => //; rewrite wlength_itv /= -EFinB.
 by case: ifP; rewrite ltey.
 Qed.

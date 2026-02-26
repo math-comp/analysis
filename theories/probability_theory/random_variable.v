@@ -269,7 +269,7 @@ have cdf_n1 : cdf X n%:R @[n --> \oo] --> 1.
   pose F n := X @^-1` `]-oo, n%:R].
   have <- : \bigcup_n F n = setT.
     rewrite -preimage_bigcup -subTset => t _/=.
-    by exists (truncn (X t)).+1 => //=; rewrite in_itv/= ltW// truncnS_gt.
+    by exists (truncn (X t)).+1; rewrite //= in_itv/= ltW// truncnS_gt.
   apply: nondecreasing_cvg_mu => //; first exact: bigcup_measurable.
   move=> n m nm; apply/subsetPset => x/=; rewrite !in_itv/= => /le_trans.
   by apply; rewrite ler_nat.
@@ -290,10 +290,8 @@ have cdf_opp_n0 : (cdf X \o -%R) n%:R @[n --> \oo] --> 0.
   rewrite -(measure0 P).
   pose F n := X @^-1` `]-oo, (- n%:R)%R].
   have <- : \bigcap_n F n = set0.
-    rewrite -subset0 => t.
-    set m := (truncn `|X t|).+1.
-    move=> /(_ m I); rewrite /F/= in_itv/= leNgt => /negP; apply.
-    by rewrite ltrNl /m (le_lt_trans (ler_norm _))// normrN truncnS_gt.
+    rewrite -subset0 => t /(_ (Num.bound (X t)) I).
+    by rewrite /F/= in_itv/= leNgt => /negP; apply; rewrite ltrNl ltrNbound.
   apply: nonincreasing_cvg_mu => //=.
   + by rewrite (le_lt_trans (probability_le1 _ _)) ?ltry.
   + exact: bigcap_measurable.
