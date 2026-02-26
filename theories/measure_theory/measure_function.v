@@ -63,7 +63,7 @@ From mathcomp Require Import measurable_structure measurable_function.
 (*                              mD is a proof that D is measurable.           *)
 (*                 isSFinite == interface for functions that satisfy the      *)
 (*                              sfinite_measure predicate                     *)
-(* {sfinite_measure set T -> \bar R} == type of s-finite measures             *)
+b(* {sfinite_measure set T -> \bar R} == type of s-finite measures             *)
 (*                              The HB class is SFiniteMeasure.               *)
 (*             isSigmaFinite == interface for functions that satisfy          *)
 (*                              sigma finiteness                              *)
@@ -1707,7 +1707,6 @@ Qed.
 
 End measure_continuity.
 
-
 Section g_sigma_algebra_measure_unique_trace.
 Context d (R : realType) (T : measurableType d).
 Variables (G : set (set T)) (D : set T) (mD : measurable D).
@@ -1935,7 +1934,7 @@ Arguments g_sigma_algebra_measure_unique {d R T} G.
 
 Section measure_unique.
 Context d (R : realType) (T : measurableType d).
-Variables  (G : set (set T)) (g : (set T)^nat).
+Variables (G : set (set T)) (g : (set T)^nat).
 Hypotheses (mG : measurable = <<s G >>) (setIG : setI_closed G).
 Hypothesis Gg : forall i, G (g i).
 Hypothesis g_cover : \bigcup_k (g k) = setT.
