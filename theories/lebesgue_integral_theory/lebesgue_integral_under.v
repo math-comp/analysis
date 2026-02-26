@@ -24,6 +24,7 @@ From mathcomp Require Import lebesgue_integral_dominated_convergence.
 
 Reserved Notation "'d1 f" (at level 10, f at next level, format "''d1'  f").
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

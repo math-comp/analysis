@@ -11,6 +11,7 @@ From mathcomp Require Import interval_inference.
 (* The contents is likely to be moved elsewhere.                              *)
 (******************************************************************************)
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

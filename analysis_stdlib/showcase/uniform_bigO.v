@@ -5,6 +5,7 @@ From mathcomp Require Import ssrnat eqtype choice fintype bigop order ssralg ssr
 From mathcomp Require Import boolp reals Rstruct_topology ereal classical_sets.
 From mathcomp Require Import interval_inference topology normedtype landau.
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

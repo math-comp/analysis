@@ -25,6 +25,7 @@ Reserved Notation "\sum_ ( i '\in' A ) F"
   (F at level 41, A at level 60,
     format "'[' \sum_ ( i  '\in'  A ) '/  '  F ']'").
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

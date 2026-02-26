@@ -14,7 +14,7 @@ From Coq Require Import Setoid.
 Set   Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Unset SsrOldRewriteGoalsOrder.
+Unset SsrOldRewriteGoalsOrder.  (* remove this line when requiring MathComp >= 2.6 *)
 
 Import GRing.Theory Num.Theory.
 

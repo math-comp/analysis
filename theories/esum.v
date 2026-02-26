@@ -25,6 +25,7 @@ From mathcomp Require Import topology sequences normedtype numfun.
 Reserved Notation "\esum_ ( i 'in' P ) F"
   (at level 41, F at level 41, format "\esum_ ( i  'in'  P )  F").
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

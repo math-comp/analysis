@@ -50,6 +50,7 @@ Reserved Notation "f = g %[ae mu ]"
 Reserved Notation "m .-null_set" (at level 2, format "m .-null_set").
 Reserved Notation "m1 `<< m2" (at level 51).
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
