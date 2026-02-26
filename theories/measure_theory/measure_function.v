@@ -63,7 +63,7 @@ From mathcomp Require Import measurable_structure measurable_function.
 (*                              mD is a proof that D is measurable.           *)
 (*                 isSFinite == interface for functions that satisfy the      *)
 (*                              sfinite_measure predicate                     *)
-b(* {sfinite_measure set T -> \bar R} == type of s-finite measures             *)
+(* {sfinite_measure set T -> \bar R} == type of s-finite measures             *)
 (*                              The HB class is SFiniteMeasure.               *)
 (*             isSigmaFinite == interface for functions that satisfy          *)
 (*                              sigma finiteness                              *)
