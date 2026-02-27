@@ -50,6 +50,205 @@ Global Hint Extern 0 (_ ≡μ _) => reflexivity : core.
 Local Open Scope classical_set_scope.
 Local Open Scope ereal_scope.
 
+(* from a PR in progress *)
+Definition preimage_display {T T'} : (T -> T') -> measure_display.
+Proof. exact. Qed.
+
+Definition g_sigma_algebra_preimageType d' (T : pointedType)
+  (T' : measurableType d') (f : T -> T') : Type := T.
+
+Definition g_sigma_algebra_preimage d' (T : pointedType)
+    (T' : measurableType d') (f : T -> T') :=
+  preimage_set_system setT f (@measurable _ T').
+
+Section preimage_generated_sigma_algebra.
+Context {d'} (T : pointedType) (T' : measurableType d').
+Variable f : T -> T'.
+
+Let preimage_set0 : g_sigma_algebra_preimage f set0.
+Proof.
+rewrite /g_sigma_algebra_preimage /preimage_set_system/=.
+by exists set0 => //; rewrite preimage_set0 setI0.
+Qed.
+
+Let preimage_setC A :
+  g_sigma_algebra_preimage f A -> g_sigma_algebra_preimage f (~` A).
+Proof.
+rewrite /g_sigma_algebra_preimage /preimage_set_system/= => -[B mB] <-{A}.
+by exists (~` B); [exact: measurableC|rewrite !setTI preimage_setC].
+Qed.
+
+Let preimage_bigcup (F : (set T)^nat) :
+  (forall i, g_sigma_algebra_preimage f (F i)) ->
+  g_sigma_algebra_preimage f (\bigcup_i (F i)).
+Proof.
+move=> mF; rewrite /g_sigma_algebra_preimage /preimage_set_system/=.
+pose g := fun i => sval (cid2 (mF i)).
+pose mg := fun i => svalP (cid2 (mF i)).
+exists (\bigcup_i g i).
+  by apply: bigcup_measurable => k; case: (mg k).
+rewrite setTI /g preimage_bigcup; apply: eq_bigcupr => k _.
+by case: (mg k) => _; rewrite setTI.
+Qed.
+
+HB.instance Definition _ := Pointed.on (g_sigma_algebra_preimageType f).
+
+HB.instance Definition _ := @isMeasurable.Build (preimage_display f)
+  (g_sigma_algebra_preimageType f) (g_sigma_algebra_preimage f)
+  preimage_set0 preimage_setC preimage_bigcup.
+
+End preimage_generated_sigma_algebra.
+(*/ from a PR in progress *)
+
+Notation "f .-preimage" := (preimage_display f) : measure_display_scope.
+Notation "f .-preimage.-measurable" :=
+  (measurable : set (set (g_sigma_algebra_preimageType f))) : classical_set_scope.
+
+Section rect_cross.
+Context {T1 T2 : Type}.
+Implicit Types (X : set_system T1) (Y : set_system T2).
+
+Definition rect X Y := [set U `*` V | U in X & V in Y].
+
+Definition cross X Y :=
+  preimage_set_system setT fst X `|` preimage_set_system setT snd Y.
+
+End rect_cross.
+
+Reserved Notation "A `x` B"  (at level 46, left associativity).
+Notation "A `x` B" := (cross A B) : classical_set_scope.
+
+Lemma yoneda {T} (A B : set_system T) :
+  sigma_algebra setT A ->
+  sigma_algebra setT B ->
+  (forall Z, sigma_algebra setT Z -> A `<=` Z <-> B `<=` Z)
+  <->
+  A = B.
+Proof.
+move=> sA sB.
+split=> [AB|AB]; last by rewrite AB.
+by apply/seteqP; split; exact/AB.
+Qed.
+
+Lemma preimage_set_system_mon {T1 T2} (A B : set_system T2) (f : T1 -> T2) :
+  A `<=` B ->
+  preimage_set_system [set: _] f A `<=` preimage_set_system [set: _] f B.
+Proof. by move=> AB _ [C ? <-]; exists C => //; exact: AB. Qed.
+
+Section rect_cross_prop.
+Context {T1 T2 T3 : pointedType}.
+
+Definition RR {T : pointedType} (Z : set_system T) : set_system T := <<s Z>>.
+
+Lemma thm4 {T : pointedType} (X Y : set_system T) : sigma_algebra setT Y ->
+  RR X `<=` Y <-> X `<=` Y.
+Proof.
+move=> sY.
+split=> [RXY|].
+  clear sY.
+  apply: subset_trans RXY.
+  exact: sub_gen_smallest.
+exact: smallest_sub.
+Qed.
+
+Lemma lem6' (Y : set_system T2) :
+  preimage_set_system setT (@snd T1 T2) (RR Y) =
+  RR (preimage_set_system setT snd Y).
+Proof.
+apply/seteqP; split; last first.
+  apply/(thm4 _ _).2.
+    set RY := @g_sigma_algebraType _ Y.
+    exact: (sigma_algebra_measurable (g_sigma_algebra_preimageType (@snd T1 RY))).
+  apply: preimage_set_system_mon.
+  exact: sub_sigma_algebra.
+move=> _ [Z RYZ <-].
+rewrite /preimage_set_system.
+red.
+move=> /= G [sigG HG].
+pose i := @image_set_system _ T2 setT (@snd _ _) G.
+(* TODO: use image_set_system *)
+apply: (RYZ i).
+split.
+  by apply: sigma_algebra_image.
+move=> A YA.
+apply: HG => //.
+by exists A.
+Qed.
+
+Lemma lem6 (X : set_system T1) (Y : set_system T2) :
+  RR (X `x` RR Y) = RR (X `x` Y).
+Proof.
+apply/yoneda; [exact: smallest_sigma_algebra..|].
+move => /= Z mZ.
+rewrite thm4//=.
+rewrite {1}/cross/=.
+rewrite subUset.
+rewrite lem6'//.
+rewrite thm4//=.
+rewrite -subUset.
+by rewrite -thm4//=.
+Qed.
+
+Lemma lem9 (X : set_system T1) (Y : set_system T2) :
+  X setT ->
+  Y setT ->
+(*  sigma_algebra setT X ->
+  sigma_algebra setT Y ->*)
+  RR (rect X Y) = RR (X `x` Y).
+Proof.
+move=> sX sY; apply/seteqP; split; last first.
+  apply: sub_sigma_algebra2.
+  move=> A [|].
+    rewrite /preimage_set_system/= => -[A1 XA1 <-{A}].
+    rewrite -setXT setTI.
+    rewrite /rect/=.
+    exists A1 =>//.
+    by exists setT => //.
+  rewrite /preimage_set_system/= => -[A1 XA1 <-{A}].
+  rewrite -setTX setTI.
+  rewrite /rect/=.
+  exists setT => //.
+  by exists A1.
+  (*  apply: sub_sigma_algebra2. (* TODO: rename that thing!! *) *)
+rewrite thm4//; last first.
+  exact: smallest_sigma_algebra.
+move=> _ [A1 X1] [A2 X2] <-.
+rewrite /setX.
+rewrite (_ : [set z | A1 z.1 /\ A2 z.2] = fst @^-1` A1 `&` snd @^-1` A2)//.
+apply: (@measurableI _ (@g_sigma_algebraType _ (X `x` Y))).
+- apply: sub_sigma_algebra.
+  left.
+  exists A1 => //.
+  by rewrite setTI.
+- apply: sub_sigma_algebra.
+  right.
+  exists A2 => //.
+  by rewrite setTI.
+Qed.
+
+End rect_cross_prop.
+
+Section rect_cross_prop2.
+Context {T1 T2 T3 : pointedType}.
+
+Lemma lem17 (X : set_system T1) (Y : set_system T2) (Z : set_system T3) :
+  X setT ->
+  Y setT ->
+  Z  setT ->
+  RR (X `x` RR (Y `x` Z)) = RR (rect X (rect Y Z)).
+Proof.
+move=> mX mY mZ.
+rewrite -(lem9 mY mZ).
+rewrite lem6.
+rewrite -(lem9 mX)//.
+red.
+exists setT => //.
+exists setT => //.
+by rewrite setXTT.
+Qed.
+
+End rect_cross_prop2.
+
 (* TODO: move *)
 Definition fun_pair {X T1 T2} (f : X -> T1) (g : X -> T2)
   (x : X) := (f x, g x).
@@ -673,17 +872,72 @@ Lemma giry_monoidal_assoc (xyz : (giry X R * giry Y R) * giry Y' R) :
 Proof.
 move: xyz => [[x y] z].
 move=> U mU.
-apply: product_measure_unique => // U1 U2 mU1 mU2.
-rewrite /giry_prod /prodA.
-transitivity ((x \x (y \x z)) ((U1 `*` U2))); last first.
-  by rewrite (@product_measure1E _ _ _ _ _ x (product_subprobability (y, z)))//.
+red in mU.
+simpl in mU.
+rewrite /g_sigma_preimageU in mU.
+have mU' : RR (@measurable _ X `x` RR (@measurable _ Y `x` @measurable _ Y')) U.
+  rewrite /RR.
+  rewrite /cross/=.
+  done.
+rewrite lem17 in mU'; [|exact: measurableT..].
+red in mU'.
+apply: (measure_unique (rect d1.-measurable (rect d2.-measurable d2'.-measurable)) (fun=> setT)) => //.
+rewrite -/(RR (rect _ (rect _ _))).
+by rewrite -lem17//.
+move=> /= P Q [P1 mP1 [P2 [P3 mP3 [P4 mP4]]]] HP2 Hp.
+move=> [Q1 mQ1 [Q2 [Q3 mQ3] [Q4 mQ4]]] HQ2 HQ.
+red.
+simpl.
+rewrite -HQ -Hp.
+rewrite -setXI.
+exists (P1 `&` Q1).
+exact: measurableI.
+exists (P2 `&` Q2).
+red.
+simpl.
+rewrite -HQ2 -HP2.
+rewrite -setXI.
+exists (P3 `&` Q3).
+exact: measurableI.
+exists (P4 `&` Q4).
+exact: measurableI.
+done.
+done.
+move=> _.
 rewrite /=.
-apply/esym.
-apply: (@product_measure_unique _ _ _ _ _ x (product_subprobability (y, z))) => //=; last first.
-  exact: measurableX.
-move=> A B mA mB.
+exists setT => //.
+exists setT => //.
+exists setT => //.
+exists setT => //.
+by rewrite setXTT.
+by rewrite setXTT.
+apply: bigcupT => //.
+by exists O.
+move=> A /=.
+case => Q mQ [E].
+case => E1 mE1 [E2 mE2] <- <-.
 rewrite /pushforward.
+rewrite (_ : _ @^-1` _ = ((Q `*` E1) `*` E2)); last first.
+  by apply/seteqP; split => -[[]]/= *; tauto.
+rewrite !product_measure1E//=.
+rewrite (@product_measure1E _ _ _ _ _ x (product_subprobability (y, z)))//=.
+rewrite !product_measure1E//=.
+by rewrite muleA.
+exact: measurableX.
+exact: measurableX.
+by rewrite ltey_eq fin_num_measure.
+Qed.
 
+Definition giry_copy (x : X) : giry _ R := giry_ret (x, x).
+
+Definition giry_discard (x : X) : giry _ R := giry_ret tt.
+
+
+Lemma test (P1 P2 : probability unit R) : P1 ≡μ P2.
+Proof.
+move=> A mA.
+apply: (measure_unique).
 Abort.
+(* Kleisli category is symmetric monoidal *)
 
 End proj_giry_prod.
