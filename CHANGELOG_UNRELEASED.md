@@ -50,6 +50,15 @@
   + lemmas `emeasurable_fun_itv_obnd_cbndP`, `emeasurable_fun_itv_bndo_bndcP`,
     `emeasurable_fun_itv_cc`
 
+- in `subtype_topology.v`:
+  + lemma `within_continuous_comp`
+
+- in `pseudometric_normed_Zmodule.v`:
+  + lemmas `within_continuousB`, `within_continuousD`
+
+- in `normed_module.v`:
+  + lemma `within_continuous_compN`
+
 ### Changed
 - in `set_interval.v`
   + `itv_is_closed_unbounded` (fix the definition)
