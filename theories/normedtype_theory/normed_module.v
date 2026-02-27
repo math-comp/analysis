@@ -2028,6 +2028,13 @@ have : n \in enum_fset D by [].
 by rewrite enum_fsetE => /mapP[/= i iD ->]; exact/le_bigmax.
 Qed.
 
+Lemma compact_has_sup (R : realType) (A : set R) :
+  A !=set0 -> compact A -> has_sup A.
+Proof.
+move=> A0 cA; split => //; have [M [_ MA]] := compact_bounded cA.
+by exists (M + 1) => y /MA My; rewrite (le_trans _ (My _ _)) ?ler_norm ?ltrDl.
+Qed.
+
 Section Closed_Ball_normedModType.
 
 Lemma closed_closed_ball_ (R : realFieldType) (V : normedModType R)

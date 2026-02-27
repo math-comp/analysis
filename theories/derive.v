@@ -1426,14 +1426,6 @@ Lemma exp_derive1 {R : numFieldType} n x :
   (@GRing.exp R ^~ n)^`() x = n%:R *: x ^+ n.-1.
 Proof. by rewrite derive1E exp_derive [LHS]mulr1. Qed.
 
-(* TODO: move *)
-Lemma compact_has_sup (R : realType) (A : set R) :
-  A !=set0 -> compact A -> has_sup A.
-Proof.
-move=> A0 cA; split => //; have [M [_ MA]] := compact_bounded cA.
-by exists (M + 1) => y /MA My; rewrite (le_trans _ (My _ _)) ?ler_norm ?ltrDl.
-Qed.
-
 Lemma compact_EVT_max (T : topologicalType) (R : realType) (f : T -> R)
     (A : set T) :
   A !=set0 -> compact A -> {within A, continuous f} ->
