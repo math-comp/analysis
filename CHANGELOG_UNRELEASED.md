@@ -282,7 +282,10 @@
 
 - in `derive.v`:
   + lemmas `near_eq_growth_rate`, `near_eq_derivable`, `near_eq_derive`,
-    `near_eq_is_derive`
+    `near_eq_is_derive` (one less hypothesis)
+
+- in `exp.v`:
+  + lemma `derivable_powR`
 
 ### Deprecated
 
