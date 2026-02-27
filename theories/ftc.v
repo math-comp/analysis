@@ -1400,10 +1400,7 @@ rewrite integration_by_substitution_decreasing.
     apply/measurable_EFinP.
     by apply: measurable_funS (mGFNF' n) => //; exact: subset_itv_oo_co.
   rewrite integral_itv_obnd_cbnd//.
-  apply/measurable_EFinP.
-  rewrite -setUitv1; last by rewrite bnd_simp ltrDl.
-  rewrite measurable_funU//; split; last exact: measurable_fun_set1.
-  by apply: measurable_funS (mGFNF' n) => //; exact: subset_itv_oo_co.
+  by apply/measurable_EFinP; have /measurable_fun_itv_oc := mGFNF' n.
 - by rewrite lerDl.
 - move=> x y /= xaa yaa yx.
   by apply: decrF; rewrite ?in_itv ?andbT/= ?(itvP xaa) ?(itvP yaa).

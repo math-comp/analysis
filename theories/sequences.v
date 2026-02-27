@@ -2944,9 +2944,8 @@ have AB : cut A B by split => //; rewrite /B setUv.
 pose l := sup A. (* the real number defined by the cut (A, B) *)
 have infleE (e : R) (e0 : e > 0) :infinite_set (`]l - e, +oo[ `&` E).
   suff : A (l - e).
-    apply: contra_not => leE.
-    rewrite -setU1itv// setIUl finite_setU; split => //.
-    by apply/(sub_finite_set _ (finite_set1 (l - e))); exact: subIsetl.
+    have /infinite_setD/[apply] := finite_set1 (l - e).
+    by rewrite setIC -setIDA setDitv1l setIC.
   have : has_sup A.
     by split => //; case: B0 => d dB; exists d => z Az; exact/ltW/ABlt.
   move/(sup_adherent e0) => [r Ar].

@@ -54,70 +54,32 @@ Implicit Types x y : R.
 
 Let sup_itv_infty_bnd x b : sup [set` Interval -oo%O (BSide b x)] = x.
 Proof.
-case: b; last first.
-  by rewrite -setUitv1// sup_setU ?sup1// => ? ? ? ->; exact/ltW.
 set s := sup _; apply/eqP; rewrite eq_le; apply/andP; split.
-- apply: ge_sup; last by move=> ? /ltW.
-  by exists (x - 1); rewrite !set_itvE/= ltrBlDr ltrDl.
+- apply: ge_sup; last by move=> ? /lteifW.
+  by exists (x - 1); apply: ltrW_lteif; rewrite ltrBlDr ltrDl.
 - rewrite leNgt; apply/negP => sx; pose p := (s + x) / 2.
-  suff /andP[?]: (p < x) && (s < p) by apply/negP; rewrite -leNgt ub_le_sup.
+  suff /andP[?]: (p < x) && (s < p)
+    by apply/negP; rewrite -leNgt ub_le_sup//= in_itv ltrW_lteif.
   by rewrite !midf_lt.
-Qed.
-
-Let inf_itv_bnd_infty x b : inf [set` Interval (BSide b x) +oo%O] = x.
-Proof.
-case: b; last by rewrite /inf opp_itv_bndy sup_itv_infty_bnd opprK.
-rewrite -setU1itv// inf_setU ?inf1// => _ b ->.
-by rewrite !set_itvE => /ltW.
-Qed.
-
-Let sup_itv_o_bnd x y b : x < y ->
-  sup [set` Interval (BRight x) (BSide b y)] = y.
-Proof.
-case: b => xy; last first.
-  by rewrite -setUitv1// sup_setU ?sup1// => ? ? /andP[? /ltW ?] ->.
-set B := [set` _]; set A := `]-oo, x]%classic.
-rewrite -(@sup_setU _ A B) //.
-- rewrite -(sup_itv_infty_bnd y true); congr sup.
-  rewrite predeqE => u; split=> [[|/andP[]//]|yu].
-  by rewrite /A !set_itvE => /le_lt_trans; apply.
-  by have [xu|ux] := ltP x u; [right; rewrite /B !set_itvE/= xu| left].
-- by move=> u v; rewrite /A /B => ? /andP[xv _]; rewrite (le_trans _ (ltW xv)).
-Qed.
-
-Let sup_itv_bounded x y a b : (BSide a x < BSide b y)%O ->
-  sup [set` Interval (BSide a x) (BSide b y)] = y.
-Proof.
-case: a => xy; last exact: sup_itv_o_bnd.
-case: b in xy *.
-  by rewrite -setU1itv// sup_setU ?sup_itv_o_bnd// => ? ? -> /andP[/ltW].
-by rewrite -setUitv1// sup_setU ?sup1// => ? ? /andP[_ /ltW ? ->].
-Qed.
-
-Let inf_itv_bnd_o x y b : (BSide b x < BLeft y)%O ->
-  inf [set` Interval (BSide b x) (BLeft y)] = x.
-Proof.
-case: b => xy.
-  by rewrite -setU1itv// inf_setU ?inf1// => _ ? -> /andP[/ltW].
-by rewrite /inf opp_itv_bnd_bnd sup_itv_o_bnd ?opprK // ltrNl opprK.
-Qed.
-
-Let inf_itv_bounded x y a b : (BSide a x < BSide b y)%O ->
-  inf [set` Interval (BSide a x) (BSide b y)] = x.
-Proof.
-case: b => xy; first exact: inf_itv_bnd_o.
-case: a in xy *.
-  by rewrite -setU1itv// inf_setU ?inf1// => ? ? -> /andP[/ltW].
-by rewrite -setUitv1// inf_setU ?inf_itv_bnd_o// => ? ? /andP[? /ltW ?] ->.
 Qed.
 
 Lemma sup_itv a b x : (a < BSide b x)%O ->
   sup [set` Interval a (BSide b x)] = x.
-Proof. by case: a => [b' y|[]]; rewrite ?bnd_simp//= => /sup_itv_bounded->. Qed.
+Proof.
+move=> xy; have /itv_bndbnd_setU : (-oo <= a)%O by rewrite bnd_simp.
+have /[swap]-> := sup_itv_infty_bnd x b; last exact/ltW.
+rewrite sup_setU// => ? ? /= /[!itv_boundlr]/= +/andP[] => /le_trans/[apply].
+by rewrite !bnd_simp => /ltW.
+Qed.
 
 Lemma inf_itv a b x : (BSide b x < a)%O ->
   inf [set` Interval (BSide b x) a] = x.
-Proof. by case: a => [b' y|[]]; rewrite ?bnd_simp//= => /inf_itv_bounded->. Qed.
+Proof.
+case: a => [b' ?|[]]//; rewrite /inf => xa.
+  rewrite opp_itv_bnd_bnd sup_itv// ?opprK//.
+  by move: xa; case: b; case: b'; rewrite !bnd_simp ?lerN2 ?ltrN2.
+by rewrite  ?opp_itv_bndy sup_itv// opprK.
+Qed.
 
 Lemma sup_itvcc x y : x <= y -> sup `[x, y] = y.
 Proof. by move=> *; rewrite sup_itv. Qed.

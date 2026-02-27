@@ -575,20 +575,19 @@ have mopoo (x : R) : measurable `]x, +oo[.
 have mnooc (x : R) : measurable `]-oo, x].
   by rewrite -setCitvr; exact/measurableC.
 have ooE (a b : R) : `]a, b[%classic = `]a, b] `\ b.
-  case: (boolP (a < b)) => ab; last by rewrite !set_itv_ge ?set0D.
-  by rewrite -setUitv1// setUDK// => x [->]; rewrite /= in_itv/= ltxx andbF.
+  by rewrite setDitv1r.
 have moo (a b : R) : measurable `]a, b[.
   by rewrite ooE; exact: measurableD.
 have mcc (a b : R) : measurable `[a, b].
   case: (boolP (a <= b)) => ab; last by rewrite set_itv_ge.
-  by rewrite -setU1itv//; apply/measurableU.
+  by rewrite -(setU1itv false)//; apply/measurableU.
 have mco (a b : R) : measurable `[a, b[.
   case: (boolP (a < b)) => ab; last by rewrite set_itv_ge.
-  by rewrite -setU1itv//; apply/measurableU.
+  by rewrite -(setU1itv false)//; apply/measurableU.
 have oooE (b : R) : `]-oo, b[%classic = `]-oo, b] `\ b.
-  by rewrite -setUitv1// setUDK// => x [->]; rewrite /= in_itv/= ltxx.
+  by rewrite setDitv1r.
 case: i => [[[] a|[]] [[] b|[]]] => //; do ?by rewrite set_itv_ge.
-- by rewrite -setU1itv//; exact/measurableU.
+- by rewrite -(setU1itv false)//; exact/measurableU.
 - by rewrite oooE; exact/measurableD.
 - by rewrite set_itvNyy.
 Qed.

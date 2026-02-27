@@ -1405,14 +1405,10 @@ Lemma emeasurable_fun_itv_obnd_cbndP (a : R) (b : itv_bound R) (f : R -> \bar R)
   measurable_fun [set` Interval (BRight a) b] f <->
   measurable_fun [set` Interval (BLeft a) b] f.
 Proof.
-split; [have [ab mf|ab _] := leP (BRight a) b|
-        have [ab _|ab] := leP b (BRight a)].
-- rewrite -setU1itv//; apply/measurable_funU => //; split => //.
-  exact: measurable_fun_set1.
-- rewrite set_itv_ge; first exact: measurable_fun_set0.
-  by rewrite -leNgt; case: b ab => -[].
-- by rewrite set_itv_ge// -?leNgt//; exact: measurable_fun_set0.
-- by rewrite -setU1itv ?ltW// => /measurable_funU[].
+have [ab|ba] := leP (BRight a) b; last first.
+  by rewrite !set_itv_ge// -leNgt ?(ltW ba)// -ltBRight_leBLeft.
+rewrite -(setU1itv false)// measurable_funU// (propT (measurable_fun_set1 _)).
+by split => // -[].
 Qed.
 
 Lemma measurable_fun_itv_obnd_cbndP (a : R) (b : itv_bound R) (f : R -> R) :
@@ -1426,12 +1422,10 @@ Lemma emeasurable_fun_itv_bndo_bndcP (a : itv_bound R) (b : R) (f : R -> \bar R)
   measurable_fun [set` Interval a (BLeft b)] f <->
   measurable_fun [set` Interval a (BRight b)] f.
 Proof.
-split; [have [ab ?|ab _] := leP a (BLeft b) |have [ab _|ab] := leP (BLeft b) a].
-- rewrite -setUitv1//; apply/measurable_funU => //; split => //.
-  exact: measurable_fun_set1.
-- by rewrite set_itv_ge -?leNgt//; exact: measurable_fun_set0.
-- by rewrite set_itv_ge -?leNgt//; exact: measurable_fun_set0.
-- by rewrite -setUitv1 ?ltW// => /measurable_funU[].
+have [ab|ba] := leP a (BLeft b); last first.
+  by rewrite !set_itv_ge// -leNgt// ltW.
+rewrite -(setUitv1 true)// measurable_funU// (propT (measurable_fun_set1 _)).
+by split => // -[].
 Qed.
 
 Lemma measurable_fun_itv_bndo_bndcP (a : itv_bound R) (b : R) (f : R -> R) :
