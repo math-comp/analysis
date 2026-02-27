@@ -14,14 +14,8 @@
   + lemma `itv_closed_ends_closed`
 - in `classical_sets.v`
   + lemma `in_set1_eq`
-- in `analysis_stdlib/Rstruct_topology.v`:
-  + lemma `RlnE`
-
-- in `classical_sets.v`:
-  + lemma `nonemptyPn`
 
 - in `set_interval.v`
-- in set_interval.v
   + definitions `itv_is_closed_unbounded`, `itv_is_cc`, `itv_closed_ends`
 
 - in `Rstruct.v`:
@@ -77,6 +71,13 @@
 
 - in `derive.v`:
   + lemmas `compact_EVT_max`, `compact_EVT_min`, `EVT_max_rV`, `EVT_min_rV`
+
+- in `functions.v`:
+  + lemmas `fun_maxC`, `fun_minC`, `min_fun_to_max`, `max_fun_to_min`
+
+- in `derive.v`:
+  + lemmas `derivable_max`, `derive_maxl`, `derive_maxr` `derivable_min`, `derive_minl`, `derive_minr`
+  + lemmas `derivable0`, `derive0`, `is_derive0`
 
 ### Changed
 
@@ -241,15 +242,6 @@
   + `closure_subset` -> `closureS`
 
 - in `set_interval.v`:
-- in `functions.v`:
-  + lemmas `fun_maxC`, `fun_minC`, `min_fun_to_max`, `max_fun_to_min`
-
-- in `derive.v`:
-  + lemmas `derivable_max`, `derive_maxl`, `derive_maxr` `derivable_min`, `derive_minl`, `derive_minr`
-  + lemmas `derivable0`, `derive0`, `is_derive0`
-
-### Renamed
-- in set_interval.v
   + `itv_is_ray` -> `itv_is_open_unbounded`
   + `itv_is_bd_open` -> `itv_is_oo`
 
@@ -287,6 +279,7 @@
 - in `lebesgue_integral_nonneg.v`:
   + lemmas `integral_itv_bndo_bndc`, `integral_itv_obnd_cbnd`,
     `integral_itv_bndoo`
+
 - in `derive.v`:
   + lemmas `near_eq_growth_rate`, `near_eq_derivable`, `near_eq_derive`,
     `near_eq_is_derive`
