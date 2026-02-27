@@ -169,7 +169,7 @@ exists (fun n => sval (cid (He (PosNum (invn n))))).
   rewrite /sval/=; case: cid => x [px xpt _].
   rewrite distrC (lt_le_trans xpt)// -(@invrK _ r) lef_pV2 ?posrE ?invr_gt0//.
   near: t; exists (truncn r^-1) => // s /= rs.
-  by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
+  by apply/ltW; rewrite -truncn_le_nat.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
 rewrite /sval/=; case: cid => // x [px xpn].
 by rewrite leNgt distrC => /negP.
@@ -229,7 +229,7 @@ have y_p : y_ n @[n --> \oo] --> p.
   rewrite -ltrBlDl => /lt_le_trans; apply.
   rewrite -(invrK e) lef_pV2// ?posrE ?invr_gt0//.
   near: t; exists (truncn e^-1) => // s /= es.
-  by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
+  by apply/ltW; rewrite -truncn_le_nat.
 have /fine_cvgP[[m _ mfy_] /= _] := h _ (conj py_ y_p).
 near \oo => n.
 have mn : (m <= n)%N by near: n; exists m.

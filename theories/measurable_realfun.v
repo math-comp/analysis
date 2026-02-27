@@ -2,6 +2,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean rat.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop reals ereal.
 From mathcomp Require Import interval_inference topology numfun tvs normedtype.
@@ -324,11 +326,9 @@ rewrite [X in measurable X](_ : _ =
   apply: bigcupT_measurable => k; rewrite -(setIid D) setIACA.
   exact/measurableI/emeasurable_fun_infty_c/emeasurable_fun_c_infty.
 rewrite predeqE => t; split => [/= [Dt ft]|].
-  exists (truncn `|fine (f t)|).+1 => //=; split=> //; split.
-    rewrite -[leRHS](fineK ft) lee_fin lerNl.
-    by rewrite (le_trans (ler_norm _))// normrN ltW// truncnS_gt.
-  rewrite -[leLHS](fineK ft) lee_fin (le_trans (ler_norm _))//.
-  by rewrite ltW// truncnS_gt.
+  exists (Num.bound (fine (f t))) => //=.
+  rewrite -(fineK ft) !lee_fin (fineK ft) lerNl.
+  by rewrite !ltW// (ltrNbound, ltr_bound).
 move=> [n _] [/= Dt [nft fnt]]; split => //; rewrite fin_numElt.
 by rewrite (lt_le_trans _ nft) ?ltNyr//= (le_lt_trans fnt)// ltry.
 Qed.
@@ -567,21 +567,15 @@ Lemma eset1Ny :
   [set -oo] = \bigcap_k `]-oo, (-k%:R%:E)[%classic :> set (\bar R).
 Proof.
 rewrite eqEsubset; split=> [_ -> i _ |]; first by rewrite /= in_itv /= ltNyr.
-move=> [r|/(_ O Logic.I)|]//.
-move=> /(_ `|floor r|%N Logic.I); rewrite /= in_itv/= ltNge.
-rewrite lee_fin; have [r0|r0] := leP 0%R r.
-  by rewrite (le_trans _ r0) // lerNl oppr0 ler0n.
-rewrite lerNl -abszN natr_absz gtr0_norm; last by rewrite ltrNr oppr0 floor_lt0.
-by rewrite mulrNz lerNl opprK floor_le_tmp.
+move=> [r|/(_ O Logic.I)|]// /(_ (Num.bound r) Logic.I) /=.
+by rewrite in_itv/= lte_fin ltNge lerNl ltW// ltrNbound.
 Qed.
 
 Lemma eset1y : [set +oo] = \bigcap_k `]k%:R%:E, +oo[%classic :> set (\bar R).
 Proof.
 rewrite eqEsubset; split=> [_ -> i _/=|]; first by rewrite in_itv /= ltry.
-move=> [r| |/(_ O Logic.I)] // /(_ `|ceil r|%N Logic.I); rewrite /= in_itv /=.
-rewrite andbT lte_fin ltNge.
-have [r0|r0] := ltP 0%R r; last by rewrite (le_trans r0).
-by rewrite natr_absz gtr0_norm// ?ceil_ge// ceil_gt0.
+move=> [r| |/(_ O Logic.I)] // /(_ (Num.bound r) Logic.I) /=.
+by rewrite in_itv/= andbT lte_fin ltNge ltW// ltr_bound.
 Qed.
 
 End erealwithrays.

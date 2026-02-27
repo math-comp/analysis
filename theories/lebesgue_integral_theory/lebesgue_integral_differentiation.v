@@ -880,8 +880,7 @@ move=> Ef; have {Ef} : mu.-negligible (E `&` [set x | 0 < f^* x]).
   near \oo => m; exists m => //=.
   rewrite -(@fineK _ (f^* x)) ?gt0_fin_numE ?ltey// lte_fin.
   rewrite invf_plt ?posrE//; last by rewrite fine_gt0// ltey fx0.
-  set r := _^-1%R; rewrite (lt_le_trans (truncnS_gt _))//.
-  by rewrite ler_nat ltnS; near: m; exact: nbhs_infty_ge.
+  by rewrite -truncn_le_nat; near: m; exact: nbhs_infty_ge.
 apply: negligibleS => z /= /not_implyP[Ez H]; split => //.
 rewrite ltNge; apply: contra_notN H.
 rewrite le_eqVlt ltNge limf_esup_ge0/= ?orbF//; last first.

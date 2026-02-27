@@ -2014,7 +2014,7 @@ Lemma compact_bounded (K : realType) (V : normedModType K) (A : set V) :
 Proof.
 rewrite compact_cover => Aco.
 have covA : A `<=` \bigcup_(n : int) [set p | `|p| < n%:~R].
-  by move=> p _; exists (floor `|p| + 1) => //=; rewrite floorD1_gt.
+  by move=> p _; exists (truncn `|p|).+1; rewrite //= truncnS_gt.
 have /Aco [] := covA.
   move=> n _; rewrite openE => p; rewrite /= -subr_gt0 => ltpn.
   apply/nbhs_ballP; exists (n%:~R - `|p|) => // q.

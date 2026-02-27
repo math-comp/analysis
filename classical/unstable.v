@@ -574,3 +574,20 @@ End ProperNotations.
 
 Lemma sqrtK {K : rcfType} : {in Num.nneg, cancel (@Num.sqrt K) (fun x => x ^+ 2)}.
 Proof. by move=> r r0; rewrite sqr_sqrtr. Qed.
+
+Lemma ltr_norm_bound {R : archiNumDomainType} (x : R) : `|x| < (Num.bound x)%:R.
+Proof. by rewrite /Num.bound -[in ltRHS]normr_id archi_boundP. Qed.
+
+Lemma real_ltr_bound {R : archiNumDomainType} (x : R) :
+  x \is Num.real -> x < (Num.bound x)%:R.
+Proof. by move=> /real_ler_norm /le_lt_trans -> //; apply: ltr_norm_bound. Qed.
+
+Lemma real_ltrNbound {R : archiNumDomainType} (x : R) :
+  x \is Num.real -> - x < (Num.bound x)%:R.
+Proof. by rewrite /Num.bound -realN -normrN; exact: real_ltr_bound. Qed.
+
+Lemma ltr_bound {R : archiRealDomainType} (x : R) : x < (Num.bound x)%:R.
+Proof. exact: real_ltr_bound. Qed.
+
+Lemma ltrNbound {R : archiRealDomainType} (x : R) : - x < (Num.bound x)%:R.
+Proof. exact: real_ltrNbound. Qed.

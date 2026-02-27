@@ -306,7 +306,7 @@ exists (fun n => sval (cid (He n.+1%:R^-1%:pos))).
   rewrite metric_sym (lt_le_trans xpt)//.
   rewrite -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0//.
   near: t; exists (truncn r^-1) => // s /= rs.
-  by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
+  by apply/ltW; rewrite -truncn_le_nat.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
 rewrite /sval/=; case: cid => // x [px xpn].
 by rewrite ltNge metric_sym => /negP.
