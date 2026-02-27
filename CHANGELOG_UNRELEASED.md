@@ -246,6 +246,7 @@
 
 - in `derive.v`:
   + lemmas `derivable_max`, `derive_maxl`, `derive_maxr` `derivable_min`, `derive_minl`, `derive_minr`
+  + lemmas `derivable0`, `derive0`, `is_derive0`
 
 ### Renamed
 - in set_interval.v
@@ -286,6 +287,9 @@
 - in `lebesgue_integral_nonneg.v`:
   + lemmas `integral_itv_bndo_bndc`, `integral_itv_obnd_cbnd`,
     `integral_itv_bndoo`
+- in `derive.v`:
+  + lemmas `near_eq_growth_rate`, `near_eq_derivable`, `near_eq_derive`,
+    `near_eq_is_derive`
 
 ### Deprecated
 

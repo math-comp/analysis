@@ -307,24 +307,20 @@ Qed.
 
 Lemma derivable0 (f : V -> W) (x : V) : derivable f x 0.
 Proof.
-apply:is_cvg_near_cst => //=.
-near=>h.
+apply: (is_cvg_near_cst 0) => //=.
+near=> h.
 by rewrite scaler0 add0r subrr scaler0.
-Unshelve.
-end_near.
-Qed.
+Unshelve. all: by end_near. Qed.
 
 Lemma derive0 (f : V -> W) (x : V) : 'D_0 f x = 0.
 Proof.
 apply/lim_near_cst => //=.
 near=> h.
 by rewrite scaler0 add0r subrr scaler0.
-Unshelve.
-end_near.
-Qed.
+Unshelve. all: by end_near. Qed.
 
 Lemma is_derive0 (f : V -> W) (x : V) : is_derive x 0 f 0.
-Proof. split; [by apply/derivable0 | by rewrite derive0]. Qed.
+Proof. by split; [exact/derivable0|rewrite derive0]. Qed.
 
 End DifferentialR.
 
@@ -2086,8 +2082,7 @@ Lemma near_eq_derivable (R : numFieldType) (V W : normedModType R)
     (f g : V -> W) (a v : V) :
   {near a, f =1 g} -> derivable f a v -> derivable g a v.
 Proof.
-case: (eqVneq v 0)=> [-> _ _| ].
-by apply/derivable0.
+have [-> _ _|] := eqVneq v 0; first exact/derivable0.
 move=> vn0 nfg /cvg_ex[/= l fl]; apply/cvg_ex; exists l => /=.
 exact/(cvg_trans _ fl)/near_eq_cvg/cvg_within/near_eq_growth_rate.
 Qed.
@@ -2096,10 +2091,9 @@ Lemma near_eq_derive (R : numFieldType) (V W : normedModType R)
   (f g : V -> W) (a v : V) :
   (\near a, f a = g a) -> 'D_v f a = 'D_v g a.
 Proof.
-case: (eqVneq v 0)=> [-> _ | ].
-by rewrite !derive0.
+have [-> _|] := eqVneq v 0; first by rewrite !derive0.
 move=> v0 fg; rewrite /derive; congr (lim _).
-rewrite eqEsubset; split; apply/near_eq_cvg/cvg_within/near_eq_growth_rate => //.
+rewrite eqEsubset; split; apply/near_eq_cvg/cvg_within/near_eq_growth_rate =>//.
 by near do apply/esym.
 Unshelve. all: by end_near. Qed.
 
@@ -2116,55 +2110,43 @@ Context {K : realType} {V W : normedModType K}.
 Implicit Types f g : V -> K^o.
 Implicit Type x : V.
 
-Fact der_max f g x v :
-  f x <> g x -> derivable f x v -> derivable g x v ->
+Fact der_max f g x v : f x != g x ->
+  derivable f x v -> derivable g x v ->
   {for x, continuous f} -> {for x, continuous g} ->
-  (fun h => h^-1 *: (((f \max g) \o shift x) (h *: v) - (f \max g) x)) @
-    0^' --> if f x < g x then 'D_v g x else 'D_v f x.
+  (fun h => h^-1 *: (((f \max g) \o shift x) (h *: v) - (f \max g) x))
+    @ 0^' --> if f x < g x then 'D_v g x else 'D_v f x.
 Proof.
 wlog: f g x / f x < g x.
-  move=> wlg fx_neq_gx.
-  move: (fx_neq_gx) => /eqP.
-  rewrite neq_lt => /orP[fg|gf].
-    move: fg fx_neq_gx.
-    by apply:wlg.
-  move=> df dg cf cg.
-  move: dg df cg cf.
-  rewrite fun_maxC ltNge if_neg le_eqVlt.
-  move: fx_neq_gx => /nesym/[dup] fx_neq_gx /eqP/negPf -> /=.
-  by apply:(wlg g f).
-move=> fx_lt_gx fg_neq df dg cf cg.
-case: ifPn => fg /=.
-  rewrite /Num.max fg => t Ht.
-  apply:(@near_eq_cvg _ _ _ _ (fun h => h^-1 *: (g (h *: v + x) - g x))).
-    near=> h.
-    rewrite ifT // -subr_lt0 (_ : f _ - _ = ((f - g) \o shift x) (h *: v)) //.
-    near: h.
-    have Hf : forall f : V -> K^o,
-    continuous_at x f -> f (shift x (x0 *: v)) @[x0 --> nbhs 0^'] --> f x.
-      move=> f' cf'.
-      apply:cvg_comp; last by apply:cf'.
+  move=> wlg; rewrite neq_lt => /orP[fg|gf df dg fxv gxv].
+  - by apply: wlg => //; rewrite lt_eqF.
+  - rewrite fun_maxC ltNge if_neg le_eqVlt eq_sym gt_eqF//=.
+    by apply: wlg => //; rewrite lt_eqF.
+move=> fx_lt_gx fg_neq df dg cf cg; case: ifPn => fg /=.
+- rewrite /Num.max fg => A DgxA.
+  apply: (@near_eq_cvg _ _ _ _ (fun h => h^-1 *: (g (h *: v + x) - g x))).
+  + near do rewrite ifT// -subr_lt0 -[ltLHS]/(((f - g) \o shift x) (_ *: v)).
+    have Hf (h : V -> K^o) : continuous_at x h ->
+        h (shift x (k *: v)) @[k --> nbhs 0^'] --> h x.
+      move=> ch.
+      apply: cvg_comp; last exact: ch.
       rewrite -[in nbhs x](add0r x).
-      apply:cvgD; last by apply:cvg_cst.
-      rewrite -(scale0r v).
-      apply:cvgZ; last by apply:cvg_cst.
-      by apply:nbhs_dnbhs.
-    apply/cvgr_lt; last by move: fg; rewrite -subr_lt0; apply.
-    by apply:cvgB; apply:Hf.
-  by apply:dg.
-exfalso.
-by apply: (negP fg).
-Unshelve.
-end_near.
-Qed.
+      apply: cvgD; last exact: cvg_cst.
+      rewrite -(scale0r v); apply: cvgZ; last exact: cvg_cst.
+      exact: nbhs_dnbhs.
+    apply/(cvgr_lt (f x - g x)); last by rewrite subr_lt0.
+    by apply: cvgB; exact: Hf.
+  + exact: dg.
+- absurd.
+  by rewrite fx_lt_gx in fg.
+Unshelve. all: by end_near. Qed.
 
 Lemma derivable_max f g x v :
-  f x <> g x -> derivable f x v -> derivable g x v ->
+  f x != g x -> derivable f x v -> derivable g x v ->
   {for x, continuous f} -> {for x, continuous g} ->
   derivable (f \max g) x v.
 Proof.
-move=> fx_gx df dg cf cg; apply/cvg_ex.
-exists(if f x < g x then 'D_v g x else 'D_v f x).
+move=> fx_gx df dg cf cg; apply/cvg_ex => /=.
+exists (if f x < g x then 'D_v g x else 'D_v f x).
 exact: der_max.
 Qed.
 
@@ -2172,9 +2154,9 @@ Lemma derive_maxl f g x v : f x > g x ->
   {for x, continuous f} -> {for x, continuous g} ->
   'D_v (f \max g) x = 'D_v f x.
 Proof.
-case: (boolP (v == 0)) => [/eqP -> //= gx_fx cf cg | v0].
+have [-> gx_fx cf cg|v0 fg cf cg]:= eqVneq v 0.
   by rewrite !derive0.
-move=> fg cf cg; apply: near_eq_derive => //.
+apply: near_eq_derive => //.
 near do rewrite /Order.max_fun /Num.max ifN// -leNgt -subr_le0.
 by move: fg; rewrite -subr_lt0; apply: cvgr_le; exact: cvgB.
 Unshelve. all: by end_near. Qed.
@@ -2185,23 +2167,21 @@ Lemma derive_maxr f g x v : f x < g x ->
 Proof. by move=> fg cf cg; rewrite fun_maxC derive_maxl. Qed.
 
 Lemma derivable_min f g x v :
-  f x <> g x -> derivable f x v -> derivable g x v ->
+  f x != g x -> derivable f x v -> derivable g x v ->
   {for x, continuous f} -> {for x, continuous g} ->
   derivable (f \min g) x v.
 Proof.
-case: (boolP (v == 0)) => [/eqP -> /= _ _ _ _ _| v0].
-  by apply/derivable0.
-rewrite min_fun_to_max=> fx_gx df dg cf cg.
-apply/derivableB; [by apply/(derivableD df dg) | by apply/derivable_max].
+have [-> *|x0] := eqVneq v 0; first exact/derivable0.
+rewrite min_fun_to_max => fx_gx df dg cf cg.
+by apply/derivableB; [apply/(derivableD df dg) |apply/derivable_max].
 Qed.
 
 Lemma derive_minr f g x v : f x > g x ->
   {for x, continuous f} -> {for x, continuous g} ->
   'D_v (f \min g) x = 'D_v g x.
 Proof.
-case: (boolP (v == 0)) => [/eqP -> //= gx_fx cf cg | v0].
-  by rewrite !derive0.
-move=> fg cf cg; apply: near_eq_derive => //.
+have [-> *|v0 fg cf cg] := eqVneq v 0; first by rewrite !derive0.
+apply: near_eq_derive => //.
 near do rewrite /Order.min_fun /Num.min ifN// -leNgt -subr_le0.
 by move: fg; rewrite -subr_lt0; apply: cvgr_le; exact: cvgB.
 Unshelve. all: by end_near. Qed.
