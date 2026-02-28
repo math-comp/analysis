@@ -47,7 +47,7 @@
 
 - in `random_variable.v`
   + lemmas `lebesgue_integral_pmf`, `cdf_measurable`, `ccdf_measurable`,
-    `le0_expectation_cdf`
+    `le0_expectation_cdf`, `expectation_cdf_ccdf`
 
 - in `lebesgue_integral_nonneg.v`:
   + lemma `integral_setU`
