@@ -60,6 +60,11 @@
 
 - in `normed_module.v`:
   + lemma `within_continuous_compN`
+- in `normed_module.v`:
+  + lemma `compact_has_sup`
+
+- in `derive.v`:
+  + lemmas `compact_EVT_max`, `compact_EVT_min`, `EVT_max_rV`, `EVT_min_rV`
 
 ### Changed
 - in `set_interval.v`
