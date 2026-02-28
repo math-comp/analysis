@@ -97,6 +97,7 @@ subgraph cluster_reals { "reals/real_interval"[label="real_interval",URL="mathco
   "classical/classical_sets" -> "reals/real_interval";
   "classical/functions" -> "reals/real_interval";
   "classical/set_interval" -> "reals/real_interval";
+  "classical/unstable" -> "reals/real_interval";
   "reals/constructive_ereal" -> "reals/real_interval";
   "reals/reals" -> "reals/real_interval";
 subgraph cluster_reals { "reals/signed"[label="signed",URL="mathcomp.reals.signed.html",fillcolor=2,fontcolor=white]}  "classical/mathcomp_extra" -> "reals/signed";
@@ -125,6 +126,7 @@ subgraph cluster_reals { "experimental_reals/realsum"[label="realsum",URL="mathc
   "classical/boolp" -> "experimental_reals/realsum";
   "classical/classical_sets" -> "experimental_reals/realsum";
   "classical/functions" -> "experimental_reals/realsum";
+  "classical/unstable" -> "experimental_reals/realsum";
   "experimental_reals/discrete" -> "experimental_reals/realsum";
   "experimental_reals/realseq" -> "experimental_reals/realsum";
   "experimental_reals/xfinmap" -> "experimental_reals/realsum";
@@ -216,6 +218,7 @@ subgraph cluster_topology { "theories/topology_theory/matrix_topology"[label="ma
   "theories/topology_theory/uniform_structure" -> "theories/topology_theory/matrix_topology";
 subgraph cluster_topology { "theories/topology_theory/nat_topology"[label="nat_topology",URL="mathcomp.analysis.topology_theory.nat_topology.html",fillcolor=4,fontcolor=white]}  "classical/all_classical" -> "theories/topology_theory/nat_topology";
   "classical/all_ssreflect_compat" -> "theories/topology_theory/nat_topology";
+  "classical/unstable" -> "theories/topology_theory/nat_topology";
   "reals/reals" -> "theories/topology_theory/nat_topology";
   "theories/topology_theory/discrete_topology" -> "theories/topology_theory/nat_topology";
   "theories/topology_theory/order_topology" -> "theories/topology_theory/nat_topology";
@@ -615,6 +618,7 @@ subgraph cluster_analysis { "theories/esum"[label="esum",URL="mathcomp.analysis.
 subgraph cluster_analysis { "theories/derive"[label="derive",URL="mathcomp.analysis.derive.html",fillcolor=5]}  "classical/all_ssreflect_compat" -> "theories/derive";
   "classical/boolp" -> "theories/derive";
   "classical/classical_sets" -> "theories/derive";
+  "classical/contra" -> "theories/derive";
   "classical/functions" -> "theories/derive";
   "classical/mathcomp_extra" -> "theories/derive";
   "classical/unstable" -> "theories/derive";
@@ -760,6 +764,7 @@ subgraph cluster_analysis { "theories/measurable_realfun"[label="measurable_real
   "classical/classical_sets" -> "theories/measurable_realfun";
   "classical/fsbigop" -> "theories/measurable_realfun";
   "classical/functions" -> "theories/measurable_realfun";
+  "classical/unstable" -> "theories/measurable_realfun";
   "reals/real_interval" -> "theories/measurable_realfun";
   "reals/reals" -> "theories/measurable_realfun";
   "theories/ereal" -> "theories/measurable_realfun";
@@ -780,6 +785,7 @@ subgraph cluster_analysis { "theories/lebesgue_stieltjes_measure"[label="lebesgu
   "classical/classical_sets" -> "theories/lebesgue_stieltjes_measure";
   "classical/fsbigop" -> "theories/lebesgue_stieltjes_measure";
   "classical/functions" -> "theories/lebesgue_stieltjes_measure";
+  "classical/unstable" -> "theories/lebesgue_stieltjes_measure";
   "reals/real_interval" -> "theories/lebesgue_stieltjes_measure";
   "reals/reals" -> "theories/lebesgue_stieltjes_measure";
   "theories/ereal" -> "theories/lebesgue_stieltjes_measure";
