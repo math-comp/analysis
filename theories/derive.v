@@ -643,7 +643,7 @@ move=> df; set g := RHS; have glin : linear g.
   by move=> a u v; rewrite /g linearP /= scalerDl -scalerA.
 pose glM := GRing.isLinear.Build _ _ _ _ _ glin.
 pose gL : {linear _ -> _} := HB.pack g glM.
-by apply:(@diff_unique _ _ _ gL); have [] := dscalel f df.
+by apply: (@diff_unique _ _ _ gL); have [] := dscalel f df.
 Qed.
 
 Lemma differentiableZl (k : V -> R) (f : W) x :
@@ -2220,5 +2220,95 @@ rewrite (le_trans (ler_normD _ _))// (splitr e) lerD//.
   apply: dle => //=; last by near: x; exact: nbhs_dnbhs_neq.
   by rewrite sub0r normrN; near: x; exact: dnbhs0_lt.
 Unshelve. all: by end_near. Qed.
+
+Global Instance is_derive_mx {m n : nat} (M : V -> 'M[R]_(m, n))
+    (dM : 'M[R]_(m, n)) (x v : V) :
+  (forall i j, is_derive x v (fun x => M x i j) (dM i j)) ->
+  is_derive x v M dM.
+Proof.
+move=> MdM; apply: DeriveDef; first exact/derivable_mxP.
+apply/matrixP => i j.
+have [_ <-] := MdM i j.
+rewrite derive_mx//.
+  by rewrite mxE.
+apply/derivable_mxP => i0 j0.
+by have [] := MdM i0 j0.
+Qed.
+
+Lemma continuous_mx {m n : nat} (f : V -> 'I_m -> 'I_n -> R) :
+    (forall i j, continuous (fun x => f x i j)) <->
+  continuous (fun x : V => \matrix_(i < m, j < n) f x i j).
+Proof.
+split.
+- move=> cf x; apply/cvgrPdist_le => /= e e0.
+  near=> t.
+  rewrite /Num.norm/= mx_normrE/= (bigmax_le _ (ltW e0))// => -[i j] _.
+  rewrite !mxE/=.
+  move: i j.
+  near: t.
+  apply: filter_forall => /= i; apply: filter_forall => /= j.
+  have /cvgrPdist_le/(_ _ e0) := cf i j x.
+  exact: filterS.
+- move=> cf i j v.
+  apply/cvgrPdist_le => /= e e0.
+  have /cvgrPdist_le/(_ _ e0) := cf v.
+  apply: filterS => w.
+  apply: le_trans.
+  rewrite [in leRHS]/Num.norm/= mx_normrE/=.
+  apply: le_trans (le_bigmax _ _ (i, j)).
+  by rewrite !mxE/=.
+Unshelve. all: by end_near. Qed.
+
+Fact dmx {m n : nat} (M : V -> 'M[R]_(m, n)) (x : V) :
+  let g := fun x0 : V => (\matrix_(i < m, j < n) 'd M x x0 i j) in
+  differentiable M x ->
+  continuous g /\
+  M \o shift x = cst (M x) + g +o_ 0 id.
+Proof.
+move=> dM Mx; split => [|].
+  case: Mx => -[Mx _].
+  rewrite /dM.
+  apply/continuous_mx => i j.
+  move=> v.
+  apply/cvgrPdist_le => /= e e0.
+  have := Mx v.
+  move/cvgrPdist_le => /(_ _ e0).
+  apply: filterS => /=t.
+  apply: le_trans.
+  rewrite {2}/Num.norm/= mx_normrE/=.
+  apply: le_trans; last first.
+    exact: le_bigmax.
+  by rewrite !mxE/=.
+apply/eqaddoE; rewrite funeqE => y /=.
+rewrite diff_locallyx; last exact: Mx.
+rewrite /dM !fctE.
+congr (_ + _ + _).
+apply/matrixP => i j/=.
+by rewrite mxE.
+Qed.
+
+Lemma diffmx {m n : nat} (M : V -> 'M[R]_(m, n)) t :
+  differentiable M t ->
+  'd M (nbhs_filter_on t) = (fun x0 : V => \matrix_(i < m, j < n) 'd M t x0 i j) :> (_ -> _).
+Proof.
+move=> dM.
+set g := (fun x0 : V => \matrix_(i, j) 'd M t x0 i j).
+have glin : linear (g : V -> _).
+  move=> a u w.
+  rewrite /g linearD linearZ/=.
+  apply/matrixP => i j.
+  by rewrite !mxE.
+pose glM := GRing.isLinear.Build _ _ _ _ _ glin.
+pose gL : {linear _ -> _} := HB.pack g glM.
+by apply: (@diff_unique _ _ _ _ gL); have [? ?] := dmx dM.
+Qed.
+
+Global Instance is_diff_mx {m n : nat} (M dM : V -> 'M[R]_(m, n)) (x : V) :
+  (forall i j, is_diff x (fun x => M x i j) (fun x => dM x i j)) ->
+  is_diff x M dM.
+Proof.
+move=> MdM.
+apply: DiffDef.
+Abort.
 
 End pointwise_derive.
