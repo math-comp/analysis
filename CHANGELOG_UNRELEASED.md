@@ -55,28 +55,6 @@
 - in `measurable_realfun.v`:
   + lemmas `emeasurable_fun_itv_obnd_cbndP`, `emeasurable_fun_itv_bndo_bndcP`,
     `emeasurable_fun_itv_cc`
-- in `normed_module.v`:
-  + lemma `open_subball_rat`
-  + fact `isolated_rat_ball`
-  + lemma `countable_isolated`
-- in `normed_module.v`:
-  + lemma `limit_point_setD`
-
-- in `reals.v`:
-  + lemma `nat_has_minimum`
-
-- in `sequences.v`:
-  + lemma `cluster_eventuallyP`
-  + lemmas `cluster_eventually_cvg`, `limit_point_cluster_eventually`
-
-- in `lebesgue_integrable.v`:
-  + lemma `integrable_set0`
-
-- in `lebesgue_integrable.v`:
-  + lemma `integrable_norm`
-- in `order_topology.v`:
-  + structures `POrderedNbhs`, `POrderedTopological`, `POrderedUniform`, `POrderedPseudoMetric`,
-    `POrderedPointedTopological`
 
 - in `measurable_function.v`:
   + lemma `preimage_set_system_compS`
@@ -314,6 +292,7 @@
 
 - in `subspace_topology.v`:
   + lemmas `open_subspaceP` and `closed_subspaceP` (use `exists2` instead of `exists`)
+
 - in `numfun.v`:
   + `fune_abse` renamed to `funeposDneg` and direction of the equality changed
   + `funeposneg` renamed to `funeposBneg` and direction of the equality changed
@@ -352,8 +331,6 @@
 
 - in `lebesgue_integral_nonneg.v`:
   + `integral_setD1_EFin` -> `integral_setD1`
-- in `charge.v`:
-  + `induced` -> `induced_charge`
 
 - in `topology_structure.v`:
   + `closed_comp` -> `preimage_closed`
@@ -386,30 +363,6 @@
 
 - in `lebesgue_integral_nonneg.v`:
   + lemma `integral_setU` (was deprecated since version 1.0.1)
-- in `measure_function.v`:
-  + notations `g_salgebra_measure_unique_trace`,
-    `g_salgebra_measure_unique_cover`, `g_salgebra_measure_unique`
-    (deprecated since 1.2.0)
-
-- in `measurable_structure.v`:
-  + notations `monotone_class`, `monotone_class_g_salgebra`,
-    `smallest_monotone_classE`, `monotone_class_subset`,
-    `setI_closed_gdynkin_salgebra`, `dynkin_g_dynkin`, `dynkin_monotone`,
-    `salgebraType`
-    (deprecated since 1.2.0)
-
-- in `sequences.v`:
-  + notation `eq_bigsetU_seqD`
-    (deprecated since 1.2.0)
-- in `measurable_structure.v`:
-  + definition `measure_dominates` (use `null_set_dominates` instead)
-  + lemma `measure_dominates_trans`
-
-- in `charge.v`:
-  + lemma `dominates_charge_variation` (use `charge_null_dominatesP` instead)
-
-- in `set_interval.v`:
-  + lemma `interval_set1` (use `set_itv1` instead)
 
 - in `boolp.v`:
   + notation `eq_exists2` (was deprecated since version 1.10.0)
