@@ -62,9 +62,6 @@ From mathcomp Require Import ereal topology normedtype sequences.
 (*                                                                            *)
 (* ## About sets of sets                                                      *)
 (* ```                                                                        *)
-(*      setI_closed G == the set of sets G is closed under finite             *)
-(*                       intersection                                         *)
-(*      setU_closed G == the set of sets G is closed under finite union       *)
 (*      setC_closed G == the set of sets G is closed under complement         *)
 (*     setSD_closed G == the set of sets G is closed under proper             *)
 (*                       difference                                           *)
@@ -153,8 +150,6 @@ Section set_systems.
 Context {T} (C : set (set T) -> Prop) (D : set T) (G : set (set T)).
 
 Definition setC_closed := forall A, G A -> G (~` A).
-Definition setI_closed := forall A B, G A -> G B -> G (A `&` B).
-Definition setU_closed := forall A B, G A -> G B -> G (A `|` B).
 Definition setSD_closed := forall A B, B `<=` A -> G A -> G B -> G (A `\` B).
 Definition setD_closed := forall A B, G A -> G B -> G (A `\` B).
 Definition setY_closed := forall A B, G A -> G B -> G (A `+` B).
@@ -196,7 +191,7 @@ Definition fin_trivIset_closed :=
   forall I (D : set I) (F : I -> set T), finite_set D -> trivIset D F ->
    (forall i, D i -> G (F i)) -> G (\bigcup_(k in D) F k).
 
-Definition setring := [/\ G set0, setU_closed & setD_closed].
+Definition setring := [/\ G set0, setU_closed G & setD_closed].
 
 Definition sigma_ring := [/\ G set0, setD_closed &
    (forall A : (set T)^nat, (forall n, G (A n)) -> G (\bigcup_k A k))].

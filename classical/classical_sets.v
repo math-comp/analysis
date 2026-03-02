@@ -103,6 +103,17 @@ From mathcomp Require Import mathcomp_extra boolp wochoice.
 (*           \bigcap_(i < n) F := \bigcap_(i in `I_n) F                       *)
 (*          \bigcap_(i >= n) F := \bigcap_(i in [set i | i >= n]) F           *)
 (*                 \bigcap_i F == same as before with T left implicit         *)
+(* ```                                                                        *)
+(*                                                                            *)
+(* ### About sets of sets                                                     *)
+(* ```                                                                        *)
+(*       set_system T := set (set T)                                          *)
+(*      setI_closed G == the set of sets G is closed under finite             *)
+(*                       intersection                                         *)
+(*      setU_closed G == the set of sets G is closed under finite union       *)
+(* ```                                                                        *)
+(*                                                                            *)
+(* ```                                                                        *)
 (*                smallest C G := \bigcap_(A in [set M | C M /\ G `<=` M]) A  *)
 (*                   A `<=` B <-> A is included in B                          *)
 (*                     A `<` B := A `<=` B /\ ~ (B `<=` A)                    *)
@@ -1624,6 +1635,18 @@ Proof.
 by rewrite eqEsubset; split => [x [b [a Aa] <- <-]|x [a Aa] <-];
   [apply/imageP |apply/imageP/imageP].
 Qed.
+
+Definition set_system U := set (set U).
+Identity Coercion set_system_to_set : set_system >-> set.
+
+Section set_systems.
+Context {T} (G : set_system T).
+
+Definition setI_closed := forall A B, G A -> G B -> G (A `&` B).
+
+Definition setU_closed := forall A B, G A -> G B -> G (A `|` B).
+
+End set_systems.
 
 Lemma subKimage {T T'} {P : set (set T')} (f : T -> T') (g : T' -> T) :
   cancel f g -> [set A | P (f @` A)] `<=` [set g @` A | A in P].

@@ -1,6 +1,7 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat all_algebra finmap all_classical.
+From mathcomp Require Import all_ssreflect_compat all_algebra finmap.
+From mathcomp Require Import all_classical.
 From mathcomp Require Import interval_inference reals topology_structure.
 From mathcomp Require Import uniform_structure pseudometric_structure.
 
@@ -234,9 +235,9 @@ Qed.
 Section Precompact.
 Context {X : topologicalType}.
 
-Lemma compactU (A B : set X) : compact A -> compact B -> compact (A `|` B).
+Lemma compactU : setU_closed (@compact X).
 Proof.
-rewrite compact_ultra => cptA cptB F UF FAB; rewrite setIUl.
+move=> A B; rewrite compact_ultra => cptA cptB F UF FAB; rewrite setIUl.
 have [/cptA[x AFx]|] := in_ultra_setVsetC A UF; first by exists x; left.
 move=> /(filterI FAB); rewrite setIUl setICr set0U => FBA.
 have /cptB[x BFx] : F B by apply: filterS FBA; exact: subIsetr.
