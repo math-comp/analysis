@@ -182,43 +182,43 @@ Qed.
 
 Lemma open_subspaceP (U : set T) :
   open (U : set (subspace A)) <->
-  exists V, open (V : set T) /\ V `&` A = U `&` A.
+  exists2 V, open (V : set T) & V `&` A = U `&` A.
 Proof.
 split; first last.
-  case=> V [oV UV]; rewrite -open_subspaceIT -UV.
+  case=> V oV UV; rewrite -open_subspaceIT -UV.
   move=> x //= []; case: nbhs_subspaceP; rewrite //= withinE.
-  move=> ? ? _; exists V; last by rewrite -setIA setIid.
-  by move: oV; rewrite openE /interior; apply.
+  move=> Ax Vx _; exists V; last by rewrite -setIA setIid.
+  by move: oV; rewrite openE /interior; exact.
 rewrite -open_subspaceIT => oUA.
-have oxF : forall x : T, (U `&` A) x ->
-    exists V, (open_nbhs (x : T) V) /\ (V `&` A `<=` U `&` A).
-  move=> x /[dup] UAx /= [??]; move: (oUA _ UAx);
-    case: nbhs_subspaceP => // ?.
-  rewrite withinE /= => [[V nbhsV UV]]; rewrite -setIA setIid in UV.
-  exists V°; split; first rewrite open_nbhsE; first split => //.
+have oxF (x : T) : (U `&` A) x ->
+    exists2 V, open_nbhs (x : T) V & V `&` A `<=` U `&` A.
+  move=> /[dup] UAx /= [Ux Ax].
+  have := oUA _ UAx; case: nbhs_subspaceP => // _.
+  rewrite withinE /= => -[V nbhsV]; rewrite -setIA setIid => UV.
+  exists V°; first rewrite open_nbhsE; first split => //.
   - exact: open_interior.
   - exact: nbhs_interior.
-  - by rewrite UV=> t [/interior_subset] ??; split.
+  - by rewrite UV => t [/interior_subset].
 pose f (x : T) :=
-  if pselect ((U `&` A) x) is left e then projT1 (cid (oxF x e)) else set0.
-set V := \bigcup_(x in (U `&` A)) (f x); exists V; split.
-  apply: bigcup_open => i UAi; rewrite /f; case: pselect => // ?; case: (cid _).
-  by move=> //= W; rewrite open_nbhsE=> -[[]].
+  if pselect ((U `&` A) x) is left e then projT1 (cid2 (oxF x e)) else set0.
+set V := \bigcup_(x in U `&` A) f x; exists V.
+  apply: bigcup_open => i UAi; rewrite /f; case: pselect => // ?; case: cid2.
+  by move=> //= W; rewrite open_nbhsE => -[].
 rewrite eqEsubset /V /f; split.
   move=> t [[u]] UAu /=; case: pselect => //= ?.
-  by case: (cid _) => //= W [] _ + ? ?; apply; split.
+  by case: cid2 => //= W _ + ? ? ; apply; exact.
 move=> t UAt; split => //; last by case: UAt.
 exists t => //; case: pselect => //= [[? ?]].
-by case: (cid _) => //= W [] [] _.
+by case: cid2 => //= W [].
 Qed.
 
 Lemma closed_subspaceP (U : set T) :
   closed (U : set (subspace A)) <->
-  exists V, closed (V : set T) /\ V `&` A = U `&` A.
+  exists2 V, closed (V : set T) & V `&` A = U `&` A.
 Proof.
-rewrite -openC open_subspaceP.
-under [X in _ <-> X] eq_exists => V do rewrite -openC.
-by split => -[V [? VU]]; exists (~` V); split; rewrite ?setCK //;
+rewrite -openC open_subspaceP !exists2E.
+under [X in _ <-> X]eq_exists => x do rewrite -openC.
+by split => -[V [? VU]]; exists (~` V); rewrite ?setCK //;
   move/(congr1 setC): VU; rewrite ?eqEsubset ?setCI ?setCK; firstorder.
 Qed.
 
@@ -234,8 +234,8 @@ Lemma open_setIS (U : set (subspace A)) : open A ->
   open (U `&` A : set T) = open U.
 Proof.
 move=> oA; apply/propext; rewrite open_subspaceP.
-split=> [|[V [oV <-]]]; last exact: openI.
-by move=> oUA; exists (U `&` A); rewrite -setIA setIid.
+split=> [|[V oV <-]]; last exact: openI.
+by move=> oUA; exists (U `&` A); rewrite // -setIA setIid.
 Qed.
 
 Lemma open_setSI (U : set (subspace A)) : open A -> open (A `&` U) = open U.
@@ -245,8 +245,8 @@ Lemma closed_setIS (U : set (subspace A)) : closed A ->
   closed (U `&` A : set T) = closed U.
 Proof.
 move=> oA; apply/propext; rewrite closed_subspaceP.
-split=> [|[V [oV <-]]]; last exact: closedI.
-by move=> oUA; exists (U `&` A); rewrite -setIA setIid.
+split=> [|[V oV <-]]; last exact: closedI.
+by move=> oUA; exists (U `&` A); rewrite // -setIA setIid.
 Qed.
 
 Lemma closed_setSI (U : set (subspace A)) :
@@ -256,8 +256,8 @@ Proof. by move=> oA; rewrite -setIC closed_setIS. Qed.
 Lemma closure_subspaceW (U : set T) :
   U `<=` A -> closure (U : set (subspace A)) = closure (U : set T) `&` A.
 Proof.
-have /closed_subspaceP := (@closed_closure _ (U : set (subspace A))).
-move=> [V] [clV VAclUA] /[dup] /(@closureS (subspace _)).
+have /closed_subspaceP := @closed_closure _ (U : set (subspace A)).
+move=> [V clV VAclUA] /[dup] /(@closureS (subspace _)).
 have /closure_id <- := closed_subspaceT => /setIidr <-; rewrite setIC.
 move=> UsubA; rewrite eqEsubset; split.
   apply: setSI; rewrite closureE; apply: smallest_sub (@subset_closure _ U).
@@ -288,13 +288,13 @@ Lemma clopen_connectedP : connected A <->
 Proof.
 split.
   move=> + U [/open_subspaceP oU /closed_subspaceP cU] UA U0; apply => //.
-  - case: oU => V [oV VAUA]; exists V; rewrite // setIC VAUA.
+  - case: oU => V oV VAUA; exists V; rewrite // setIC VAUA.
     exact/esym/setIidPl.
-  - case: cU => V [cV VAUA]; exists V => //; rewrite setIC VAUA.
+  - case: cU => V cV VAUA; exists V; rewrite // setIC VAUA.
     exact/esym/setIidPl.
 move=> clpnA U Un0 [V oV UVA] [W cW UWA]; apply: clpnA => //; first split.
-- by apply/open_subspaceP; exists V; rewrite setIC UVA setIAC setIid.
-- by apply/closed_subspaceP; exists W; rewrite setIC UWA setIAC setIid.
+- by apply/open_subspaceP; exists V; rewrite // setIC UVA setIAC setIid.
+- by apply/closed_subspaceP; exists W; rewrite // setIC UWA setIAC setIid.
 - by rewrite UWA; exact: subIsetl.
 Qed.
 
@@ -311,8 +311,8 @@ Global Instance subspace_proper_filter {T : topologicalType}
     (A : set T) (x : subspace A) :
   ProperFilter (nbhs_subspace x) := nbhs_subspace_filter x.
 
-Definition from_subspace {T U : Type} (A : set T) (f : T -> U) : subspace A -> U :=
-  f.
+Definition from_subspace {T U : Type} (A : set T) (f : T -> U)
+  : subspace A -> U := f.
 Arguments from_subspace {T U} A f.
 
 Notation "{ 'within' A , 'continuous' f }" :=
@@ -391,21 +391,21 @@ Lemma withinU_continuous {U} A B (f : T -> U) : closed A -> closed B ->
   {within A `|` B, continuous f}.
 Proof.
 move=> ? ? ctsA ctsB; apply/continuous_closedP => W oW.
-case/continuous_closedP/(_ _ oW)/closed_subspaceP: ctsA => V1 [? V1W].
-case/continuous_closedP/(_ _ oW)/closed_subspaceP: ctsB => V2 [? V2W].
-apply/closed_subspaceP; exists ((V1 `&` A) `|` (V2 `&` B)); split.
+case/continuous_closedP/(_ _ oW)/closed_subspaceP: ctsA => V1 cV1 V1W.
+case/continuous_closedP/(_ _ oW)/closed_subspaceP: ctsB => V2 cV2 V2W.
+apply/closed_subspaceP; exists ((V1 `&` A) `|` (V2 `&` B)).
   by apply: closedU; exact: closedI.
-rewrite [RHS]setIUr -V2W -V1W eqEsubset; split=> ?.
-  by case=> [[][]] ? ? [] ?; [left | left | right | right]; split.
-by case=> [][] ? ?; split=> []; [left; split | left | right; split | right].
+rewrite [RHS]setIUr -V2W -V1W eqEsubset; split=> t.
+  by case=> [[][]] ? ? [] ?; [left | left | right | right].
+by case=> [][] ? ?; split=> []; [left | left | right | right].
 Qed.
 
 Lemma subspaceT_continuous {U} A (B : set U) (f : {fun A >-> B}) :
   {within A, continuous f} -> continuous (f : subspace A -> subspace B).
 Proof.
-move=> /continuousP ctsf; apply/continuousP => O /open_subspaceP [V [oV VBOB]].
+move=> /continuousP ctsf; apply/continuousP => O /open_subspaceP [V oV VBOB].
 rewrite -open_subspaceIT; apply/open_subspaceP.
-case/open_subspaceP: (ctsf _ oV) => W [oW fVA]; exists W; split => //.
+case/open_subspaceP: (ctsf _ oV) => W oW fVA; exists W => //.
 rewrite fVA -setIA setIid eqEsubset; split => x [fVx Ax]; split => //.
 - by have /[!VBOB]-[] : (V `&` B) (f x) by split => //; exact: funS.
 - by have /[!esym VBOB]-[] : (O `&` B) (f x) by split => //; exact: funS.
@@ -571,7 +571,7 @@ Variables (f : U -> T).
 Lemma initial_subspace_open (A : set (initial_topology f)) :
   open A -> open (f @` A : set (subspace (range f))).
 Proof.
-case=> B oB <-; apply/open_subspaceP; exists B; split => //; rewrite eqEsubset.
+case=> B oB <-; apply/open_subspaceP; exists B => //; rewrite eqEsubset.
 split => z [] /[swap]; first by case=> w _ <- ?; split; exists w.
 by case=> w _ <- [v] ? <-.
 Qed.

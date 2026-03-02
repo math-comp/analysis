@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint interval.
-From mathcomp Require Import archimedean rat.
+From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
+From mathcomp Require Import interval archimedean rat.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets.
@@ -725,7 +725,7 @@ Qed.
 Lemma open_measurable_subspace (D : set R) (U : set (subspace D)) :
   measurable D -> open U -> measurable (D `&` U).
 Proof.
-move=> mD /open_subspaceP [V [oV] VD]; rewrite setIC -VD.
+move=> mD /open_subspaceP [V oV VD]; rewrite setIC -VD.
 by apply: measurableI => //; exact: open_measurable.
 Qed.
 
