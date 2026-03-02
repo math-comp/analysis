@@ -342,15 +342,13 @@ Proof.
 move=> /neitv_lt_bnd/= xy.
 apply/seteqP; split => z/=; rewrite !in_itv/=; last first.
   move: b1 b2 xy.
-  case=> -[]; rewrite !bnd_simp/= => + []// -> => ->; rewrite ?lexx ?ltxx//.
-  by rewrite andbF.
+  by move=> [] [] /[!bnd_simp]/= + []// -> => ->; rewrite ?(lexx,ltxx,andbF).
 case=> /[swap] /negP; rewrite negb_and.
-move: b1 b2 {xy}.
-case=> -[]/= + /andP[]; rewrite ?ltNge !negbK => /orP[]; try move=> -> //.
-- by case; move=> ? ? ?; left; apply/le_anti/andP; split.
-- by case; move=> ? ? ?; left; apply/le_anti/andP; split.
-- by case; move=> ? ? ?; right; apply/le_anti/andP; split.
-- by case; move=> ? ? ?; right; apply/le_anti/andP; split.
+move: b1 b2 {xy} => [] [] /= + /andP[]; rewrite ?ltNge !negbK.
+- by move=> /orP[*|->//]; left; exact/le_anti/andP.
+- by case/orP => *; [left|right]; exact/le_anti/andP.
+- by case/orP => ->.
+- by move=> /orP[->//|*]; right; exact/le_anti/andP.
 Qed.
 
 Lemma setDccitv (x y : T) (b1 b2 : bool) :
@@ -361,41 +359,35 @@ Proof.
 move=> /neitv_lt_bnd/= xy.
 apply/seteqP; split => z/=; rewrite !in_itv/=; last first.
   move: b1 b2 xy.
-  case=> -[]; rewrite !bnd_simp/= => + []// -> => ->; rewrite ?lexx ?ltxx//.
-  by rewrite andbF.
+  by move=> [] [] /[!bnd_simp]/= + []// -> => ->; rewrite ?(lexx,ltxx,andbF).
 case=> /[swap] /negP; rewrite negb_and.
-move: b1 b2 {xy}.
-case=> -[]/= /orP[] + /andP[]; rewrite -?leNgt; try move=> /negPf -> //.
-- by move=> ? ? ?; right; apply/le_anti/andP; split.
-- by move=> ? ? ?; left; apply/le_anti/andP; split.
-- by move=> ? ? ?; right; apply/le_anti/andP; split.
-- by move=> ? ? ?; left; apply/le_anti/andP; split.
+move: b1 b2 {xy} => [] [] /= + /andP[]; rewrite -?leNgt.
+- by move=> /orP[/negPf ->//|*]; right; exact/le_anti/andP.
+- by case/orP => /negPf ->.
+- by case/orP => *; [left|right]; exact/le_anti/andP.
+- by move=> /orP[*|/negPf ->//]; left; exact/le_anti/andP.
 Qed.
 
 Lemma setDitvoy a (x : T) (b : bool) :
   neitv (Interval (BSide b x) a) ->
-  [set` Interval (BSide b x) a] `\` `]x, +oo[ =
-  (if b then [set x] else set0).
+  [set` Interval (BSide b x) a] `\` `]x, +oo[ = if b then [set x] else set0.
 Proof.
-move/neitv_lt_bnd => xa12.
-apply/seteqP; split => z/=; rewrite !in_itv/=; last first.
-  move: xa12; case: b; rewrite //= => /[swap] <-.
-  by case: a => [[]?|[]]; rewrite !bnd_simp.
-clear xa12; case: b; rewrite /= andbT; last by case=> /andP[] ->.
-by case=> /andP[] ? _ /negP; rewrite -leNgt => ?; apply/le_anti/andP; split.
+move/neitv_lt_bnd => /= bxa; apply/seteqP; split => z/=; rewrite !in_itv/=.
+- case: b {bxa}; rewrite /= andbT; last by case=> /andP[->].
+  by case=> /andP[? _] /negP; rewrite -leNgt => ?; exact/le_anti/andP.
+- case: b bxa => //= /[swap] <-.
+  by move: a => [[] ?|[]]; rewrite !bnd_simp.
 Qed.
 
 Lemma setDitvNyo a (x : T) (b : bool) :
   neitv (Interval a (BSide b x)) ->
-  [set` Interval a (BSide b x)] `\` `]-oo, x[ =
-  (if b then set0 else [set x]).
+  [set` Interval a (BSide b x)] `\` `]-oo, x[ = if b then set0 else [set x].
 Proof.
-move/neitv_lt_bnd => ax12.
-apply/seteqP; split => z/=; rewrite !in_itv/=; last first.
-  move: ax12; case: b => //= /[swap] <-.
-  by case: a => [[]?|[]]; rewrite !bnd_simp// andbT.
-clear ax12; case: b => /=; first by case=> /andP[] _ ->.
-by case=> /andP[] _ ? /negP; rewrite -leNgt => ?; apply/le_anti/andP; split.
+move/neitv_lt_bnd => /= abx; apply/seteqP; split => z/=; rewrite !in_itv/=.
+- case: b {abx} => /=; first by case=> /andP[_ ->].
+  by case=> /andP[_ ?] /negP; rewrite -leNgt => ?; exact/le_anti/andP.
+- case: b abx => //= /[swap] <-.
+  by move: a => [[] ?|[]]; rewrite !bnd_simp// andbT.
 Qed.
 
 Lemma setDcitvy a (x : T) (b : bool) :
@@ -403,12 +395,11 @@ Lemma setDcitvy a (x : T) (b : bool) :
   [set` Interval (BLeft x) a] `\` [set` Interval (BSide b x) +oo%O] =
   (if b then set0 else [set x]).
 Proof.
-move/neitv_lt_bnd => xa12.
-apply/seteqP; split => z/=; rewrite !in_itv/=; last first.
-  move: xa12; case: b => //= /[swap] <-.
-  by case: a => [[]?|[]]; rewrite /= !bnd_simp.
-clear xa12; case: b; rewrite /= andbT; first by case=> /andP[] ->.
-by case=> /andP[] ? _ /negP; rewrite -leNgt => ?; apply/le_anti/andP; split.
+move/neitv_lt_bnd => /= xa; apply/seteqP; split => z/=; rewrite !in_itv/=.
+- case: b {xa}; rewrite /= andbT; first by case=> /andP[->].
+  by case=> /andP[? _] /negP; rewrite -leNgt => ?; exact/le_anti/andP.
+- case: b xa => //= /[swap] <-.
+  by move: a => [[] ?|[]]; rewrite /= !bnd_simp.
 Qed.
 
 Lemma setDcitvNy a (x : T) (b : bool) :
@@ -416,12 +407,11 @@ Lemma setDcitvNy a (x : T) (b : bool) :
   [set` Interval a (BRight x)] `\` [set` Interval -oo%O (BSide b x)] =
   (if b then [set x] else set0).
 Proof.
-move/neitv_lt_bnd => ax12.
-apply/seteqP; split => z/=; rewrite !in_itv/=; last first.
-  move: ax12; case: b; rewrite //= => /[swap] <-.
-  by case: a => [[]?|[]]; rewrite /= !bnd_simp// andbT.
-clear ax12; case: b => /=; last by case=> /andP[] _ ->.
-by case=> /andP[] _ ? /negP; rewrite -leNgt => ?; apply/le_anti/andP; split.
+move/neitv_lt_bnd => /= ax; apply/seteqP; split => z/=; rewrite !in_itv/=.
+- case: b {ax} => /=; last by case=> /andP[_ ->].
+  by case=> /andP[_ ?] /negP; rewrite -leNgt => ?; exact/le_anti/andP.
+- case: b ax => //= /[swap] <-.
+  by move: a => [[] ?|[]]; rewrite /= !bnd_simp// andbT.
 Qed.
 
 End set_itv_orderType.
