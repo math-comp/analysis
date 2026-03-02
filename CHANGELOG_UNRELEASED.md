@@ -4,8 +4,8 @@
 
 ### Added
 - in set_interval.v
-  + lemmas `setUitv2`, `setDitv2`, `setDitvoo`, `setDitvoy`, `setDitvNyo`,
-    `setDccitv`, `setDcitvy`, `setDcitvNy`
+  + lemmas `setUitv_set2`, `setDitv_set2`, `setDitvoo`, `setDitvoy`, `setDitvNyo`,
+    `setDccitv`, `setD_cbnd_bndy`, `setD_bndc_Nybnd`
 
 - in `topology_structure.v`
   + lemma `interiorS`

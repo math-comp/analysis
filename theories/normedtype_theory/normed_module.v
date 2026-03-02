@@ -2073,7 +2073,7 @@ Qed.
 Lemma closed_ball_ball {R : realFieldType} (x r : R) : 0 < r ->
   closed_ball x r = [set x - r] `|` ball x r `|` [set x + r].
 Proof.
-move=> r0; rewrite closed_ball_itv// -(setUitv2 false true).
+move=> r0; rewrite closed_ball_itv// -(setUitv_set2 false true).
   by rewrite setUAC setUC ball_itv.
 by rewrite lerD2l ge0_cp// ltW.
 Qed.
