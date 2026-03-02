@@ -37,7 +37,7 @@ move=> /= M s /= /(nbhs_ballP (M i j)) [e e0 es].
 by apply/nbhs_ballP; exists e => //= N [_ MN]; exact/es/MN.
 Qed.
 
-#[local]Lemma rV_compact_nondegenerate (T : ptopologicalType) n
+#[local] Lemma rV_compact_nondegenerate (T : ptopologicalType) n
     (A : 'I_n.+1 -> set T) :
   (forall i, compact (A i)) ->
   compact [ set v : 'rV[T]_n.+1 | forall i, A i (v ord0 i)].
@@ -252,3 +252,25 @@ HB.instance Definition _ (K : numFieldType) m n :=
     (@mx_normZ K m n).
 
 End matrix_NormedModule.
+
+Lemma continuous_mx {V : topologicalType} {R : realFieldType} {m n : nat}
+    (f : V -> 'M[R]_(m, n)) :
+  (forall i j, continuous (fun x => f x i j)) <->
+  continuous (fun x : V => \matrix_(i < m, j < n) f x i j).
+Proof.
+split => [cf x|cf i j v].
+- apply/cvgrPdist_le => /= e e0; near=> t.
+  rewrite /Num.norm/= mx_normrE/= (bigmax_le _ (ltW e0))// => -[i j] _.
+  rewrite !mxE/=.
+  move: i j; near: t.
+  apply: filter_forall => /= i; apply: filter_forall => /= j.
+  have /(@cvgrPdist_le _ R^o)/(_ _ e0) := cf i j x.
+  exact: filterS.
+- apply/(@cvgrPdist_le _ R^o) => /= e e0.
+  have /cvgrPdist_le/(_ _ e0) := cf v.
+  apply: filterS => w.
+  apply: le_trans.
+  rewrite [in leRHS]/Num.norm/= mx_normrE/=.
+  apply: le_trans (le_bigmax _ _ (i, j)).
+  by rewrite !mxE.
+Unshelve. all: by end_near. Qed.

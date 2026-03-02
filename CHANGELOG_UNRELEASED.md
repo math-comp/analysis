@@ -83,6 +83,15 @@
 
 - in `subspace_topology.v`:
   + lemma `withinU_continuous_patch`
+- in `matrix_normedtype.v`:
+  + lemma `continuous_mx`
+
+- in `derive.v`:
+  + instance `is_derive_mx`
+  + fact `dmx`
+  + lemma `diffmx`
+  + lemma `is_diff_mx`
+  + instance `is_diff_mx`
 
 ### Changed
 

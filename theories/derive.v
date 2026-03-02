@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat ssralg ssrnum matrix interval poly.
-From mathcomp Require Import sesquilinear.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum matrix interval.
+From mathcomp Require Import poly sesquilinear.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp contra classical_sets.
@@ -660,7 +660,7 @@ move=> df; set g := RHS; have glin : linear g.
   by move=> a u v; rewrite /g linearP /= scalerDl -scalerA.
 pose glM := GRing.isLinear.Build _ _ _ _ _ glin.
 pose gL : {linear _ -> _} := HB.pack g glM.
-by apply:(@diff_unique _ _ _ gL); have [] := dscalel f df.
+by apply: (@diff_unique _ _ _ gL); have [] := dscalel f df.
 Qed.
 
 Lemma differentiableZl (k : V -> R) (f : W) x :
@@ -2328,4 +2328,76 @@ rewrite (le_trans (ler_normD _ _))// (splitr e) lerD//.
   by rewrite sub0r normrN; near: x; exact: dnbhs0_lt.
 Unshelve. all: by end_near. Qed.
 
+Global Instance is_derive_mx {m n : nat} (M : V -> 'M[R]_(m, n))
+    (dM : 'M[R]_(m, n)) (x v : V) :
+  (forall i j, is_derive x v (fun x => M x i j) (dM i j)) ->
+  is_derive x v M dM.
+Proof.
+move=> MdM; apply: DeriveDef; first exact/derivable_mxP.
+apply/matrixP => i j.
+have [_ <-] := MdM i j.
+rewrite derive_mx ?mxE//.
+apply/derivable_mxP => i0 j0.
+by have [] := MdM i0 j0.
+Qed.
+
+Fact dmx {m n : nat} (M : V -> 'M[R]_(m, n)) (x : V) :
+  let g := fun x0 : V => (\matrix_(i < m, j < n) 'd M x x0 i j) in
+  differentiable M x ->
+  continuous g /\
+  M \o shift x = cst (M x) + g +o_ 0 id.
+Proof.
+move=> dM Mx; split => [|].
+- apply/continuous_mx => i j v; apply/cvgrPdist_le => /= e e0.
+  case: Mx => -[+ _] => /(_ v)/cvgrPdist_le/(_ _ e0).
+  apply: filterS => /= t; apply: le_trans.
+  by rewrite {2}/Num.norm/= mx_normrE (le_trans _ (le_bigmax _ _ (i, j))) ?mxE.
+- apply/eqaddoE; rewrite funeqE => y /=.
+  rewrite (diff_locallyx Mx) /dM !fctE; congr (_ + _ + _).
+  by apply/matrixP => i j/=; rewrite mxE.
+Qed.
+
+Lemma diffmx {m n : nat} (M : V -> 'M[R]_(m, n)) t :
+  differentiable M t ->
+  'd M (nbhs_filter_on t) =
+  (fun x0 : V => \matrix_(i < m, j < n) 'd M t x0 i j) :> (_ -> _).
+Proof.
+move=> dM.
+set g := fun x0 : V => \matrix_(i, j) 'd M t x0 i j.
+have glin : linear (g : V -> _).
+  move=> a u w.
+  by rewrite /g linearD linearZ/=; apply/matrixP => i j; rewrite !mxE.
+pose glM := GRing.isLinear.Build _ _ _ _ _ glin.
+pose gL : {linear _ -> _} := HB.pack g glM.
+by apply: (@diff_unique _ _ _ _ gL); have [? ?] := dmx dM.
+Qed.
+
 End pointwise_derive.
+
+Section Ris_diff_mx.
+Local Open Scope classical_set_scope.
+Context {R : realFieldType}.
+
+Global Instance is_diff_mx {m n : nat} (M dM : R -> 'M[R]_(m, n)) (x : R) :
+  (forall i j, is_diff x (fun x => M x i j) (fun x => dM x i j)) ->
+  is_diff x M dM.
+Proof.
+move=> /= MdM.
+have diffM : differentiable M (nbhs_filter_on x).
+  apply/derivable1_diffP; apply/derivable_mxP => i j.
+  by have [/(@derivable1_diffP _ _ (fun x0 => M x0 i j) x)] := MdM i j.
+have diffMx i j : differentiable (fun x0 : R => M x0 i j) x.
+  by have [/=] := MdM i j.
+apply: DiffDef; first exact: diffM.
+rewrite diffmx//=; apply/funext => /= v; apply/matrixP => i j.
+rewrite !mxE.
+have [diffMij dMdM] := MdM i j.
+rewrite -deriveE//.
+move/(congr1 (fun f => f v)) : dMdM.
+rewrite -(deriveE _ diffMij) => <-.
+rewrite derive_mx ?mxE//=.
+apply/derivable_mxP => i0 j0/=.
+by have [/diff_derivable-/(_ v)] := MdM i0 j0.
+Qed.
+
+End Ris_diff_mx.
