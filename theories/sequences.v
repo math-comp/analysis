@@ -1478,14 +1478,14 @@ have <- : sup (range v_) = fine l.
     by exists (m + N)%N => //; rewrite /v_/= fineK// u_fin_num// leq_addl.
   apply: ge_ereal_sup => /= _ [m _] <-.
   rewrite (@le_trans _ _ (u_ (m + N)%N))//; first by rewrite nd_u_// leq_addr.
-  apply: ereal_sup_ubound => /=; exists (fine (u_ (m + N))); first by exists m.
+  apply: ereal_sup_ubound => /=; exists (fine (u_ (m + N)%N)); first by exists m.
   by rewrite fineK// u_fin_num// leq_addl.
 apply: nondecreasing_cvgn.
 - move=> m n mn /=; rewrite /v_ /= fine_le ?u_fin_num ?leq_addl//.
   by rewrite nd_u_// leq_add2r.
 - exists (fine l) => /= _ [m _ <-]; rewrite /v_ /= fine_le//.
     by rewrite u_fin_num// leq_addl.
-  by apply: ereal_sup_ubound; exists (m + N).
+  by apply: ereal_sup_ubound; exists (m + N)%N.
 Unshelve. all: by end_near. Qed.
 
 Lemma ereal_nondecreasing_is_cvgn (R : realType) (u_ : (\bar R) ^nat) :

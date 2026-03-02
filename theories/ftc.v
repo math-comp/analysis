@@ -88,7 +88,7 @@ Qed.
 Let FTC0 f a : mu.-integrable setT (EFin \o f) ->
   let F x := (\int[mu]_(t in [set` Interval a (BRight x)]) f t)%R in
   forall x, a < BRight x -> lebesgue_pt f x ->
-    h^-1 *: (F (h + x) - F x) @[h --> 0%R^'] --> f x.
+    h^-1 *: (F (h + x)%R - F x) @[h --> 0%R^'] --> f x.
 Proof.
 move=> intf F x ax fx.
 have locf : locally_integrable setT f.
@@ -106,7 +106,7 @@ apply: cvg_at_right_left_dnbhs.
       by rewrite (lt_le_trans _ yz)// ltrBlDr ltrDl.
     rewrite (lebesgue_measure_ball _ (ltW _))// -/mu muE -EFinM lee_fin.
     by rewrite mulr_natl.
-  have ixdf n : \int[mu]_(t in [set` Interval a (BRight (x + d n))]) (f t)%:E -
+  have ixdf n : \int[mu]_(t in [set` Interval a (BRight (x + d n)%R)]) (f t)%:E -
                 \int[mu]_(t in [set` Interval a (BRight x)]) (f t)%:E =
                 \int[mu]_(y in E x n) (f y)%:E.
     rewrite -[in X in X - _]integral_itv_bndo_bndc; last first.
@@ -161,7 +161,7 @@ apply: cvg_at_right_left_dnbhs.
     rewrite lebesgue_measure_ball//; last exact: ltW.
     by rewrite -/mu muE -EFinM lee_fin mulr_natl.
   have ixdf : {near \oo,
-      (fun n => \int[mu]_(t in [set` Interval a (BRight (x + d n))]) (f t)%:E -
+      (fun n => \int[mu]_(t in [set` Interval a (BRight (x + d n)%R)]) (f t)%:E -
                 \int[mu]_(t in [set` Interval a (BRight x)]) (f t)%:E) =1
       (fun n => - (\int[mu]_(y in E x n) (f y)%:E))}.
     case: a ax {F}; last first.
@@ -236,7 +236,7 @@ Let FTC0_restrict f a x (u : R) : (x < u)%R ->
   mu.-integrable [set` Interval a (BRight u)] (EFin \o f) ->
   let F y := (\int[mu]_(t in [set` Interval a (BRight y)]) f t)%R in
   a < BRight x -> lebesgue_pt f x ->
-  h^-1 *: (F (h + x) - F x) @[h --> 0%R^'] --> f x.
+  h^-1 *: (F (h + x)%R - F x) @[h --> 0%R^'] --> f x.
 Proof.
 move=> xu + F ax fx.
 rewrite integrable_mkcond//= (restrict_EFin f) => intf.
@@ -270,7 +270,7 @@ have /= := FTC0_restrict xu intf ax fx.
 set g := (f in f n @[n --> _] --> _ -> _).
 set h := (f in _ -> f n @[n --> _] --> _).
 suff : g = h by move=> <-.
-by apply/funext => y;rewrite /g /h /= [X in F (X + _)]mulr1.
+by apply/funext => y;rewrite /g /h /= [X in F (X + _)%R]mulr1.
 Qed.
 
 Corollary FTC1 f a :
@@ -606,7 +606,7 @@ have GacFa : G x @[x --> a^'+] --> (- c + F a)%R.
     rewrite opprB GFc; last by rewrite in_itv/=; apply/andP.
     by rewrite addNr normr0 ltW.
   have := @cvgD _ _ _ _ Fap _ _ _ _ GFac Fa.
-  rewrite (_ : (G \- F)%R + F = G)//.
+  rewrite (_ : (G \- F) + F = G)%R//.
   by apply/funext => x/=; rewrite subrK.
 have GbcFb : G x @[x --> b^'-] --> (- c + F b)%R.
   have Fbn : Filter b^'- by exact: at_left_proper_filter.
@@ -615,7 +615,7 @@ have GbcFb : G x @[x --> b^'-] --> (- c + F b)%R.
     rewrite opprB GFc; last by rewrite in_itv/=; apply/andP.
     by rewrite addNr normr0 ltW.
   have := @cvgD _ _ _ _ Fbn _ _ _ _ GFbc Fb.
-  rewrite (_ : (G \- F)%R + F = G)//.
+  rewrite (_ : G \- F + F = G)%R //.
   by apply/funext => x/=; rewrite subrK.
 have contF : {within `[a, b], continuous F}.
   apply/(continuous_within_itvP _ ab); split => //.
@@ -661,18 +661,18 @@ rewrite ge0_integral_bigcup//=; last 3 first.
 - by rewrite -seqDU_bigcup_eq -itv_bndy_bigcup_BRight; exact: measurableT_comp.
 - move=> x/=; rewrite -seqDU_bigcup_eq -itv_bndy_bigcup_BRight/=.
   by rewrite /= in_itv/= => /andP[/ltW + _]; rewrite lee_fin; exact: f_ge0.
-have dFEn n : {in `]a + n%:R, a + n.+1%:R[, F^`() =1 f}.
+have dFEn n : {in `](a + n%:R)%R, (a + n.+1%:R)%R[, F^`() =1 f}.
   apply: in1_subset_itv dFE.
   apply: subset_trans (subset_itvl _) (subset_itvr _) => //=.
   by rewrite bnd_simp lerDl.
-have liml : limn (EFin \o (fun k => F (a + k%:R))) = l%:E.
+have liml : limn (EFin \o (fun k => F (a + k%:R)%R)) = l%:E.
   apply/cvg_lim => //.
   apply: cvg_EFin; first exact: nearW.
   apply/((cvg_pinftyP F l).1 Fxl)/cvgryPge => r.
   by near do rewrite -lerBlDl; exact: nbhs_infty_ger.
 transitivity (\sum_(0 <= i <oo) ((F (a + i.+1%:R))%:E - (F (a + i%:R))%:E)).
   transitivity (\sum_(0 <= i <oo)
-      \int[mu]_(x in seqDU (fun k => `]a, (a + k%:R)]%classic) i.+1) (f x)%:E).
+      \int[mu]_(x in seqDU (fun k => `]a, (a + k%:R)%R]%classic) i.+1) (f x)%:E).
     apply/cvg_lim => //; rewrite -cvg_shiftS/=.
     under eq_cvg.
       move=> k /=; rewrite big_nat_recl//.
@@ -700,13 +700,13 @@ transitivity (\sum_(0 <= i <oo) ((F (a + i.+1%:R))%:E - (F (a + i%:R))%:E)).
     + move=> x; rewrite in_itv/= => /andP[anx _].
       by apply/dF; rewrite (le_lt_trans _ anx)// lerDl.
     + move: n => [|n]; first by rewrite addr0.
-      have : {within `[a + n.+1%:R, a + n.+2%:R], continuous F}.
+      have : {within `[(a + n.+1%:R)%R, (a + n.+2%:R)%R], continuous F}.
         apply: derivable_within_continuous => /= x.
         rewrite in_itv/= => /andP[aSn _].
         by apply: dF; rewrite (lt_le_trans _ aSn)// ltrDl.
       move/continuous_within_itvP.
       by rewrite ltrD2l ltr_nat ltnS => /(_ (ltnSn _))[].
-  - have : {within `[a + n%:R + 2^-1%R, a + n.+1%:R], continuous F}.
+  - have : {within `[(a + n%:R + 2^-1%R)%R, (a + n.+1%:R)%R], continuous F}.
       apply: derivable_within_continuous => x.
       rewrite in_itv/= => /andP[aSn _].
       by apply: dF; rewrite (lt_le_trans _ aSn)// -addrA ltrDl ltr_wpDl.
@@ -717,7 +717,7 @@ rewrite nondecreasing_telescope_sumey.
 - by rewrite addr0 EFinN; congr (_ - _).
 - by rewrite liml.
 - apply/nondecreasing_seqP => n; rewrite -subr_ge0.
-  have isdF (x : R) : x \in `]a + n%:R, a + n.+1%:R[ -> is_derive x 1%R F (f x).
+  have isdF (x : R) : x \in `](a + n%:R)%R, (a + n.+1%:R)%R[ -> is_derive x 1%R F (f x).
     rewrite in_itv/= => /andP[anx _].
     rewrite -dFE; last by rewrite in_itv/= andbT (le_lt_trans _ anx)// lerDl.
     rewrite derive1E.
@@ -1283,12 +1283,12 @@ Lemma decreasing_ge0_integration_by_substitutiony F G a :
 Proof.
 move=> decrF cdF /cvg_ex[/= dFa cdFa] /cvg_ex[/= dFoo cdFoo].
 move=> [dF cFa] Fny /continuous_within_itvNycP[cG cGFa] G0.
-have mG n : measurable_fun `](F (a + n.+1%:R)), (F a)] G.
+have mG n : measurable_fun `](F (a + n.+1%:R)%R), (F a)] G.
   apply/measurable_fun_itv_bndo_bndcP.
   apply: open_continuous_measurable_fun; first exact: interval_open.
   move=> x; rewrite inE/= in_itv/= => /andP[_ xFa].
   by apply: cG; rewrite in_itv.
-have mGFNF' i : measurable_fun `[a, (a + i.+1%:R)[ ((G \o F) * - F^`())%R.
+have mGFNF' i : measurable_fun `[a, (a + i.+1%:R)%R[ ((G \o F) * - F^`())%R.
   apply/measurable_fun_itv_obnd_cbndP.
   apply: open_continuous_measurable_fun; first exact: interval_open.
   move=> x; rewrite inE/= in_itv/= => /andP[ax _].
@@ -1330,7 +1330,7 @@ transitivity (limn (fun n => \int[mu]_(x in `[F (a + n%:R)%R, F a[) (G x)%:E)).
     apply: G0.
     move: xFaSkFa.
     rewrite big_mkord -bigsetU_seqDU.
-    rewrite -(bigcup_mkord _ (fun k => `]F (a + k.+1%:R), F a[%classic)).
+    rewrite -(bigcup_mkord _ (fun k => `]F (a + k.+1%:R)%R, F a[%classic)).
     by move: x; apply: bigcup_sub => k/= nk; exact: subset_itvr.
   rewrite -integral_itv_obnd_cbnd; last first.
     apply/measurable_EFinP; case: n => [|n].
@@ -1338,7 +1338,7 @@ transitivity (limn (fun n => \int[mu]_(x in `[F (a + n%:R)%R, F a[) (G x)%:E)).
     by apply: measurable_funS (mG n) => //; exact: subset_itvW.
   congr (integral _).
   rewrite big_mkord -bigsetU_seqDU.
-  rewrite -(bigcup_mkord _ (fun k => `]F (a + k.+1%:R), F a[%classic)).
+  rewrite -(bigcup_mkord _ (fun k => `]F (a + k.+1%:R)%R, F a[%classic)).
   exact/esym/decreasing_itvoo_bigcup.
 transitivity (limn (fun n =>
     \int[mu]_(x in `]a, (a + n%:R)%R[) (((G \o F) * - F^`()) x)%:E)); last first.
@@ -1375,15 +1375,15 @@ transitivity (limn (fun n =>
   - exact: iota_uniq.
   - exact: (@sub_trivIset _ _ _ [set: nat]).
   - apply/measurable_EFinP.
-    apply: (measurable_funS (measurable_itv `]a, (a + n.+1%:R)[)).
+    apply: (measurable_funS (measurable_itv `]a, (a + n.+1%:R)%R[)).
       rewrite big_mkord -bigsetU_seqDU.
-      rewrite -(bigcup_mkord _ (fun k => `]a, (a + k.+1%:R)[%classic)).
+      rewrite -(bigcup_mkord _ (fun k => `]a, (a + k.+1%:R)%R[%classic)).
       apply: bigcup_sub => k/= kn.
       by apply: subset_itvl; rewrite bnd_simp/= lerD2l ler_nat ltnS ltnW.
     by apply: measurable_funS (mGFNF' n) => //; exact: subset_itv_oo_co.
   congr (integral _).
   rewrite big_mkord -bigsetU_seqDU.
-  rewrite -(bigcup_mkord n (fun k => `]a, (a + k.+1%:R)[%classic)).
+  rewrite -(bigcup_mkord n (fun k => `]a, (a + k.+1%:R)%R[%classic)).
   rewrite eqEsubset; split.
     move: n => [|n]; first by rewrite addr0 set_itvoo0.
     by apply: (@bigcup_sup _ _ n) => /=.

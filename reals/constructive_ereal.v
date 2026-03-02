@@ -570,14 +570,63 @@ End ERealArith.
 Arguments mule : simpl never.
 Arguments inve : simpl never.
 
-Notation "+%dE"  := (@GRing.add (\bar^d _)).
-Notation "+%E"   := (@GRing.add (\bar _)).
-Notation "-%E"   := oppe.
-Notation "x + y" := (GRing.add (x%dE : \bar^d _) y%dE) : ereal_dual_scope.
-Notation "x + y" := (GRing.add x%E y%E) : ereal_scope.
-Notation "x - y" := ((x%dE : \bar^d _) + oppe y%dE) : ereal_dual_scope.
-Notation "x - y" := (x%E + (oppe y%E)) : ereal_scope.
-Notation "- x"   := (oppe x%dE : \bar^d _) : ereal_dual_scope.
+
+(* We use elpi to name the canonical nmodule for \bar R and \bar^d R. *)
+(* This used to be called `extended_nmodType` and `dual_extended_nmodType`. *)
+(* HB gives them generated names now, though we should restore naming cf *)
+(* https://github.com/math-comp/hierarchy-builder/issues/328 *)
+Elpi Command canonical_notation_ereal.
+Elpi Accumulate lp:{{
+      main [] :-
+        coq.unify-leq {{\bar lp:_}} {{GRing.Nmodule.sort lp:M}} ok,
+        coq.safe-dest-app M CR _,
+        coq.notation.add-abbreviation "extended_nmodType" 0 CR tt _.
+  }}.
+Elpi canonical_notation_ereal.
+Elpi Command canonical_notation_dual_ereal.
+Elpi Accumulate lp:{{
+      main [] :-
+        coq.unify-leq {{dual_extended lp:_}} {{GRing.Nmodule.sort lp:M}} ok,
+        coq.safe-dest-app M CR _,
+        coq.notation.add-abbreviation "dual_extended_nmodType" 0 CR tt _.
+  }}.
+Elpi canonical_notation_dual_ereal.
+
+(* We provide local notations for parsing and printing of particular *)
+(* instances of generic notations. *)
+Local Notation add_parsingde := (@GRing.add (\bar^d _)).
+Local Notation add_rcde := (@GRing.add (@reverse_coercion _ _ _ (\bar^d _))).
+Local Notation add_cande := (@GRing.add dual_extended_nmodType).
+Local Notation add_parsinge := (@GRing.add (\bar _)).
+Local Notation add_rce := (@GRing.add (@reverse_coercion _ _ _ (\bar _))).
+Local Notation add_cane := (@GRing.add extended_nmodType).
+
+Notation "+%dE" := add_parsingde (only parsing).
+Notation "+%dE" := add_rcde (only printing).
+Notation "+%dE" := add_cande (only printing).
+Notation "+%E"  := add_parsinge (only parsing).
+Notation "+%E"  := add_rce (only printing).
+Notation "+%E"  := add_cane (only printing).
+Notation "-%E"  := oppe.
+Notation "x + y" := (add_parsingde x%dE y%dE) (only parsing) : ereal_dual_scope.
+Notation "x + y" := (add_rcde x%dE y%dE) (only printing) : ereal_dual_scope.
+Notation "x + y" := (add_cande x%dE y%dE) (only printing) : ereal_dual_scope.
+Notation "x + y" := (add_parsinge x%E y%E) (only parsing) : ereal_scope.
+Notation "x + y" := (add_rce x%E y%E) (only printing) : ereal_scope.
+Notation "x + y" := (add_cane x%E y%E) (only printing) : ereal_scope.
+Notation "x - y" := (add_parsingde x%dE (oppe (y%dE : \bar^d _))%dE)
+  (only parsing) : ereal_dual_scope.
+Notation "x - y" := (add_rcde x%dE (oppe y%dE))
+  (only printing) : ereal_dual_scope.
+Notation "x - y" := (add_cande x%dE (oppe y%dE))
+  (only printing) : ereal_dual_scope.
+Notation "x - y" := (add_parsinge x%E (oppe y%E)) (only parsing) : ereal_scope.
+Notation "x - y" := (add_rce x%E (oppe y%E)) (only printing) : ereal_scope.
+Notation "x - y" := (add_cane x%E (oppe y%E)) (only printing) : ereal_scope.
+(* All previous notations should ideal by generated too, *)
+(* but elpi lacks support for string notations.          *)
+
+Notation "- x"   := (oppe (x%dE : \bar^d _)) : ereal_dual_scope.
 Notation "- x"   := (oppe x%E) : ereal_scope.
 Notation "*%E"   := mule.
 Notation "x * y" := (mule x%dE y%dE : \bar^d _) : ereal_dual_scope.
@@ -643,12 +692,23 @@ Notation "- 1" := (oppe 1) : ereal_scope.
 
 Notation "\- f" := (fun x => - f x)%dE : ereal_dual_scope.
 Notation "\- f" := (fun x => - f x)%E : ereal_scope.
-Notation "f \+ g" := (fun x => f x + g x)%dE : ereal_dual_scope.
-Notation "f \+ g" := (fun x => f x + g x)%E : ereal_scope.
-Notation "f \* g" := (fun x => f x * g x)%dE : ereal_dual_scope.
-Notation "f \* g" := (fun x => f x * g x)%E : ereal_scope.
-Notation "f \- g" := (fun x => f x - g x)%dE : ereal_dual_scope.
-Notation "f \- g" := (fun x => f x - g x)%E : ereal_scope.
+Notation "f \+ g" := (fun x => add_parsingde (f x)%dE (g x)%dE) (only parsing) : ereal_dual_scope.
+Notation "f \+ g" := (fun x => add_rcde (f x)%dE (g x)%dE) (only printing) : ereal_dual_scope.
+Notation "f \+ g" := (fun x => add_cande (f x)%dE (g x)%dE) (only printing) : ereal_dual_scope.
+Notation "f \+ g" := (fun x => add_parsinge (f x)%E (g x)%E) (only parsing) : ereal_scope.
+Notation "f \+ g" := (fun x => add_rce (f x)%E (g x)%E) (only printing) : ereal_scope.
+Notation "f \+ g" := (fun x => add_cane (f x)%E (g x)%E) (only printing) : ereal_scope.
+Notation "f \- g" := (fun x => add_parsingde ((f x)%dE : \bar^d _) (oppe ((g%dE x) : \bar^d _))%dE)
+  (only parsing) : ereal_dual_scope.
+Notation "f \- g" := (fun x => add_rcde (f x)%dE (oppe (g x)%dE))
+  (only printing) : ereal_dual_scope.
+Notation "f \- g" := (fun x => add_cande (f x)%dE (oppe (g x)%dE))
+  (only printing) : ereal_dual_scope.
+Notation "f \- g" := (fun x => add_parsinge ((f x)%E : \bar _) (oppe (g x)%E)) (only parsing) : ereal_scope.
+Notation "f \- g" := (fun x => add_rce (f x)%E (oppe (g x)%E)) (only printing) : ereal_scope.
+Notation "f \- g" := (fun x => add_cane (f x)%E (oppe (g x)%E)) (only printing) : ereal_scope.
+Notation "f \* g" := (fun x => (f x * g x)%dE) : ereal_dual_scope.
+Notation "f \* g" := (fun x => (f x * g x)%E) : ereal_scope.
 
 Notation "\sum_ ( i <- r | P ) F" :=
   (\big[+%dE/0%dE]_(i <- r | P%B) F%dE) : ereal_dual_scope.

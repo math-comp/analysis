@@ -217,11 +217,11 @@ Proof. by move=> ?; apply/ess_supP; apply: nearW. Qed.
 Lemma ess_sup_cstr y : 0 < mu [set: T] -> ess_supr (cst y) = y%:E.
 Proof. by move=> muN0; rewrite (ess_sup_ae_cst y%:E)//=; apply: nearW. Qed.
 
-Lemma ess_suprD f g : ess_supr (f \+ g) <= ess_supr f + ess_supr g.
+Lemma ess_suprD f g : ess_supr (f \+ g)%R <= ess_supr f + ess_supr g.
 Proof. by rewrite (le_trans _ (ess_supD _ _ _)). Qed.
 
 Lemma ess_sup_normD f g :
-  ess_supr (normr \o (f \+ g)) <= ess_supr (normr \o f) + ess_supr (normr \o g).
+  ess_supr (normr \o (f \+ g)%R) <= ess_supr (normr \o f) + ess_supr (normr \o g).
 Proof.
 rewrite (le_trans _ (ess_suprD _ _))// le_ess_sup//.
 by apply/nearW => x; apply/ler_normD.

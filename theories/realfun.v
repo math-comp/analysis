@@ -2042,7 +2042,7 @@ by move/hasNub_ereal_sup; apply; exact: variations_neq0.
 Qed.
 
 Lemma total_variation_le a b f g : a <= b ->
-  (TV a b (f \+ g) <= TV a b f + TV a b g)%E.
+  (TV a b (f \+ g)%R <= TV a b f + TV a b g)%E.
 Proof.
 rewrite le_eqVlt => /predU1P[<-{b}|ab].
   by rewrite !total_variationxx adde0.

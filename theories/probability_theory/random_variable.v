@@ -303,7 +303,7 @@ Qed.
 Lemma cdf_right_continuous : right_continuous (cdf X).
 Proof.
 move=> a.
-pose s := fine (ereal_inf (cdf X @` `]a, a + 1%R]%classic)).
+pose s := fine (ereal_inf (cdf X @` `]a, (a + 1)%R]%classic)).
 have cdf_s : cdf X r @[r --> a^'+] --> s%:E.
   rewrite /s fineK.
   - apply: nondecreasing_at_right_cvge; first by rewrite ltBSide /= ?ltrDl.
@@ -312,13 +312,13 @@ have cdf_s : cdf X r @[r --> a^'+] --> s%:E.
     + by rewrite (lt_le_trans (ltNyr 0%R)) ?le_ereal_inf_tmp//= => l[? _] <-.
     + rewrite (le_lt_trans _ (ltry 1%R))// ge_ereal_inf//=.
       exists (cdf X (a + 1)); last exact: cdf_le1.
-      by exists (a + 1%R) => //; rewrite in_itv /=; apply/andP; rewrite ltrDl.
+      by exists (a + 1)%R => //; rewrite in_itv /=; apply/andP; rewrite ltrDl.
 have cdf_ns : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> s%:E.
   move/cvge_at_rightP : cdf_s; apply; split=> [n|]; rewrite ?ltrDl //.
   rewrite -[X in _ --> X]addr0; apply: (@cvgD _ R^o); first exact: cvg_cst.
   by rewrite gtr0_cvgV0 ?cvg_shiftS; [exact: cvgr_idn | near=> n].
 have cdf_na : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> cdf X a.
-  pose F n := X @^-1` `]-oo, a + n.+1%:R^-1%R].
+  pose F n := X @^-1` `]-oo, (a + n.+1%:R^-1)%R].
   suff : P (F n) @[n --> \oo] --> P (\bigcap_n F n).
     by rewrite [in X in _ --> X -> _]/F -preimage_bigcap -itvNycEbigcap.
   apply: nonincreasing_cvg_mu => [| | |m n mn].
