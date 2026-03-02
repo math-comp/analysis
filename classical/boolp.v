@@ -297,8 +297,6 @@ Qed.
 Lemma eq2_exists T S (U V : forall x : T, S x -> Prop) :
   (forall x y, U x y = V x y) -> (exists x y, U x y) = (exists x y, V x y).
 Proof. by move=> UV; apply/eq_exists => x; exact/eq_exists. Qed.
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `eq2_exists`.")]
-Notation eq_exists2 := eq2_exists (only parsing).
 
 Lemma eq3_exists T S R (U V : forall (x : T) (y : S x), R x y -> Prop) :
   (forall x y z, U x y z = V x y z) ->

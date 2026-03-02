@@ -194,6 +194,9 @@
 - in classical_sets.v
   + lemma `in_set1` (statement changed)
 
+- in `subspace_topology.v`:
+  + lemmas `open_subspaceP` and `closed_subspaceP` (use `exists2` instead of `exists`)
+
 ### Renamed
 
 - in `topology_structure.v`
@@ -259,6 +262,9 @@
 
 - in `lebesgue_integral_nonneg.v`:
   + lemma `integral_setU` (was deprecated since version 1.0.1)
+
+- in `boolp.v`:
+  + notation `eq_exists2` (was deprecated since version 1.10.0)
 
 ### Infrastructure
 

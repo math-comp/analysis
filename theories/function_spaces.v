@@ -417,7 +417,7 @@ Lemma join_product_initial : set_inj [set: T] join_product ->
 Proof.
 move=> inj; rewrite predeqE => U; split; first last.
   by move=> [V ? <-]; apply: open_comp => // + _; exact: join_product_continuous.
-move=> /join_product_open/open_subspaceP [V [oU VU]].
+move=> /join_product_open/open_subspaceP [V oU VU].
 exists V => //; have := @f_equal _ _ (preimage join_product) _ _ VU.
 rewrite !preimage_setI // !preimage_range !setIT => ->.
 rewrite eqEsubset; split; last exact: preimage_image.
