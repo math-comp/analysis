@@ -1124,6 +1124,13 @@ Definition derivable_Nyo_Lcontinuous (f : R -> V) (x : R) :=
 Definition derivable_oy_Rcontinuous (f : R -> V) (x : R) :=
   {in `]x, +oo[, forall x, derivable f x 1} /\ f @ x^'+ --> f x.
 
+Lemma derivable_oy_RcontinuousN (f : R -> V) (x : R) :
+  derivable_oy_Rcontinuous f x -> derivable_oy_Rcontinuous (- f) x.
+Proof.
+case=> /= derF Fa; split; last exact: cvgN.
+by move=> /= ? ?; exact/derivableN/derF.
+Qed.
+
 Lemma derivable_oy_Rcontinuous_within_itvcy (f : R -> V) (x : R) :
   derivable_oy_Rcontinuous f x -> {within `[x, +oo[, continuous f}.
 Proof.
