@@ -84,6 +84,10 @@ Lemma card_fset_sum1 (T : choiceType) (A : {fset T}) :
   #|` A| = (\sum_(i <- A) 1)%N.
 Proof. by rewrite big_seq_fsetE/= sum1_card cardfE. Qed.
 
+Lemma lteifS {disp : Order.disp_t} {T : porderType disp}
+  [x y : T] (C : bool) : (x < y)%O -> (x < y ?<= if C)%O.
+Proof. by case: C => //= /ltW. Qed.
+
 (**************************)
 (* MathComp 2.6 additions *)
 (**************************)

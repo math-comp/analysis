@@ -616,10 +616,8 @@ pose V := I `|` `[y, +oo[; have Iy : I y.
 have IU : I `<=` U by move=> ? [? [+ _ _]] => /subset_trans; exact.
 exists V; split; first split.
 - suff -> : V = I `|` `]y,+oo[ by exact: openU.
-  rewrite eqEsubset; split => z; case; first by left.
-  + by rewrite -setU1itv // => -[->|]; [left| right].
-  + by left.
-  + by rewrite /V -setU1itv //; right; right.
+  have /mem_set := Iy; rewrite -sub1set => /setUidl <-.
+  by rewrite -setUA setU1itv.
 - by apply: closedU => //; exact: rray_closed.
 - by left.
 - by move=> [/IU //|]; rewrite set_itvE/= leNgt xy.

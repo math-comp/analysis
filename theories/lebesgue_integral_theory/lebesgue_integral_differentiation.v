@@ -194,10 +194,7 @@ Lemma lebesgue_differentiation_continuous (f : R -> rT^o) (A : set R) (x : R) :
 Proof.
 have ball_itvr r : 0 < r -> `[x - r, x + r] `\` ball x r = [set x + r; x - r].
   move: r => _/posnumP[r].
-  rewrite -setU1itv ?bnd_simp ?lerBlDr -?addrA ?ler_wpDr//.
-  rewrite -setUitv1 ?bnd_simp ?ltrBlDr -?addrA ?ltr_pwDr//.
-  rewrite setUA setUC setUA setDUl !ballE setDv setU0 setDidl// -subset0.
-  by move=> z /= [[]] ->; rewrite in_itv/= ltxx// andbF.
+  by rewrite ballE setDitvoo 1?setUC// neitvE bnd_simp lerD2l// ge0_cp.
 have ball_itv2 r : 0 < r -> ball x r = `[x - r, x + r] `\` [set x + r; x - r].
   move: r => _/posnumP[r].
   rewrite -ball_itvr // setDD setIC; apply/esym/setIidPl.

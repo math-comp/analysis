@@ -3,6 +3,10 @@
 ## [Unreleased]
 
 ### Added
+- in set_interval.v
+  + lemmas `setUitv_set2`, `setDitv_set2`, `setDitvoo`, `setDitvoy`, `setDitvNyo`,
+    `setDccitv`, `setD_cbnd_bndy`, `setD_bndc_Nybnd`
+
 - in `topology_structure.v`
   + lemma `interiorS`
 
@@ -67,6 +71,9 @@
   + lemmas `compact_EVT_max`, `compact_EVT_min`, `EVT_max_rV`, `EVT_min_rV`
 
 ### Changed
+- in set_interval.v
+  + `setUitv1`, `setU1itv`, `setDitv1l`, `setDitv1r` (generalized)
+
 - in `set_interval.v`
   + `itv_is_closed_unbounded` (fix the definition)
 
