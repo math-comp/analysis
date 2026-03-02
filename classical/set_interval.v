@@ -200,7 +200,7 @@ apply/predeqP => z /=; rewrite itv_split1U// [in X in _ <-> X]inE.
 by rewrite (rwP eqP) (rwP orP) orbC.
 Qed.
 
-Lemma setUitv2 x y b1 b2 :
+Lemma setUitv_set2 x y b1 b2 :
   (x <= y)%O ->
   [set` Interval (BSide b1 x) (BSide b2 y)] `|` [set x; y] = `[x, y]%classic.
 Proof.
@@ -230,7 +230,7 @@ move=> /andP[]; rewrite lt_neqAle => /andP[xz zx ->].
 by rewrite andbT; split => //; exact/nesym/eqP.
 Qed.
 
-Lemma setDitv2 x y b1 b2 :
+Lemma setDitv_set2 x y b1 b2 :
   [set` Interval (BSide b1 x) (BSide b2 y)] `\` [set x; y] = `]x, y[%classic.
 Proof. by rewrite -setDDl setDitv1l setDitv1r. Qed.
 
@@ -390,7 +390,7 @@ move/neitv_lt_bnd => /= abx; apply/seteqP; split => z/=; rewrite !in_itv/=.
   by move: a => [[] ?|[]]; rewrite !bnd_simp// andbT.
 Qed.
 
-Lemma setDcitvy a (x : T) (b : bool) :
+Lemma setD_cbnd_bndy a (x : T) (b : bool) :
   neitv (Interval (BLeft x) a) ->
   [set` Interval (BLeft x) a] `\` [set` Interval (BSide b x) +oo%O] =
   (if b then set0 else [set x]).
@@ -402,7 +402,7 @@ move/neitv_lt_bnd => /= xa; apply/seteqP; split => z/=; rewrite !in_itv/=.
   by move: a => [[] ?|[]]; rewrite /= !bnd_simp.
 Qed.
 
-Lemma setDcitvNy a (x : T) (b : bool) :
+Lemma setD_bndc_Nybnd a (x : T) (b : bool) :
   neitv (Interval a (BRight x)) ->
   [set` Interval a (BRight x)] `\` [set` Interval -oo%O (BSide b x)] =
   (if b then [set x] else set0).
