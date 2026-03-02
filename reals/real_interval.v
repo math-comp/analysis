@@ -56,10 +56,10 @@ Let sup_itv_infty_bnd x b : sup [set` Interval -oo%O (BSide b x)] = x.
 Proof.
 set s := sup _; apply/eqP; rewrite eq_le; apply/andP; split.
 - apply: ge_sup; last by move=> ? /lteifW.
-  by exists (x - 1); apply: ltrW_lteif; rewrite ltrBlDr ltrDl.
+  by exists (x - 1); apply: lteifS; rewrite ltrBlDr ltrDl.
 - rewrite leNgt; apply/negP => sx; pose p := (s + x) / 2.
   suff /andP[?]: (p < x) && (s < p)
-    by apply/negP; rewrite -leNgt ub_le_sup//= in_itv ltrW_lteif.
+    by apply/negP; rewrite -leNgt ub_le_sup//= in_itv lteifS.
   by rewrite !midf_lt.
 Qed.
 
