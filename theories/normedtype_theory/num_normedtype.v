@@ -46,6 +46,7 @@ Reserved Notation "f @`] a , b [" (format "f  @`] a ,  b [").
 Reserved Notation "+oo_ R" (at level 3, left associativity, format "+oo_ R").
 Reserved Notation "-oo_ R" (at level 3, left associativity, format "-oo_ R").
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

@@ -26,6 +26,8 @@ From mathcomp Require Import product_topology subspace_topology.
 (*                                                                            *)
 (******************************************************************************)
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 

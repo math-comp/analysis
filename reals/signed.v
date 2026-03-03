@@ -179,6 +179,7 @@ Reserved Notation "x %:nng" (format "x %:nng").
 
 Reserved Notation "!! x" (at level 100, only parsing).
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

@@ -18,6 +18,7 @@ From mathcomp Require Import measurable_structure measure_function.
 
 Reserved Notation "'\d_' a" (at level 8, a at level 2, format "'\d_' a").
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

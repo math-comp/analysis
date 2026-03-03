@@ -64,6 +64,7 @@ From mathcomp Require Import num_normedtype.
 Reserved Notation "[ 'bounded' E | x 'in' A ]"
   (at level 0, x name, format "[ 'bounded'  E  |  x  'in'  A ]").
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

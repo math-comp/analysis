@@ -53,6 +53,7 @@ From mathcomp Require Import topology function_spaces.
 (* - The product of two Tvs is endowed with the structure of Tvs.             *)
 (******************************************************************************)
 
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

@@ -24,6 +24,9 @@ From mathcomp Require Import order_topology pseudometric_structure compact.
 (*                                  topology, uniformity, and pseudometric    *)
 (* ```                                                                        *)
 (******************************************************************************)
+
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
 Local Open Scope classical_set_scope.
