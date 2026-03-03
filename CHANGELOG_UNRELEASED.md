@@ -196,6 +196,10 @@
 
 - in `subspace_topology.v`:
   + lemmas `open_subspaceP` and `closed_subspaceP` (use `exists2` instead of `exists`)
+- moved from `filter.v` to `classical_sets.v`:
+  + definition `set_system`
+- moved from `measurable_structure.v` to `classical_sets.v`:
+  + definitions `setI_closed`, `setU_closed`
 
 ### Renamed
 

@@ -49,9 +49,9 @@ Definition wopen := [set f @^-1` A | A in open].
 Local Lemma wopT : wopen [set: W].
 Proof. by exists setT => //; apply: openT. Qed.
 
-Local Lemma wopI (A B : set W) : wopen A -> wopen B -> wopen (A `&` B).
+Local Lemma wopI : setI_closed wopen.
 Proof.
-by move=> [C Cop <-] [D Dop <-]; exists (C `&` D) => //; apply: openI.
+by move=> ? ? [C Cop <-] [D Dop <-]; exists (C `&` D) => //; exact: openI.
 Qed.
 
 Local Lemma wop_bigU (I : Type) (g : I -> set W) :

@@ -214,9 +214,6 @@ Reserved Notation "E `@[ x --> F ]"
   (at level 60, x name, format "E  `@[ x  -->  F ]").
 Reserved Notation "f `@ F" (at level 60, format "f  `@  F").
 
-Definition set_system U := set (set U).
-Identity Coercion set_system_to_set : set_system >-> set.
-
 HB.mixin Record isFiltered U T := {
   nbhs : T -> set_system U
 }.
@@ -431,7 +428,7 @@ Qed.
 
 Class Filter {T : Type} (F : set_system T) := {
   filterT : F setT ;
-  filterI : forall P Q : set T, F P -> F Q -> F (P `&` Q) ;
+  filterI : setI_closed F ;
   filterS : forall P Q : set T, P `<=` Q -> F P -> F Q
 }.
 Global Hint Mode Filter - ! : typeclass_instances.
@@ -1179,7 +1176,7 @@ Global Instance within_filter T D F : Filter F -> Filter (@within T D F).
 Proof.
 move=> FF; rewrite /within; constructor => /=.
 - by apply: filterE.
-- by move=> P Q; apply: filterS2 => x DP DQ Dx; split; [apply: DP|apply: DQ].
+- by move=> P Q/=; apply: filterS2 => x DP DQ Dx; split; [apply: DP|apply: DQ].
 - by move=> P Q subPQ; apply: filterS => x DP /DP /subPQ.
 Qed.
 
@@ -1203,7 +1200,7 @@ Global Instance subset_filter_filter T F (D : set T) :
 Proof.
 move=> FF; constructor; rewrite /subset_filter/=.
 - exact: filterE.
-- by move=> P Q; apply: filterS2=> x PD QD Dx; split.
+- by move=> P Q/=; exact: filterS2.
 - by move=> P Q subPQ; apply: filterS => R PD Dx; apply: subPQ.
 Qed.
 #[global] Typeclasses Opaque subset_filter.

@@ -1,6 +1,7 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat all_algebra finmap all_classical.
+From mathcomp Require Import all_ssreflect_compat all_algebra finmap.
+From mathcomp Require Import all_classical.
 From mathcomp Require Export filter.
 
 (**md**************************************************************************)
@@ -169,9 +170,9 @@ Proof. by rewrite openE. Qed.
 Lemma openT : open (setT : set T).
 Proof. by rewrite openE => ??; apply: filterT. Qed.
 
-Lemma openI (A B : set T) : open A -> open B -> open (A `&` B).
+Lemma openI : setI_closed (@open T).
 Proof.
-rewrite openE => Aop Bop p [Ap Bp].
+move=> A B; rewrite openE => Aop Bop p [Ap Bp].
 by apply: filterI; [apply: Aop|apply: Bop].
 Qed.
 
@@ -182,9 +183,9 @@ rewrite openE => fop p [i Di].
 by have /fop fiop := Di; move/fiop; apply: filterS => ??; exists i.
 Qed.
 
-Lemma openU (A B : set T) : open A -> open B -> open (A `|` B).
+Lemma openU : setU_closed (@open T).
 Proof.
-by rewrite openE => Aop Bop p [/Aop|/Bop]; apply: filterS => ??; [left|right].
+by move=> A B /[!openE] AA BB p [/AA|/BB]; apply: filterS => ? ?; [left|right].
 Qed.
 
 Lemma open_subsetE (A B : set T) : open A -> (A `<=` B) = (A `<=` B°).
@@ -210,9 +211,8 @@ Qed.
 Lemma open_nbhsT (p : T) : open_nbhs p setT.
 Proof. by split=> //; apply: openT. Qed.
 
-Lemma open_nbhsI (p : T) (A B : set T) :
-  open_nbhs p A -> open_nbhs p B -> open_nbhs p (A `&` B).
-Proof. by move=> [Aop Ap] [Bop Bp]; split; [apply: openI|split]. Qed.
+Lemma open_nbhsI (p : T) : setI_closed (open_nbhs p).
+Proof. by move=> A B [Aop Ap] [Bop Bp]; split => //; exact: openI. Qed.
 
 Lemma open_nbhs_nbhs (p : T) (A : set T) : open_nbhs p A -> nbhs p A.
 Proof. by rewrite nbhsE => p_A; exists A. Qed.
@@ -455,7 +455,7 @@ Definition nbhs_of_open (T : Type) (op : set_system T) (p : T) (A : set T) :=
 HB.factory Record isOpenTopological T & Choice T := {
   op : set_system T ;
   opT : op setT ;
-  opI : forall (A B : set T), op A -> op B -> op (A `&` B) ;
+  opI : setI_closed op ;
   op_bigU : forall (I : Type) (f : I -> set T), (forall i, op (f i)) ->
     op (\bigcup_i f i)
 }.
@@ -739,9 +739,9 @@ move=> fcl t clft i Di; have /fcl := Di; apply.
 by move=> A /clft [s [/(_ i Di)]]; exists s.
 Qed.
 
-Lemma closedI (D E : set T) : closed D -> closed E -> closed (D `&` E).
+Lemma closedI : setI_closed closed.
 Proof.
-by move=> Dcl Ecl p clDEp; split; [apply: Dcl|apply: Ecl];
+by move=> D E Dcl Ecl p clDEp; split; [apply: Dcl|apply: Ecl];
   move=> A /clDEp [q [[]]]; exists q.
 Qed.
 
@@ -815,9 +815,8 @@ rewrite continuousP; split=> ctsf ? ?.
 by rewrite -closedC preimage_setC; apply: ctsf; rewrite closedC.
 Qed.
 
-Lemma closedU (T : topologicalType) (D E : set T) :
-  closed D -> closed E -> closed (D `|` E).
-Proof. by rewrite -?openC setCU; exact: openI. Qed.
+Lemma closedU (T : topologicalType) : setU_closed (@closed T).
+Proof. by move=> E D; rewrite -?openC setCU; exact: openI. Qed.
 
 Lemma closed_bigsetU (T : topologicalType) (I : eqType) (s : seq I)
     (F : I -> set T) : (forall x, x \in s -> closed (F x)) ->
@@ -1003,11 +1002,11 @@ Implicit Type T : topologicalType.
 
 Definition clopen {T} (A : set T) := open A /\ closed A.
 
-Lemma clopenI {T} (A B : set T) : clopen A -> clopen B -> clopen (A `&` B).
-Proof. by case=> ? ? [] ? ?; split; [exact: openI | exact: closedI]. Qed.
+Lemma clopenI {T} : setI_closed (@clopen T).
+Proof. by move=> ? ? [] ? ? [] ? ?; split; [exact: openI|exact: closedI]. Qed.
 
-Lemma clopenU {T} (A B : set T) : clopen A -> clopen B -> clopen (A `|` B).
-Proof. by case=> ? ? [] ? ?; split; [exact: openU | exact: closedU]. Qed.
+Lemma clopenU {T} : setU_closed (@clopen T).
+Proof. by move=> ? ? [] ? ? [] ? ?; split; [exact: openU|exact: closedU]. Qed.
 
 Lemma clopenC {T} (A B : set T) : clopen A -> clopen (~`A).
 Proof. by case=> ? ?; split;[exact: closed_openC | exact: open_closedC ]. Qed.
