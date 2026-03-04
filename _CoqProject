@@ -75,12 +75,12 @@ theories/homotopy_theory/continuous_path.v
 
 theories/ess_sup_inf.v
 theories/cantor.v
-theories/tvs.v
 
 theories/normedtype_theory/num_normedtype.v
 theories/normedtype_theory/matrix_normedtype.v
 theories/normedtype_theory/ereal_normedtype.v
 theories/normedtype_theory/pseudometric_normed_Zmodule.v
+theories/normedtype_theory/tvs.v
 theories/normedtype_theory/normed_module.v
 theories/normedtype_theory/complete_normed_module.v
 theories/normedtype_theory/urysohn.v

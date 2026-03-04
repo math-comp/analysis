@@ -41,12 +41,12 @@ homotopy_theory/continuous_path.v
 
 ess_sup_inf.v
 cantor.v
-tvs.v
 
 normedtype_theory/num_normedtype.v
 normedtype_theory/matrix_normedtype.v
 normedtype_theory/ereal_normedtype.v
 normedtype_theory/pseudometric_normed_Zmodule.v
+normedtype_theory/tvs.v
 normedtype_theory/normed_module.v
 normedtype_theory/complete_normed_module.v
 normedtype_theory/urysohn.v

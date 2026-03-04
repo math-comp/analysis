@@ -208,6 +208,13 @@
   + file `function_spaces.v`
 - moved from `theories` to `theories/topology_theory`
 
+- moved from `theories` to `theories/normedtype_theory`:
+  + file `tvs.v`
+
+- moved from `tvs.v` to `pseudometric_normed_Zmodule.v`:
+  + definitions `NbhsNmodule`, `NbhsZmodule`, `PreTopologicalNmodule`, `PreTopologicalZmodule`,
+    `PreUniformNmodule`, `PreUniformZmodule`
+
 ### Renamed
 
 - in `topology_structure.v`

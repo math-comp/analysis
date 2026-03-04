@@ -3,7 +3,8 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat ssralg ssrnum vector.
 From mathcomp Require Import interval_inference.
 From mathcomp Require Import boolp classical_sets functions cardinality.
-From mathcomp Require Import set_interval reals topology.
+From mathcomp Require Import set_interval reals topology num_normedtype.
+From mathcomp Require Import pseudometric_normed_Zmodule.
 
 (**md**************************************************************************)
 (* # Topological vector spaces                                                *)
@@ -73,13 +74,8 @@ Local Open Scope ring_scope.
 (* HB.structure Definition FilteredZmodule := {M of Filtered M M & GRing.Zmodule M}. *)
 (* HB.structure Definition FilteredLmodule (K : numDomainType) := *)
 (*   {M of Filtered M M & GRing.Lmodule K M}. *)
-HB.structure Definition NbhsNmodule := {M of Nbhs M & GRing.Nmodule M}.
-HB.structure Definition NbhsZmodule := {M of Nbhs M & GRing.Zmodule M}.
 HB.structure Definition NbhsLmodule (K : numDomainType) :=
   {M of Nbhs M & GRing.Lmodule K M}.
-
-HB.structure Definition PreTopologicalNmodule :=
-  {M of Topological M & GRing.Nmodule M}.
 
 HB.mixin Record PreTopologicalNmodule_isTopologicalNmodule M
     & PreTopologicalNmodule M := {
@@ -88,9 +84,6 @@ HB.mixin Record PreTopologicalNmodule_isTopologicalNmodule M
 
 HB.structure Definition TopologicalNmodule :=
   {M of PreTopologicalNmodule M & PreTopologicalNmodule_isTopologicalNmodule M}.
-
-HB.structure Definition PreTopologicalZmodule :=
-  {M of Topological M & GRing.Zmodule M}.
 
 HB.mixin Record TopologicalNmodule_isTopologicalZmodule M
     & Topological M & GRing.Zmodule M := {
@@ -191,16 +184,12 @@ HB.instance Definition _ :=
 
 HB.end.
 
-HB.structure Definition PreUniformNmodule := {M of Uniform M & GRing.Nmodule M}.
-
 HB.mixin Record PreUniformNmodule_isUniformNmodule M & PreUniformNmodule M := {
   add_unif_continuous : unif_continuous (fun x : M * M => x.1 + x.2)
 }.
 
 HB.structure Definition UniformNmodule :=
   {M of PreUniformNmodule M & PreUniformNmodule_isUniformNmodule M}.
-
-HB.structure Definition PreUniformZmodule := {M of Uniform M & GRing.Zmodule M}.
 
 HB.mixin Record UniformNmodule_isUniformZmodule M
     & Uniform M & GRing.Zmodule M := {
