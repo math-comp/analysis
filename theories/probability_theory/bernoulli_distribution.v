@@ -7,8 +7,8 @@ From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra.
 From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
 From mathcomp Require Import reals ereal topology normedtype sequences esum.
-From mathcomp Require Import measure numfun lebesgue_measure lebesgue_integral.
-From mathcomp Require Import kernel.
+From mathcomp Require Import measure numfun measurable_realfun lebesgue_measure.
+From mathcomp Require Import lebesgue_integral kernel.
 
 (**md**************************************************************************)
 (* # Bernoulli distribution                                                   *)

@@ -1,11 +1,12 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval finmap.
-From mathcomp Require Import archimedean.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval.
+From mathcomp Require Import interval_inference archimedean finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop reals interval_inference ereal.
-From mathcomp Require Import topology normedtype sequences esum measure.
-From mathcomp Require Import numfun lebesgue_measure lebesgue_integral.
+From mathcomp Require Import cardinality fsbigop reals ereal topology.
+From mathcomp Require Import normedtype sequences esum measure.
+From mathcomp Require Import measurable_realfun numfun lebesgue_measure.
+From mathcomp Require Import lebesgue_integral.
 
 (**md**************************************************************************)
 (* # Kernels                                                                  *)

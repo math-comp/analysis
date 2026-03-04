@@ -1,11 +1,13 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval finmap.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval.
+From mathcomp Require Import finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop reals interval_inference ereal.
 From mathcomp Require Import topology tvs normedtype sequences real_interval.
-From mathcomp Require Import esum measure lebesgue_measure numfun realfun.
-From mathcomp Require Import exp trigo lebesgue_integral derive charge ftc.
+From mathcomp Require Import esum measure measurable_realfun numfun realfun.
+From mathcomp Require Import exp trigo lebesgue_measure lebesgue_integral.
+From mathcomp Require Import derive ftc.
 
 (**md**************************************************************************)
 (* # Gauss integral                                                           *)
@@ -384,7 +386,7 @@ rewrite ge0_symfun_integralT//=.
 - by move=> x/=; rewrite /gauss_fun sqrrN.
 Qed.
 
-Lemma integrableT_gauss : mu.-integrable setT (EFin \o gauss_fun).
+Lemma integrableT_gauss : mu.-integrable [set: R] (EFin \o gauss_fun).
 Proof.
 apply/integrableP; split.
   by apply/measurable_EFinP/measurable_funTS; exact: measurable_gauss_fun.

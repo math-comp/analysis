@@ -1,12 +1,11 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint interval.
-From mathcomp Require Import archimedean rat.
+From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
+From mathcomp Require Import interval interval_inference archimedean rat.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality set_interval interval_inference reals.
-From mathcomp Require Import topology function_spaces real_interval.
-From mathcomp Require Import prodnormedzmodule tvs.
+From mathcomp Require Import cardinality set_interval reals real_interval.
+From mathcomp Require Import topology prodnormedzmodule tvs.
 
 (**md**************************************************************************)
 (* # Preliminaries for norm-related notions                                   *)

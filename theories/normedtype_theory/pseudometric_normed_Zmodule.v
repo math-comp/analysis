@@ -1,11 +1,10 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
-From mathcomp Require Import interval archimedean.
+From mathcomp Require Import interval interval_inference archimedean.
 From mathcomp Require Import boolp classical_sets functions cardinality.
-From mathcomp Require Import set_interval interval_inference ereal reals.
-From mathcomp Require Import topology function_spaces prodnormedzmodule tvs.
-From mathcomp Require Import num_normedtype.
+From mathcomp Require Import set_interval ereal reals topology.
+From mathcomp Require Import prodnormedzmodule tvs num_normedtype.
 
 (**md**************************************************************************)
 (* # Normed topological abelian groups                                        *)

@@ -1,13 +1,14 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval finmap.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval.
+From mathcomp Require Import interval_inference finmap.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp interval_inference.
-From mathcomp Require Import classical_sets functions cardinality fsbigop reals.
-From mathcomp Require Import ereal topology normedtype sequences real_interval.
-From mathcomp Require Import esum measure ess_sup_inf lebesgue_measure.
-From mathcomp Require Import lebesgue_integral numfun exp convex.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import cardinality convex fsbigop reals ereal topology.
+From mathcomp Require Import normedtype sequences real_interval esum measure.
+From mathcomp Require Import ess_sup_inf measurable_realfun lebesgue_measure.
+From mathcomp Require Import lebesgue_integral numfun exp.
 
 (**md**************************************************************************)
 (* # Hoelder's Inequality                                                     *)

@@ -4,7 +4,8 @@ From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean finmap interval_inference.
 From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
 From mathcomp Require Import reals ereal topology normedtype sequences derive.
-From mathcomp Require Import measure exp trigo numfun realfun lebesgue_measure.
+From mathcomp Require Import measure exp trigo numfun realfun.
+From mathcomp Require Import measurable_realfun lebesgue_measure.
 From mathcomp Require Import lebesgue_integral ftc gauss_integral.
 
 (**md**************************************************************************)
