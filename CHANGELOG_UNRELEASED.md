@@ -206,6 +206,7 @@
 
 - moved from `theories` to `theories/topology_theory`:
   + file `function_spaces.v`
+- moved from `theories` to `theories/topology_theory`
 
 ### Renamed
 
