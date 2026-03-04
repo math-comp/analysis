@@ -171,7 +171,7 @@ by rewrite expr0n/= oppr0 expR0 gauss_fun_le1.
 Unshelve. all: end_near. Qed.
 
 Let cvg_dintegral01_u x :
-  h^-1 *: (integral01_u (h + x)%E - integral01_u x) @[h --> 0^'] -->
+  h^-1 *: (integral01_u (h + x) - integral01_u x) @[h --> 0^'] -->
   - 2 * x * gauss_fun x * \int[mu]_(t in `[0, 1]) gauss_fun (t * x).
 Proof.
 have [c [e e0 cex]] : exists c : R, exists2 e : R, 0 < e & ball c e x.

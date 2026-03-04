@@ -71,6 +71,9 @@
   + lemmas `compact_EVT_max`, `compact_EVT_min`, `EVT_max_rV`, `EVT_min_rV`
 
 ### Changed
+
+- in `constructive_ereal.v`: fixed the infamous `%E` scope bug.
+
 - in set_interval.v
   + `setUitv1`, `setU1itv`, `setDitv1l`, `setDitv1r` (generalized)
 

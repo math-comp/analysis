@@ -743,7 +743,7 @@ Qed.
 
 Lemma lerB_DLnorm f g p :
   measurable_fun [set: T] f -> measurable_fun [set: T] g -> (1 <= p)%R ->
-  'N_p%:E[f] <= 'N_p%:E[f \+ g] + 'N_p%:E[g].
+  'N_p%:E[f] <= 'N_p%:E[(f \+ g)%R] + 'N_p%:E[g].
 Proof.
 move=> mf mg p1.
 rewrite [in leLHS](_ : f = ((f + g) + (-%R \o g))%R); last by rewrite addrK.
@@ -757,7 +757,7 @@ Qed.
 
 Lemma lerB_LnormD f g p :
   measurable_fun [set: T] f -> measurable_fun [set: T] g -> (1 <= p)%R ->
-  'N_p%:E[f] - 'N_p%:E[g] <= 'N_p%:E[f \+ g].
+  'N_p%:E[f] - 'N_p%:E[g] <= 'N_p%:E[(f \+ g)%R].
 Proof.
 move=> mf mg p1.
 set rhs := (leRHS); have [?|] := boolP (rhs \is a fin_num).
