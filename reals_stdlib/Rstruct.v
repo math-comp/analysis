@@ -1,7 +1,7 @@
 (* see below (after doc) for copyright notice *)
-From Coq Require Import ZArith Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
-From Coq Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
-From Coq Require Import Rtrigo1 Reals.
+From Stdlib Require Import ZArith Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
+From Stdlib Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
+From Stdlib Require Import Rtrigo1 Reals.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat ssralg poly ssrnum archimedean.
 

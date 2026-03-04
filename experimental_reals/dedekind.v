@@ -8,7 +8,7 @@
 
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect_compat all_algebra.
-From Coq Require Import Setoid.
+From Corelib Require Import Setoid.
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.
