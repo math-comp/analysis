@@ -1,12 +1,15 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp Require Import interval_inference.
-From mathcomp Require Import boolp classical_sets topology reals.
+From mathcomp Require Import wochoice boolp classical_sets topology reals.
+From mathcomp Require Import filter reals normedtype.
+Import numFieldNormedType.Exports.
+Local Open Scope classical_set_scope.
 
 (* Marie's proposal: encode the "partial" properties by reasoning on
   the graph of functions. The other option would be to study a partial
   order defined on subsets of the ambiant space V, on which it is possible
-  to obtain a bounded linear form extending f. But this options seems much
+  to obtain a bounded lineEar form extending f. But this options seems much
   less convenient, in particular when establishing that one can extend f
   on a space with one more dimension. Indeed, exhibiting a term of type
   V -> R requires a case ternary analysis on F, the new line, and an
@@ -20,143 +23,11 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
 
-(* A handful of axioms, stated here without trying to minimize the
-   interface. *)
+Search "choice_prop". 
 
- Axiom Prop_irrelevance : forall (P : Prop) (x y : P), x = y.
- Axiom funext : forall (T U : Type) (f g : T -> U), (f =1 g) -> f = g.
- Axiom propext : forall (P Q : Prop), (P <-> Q) -> (P = Q).
+Definition Choice_prop := ((forall T U  (Q : T -> U -> Prop),
+                                (forall t : T, exists u : U,  Q t u) -> (exists e, forall t,  Q t (e t)))).
 
- Definition Choice_prop := ((forall T U  (Q : T -> U -> Prop),
-                                (forall t : T, exists u : U,  Q t u) -> (exists e, forall t,  Q t (e t)))) .
- Definition EM :=  forall (P : Prop), P \/ ~ P.
-
-
-Section Diaconescu.
-
- Lemma contrapos (P Q : Prop) : (P -> Q) -> (~Q -> ~P).
- Proof.
-   move => H nQ p.
-   by pose bot := nQ (H p).
- Qed.
-
- Lemma propeqE (P Q : Prop) : (P = Q) = (P <-> Q).
- Proof. by apply: propext; split=> [->|/propext]. Qed.
-
- Lemma funeqE {T U : Type} (f g : T -> U) : (f = g) = (f =1 g).
- Proof. by rewrite propeqE; split=> [->//|/funext]. Qed.
-
- Lemma predeqE {T} (P Q : T -> Prop) : (P = Q) = (forall x, P x <-> Q x).
- Proof.
- by rewrite propeqE; split=> [->//|?]; rewrite funeqE=> x; rewrite propeqE.
- Qed.
-
-
-
-  (*the following is directly borrowed from coq.stdlib/Coq.Logic.Diaconescu *)
-
- Lemma Relational_Choice  : Choice_prop ->  forall A B  (R:A->B->Prop),
-    (forall x : A, exists y : B, R x y) ->
- (exists R' : A->B->Prop, subrelation R' R /\ forall x, exists! y, R' x y).
- Proof.
- move => H A B R Hex. case (H A B R Hex) => [f P].
- exists (fun x y => y = (f x)).
- split.
- move => x y -> ; exact : (P x).
- move => x ; exists (f x) ; split.
-   by [].
-   by move => z ->.
- Qed.
-
-
- Lemma rel_choice_and_proof_irrel_imp_guarded_rel_choice :
- Choice_prop -> (forall A B (P : A ->Prop), forall R : A->B->Prop,
-    (forall x : A, P x -> exists y : B, R x y) ->
-    (exists R' : A->B->Prop,
-    subrelation R' R /\ forall x, P x -> exists! y, R' x y)).
- Proof.
-  move => choice_prop.
-  pose rel_choice := Relational_Choice  choice_prop.
-  move => A B P R H.
-  destruct (rel_choice _ _ (fun (x:sigT P) (y:B) => R (projT1 x) y)) as (R',(HR'R,H0)).
-  intros (x,HPx).
-  destruct (H x HPx) as (y,HRxy).
-  exists y; exact HRxy.
-  set (R'' := fun (x:A) (y:B) => exists H : P x, R' (existT P x H) y).
-  exists R''; split.
-  intros x y (HPx,HR'xy).
-    change x with (projT1 (existT P x HPx)); apply HR'R; exact HR'xy.
-  intros x HPx.
-  destruct (H0 (existT P x HPx)) as (y,(HR'xy,Huniq)).
-  exists y; split. exists HPx; exact HR'xy.
-  intros y' (H'Px,HR'xy').
-    apply Huniq.
-    rewrite (Prop_irrelevance  HPx H'Px); exact HR'xy'.
-Qed.
-
- Lemma AC_bool_subset_to_bool :
-  Choice_prop ->
-  (exists R : (bool -> Prop) -> bool -> Prop,
-   (forall P:bool -> Prop,
-      (exists b : bool, P b) ->
-      exists b : bool, P b /\ R P b /\ (forall b':bool, R P b' -> b = b'))).
- Proof.
- move => choice_prop.
-  destruct ( (rel_choice_and_proof_irrel_imp_guarded_rel_choice choice_prop)    _ _
-   (fun Q:bool -> Prop =>  exists y : _, Q y)
-   (fun (Q:bool -> Prop) (y:bool) => Q y)) as (R,(HRsub,HR)).
-    exact (fun _ H => H).
-  exists R; move => P HP.
-  case (HR P HP) as (y,(Hy,Huni)).
-  exists y; firstorder.
-Qed.
-
-
-
-End Diaconescu.
-
-
-
-Section Classical.
-
- Variable EM : forall (P : Prop), P \/ ~ P.
-
- Lemma double_neg_elim  (P :  Prop) : ~ ( ~ P) <-> P.
- Proof.
-   split.
-   - move => nnP. case : (EM P) ; first by [].
-     by move => nP ; pose bot :=  nnP nP.
-   - by move => p np.
- Qed.
-
- Lemma neg_exists (T : Type) (P : T -> Prop) : ~ ( exists s, ( P s)) -> forall s, ~ ( P s ).
- Proof.
-  by move => H s Ps ; have : exists s : T, P s by exists s.
- Qed.
-
- Lemma contrap P Q : ( ~ P -> ~ Q) -> ( Q -> P ).
- Proof.
-  move => H p.
-  case : (EM P) ; first by [].
-  move => nQ.
-  have bot :  False by exact : ((H nQ)p) .
-  by [].
- Qed.
-
- Lemma neg_forall (T : Type) (P : T -> Prop) : ~ (forall s, (P s)) -> exists s,  ~ ( P s).
- Proof.
-   apply : contrap.
-   move => nE. apply : (proj2 (double_neg_elim (forall s, (P s)))).
-   move => s. apply : (proj1 (double_neg_elim (P s))).
-   exact :  ((neg_exists nE) s).
- Qed.
-
-Lemma neg_impl (P Q : Prop) : ~ ( P -> Q) -> (P /\ ~Q).
- Proof.
-by rewrite not_implyE.
-Qed.
-
-End Classical.
 
  Local Open Scope ring_scope.
  Import GRing.Theory.
@@ -166,376 +37,11 @@ Section SetPredRels.
 
  Variables T U : Type.
  Implicit Types f g : T -> U -> Prop.
-
- Definition set (A : Type) := A -> Prop.
-
- Definition total_on T (A : set T) (R : T -> T -> Prop) :=
-   forall s t, A s -> A t -> R s t \/ R t s.
-
- (* Extends is just relation inclusion *)
- Definition extends f g := forall v r, f v r -> g v r.
-
- Lemma extends_refl f : extends f f. Proof. by []. Qed.
-
- Lemma extends_trans f2 f1 f3 : extends f1 f2 -> extends f2 f3 -> extends f1 f3.
- Proof. by move=> h1 h2 v r /h1 /h2. Qed.
-
- (* We make use of funext and propext here. Ideally we would word on hprops. *)
- Lemma extends_antisym f g : extends f g -> extends g f -> f = g.
- Proof.
- move=> efg egf; apply: funext => v; apply: funext=> r; apply: propext; split.
- - exact: efg.
- - exact: egf.
- Qed.
-
-
  (* Functional (possibly empty or partial) graphs *)
  Definition functional f :=
    forall v r1 r2, f v r1 -> f v r2 -> r1 = r2.
 
- (* Graph of a function *)
- Definition graph_of (h : T -> U) v r : Prop := r = h v.
-
- (* The relation f includes the graph of function h on set A *)
- (* the intension is that f is the graph of a function h, which
-    coincides with f on F *)
- Definition extends_fun_on (A : set T) f h := forall v, A v -> f v (h v).
-
 End SetPredRels.
-
-
-
-
-
-
-
-Section StrictInductiveFixpoint.
- (*We prove a fixpoint lemma for increasing functions on strictly
-  inductive sets, following ALgebra by Lang*)
-  (* Choice is not necessary, but EM is*)
-
-  Variable EM :  forall P, P \/ ~ P.
-
-  Variable (T : Type) ( R : T -> T -> Prop)  (f : T -> T).
-
-
-  Hypothesis f_incr : forall t, R t (f t).
-
-  Hypothesis R_ref : forall t, R t t.
-
-  Hypothesis R_trans : forall r s t, R r s -> R s t -> R r t.
-
-  Hypothesis R_antisym : forall r s, R r s -> R s r -> r=s.
-
-  Definition maj ( T: Type)  (R : T -> T -> Prop) A t := forall s, A s -> R s t.
-
-  Definition sup A t :=  (maj R A t)/\(forall r, (maj R A r) -> R t r ).
-
-
-  Hypothesis R_strind : (forall A : set T, total_on A R -> exists t,  sup A t).
-
-
-  (*Beginning by lemmas on sets, least upper bounds and the subset relation *)
-
-
-  Lemma sup_uniq A r s : sup A r -> sup A s -> s  = r.
-  Proof.
-   move => [majr supr] [majs sups].
-   exact (R_antisym (sups r  majr) (supr s majs)).
-  Qed.
-
-  (* It seems that we don't need to reason on nonempy subsets, contr. to Lang*)
-  (*Definition nonempty (A: set T) := exists x_0,  A x_0.*)
-
-  Definition subset (A B: set T) := forall x, A x -> B x.
-
-  Lemma subset_refl : forall A, subset A A.
-  Proof. by move => A s. Qed.
-
-  Lemma subset_trans : forall A B C, subset A B -> subset B C -> subset A C.
-  Proof. by  move => A B C HAB HBC s As; apply : HBC s (HAB s As). Qed.
-
-  Lemma subset_antisym : forall A B, subset A B -> subset B A -> A = B.
-  Proof.
-   move => A B HAB HBA; apply : funext => s; apply: propext;  split.
-   exact (HAB s).
-   exact (HBA s).
-  Qed.
-
-  (*An admissible subset is stable by f and contains the least upper bounds
-   of its subsets*)
-
-  Definition adm (B :set T) :=  (forall x , B x -> (B (f x)) ) /\
-                              (forall C : set T, subset C B -> total_on C R ->
-                                                 forall t, (sup C t -> B t)).
-  (* M is the intersection of all admissible subsets *)
-
-  Definition M := fun x => ( forall B,  adm B -> B x).
-
-  (* This is how we prove the existence of a fixpoint *)
-  Lemma fixpoint_tot M : adm M ->  (total_on M R) -> exists t,  t = f t.
-  Proof.
-   move => adM totM.
-   have idM : forall x,  M x -> M x  by [].
-   case : (R_strind  totM) => [t supt].
-   exists t.
-   pose Mt := (proj2 adM) M idM totM t supt.
-   pose ht :=  ((proj1 supt) ((f t))) ( (proj1 adM) t  Mt).
-   exact (R_antisym (f_incr t) ht) .
-  Qed.
-
-  Lemma stabM : forall x, M x -> M (f x).
-  Proof. move => x Mx B admB ;  exact ((proj1 admB) x  (Mx B admB)). Qed.
-
-  (*To prove that M is itself admissible, we must now show that it contains
-    the least upper bounds of its totally ordered subsets*)
-
-  Lemma BsubsetM : forall B, adm B -> subset M B. Proof.
-  by move => B admB x Mx ; apply : Mx B admB.
-  Qed.
-
-  Lemma adm_M : adm M.
-  Proof.
-  split.
-  - exact : stabM.
-  - move => C MC totC ; move : (R_strind totC) => [t tsupC] r rsupC.
-    rewrite (sup_uniq tsupC rsupC)  => B [f_B sup_int_B].
-    have BC : subset C B by  move => x Cx ; apply : (MC x Cx B).
-    exact : (sup_int_B C BC totC).
-  Qed.
-
- (* To prove totality of M we need a few lemmas*)
-
-  Definition extreme c :=  M c /\ (forall (x:T), M x -> ((x <> c) ->  R x c-> R (f x) c)).
-
-  Lemma extrM : subset extreme M.
-  Proof. by move => x extrx ; apply : proj1 extrx. Qed.
-
-  Definition extr_set c :=  fun x => (M x /\ ((R x c) \/ ( R (f c) x))).
-
-  Lemma subextrM (c :T) : extreme c -> subset (extr_set c) M.
-  Proof.
-   move =>  extrc x  extrcx ; exact (proj1 extrcx).
-  Qed.
-
-
-  Lemma MextrM c :  extreme c -> (forall x , M x -> extr_set c x).
-  Proof.
-  move =>  [Mc extrc].
-  have extrMc : extreme c. split ; first by exact : Mc.
-                          exact : extrc.
-  have extr_adm : adm (extr_set c).
-  split.
-  - move => x [Mx extrcx] ; case : (EM (x =c)).
-    - move => H ; split.
-      exact  (stabM  Mx).
-      by  right; rewrite H.
-    - move => neq_xc ; case : extrcx.
-       - move => Rxc ; split.
-          - exact : stabM.
-          - left ;   exact (extrc x Mx neq_xc   Rxc).
-          - move => Rfcx ; split.
-            - exact : stabM.
-            - right; exact : (R_trans  Rfcx (f_incr x)).
-   - move => C Cextrc totC t supCt.
-     split.
-     - exact: (proj2 adm_M C (subset_trans Cextrc ((subextrM extrMc) )) totC t supCt).
-     - case : (EM  (maj R C c)).
-       - move => H ; left ; exact : (proj2 supCt c H).
-       - move =>  /(neg_forall EM)-[s ps].
-         have [Cs nRsc] := neg_impl ps => {ps}. (*short*)
-         have lem : R (f c) s .
-         case : (EM (R ( f c) s )) ; first  by [].
-          case : (proj2  (Cextrc s Cs)).
-            - move =>  H ; pose bot := nRsc H; by [].
-            - by [].
-         right. exact : (R_trans lem (proj1 supCt s Cs)).
-  move => x mx. exact : ( mx (extr_set c) extr_adm).
-  Qed.
-
-
-  Lemma all_extr : forall c,  M c -> extreme c.
-  Proof.
-   have admE : adm extreme.
-    have f_E : forall c,  extreme c -> extreme ( f c ).
-      move => c  [Mc extrc]. split. by  apply : stabM.
-      have  extrec : extreme c. split. by []. by [].
-      move => x Mx neq_xfc.
-        case : (proj2 (MextrM extrec  Mx)).
-        case : (EM (x =c )).
-         - by  move => -> .
-         - move => neq_xc Rxc Rxfc ;
-                     exact ( R_trans (extrc x Mx neq_xc Rxc) (f_incr c)).
-         - by move => Rfcx Rxfc ; pose bot := (neq_xfc (R_antisym Rxfc Rfcx)).
-    have sup_E : (forall C , subset C extreme -> total_on C R ->
-                                    forall t, (sup C t -> extreme t)).
-      move => C subCE totC t supCt.
-      have Mt : M t
-        by apply : (proj2 adm_M) C (subset_trans subCE extrM) totC t supCt.
-      split. exact: Mt.
-        move => x Mx neq_xt Rxt.
-        case : (EM (forall c, C c -> R (f c) x )).
-         - move => H.
-           have lem : maj R C x. move => c Cc ; exact : ( R_trans (f_incr c) (H c Cc)).
-           by pose bot := neq_xt (R_antisym Rxt (proj2 supCt x lem)).
-         - move => /(neg_forall EM)-[c H1]. pose H2 := neg_impl H1.
-           move : H2 ; move => [Cc nRfcx] {H1}. (*short ?*)
-           have extrec : extreme c by apply :subCE c Cc.
-           case : (proj2 ( MextrM  extrec  Mx)).
-             - case : (EM (x =c)).
-               - move => eq_xc ; move : neq_xt ; rewrite eq_xc => neq_ct.
-                 move : extrec. rewrite -eq_xc  => extrx.
-                 case : (proj2 (MextrM extrx Mt)).
-                   - move : neq_ct; rewrite -eq_xc => neq_xt. (*short*)
-                     by move => Rtx; pose bot := neq_xt (R_antisym Rxt Rtx).
-                   - by [].
-               - move => neq_xc Rxc.
-                 exact : (R_trans ((proj2 extrec) x Mx neq_xc Rxc) (proj1 supCt c Cc)) .
-             - move => Rfcx ; by pose bot := nRfcx Rfcx.
-   split.
-     exact : f_E.
-     exact : sup_E.
-  by move => c Mc; exact : (Mc extreme admE).
-  Qed.
-
-
-  (*Now we can prove totality of R on M and conclude *)
-  Lemma tot_M : total_on M R.
-  Proof.
-   move => x y Mx My.
-   case :  (proj2 (MextrM (all_extr Mx) My)).
-     by  move => Ryx ; right.
-     by move => Rfxy ; left ;  apply :  R_trans (f_incr x) Rfxy.
-  Qed.
-
-
-  Lemma fixpoint : exists t,  t = f t.
-  Proof.
-   exact (fixpoint_tot adm_M tot_M).
-  Qed.
-
-
-End StrictInductiveFixpoint.
-
-
-
-Section Zorn.
-
-
- (*This proof of Zorn using the fixpoint theorem follows Lang, Algebra, Appendix 2*)
-  (* We first prove Zorn for strictly inductive sets*)
-
- Variable Choice_prop :  forall T U (P : T -> U -> Prop),
-     (forall t : T, exists u : U,  P t u) -> (exists e, forall t,  P t (e t)).
-
- Variable EM :  forall P, P \/ ~P.
-
- Lemma Zorn_strict : forall (T : Type) ( R : T -> T -> Prop),
-   (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) ->
-   (forall s t, R s t -> R t s -> s = t) ->
-   (forall A : set T, total_on A R -> exists t,
-         (maj R A t)/\(forall r, (maj R A r) -> R t r )) ->
-   exists t, forall s, R t s -> s = t.
- Proof.
-  move =>  T R Hrefl Htrans Hord Hchain.
-  case : (EM (exists t, forall s: T, R t s -> s= t)) ; first by [].
-  move => /neg_exists Habs.
-  have Hsucc :  (forall t, exists s, R t s /\ t <> s).
-    move => t.  case : (EM ( exists s : T, R t s /\ t <> s)) ; first by [].
-    move => /neg_exists H.
-    have lem : (forall s : T, R t s -> s=t).
-      move => s Rts. case : (EM (t=s)) ; first by [].
-      move => sneqt ; have lem2 : (R t s /\ t <> s) by split .
-      by  have bot := H s lem2.
-  by have bot := Habs t lem.
-  case : (Choice_prop Hsucc) => {Hsucc} f Hf ; have Hmaj := fun a => proj1 (Hf a).
-   pose Hfix := fixpoint EM Hmaj Hrefl Htrans Hord Hchain.
-   case : Hfix => t hfix.
-     by have bot := (proj2 (Hf t) hfix ).
- Qed.
-
-
-
- (*Then we deduce the more general Zorn Lemma for orders.
-  This is done by applying Zorn_strict to the totally ordered subsets of T
-  ordered by inculsion *)
-
-
- Variable ( T : Type) ( R : T -> T -> Prop).
-
- Record tot_subset : Type := Tot_subset
-                              {car : set T ; tot : total_on car R}.
-
- Lemma tot_subset_eq U1 U2 : car U1 = car U2 -> U1 = U2.
- Proof.
-  case: U1 => m1 pm1; case: U2 => m2 pm2 /= e;
-                                    move: pm1 pm2; rewrite e => pm1 pm2.
- by congr Tot_subset; apply: Prop_irrelevance.
- Qed.
-
-
-
- Definition subsett ( C D : tot_subset) := subset (car C) (car D).
-
- Lemma  Zorn :
-   (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) ->
-   (forall s t, R s t -> R t s -> s = t) ->
-   (forall A : set T, total_on A R -> exists t, forall s, A s -> R s t) ->
-   exists t, forall s, R t s -> s = t.
- Proof.
- move => Rrefl Rtrans Rantis Rind.
- have subset_strict_ind :  (forall W : set (tot_subset), total_on W subsett ->
-     exists A, (maj subsett W A)/\(forall B, (maj subsett W B) -> subsett A B )).
-  move => W Htot.
-  pose U := fun (t : T) => exists A, (W A) /\ (car A t).
-  have tot_U : total_on U R.
-   move => t s [[cAt tot_At] [Wt ct]] [[cAs tot_As] [Ws cs]].
-   case:  (Htot (Tot_subset tot_At) (Tot_subset tot_As) Wt Ws).
-     by  move => Ats ; exact (tot_As  t s  (Ats t ct) cs).
-     by  move => Ast ;  rewrite or_comm ;  exact  (tot_At s t (Ast s cs) ct).
-  pose Utot := Tot_subset tot_U.
-  have UsupW : (maj subsett W Utot)/\
-               (forall B, (maj subsett W B) -> subsett Utot B).
-    split ; first  by  move => B WB tB ctB //= ; exists B ; split.
-    move => B majWB t //= [A [ ]] WA cAt ; exact (majWB A WA t cAt).
-  by  exists Utot.
- have subsett_maj : exists (A : tot_subset),
-                    forall (B : tot_subset), subsett A B -> B = A.
- apply : Zorn_strict.
-  by move => t; apply : subset_refl.
-  by move => r s t ; apply : subset_trans.
-  by move => s t Hst Hts ; apply : tot_subset_eq ; apply : subset_antisym.
-  exact : subset_strict_ind.
- case : subsett_maj => [[cA PA]] majA.
- pose tot_A := Tot_subset PA.
- (*we want to handle A as a subset and as a totally ordered subset *)
- case : (Rind cA PA) => t t_maj.
- exists t ; move => s Rts.
- pose B := fun u => (cA u)\/(u=s).
- have lem : total_on B R.
-  move => u v Bu Bv ; case : Bv; case :  Bu.
-    exact :  PA.
-    by move => -> Av ; right ; apply :  Rtrans v t s (t_maj v Av) Rts.
-    by move => Au -> ; left ; apply : Rtrans u t s (t_maj u Au) Rts.
-    by move => -> -> ; left ;apply : Rrefl s.
- pose tot_B := Tot_subset lem.
- have HAB : subsett tot_A tot_B by move => u Au ; left.
- have eq_A_B : tot_B = tot_A  by apply : majA tot_B HAB.
- have eqc_A_B : cA = B.
-  have lem1 : B = car (tot_B) by [] ; rewrite lem1.
-  have lem2 : cA = car (tot_A) by [] ; rewrite lem2 .
-  by rewrite eq_A_B  => {lem1} {lem2}.
- have As : cA s.
-   have Bs : B s by right .
-   by rewrite eqc_A_B.
- exact : Rantis s t (t_maj s As) Rts.
-Qed.
-
-End Zorn.
-
-
-
-
 
 
 Section OrderRels.
@@ -559,7 +65,7 @@ Section OrderRels.
 
  Variables (R : numDomainType) (V : lmodType R).
 
- Definition convex (p : V -> R) :=  forall v1 v2 l m,
+ Definition convex_fun (p : V -> R) :=  forall v1 v2 l m,
    ( 0 <= l /\ 0 <= m) ->  l + m = 1 -> p (l *: v1 + m *: v2) <= l * (p v1) + m * (p v2).
 
  Definition linear_rel (f : V -> R -> Prop) :=
@@ -598,8 +104,6 @@ Section OrderRels.
 
  Section HBPreparation.
 
- Variable EM : forall P, P \/ ~ P.
-
  Variable Choice_prop :  forall T U (P : T -> U -> Prop),
      (forall t : T, exists u : U,  P t u) -> (exists e, forall t,  P t (e t)).
 
@@ -620,7 +124,7 @@ have -> : 0 = 0 + (-1) *: 0 :> V by rewrite scaler0 addr0.
 by rewrite linphiF // mulN1r addrN.
 Qed.
 
- Hypothesis p_cvx : convex p.
+ Hypothesis p_cvx : convex_fun p.
 
  Hypothesis sup : forall (A : set R) (a m : R),
      A a -> ubd A m ->
@@ -651,38 +155,36 @@ Qed.
  by congr ZornType; apply: Prop_irrelevance.
  Qed.
 
- Definition zorn_rel (z1 z2 : zorn_type) := extends (carrier z1) (carrier z2).
-
- Lemma zorn_rel_refl z : zorn_rel z z.
- Proof. rewrite /zorn_rel. exact: extends_refl. Qed.
-
- Lemma zorn_rel_trans z1 z2 z3 :
-   zorn_rel z1 z2 -> zorn_rel z2 z3 -> zorn_rel z1 z3.
- Proof. rewrite /zorn_rel; exact: extends_trans. Qed.
-
- Lemma zorn_rel_antisym z1 z2 : zorn_rel z1 z2 -> zorn_rel z2 z1 -> z1 = z2.
+  Definition zorn_rel (z1 z2 : zorn_type):= forall x y, (carrier z1 x y) ->  (carrier z2 x y ). 
+ 
+ (* Zorn applied to the relation of extending the graph of the first function *)
+ Lemma zorn_rel_ex : exists g : zorn_type, forall z, zorn_rel g z -> z = g.
  Proof.
- rewrite /zorn_rel /= => s12 s21; apply: zorn_type_eq; exact: extends_antisym.
- Qed.
-
- Lemma zorn_rel_maj (A : set zorn_type) : total_on A zorn_rel ->
-    exists t, forall s, A s -> zorn_rel s t.
- Proof.
- move=> htot.
- case: (EM (exists a, A a)) => [[w Aw] | eA]; last first.
+ pose Rbool := (fun x y => `[< zorn_rel x y >]).
+ have RboolP : forall z t, Rbool z t <-> zorn_rel z t by split; move => /asboolP //=. 
+ suff [t st]:  exists t : zorn_type, forall s : zorn_type, Rbool t s -> s = t. 
+    by exists t;  move => z /RboolP tz; apply: st. 
+         apply: (@Zorn zorn_type Rbool).
+ - by move => t; apply/RboolP. 
+ - by move => r s t /RboolP  a /RboolP  b; apply/RboolP => x y /a /b. 
+ - move => r s /RboolP a /RboolP b; apply: zorn_type_eq.
+   by apply: funext => z; apply: funext => h;apply: propext; split => [/a | /b]. 
+ - move => A Amax.
+ case: (lem (exists a, A a)) => [[w Aw] | eA]; last first.
    by exists zphi => a Aa; elim: eA; exists a.
  (* g is the union of the graphs indexed by elements in a *)
  pose g v r := exists a, A a /\ (carrier a v r).
  have g_fun : functional g.
    move=> v r1 r2 [a [Aa avr1]] [b [Ab bvr2]].
-   have [] : zorn_rel a b \/ zorn_rel b a by exact: htot.
-   - rewrite /zorn_rel; case: b Ab bvr2 {Aa} => s2 [fs2 _ _ _] /= _ s2vr2 ecas2.
+   have [] : Rbool a b \/ Rbool b a by exact: Amax.
+      - rewrite /Rbool /RboolP /zorn_rel; case: b Ab bvr2 {Aa}.
+        move => s2 [fs2 _ _ _] /= _ s2vr2 /asboolP ecas2.
      by move/ecas2: avr1 => /fs2 /(_ s2vr2).
-   - rewrite /zorn_rel; case: a Aa avr1 {Ab} => s1 [fs1 _ _ _] /= _ s1vr1 ecbs1.
+   - rewrite /Rbool /RboolP  /zorn_rel; case: a Aa avr1 {Ab} => s1 [fs1 _ _ _] /= _ s1vr1 /asboolP ecbs1.
      by move/ecbs1: bvr2; apply: fs1.
  have g_lin : linear_rel g.
-   move=> v1 v2 l r1 r2 [a1 [Aa1 c1]] [a2 [Aa2 c2]].
-   have [sc12 | sc21] := htot _ _ Aa1 Aa2.
+   move=> v1 v2 l r1 r2 [a1 [Aa1 c1]] [a2 [Aa2 c2]]. 
+   have [/RboolP sc12 | /RboolP sc21] := Amax _ _ Aa1 Aa2.
    - have {c1 sc12 Aa1 a1} c1 :  carrier a2 v1 r1 by apply: sc12.
      exists a2; split=> //; case: a2 {Aa2} c2 c1 => c /= [_ hl _ _] *; exact: hl.
    - have {c2 sc21 Aa2 a2} c2 :  carrier a1 v2 r2 by apply: sc21.
@@ -692,20 +194,10 @@ Qed.
    move=> *; exists w; split=> //; case: w Aw => [c [_ _ _ hp]] _ //=; exact: hp.
  have spec_g : spec g by split.
  pose zg := ZornType spec_g.
- by exists zg => [a Aa]; rewrite /zorn_rel /= => v r cvr; exists a.
- Qed.
+ by  exists zg => [a Aa]; apply/RboolP; rewrite /zorn_rel  => v r cvr; exists a.
+ Qed. 
 
- Lemma zorn_rel_ex : exists g : zorn_type, forall z, zorn_rel g z -> z = g.
- Proof.
- apply: Zorn.
- - exact : Choice_prop.
- - exact : EM.
- - exact: zorn_rel_refl.
- - exact: zorn_rel_trans.
- - exact: zorn_rel_antisym.
- - exact: zorn_rel_maj.
- Qed.
-
+ 
  Variable g : zorn_type.
 
  Hypothesis gP : forall z, zorn_rel g z -> z = g.
@@ -716,7 +208,7 @@ Qed.
  Lemma domain_extend  (z : zorn_type) v :
      exists2 ze : zorn_type, (zorn_rel z ze) & (exists r, (carrier ze)  v r).
  Proof.
- case: (EM (exists r, (carrier z v r))).
+ case: (lem (exists r, (carrier z v r))).
    by case=> r rP; exists z => //; exists r.
  case: z => [c [fs1 ls1 ms1 ps1]] /= nzv.
  have c00 : c 0 0.
@@ -790,7 +282,7 @@ Qed.
          by rewrite lerBlDl -lerBlDr mulrC.
        by apply: le_trans le_sa_alpha; apply: ubdP; exists x; exists r; exists l.
  pose z' := add_line c v a.
- have z'_extends :  extends c z'.
+ have z'_extends :  forall v r, c v r -> z' v r.
    move=> x r cxr; exists x; exists r; exists 0; split=> //.
    - by rewrite scale0r addr0.
    - by rewrite mul0r addr0.
@@ -848,24 +340,24 @@ by have -> // := fg v r (h v).
 Qed.
 
 
-End HBPreparation.
+ End HBPreparation.
 
 
-Section HahnBanach.
+ Section HahnBanachold.
 (* Now we prove HahnBanach on functions*)
 (* We consider R a real (=ordered) field with supremum, and V a (left) module
    on R. We do not make use of the 'vector' interface as the latter enforces
    finite dimension. *)
-Variable EM : forall P,  P \/ ~P.
+  
 
 Variable Choice_prop :  forall T U (P : T -> U -> Prop),
      (forall t : T, exists u : U,  P t u) -> (exists e, forall t,  P t (e t)).
-
+  
 Variables (R : realFieldType) (V : lmodType R).
 
 Hypothesis sup : forall (A : set R) (a m : R),
     A a -> ubd A m ->
-    {s : R | ubd A s /\ forall u, ubd A u -> s <= u}.
+    {s : R | ubd A s /\ forall u, ubd A u -> s <= u}. 
 
 (* This could be obtained from sup but we are lazy here *)
 Hypothesis inf : forall (A : set R) (a m : R),
@@ -881,17 +373,17 @@ Variables (F G : pred V) (f : V -> R) (p : V -> R).
 Hypothesis F0 : F 0.
 Hypothesis linF : forall v1 v2 l, F v1 -> F v2 -> F (v1 + l *: v2).
 
-Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 ->
+Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 -> 
                               f (v1 + l *: v2) = f v1 + l * (f v2).
 
 (* In fact we do not need G to be a superset of F *)
 (* Hypothesis sFG : subpred F G. *)
 
-Hypothesis p_cvx : convex p.
+Hypothesis p_cvx : convex_fun p.
 
 Hypothesis f_bounded_by_p : forall x, F x -> f x <= p x.
 
-Theorem HahnBanach : exists g : {scalar V},
+Theorem HahnBanachold : exists g : {scalar V}, 
   (forall x,  g x <= p x) /\ (forall x, F x -> g x = f x).
 pose graphF v r := F v /\ r = f v.
 have func_graphF : functional graphF by move=> v r1 r2 [Fv ->] [_ ->].
@@ -902,10 +394,10 @@ have maj_graphF : maj_by p graphF by move=> v r [Fv ->]; exact: f_bounded_by_p.
 
 have prol_graphF : prol F f graphF by move=> v Fv; split.
 have graphFP : spec F f p graphF by split.
-have [z zmax]:= zorn_rel_ex EM Choice_prop graphFP.
+have [z zmax]:= zorn_rel_ex graphFP.
 pose FP v : Prop := F v.
 have FP0 : FP 0 by [].
-have [g gP]:= hb_witness EM Choice_prop linfF FP0 p_cvx sup inf zmax.
+have [g gP]:= hb_witness Choice_prop linfF FP0 p_cvx sup inf zmax.
 have scalg : linear_for *%R g.
   case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
   have addg : additive g.
@@ -932,11 +424,80 @@ have grxtf v : F v -> g v = f v.
     by  case: z {zmax} gP => [c [_ _ bp _]] /= gP; apply/bp/gP.
 Qed.
 
-End HahnBanach.
+End HahnBanachold.
 
-From mathcomp Require Import filter reals normedtype.
-Import numFieldNormedType.Exports.
-Local Open Scope classical_set_scope.
+ 
+
+Section HahnBanachnew.
+(* Now we prove HahnBanach on functions*)
+(* We consider R a real (=ordered) field with supremum, and V a (left) module
+   on R. We do not make use of the 'vector' interface as the latter enforces
+   finite dimension. *)
+
+Variable Choice_prop :  forall T U (P : T -> U -> Prop),
+     (forall t : T, exists u : U,  P t u) -> (exists e, forall t,  P t (e t)).
+
+Variables (R : realFieldType) (V : lmodType R).
+
+Hypothesis sup : forall (A : set R) (a m : R),
+    A a -> ubd A m ->
+    {s : R | ubd A s /\ forall u, ubd A u -> s <= u}.
+
+(* This could be obtained from sup but we are lazy here *)
+Hypothesis inf : forall (A : set R) (a m : R),
+    A a ->  ibd A m ->
+    {s : R | ibd A s /\ forall u, ibd A u -> u <= s}.
+
+Variables (F : subLmodType V) (f : {linear F -> R}) (p : V -> R).
+
+Hypothesis p_cvx : convex_fun p.
+
+Hypothesis f_bounded_by_p : forall x : F,  (f x) <= (p (val x)).
+
+Theorem newHahnBanach : exists g : {scalar V},
+  (forall x,  g x <= p x) /\ (forall x, F x -> g (val x) = f x).
+pose graphF v r :=  r = f v.
+have graphFP: spec [set: F] f (fun z => p (val z)) graphF. split => //=.
+ - by move=> v r1 r2  [->] [ ->]. 
+ - by move=> v1 v2 l r1 r2; rewrite /graphF => -> -> ;rewrite !linearE. 
+   by  move=> v r [->].
+(*   
+have [z zmax]:= zorn_rel_ex graphFP.
+(*   z : zorn_type (fun x : V => F x) f p
+  zmax : forall z0 : zorn_type (fun x : V => F x) f p, zorn_rel z z0 -> z0 = z
+*)
+pose FP v : Prop := F v.
+have FP0 : FP 0 by [].
+have [g gP]:= hb_witness Choice_prop linfF FP0 p_cvx sup inf zmax.
+have scalg : linear_for *%R g.
+  case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
+  have addg : additive g.
+     move=> w1 w2;  apply/gP.
+     apply: linrel_add.
+     exact ls1.
+     by apply /gP.
+     by apply /gP.
+  suff scalg : scalable_for  *%R g.
+    move=> a u v.
+    rewrite -gP.
+    rewrite (addrC _ v).
+    rewrite (addrC _ (g v)).
+    apply: ls1.
+    by apply /gP.
+    by apply /gP.
+  by move=> w l; apply/gP; apply: linrel_scale=> //; apply/gP.
+pose H := GRing.isLinear.Build _ _ _ _ g scalg.
+pose g' : {linear V -> R | *%R} := HB.pack g H.
+exists g'.
+have grxtf v : F v -> g v = f v.
+  move=> Fv; apply/gP; case: z {zmax gP} => [c [_ _ _ pf]] /=; exact: pf.
+  suff pmajg v :  g v <= p v by split.
+    by  case: z {zmax} gP => [c [_ _ bp _]] /= gP; apply/bp/gP.
+Qed.
+ *)
+Admitted.
+End HahnBanachnew.
+
 
 Section HBGeom.
 Variable (R : realType) (V : normedModType R) (F : pred V) (f : V -> R) (F0 : F 0).
@@ -972,7 +533,7 @@ Proof.
   rewrite -nbhs_nearE => H0 {H} ; move : (nbhs_ex H0) => [tp H] {H0}.
   (*pose t := tp%:num .  *)
   exists (2*(tp%:num)^-1). split=> //.
-  move=> x. case:  (boolp.EM (x=0)).
+  move=> x. case:  (lem (x=0)).
   - by move=> ->; rewrite f0 normr0 normr0 //= mul0r.
   - move/eqP=> xneq0 Fx.
   pose a : V := (`|x|^-1 * (tp%:num)/2 ) *: x.
@@ -1027,7 +588,7 @@ Lemma mymyinf : forall (A : set R) (a m : R),
 Qed.
 
 Notation myHB :=
-  (HahnBanach (boolp.EM) Choice_prop mymysup mymyinf F0 linF linfF).
+  (HahnBanachold Choice_prop mymysup mymyinf F0 linF linfF).
 
 Theorem HB_geom_normed :
   continuousR_on_at F 0 f ->
@@ -1035,7 +596,7 @@ Theorem HB_geom_normed :
 Proof.
   move=> H; move: (continuousR_scalar_on_bounded H) => [r [ltr0 fxrx]] {H}.
   pose p:= fun x : V => `|x|*r.
- have convp: hahn_banach_theorem.convex p.
+ have convp: convex_fun p.
    move=> v1 v2 l m [lt0l lt0m] addlm1 //= ; rewrite !/( p _) !mulrA -mulrDl.
    suff: `|l *: v1 + m *: v2|  <= (l * `|v1| + m * `|v2|).
      move => h; apply : ler_pM; last by [].
