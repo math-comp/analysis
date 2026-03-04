@@ -227,12 +227,13 @@
       <p><a href="./index.html">Top</a></p>
       <h1 class="title">Module mathcomp.experimental_reals.discrete</h1>
 <br/>
-<span class="vernacular">From</span><span class="id"> Corelib</span><span class="vernacular"> Require</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Setoids.Setoid.html">Setoid</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> Coq</span><span class="vernacular"> Require</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.0.0/stdlib/Stdlib.Setoids.Setoid.html">Setoid</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> HB</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for HB.structures">structures</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_ssreflect_compat.html">all_ssreflect_compat</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.all_algebra.html">all_algebra</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span>.<span class="id">classical</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html">boolp</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.xfinmap.html">xfinmap</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html">reals</a></span>.<br/>
 <br/>
+<span class="gallina-kwd">Set</span>  <span class="id"> SsrOldRewriteGoalsOrder</span>.  <br/>
 <span class="gallina-kwd">Set</span>  <span class="vernacular"> Implicit</span><span class="vernacular"> Arguments</span>.<br/>
 <span class="vernacular">Unset</span><span class="vernacular"> Strict</span><span class="vernacular"> Implicit</span>.<br/>
 <span class="vernacular">Unset</span><span class="vernacular"> Printing</span><span class="vernacular"> Implicit</span><span class="vernacular"> Defensive</span>.<br/>
@@ -255,7 +256,7 @@ Arguments existsTP {T} P%_function_scope
 existsTP is opaque
 Expands to: Constant mathcomp.experimental_reals.discrete.existsTP
 Declared in
-library mathcomp.experimental_reals.discrete, line 27, characters 6-14
+library mathcomp.experimental_reals.discrete, line 28, characters 6-14
 ">existsTP</a></span> (<span id="P:2" class="id"><a name="P:2" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#ProofIrrelevantChoice.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> Prop</span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562">{</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562"> </a></span><span id="x:3" class="id"><a name="x:3" class="">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#ProofIrrelevantChoice.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562"> |</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#P:2">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#x:3">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#6556914db359db999889decec6a4a562"> }</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e03f39daf98516fa530d3f6f5a1b4d92"> +</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:4" class="id"><a name="x:4" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181">~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#P:2">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#x:4">x</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -284,7 +285,7 @@ discrete_pred_sub__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubType
 Declared in
-library mathcomp.experimental_reals.discrete, line 45, characters 0-46
+library mathcomp.experimental_reals.discrete, line 46, characters 0-46
 ">HB</a></span></span>.<span id="discrete_pred_sub__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="discrete_pred_sub__canonical__eqtype_SubType" class="" title="discrete_pred_sub__canonical__eqtype_SubType :
 forall [T : Type] (E : pred T), subType (T:=T) (in_mem^~ (mem E))
 
@@ -294,7 +295,7 @@ discrete_pred_sub__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubType
 Declared in
-library mathcomp.experimental_reals.discrete, line 45, characters 0-46
+library mathcomp.experimental_reals.discrete, line 46, characters 0-46
 ">instance</a></span></span><span class="vernacular"> Definition</span><span id="discrete_pred_sub__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="discrete_pred_sub__canonical__eqtype_SubType" class="" title="discrete_pred_sub__canonical__eqtype_SubType :
 forall [T : Type] (E : pred T), subType (T:=T) (in_mem^~ (mem E))
 
@@ -304,7 +305,7 @@ discrete_pred_sub__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubType
 Declared in
-library mathcomp.experimental_reals.discrete, line 45, characters 0-46
+library mathcomp.experimental_reals.discrete, line 46, characters 0-46
 "> _</a></span></span><span id="discrete_pred_sub__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="discrete_pred_sub__canonical__eqtype_SubType" class="" title="discrete_pred_sub__canonical__eqtype_SubType :
 forall [T : Type] (E : pred T), subType (T:=T) (in_mem^~ (mem E))
 
@@ -314,7 +315,7 @@ discrete_pred_sub__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubType
 Declared in
-library mathcomp.experimental_reals.discrete, line 45, characters 0-46
+library mathcomp.experimental_reals.discrete, line 46, characters 0-46
 "> :=</a></span></span><span id="discrete_pred_sub__canonical__eqtype_SubType" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="discrete_pred_sub__canonical__eqtype_SubType" class="" title="discrete_pred_sub__canonical__eqtype_SubType :
 forall [T : Type] (E : pred T), subType (T:=T) (in_mem^~ (mem E))
 
@@ -324,7 +325,7 @@ discrete_pred_sub__canonical__eqtype_SubType is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubType
 Declared in
-library mathcomp.experimental_reals.discrete, line 45, characters 0-46
+library mathcomp.experimental_reals.discrete, line 46, characters 0-46
 "> [isSub</a></span></span><span class="gallina-kwd"> for</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#2da1a13c2d8418cd34c731e37f154fe7"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#rsval">rsval</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#2da1a13c2d8418cd34c731e37f154fe7">]</a></span>.<br/>
 <span class="vernacular">End</span><span class="id"> Def</span>.<br/>
 <br/>
@@ -337,7 +338,7 @@ discrete_pred_sub__canonical__eqtype_SubEquality is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubEquality
 Declared in
-library mathcomp.experimental_reals.discrete, line 48, characters 0-87
+library mathcomp.experimental_reals.discrete, line 49, characters 0-87
 ">HB</a></span></span></span></span></span></span></span>.<span id="discrete_pred_sub__canonical__eqtype_SubEquality" class="id"><span id="discrete_pred_sub__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="eqtype_Equality__to__eqtype_hasDecEq" class="id"><span id="HB_unnamed_factory_4" class="id"><span id="PredSubtype.hb_instance_3.E" class="id"><span id="PredSubtype.hb_instance_3.T" class="id"><a name="discrete_pred_sub__canonical__eqtype_SubEquality" class="" title="discrete_pred_sub__canonical__eqtype_SubEquality :
 forall [T : eqType] (E : pred T), subEqType (T:=T) (in_mem^~ (mem E))
 
@@ -347,7 +348,7 @@ discrete_pred_sub__canonical__eqtype_SubEquality is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubEquality
 Declared in
-library mathcomp.experimental_reals.discrete, line 48, characters 0-87
+library mathcomp.experimental_reals.discrete, line 49, characters 0-87
 ">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="discrete_pred_sub__canonical__eqtype_SubEquality" class="id"><span id="discrete_pred_sub__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="eqtype_Equality__to__eqtype_hasDecEq" class="id"><span id="HB_unnamed_factory_4" class="id"><span id="PredSubtype.hb_instance_3.E" class="id"><span id="PredSubtype.hb_instance_3.T" class="id"><a name="discrete_pred_sub__canonical__eqtype_SubEquality" class="" title="discrete_pred_sub__canonical__eqtype_SubEquality :
 forall [T : eqType] (E : pred T), subEqType (T:=T) (in_mem^~ (mem E))
 
@@ -357,7 +358,7 @@ discrete_pred_sub__canonical__eqtype_SubEquality is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubEquality
 Declared in
-library mathcomp.experimental_reals.discrete, line 48, characters 0-87
+library mathcomp.experimental_reals.discrete, line 49, characters 0-87
 "> _</a></span></span></span></span></span></span></span> (<span id="discrete_pred_sub__canonical__eqtype_SubEquality" class="id"><span id="discrete_pred_sub__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="eqtype_Equality__to__eqtype_hasDecEq" class="id"><span id="HB_unnamed_factory_4" class="id"><span id="PredSubtype.hb_instance_3.E" class="id"><span id="PredSubtype.hb_instance_3.T" class="id"><a name="discrete_pred_sub__canonical__eqtype_SubEquality" class="" title="discrete_pred_sub__canonical__eqtype_SubEquality :
 forall [T : eqType] (E : pred T), subEqType (T:=T) (in_mem^~ (mem E))
 
@@ -367,7 +368,7 @@ discrete_pred_sub__canonical__eqtype_SubEquality is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubEquality
 Declared in
-library mathcomp.experimental_reals.discrete, line 48, characters 0-87
+library mathcomp.experimental_reals.discrete, line 49, characters 0-87
 ">T</a></span></span></span></span></span></span></span><span id="discrete_pred_sub__canonical__eqtype_SubEquality" class="id"><span id="discrete_pred_sub__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="eqtype_Equality__to__eqtype_hasDecEq" class="id"><span id="HB_unnamed_factory_4" class="id"><span id="PredSubtype.hb_instance_3.E" class="id"><span id="PredSubtype.hb_instance_3.T" class="id"><a name="discrete_pred_sub__canonical__eqtype_SubEquality" class="" title="discrete_pred_sub__canonical__eqtype_SubEquality :
 forall [T : eqType] (E : pred T), subEqType (T:=T) (in_mem^~ (mem E))
 
@@ -377,7 +378,7 @@ discrete_pred_sub__canonical__eqtype_SubEquality is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubEquality
 Declared in
-library mathcomp.experimental_reals.discrete, line 48, characters 0-87
+library mathcomp.experimental_reals.discrete, line 49, characters 0-87
 "> :</a></span></span></span></span></span></span></span><span id="discrete_pred_sub__canonical__eqtype_SubEquality" class="id"><span id="discrete_pred_sub__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_6" class="id"><span id="eqtype_Equality__to__eqtype_hasDecEq" class="id"><span id="HB_unnamed_factory_4" class="id"><span id="PredSubtype.hb_instance_3.E" class="id"><span id="PredSubtype.hb_instance_3.T" class="id"><a name="discrete_pred_sub__canonical__eqtype_SubEquality" class="" title="discrete_pred_sub__canonical__eqtype_SubEquality :
 forall [T : eqType] (E : pred T), subEqType (T:=T) (in_mem^~ (mem E))
 
@@ -387,7 +388,7 @@ discrete_pred_sub__canonical__eqtype_SubEquality is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__eqtype_SubEquality
 Declared in
-library mathcomp.experimental_reals.discrete, line 48, characters 0-87
+library mathcomp.experimental_reals.discrete, line 49, characters 0-87
 "> eqType</a></span></span></span></span></span></span></span>) (<span class="id">E</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#T:15">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#01c2ad26def07bb4e4d163988edce587">[Equality</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#01c2ad26def07bb4e4d163988edce587"> of</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#01c2ad26def07bb4e4d163988edce587"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#pred_sub">pred_sub</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#E:16">E</a></span><span class="gallina-kwd"> by</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#01c2ad26def07bb4e4d163988edce587"> &lt;:]</a></span>.<br/>
 <br/>
@@ -400,7 +401,7 @@ discrete_pred_sub__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__choice_SubChoice
 Declared in
-library mathcomp.experimental_reals.discrete, line 51, characters 0-89
+library mathcomp.experimental_reals.discrete, line 52, characters 0-89
 ">HB</a></span></span></span></span></span></span></span></span>.<span id="discrete_pred_sub__canonical__choice_SubChoice" class="id"><span id="discrete_pred_sub__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_8" class="id"><span id="PredSubtype.hb_instance_7.E" class="id"><span id="PredSubtype.hb_instance_7.T" class="id"><a name="discrete_pred_sub__canonical__choice_SubChoice" class="" title="discrete_pred_sub__canonical__choice_SubChoice :
 forall [T : choiceType] (E : pred T), subChoiceType (T:=T) (in_mem^~ (mem E))
 
@@ -410,7 +411,7 @@ discrete_pred_sub__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__choice_SubChoice
 Declared in
-library mathcomp.experimental_reals.discrete, line 51, characters 0-89
+library mathcomp.experimental_reals.discrete, line 52, characters 0-89
 ">instance</a></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="discrete_pred_sub__canonical__choice_SubChoice" class="id"><span id="discrete_pred_sub__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_8" class="id"><span id="PredSubtype.hb_instance_7.E" class="id"><span id="PredSubtype.hb_instance_7.T" class="id"><a name="discrete_pred_sub__canonical__choice_SubChoice" class="" title="discrete_pred_sub__canonical__choice_SubChoice :
 forall [T : choiceType] (E : pred T), subChoiceType (T:=T) (in_mem^~ (mem E))
 
@@ -420,7 +421,7 @@ discrete_pred_sub__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__choice_SubChoice
 Declared in
-library mathcomp.experimental_reals.discrete, line 51, characters 0-89
+library mathcomp.experimental_reals.discrete, line 52, characters 0-89
 "> _</a></span></span></span></span></span></span></span></span> (<span id="discrete_pred_sub__canonical__choice_SubChoice" class="id"><span id="discrete_pred_sub__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_8" class="id"><span id="PredSubtype.hb_instance_7.E" class="id"><span id="PredSubtype.hb_instance_7.T" class="id"><a name="discrete_pred_sub__canonical__choice_SubChoice" class="" title="discrete_pred_sub__canonical__choice_SubChoice :
 forall [T : choiceType] (E : pred T), subChoiceType (T:=T) (in_mem^~ (mem E))
 
@@ -430,7 +431,7 @@ discrete_pred_sub__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__choice_SubChoice
 Declared in
-library mathcomp.experimental_reals.discrete, line 51, characters 0-89
+library mathcomp.experimental_reals.discrete, line 52, characters 0-89
 ">T</a></span></span></span></span></span></span></span></span><span id="discrete_pred_sub__canonical__choice_SubChoice" class="id"><span id="discrete_pred_sub__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_8" class="id"><span id="PredSubtype.hb_instance_7.E" class="id"><span id="PredSubtype.hb_instance_7.T" class="id"><a name="discrete_pred_sub__canonical__choice_SubChoice" class="" title="discrete_pred_sub__canonical__choice_SubChoice :
 forall [T : choiceType] (E : pred T), subChoiceType (T:=T) (in_mem^~ (mem E))
 
@@ -440,7 +441,7 @@ discrete_pred_sub__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__choice_SubChoice
 Declared in
-library mathcomp.experimental_reals.discrete, line 51, characters 0-89
+library mathcomp.experimental_reals.discrete, line 52, characters 0-89
 "> :</a></span></span></span></span></span></span></span></span><span id="discrete_pred_sub__canonical__choice_SubChoice" class="id"><span id="discrete_pred_sub__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_11" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_8" class="id"><span id="PredSubtype.hb_instance_7.E" class="id"><span id="PredSubtype.hb_instance_7.T" class="id"><a name="discrete_pred_sub__canonical__choice_SubChoice" class="" title="discrete_pred_sub__canonical__choice_SubChoice :
 forall [T : choiceType] (E : pred T), subChoiceType (T:=T) (in_mem^~ (mem E))
 
@@ -450,7 +451,7 @@ discrete_pred_sub__canonical__choice_SubChoice is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__choice_SubChoice
 Declared in
-library mathcomp.experimental_reals.discrete, line 51, characters 0-89
+library mathcomp.experimental_reals.discrete, line 52, characters 0-89
 "> choiceType</a></span></span></span></span></span></span></span></span>) (<span class="id">E</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#T:17">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#66b07d305ccef05249d819a7d15ac0a1">[Choice</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#66b07d305ccef05249d819a7d15ac0a1"> of</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#66b07d305ccef05249d819a7d15ac0a1"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#pred_sub">pred_sub</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#E:18">E</a></span><span class="gallina-kwd"> by</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#66b07d305ccef05249d819a7d15ac0a1"> &lt;:]</a></span>.<br/>
 <br/>
@@ -463,7 +464,7 @@ discrete_pred_sub__canonical__choice_SubCountable is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__choice_SubCountable
 Declared in
-library mathcomp.experimental_reals.discrete, line 54, characters 0-91
+library mathcomp.experimental_reals.discrete, line 55, characters 0-91
 ">HB</a></span></span></span></span></span></span></span></span></span>.<span id="discrete_pred_sub__canonical__choice_SubCountable" class="id"><span id="discrete_pred_sub__canonical__choice_Countable" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="choice_Countable__to__choice_Choice_isCountable" class="id"><span id="choice_Countable__to__eqtype_hasDecEq" class="id"><span id="choice_Countable__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_13" class="id"><span id="PredSubtype.hb_instance_12.E" class="id"><span id="PredSubtype.hb_instance_12.T" class="id"><a name="discrete_pred_sub__canonical__choice_SubCountable" class="" title="discrete_pred_sub__canonical__choice_SubCountable :
 forall [T : countType] (E : pred T), subCountType (T:=T) (in_mem^~ (mem E))
 
@@ -473,7 +474,7 @@ discrete_pred_sub__canonical__choice_SubCountable is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__choice_SubCountable
 Declared in
-library mathcomp.experimental_reals.discrete, line 54, characters 0-91
+library mathcomp.experimental_reals.discrete, line 55, characters 0-91
 ">instance</a></span></span></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="discrete_pred_sub__canonical__choice_SubCountable" class="id"><span id="discrete_pred_sub__canonical__choice_Countable" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="choice_Countable__to__choice_Choice_isCountable" class="id"><span id="choice_Countable__to__eqtype_hasDecEq" class="id"><span id="choice_Countable__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_13" class="id"><span id="PredSubtype.hb_instance_12.E" class="id"><span id="PredSubtype.hb_instance_12.T" class="id"><a name="discrete_pred_sub__canonical__choice_SubCountable" class="" title="discrete_pred_sub__canonical__choice_SubCountable :
 forall [T : countType] (E : pred T), subCountType (T:=T) (in_mem^~ (mem E))
 
@@ -483,7 +484,7 @@ discrete_pred_sub__canonical__choice_SubCountable is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__choice_SubCountable
 Declared in
-library mathcomp.experimental_reals.discrete, line 54, characters 0-91
+library mathcomp.experimental_reals.discrete, line 55, characters 0-91
 "> _</a></span></span></span></span></span></span></span></span></span> (<span id="discrete_pred_sub__canonical__choice_SubCountable" class="id"><span id="discrete_pred_sub__canonical__choice_Countable" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="choice_Countable__to__choice_Choice_isCountable" class="id"><span id="choice_Countable__to__eqtype_hasDecEq" class="id"><span id="choice_Countable__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_13" class="id"><span id="PredSubtype.hb_instance_12.E" class="id"><span id="PredSubtype.hb_instance_12.T" class="id"><a name="discrete_pred_sub__canonical__choice_SubCountable" class="" title="discrete_pred_sub__canonical__choice_SubCountable :
 forall [T : countType] (E : pred T), subCountType (T:=T) (in_mem^~ (mem E))
 
@@ -493,7 +494,7 @@ discrete_pred_sub__canonical__choice_SubCountable is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__choice_SubCountable
 Declared in
-library mathcomp.experimental_reals.discrete, line 54, characters 0-91
+library mathcomp.experimental_reals.discrete, line 55, characters 0-91
 ">T</a></span></span></span></span></span></span></span></span></span><span id="discrete_pred_sub__canonical__choice_SubCountable" class="id"><span id="discrete_pred_sub__canonical__choice_Countable" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="choice_Countable__to__choice_Choice_isCountable" class="id"><span id="choice_Countable__to__eqtype_hasDecEq" class="id"><span id="choice_Countable__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_13" class="id"><span id="PredSubtype.hb_instance_12.E" class="id"><span id="PredSubtype.hb_instance_12.T" class="id"><a name="discrete_pred_sub__canonical__choice_SubCountable" class="" title="discrete_pred_sub__canonical__choice_SubCountable :
 forall [T : countType] (E : pred T), subCountType (T:=T) (in_mem^~ (mem E))
 
@@ -503,7 +504,7 @@ discrete_pred_sub__canonical__choice_SubCountable is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__choice_SubCountable
 Declared in
-library mathcomp.experimental_reals.discrete, line 54, characters 0-91
+library mathcomp.experimental_reals.discrete, line 55, characters 0-91
 "> :</a></span></span></span></span></span></span></span></span></span><span id="discrete_pred_sub__canonical__choice_SubCountable" class="id"><span id="discrete_pred_sub__canonical__choice_Countable" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="choice_Countable__to__choice_Choice_isCountable" class="id"><span id="choice_Countable__to__eqtype_hasDecEq" class="id"><span id="choice_Countable__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_13" class="id"><span id="PredSubtype.hb_instance_12.E" class="id"><span id="PredSubtype.hb_instance_12.T" class="id"><a name="discrete_pred_sub__canonical__choice_SubCountable" class="" title="discrete_pred_sub__canonical__choice_SubCountable :
 forall [T : countType] (E : pred T), subCountType (T:=T) (in_mem^~ (mem E))
 
@@ -513,7 +514,7 @@ discrete_pred_sub__canonical__choice_SubCountable is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.discrete_pred_sub__canonical__choice_SubCountable
 Declared in
-library mathcomp.experimental_reals.discrete, line 54, characters 0-91
+library mathcomp.experimental_reals.discrete, line 55, characters 0-91
 "> countType</a></span></span></span></span></span></span></span></span></span>) (<span class="id">E</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#T:19">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#3639cd8b8c56c8234736807568e1e20f">[Countable</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#3639cd8b8c56c8234736807568e1e20f"> of</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#3639cd8b8c56c8234736807568e1e20f"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#pred_sub">pred_sub</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#E:20">E</a></span><span class="gallina-kwd"> by</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#3639cd8b8c56c8234736807568e1e20f"> &lt;:]</a></span>.<br/>
 <span class="vernacular">End</span><span class="id"> PredSubtype</span>.<br/>
@@ -532,7 +533,7 @@ Arguments pincl [T]%_type_scope [E F] le x
 pincl is transparent
 Expands to: Constant mathcomp.experimental_reals.discrete.pincl
 Declared in
-library mathcomp.experimental_reals.discrete, line 65, characters 11-16
+library mathcomp.experimental_reals.discrete, line 66, characters 11-16
 ">pincl</a></span> (<span id="x:29" class="id"><a name="x:29" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#PIncl.E">E</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#PIncl.F">F</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.experimental_reals.discrete.html#PSubSub">PSubSub</a></span> (<span class="id"><a href="mathcomp.experimental_reals.discrete.html#PIncl.le">le</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#valP">valP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#x:29">x</a></span>)).<br/>
 <span class="vernacular">End</span><span class="id"> PIncl</span>.<br/>
@@ -554,7 +555,7 @@ Arguments rpickle [T]%_type_scope [E] c _
 rpickle is transparent
 Expands to: Constant mathcomp.experimental_reals.discrete.rpickle
 Declared in
-library mathcomp.experimental_reals.discrete, line 79, characters 11-18
+library mathcomp.experimental_reals.discrete, line 80, characters 11-18
 ">rpickle</a></span> (<span id="c:38" class="id"><a name="c:38" class="">c</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#countable">countable</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">let:</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#Countable">Countable</a></span><span class="id"> p</span><span class="id"> _</span><span class="id"> _</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c:38">c</a></span><span class="gallina-kwd"> in</span><span class="id"> p</span>.<br/>
 <br/>
@@ -566,7 +567,7 @@ Arguments runpickle [T]%_type_scope [E] c _%_nat_scope
 runpickle is transparent
 Expands to: Constant mathcomp.experimental_reals.discrete.runpickle
 Declared in
-library mathcomp.experimental_reals.discrete, line 82, characters 11-20
+library mathcomp.experimental_reals.discrete, line 83, characters 11-20
 ">runpickle</a></span> (<span id="c:40" class="id"><a name="c:40" class="">c</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#countable">countable</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">let:</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#Countable">Countable</a></span><span class="id"> _</span><span class="id"> p</span><span class="id"> _</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c:40">c</a></span><span class="gallina-kwd"> in</span><span class="id"> p</span>.<br/>
 <br/>
@@ -579,7 +580,7 @@ Arguments rpickleK [T]%_type_scope [E] c x
 rpickleK is opaque
 Expands to: Constant mathcomp.experimental_reals.discrete.rpickleK
 Declared in
-library mathcomp.experimental_reals.discrete, line 85, characters 6-14
+library mathcomp.experimental_reals.discrete, line 86, characters 6-14
 ">rpickleK</a></span><span class="id"> </span><span id="c:42" class="id"><a name="c:42" class="">c</a></span><span class="id">:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#pcancel">pcancel</a></span> (<span class="id"><a href="mathcomp.experimental_reals.discrete.html#rpickle">rpickle</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c:42">c</a></span>) (<span class="id"><a href="mathcomp.experimental_reals.discrete.html#runpickle">runpickle</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c:42">c</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -595,7 +596,7 @@ Arguments countable_countable [T] E
 countable_countable is opaque
 Expands to: Constant mathcomp.experimental_reals.discrete.countable_countable
 Declared in
-library mathcomp.experimental_reals.discrete, line 91, characters 6-25
+library mathcomp.experimental_reals.discrete, line 92, characters 6-25
 ">countable_countable</a></span> (<span id="T:43" class="id"><a name="T:43" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Countable.Exports.countType">countType</a></span>) (<span id="E:44" class="id"><a name="E:44" class="">E</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#T:43">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#countable">countable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#E:44">E</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -616,7 +617,7 @@ Arguments can_countable [T]%_type_scope [U E] [f g]%_function_scope _
 can_countable is opaque
 Expands to: Constant mathcomp.experimental_reals.discrete.can_countable
 Declared in
-library mathcomp.experimental_reals.discrete, line 98, characters 6-19
+library mathcomp.experimental_reals.discrete, line 99, characters 6-19
 ">can_countable</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#cancel">cancel</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CanCountable.f">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CanCountable.g">g</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#countable">countable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CanCountable.E">E</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -640,7 +641,7 @@ countable_countMixin is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.countable_countMixin
 Declared in
-library mathcomp.experimental_reals.discrete, line 109, characters 11-31
+library mathcomp.experimental_reals.discrete, line 110, characters 11-31
 ">countable_countMixin</a></span> <span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Countable.copy">Countable</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Countable.copy">copy</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.E">E</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#pcan_type">pcan_type</a></span> (<span class="id"><a href="mathcomp.experimental_reals.discrete.html#rpickleK">rpickleK</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.c">c</a></span>)).<br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="countable_choiceMixin" class="id"><a name="countable_choiceMixin" class="" title="countable_choiceMixin :
@@ -653,7 +654,7 @@ countable_choiceMixin is transparent
 Expands to: Constant
             mathcomp.experimental_reals.discrete.countable_choiceMixin
 Declared in
-library mathcomp.experimental_reals.discrete, line 111, characters 11-32
+library mathcomp.experimental_reals.discrete, line 112, characters 11-32
 ">countable_choiceMixin</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.copy">Choice</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.copy">copy</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.E">E</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#pcan_type">pcan_type</a></span> (<span class="id"><a href="mathcomp.experimental_reals.discrete.html#rpickleK">rpickleK</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.c">c</a></span>)).<br/>
 <span class="vernacular">End</span><span class="id"> CountType</span>.<br/>
@@ -679,7 +680,7 @@ Arguments finiteP {T} [E] _
 finiteP is opaque
 Expands to: Constant mathcomp.experimental_reals.discrete.finiteP
 Declared in
-library mathcomp.experimental_reals.discrete, line 129, characters 6-13
+library mathcomp.experimental_reals.discrete, line 130, characters 6-13
 ">finiteP</a></span> (<span id="E:69" class="id"><a name="E:69" class="">E</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#FiniteTheory.T">T</a></span>)<span class="id"> :</span> (<span class="gallina-kwd">exists</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="s:70" class="id"><a name="s:70" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#seq">seq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#FiniteTheory.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">{subset</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#E:69">E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> &lt;=</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#s:70">s</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">}</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#finite">finite</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#E:69">E</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -699,7 +700,7 @@ Arguments finiteNP {T} [E] _%_function_scope n%_nat_scope
 finiteNP is opaque
 Expands to: Constant mathcomp.experimental_reals.discrete.finiteNP
 Declared in
-library mathcomp.experimental_reals.discrete, line 136, characters 6-14
+library mathcomp.experimental_reals.discrete, line 137, characters 6-14
 ">finiteNP</a></span> (<span id="E:71" class="id"><a name="E:71" class="">E</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#FiniteTheory.T">T</a></span>)<span class="id">:</span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="s:72" class="id"><a name="s:72" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#seq">seq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#FiniteTheory.T">T</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181">~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">{subset</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#E:71">E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> &lt;=</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#s:72">s</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">}</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="n:73" class="id"><a name="n:73" class="">n</a></span><span class="id">,</span><span class="gallina-kwd"> exists</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="s:74" class="id"><a name="s:74" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#seq">seq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#FiniteTheory.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">[/\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#size">size</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#s:74">s</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#n:73">n</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#uniq">uniq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#s:74">s</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">{subset</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#s:74">s</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> &lt;=</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#E:71">E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">]</a></span>.<br/>
 <details>
@@ -727,7 +728,7 @@ Arguments finite_countable [T E] _
 finite_countable is opaque
 Expands to: Constant mathcomp.experimental_reals.discrete.finite_countable
 Declared in
-library mathcomp.experimental_reals.discrete, line 154, characters 6-22
+library mathcomp.experimental_reals.discrete, line 155, characters 6-22
 ">finite_countable</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#finite">finite</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#FiniteCountable.E">E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#countable">countable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#FiniteCountable.E">E</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -753,7 +754,7 @@ Arguments countable_sub [T E F] _ _
 countable_sub is opaque
 Expands to: Constant mathcomp.experimental_reals.discrete.countable_sub
 Declared in
-library mathcomp.experimental_reals.discrete, line 169, characters 6-19
+library mathcomp.experimental_reals.discrete, line 170, characters 6-19
 ">countable_sub</a></span><span class="id">:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">{subset</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountSub.E">E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> &lt;=</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountSub.F">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#countable">countable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountSub.F">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#countable">countable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountSub.E">E</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -779,7 +780,7 @@ Arguments cunion_countable [T] [E]%_function_scope cE%_function_scope
 cunion_countable is opaque
 Expands to: Constant mathcomp.experimental_reals.discrete.cunion_countable
 Declared in
-library mathcomp.experimental_reals.discrete, line 183, characters 6-22
+library mathcomp.experimental_reals.discrete, line 184, characters 6-22
 ">cunion_countable</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#countable">countable</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#10dd1f0b03819efd5777bd139f7faec4">[pred</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#10dd1f0b03819efd5777bd139f7faec4"> </a></span><span id="x:101" class="id"><a name="x:101" class="">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#10dd1f0b03819efd5777bd139f7faec4"> |</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#10dd1f0b03819efd5777bd139f7faec4"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="gallina-kwd"> exists</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="i:102" class="id"><a name="i:102" class="">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#x:101">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableUnion.E">E</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#i:102">i</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> &gt;]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#10dd1f0b03819efd5777bd139f7faec4">]</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>

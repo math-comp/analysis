@@ -9,6 +9,7 @@ digraph depend {
   subgraph cluster_normedtype { label="NormedType" }
   subgraph cluster_measure { label="Measure" }
   subgraph cluster_lebesgue_integral { label="Lebesgue_integral" }
+  subgraph cluster_probability { label="Probability" }
 subgraph cluster_classical { "classical/all_classical"[label="all_classical",URL="mathcomp.classical.all_classical.html",fillcolor=1]}
   "classical/boolp" -> "classical/all_classical";
   "classical/cardinality" -> "classical/all_classical";
@@ -1175,7 +1176,7 @@ subgraph cluster_analysis { "theories/hoelder"[label="hoelder",URL="mathcomp.ana
   "theories/numfun" -> "theories/hoelder";
   "theories/sequences" -> "theories/hoelder";
   "theories/topology_theory/topology" -> "theories/hoelder";
-subgraph cluster_analysis { "theories/probability_theory/random_variable"[label="random_variable",URL="mathcomp.analysis.random_variable.html",fillcolor=5]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/random_variable";
+subgraph cluster_probability { "theories/probability_theory/random_variable"[label="random_variable",URL="mathcomp.analysis.probability_theory.random_variable.html",fillcolor=12]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/random_variable";
   "classical/boolp" -> "theories/probability_theory/random_variable";
   "classical/cardinality" -> "theories/probability_theory/random_variable";
   "classical/classical_sets" -> "theories/probability_theory/random_variable";
@@ -1194,7 +1195,7 @@ subgraph cluster_analysis { "theories/probability_theory/random_variable"[label=
   "theories/realfun" -> "theories/probability_theory/random_variable";
   "theories/sequences" -> "theories/probability_theory/random_variable";
   "theories/topology_theory/topology" -> "theories/probability_theory/random_variable";
-subgraph cluster_analysis { "theories/probability_theory/bernoulli_distribution"[label="bernoulli_distribution",URL="mathcomp.analysis.bernoulli_distribution.html",fillcolor=5]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/bernoulli_distribution";
+subgraph cluster_probability { "theories/probability_theory/bernoulli_distribution"[label="bernoulli_distribution",URL="mathcomp.analysis.probability_theory.bernoulli_distribution.html",fillcolor=12]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/bernoulli_distribution";
   "classical/boolp" -> "theories/probability_theory/bernoulli_distribution";
   "classical/cardinality" -> "theories/probability_theory/bernoulli_distribution";
   "classical/classical_sets" -> "theories/probability_theory/bernoulli_distribution";
@@ -1213,7 +1214,7 @@ subgraph cluster_analysis { "theories/probability_theory/bernoulli_distribution"
   "theories/numfun" -> "theories/probability_theory/bernoulli_distribution";
   "theories/sequences" -> "theories/probability_theory/bernoulli_distribution";
   "theories/topology_theory/topology" -> "theories/probability_theory/bernoulli_distribution";
-subgraph cluster_analysis { "theories/probability_theory/binomial_distribution"[label="binomial_distribution",URL="mathcomp.analysis.binomial_distribution.html",fillcolor=5]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/binomial_distribution";
+subgraph cluster_probability { "theories/probability_theory/binomial_distribution"[label="binomial_distribution",URL="mathcomp.analysis.probability_theory.binomial_distribution.html",fillcolor=12]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/binomial_distribution";
   "classical/boolp" -> "theories/probability_theory/binomial_distribution";
   "classical/cardinality" -> "theories/probability_theory/binomial_distribution";
   "classical/classical_sets" -> "theories/probability_theory/binomial_distribution";
@@ -1231,7 +1232,7 @@ subgraph cluster_analysis { "theories/probability_theory/binomial_distribution"[
   "theories/probability_theory/bernoulli_distribution" -> "theories/probability_theory/binomial_distribution";
   "theories/sequences" -> "theories/probability_theory/binomial_distribution";
   "theories/topology_theory/topology" -> "theories/probability_theory/binomial_distribution";
-subgraph cluster_analysis { "theories/probability_theory/uniform_distribution"[label="uniform_distribution",URL="mathcomp.analysis.uniform_distribution.html",fillcolor=5]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/uniform_distribution";
+subgraph cluster_probability { "theories/probability_theory/uniform_distribution"[label="uniform_distribution",URL="mathcomp.analysis.probability_theory.uniform_distribution.html",fillcolor=12]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/uniform_distribution";
   "classical/boolp" -> "theories/probability_theory/uniform_distribution";
   "classical/cardinality" -> "theories/probability_theory/uniform_distribution";
   "classical/classical_sets" -> "theories/probability_theory/uniform_distribution";
@@ -1246,7 +1247,7 @@ subgraph cluster_analysis { "theories/probability_theory/uniform_distribution"[l
   "theories/numfun" -> "theories/probability_theory/uniform_distribution";
   "theories/sequences" -> "theories/probability_theory/uniform_distribution";
   "theories/topology_theory/topology" -> "theories/probability_theory/uniform_distribution";
-subgraph cluster_analysis { "theories/probability_theory/normal_distribution"[label="normal_distribution",URL="mathcomp.analysis.normal_distribution.html",fillcolor=5]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/normal_distribution";
+subgraph cluster_probability { "theories/probability_theory/normal_distribution"[label="normal_distribution",URL="mathcomp.analysis.probability_theory.normal_distribution.html",fillcolor=12]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/normal_distribution";
   "classical/boolp" -> "theories/probability_theory/normal_distribution";
   "classical/cardinality" -> "theories/probability_theory/normal_distribution";
   "classical/classical_sets" -> "theories/probability_theory/normal_distribution";
@@ -1267,7 +1268,7 @@ subgraph cluster_analysis { "theories/probability_theory/normal_distribution"[la
   "theories/sequences" -> "theories/probability_theory/normal_distribution";
   "theories/topology_theory/topology" -> "theories/probability_theory/normal_distribution";
   "theories/trigo" -> "theories/probability_theory/normal_distribution";
-subgraph cluster_analysis { "theories/probability_theory/exponential_distribution"[label="exponential_distribution",URL="mathcomp.analysis.exponential_distribution.html",fillcolor=5]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/exponential_distribution";
+subgraph cluster_probability { "theories/probability_theory/exponential_distribution"[label="exponential_distribution",URL="mathcomp.analysis.probability_theory.exponential_distribution.html",fillcolor=12]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/exponential_distribution";
   "classical/boolp" -> "theories/probability_theory/exponential_distribution";
   "classical/cardinality" -> "theories/probability_theory/exponential_distribution";
   "classical/classical_sets" -> "theories/probability_theory/exponential_distribution";
@@ -1286,7 +1287,7 @@ subgraph cluster_analysis { "theories/probability_theory/exponential_distributio
   "theories/realfun" -> "theories/probability_theory/exponential_distribution";
   "theories/sequences" -> "theories/probability_theory/exponential_distribution";
   "theories/topology_theory/topology" -> "theories/probability_theory/exponential_distribution";
-subgraph cluster_analysis { "theories/probability_theory/poisson_distribution"[label="poisson_distribution",URL="mathcomp.analysis.poisson_distribution.html",fillcolor=5]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/poisson_distribution";
+subgraph cluster_probability { "theories/probability_theory/poisson_distribution"[label="poisson_distribution",URL="mathcomp.analysis.probability_theory.poisson_distribution.html",fillcolor=12]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/poisson_distribution";
   "classical/boolp" -> "theories/probability_theory/poisson_distribution";
   "classical/classical_sets" -> "theories/probability_theory/poisson_distribution";
   "reals/reals" -> "theories/probability_theory/poisson_distribution";
@@ -1299,7 +1300,7 @@ subgraph cluster_analysis { "theories/probability_theory/poisson_distribution"[l
   "theories/normedtype_theory/normedtype" -> "theories/probability_theory/poisson_distribution";
   "theories/sequences" -> "theories/probability_theory/poisson_distribution";
   "theories/topology_theory/topology" -> "theories/probability_theory/poisson_distribution";
-subgraph cluster_analysis { "theories/probability_theory/beta_distribution"[label="beta_distribution",URL="mathcomp.analysis.beta_distribution.html",fillcolor=5]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/beta_distribution";
+subgraph cluster_probability { "theories/probability_theory/beta_distribution"[label="beta_distribution",URL="mathcomp.analysis.probability_theory.beta_distribution.html",fillcolor=12]}  "classical/all_ssreflect_compat" -> "theories/probability_theory/beta_distribution";
   "classical/boolp" -> "theories/probability_theory/beta_distribution";
   "classical/cardinality" -> "theories/probability_theory/beta_distribution";
   "classical/classical_sets" -> "theories/probability_theory/beta_distribution";
@@ -1323,7 +1324,7 @@ subgraph cluster_analysis { "theories/probability_theory/beta_distribution"[labe
   "theories/realfun" -> "theories/probability_theory/beta_distribution";
   "theories/sequences" -> "theories/probability_theory/beta_distribution";
   "theories/topology_theory/topology" -> "theories/probability_theory/beta_distribution";
-subgraph cluster_analysis { "theories/probability_theory/probability"[label="probability",URL="mathcomp.analysis.probability.html",fillcolor=5]}  "theories/probability_theory/bernoulli_distribution" -> "theories/probability_theory/probability";
+subgraph cluster_probability { "theories/probability_theory/probability"[label="probability",URL="mathcomp.analysis.probability_theory.probability.html",fillcolor=12]}  "theories/probability_theory/bernoulli_distribution" -> "theories/probability_theory/probability";
   "theories/probability_theory/beta_distribution" -> "theories/probability_theory/probability";
   "theories/probability_theory/binomial_distribution" -> "theories/probability_theory/probability";
   "theories/probability_theory/exponential_distribution" -> "theories/probability_theory/probability";

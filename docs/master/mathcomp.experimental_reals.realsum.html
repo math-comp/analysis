@@ -236,7 +236,7 @@
 <span class="gallina-kwd">Set</span><span class="vernacular"> Implicit</span><span class="vernacular"> Arguments</span>.<br/>
 <span class="vernacular">Unset</span><span class="vernacular"> Strict</span><span class="vernacular"> Implicit</span>.<br/>
 <span class="vernacular">Unset</span><span class="vernacular"> Printing</span><span class="vernacular"> Implicit</span><span class="vernacular"> Defensive</span>.<br/>
-<span class="vernacular">Unset</span><span class="id"> SsrOldRewriteGoalsOrder</span>.<br/>
+<span class="vernacular">Unset</span><span class="id"> SsrOldRewriteGoalsOrder</span>.  <br/>
 <br/>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">TTheory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">Theory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Theory">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Theory">Theory</a></span>.<br/>
 <br/>
@@ -2221,7 +2221,7 @@ forall {R : realType} [T : choiceType] [S1 S2 : T -> R],
 (forall x : T, (0 <= S1 x)%R) ->
 (forall x : T, (0 <= S2 x)%R) ->
 summable (T:=T) (R:=R) S1 ->
-summable (T:=T) (R:=R) S2 -> psum (S1 \+ S2)%R = (psum S1 + psum S2)%E
+summable (T:=T) (R:=R) S2 -> psum (S1 \+ S2)%R = (psum S1 + psum S2)%R
 
 psumD is not universe polymorphic
 Arguments psumD {R} [T] [S1 S2]%_function_scope (_ _)%_function_scope _ _
@@ -2366,8 +2366,7 @@ Qed.</div></details>
 forall {R : realType} [T : choiceType] [S : T -> R] (P : pred T),
 summable (T:=T) (R:=R) S ->
 psum S =
-(psum (fun x : T => ((P x)%:R * S x)%R) +
- psum (fun x : T => ((~~ P x)%:R * S x)%R))%E
+(psum (fun x : T => (P x)%:R * S x) + psum (fun x : T => (~~ P x)%:R * S x))%R
 
 psumID is not universe polymorphic
 Arguments psumID {R} [T] [S]%_function_scope P _
@@ -2862,8 +2861,7 @@ Qed.</div></details>
 forall {R : realType} {T : choiceType} [S : T -> R] (P : pred T),
 summable (T:=T) (R:=R) S ->
 sum S =
-(sum (fun x : T => ((P x)%:R * S x)%R) +
- sum (fun x : T => ((~~ P x)%:R * S x)%R))%E
+(sum (fun x : T => (P x)%:R * S x) + sum (fun x : T => (~~ P x)%:R * S x))%R
 
 sumID is not universe polymorphic
 Arguments sumID {R T} [S]%_function_scope P _

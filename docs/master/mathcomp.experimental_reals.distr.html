@@ -235,7 +235,7 @@
 <span class="gallina-kwd">Set</span><span class="vernacular"> Implicit</span><span class="vernacular"> Arguments</span>.<br/>
 <span class="vernacular">Unset</span><span class="vernacular"> Strict</span><span class="vernacular"> Implicit</span>.<br/>
 <span class="vernacular">Unset</span><span class="vernacular"> Printing</span><span class="vernacular"> Implicit</span><span class="vernacular"> Defensive</span>.<br/>
-<span class="vernacular">Unset</span><span class="id"> SsrOldRewriteGoalsOrder</span>.<br/>
+<span class="vernacular">Unset</span><span class="id"> SsrOldRewriteGoalsOrder</span>.  <br/>
 <br/>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">TTheory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">Theory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Theory">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.archimedean.html#Num.Theory">Theory</a></span>.<br/>
 <br/>
@@ -855,7 +855,7 @@ library mathcomp.experimental_reals.distr, line 231, characters 6-13
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="drestrD" class="id"><a name="drestrD" class="" title="drestrD :
 forall {R : realType} {T : choiceType} (mu0 : {distr T / R}) 
   (p : pred T) (x : T),
-mu0 x = (drestr p mu0 x + drestr (predC p) mu0 x)%E
+mu0 x = (drestr p mu0 x + drestr (predC p) mu0 x)%R
 
 drestrD is not universe polymorphic
 Arguments drestrD {R T} mu p x
@@ -1594,9 +1594,9 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="dlet_additive" class="id"><a name="dlet_additive" class="" title="dlet_additive :
 forall {R : realType} {T U : choiceType} [mu0 mu1 mu2 : {distr T / R}]
   (f : T -> {distr U / R}) (z : U),
-(forall x : T, mu0 x = (mu1 x + mu2 x)%E) ->
+(forall x : T, mu0 x = (mu1 x + mu2 x)%R) ->
 (\dlet_(x <- mu0) f x) z =
-((\dlet_(x <- mu1) f x) z + (\dlet_(x <- mu2) f x) z)%E
+((\dlet_(x <- mu1) f x) z + (\dlet_(x <- mu2) f x) z)%R
 
 dlet_additive is not universe polymorphic
 Arguments dlet_additive {R T U} [mu mu1 mu2] f%_function_scope 
@@ -3003,7 +3003,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="prID" class="id"><a name="prID" class="" title="prID :
 forall {R : realType} {T : choiceType} (A B : pred T) (mu : {distr T / R}),
-\P_[mu] A = (\P_[mu] [predI A & B] + \P_[mu] [predI A & predC B])%E
+\P_[mu] A = (\P_[mu] [predI A & B] + \P_[mu] [predI A & predC B])%R
 
 prID is not universe polymorphic
 Arguments prID {R T} A B mu
@@ -3024,7 +3024,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pr_or_indep" class="id"><a name="pr_or_indep" class="" title="pr_or_indep :
 forall {R : realType} {T : choiceType} [A B : pred T] (mu : {distr T / R}),
 (forall x : T, x \in A -> x \notin B) ->
-\P_[mu] [predU A & B] = (\P_[mu] A + \P_[mu] B)%E
+\P_[mu] [predU A & B] = (\P_[mu] A + \P_[mu] B)%R
 
 pr_or_indep is not universe polymorphic
 Arguments pr_or_indep {R T} [A B] mu _%_function_scope
@@ -3128,7 +3128,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pr_or" class="id"><a name="pr_or" class="" title="pr_or :
 forall {R : realType} {T : choiceType} (A B : pred T) (mu : {distr T / R}),
-\P_[mu] [predU A & B] = ((\P_[mu] A + \P_[mu] B)%E - \P_[mu] [predI A & B])%R
+\P_[mu] [predU A & B] = (\P_[mu] A + \P_[mu] B - \P_[mu] [predI A & B])%R
 
 pr_or is not universe polymorphic
 Arguments pr_or {R T} A B mu
@@ -3150,7 +3150,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pr_and" class="id"><a name="pr_and" class="" title="pr_and :
 forall {R : realType} {T : choiceType} (A B : pred T) (mu : {distr T / R}),
-\P_[mu] [predI A & B] = ((\P_[mu] A + \P_[mu] B)%E - \P_[mu] [predU A & B])%R
+\P_[mu] [predI A & B] = (\P_[mu] A + \P_[mu] B - \P_[mu] [predU A & B])%R
 
 pr_and is not universe polymorphic
 Arguments pr_and {R T} A B mu
@@ -3167,7 +3167,7 @@ library mathcomp.experimental_reals.distr, line 1134, characters 6-12
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ler_pr_or" class="id"><a name="ler_pr_or" class="" title="ler_pr_or :
 forall {R : realType} {T : choiceType} (A B : pred T) (mu : {distr T / R}),
-(\P_[mu] [predU A & B] <= (\P_[mu] A + \P_[mu] B)%E)%R
+(\P_[mu] [predU A & B] <= \P_[mu] A + \P_[mu] B)%R
 
 ler_pr_or is not universe polymorphic
 Arguments ler_pr_or {R T} A B mu
@@ -3184,7 +3184,7 @@ library mathcomp.experimental_reals.distr, line 1138, characters 6-15
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ler_pr_and" class="id"><a name="ler_pr_and" class="" title="ler_pr_and :
 forall {R : realType} {T : choiceType} (A B : pred T) (mu : {distr T / R}),
-(\P_[mu] [predI A & B] <= (\P_[mu] A + \P_[mu] B)%E)%R
+(\P_[mu] [predI A & B] <= \P_[mu] A + \P_[mu] B)%R
 
 ler_pr_and is not universe polymorphic
 Arguments ler_pr_and {R T} A B mu
@@ -3220,7 +3220,7 @@ Qed.</div></details>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pr_split" class="id"><a name="pr_split" class="" title="pr_split :
 forall {R : realType} {T : choiceType} (B A : pred T) (mu : {distr T / R}),
 \P_[mu] A =
-((\P_[mu] B * \P_[mu, B] A)%R + (\P_[mu] (predC B) * \P_[mu, predC B] A)%R)%E
+(\P_[mu] B * \P_[mu, B] A + \P_[mu] (predC B) * \P_[mu, predC B] A)%R
 
 pr_split is not universe polymorphic
 Arguments pr_split {R T} B A mu
@@ -3248,7 +3248,7 @@ forall {R : realType} {T : choiceType} (A : pred T)
   [f : T -> R] [mu : {distr T / R}],
 \E?_[mu] f ->
 \E_[mu] f =
-((\P_[mu] A * \E_[mu, A] f)%R + (\P_[mu] (predC A) * \E_[mu, predC A] f)%R)%E
+(\P_[mu] A * \E_[mu, A] f + \P_[mu] (predC A) * \E_[mu, predC A] f)%R
 
 __admitted__exp_split is not universe polymorphic
 Arguments __admitted__exp_split {R T} A [f]%_function_scope [mu] _

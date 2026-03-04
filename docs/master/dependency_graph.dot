@@ -77,39 +77,12 @@ digraph depend {
 		"theories/hoelder"	[URL="mathcomp.analysis.hoelder.html",
 			fillcolor=5,
 			label=hoelder];
-		"theories/probability_theory/random_variable"	[URL="mathcomp.analysis.random_variable.html",
-			fillcolor=5,
-			label=random_variable];
-		"theories/probability_theory/bernoulli_distribution"	[URL="mathcomp.analysis.bernoulli_distribution.html",
-			fillcolor=5,
-			label=bernoulli_distribution];
 		"theories/kernel"	[URL="mathcomp.analysis.kernel.html",
 			fillcolor=5,
 			label=kernel];
-		"theories/probability_theory/binomial_distribution"	[URL="mathcomp.analysis.binomial_distribution.html",
-			fillcolor=5,
-			label=binomial_distribution];
-		"theories/probability_theory/uniform_distribution"	[URL="mathcomp.analysis.uniform_distribution.html",
-			fillcolor=5,
-			label=uniform_distribution];
-		"theories/probability_theory/normal_distribution"	[URL="mathcomp.analysis.normal_distribution.html",
-			fillcolor=5,
-			label=normal_distribution];
 		"theories/gauss_integral"	[URL="mathcomp.analysis.gauss_integral.html",
 			fillcolor=5,
 			label=gauss_integral];
-		"theories/probability_theory/exponential_distribution"	[URL="mathcomp.analysis.exponential_distribution.html",
-			fillcolor=5,
-			label=exponential_distribution];
-		"theories/probability_theory/poisson_distribution"	[URL="mathcomp.analysis.poisson_distribution.html",
-			fillcolor=5,
-			label=poisson_distribution];
-		"theories/probability_theory/beta_distribution"	[URL="mathcomp.analysis.beta_distribution.html",
-			fillcolor=5,
-			label=beta_distribution];
-		"theories/probability_theory/probability"	[URL="mathcomp.analysis.probability.html",
-			fillcolor=5,
-			label=probability];
 		"theories/pi_irrational"	[URL="mathcomp.analysis.pi_irrational.html",
 			fillcolor=5,
 			label=pi_irrational];
@@ -444,6 +417,36 @@ digraph depend {
 			fillcolor=10,
 			fontcolor=white,
 			label=giry];
+	}
+	subgraph cluster_probability {
+		graph [label=Probability];
+		"theories/probability_theory/random_variable"	[URL="mathcomp.analysis.probability_theory.random_variable.html",
+			fillcolor=12,
+			label=random_variable];
+		"theories/probability_theory/bernoulli_distribution"	[URL="mathcomp.analysis.probability_theory.bernoulli_distribution.html",
+			fillcolor=12,
+			label=bernoulli_distribution];
+		"theories/probability_theory/binomial_distribution"	[URL="mathcomp.analysis.probability_theory.binomial_distribution.html",
+			fillcolor=12,
+			label=binomial_distribution];
+		"theories/probability_theory/uniform_distribution"	[URL="mathcomp.analysis.probability_theory.uniform_distribution.html",
+			fillcolor=12,
+			label=uniform_distribution];
+		"theories/probability_theory/normal_distribution"	[URL="mathcomp.analysis.probability_theory.normal_distribution.html",
+			fillcolor=12,
+			label=normal_distribution];
+		"theories/probability_theory/exponential_distribution"	[URL="mathcomp.analysis.probability_theory.exponential_distribution.html",
+			fillcolor=12,
+			label=exponential_distribution];
+		"theories/probability_theory/poisson_distribution"	[URL="mathcomp.analysis.probability_theory.poisson_distribution.html",
+			fillcolor=12,
+			label=poisson_distribution];
+		"theories/probability_theory/beta_distribution"	[URL="mathcomp.analysis.probability_theory.beta_distribution.html",
+			fillcolor=12,
+			label=beta_distribution];
+		"theories/probability_theory/probability"	[URL="mathcomp.analysis.probability_theory.probability.html",
+			fillcolor=12,
+			label=probability];
 	}
 	"classical/all_classical" -> "reals/prodnormedzmodule";
 	"classical/all_classical" -> "theories/topology_theory/topology_structure";
