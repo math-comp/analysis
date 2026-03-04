@@ -6,7 +6,11 @@ From mathcomp Require Import generic_quotient.
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop reals interval_inference.
-From mathcomp Require Import topology.
+From mathcomp Require Import topology_structure uniform_structure.
+From mathcomp Require Import supremum_topology initial_topology.
+From mathcomp Require Import pseudometric_structure separation_axioms.
+From mathcomp Require Import compact connected subspace_topology.
+From mathcomp Require Import product_topology.
 
 (**md**************************************************************************)
 (* # The topology of functions spaces                                         *)

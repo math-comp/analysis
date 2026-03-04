@@ -204,6 +204,8 @@
 - moved from `measurable_structure.v` to `classical_sets.v`:
   + definitions `setI_closed`, `setU_closed`
 
+- moved from `theories` to `theories/topology_theory`
+
 ### Renamed
 
 - in `topology_structure.v`
