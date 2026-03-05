@@ -87,14 +87,14 @@ in {
       rocq-core.override.version = "master";
       stdlib.override.version = "master";
       rocq-elpi.override.version = "master";
-      rocq-elpi.override.elpi-version = "3.0.1";
+      rocq-elpi.override.elpi-version = "3.6.1";
       hierarchy-builder.override.version = "master";
     };
     coqPackages = common-bundle // {
       coq.override.version = "master";
       stdlib.override.version = "master";
       coq-elpi.override.version = "master";
-      coq-elpi.override.elpi-version = "3.0.1";
+      coq-elpi.override.elpi-version = "3.6.1";
       hierarchy-builder.override.version = "master";
       mathcomp.override.version = "master";
       mathcomp-bigenough.override.version = "master";
