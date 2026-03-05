@@ -70,6 +70,9 @@
 - in `derive.v`:
   + lemmas `compact_EVT_max`, `compact_EVT_min`, `EVT_max_rV`, `EVT_min_rV`
 
+- in `subspace_topology.v`:
+  + lemma `within_continuous_patch`
+
 ### Changed
 
 - in `constructive_ereal.v`: fixed the infamous `%E` scope bug.
