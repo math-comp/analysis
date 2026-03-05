@@ -94,6 +94,7 @@
 
 - in `measurable_function.v`:
   + lemma `preimage_set_system_compS`
+  + lemmas `lt_le_nbhsr`, `lt_le_nbhsl`
 
 ### Changed
 
@@ -313,6 +314,8 @@
   + lemma `derivable_powR`
 - in `convex.v`:
   + definition `convex_function` (from a realType as domain to a convex_lmodType as domain)
+- in `num_topology.v`:
+  + lemma `lt_nbhsl`
 
 ### Deprecated
 
