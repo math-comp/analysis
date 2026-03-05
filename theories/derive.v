@@ -2235,7 +2235,7 @@ apply/derivable_mxP => i0 j0.
 by have [] := MdM i0 j0.
 Qed.
 
-Lemma continuous_mx {m n : nat} (f : V -> 'I_m -> 'I_n -> R) :
+Lemma continuous_mx {m n : nat} (f : V -> 'M[R]_(m, n)) :
     (forall i j, continuous (fun x => f x i j)) <->
   continuous (fun x : V => \matrix_(i < m, j < n) f x i j).
 Proof.
@@ -2303,12 +2303,43 @@ pose gL : {linear _ -> _} := HB.pack g glM.
 by apply: (@diff_unique _ _ _ _ gL); have [? ?] := dmx dM.
 Qed.
 
-Global Instance is_diff_mx {m n : nat} (M dM : V -> 'M[R]_(m, n)) (x : V) :
+End pointwise_derive.
+
+Section Ris_diff_mx.
+Local Open Scope classical_set_scope.
+Context {R : realFieldType}.
+
+Global Instance is_diff_mx {m n : nat} (M dM : R -> 'M[R]_(m, n)) (x : R) :
   (forall i j, is_diff x (fun x => M x i j) (fun x => dM x i j)) ->
   is_diff x M dM.
 Proof.
 move=> MdM.
+have diffM : differentiable M (nbhs_filter_on x).
+  apply/derivable1_diffP.
+  apply/derivable_mxP => i j.
+  have [/=] := MdM i j.
+  by move/(@derivable1_diffP R R (fun x0 => M x0 i j) x).
+have H i j : differentiable (fun x0 : R => M x0 i j) x.
+  simpl in *.
+  by have [/=] := MdM i j.
 apply: DiffDef.
-Abort.
+  exact: diffM.
+rewrite diffmx; last exact: diffM.
+apply/funext => /= v.
+apply/matrixP => i j.
+rewrite !mxE.
+have [] := MdM i j => diffMij dMdM.
+simpl in *.
+rewrite -deriveE//.
+move/(congr1 (fun f => f v)) : dMdM.
+rewrite -deriveE.
+  move=> <-.
+  rewrite derive_mx//=.
+    by rewrite mxE.
+  apply/derivable_mxP => i0 j0/=.
+  have [/=] := MdM i0 j0.
+  by move/diff_derivable => /(_ v).
+exact: H.
+Qed.
 
-End pointwise_derive.
+End Ris_diff_mx.
