@@ -81,6 +81,9 @@
 - in `measurable_structure.v`:
   + structure `PMeasurable`, notation `pmeasurableType`
 
+- in `subspace_topology.v`:
+  + lemma `within_continuous_patch`
+
 ### Changed
 
 - moved from `measurable_structure.v` to `classical_sets.v`:
