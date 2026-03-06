@@ -85,6 +85,8 @@
   + lemmas `limit_point_closed`
 - in `convex.v`:
   + lemma `convex_setW`
+- in `convex.v`:
+  + lemma `convexW`
 
 ### Changed
 
@@ -245,6 +247,8 @@
 
 - moved from `tvs.v` to `convex.v`
   + definition `convex`, renamed to `convex_set`
+- moved from `tvs.v` to `convex.v`
+  + definition `convex`
   
 ### Renamed
 
