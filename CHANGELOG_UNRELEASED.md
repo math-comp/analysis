@@ -206,7 +206,6 @@
 
 - moved from `theories` to `theories/topology_theory`:
   + file `function_spaces.v`
-- moved from `theories` to `theories/topology_theory`
 
 - moved from `theories` to `theories/normedtype_theory`:
   + file `tvs.v`
@@ -218,7 +217,7 @@
 - in `tvs.v`, turned into `Let`'s:
   + local lemmas `standard_add_continuous`, `standard_scale_continuous`, `standard_locally_convex`
 
-- in `normed_module.v`:
+- in `normed_module.v`, turned into `Let`'s:
   + local lemmas `add_continuous`, `scale_continuous`, `locally_convex`
 
 ### Renamed
