@@ -511,6 +511,7 @@ Unshelve. all: by end_near. Qed.
 
 Local Open Scope convex_scope.
 
+
 Let standard_ball_convex_set (x : R^o) (r : R) : convex_set (ball x r).
 Proof.
 apply/convex_setW => z y; rewrite !inE -!ball_normE /= => zx yx l l0 l1.

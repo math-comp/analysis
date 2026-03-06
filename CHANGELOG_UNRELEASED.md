@@ -85,6 +85,7 @@
   + lemmas `limit_point_closed`
 - in `convex.v`:
   + lemma `convex_setW`
+- in `convex.v`:
   + lemma `convexW`
 
 ### Changed
