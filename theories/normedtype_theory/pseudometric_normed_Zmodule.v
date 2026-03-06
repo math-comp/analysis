@@ -4,7 +4,7 @@ From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
 From mathcomp Require Import interval interval_inference archimedean.
 From mathcomp Require Import boolp classical_sets functions cardinality.
 From mathcomp Require Import set_interval ereal reals topology.
-From mathcomp Require Import prodnormedzmodule tvs num_normedtype.
+From mathcomp Require Import prodnormedzmodule num_normedtype.
 
 (**md**************************************************************************)
 (* # Normed topological abelian groups                                        *)
@@ -123,6 +123,15 @@ by move/predU1P => [->|]; [exact: nbhs_singleton | near: z; exact: fxr].
 Unshelve. all: by end_near. Qed.
 
 End at_left_right_topologicalType.
+
+HB.structure Definition NbhsNmodule := {M of Nbhs M & GRing.Nmodule M}.
+HB.structure Definition NbhsZmodule := {M of Nbhs M & GRing.Zmodule M}.
+HB.structure Definition PreTopologicalNmodule :=
+  {M of Topological M & GRing.Nmodule M}.
+HB.structure Definition PreTopologicalZmodule :=
+  {M of Topological M & GRing.Zmodule M}.
+HB.structure Definition PreUniformNmodule := {M of Uniform M & GRing.Nmodule M}.
+HB.structure Definition PreUniformZmodule := {M of Uniform M & GRing.Zmodule M}.
 
 HB.mixin Record NormedZmod_PseudoMetric_eq (R : numDomainType) T
     & Num.NormedZmodule R T & PseudoPointedMetric R T := {
