@@ -23,10 +23,6 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
 
-Search "choice_prop". 
-
-Definition Choice_prop := ((forall T U  (Q : T -> U -> Prop),
-                                (forall t : T, exists u : U,  Q t u) -> (exists e, forall t,  Q t (e t)))).
 
 
  Local Open Scope ring_scope.
@@ -103,9 +99,6 @@ Section OrderRels.
 
 
  Section HBPreparation.
-
- Variable Choice_prop :  forall T U (P : T -> U -> Prop),
-     (forall t : T, exists u : U,  P t u) -> (exists e, forall t,  P t (e t)).
 
  Variables (R : realFieldType) (V : lmodType R).
 
@@ -332,9 +325,7 @@ Qed.
 
 Lemma hb_witness : exists h : V -> R, forall v r, carrier g v r <-> (h v = r).
 Proof.
-have [h hP] : exists h,  forall v, carrier g v (h v) by exact: Choice_prop tot_g.
-exists h => v r.
-split; last by move<-.
+move: (choice tot_g) => [h hP]; exists h => v r; split; last by move<-.
 case: g gP tot_g hP => c /= [fg lg mg pg] => gP' tot_g' hP cvr.
 by have -> // := fg v r (h v).
 Qed.
@@ -348,10 +339,6 @@ Qed.
 (* We consider R a real (=ordered) field with supremum, and V a (left) module
    on R. We do not make use of the 'vector' interface as the latter enforces
    finite dimension. *)
-  
-
-Variable Choice_prop :  forall T U (P : T -> U -> Prop),
-     (forall t : T, exists u : U,  P t u) -> (exists e, forall t,  P t (e t)).
   
 Variables (R : realFieldType) (V : lmodType R).
 
@@ -397,7 +384,7 @@ have graphFP : spec F f p graphF by split.
 have [z zmax]:= zorn_rel_ex graphFP.
 pose FP v : Prop := F v.
 have FP0 : FP 0 by [].
-have [g gP]:= hb_witness Choice_prop linfF FP0 p_cvx sup inf zmax.
+have [g gP]:= hb_witness linfF FP0 p_cvx sup inf zmax.
 have scalg : linear_for *%R g.
   case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
   have addg : additive g.
@@ -434,9 +421,6 @@ Section HahnBanachnew.
    on R. We do not make use of the 'vector' interface as the latter enforces
    finite dimension. *)
 
-Variable Choice_prop :  forall T U (P : T -> U -> Prop),
-     (forall t : T, exists u : U,  P t u) -> (exists e, forall t,  P t (e t)).
-
 Variables (R : realFieldType) (V : lmodType R).
 
 Hypothesis sup : forall (A : set R) (a m : R),
@@ -468,7 +452,7 @@ have [z zmax]:= zorn_rel_ex graphFP.
 *)
 pose FP v : Prop := F v.
 have FP0 : FP 0 by [].
-have [g gP]:= hb_witness Choice_prop linfF FP0 p_cvx sup inf zmax.
+have [g gP]:= hb_witness linfF FP0 p_cvx sup inf zmax.
 have scalg : linear_for *%R g.
   case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
   have addg : additive g.
@@ -504,9 +488,6 @@ Variable (R : realType) (V : normedModType R) (F : pred V) (f : V -> R) (F0 : F 
 
 Hypothesis linF : forall (v1 v2 : V) (l : R), F v1 -> F v2 -> F (v1 + l *: v2).
 Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 -> f (v1 + l *: v2) = f v1 + l * (f v2).
-
-Hypothesis (Choice_prop : ((forall T U  (Q : T -> U -> Prop),
-                      (forall t : T, exists u : U,  Q t u) -> (exists e, forall t,  Q t (e t))))).
 
 (*Looked a long time for within *)
 Definition continuousR_on ( G : set V ) (g : V -> R) :=
@@ -588,7 +569,7 @@ Lemma mymyinf : forall (A : set R) (a m : R),
 Qed.
 
 Notation myHB :=
-  (HahnBanachold Choice_prop mymysup mymyinf F0 linF linfF).
+  (HahnBanachold mymysup mymyinf F0 linF linfF).
 
 Theorem HB_geom_normed :
   continuousR_on_at F 0 f ->
@@ -640,8 +621,6 @@ Variable (R : realType) (V: normedModType R) (F : subLmodType V) (f : {linear F 
 
 (* One needs to define the topological structure on F as the one induced by V, and make it  a normedModtype, as was done for subLmodType *)
 
-Hypothesis (Choice_prop : ((forall T U  (Q : T -> U -> Prop),
-                      (forall t : T, exists u : U,  Q t u) -> (exists e, forall t,  Q t (e t))))).
 
 (*
 Lemma mymysup : forall (A : set R) (a m : R),
@@ -672,7 +651,7 @@ Qed.
 
 
 Notation myHB :=
-  (HahnBanach (boolp.EM) Choice_prop mymysup mymyinf F0 linF linfF).
+  (HahnBanach (boolp.EM)  mymysup mymyinf F0 linF linfF).
  *)
 
  Search "continuous" "subspace".  
