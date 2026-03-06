@@ -2155,7 +2155,7 @@ Qed.
 End derive_horner.
 
 Section pointwise_derivable.
-Context {R : realFieldType} {V W : normedModType R} {m n : nat}.
+Context {R : realFieldType} {V : normedModType R} {m n : nat}.
 Implicit Types M : V -> 'M[R]_(m, n).
 
 Lemma derivable_mxP M t v :
@@ -2187,7 +2187,7 @@ End pointwise_derivable.
 
 Section pointwise_derive.
 Local Open Scope classical_set_scope.
-Context {R : realFieldType} {V W : normedModType R} .
+Context {R : realFieldType} {V : normedModType R}.
 
 Lemma derive_mx {m n : nat} (M : V -> 'M[R]_(m, n)) t v :
   derivable M t v ->
