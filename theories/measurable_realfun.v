@@ -1,15 +1,13 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
-From mathcomp Require Import interval archimedean rat.
+From mathcomp Require Import interval interval_inference archimedean rat.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import boolp classical_sets.
-From mathcomp Require Import functions cardinality fsbigop reals ereal.
-From mathcomp Require Import interval_inference topology numfun tvs normedtype.
-From mathcomp Require Import function_spaces sequences esum measure.
-From mathcomp Require Import real_interval realfun exp.
-From mathcomp Require Export lebesgue_stieltjes_measure.
+From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
+From mathcomp Require Import reals ereal topology numfun tvs normedtype.
+From mathcomp Require Import real_interval sequences esum measure realfun exp.
+From mathcomp Require Import lebesgue_stieltjes_measure.
 
 (**md**************************************************************************)
 (* # Measurable Functions over $\mathbb{R}$ and $\overline{\mathbb{R}}$       *)

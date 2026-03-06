@@ -1,9 +1,10 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum matrix interval.
-From mathcomp Require Import boolp classical_sets interval_inference reals.
-From mathcomp Require Import topology function_spaces prodnormedzmodule tvs.
-From mathcomp Require Import pseudometric_normed_Zmodule normed_module.
+From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum matrix.
+From mathcomp Require Import interval interval_inference.
+From mathcomp Require Import boolp classical_sets reals topology.
+From mathcomp Require Import prodnormedzmodule tvs pseudometric_normed_Zmodule.
+From mathcomp Require Import normed_module.
 
 (**md**************************************************************************)
 (* # Normed topological Abelian group of matrices                             *)

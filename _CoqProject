@@ -67,13 +67,13 @@ theories/topology_theory/sigT_topology.v
 theories/topology_theory/discrete_topology.v
 theories/topology_theory/separation_axioms.v
 theories/topology_theory/metric_structure.v
+theories/topology_theory/function_spaces.v
 
 theories/homotopy_theory/homotopy.v
 theories/homotopy_theory/wedge_sigT.v
 theories/homotopy_theory/continuous_path.v
 
 theories/ess_sup_inf.v
-theories/function_spaces.v
 theories/cantor.v
 theories/tvs.v
 
