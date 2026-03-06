@@ -2472,7 +2472,8 @@ HB.instance Definition _ :=
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R (max_space Bbasis) erefl.
 
 HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R (max_space Bbasis) (max_normZ B).
+  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R (max_space Bbasis)
+    (@Norm.normZ _ _ (unstable_max_norm__canonical__Norm_Norm Bbasis)).
 
 End InfiniteNorm.
 

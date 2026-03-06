@@ -24,6 +24,11 @@ From mathcomp Require Import vector archimedean interval.
 (*                           the dependent sum                                *)
 (*                prodA x := sends (X * Y) * Z to X * (Y * Z)                 *)
 (*               prodAr x := sends X * (Y * Z) to (X * Y) * Z                 *)
+(*             max_norm x := maximum of the norms of the coordinates of the   *)
+(*                           vector x in a given basis.                       *)
+(*            max_space V := alias of the vectType V equipped with a          *)
+(*                           structure of normed Z-module, where the norm is  *)
+(*                           max_norm.                                        *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -594,6 +599,9 @@ Proof. exact: real_ltr_bound. Qed.
 Lemma ltrNbound {R : archiRealDomainType} (x : R) : - x < (Num.bound x)%:R.
 Proof. exact: real_ltrNbound. Qed.
 
+(* normedZmodType provide norms but the subject is not the norm. We define here
+   a structure of norm where the subject is the function from the left-module to
+   its scalar field. *)
 Module Norm.
 
 HB.mixin Record isNorm (K : numDomainType) (L : lmodType K) (norm : L -> K) := {
@@ -618,7 +626,7 @@ Lemma normN x : norm (- x) = norm x.
 Proof. by rewrite -scaleN1r normZ normrN1 mul1r. Qed.
 
 Lemma ler_norm_sum (I : Type) (r : seq I) (F : I -> L) :
-    norm (\sum_(i <- r) F i) <= \sum_(i <- r) norm (F i).
+  norm (\sum_(i <- r) F i) <= \sum_(i <- r) norm (F i).
 Proof.
 by elim/big_ind2 : _ => *; rewrite ?norm0// (le_trans (ler_normD _ _))// lerD.
 Qed.
@@ -642,7 +650,7 @@ Definition max_space : Type := (fun=> V) Bbasis.
 
 HB.instance Definition _ := Vector.on max_space.
 
-Lemma max_norm_ge0 x : 0 <= max_norm x.
+Let max_norm_ge0 x : 0 <= max_norm x.
 Proof.
 rewrite /max_norm.
 by elim/big_ind : _ => //= ? ? ? ?; rewrite /Order.max; case: ifP.
@@ -659,7 +667,7 @@ have /comparable_leNgt <- := real_comparable bR (normr_real (coord B j x)).
 by move=> /(le_trans IHl).
 Qed.
 
-Lemma max_norm0 : max_norm 0 = 0.
+Let max_norm0 : max_norm 0 = 0.
 Proof.
 apply: le_anti; rewrite max_norm_ge0 andbT.
 apply: bigmax_le => // i _.
@@ -669,13 +677,13 @@ have <-: \sum_(i < \dim V') 0 *: B`_i = 0.
 by rewrite coord_sum_free ?normr0// (basis_free Bbasis).
 Qed.
 
-Lemma ler_max_normD x y : max_norm (x + y) <= max_norm x + max_norm y.
+Let ler_max_normD x y : max_norm (x + y) <= max_norm x + max_norm y.
 Proof.
 apply: bigmax_le => [|/= i _]; first by rewrite addr_ge0// max_norm_ge0.
 by rewrite raddfD/= (le_trans (ler_normD _ _))// lerD// le_coord_max_norm.
 Qed.
 
-Lemma max_norm0_eq0 x : max_norm x = 0 -> x = 0.
+Let max_norm0_eq0 x : max_norm x = 0 -> x = 0.
 Proof.
 move=> x0; rewrite (coord_basis Bbasis (memvf x)).
 suff: forall i, coord B i x = 0.
@@ -683,7 +691,7 @@ suff: forall i, coord B i x = 0.
 by move=> i; apply/normr0_eq0/le_anti; rewrite normr_ge0 -x0 le_coord_max_norm.
 Qed.
 
-Lemma max_normZ r x : max_norm (r *: x) = `|r| * max_norm x.
+Let max_normZ r x : max_norm (r *: x) = `|r| * max_norm x.
 Proof.
 rewrite /max_norm.
 under eq_bigr do rewrite linearZ/= normrM.
@@ -694,10 +702,10 @@ Qed.
 HB.instance Definition _ := Norm.isNorm.Build K V max_norm
   max_norm0 max_norm_ge0 max_norm0_eq0 ler_max_normD max_normZ.
 
-Lemma max_normMn x n : max_norm (x *+ n) = max_norm x *+ n.
+Let max_normMn x n : max_norm (x *+ n) = max_norm x *+ n.
 Proof. exact: Norm.Theory.normMn. Qed.
 
-Lemma max_normN x : max_norm (- x) = max_norm x.
+Let max_normN x : max_norm (- x) = max_norm x.
 Proof. exact: Norm.Theory.normN. Qed.
 
 HB.instance Definition _ := Num.Zmodule_isNormed.Build K
