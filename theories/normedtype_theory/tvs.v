@@ -492,84 +492,44 @@ End Tvs_numField.
 Section standard_topology.
 Variable R : numFieldType.
 
-Local Lemma standard_add_continuous : continuous (fun x : R^o * R^o => x.1 + x.2).
+(** NB: we have almost the same proof in `pseudometric_normed_Zmodule.v` *)
+Let standard_add_continuous : continuous (fun x : R^o * R^o => x.1 + x.2).
 Proof.
-(* NB(rei): almost the same code as in normedtype.v *)
-move=> [/= x y]; apply/cvg_ballP => e e0 /=.
-exists (ball x (e / 2), ball y (e / 2)) => /=.
-  by split; apply: nbhsx_ballx; rewrite divr_gt0.
-rewrite /ball /ball_/= => xy /= [nx ny].
-by rewrite opprD addrACA (le_lt_trans (ler_normD _ _)) // (splitr e) ltrD.
-Qed.
+move=> [/= x y]; apply/cvgrPdist_lt=> _/posnumP[e]; near=> a b => /=.
+by rewrite opprD addrACA normm_lt_split.
+Unshelve. all: by end_near. Qed.
 
-Local Lemma standard_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
+Let standard_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
 Proof.
-(* NB: This lemma is proved once again in normedtype, in a shorter way with much more machinery *)
-(*     To be rewritten once normedtype is split and tvs can depend on these lemmas *)
-move=> [k x]; apply/cvg_ballP => e le0 /=.
-pose M : R := maxr (`|e| + 1) (maxr `|k| (`|x| + `|x| + 2^-1 + 1)).
-have M0l : 0 < `|e| + 1 by rewrite ltr_wpDl.
-have M0r : 0 < maxr `|k| (`|x| + `|x| + 2^-1 + 1).
-  rewrite comparable_lt_max; last exact/real_comparable.
-  by rewrite normr_gt0; case: eqP => /=.
-have Me : `|e| < M.
-  rewrite (@lt_le_trans _ _ (`|e| + 1)) ?ltrDl//.
-  have /= -> := num_le_max (`|e| + 1) (PosNum M0l) (PosNum M0r).
-  by rewrite lexx.
-have M0 : 0 < M by apply: le_lt_trans Me.
-pose r := `|e| / 2 / M.
-exists (ball k r, ball x r) => [|[z1 z2] [k1r k2r]].
-  by split; exists r; rewrite //= ?divr_gt0 //= normr_gt0 gt_eqF.
-have := @ball_split _ _ (k * z2)  (k * x)  (z1 * z2) `|e|.
-rewrite /ball/= real_lter_normr ?gtr0_real//.
-rewrite (_ : _ < - e = false) ?orbF; last by rewrite ltr_nnorml// oppr_le0 ltW.
-apply.
-  rewrite -mulrBr normrM (@le_lt_trans _ _ (M * `|x - z2|)) ?ler_wpM2r//.
-    have /= -> := num_le_max `|k| (PosNum M0l) (PosNum M0r).
-    by apply/orP; right; rewrite /maxr; case: ifPn => // /ltW.
-  by rewrite -ltr_pdivlMl ?(lt_le_trans k2r)// mulrC.
-rewrite -mulrBl normrM (@le_lt_trans _ _ (`|k - z1| * M)) ?ler_wpM2l//.
-  rewrite (@le_trans _ _ (`|z2| + `|x|))// ?lerDl ?normr_ge0//.
-  have z2xe : `|z2| <= `|x| + r.
-    by rewrite -lerBlDl -(normrN x) (le_trans (lerB_normD _ _))// distrC ltW.
-  rewrite (@le_trans _ _ (`|x| + r + `|x|)) ?lerD// addrC.
-  rewrite [leRHS](_ : _ = M^-1 * (M *  M)); last first.
-    by rewrite mulKf// gt_eqF.
-  rewrite [leLHS](_ : _ = M^-1 * (M * (`|x| + `|x|) + `|e| / 2)); last first.
-    by rewrite mulrDr mulKf ?gt_eqF// mulrC addrA.
-  rewrite ler_wpM2l// ?invr_ge0// ?ltW// -ltrBrDl -mulrBr ltr_pM// ltrBrDl//.
-  rewrite (@lt_le_trans _ _ (`|x| + `|x| + 2^-1 + 1)) //.
-    by rewrite ltrDl ltr01.
-  rewrite (num_le_max _ (PosNum M0l) (PosNum M0r))//=.
-  apply/orP; right; have [->|k0] := eqVneq k 0.
-    by rewrite normr0 comparable_le_max ?real_comparable// lexx orbT.
-  have nk0 : 0 < `|k| by rewrite normr_gt0.
-  have xx21 : 0 < `|x| + `|x| + 2^-1 + 1%R by rewrite addr_gt0.
-  by rewrite (num_le_max _ (PosNum nk0) (PosNum xx21))// lexx orbT.
-by rewrite -ltr_pdivlMr ?(lt_le_trans k1r) ?normr_gt0.
-Qed.
+move=> [/= k x]; apply/cvgrPdist_lt => _/posnumP[e]; near +oo_R => M.
+near=> l z => /=; have M0 : 0 < M by [].
+rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normrM.
+  rewrite (@le_lt_trans _ _ (M * `|x - z|)) ?ler_wpM2r -?ltr_pdivlMl//.
+  by near: z; apply: cvgr_dist_lt; rewrite // mulr_gt0 ?invr_gt0.
+rewrite (@le_lt_trans _ _ (`|k - l| * M)) ?ler_wpM2l -?ltr_pdivlMr//.
+  by near: z; near: M; exact: (@cvg_bounded _ R^o _ _ _ _ _ (@cvg_refl _ _)).
+by near: l; apply: cvgr_dist_lt; rewrite // divr_gt0.
+Unshelve. all: by end_near. Qed.
 
-Local Lemma standard_locally_convex :
+Let standard_locally_convex :
   exists2 B : set (set R^o), (forall b, b \in B -> convex b) & basis B.
 Proof.
-(* NB(rei): almost the same code as in normedtype.v *)
 exists [set B | exists x r, B = ball x r].
   move=> b; rewrite inE /= => [[x]] [r] -> z y l.
-  rewrite !inE /ball /= => zx yx l0; rewrite -subr_gt0 => l1.
-  have -> : x = l *: x + (1 - l) *: x by rewrite scalerBl addrC subrK scale1r.
+  rewrite !inE -!ball_normE /= => zx yx l0; rewrite -subr_gt0 => l1.
+  have -> : x = l *: x + (1 - l) *: x by rewrite addrC scalerBl subrK scale1r.
   rewrite [X in `|X|](_ : _ = l *: (x - z) + (1 - l) *: (x - y)); last first.
-    by rewrite opprD addrACA -mulrBr -mulrBr.
+    by rewrite opprD addrACA -scalerBr -scalerBr.
   rewrite (@le_lt_trans _ _ (`|l| * `|x - z| + `|1 - l| * `|x - y|))//.
     by rewrite -!normrM ler_normD.
   rewrite (@lt_le_trans _ _ (`|l| * r + `|1 - l| * r ))//.
-    by rewrite ltr_leD// -lter_pdivlMl ?mulKf// ?normrE ?gt_eqF// ltW.
-  suff-> : `|1 - l| = 1 - `|l| by rewrite -mulrDl addrC subrK mul1r.
-  by move: l0 l1 => /ltW/normr_idP -> /ltW/normr_idP ->.
+    by rewrite ltr_leD// lter_pM2l// ?normrE ?gt_eqF// ltW.
+  by rewrite !gtr0_norm// -mulrDl addrC subrK mul1r.
 split.
   move=> B [x] [r] ->.
-  rewrite openE/= /ball/= /interior => y /= bxy; rewrite -nbhs_ballE.
+  rewrite openE/= -ball_normE/= /interior => y /= bxy; rewrite -nbhs_ballE.
   exists (r - `|x - y|) => /=; first by rewrite subr_gt0.
-  move=> z; rewrite /ball/= ltrBrDr.
+  move=> z; rewrite -ball_normE/= ltrBrDr.
   by apply: le_lt_trans; rewrite [in leRHS]addrC ler_distD.
 move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
 by exists (ball x r) => //; split; [exists x, r|exact: ballxx].

@@ -93,15 +93,13 @@ HB.factory Record PseudoMetricNormedZmod_Lmodule_isNormedModule (K : numFieldTyp
 
 HB.builders Context K V & PseudoMetricNormedZmod_Lmodule_isNormedModule K V.
 
-(* NB: These lemmas are done later with more machinery. They should
-   be simplified once normedtype is split, and the present section can
-   depend on near lemmas on pseudometricnormedzmodtype? *)
 (* add_continuous has been moved to pseudometric_normed_Zmodule.v,
   scale_continuous is proved but is not proved again anymore later in this file *)
-Lemma add_continuous : continuous (fun x : V * V => x.1 + x.2).
+Let add_continuous : continuous (fun x : V * V => x.1 + x.2).
 Proof. exact: add_continuous. Qed.
 
-Lemma scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
+(** NB: we have almost the same proof in `tvs.v` *)
+Let scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
 Proof.
 move=> [/= k x]; apply/cvgrPdist_lt => _/posnumP[e]; near +oo_K => M.
 near=> l z => /=; have M0 : 0 < M by [].
@@ -113,7 +111,8 @@ rewrite (@le_lt_trans _ _ (`|k - l| * M)) ?ler_wpM2l -?ltr_pdivlMr//.
 by near: l; apply: cvgr_dist_lt; rewrite // divr_gt0.
 Unshelve. all: by end_near. Qed.
 
-Lemma locally_convex :
+(** NB: we have almost the same proof in `tvs.v` *)
+Let locally_convex :
   exists2 B : set (set V), (forall b, b \in B -> convex b) & basis B.
 Proof.
 exists [set B | exists x r, B = ball x r].
@@ -418,9 +417,6 @@ apply: (@cvg_lim _ _ _ (at_left _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_
 exists e%:num => //= y xe_y; rewrite lt_def => /andP [xney _].
 by apply: xe_A => //; rewrite eq_sym.
 Qed.
-
-Lemma scale_continuous : continuous (fun z : K * V => z.1 *: z.2).
-Proof. exact: scale_continuous. Abort.
 
 Arguments scale_continuous _ _ : clear implicits.
 

@@ -215,6 +215,12 @@
   + definitions `NbhsNmodule`, `NbhsZmodule`, `PreTopologicalNmodule`, `PreTopologicalZmodule`,
     `PreUniformNmodule`, `PreUniformZmodule`
 
+- in `tvs.v`, turned into `Let`'s:
+  + local lemmas `standard_add_continuous`, `standard_scale_continuous`, `standard_locally_convex`
+
+- in `normed_module.v`:
+  + local lemmas `add_continuous`, `scale_continuous`, `locally_convex`
+
 ### Renamed
 
 - in `topology_structure.v`
