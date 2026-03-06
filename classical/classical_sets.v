@@ -507,6 +507,7 @@ Implicit Types A B C D : set T.
 
 Lemma mem_set {A} {u : T} : A u -> u \in A. Proof. by rewrite inE. Qed.
 Lemma set_mem {A} {u : T} : u \in A -> A u. Proof. by rewrite inE. Qed.
+#[deprecated(since="mathcomp-analysis 1.16.0", use=in_setT)]
 Lemma mem_setT (u : T)    : u \in [set: T]. Proof. by rewrite inE. Qed.
 Lemma mem_setK {A} {u : T} : cancel (@mem_set A u) set_mem. Proof. by []. Qed.
 Lemma set_memK {A} {u : T} : cancel (@set_mem A u) mem_set. Proof. by []. Qed.
