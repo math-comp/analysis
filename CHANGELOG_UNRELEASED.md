@@ -250,6 +250,9 @@
 - moved from `tvs.v` to `convex.v`
   + definition `convex`
   
+- in convex.v
+  + definition `convex_function` generalized from a realspace as domain to a lmodType as domain
+
 ### Renamed
 
 - in `topology_structure.v`

@@ -1,8 +1,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp Require Import interval_inference.
-From mathcomp Require Import wochoice boolp classical_sets topology reals.
-From mathcomp Require Import filter reals normedtype.
+From mathcomp Require Import unstable wochoice boolp classical_sets topology reals.
+From mathcomp Require Import filter reals normedtype convex.
 Import numFieldNormedType.Exports.
 Local Open Scope classical_set_scope.
 
@@ -25,7 +25,8 @@ Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
 
 
- Local Open Scope ring_scope.
+Local Open Scope ring_scope.
+Local Open Scope convex_scope.
  Import GRing.Theory.
  Import Num.Theory.
 
@@ -60,10 +61,12 @@ Section OrderRels.
  Section LinAndCvx.
 
  Variables (R : numDomainType) (V : lmodType R).
-
- Definition convex_fun (p : V -> R) :=  forall v1 v2 l m,
+ (*
+ Check convex_function.
+ Definition convex_function (p : V -> R) :=  forall v1 v2 l m,
    ( 0 <= l /\ 0 <= m) ->  l + m = 1 -> p (l *: v1 + m *: v2) <= l * (p v1) + m * (p v2).
-
+  *)
+ 
  Definition linear_rel (f : V -> R -> Prop) :=
    forall v1 v2 l r1 r2,  f v1 r1 -> f v2 r2 -> f (v1 + l *: v2) (r1 + l * r2).
 
@@ -102,14 +105,13 @@ Section OrderRels.
 
  Variables (R : realFieldType) (V : lmodType R).
 
- Variables (F G : set V) (phi : V -> R) (p : V -> R).
+ Variables (F : set V) (phi : V -> R) (p : V -> R).
 
 Hypothesis linphiF : forall v1 v2 l, F v1 -> F v2 ->
                               phi (v1 + l *: v2) = phi v1 + l * (phi v2).
-
  Implicit Types (f g : V -> R -> Prop).
 
- Hypothesis F0 : F 0.
+Hypothesis F0 : F 0.
 
 Fact phi0 : phi 0 = 0.
 Proof.
@@ -117,7 +119,8 @@ have -> : 0 = 0 + (-1) *: 0 :> V by rewrite scaler0 addr0.
 by rewrite linphiF // mulN1r addrN.
 Qed.
 
- Hypothesis p_cvx : convex_fun p.
+About convex_function. 
+Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
 
  Hypothesis sup : forall (A : set R) (a m : R),
      A a -> ubd A m ->
@@ -198,6 +201,15 @@ Qed.
  (*The next lemma proves that when z is of zorn_type, it can be extended on any
   real line directed by an arbitrary vector v *)
 
+ Lemma divDl_ge0 (s t : R) (s0 : 0 <= s) (t0 : 0 <= t) : 0 <= s / (s +t).
+ Admitted.
+
+ Lemma divDl_le1 (s t : R) (s0 : 0 <= s) (t0 : 0 <= t) :  s / (s +t) <= 1.
+ Admitted.
+
+ Lemma divD_onem (s t : R) : (s / (s + t)).~ = t / (s + t).
+ Admitted. 
+
  Lemma domain_extend  (z : zorn_type) v :
      exists2 ze : zorn_type, (zorn_rel z ze) & (exists r, (carrier ze)  v r).
  Proof.
@@ -229,16 +241,11 @@ Qed.
      have /ler_pM2r <- : 0 < (s + t) ^-1 by rewrite invr_gt0 addr_gt0.
      set y1 : V := _ + _ *: _; set y2 : V :=  _ - _ *: _.
      set rhs := (X in _ <= X).
-     have step1 : p (s  / (s + t) *: y1 + t  / (s + t) *: y2) <= rhs.
-       rewrite /rhs !mulrDl ![_  * _ / _]mulrAC; apply: p_cvx.
-       split.
-        rewrite divr_ge0 //=.
-          by apply : ltW.
-          by rewrite addr_ge0 //= ; apply: ltW.
-        rewrite divr_ge0 //=.
-          by apply : ltW.
-          by rewrite  addr_ge0 //= ;  apply: ltW.
-     by rewrite -mulrDl mulfV //; apply: lt0r_neq0; rewrite addr_gt0.
+     have step1 : p (s  / (s + t) *: y1 + t  / (s + t) *: y2) <= rhs. 
+       rewrite /rhs !mulrDl ![_  * _ / _]mulrAC. 
+       pose st := Itv01 (divDl_ge0 (ltW lt0s) (ltW lt0t)) ((divDl_le1 (ltW lt0s) (ltW lt0t))). 
+       move: (p_cvx st (in_setT y1) (in_setT y2)). 
+       by rewrite /conv /= [X in ((_ <= X)-> _)]/conv /= divD_onem /=.
      apply: le_trans step1 => {rhs}.
      set u : V := (X in p X).
      have {u y1 y2} -> : u = t  / (s + t) *: x1 + s / (s + t) *: x2.
@@ -351,9 +358,7 @@ Hypothesis inf : forall (A : set R) (a m : R),
     A a ->  ibd A m ->
     {s : R | ibd A s /\ forall u, ibd A u -> u <= s}.
 
-(* F and G are of type V -> bool, as required by the Mathematical Components
-   interfaces. f is a linear application from (the entire) V to R. *)
-Variables (F G : pred V) (f : V -> R) (p : V -> R).
+Variables (F : pred V) (f : V -> R) (p : V -> R).
 
 (* MathComp seems to lack of an interface for submodules of V, so for now
    we state "by hand" that F is closed under linear combinations. *)
@@ -363,10 +368,7 @@ Hypothesis linF : forall v1 v2 l, F v1 -> F v2 -> F (v1 + l *: v2).
 Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 -> 
                               f (v1 + l *: v2) = f v1 + l * (f v2).
 
-(* In fact we do not need G to be a superset of F *)
-(* Hypothesis sFG : subpred F G. *)
-
-Hypothesis p_cvx : convex_fun p.
+Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
 
 Hypothesis f_bounded_by_p : forall x, F x -> f x <= p x.
 
@@ -384,7 +386,7 @@ have graphFP : spec F f p graphF by split.
 have [z zmax]:= zorn_rel_ex graphFP.
 pose FP v : Prop := F v.
 have FP0 : FP 0 by [].
-have [g gP]:= hb_witness linfF FP0 p_cvx sup inf zmax.
+have [g gP]:= (hb_witness linfF FP0 p_cvx sup inf graphFP zmax).
 have scalg : linear_for *%R g.
   case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
   have addg : additive g.
@@ -434,7 +436,7 @@ Hypothesis inf : forall (A : set R) (a m : R),
 
 Variables (F : subLmodType V) (f : {linear F -> R}) (p : V -> R).
 
-Hypothesis p_cvx : convex_fun p.
+Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
 
 Hypothesis f_bounded_by_p : forall x : F,  (f x) <= (p (val x)).
 
@@ -490,12 +492,12 @@ Hypothesis linF : forall (v1 v2 : V) (l : R), F v1 -> F v2 -> F (v1 + l *: v2).
 Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 -> f (v1 + l *: v2) = f v1 + l * (f v2).
 
 (*Looked a long time for within *)
-Definition continuousR_on ( G : set V ) (g : V -> R) :=
+Definition continuousR_on (G : set V) (g : V -> R) :=
   {within G, continuous g}.
 (*  (forall x, (g @ (within G (nbhs x))) --> g x).*)
 
 (*Do we need to have F x ?*)
-Definition continuousR_on_at (G : set V ) (x : V ) (g : V -> R)  :=
+Definition continuousR_on_at (G : set V) (x : V) (g : V -> R)  :=
   g @ (within G (nbhs x)) --> (g x).
 
 Lemma continuousR_scalar_on_bounded :
@@ -577,8 +579,10 @@ Theorem HB_geom_normed :
 Proof.
   move=> H; move: (continuousR_scalar_on_bounded H) => [r [ltr0 fxrx]] {H}.
   pose p:= fun x : V => `|x|*r.
- have convp: convex_fun p.
-   move=> v1 v2 l m [lt0l lt0m] addlm1 //= ; rewrite !/( p _) !mulrA -mulrDl.
+ have convp: (@convex_function _ _ [set: V] p).
+ rewrite /convex_function /conv => l v1 v2 _ _ /=.
+ rewrite [X in (_ <= X)]/conv /=.
+ move => v1 v2 l m [lt0l lt0m] addlm1 //= ; rewrite !/( p _) !mulrA -mulrDl.
    suff: `|l *: v1 + m *: v2|  <= (l * `|v1| + m * `|v2|).
      move => h; apply : ler_pM; last by [].
      by apply : normr_ge0.
