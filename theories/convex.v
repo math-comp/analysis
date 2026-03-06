@@ -220,7 +220,8 @@ Proof. by move=> ab; rewrite in_itv/= -lerN2 convN convC !conv_le ?lerN2. Qed.
 
 End conv_numDomainType.
 
-Definition convex_function (R : realType) (D : set R) (f : R -> R^o) :=
+
+Definition convex_function (R : numFieldType) (E : lmodType R) (E' := convex_lmodType E) (D : set E') (f : E' -> R^o) :=
   forall (t : {i01 R}),
-    {in D &, forall (x y : R^o), (f (x <| t |> y) <= f x <| t |> f y)%R}.
+    {in D &, forall (x y : E'), (f (x <| t |> y) <= f x <| t |> f y)%R}.
 (* TODO: generalize to convTypes once we have ordered convTypes (mathcomp 2) *)

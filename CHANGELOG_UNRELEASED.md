@@ -241,6 +241,7 @@
   + lemma `cvg_comp_shift`
   + lemma `ball_open_nbhs`
 
+  
 ### Renamed
 
 - in `topology_structure.v`
@@ -291,6 +292,8 @@
 
 - in `exp.v`:
   + lemma `derivable_powR`
+- in `convex.v`:
+  + definition `convex_function` (from a realType as domain to a convex_lmodType as domain)
 
 ### Deprecated
 
