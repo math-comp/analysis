@@ -76,7 +76,7 @@ Definition diff (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
 Local Notation "''d' f x" := (@diff _ (Phantom _ (nbhs x)) f).
 
 Fact diff_key : forall T, T -> unit. Proof. by constructor. Qed.
-CoInductive differentiable_def (f : V -> W) (x : filter_on V)
+Variant differentiable_def (f : V -> W) (x : filter_on V)
   (phF : phantom (set (set V)) x) : Prop := DifferentiableDef of
   (continuous ('d f x) /\
   f = cst (f (lim x)) + 'd f x \o center (lim x) +o_x (center (lim x))).
