@@ -83,6 +83,8 @@
 
 - in `separation_axioms.v`:
   + lemmas `limit_point_closed`
+- in `convex.v`:
+  + lemma `convexW`
 
 ### Changed
 
@@ -241,6 +243,8 @@
   + lemma `cvg_comp_shift`
   + lemma `ball_open_nbhs`
 
+- moved from `tvs.v` to `convex.v`
+  + definition `convex`
   
 ### Renamed
 

@@ -220,6 +220,22 @@ Proof. by move=> ab; rewrite in_itv/= -lerN2 convN convC !conv_le ?lerN2. Qed.
 
 End conv_numDomainType.
 
+Definition convex (R : numDomainType) (M : lmodType R)
+    (A : set (convex_lmodType M)) :=
+  forall x y lambda, x \in A -> y \in A -> x <| lambda |> y \in A.
+
+Lemma convexW (R : numDomainType) (M : lmodType R) (A : set (convex_lmodType M)) :
+  convex A <->
+  {in A &, forall x y (k : {i01 R}), 0 < k%:num -> k%:num < 1 -> x <| k |> y \in A}.
+Proof.
+split => [cA x y xA yA k k0 k1|cA x y l xA yA].
+  by have /(_ k) := cA _ _ _ xA yA.
+have [->|l0] := eqVneq l 0%:i01; first by rewrite conv0.
+have [->|l1] := eqVneq l 1%:i01; first by rewrite conv1.
+apply: cA => //.
+- by rewrite lt_neqAle eq_sym l0 ge0.
+- by rewrite lt_neqAle l1 le1.
+Qed.
 
 Definition convex_function (R : numFieldType) (E : lmodType R) (E' := convex_lmodType E) (D : set E') (f : E' -> R^o) :=
   forall (t : {i01 R}),

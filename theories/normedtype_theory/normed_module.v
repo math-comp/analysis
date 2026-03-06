@@ -7,7 +7,7 @@ From mathcomp Require Import interval_inference fieldext falgebra.
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets filter functions cardinality.
 From mathcomp Require Import set_interval ereal reals topology real_interval.
-From mathcomp Require Import prodnormedzmodule tvs num_normedtype.
+From mathcomp Require Import convex prodnormedzmodule tvs num_normedtype.
 From mathcomp Require Import ereal_normedtype pseudometric_normed_Zmodule.
 
 (**md**************************************************************************)
@@ -111,21 +111,27 @@ rewrite (@le_lt_trans _ _ (`|k - l| * M)) ?ler_wpM2l -?ltr_pdivlMr//.
 by near: l; apply: cvgr_dist_lt; rewrite // divr_gt0.
 Unshelve. all: by end_near. Qed.
 
+Local Open Scope convex_scope.
+
 (** NB: we have almost the same proof in `tvs.v` *)
 Let locally_convex :
-  exists2 B : set (set V), (forall b, b \in B -> convex b) & basis B.
+  exists2 B : set (set (convex_lmodType V)), (forall b, b \in B -> convex b) & basis B.
 Proof.
-exists [set B | exists x r, B = ball x r].
-  move=> b; rewrite inE /= => [[x]] [r] -> z y l.
-  rewrite !inE -!ball_normE /= => zx yx l0; rewrite -subr_gt0 => l1.
-  have -> : x = l *: x + (1 - l) *: x by rewrite addrC scalerBl subrK scale1r.
-  rewrite [X in `|X|](_ : _ = l *: (x - z) + (1 - l) *: (x - y)); last first.
+exists [set B | exists (x : convex_lmodType V) r, B = ball x r].
+  move=> b; rewrite inE => [[x]] [r] ->.
+  apply/convexW => z y; rewrite !inE -!ball_normE /= => zx yx l l0 l1.
+  have -> : x = x <| l |> x by rewrite convmm. (*TODO: this looks superfluous *)
+  rewrite /ball_/= inE/=.
+  rewrite [X in `|X|](_ : _ = (x - z : convex_lmodType V) <| l |>
+                              (x - y : convex_lmodType V)); last first.
     by rewrite opprD addrACA -scalerBr -scalerBr.
-  rewrite (@le_lt_trans _ _ (`|l| * `|x - z| + `|1 - l| * `|x - y|))//.
+  rewrite (@le_lt_trans _ _ ((l%:num) * `|x - z| + l%:num.~ * `|x - y|))//.
+    rewrite -[in X in _ <= X + _](@ger0_norm _ l%:num)//.
+    rewrite -[in X in _ <= _ + X](@ger0_norm _ l%:num.~) ?subr_ge0//.
     by rewrite -!normrZ ler_normD.
-  rewrite (@lt_le_trans _ _ (`|l| * r + `|1 - l| * r ))//.
-    by rewrite ltr_leD// lter_pM2l// ?normrE ?gt_eqF// ltW.
-  by rewrite !gtr0_norm// -mulrDl addrC subrK mul1r.
+  rewrite (@lt_le_trans _ _ (l%:num * r + l%:num.~ * r ))//.
+    by rewrite ltr_leD// lter_pM2l// ?normrE ?gt_eqF ?ltW// subr_gt0.
+  by rewrite -mulrDl addrC subrK mul1r.
 split; first by move=> B [x] [r] ->; exact: ball_open.
 move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
 by exists (ball x r) => //; split; [exists x, r|exact: ballxx].

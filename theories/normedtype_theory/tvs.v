@@ -2,8 +2,10 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat ssralg ssrnum vector.
 From mathcomp Require Import interval_inference.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality.
-From mathcomp Require Import set_interval reals topology num_normedtype.
+From mathcomp Require Import convex set_interval reals topology num_normedtype.
 From mathcomp Require Import pseudometric_normed_Zmodule.
 
 (**md**************************************************************************)
@@ -306,10 +308,6 @@ HB.instance Definition _ :=
 
 HB.end.
 
-Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
-  forall x y (lambda : R), x \in A -> y \in A ->
-  0 < lambda -> lambda < 1 -> lambda *: x + (1 - lambda) *: y \in A.
-
 HB.mixin Record Uniform_isTvs (R : numDomainType) E
     & Uniform E & GRing.Lmodule R E := {
   locally_convex : exists2 B : set (set E),
@@ -511,20 +509,30 @@ rewrite (@le_lt_trans _ _ (`|k - l| * M)) ?ler_wpM2l -?ltr_pdivlMr//.
 by near: l; apply: cvgr_dist_lt; rewrite // divr_gt0.
 Unshelve. all: by end_near. Qed.
 
+Local Open Scope convex_scope.
+
 Let standard_locally_convex :
   exists2 B : set (set R^o), (forall b, b \in B -> convex b) & basis B.
 Proof.
 exists [set B | exists x r, B = ball x r].
-  move=> b; rewrite inE /= => [[x]] [r] -> z y l.
-  rewrite !inE -!ball_normE /= => zx yx l0; rewrite -subr_gt0 => l1.
-  have -> : x = l *: x + (1 - l) *: x by rewrite addrC scalerBl subrK scale1r.
-  rewrite [X in `|X|](_ : _ = l *: (x - z) + (1 - l) *: (x - y)); last first.
-    by rewrite opprD addrACA -scalerBr -scalerBr.
-  rewrite (@le_lt_trans _ _ (`|l| * `|x - z| + `|1 - l| * `|x - y|))//.
-    by rewrite -!normrM ler_normD.
-  rewrite (@lt_le_trans _ _ (`|l| * r + `|1 - l| * r ))//.
-    by rewrite ltr_leD// lter_pM2l// ?normrE ?gt_eqF// ltW.
-  by rewrite !gtr0_norm// -mulrDl addrC subrK mul1r.
+  move=> b/= /[!inE]/= [[x]] [r] ->.
+  apply/convexW => z y; rewrite /ball/= !inE/= => zx yx l /[!inE]/= l0 l1.
+  (* conv lemma? *)
+  have -> : x = x <| l |> x by rewrite convmm. (*TODO: this looks superfluous *)
+  rewrite [X in `|X|](_ : _ = (x - z) <| l |> (x - y)); last first.
+    by rewrite opprD addrACA -mulrBr -mulrBr.
+ rewrite (@le_lt_trans _ _ ((`|x - z| : R^o) <| l |> `|x - y|))//.
+    rewrite -[in X in _ <= X + _](@ger0_norm _ l%:num)//.
+    rewrite -[in X in _ <= _ + X](@ger0_norm _ l%:num.~) ?subr_ge0//.
+    rewrite [X in `|X| <= _](_ : _ = l%:num * (x - z) + l%:num.~ * (x - y))//.
+    rewrite -[X in _ <= X + _]normrM.
+    rewrite -[X in _ <= _ + X]normrM.
+    by rewrite ler_normD.
+  rewrite (@lt_le_trans _ _ ((r : R^o) <| l |> r))//.
+    rewrite ltr_leD//.
+      by rewrite ltr_pM2l// normr_gt0// gt_eqF.
+    by rewrite ler_wpM2l// ?subr_ge0// ltW.
+  by rewrite convmm.
 split; first by move=> B [x] [r] ->; exact: ball_open.
 move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
 by exists (ball x r) => //; split; [exists x, r|exact: ballxx].
@@ -582,8 +590,10 @@ have : basis B.
   rewrite !nbhsE /=; split; first by exists a => //; split => //; exact: Beo.
   by exists b => //; split => // []; exact: Bfo.
 exists B => // => b; rewrite inE /= => [[]] bo [] be [] bf Bee [] Bff <-.
-move => [x1 y1] [x2 y2] l /[!inE] /= -[xe1 yf1] [xe2 yf2] l0 l1.
-by split; rewrite -inE; [apply: Bcb; rewrite ?inE|apply: Bcf; rewrite ?inE].
+move => [x1 y1] [x2 y2] l /[!inE] /= -[xe1 yf1] [xe2 yf2].
+split.
+  by apply/set_mem/Bcb; [exact/mem_set|exact/mem_set|exact/mem_set].
+by apply/set_mem/Bcf; [exact/mem_set|exact/mem_set|exact/mem_set].
 Qed.
 
 HB.instance Definition _ := PreTopologicalNmodule_isTopologicalNmodule.Build
