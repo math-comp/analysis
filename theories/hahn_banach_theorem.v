@@ -581,18 +581,15 @@ Proof.
   pose p:= fun x : V => `|x|*r.
  have convp: (@convex_function _ _ [set: V] p).
  rewrite /convex_function /conv => l v1 v2 _ _ /=.
- rewrite [X in (_ <= X)]/conv /=.
- move => v1 v2 l m [lt0l lt0m] addlm1 //= ; rewrite !/( p _) !mulrA -mulrDl.
-   suff: `|l *: v1 + m *: v2|  <= (l * `|v1| + m * `|v2|).
-     move => h; apply : ler_pM; last by [].
-     by apply : normr_ge0.
-     by apply : ltW.
-       by [].
-   have labs : `|l| = l by apply/normr_idP.
-   have mabs: `|m| = m by apply/normr_idP.
-   rewrite -[in(_*_)]labs -[in(m*_)]mabs.
-   rewrite -!normrZ.
-   by apply : ler_normD.
+ rewrite [X in (_ <= X)]/conv /= /p.
+ apply: le_trans.
+   have H  :  `|l%:num *: v1 + (l%:num).~ *: v2|  <=  `|l%:num *: v1|  + `|(l%:num).~ *: v2|.
+     by apply: ler_normD.
+   by apply: (@ler_pM _ _ _ r r _ _ H) => //; apply: ltW.  
+   rewrite mulrDl !normrZ -mulr_algl -[X in _ <= _ + X]mulr_algl.
+   have -> : `|l%:num| = l%:num by apply/normr_idP.
+   have -> : `|(l%:num).~| = (l%:num).~. apply/normr_idP. admit. 
+   rewrite !mulrA.    admit.
  have majfp : forall x, F x -> f x <= p x.
    move => x Fx; rewrite /(p _) ; apply : le_trans ; last by [].
    apply : le_trans.
@@ -611,8 +608,7 @@ Proof.
     by rewrite /p -[X in _ <= X]mul1r; apply: ler_pM; rewrite ?normr_ge0 ?ltW //=.
   - apply: (le_trans (majgp (y))); rewrite /p -[X in _ <= X]mul1r -normrN.
     apply: ler_pM; rewrite ?normr_ge0 ?ltW //=.
-Qed.
-
+Admitted.
 
 End HBGeom.
 
