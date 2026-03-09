@@ -2153,3 +2153,72 @@ exact/derivable1_diffP/derivable_horner.
 Qed.
 
 End derive_horner.
+
+Section pointwise_derivable.
+Context {R : realFieldType} {V : normedModType R} {m n : nat}.
+Implicit Types M : V -> 'M[R]_(m, n).
+
+Lemma derivable_mxP M t v :
+  derivable M t v <-> forall i j, derivable (fun x => M x i j) t v.
+Proof.
+split=> [|Mvt].
+- move=> /cvg_ex[/= l Mvtl] i j; apply/cvg_ex; exists (l i j).
+  apply/cvgrPdist_le => /= e e0.
+  move/cvgrPdist_le : Mvtl => /(_ _ e0)[/= r r0] rMvte.
+  near=> x.
+  apply: le_trans (rMvte x _ _).
+  + rewrite [leRHS]/Num.Def.normr/= mx_normrE.
+    apply: le_trans; last exact: le_bigmax.
+    by rewrite !mxE.
+  + rewrite /ball_/= sub0r normrN.
+    by near: x; exact: dnbhs0_lt.
+  + near: x; exact: nbhs_dnbhs_neq.
+- apply/cvg_ex => /=.
+  exists (\matrix_(i < m, j < n) sval (cid ((cvg_ex _).1 (Mvt i j)))).
+  apply/cvgrPdist_le => /= e e0.
+  near=> x.
+  rewrite /Num.Def.normr/= mx_normrE (bigmax_le _ (ltW e0))//= => i _.
+  rewrite !mxE/=.
+  move: i; near: x; apply: filter_forall => /= i.
+  exact: ((cvgrPdist_le _ _).1 (svalP (cid ((cvg_ex _).1 (Mvt i.1 i.2))))).
+Unshelve. all: by end_near. Qed.
+
+End pointwise_derivable.
+
+Section pointwise_derive.
+Local Open Scope classical_set_scope.
+Context {R : realFieldType} {V : normedModType R}.
+
+Lemma derive_mx {m n : nat} (M : V -> 'M[R]_(m, n)) t v :
+  derivable M t v ->
+  'D_v M t = \matrix_(i < m, j < n) 'D_v (fun t => M t i j) t.
+Proof.
+move=> /cvg_ex[/= l Mvtl]; apply/cvg_lim => //=; apply/cvgrPdist_le => /= e e0.
+move/cvgrPdist_le : (Mvtl) => /(_ (e / 2)) /[!divr_gt0]// /(_ isT)[d /= d0 dle].
+near=> x.
+rewrite [leLHS]/Num.Def.normr/= mx_normrE (bigmax_le _ (ltW e0))//= => -[i j] _.
+rewrite [in leLHS]mxE/= [X in _ + X]mxE -(subrKA (l i j)).
+rewrite (le_trans (ler_normD _ _))// (splitr e) lerD//.
+- rewrite mxE.
+  suff : (h^-1 *: (M (h *: v + t) i j - M t i j)) @[h --> 0^'] --> l i j.
+    move/cvg_lim => /=; rewrite /derive /= => ->//.
+    by rewrite subrr normr0 divr_ge0// ltW.
+  apply/cvgrPdist_le => /= r r0.
+  move/cvgrPdist_le : Mvtl => /(_ r r0)[/= s s0] sr.
+  near=> y.
+  apply: (@le_trans _ _ (`|l - y^-1 *: (M (y *: v + t) - M t)|)).
+    rewrite [in leRHS]/Num.Def.normr/= mx_normrE.
+    by under eq_bigr do rewrite !mxE; exact: (le_bigmax _ _ (i, j)).
+  rewrite sr//=; last by near: y; exact: nbhs_dnbhs_neq.
+  by rewrite sub0r normrN; near: y; exact: dnbhs0_lt.
+- rewrite mxE.
+  apply: (@le_trans _ _ `|l - x^-1 *: (M (x *: v + t) - M t)|).
+    rewrite [in leRHS]/Num.Def.normr/= mx_normrE/=.
+    under eq_bigr do rewrite !mxE.
+    apply: le_trans; last exact: le_bigmax.
+    by rewrite !mxE.
+  apply: dle => //=; last by near: x; exact: nbhs_dnbhs_neq.
+  by rewrite sub0r normrN; near: x; exact: dnbhs0_lt.
+Unshelve. all: by end_near. Qed.
+
+End pointwise_derive.

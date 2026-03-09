@@ -55,6 +55,8 @@
 - in `measurable_realfun.v`:
   + lemmas `emeasurable_fun_itv_obnd_cbndP`, `emeasurable_fun_itv_bndo_bndcP`,
     `emeasurable_fun_itv_cc`
+- in `derive.v`:
+  + lemmas `derivable_mxP`, `derive_mx`
 
 - in `subtype_topology.v`:
   + lemma `within_continuous_comp`
