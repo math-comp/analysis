@@ -1078,37 +1078,6 @@ move=> p q _ _ /=; apply: contraPP => /eqP.
 by rewrite neq_lt => /orP[] /arv /[swap] ->; rewrite ltxx.
 Qed.
 
-Section limit_point_closed.
-Context {R : archiRealFieldType}.
-Implicit Types (A : set R) (a : R).
-
-Lemma not_limit_point_set1 A a : ~ limit_point A a ->
-  exists e : {posnum R}, ball a e%:num `&` A `<=` [set a].
-Proof.
-move=> Ua; apply/not_existsP => aAa.
-apply: Ua => /= V [e /= e0 aeV].
-have /nonsubset[/= x [[aex Ax] /eqP xa]] := aAa (PosNum e0).
-by exists x; split => //; exact: aeV.
-Qed.
-
-Lemma limit_point_closed A : closed (limit_point A).
-Proof.
-rewrite -openC openE/= => a /not_limit_point_set1[e AeAa].
-exists e%:num => //= b bae.
-suff : b \notin limit_point A by rewrite notin_setE.
-have {}bae : nbhs b (ball a e%:num).
-  have [->|ab] := eqVneq a b; first exact: nbhsx_ballx.
-  exists (Num.min `|b - a| (e%:num - `|b - a|)) => /=.
-    by rewrite lt_min/= normr_gt0 subr_eq0 eq_sym ab/= subr_gt0 distrC.
-  move=> x; rewrite /ball /ball_ /= lt_min => /andP[bxba bxe].
-  by rewrite -(subrKA b) (le_lt_trans (ler_normD _ _))// -ltrBrDl (distrC a).
-rewrite notin_setE => /limit_point_infinite_setP/(_ _ bae); apply.
-exact: (sub_finite_set AeAa).
-Qed.
-
-End limit_point_closed.
-Arguments limit_point_closed {R} A.
-
 Lemma limit_point_setD {R : archiRealFieldType} (A V : set R) a :
   finite_set V -> limit_point A a -> limit_point (A `\` V) a.
 Proof.
