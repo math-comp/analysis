@@ -201,6 +201,31 @@ Arguments hausdorff_space : clear implicits.
 Arguments accessible_space : clear implicits.
 Arguments kolmogorov_space : clear implicits.
 
+Lemma limit_point_closed {T : topologicalType} (A : set T) :
+  accessible_space T -> closed (limit_point A).
+Proof.
+move=> accT; rewrite -openC openE/= => a.
+rewrite /setC/= limit_pointNE => -[X].
+rewrite nbhsE/= => -[U oaU UX] XAa.
+rewrite /interior nbhsE/=.
+exists U => // x Ux /=.
+rewrite limit_pointNE.
+have [xa|xneqa] := eqVneq x a.
+  exists U; rewrite xa; first exact: open_nbhs_nbhs.
+  by apply: subset_trans XAa; exact: setIS.
+exists (U `&` [set~ a]).
+  apply: open_nbhs_nbhs; split.
+    apply: openI; first by case: oaU.
+    by rewrite openC; exact: accessible_closed_set1.
+  by split => //; exact/eqP.
+apply: (@subset_trans _ (A `&` (X `&` [set~ a]))).
+  by apply: setIS; exact: setSI.
+apply: (@subset_trans _ ([set a] `&` [set~ a])).
+  by rewrite setIA; exact: setSI.
+by rewrite setICr.
+Qed.
+Arguments limit_point_closed {T} A.
+
 Lemma subspace_hausdorff {T : topologicalType} (A : set T) :
   hausdorff_space T -> hausdorff_space (subspace A).
 Proof.

@@ -80,6 +80,11 @@
   + lemmas `derivable0`, `derive0`, `is_derive0`
 - in `normed_module.v`:
   + lemmas `not_limit_point_set1`, `limit_point_closed`
+- in `topology_structure.v`:
+  + lemma `limit_pointNE`
+
+- in `separation_axioms.v`:
+  + lemmas `limit_point_closed`
 
 ### Changed
 
