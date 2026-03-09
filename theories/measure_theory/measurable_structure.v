@@ -136,6 +136,8 @@ Reserved Notation "'d<<' D '>>'".
 Reserved Notation "mu .-measurable" (format "mu .-measurable").
 Reserved Notation "G .-sigma" (format "G .-sigma").
 Reserved Notation "G .-sigma.-measurable" (format "G .-sigma.-measurable").
+Reserved Notation "f .-preimage" (format "f .-preimage").
+Reserved Notation "f .-preimage.-measurable" (format "f .-preimage.-measurable").
 Reserved Notation "'<<l' D , G '>>'" (format "'<<l'  D ,  G  '>>'").
 Reserved Notation "'<<l' G '>>'" (format "'<<l'  G  '>>'").
 Reserved Notation "'<<d' G '>>'" (format "'<<d'  G '>>'").
