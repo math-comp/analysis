@@ -202,14 +202,23 @@ Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
   real line directed by an arbitrary vector v *)
 
  Lemma divDl_ge0 (s t : R) (s0 : 0 <= s) (t0 : 0 <= t) : 0 <= s / (s +t).
- Admitted.
-
+ by apply: divr_ge0 => //; apply: addr_ge0.
+ Qed.
+ 
  Lemma divDl_le1 (s t : R) (s0 : 0 <= s) (t0 : 0 <= t) :  s / (s +t) <= 1.
- Admitted.
+ move: s0; rewrite le0r => /orP []; first by move => /eqP ->; rewrite mul0r //.
+ move: t0; rewrite le0r => /orP [].
+   by move => /eqP -> s0; rewrite addr0 divff //=; apply: lt0r_neq0. 
+ by move=> t0 s0; rewrite ler_pdivrMr ?mul1r ?addr_gt0 // lerDl ltW.
+ Qed.    
 
- Lemma divD_onem (s t : R) : (s / (s + t)).~ = t / (s + t).
- Admitted. 
-
+ Lemma divD_onem (s t : R) (s0 : 0 < s) (t0 : 0 < t): (s / (s + t)).~ = t / (s + t).
+ rewrite /(_).~.
+ suff -> : 1 = (s + t)/(s + t) by rewrite -mulrBl -addrAC subrr add0r. 
+ rewrite divff // /eqP addr_eq0; apply/negbT/eqP => H.
+ by move: s0; rewrite H oppr_gt0 ltNge; move/negP; apply; rewrite ltW.
+ Qed.
+ 
  Lemma domain_extend  (z : zorn_type) v :
      exists2 ze : zorn_type, (zorn_rel z ze) & (exists r, (carrier ze)  v r).
  Proof.
@@ -386,7 +395,7 @@ have graphFP : spec F f p graphF by split.
 have [z zmax]:= zorn_rel_ex graphFP.
 pose FP v : Prop := F v.
 have FP0 : FP 0 by [].
-have [g gP]:= (hb_witness linfF FP0 p_cvx sup inf graphFP zmax).
+have [g gP]:= (hb_witness linfF FP0 p_cvx sup inf zmax).
 have scalg : linear_for *%R g.
   case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
   have addg : additive g.
@@ -585,12 +594,13 @@ Proof.
  apply: le_trans.
    have H  :  `|l%:num *: v1 + (l%:num).~ *: v2|  <=  `|l%:num *: v1|  + `|(l%:num).~ *: v2|.
      by apply: ler_normD.
-   by apply: (@ler_pM _ _ _ r r _ _ H) => //; apply: ltW.  
-   rewrite mulrDl !normrZ -mulr_algl -[X in _ <= _ + X]mulr_algl.
+   by apply: (@ler_pM _ _ _ r r _ _ H) => //; apply: ltW.   
+   rewrite mulrDl !normrZ -mulr_algl -[X in _ <= _ + X]mulr_algl !scaler1.
+   (* where is the lemma combining mulr_algl and scaler1, easier to search *)
    have -> : `|l%:num| = l%:num by apply/normr_idP.
-   have -> : `|(l%:num).~| = (l%:num).~. apply/normr_idP. admit. 
-   rewrite !mulrA.    admit.
- have majfp : forall x, F x -> f x <= p x.
+   have -> : `|(l%:num).~| = (l%:num).~ by apply/normr_idP; apply: onem_ge0.
+   by rewrite !mulrA. 
+   have majfp : forall x, F x -> f x <= p x.
    move => x Fx; rewrite /(p _) ; apply : le_trans ; last by [].
    apply : le_trans.
    apply : ler_norm.
@@ -608,7 +618,7 @@ Proof.
     by rewrite /p -[X in _ <= X]mul1r; apply: ler_pM; rewrite ?normr_ge0 ?ltW //=.
   - apply: (le_trans (majgp (y))); rewrite /p -[X in _ <= X]mul1r -normrN.
     apply: ler_pM; rewrite ?normr_ge0 ?ltW //=.
-Admitted.
+Qed.     
 
 End HBGeom.
 
