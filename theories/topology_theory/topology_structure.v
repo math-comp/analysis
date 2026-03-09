@@ -693,10 +693,9 @@ Lemma limit_pointNE A a : (~ limit_point A a) =
   exists2 X : set T, nbhs a X & A `&` X `<=` [set a].
 Proof.
 rewrite /limit_point/= -existsNE exists2E; apply: eq_exists => X/=.
-rewrite not_implyE; congr and.
-rewrite -forallNE; apply: eq_forall => x/=.
-rewrite and3E not_andE orC -implyE; congr (_ -> _).
-by rewrite -(propext (rwP negP)) not_notE -(propext (rwP eqP)).
+rewrite not_implyE -forallNE; congr and; apply: eq_forall => t/=.
+rewrite and3E not_andE (propext (rwP negP)) negbK implyE orC.
+by rewrite -(propext (rwP eqP)).
 Qed.
 
 Definition isolated (A : set T) (x : T) :=
