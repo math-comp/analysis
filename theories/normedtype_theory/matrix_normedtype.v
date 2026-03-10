@@ -219,6 +219,28 @@ HB.instance Definition _ :=
 
 End matrix_pseudoMetricNormedZmod.
 
+Section vector_continuous.
+Context {R : realFieldType} {n : nat}.
+Import numFieldNormedType.Exports.
+
+Lemma within_continuous_coord A (f : R -> 'rV[R]_n) :
+  {within A, continuous f} <->
+  forall i, {within A, continuous (fun x => f x ord0 i)}.
+Proof.
+split=> [Af i|Af].
+- apply: (within_continuous_comp _ f (fun M => M ord0 i)) => //= x _.
+  exact: coord_continuous.
+- apply/subspace_continuousP => /= x Ax; apply/cvgrPdist_le => /= e e0.
+  rewrite near_withinE; near=> t => At.
+  rewrite /Num.norm/= mx_normrE (bigmax_le _ (ltW e0))//= => -[i j] _ /=.
+  rewrite {i}(ord1 i) !mxE.
+  move: j At; near: t; apply: filter_forall => /= j.
+  have /subspace_continuousP/(_ x Ax)/cvgr_dist_le/(_ _ e0) := Af j.
+  by rewrite near_withinE.
+Unshelve. all: by end_near. Qed.
+
+End vector_continuous.
+
 Lemma bounded_closed_compact (R : realType) n (A : set 'rV[R]_n) :
   bounded_set A -> closed A -> compact A.
 Proof.
