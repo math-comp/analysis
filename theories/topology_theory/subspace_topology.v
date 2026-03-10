@@ -705,3 +705,27 @@ HB.instance Definition _ :=
   @isContinuous.Build (subspace A) Z (g \o f) continuous_comp_subproof.
 
 End continuous_fun_comp.
+
+Section continuous_patch.
+Context {U : topologicalType} {V : topologicalType}.
+Variables (A : set U) (B : set U) (f : U -> V) (g : U -> V).
+Hypothesis cont1 : {within A, continuous f}.
+Hypothesis cont2 : {within B, continuous g}.
+Hypothesis closedA : closed A.
+Hypothesis closedB : closed B.
+Hypothesis eq_AB : forall x, x \in A `&` B -> f x = g x.  
+
+Lemma within_continuous_patch : {within A `|` B, continuous (patch g A f)}.
+Proof.
+apply: withinU_continuous => //.
+  have : {in A, f =1 patch g A f } by rewrite /patch => r ->.
+  by move/subspace_eq_continuous; apply.
+have : {in B, g =1 patch g A f }.
+  move=> r rab.
+  rewrite /patch; case: ifPn => [xab | //].
+  apply/esym/eq_AB.
+  by rewrite inE; split; apply set_mem.
+by move/subspace_eq_continuous; apply.
+Qed.
+
+End continuous_patch.
