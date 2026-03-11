@@ -525,12 +525,7 @@ exists [set B | exists x r, B = ball x r].
   rewrite (@lt_le_trans _ _ (`|l| * r + `|1 - l| * r ))//.
     by rewrite ltr_leD// lter_pM2l// ?normrE ?gt_eqF// ltW.
   by rewrite !gtr0_norm// -mulrDl addrC subrK mul1r.
-split.
-  move=> B [x] [r] ->.
-  rewrite openE/= -ball_normE/= /interior => y /= bxy; rewrite -nbhs_ballE.
-  exists (r - `|x - y|) => /=; first by rewrite subr_gt0.
-  move=> z; rewrite -ball_normE/= ltrBrDr.
-  by apply: le_lt_trans; rewrite [in leRHS]addrC ler_distD.
+split; first by move=> B [x] [r] ->; exact: ball_open.
 move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
 by exists (ball x r) => //; split; [exists x, r|exact: ballxx].
 Qed.
