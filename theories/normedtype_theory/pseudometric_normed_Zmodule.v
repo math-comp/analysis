@@ -171,6 +171,17 @@ Local Notation ball_norm := (ball_ (@Num.norm K V)).
 Lemma ball_normE : ball_norm = ball.
 Proof. by rewrite pseudo_metric_ball_norm. Qed.
 
+Lemma ball_open (x : V) (r : K) : open (ball x r).
+Proof.
+rewrite openE/= -ball_normE/= /interior => y /= bxy; rewrite -nbhs_ballE.
+exists (r - `|x - y|) => /=; first by rewrite subr_gt0.
+move=> z; rewrite -ball_normE/= ltrBrDr.
+by apply: le_lt_trans; rewrite [in leRHS]addrC ler_distD.
+Qed.
+
+Lemma ball_open_nbhs (x : V) (r : K) : 0 < r -> open_nbhs x (ball x r).
+Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
+
 (**md Neighborhoods defined by the norm: *)
 Local Notation nbhs_norm := (nbhs_ball_ ball_norm).
 
@@ -312,6 +323,20 @@ Proof. by rewrite addrC nbhsDl -propeqE; apply: eq_near => ?; rewrite addrC. Qed
 
 Lemma nbhs0P (P : set V) x : (\near x, P x) <-> (\forall e \near 0, P (x + e)).
 Proof. by rewrite -nbhsDr addr0. Qed.
+
+Lemma near_shift (y x : V) (P : set V) :
+  (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
+Proof.
+rewrite propeqE nbhs0P [X in _ <-> X]nbhs0P/= -propeqE.
+by apply: eq_near => e; rewrite [_ + _ + _]addrC subrKA.
+Qed.
+
+Lemma cvg_comp_shift {T : Type} (x y : V) (f : V -> T) :
+  (f \o shift x) @ y = f @ (y + x).
+Proof.
+rewrite funeqE => A; rewrite /= !near_simpl (near_shift (y + x)).
+by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
+Qed.
 
 End pseudoMetricNormedZmod_numDomainType.
 #[global] Hint Resolve normr_ge0 : core.

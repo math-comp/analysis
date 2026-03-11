@@ -564,7 +564,7 @@ have {}Kcmf : K `<=` cover [set i | HL f i > c%:E] (fun i => ball i (r_ i)).
 have {Kcmf}[D Dsub Kcover] : finite_subset_cover [set i | c%:E < HL f i]
     (fun i => ball i (r_ i)) K.
   move: cK; rewrite compact_cover => /(_ _ _ _ _ Kcmf); apply.
-  by move=> /= x cMfx; exact/ball_open/r_pos.
+  by move=> /= x cMfx; exact: ball_open.
 have KDB : K `<=` cover [set` D] B.
   by apply: (subset_trans Kcover) => /= x [r Dr] rx; exists r.
 have is_ballB i : is_ball (B i) by exact: is_ball_ball.
