@@ -81,7 +81,7 @@
 - in `normed_module.v`:
   + lemmas `not_limit_point_set1`, `limit_point_closed`
 - in `topology_structure.v`:
-  + lemma `limit_pointNE`
+  + lemma `not_limit_pointE`
 
 - in `separation_axioms.v`:
   + lemmas `limit_point_closed`

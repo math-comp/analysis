@@ -205,11 +205,11 @@ Lemma limit_point_closed {T : topologicalType} (A : set T) :
   accessible_space T -> closed (limit_point A).
 Proof.
 move=> accT; rewrite -openC openE/= => a.
-rewrite /setC/= limit_pointNE => -[X].
+rewrite /setC/= not_limit_pointE => -[X].
 rewrite nbhsE/= => -[U oaU UX] XAa.
 rewrite /interior nbhsE/=.
 exists U => // x Ux /=.
-rewrite limit_pointNE.
+rewrite not_limit_pointE.
 have [xa|xneqa] := eqVneq x a.
   exists U; rewrite xa; first exact: open_nbhs_nbhs.
   by apply: subset_trans XAa; exact: setIS.
