@@ -27,36 +27,9 @@ Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
 Local Open Scope ring_scope.
 Local Open Scope convex_scope.
+Local Open Scope real_scope.
  Import GRing.Theory.
  Import Num.Theory.
-
-Section SetPredRels.
-
- Variables T U : Type.
- Implicit Types f g : T -> U -> Prop.
- (* Functional (possibly empty or partial) graphs *)
- Definition functional f :=
-   forall v r1 r2, f v r1 -> f v r2 -> r1 = r2.
-
-End SetPredRels.
-
-
-Section OrderRels.
-
- Variable (R : numDomainType).
-
- (* Upper bound *)
- Definition ubd (s : set R) (a : R) := forall x, s x -> x <= a.
-
- (* Lower bound *)
- Definition ibd (s : set R) (a : R) := forall x, s x -> a <= x.
-
- (* the intension is that f is the graph of a function bounded by p *)
- Definition maj_by T p (f : T -> R -> Prop) :=
-   forall v r, f v r -> r <= p v.
-
- End OrderRels.
-
 
  Section LinAndCvx.
 
@@ -103,7 +76,7 @@ Section OrderRels.
 
  Section HBPreparation.
 
- Variables (R : realFieldType) (V : lmodType R).
+ Variables (R : realType) (V : lmodType R).
 
  Variables (F : set V) (phi : V -> R) (p : V -> R).
 
@@ -122,18 +95,13 @@ Qed.
 About convex_function. 
 Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
 
- Hypothesis sup : forall (A : set R) (a m : R),
-     A a -> ubd A m ->
-     {s : R | ubd A s /\ forall u, ubd A u -> s <= u}.
-
- Hypothesis inf : forall (A : set R) (a m : R),
-     A a ->  ibd A m ->
-     {s : R | ibd A s /\ forall u, ibd A u -> u <= s}.
-
- (* f is a subset of (V x R), if v is in pi_1 f, then (v, phi v) is in f.
-    Otherwise said, the graph of phi restructed to pi_1 f is included in f*)
-
  Definition prol f := forall v, F v -> f v (phi v).
+
+ Definition maj_by T p (f : T -> R -> Prop) :=
+   forall v r, f v r -> r <= p v.
+
+  Definition functional f :=
+   forall v r1 r2, f v r1 -> f v r2 -> r1 = r2.
 
  Definition spec (f : V -> R -> Prop) :=
    [/\ functional f, linear_rel f, maj_by p f &  prol f].
@@ -269,13 +237,21 @@ Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
        [/\ c x1 r1, 0 < s1 & r = a x1 r1 s1].
      pose Pb : set R := fun r =>  exists x1, exists r1, exists s1,
        [/\ c x1 r1, 0 < s1 & r = b x1 r1 s1].
-     have exPa : Pa (a 0 0 1) by exists 0; exists 0; exists 1; split.
-     have exPb : Pb (b 0 0 1) by exists 0; exists 0; exists 1; split.
-     have majPa x : Pa x -> x <= b 0 0 1.
-       move=> [y [r [s [cry lt0s ->]]]]; apply: le_a_b => //; exact: ltr01.
-     have minPb x : Pb x -> a 0 0 1 <= x.
-       move=> [y [r [s [cry lt0s ->]]]]; apply: le_a_b => //; exact: ltr01.
-     have [sa [ubdP saP]]:= sup exPa majPa; have [ib [ibdP ibP]]:= inf exPb minPb.
+     (* have exPb : Pb (b 0 0 1) by exists 0; exists 0; exists 1; split. *)
+     (* have minPb x : Pb x -> a 0 0 1 <= x. *)
+     (*   move=> [y [r [s [cry lt0s ->]]]]; apply: le_a_b => //; exact: ltr01. *)
+     (* have [ib [ibdP ibP]]:= inf exPb minPb. (*To be deleted*) *)
+     pose sa := reals.sup Pa. (* This is why we need realTypes, we need P with values in a realType *)
+     have Pax : Pa !=set0 by exists (a 0 0 1); exists 0; exists 0; exists 1; split.
+     have ubdP : ubound Pa sa.
+       apply: sup_upper_bound; split => //=.
+       exists (b 0 0 1) =>/= x [y [r [s [cry lt0s ->]]]]; apply: le_a_b => //; exact: ltr01.
+     have saP: forall u : R, ubound Pa u -> sa <= u by move=> u; apply: ge_sup.  
+     pose ib := reals.inf Pb. (* This is why we need realTypes, we need P with values in a realType *)
+     have Pbx : Pb !=set0 by exists (b 0 0 1); exists 0; exists 0; exists 1; split.
+     have ibdP : lbound Pb ib.
+       by apply: ge_inf; exists (a 0 0 1) =>/= x [y [r [s [cry lt0s ->]]]]; apply: le_a_b => //; exact: ltr01.
+     have ibP: forall u : R, lbound Pb u -> u <= ib by move=> u; apply: lb_le_inf Pbx.
      have le_sa_ib : sa <= ib.
        apply: saP=> r' [y [r [l [cry lt0l -> {r'}]]]].
        apply: ibP=> s' [z [s [m [crz lt0m -> {s'}]]]]; exact: le_a_b.
@@ -356,18 +332,10 @@ Qed.
    on R. We do not make use of the 'vector' interface as the latter enforces
    finite dimension. *)
   
-Variables (R : realFieldType) (V : lmodType R).
+ Variables (R : realType) (V : lmodType R) (f: V -> R).
 
-Hypothesis sup : forall (A : set R) (a m : R),
-    A a -> ubd A m ->
-    {s : R | ubd A s /\ forall u, ubd A u -> s <= u}. 
+ Variables (F : set V) (phi : V -> R) (p : V -> R).
 
-(* This could be obtained from sup but we are lazy here *)
-Hypothesis inf : forall (A : set R) (a m : R),
-    A a ->  ibd A m ->
-    {s : R | ibd A s /\ forall u, ibd A u -> u <= s}.
-
-Variables (F : pred V) (f : V -> R) (p : V -> R).
 
 (* MathComp seems to lack of an interface for submodules of V, so for now
    we state "by hand" that F is closed under linear combinations. *)
@@ -389,13 +357,12 @@ have lin_graphF : linear_rel graphF.
   move=> v1 v2 l r1 r2 [Fv1 ->] [Fv2 ->]; split; first exact: linF.
   by rewrite linfF.
 have maj_graphF : maj_by p graphF by move=> v r [Fv ->]; exact: f_bounded_by_p.
-
 have prol_graphF : prol F f graphF by move=> v Fv; split.
 have graphFP : spec F f p graphF by split.
 have [z zmax]:= zorn_rel_ex graphFP.
 pose FP v : Prop := F v.
 have FP0 : FP 0 by [].
-have [g gP]:= (hb_witness linfF FP0 p_cvx sup inf zmax).
+have [g gP]:= (hb_witness linfF FP0 p_cvx zmax).
 have scalg : linear_for *%R g.
   case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
   have addg : additive g.
@@ -432,16 +399,7 @@ Section HahnBanachnew.
    on R. We do not make use of the 'vector' interface as the latter enforces
    finite dimension. *)
 
-Variables (R : realFieldType) (V : lmodType R).
-
-Hypothesis sup : forall (A : set R) (a m : R),
-    A a -> ubd A m ->
-    {s : R | ubd A s /\ forall u, ubd A u -> s <= u}.
-
-(* This could be obtained from sup but we are lazy here *)
-Hypothesis inf : forall (A : set R) (a m : R),
-    A a ->  ibd A m ->
-    {s : R | ibd A s /\ forall u, ibd A u -> u <= s}.
+Variables (R : realType) (V : lmodType R).
 
 Variables (F : subLmodType V) (f : {linear F -> R}) (p : V -> R).
 
@@ -463,7 +421,7 @@ have [z zmax]:= zorn_rel_ex graphFP.
 *)
 pose FP v : Prop := F v.
 have FP0 : FP 0 by [].
-have [g gP]:= hb_witness linfF FP0 p_cvx sup inf zmax.
+have [g gP]:= hb_witness linfF FP0 p_cvx inf zmax.
 have scalg : linear_for *%R g.
   case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
   have addg : additive g.
@@ -495,6 +453,7 @@ End HahnBanachnew.
 
 
 Section HBGeom.
+(* TODO : make R : realFieldtype *)
 Variable (R : realType) (V : normedModType R) (F : pred V) (f : V -> R) (F0 : F 0).
 
 Hypothesis linF : forall (v1 v2 : V) (l : R), F v1 -> F v2 -> F (v1 + l *: v2).
@@ -553,34 +512,8 @@ Proof.
  by rewrite add0r.
 Qed.
 
-Lemma mymysup : forall (A : set R) (a m : R),
-     A a -> ubound A m ->
-     {s : R | ubound A s /\ forall u, ubound A u -> s <= u}.
-Proof.
-  move => A a m Aa majAm.
-  have [A0 Aub]: has_sup A. split; first by exists a.
-    by exists m => x; apply majAm.
-  exists (reals.sup A).
-split.
-  by apply: sup_upper_bound.
-  by move => x; apply: sup_le_ub.
-Qed.
-
-(*TODO: should be lb_le_inf: *)
-Lemma mymyinf : forall (A : set R) (a m : R),
-     A a ->  lbound A m ->
-     {s : R | lbound A s /\ forall u, lbound A u -> u <= s}.
-  move => A a m Aa minAm.
-  have [A0 Alb]: has_inf A. split; first by exists a.
-    by exists m => x; apply minAm.
-  exists (reals.inf A).
-  split.
-    exact: ge_inf.
-  by move => x; apply: lb_le_inf.
-Qed.
-
 Notation myHB :=
-  (HahnBanachold mymysup mymyinf F0 linF linfF).
+  (HahnBanachold F0 linF linfF).
 
 Theorem HB_geom_normed :
   continuousR_on_at F 0 f ->
@@ -594,9 +527,8 @@ Proof.
  apply: le_trans.
    have H  :  `|l%:num *: v1 + (l%:num).~ *: v2|  <=  `|l%:num *: v1|  + `|(l%:num).~ *: v2|.
      by apply: ler_normD.
-   by apply: (@ler_pM _ _ _ r r _ _ H) => //; apply: ltW.   
-   rewrite mulrDl !normrZ -mulr_algl -[X in _ <= _ + X]mulr_algl !scaler1.
-   (* where is the lemma combining mulr_algl and scaler1, easier to search *)
+   by apply: (@ler_pM _ _ _ r r _ _ H) => //; apply: ltW.
+   rewrite mulrDl !normrZ -![_ *: _]/(_ * _).
    have -> : `|l%:num| = l%:num by apply/normr_idP.
    have -> : `|(l%:num).~| = (l%:num).~ by apply/normr_idP; apply: onem_ge0.
    by rewrite !mulrA. 
