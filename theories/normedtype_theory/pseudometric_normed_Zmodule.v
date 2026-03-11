@@ -11,7 +11,7 @@ From mathcomp Require Import prodnormedzmodule num_normedtype.
 (*                                                                            *)
 (* This directory (`normed_theory`) file extends the topological hierarchy    *)
 (* with norm-related notions. Note that balls in `topology_theory` are not    *)
-(* necessarily open, here they are.                                           *)
+(* necessarily ope, here they are.                                           *)
 (*                                                                            *)
 (* ## Helper functions                                                        *)
 (* To be used in `normed_module.v`.                                           *)
