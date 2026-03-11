@@ -122,7 +122,8 @@ rewrite [X in `|X|](_ : _ = (x - z : convex_lmodType _) <| l |>
   by rewrite opprD -[in LHS](convmm l x) addrACA -scalerBr -scalerBr.
 rewrite (le_lt_trans (ler_normD _ _))// !normrZ.
 rewrite (@ger0_norm _ l%:num)// (@ger0_norm _ l%:num.~) ?onem_ge0//.
-by rewrite -[ltRHS]mul1r -(add_onemK l%:num) mulrDl ltrD// ltr_pM2l// onem_gt0.
+rewrite -[ltRHS]mul1r -(add_onemK l%:num) [ltRHS]mulrDl.
+by rewrite ltrD// ltr_pM2l// onem_gt0.
 Qed.
 
 (** NB: we have almost the same proof in `tvs.v` *)
