@@ -28,18 +28,15 @@ Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Local Open Scope ring_scope.
 Local Open Scope convex_scope.
 Local Open Scope real_scope.
- Import GRing.Theory.
- Import Num.Theory.
+Import GRing.Theory.
+Import Num.Theory.
 
- Section LinAndCvx.
+ 
+Module Linrel.
+Section Linrelsec.
 
  Variables (R : numDomainType) (V : lmodType R).
- (*
- Check convex_function.
- Definition convex_function (p : V -> R) :=  forall v1 v2 l m,
-   ( 0 <= l /\ 0 <= m) ->  l + m = 1 -> p (l *: v1 + m *: v2) <= l * (p v1) + m * (p v2).
-  *)
- 
+
  Definition linear_rel (f : V -> R -> Prop) :=
    forall v1 v2 l r1 r2,  f v1 r1 -> f v2 r2 -> f (v1 + l *: v2) (r1 + l * r2).
 
@@ -71,47 +68,45 @@ Local Open Scope real_scope.
    exists v' : V, exists r' : R, exists lambda : R,
          [/\ f v' r', v = v' + lambda *: w & r = r' + lambda * a].
 
- End LinAndCvx.
+End Linrelsec.
+End Linrel.
 
 
- Section HBPreparation.
+Section HBPreparation.
+Import Linrel.
+ (* TODO: getting rid of relations and linear relations to make Zorn act on functions only ? *)
 
  Variables (R : realType) (V : lmodType R).
 
- Variables (F : set V) (phi : V -> R) (p : V -> R).
-
+ Variables (F : subLmodType V) (phi : {linear F -> R}) (p : V -> R).
+ 
 Hypothesis linphiF : forall v1 v2 l, F v1 -> F v2 ->
                               phi (v1 + l *: v2) = phi v1 + l * (phi v2).
- Implicit Types (f g : V -> R -> Prop).
-
-Hypothesis F0 : F 0.
-
-Fact phi0 : phi 0 = 0.
-Proof.
-have -> : 0 = 0 + (-1) *: 0 :> V by rewrite scaler0 addr0.
-by rewrite linphiF // mulN1r addrN.
-Qed.
-
-About convex_function. 
+Implicit Types (f g : V -> R -> Prop).
+ 
 Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
 
- Definition prol f := forall v, F v -> f v (phi v).
+Definition prol f := forall v, F v -> f (val v) (phi v).
 
- Definition maj_by T p (f : T -> R -> Prop) :=
+Definition maj_by T p (f : T -> R -> Prop) :=
    forall v r, f v r -> r <= p v.
 
-  Definition functional f :=
-   forall v r1 r2, f v r1 -> f v r2 -> r1 = r2.
+Definition functional f :=
+  forall v r1 r2, f v r1 -> f v r2 -> r1 = r2.
 
- Definition spec (f : V -> R -> Prop) :=
+Definition linear_rel (f : V -> R -> Prop) :=
+   forall v1 v2 l r1 r2,  f v1 r1 -> f v2 r2 -> f (v1 + l *: v2) (r1 + l * r2).
+
+Definition spec (f : V -> R -> Prop) :=
    [/\ functional f, linear_rel f, maj_by p f &  prol f].
 
- Record zorn_type : Type := ZornType
+Record zorn_type : Type := ZornType
    {carrier : V -> R -> Prop; specP : spec carrier}.
 
- Hypothesis spec_phi : spec (fun v r => F v /\ r = phi v).
+(*Variables (v : V) (r : R). Check (v \in (val @` [set: F])).*)
+Hypothesis spec_phi : spec (fun v r =>  exists2 y : F, v = val y & r = phi y).
 
- Definition zphi := ZornType spec_phi.
+Definition zphi := ZornType spec_phi.
 
  Lemma zorn_type_eq z1 z2 : carrier z1 = carrier z2 -> z1 = z2.
  Proof.
@@ -194,7 +189,8 @@ Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
    by case=> r rP; exists z => //; exists r.
  case: z => [c [fs1 ls1 ms1 ps1]] /= nzv.
  have c00 : c 0 0.
-   rewrite -phi0; exact: ps1.
+   have <- : phi 0 = 0 by rewrite linear0.
+   by move: ps1; rewrite /prol /= => /(_ 0 _) /=; rewrite GRing.val0; apply. 
  have [a aP] : exists a,  forall (x : V) (r lambda : R),
        c x r -> r + lambda * a <= p (x + lambda *: v).
    suff [a aP] : exists a,  forall (x : V) (r lambda : R),
@@ -237,11 +233,7 @@ Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
        [/\ c x1 r1, 0 < s1 & r = a x1 r1 s1].
      pose Pb : set R := fun r =>  exists x1, exists r1, exists s1,
        [/\ c x1 r1, 0 < s1 & r = b x1 r1 s1].
-     (* have exPb : Pb (b 0 0 1) by exists 0; exists 0; exists 1; split. *)
-     (* have minPb x : Pb x -> a 0 0 1 <= x. *)
-     (*   move=> [y [r [s [cry lt0s ->]]]]; apply: le_a_b => //; exact: ltr01. *)
-     (* have [ib [ibdP ibP]]:= inf exPb minPb. (*To be deleted*) *)
-     pose sa := reals.sup Pa. (* This is why we need realTypes, we need P with values in a realType *)
+     pose sa := reals.sup Pa. (* This is why we need realTypes, we need p with values in a realType *)
      have Pax : Pa !=set0 by exists (a 0 0 1); exists 0; exists 0; exists 1; split.
      have ubdP : ubound Pa sa.
        apply: sup_upper_bound; split => //=.
@@ -265,14 +257,16 @@ Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
      - suff : a x r l <= alpha.
          rewrite /a. move/ler_pdivrMr: lt0l->.
          by rewrite lerBlDl -lerBlDr mulrC.
-       by apply: le_trans le_sa_alpha; apply: ubdP; exists x; exists r; exists l.
- pose z' := add_line c v a.
+         by apply: le_trans le_sa_alpha; apply: ubdP; exists x; exists r; exists l.
+ pose z' := fun k r =>
+   exists v' : V, exists r' : R, exists lambda : R,
+         [/\ c v' r', k = v' + lambda *: v & r = r' + lambda * a].
  have z'_extends :  forall v r, c v r -> z' v r.
    move=> x r cxr; exists x; exists r; exists 0; split=> //.
    - by rewrite scale0r addr0.
    - by rewrite mul0r addr0.
  have z'_prol : prol z'.
-   move=> x /ps1 cxphix; exists x; exists (phi x); exists 0; split=> //.
+   move=> x /ps1 cxphix; exists (val x); exists (phi x); exists 0; split=> //.
    - by rewrite scale0r addr0.
    - by rewrite mul0r addr0.
  - have z'_maj_by_p : maj_by p z'.
@@ -291,7 +285,10 @@ Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
    have h1 (x : V) (r l : R) : x = l *: v ->  c x r -> x = 0 /\ l = 0.
      move=> -> cxr; case: (l =P 0) => [-> | /eqP ln0]; first by rewrite scale0r.
      suff cvs: c v (l^-1 * r) by elim:nzv; exists (l^-1 * r).
-     suff -> : v = l ^-1 *: (l *: v) by exact: linrel_scale.
+     suff -> : v = l ^-1 *: (l *: v).
+       have -> :
+       c ( l ^-1 *: (l *: v)) (l^-1 * r) =  c (0 + l ^-1 *: (l *: v)) (0 + l^-1 * r) by rewrite !add0r.
+       by apply: ls1=> //; apply: linrel_00 fxr.
      by rewrite scalerA mulVf ?scale1r.
    have [rw12 erw12] : exists r,  c (w1 - w2) r.
      exists (s1 + (-1) * s2).
@@ -326,49 +323,43 @@ Qed.
  End HBPreparation.
 
 
- Section HahnBanachold.
+Section HahnBanachold.
+Import Linrel.
 (* Now we prove HahnBanach on functions*)
 (* We consider R a real (=ordered) field with supremum, and V a (left) module
    on R. We do not make use of the 'vector' interface as the latter enforces
    finite dimension. *)
   
- Variables (R : realType) (V : lmodType R) (f: V -> R).
+ Variables (R : realType) (V : lmodType R).
 
- Variables (F : set V) (phi : V -> R) (p : V -> R).
+ Variables (F : subLmodType V) (f : {linear F -> R}) (p : V -> R).
 
 
 (* MathComp seems to lack of an interface for submodules of V, so for now
    we state "by hand" that F is closed under linear combinations. *)
-Hypothesis F0 : F 0.
-Hypothesis linF : forall v1 v2 l, F v1 -> F v2 -> F (v1 + l *: v2).
-
-Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 -> 
-                              f (v1 + l *: v2) = f v1 + l * (f v2).
 
 Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
 
-Hypothesis f_bounded_by_p : forall x, F x -> f x <= p x.
+Hypothesis f_bounded_by_p : forall (z : F), (f z  <= p (val z)).
 
 Theorem HahnBanachold : exists g : {scalar V}, 
-  (forall x,  g x <= p x) /\ (forall x, F x -> g x = f x).
-pose graphF v r := F v /\ r = f v.
-have func_graphF : functional graphF by move=> v r1 r2 [Fv ->] [_ ->].
-have lin_graphF : linear_rel graphF.
-  move=> v1 v2 l r1 r2 [Fv1 ->] [Fv2 ->]; split; first exact: linF.
-  by rewrite linfF.
-have maj_graphF : maj_by p graphF by move=> v r [Fv ->]; exact: f_bounded_by_p.
-have prol_graphF : prol F f graphF by move=> v Fv; split.
-have graphFP : spec F f p graphF by split.
+  (forall x,  g x <= p x) /\ (forall (z : F), g (\val z) = f z). 
+pose graphF (v : V) r := exists2 z : F, v = \val z & r = f z.
+have func_graphF : functional graphF.
+   by move=> _ _ _ [z1 -> ->] [z2] /val_inj -> ->.     
+have lin_graphF : linear_rel graphF. 
+  by move=> _ _ l _  _ [z1 [-> ->]] [z2 -> ->]; exists (z1 + l*: z2); by rewrite linearD linearZ.
+have maj_graphF : maj_by p graphF by move=> _ _ [z -> ->]; exact: f_bounded_by_p.
+have prol_graphF : prol f graphF by move=> v Fv; exists v. 
+have graphFP : spec f p graphF by split.
 have [z zmax]:= zorn_rel_ex graphFP.
-pose FP v : Prop := F v.
-have FP0 : FP 0 by [].
-have [g gP]:= (hb_witness linfF FP0 p_cvx zmax).
+have [g gP]:= (hb_witness p_cvx zmax).
 have scalg : linear_for *%R g.
   case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
   have addg : additive g.
      move=> w1 w2;  apply/gP.
      apply: linrel_add.
-     exact ls1.
+     exact: ls1.
      by apply /gP.
      by apply /gP.
   suff scalg : scalable_for  *%R g.
@@ -381,83 +372,20 @@ have scalg : linear_for *%R g.
     by apply /gP.
   by move=> w l; apply/gP; apply: linrel_scale=> //; apply/gP.
 pose H := GRing.isLinear.Build _ _ _ _ g scalg.
-pose g' : {linear V -> R | *%R} := HB.pack g H.
+pose g' : {linear V -> R | *%R} := HB.pack g H. simpl in *. 
 exists g'.
-have grxtf v : F v -> g v = f v.
-  move=> Fv; apply/gP; case: z {zmax gP} => [c [_ _ _ pf]] /=; exact: pf.
-  suff pmajg v :  g v <= p v by split.
-    by  case: z {zmax} gP => [c [_ _ bp _]] /= gP; apply/bp/gP.
+have gextf y : F y -> g (val y) = f y.
+  by move=> Fy; apply/gP; case: z {zmax gP} => [c [_ _ _ pf]] /=; exact: pf.
+split; last by move => z'; apply: gextf.  
+suff pmajg (y : F) :  g (val y) <= p (val y).
+  by case: z {zmax} gP => [c [_ _ bp _]] /= gP => x; apply: bp; apply/gP.
+by rewrite gextf //. 
 Qed.
 
 End HahnBanachold.
 
- 
-
-Section HahnBanachnew.
-(* Now we prove HahnBanach on functions*)
-(* We consider R a real (=ordered) field with supremum, and V a (left) module
-   on R. We do not make use of the 'vector' interface as the latter enforces
-   finite dimension. *)
-
-Variables (R : realType) (V : lmodType R).
-
-Variables (F : subLmodType V) (f : {linear F -> R}) (p : V -> R).
-
-Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
-
-Hypothesis f_bounded_by_p : forall x : F,  (f x) <= (p (val x)).
-
-Theorem newHahnBanach : exists g : {scalar V},
-  (forall x,  g x <= p x) /\ (forall x, F x -> g (val x) = f x).
-pose graphF v r :=  r = f v.
-have graphFP: spec [set: F] f (fun z => p (val z)) graphF. split => //=.
- - by move=> v r1 r2  [->] [ ->]. 
- - by move=> v1 v2 l r1 r2; rewrite /graphF => -> -> ;rewrite !linearE. 
-   by  move=> v r [->].
-(*   
-have [z zmax]:= zorn_rel_ex graphFP.
-(*   z : zorn_type (fun x : V => F x) f p
-  zmax : forall z0 : zorn_type (fun x : V => F x) f p, zorn_rel z z0 -> z0 = z
-*)
-pose FP v : Prop := F v.
-have FP0 : FP 0 by [].
-have [g gP]:= hb_witness linfF FP0 p_cvx inf zmax.
-have scalg : linear_for *%R g.
-  case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
-  have addg : additive g.
-     move=> w1 w2;  apply/gP.
-     apply: linrel_add.
-     exact ls1.
-     by apply /gP.
-     by apply /gP.
-  suff scalg : scalable_for  *%R g.
-    move=> a u v.
-    rewrite -gP.
-    rewrite (addrC _ v).
-    rewrite (addrC _ (g v)).
-    apply: ls1.
-    by apply /gP.
-    by apply /gP.
-  by move=> w l; apply/gP; apply: linrel_scale=> //; apply/gP.
-pose H := GRing.isLinear.Build _ _ _ _ g scalg.
-pose g' : {linear V -> R | *%R} := HB.pack g H.
-exists g'.
-have grxtf v : F v -> g v = f v.
-  move=> Fv; apply/gP; case: z {zmax gP} => [c [_ _ _ pf]] /=; exact: pf.
-  suff pmajg v :  g v <= p v by split.
-    by  case: z {zmax} gP => [c [_ _ bp _]] /= gP; apply/bp/gP.
-Qed.
- *)
-Admitted.
-End HahnBanachnew.
-
-
 Section HBGeom.
-(* TODO : make R : realFieldtype *)
-Variable (R : realType) (V : normedModType R) (F : pred V) (f : V -> R) (F0 : F 0).
-
-Hypothesis linF : forall (v1 v2 : V) (l : R), F v1 -> F v2 -> F (v1 + l *: v2).
-Hypothesis linfF : forall v1 v2 l, F v1 -> F v2 -> f (v1 + l *: v2) = f v1 + l * (f v2).
+Variable (R : realType) (V : normedModType R) (F : subLmodType V) (f : {linear F -> R}).
 
 (*Looked a long time for within *)
 Definition continuousR_on (G : set V) (g : V -> R) :=
@@ -468,58 +396,17 @@ Definition continuousR_on (G : set V) (g : V -> R) :=
 Definition continuousR_on_at (G : set V) (x : V) (g : V -> R)  :=
   g @ (within G (nbhs x)) --> (g x).
 
-Lemma continuousR_scalar_on_bounded :
-  (continuousR_on_at F 0 f) ->
-  (exists  r , (r > 0 ) /\ (forall x : V, F x ->   (`|f x| ) <=  `|x| * r)).
-Proof.
-  rewrite /continuousR_on_at.
-  move  => /cvg_ballP  H.
-  have H':  (0 < 1) by [].
-  have : \forall x \near within (fun x : V => F x) (nbhs 0), ball (f 0) 1 (f x).
-  apply: H. by [].
-  have f0 : f 0 = 0.
-     suff -> : f 0 = f (0 + (-1)*: 0) by rewrite linfF // mulNr mul1r addrN.
-     by rewrite scaleNr scaler0 addrN.
-  rewrite /( _ @ _ ) //= nearE /(within _ ) f0 //=. rewrite near_simpl.
-  rewrite -nbhs_nearE => H0 {H} ; move : (nbhs_ex H0) => [tp H] {H0}.
-  (*pose t := tp%:num .  *)
-  exists (2*(tp%:num)^-1). split=> //.
-  move=> x. case:  (lem (x=0)).
-  - by move=> ->; rewrite f0 normr0 normr0 //= mul0r.
-  - move/eqP=> xneq0 Fx.
-  pose a : V := (`|x|^-1 * (tp%:num)/2 ) *: x.
-  have Btp : ball 0  (tp%:num) a.
-   apply : ball_sym ; rewrite -ball_normE /ball_ /=  subr0.
-   rewrite normrZ mulrC normrM.
-   rewrite !gtr0_norm //= ; last first.
-     rewrite  pmulr_lgt0 // ?invr_gt0 ?normr_gt0 //.
-   rewrite mulrC -mulrA -mulrA ltr_pdivrMl; last by rewrite normr_gt0.
-   rewrite mulrC -mulrA  gtr_pMl.
-   rewrite invf_lt1 //=.
-     by rewrite ltr1n.
-   by  rewrite pmulr_lgt0 // !normr_gt0.
- have Fa : F a by rewrite -[a]add0r; apply: linF.
- have :  `|f a| < 1.
-    by move: (H _ Btp Fa); rewrite /ball /ball_ //= sub0r normrN.
-  suff ->  : ( f a =  ( (`|x|^-1) * (tp%:num)/2 ) * ( f x)) .
-     rewrite normrM (gtr0_norm) //.
-     rewrite mulrC mulrC  -mulrA  -mulrA  ltr_pdivrMl //= ;
-       last by rewrite normr_gt0.
-     rewrite mulrC [(_*1)]mulrC mul1r.
-     rewrite -[X in _ * X < _ ]invf_div ltr_pdivrMr //=; apply: ltW.
-     by rewrite !mulr_gt0  ?normr_gt0  // ?invr_gt0 normr_gt0.
- suff -> : a = 0+ (`|x|^-1 * tp%:num /2) *: x by rewrite linfF // f0 add0r.
- by rewrite add0r.
-Qed.
+Let setF := [set x : V  | exists (z : F), val z = x].
 
-Notation myHB :=
-  (HahnBanachold F0 linF linfF).
+(* TODO : define (F : subNormedModType V) so as to have (f : {linear_continuous F ->
+R}), and to obtain the first hypothesis of the following theorem through the
+lemmas continuous_linear_bounded*)
 
 Theorem HB_geom_normed :
-  continuousR_on_at F 0 f ->
-  exists g: {scalar V}, (continuous (g : V -> R)) /\ (forall x, F x -> (g x = f x)).
+   (exists  r , (r > 0 ) /\ (forall (z : F), (`|f z| ) <=  `|(val z)| * r)) ->
+  exists g: {scalar V}, (continuous (g : V -> R)) /\ (forall (x : F), (g (val x) = f x)).
 Proof.
-  move=> H; move: (continuousR_scalar_on_bounded H) => [r [ltr0 fxrx]] {H}.
+  move=> [r [ltr0 fxrx]].
   pose p:= fun x : V => `|x|*r.
  have convp: (@convex_function _ _ [set: V] p).
  rewrite /convex_function /conv => l v1 v2 _ _ /=.
@@ -532,12 +419,10 @@ Proof.
    have -> : `|l%:num| = l%:num by apply/normr_idP.
    have -> : `|(l%:num).~| = (l%:num).~ by apply/normr_idP; apply: onem_ge0.
    by rewrite !mulrA. 
-   have majfp : forall x, F x -> f x <= p x.
-   move => x Fx; rewrite /(p _) ; apply : le_trans ; last by [].
-   apply : le_trans.
-   apply : ler_norm.
-   by apply : (fxrx x Fx).
- move: (myHB convp majfp) => [ g  [majgp  F_eqgf] ] {majfp}.
+   have majfp : forall z : F, f z <= p (\val z). 
+   move => z; rewrite /(p _) ; apply : le_trans; last by []. 
+   by apply : ler_norm.
+ move: (HahnBanachold convp majfp) => [ g  [majgp  F_eqgf] ] {majfp}.
  exists g;  split; last by [].
   move=> x; rewrite /cvgP; apply: (continuousfor0_continuous).
   apply: bounded_linear_continuous.
@@ -553,102 +438,3 @@ Proof.
 Qed.     
 
 End HBGeom.
-
-
-Section newHBGeom.
-
-  (* TODO: port to ctvsType, by porting lemmas on continuous bounded linear functions there *)
-
-Variable (R : realType) (V: normedModType R) (F : subLmodType V) (f : {linear F -> R}).
-
-(* One needs to define the topological structure on F as the one induced by V, and make it  a normedModtype, as was done for subLmodType *)
-
-
-(*
-Lemma mymysup : forall (A : set R) (a m : R),
-     A a -> ubound A m ->
-     {s : R | ubound A s /\ forall u, ubound A u -> s <= u}.
-Proof.
-  move => A a m Aa majAm.
-  have [A0 Aub]: has_sup A. split; first by exists a.
-    by exists m => x; apply majAm.
-  exists (reals.sup A).
-split.
-  by apply: sup_upper_bound.
-  by move => x; apply: sup_le_ub.
-Qed.
-
-(*TODO: should be lb_le_inf: *)
-Lemma mymyinf : forall (A : set R) (a m : R),
-     A a ->  lbound A m ->
-     {s : R | lbound A s /\ forall u, lbound A u -> u <= s}.
-  move => A a m Aa minAm.
-  have [A0 Alb]: has_inf A. split; first by exists a.
-    by exists m => x; apply minAm.
-  exists (reals.inf A).
-  split.
-    exact: ge_inf.
-  by move => x; apply: lb_le_inf.
-Qed.
-
-
-Notation myHB :=
-  (HahnBanach (boolp.EM)  mymysup mymyinf F0 linF linfF).
- *)
-
- Search "continuous" "subspace".  
-(* bounded_linear_continuous: forall [R : numFieldType] [V W : normedModType R] [f : {linear V -> W}], bounded_near f (nbhs (0 : V)) -> continuous f
-linear_bounded_continuous: forall [R : numFieldType] [V W : normedModType R] (f : {linear V -> W}), bounded_near f (nbhs 0) <-> continuous f
-continuous_linear_bounded: forall [R : numFieldType] [V W : normedModType R] (x : V) [f : {linear V -> W}], {for 0, continuous f} -> bounded_near f (nbhs x) *)
-
- (*TODO : clean the topological structure on F. Define subctvs ? *)
-Theorem new_HB_geom_normed :
-  continuous (f : (@initial_topology (sub_type F) V val) -> R) -> 
-  exists g: {scalar V}, (continuous (g : V -> R)) /\ (forall (x : F), (g (val x) = f x)).
-Proof.
-  move /(_ 0) => /= H; rewrite /from_subspace /=.
-  have f0 : {for 0, continuous ( (f : (@initial_topology (sub_type F) V val) -> R))}.
-  admit.  
-  Check (continuous_linear_bounded).
-  (* TODO ; to apply this lemma, F needs to be given a normedmodtype structure *)
- (*  move=> H; move: (continuousR_scalar_on_bounded H) => [r [ltr0 fxrx]] {H}.
-  (* want :   r :
-  ltr0 : 0 < r
-  fxrx : forall x : V, F x -> `|f x| <= `|x| * r*)
- pose p:= fun x : V => `|x|*r.
- have convp: hahn_banach_theorem.convex p.
-   move=> v1 v2 l m [lt0l lt0m] addlm1 //= ; rewrite !/( p _) !mulrA -mulrDl.
-   suff: `|l *: v1 + m *: v2|  <= (l * `|v1| + m * `|v2|).
-     move => h; apply : ler_pM; last by [].
-     by apply : normr_ge0.
-     by apply : ltW.
-       by [].
-   have labs : `|l| = l by apply/normr_idP.
-   have mabs: `|m| = m by apply/normr_idP.
-   rewrite -[in(_*_)]labs -[in(m*_)]mabs.
-   rewrite -!normrZ.
-   by apply : ler_normD.
- have majfp : forall x, F x -> f x <= p x.
-   move => x Fx; rewrite /(p _) ; apply : le_trans ; last by [].
-   apply : le_trans.
-   apply : ler_norm.
-   by apply : (fxrx x Fx).
- move: (myHB convp majfp) => [ g  [majgp  F_eqgf] ] {majfp}.
- exists g;  split; last by [].
-  move=> x; rewrite /cvgP; apply: (continuousfor0_continuous).
-  apply: bounded_linear_continuous.
-  exists r.
-  split; first by rewrite realE; apply/orP; left; apply: ltW. (* r is Numreal ... *)
-  move => M m1; rewrite nbhs_ballP;  exists 1 => /=; first by [].
-  move => y; rewrite -ball_normE //= sub0r => y1.
-  rewrite ler_norml; apply/andP. split.
-  - rewrite lerNl  -linearN; apply: (le_trans (majgp (-y))).
-    by rewrite /p -[X in _ <= X]mul1r; apply: ler_pM; rewrite ?normr_ge0 ?ltW //=.
-  - apply: (le_trans (majgp (y))); rewrite /p -[X in _ <= X]mul1r -normrN.
-    apply: ler_pM; rewrite ?normr_ge0 ?ltW //=.
-Qed.
-*)
-Admitted.  
-
-
-End newHBGeom.
