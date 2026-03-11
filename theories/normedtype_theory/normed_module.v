@@ -126,12 +126,7 @@ exists [set B | exists x r, B = ball x r].
   rewrite (@lt_le_trans _ _ (`|l| * r + `|1 - l| * r ))//.
     by rewrite ltr_leD// lter_pM2l// ?normrE ?gt_eqF// ltW.
   by rewrite !gtr0_norm// -mulrDl addrC subrK mul1r.
-split.
-  move=> B [x] [r] ->.
-  rewrite openE/= -ball_normE/= /interior => y /= bxy; rewrite -nbhs_ballE.
-  exists (r - `|x - y|) => /=; first by rewrite subr_gt0.
-  move=> z; rewrite -ball_normE/= ltrBrDr.
-  by apply: le_lt_trans; rewrite [in leRHS]addrC ler_distD.
+split; first by move=> B [x] [r] ->; exact: ball_open.
 move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
 by exists (ball x r) => //; split; [exists x, r|exact: ballxx].
 Qed.
@@ -359,37 +354,9 @@ rewrite inE; apply: subset_itv_oo_cc.
 by near: z; exact: near_in_itvoo.
 Unshelve. all: by end_near. Qed.
 
-Section NormedModule_numDomainType.
-Variables (K : numDomainType) (V : normedModType K).
-
-Lemma normrZV (x : V) : `|x| \in GRing.unit -> `| `| x |^-1 *: x | = 1.
+Lemma normrZV (K : numDomainType) (V : normedModType K) (x : V) :
+  `|x| \in GRing.unit -> `| `| x |^-1 *: x | = 1.
 Proof. by move=> nxu; rewrite normrZ normrV// normr_id mulVr. Qed.
-
-Lemma near_shift (y x : V) (P : set V) :
-   (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
-Proof.
-rewrite propeqE nbhs0P [X in _ <-> X]nbhs0P/= -propeqE.
-by apply: eq_near => e; rewrite [_ + _ + _]addrC subrKA.
-Qed.
-
-Lemma cvg_comp_shift {T : Type} (x y : V) (f : V -> T) :
-  (f \o shift x) @ y = f @ (y + x).
-Proof.
-rewrite funeqE => A; rewrite /= !near_simpl (near_shift (y + x)).
-by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
-Qed.
-
-Lemma ball_open (x : V) (r : K) : 0 < r -> open (ball x r).
-Proof.
-rewrite openE -ball_normE /interior => r0 y /= Bxy; near=> z.
-rewrite /= (le_lt_trans (ler_distD y _ _)) // addrC -ltrBrDr.
-by near: z; apply: cvgr_dist_lt; rewrite // subr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma ball_open_nbhs (x : V) (r : K) : 0 < r -> open_nbhs x (ball x r).
-Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
-
-End NormedModule_numDomainType.
 
 Definition self_sub (K : numDomainType) (V W : normedModType K)
   (f : V -> W) (x : V * V) : W := f x.1 - f x.2.
@@ -2123,11 +2090,11 @@ move=> oS /set_mem/(open_subball oS)[r/= r0 rS].
 have [y yxr] : exists y, ball x (r / 4) (ratr y).
   suff : ball x (r / 4) `&` range ratr !=set0.
     by move=> [/= _ []] /[swap] -[y _ <-]; exists y.
-  apply: dense_rat; last by apply: ball_open; rewrite divr_gt0.
+  apply: dense_rat; last exact: ball_open.
   by exists x; apply: ballxx; rewrite divr_gt0.
 have [q /andP[rq qr]] : exists q, r / 4 < ratr q < r / 2.
   have : ball (r / 3) (r / 12) `&` range ratr !=set0.
-    apply: dense_rat; last by apply: ball_open; rewrite divr_gt0.
+    apply: dense_rat; last exact: ball_open.
     by exists (r / 3); apply: ballxx; rewrite divr_gt0.
   move=> [/= _ []] /[swap] -[z _ <-].
   rewrite ball_itv/= in_itv/= => /andP[rz zr]; exists z; apply/andP; split.
@@ -2250,7 +2217,7 @@ have [e /= e0 eU] := open_subball oU Uq.
 pose B := ball (@ratr R q) (e / 2).
 have Bq : B (ratr q) by apply: ballxx; rewrite divr_gt0.
 apply/mem_set; exists B => //; split => //; split.
-- by apply: ball_open; rewrite divr_gt0.
+- exact: ball_open.
 - by rewrite /B ball_itv; exact: interval_is_interval.
 - apply: eU => //; last by rewrite divr_gt0.
   rewrite ball_normE/= /ball/= sub0r normrN gtr0_norm ?divr_gt0//.

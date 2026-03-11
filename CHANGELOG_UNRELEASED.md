@@ -222,6 +222,13 @@
 - in `normed_module.v`, turned into `Let`'s:
   + local lemmas `add_continuous`, `scale_continuous`, `locally_convex`
 
+- moved from `normed_module.v` to `pseudometric_normed_Zmodule.v` and
+  generalized from `normedModType` to `pseudoMetricNormedZmodType`
+  + lemma `ball_open` (`0 < r` hypothesis also not needed anymore)
+  + lemma `near_shift`
+  + lemma `cvg_comp_shift`
+  + lemma `ball_open_nbhs`
+
 ### Renamed
 
 - in `topology_structure.v`
