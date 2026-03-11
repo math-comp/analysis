@@ -113,25 +113,24 @@ Unshelve. all: by end_near. Qed.
 
 Local Open Scope convex_scope.
 
+Let ball_convex (x : convex_lmodType V) (r : K) : convex (ball x r).
+Proof.
+apply/convexW => z y; rewrite !inE -!ball_normE /= => zx yx l l0 l1.
+rewrite inE/=.
+rewrite [X in `|X|](_ : _ = (x - z : convex_lmodType _) <| l |>
+                            (x - y : convex_lmodType _)); last first.
+  by rewrite opprD -[in LHS](convmm l x) addrACA -scalerBr -scalerBr.
+rewrite (le_lt_trans (ler_normD _ _))// !normrZ.
+rewrite (@ger0_norm _ l%:num)// (@ger0_norm _ l%:num.~) ?onem_ge0//.
+by rewrite -[ltRHS]mul1r -(add_onemK l%:num) mulrDl ltrD// ltr_pM2l// onem_gt0.
+Qed.
+
 (** NB: we have almost the same proof in `tvs.v` *)
 Let locally_convex :
   exists2 B : set (set (convex_lmodType V)), (forall b, b \in B -> convex b) & basis B.
 Proof.
 exists [set B | exists (x : convex_lmodType V) r, B = ball x r].
-  move=> b; rewrite inE => [[x]] [r] ->.
-  apply/convexW => z y; rewrite !inE -!ball_normE /= => zx yx l l0 l1.
-  have -> : x = x <| l |> x by rewrite convmm. (*TODO: this looks superfluous *)
-  rewrite /ball_/= inE/=.
-  rewrite [X in `|X|](_ : _ = (x - z : convex_lmodType V) <| l |>
-                              (x - y : convex_lmodType V)); last first.
-    by rewrite opprD addrACA -scalerBr -scalerBr.
-  rewrite (@le_lt_trans _ _ ((l%:num) * `|x - z| + l%:num.~ * `|x - y|))//.
-    rewrite -[in X in _ <= X + _](@ger0_norm _ l%:num)//.
-    rewrite -[in X in _ <= _ + X](@ger0_norm _ l%:num.~) ?subr_ge0//.
-    by rewrite -!normrZ ler_normD.
-  rewrite (@lt_le_trans _ _ (l%:num * r + l%:num.~ * r ))//.
-    by rewrite ltr_leD// lter_pM2l// ?normrE ?gt_eqF ?ltW// subr_gt0.
-  by rewrite -mulrDl addrC subrK mul1r.
+  by move=> b; rewrite inE => [[x]] [r] ->; exact: ball_convex.
 split; first by move=> B [x] [r] ->; exact: ball_open.
 move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
 by exists (ball x r) => //; split; [exists x, r|exact: ballxx].

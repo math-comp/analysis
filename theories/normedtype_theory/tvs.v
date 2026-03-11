@@ -511,31 +511,26 @@ Unshelve. all: by end_near. Qed.
 
 Local Open Scope convex_scope.
 
+Let standard_ball_convex (x : R^o) (r : R) : convex (ball x r).
+Proof.
+apply/convexW => z y; rewrite !inE -!ball_normE /= => zx yx l l0 l1.
+rewrite inE/=.
+rewrite [X in `|X|](_ : _ = (x - z : convex_lmodType _) <| l |>
+                            (x - y : convex_lmodType _)); last first.
+  by rewrite opprD -[in LHS](convmm l x) addrACA -scalerBr -scalerBr.
+rewrite (le_lt_trans (ler_normD _ _))// !normrM.
+rewrite (@ger0_norm _ l%:num)// (@ger0_norm _ l%:num.~) ?onem_ge0//.
+by rewrite -[ltRHS]mul1r -(add_onemK l%:num) mulrDl ltrD// ltr_pM2l// onem_gt0.
+Qed.
+
 Let standard_locally_convex :
   exists2 B : set (set R^o), (forall b, b \in B -> convex b) & basis B.
 Proof.
 exists [set B | exists x r, B = ball x r].
-  move=> b/= /[!inE]/= [[x]] [r] ->.
-  apply/convexW => z y; rewrite /ball/= !inE/= => zx yx l /[!inE]/= l0 l1.
-  (* conv lemma? *)
-  have -> : x = x <| l |> x by rewrite convmm. (*TODO: this looks superfluous *)
-  rewrite [X in `|X|](_ : _ = (x - z) <| l |> (x - y)); last first.
-    by rewrite opprD addrACA -mulrBr -mulrBr.
- rewrite (@le_lt_trans _ _ ((`|x - z| : R^o) <| l |> `|x - y|))//.
-    rewrite -[in X in _ <= X + _](@ger0_norm _ l%:num)//.
-    rewrite -[in X in _ <= _ + X](@ger0_norm _ l%:num.~) ?subr_ge0//.
-    rewrite [X in `|X| <= _](_ : _ = l%:num * (x - z) + l%:num.~ * (x - y))//.
-    rewrite -[X in _ <= X + _]normrM.
-    rewrite -[X in _ <= _ + X]normrM.
-    by rewrite ler_normD.
-  rewrite (@lt_le_trans _ _ ((r : R^o) <| l |> r))//.
-    rewrite ltr_leD//.
-      by rewrite ltr_pM2l// normr_gt0// gt_eqF.
-    by rewrite ler_wpM2l// ?subr_ge0// ltW.
-  by rewrite convmm.
+  by move=> B/= /[!inE]/= [[x]] [r] ->; exact: standard_ball_convex.
 split; first by move=> B [x] [r] ->; exact: ball_open.
 move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
-by exists (ball x r) => //; split; [exists x, r|exact: ballxx].
+by exists (ball x r) => //=; split; [exists x, r|exact: ballxx].
 Qed.
 
 HB.instance Definition _ :=
