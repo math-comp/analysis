@@ -689,6 +689,15 @@ Proof. by rewrite limit_pointEnbhs; under eq_fun do rewrite meets_openr. Qed.
 Lemma subset_limit_point E : limit_point E `<=` closure E.
 Proof. by move=> t Et U tU; have [p [? ? ?]] := Et _ tU; exists p. Qed.
 
+Lemma not_limit_pointE A a : (~ limit_point A a) =
+  exists2 X : set T, nbhs a X & A `&` X `<=` [set a].
+Proof.
+rewrite /limit_point/= -existsNE exists2E; apply: eq_exists => X/=.
+rewrite not_implyE -forallNE; congr and; apply: eq_forall => t/=.
+rewrite and3E not_andE (propext (rwP negP)) negbK implyE orC.
+by rewrite -(propext (rwP eqP)).
+Qed.
+
 Definition isolated (A : set T) (x : T) :=
   x \in A /\ exists2 V, nbhs x V & V `&` A = [set x].
 

@@ -78,6 +78,11 @@
 - in `derive.v`:
   + lemmas `derivable_max`, `derive_maxl`, `derive_maxr` `derivable_min`, `derive_minl`, `derive_minr`
   + lemmas `derivable0`, `derive0`, `is_derive0`
+- in `topology_structure.v`:
+  + lemma `not_limit_pointE`
+
+- in `separation_axioms.v`:
+  + lemmas `limit_point_closed`
 
 ### Changed
 
