@@ -1041,6 +1041,67 @@ Proof. by move=> /differentiableP df; rewrite diff_val. Qed.
 
 End DifferentialR3_numFieldType.
 
+Lemma derivable_row_mx {R : realFieldType} {n1 n2 : nat}
+    (f : R -> 'rV[R]_n1) (g : R -> 'rV[R]_n2) t v :
+  (forall x, derivable f x v) -> (forall x, derivable g x v) ->
+  derivable (fun x : R => row_mx (f x) (g x)) t v.
+Proof.
+move=> /= fv gv; apply/derivable_mxP => i j.
+rewrite (ord1 i)/=.
+have /cvg_ex[/= l Hl]:= fv t.
+have /cvg_ex[/= k Hk]:= gv t.
+apply/cvg_ex => /=; exists (row_mx l k)``_j.
+apply/cvgrPdist_le => /= e e0.
+move/cvgrPdist_le : Hl => /(_ _ e0) Hl.
+move/cvgrPdist_le : Hk => /(_ _ e0) Hk.
+move: Hl Hk; apply: filterS2 => x Hl Hk.
+rewrite !mxE.
+case: fintype.splitP => j1 jj1.
+  apply: le_trans Hl.
+  rewrite [in leRHS]/Num.Def.normr/= mx_normrE.
+  apply: le_trans; last first.
+    exact: (le_bigmax _ _ (ord0, j1)).
+  by rewrite !mxE/=.
+apply: le_trans Hk.
+rewrite [in leRHS]/Num.Def.normr/= mx_normrE.
+apply: le_trans; last first.
+  exact: (le_bigmax _ _ (ord0, j1)).
+by rewrite !mxE/=.
+Qed.
+
+Lemma derive_row_mx {R : realFieldType} {n1 n2 : nat}
+     (f : R -> 'rV[R]_n1) (g : R -> 'rV[R]_n2) t v :
+  (forall x : R, derivable f x v) ->
+  (forall x : R, derivable g x v) ->
+  'D_v (fun x => row_mx (f x) (g x)) t = row_mx ('D_v f t) ('D_v g t).
+Proof.
+move=> fv gv.
+apply/matrixP => i j.
+rewrite [in LHS]derive_mx ?mxE//=; last first.
+  by apply: derivable_row_mx; [exact: fv|exact: gv].
+do 2 rewrite derive_mx ?mxE//=.
+case: fintype.split_ordP => /= j1 jj1; rewrite !mxE; congr ('D_v _ t).
+  apply/funext => x; rewrite !mxE.
+  case: fintype.split_ordP => k jE.
+    congr (f x i _).
+    move: jE.
+    by rewrite jj1 => /(congr1 val) => /= /val_inj.
+  move: jE.
+  rewrite jj1 => /(congr1 val)/=.
+  have /[swap] -> := ltn_ord j1.
+  by rewrite ltnNge/= leq_addr.
+apply/funext => x; rewrite !mxE.
+case: fintype.split_ordP => k jE.
+  move: jE.
+  rewrite jj1 => /(congr1 val)/=.
+  have /[swap] <- := ltn_ord k.
+  by rewrite ltnNge/= leq_addr.
+congr (g x i _).
+move: jE.
+rewrite jj1 => /(congr1 val) => /= /eqP.
+by rewrite eqn_add2l => /eqP /val_inj.
+Qed.
+
 Section DeriveRU.
 Variables (R : numFieldType) (U : normedModType R).
 Implicit Types f : R -> U.

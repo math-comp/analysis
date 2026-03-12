@@ -71,6 +71,8 @@
 
 - in `derive.v`:
   + lemmas `compact_EVT_max`, `compact_EVT_min`, `EVT_max_rV`, `EVT_min_rV`
+- in `derive.v`:
+  + lemmas `derivable_row_mx`, `derive_row_mx`
 
 - in `functions.v`:
   + lemmas `fun_maxC`, `fun_minC`, `min_fun_to_max`, `max_fun_to_min`
