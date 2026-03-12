@@ -171,6 +171,18 @@ apply; last by rewrite gtrBl.
 by rewrite /= opprB addrC subrK ger0_norm// gtr_pMr// invf_lt1// ltr1n.
 Qed.
 
+Lemma cvg_dnbhs_at_right (T : topologicalType) (f : R -> T) (p : R) (l : T) :
+  f x @[x --> p^'] --> l -> f x @[x --> p^'+] --> l.
+Proof.
+by apply: cvg_trans; apply: cvg_app; apply: within_subset=> r ?; rewrite gt_eqF.
+Qed.
+
+Lemma cvg_dnbhs_at_left (T : topologicalType) (f : R -> T) (p : R) (l : T) :
+  f x @[x --> p^'] --> l -> f x @[x --> p^'-] --> l.
+Proof.
+by apply: cvg_trans; apply: cvg_app; apply: within_subset=> r ?; rewrite lt_eqF.
+Qed.
+
 Lemma nbhs_right_gt x : \forall y \near x^'+, x < y.
 Proof. by rewrite near_withinE; apply: nearW. Qed.
 

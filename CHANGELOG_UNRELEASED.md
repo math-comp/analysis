@@ -85,6 +85,8 @@
   + lemmas `limit_point_closed`
 - in `convex.v`:
   + lemma `convex_setW`
+- in `num_topology.v`:
+  + lemmas `cvg_dnbhs_at_right`, `cvg_dnbhs_at_left`
 
 ### Changed
 
