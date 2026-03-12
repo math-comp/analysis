@@ -688,35 +688,37 @@ rewrite setDitv1r; congr -%E; apply: eq_integral => r _.
 by rewrite (@comp_preimage _ _ _ _ _ -%R)/= opp_preimage_itvbndy/= opprK.
 Qed.
 
+Let preimage_funrpos (f : T -> R) r : (0 <= r)%R ->
+  (f^\+)%R @^-1` `]r, +oo[ = f @^-1` `]r, +oo[.
+Proof.
+move=> r0; apply: eq_set => a/=.
+by rewrite !in_itv/= !andbT lt_max (ltNge r 0%R) r0 orbF.
+Qed.
+
+Let preimage_funrneg (f : T -> R) r : (r < 0)%R ->
+  (- f^\-)%R @^-1` `]-oo, r] = (f)%R @^-1` `]-oo, r].
+Proof.
+move=> r0; apply: eq_set => a/=.
+by rewrite !in_itv/= lerNl le_max lerN2 (leNgt _ 0%R) oppr_gt0 r0 orbF.
+Qed.
+
 Lemma expectation_cdf_ccdf (X : {RV P >-> R}) : Lfun P 1 X ->
   'E_P[X] = \int[mu]_(r in `[0%R, +oo[) ccdf X r
             - \int[mu]_(r in `]-oo, 0%R[) cdf X r.
 Proof.
 move=> L1X.
-pose Xp := (cst 0%R) \max X.
-pose Xm := (cst 0%R) \min X.
-have Xp_leX x : setT x -> `|(Xp x)%:E| <= `|(X x)%:E|.
-  by rewrite lee_tofin// ger0_norm ?le_max ?lexx// ge_max normr_ge0 ler_norm.
-have Xm_leX x : setT x -> `|(Xm x)%:E| <= `|(X x)%:E|.
-  rewrite /Xm lee_tofin//=.
-  by have [//=| Xle0 |] := (@real_le0P _ (X x));
-    [rewrite ler0_norm | rewrite normr0; exact: ltW].
-have XpP1 : Xp \in Lfun P 1.
-  by rewrite Lfun1_integrable; apply: (le_integrable _ _ Xp_leX);
-    [| apply/measurable_EFinP | rewrite -Lfun1_integrable].
-have XmP1: Xm \in Lfun P 1.
-  by rewrite Lfun1_integrable; apply: (le_integrable _ _ Xm_leX);
-    [| apply/measurable_EFinP | rewrite -Lfun1_integrable].
-rewrite (_ :  MeasurableFun.sort X = (Xp \+ Xm)%R) ?expectationD//;
-  last by apply: funext => x; rewrite /= addr_max_min add0r.
-rewrite (_ : 'E_P[Xp] = \int[mu]_(r in `[0%R, +oo[) ccdf X r); last first.
-  rewrite ge0_expectation_ccdf/= => [|x]; last by case: ler0P; last exact: ltW.
-  apply: eq_integral => r; rewrite inE/= in_itv/= andbT => r_ge0; congr (P _).
-  by apply: eq_set => x/=; rewrite !in_itv/= !andbT lt_max ltNge r_ge0.
-rewrite (_ : 'E_P[Xm] = - \int[mu]_(r in `]-oo, 0%R[) cdf X r)//.
-rewrite le0_expectation_cdf/= => [|x]; last by rewrite ge_min ?lexx.
-congr -%E; apply: eq_integral => r; rewrite inE/= in_itv/= => r_le0.
-by congr (P _); apply: eq_set => x/=; rewrite !in_itv/= ge_min leNgt r_le0.
+rewrite -[in LHS](funrposBneg X) expectationD; last 2 first.
+- exact/Lfun1_integrable/integrable_funrpos/Lfun1_integrable.
+- rewrite rpredN/=.
+  exact/Lfun1_integrable/integrable_funrneg/Lfun1_integrable.
+rewrite (_ : 'E_P[X^\+] = \int[mu]_(r in `[0%R, +oo[) ccdf X r); last first.
+  rewrite ge0_expectation_ccdf/= => [|?]; last by rewrite funrpos_ge0.
+  apply: eq_integral => r; rewrite inE/= in_itv/= andbT => r0; congr (P _).
+  by rewrite preimage_funrpos.
+rewrite (_ : 'E_P[- X^\-] = - \int[mu]_(r in `]-oo, 0%R[) cdf X r)//.
+rewrite le0_expectation_cdf/= => [|x]; last by rewrite oppr_le0 funrneg_ge0.
+congr -%E; apply: eq_integral => r; rewrite inE/= in_itv/= => r0; congr (P _).
+by rewrite preimage_funrneg.
 Qed.
 
 End tail_expectation_formula.
