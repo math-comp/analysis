@@ -2110,7 +2110,7 @@ Context {K : realType} {V W : normedModType K}.
 Implicit Types f g : V -> K^o.
 Implicit Type x : V.
 
-Fact der_max f g x v : f x != g x ->
+Fact der_max_subproof f g x v : f x != g x ->
   derivable f x v -> derivable g x v ->
   {for x, continuous f} -> {for x, continuous g} ->
   (fun h => h^-1 *: (((f \max g) \o shift x) (h *: v) - (f \max g) x))
@@ -2147,7 +2147,7 @@ Lemma derivable_max f g x v :
 Proof.
 move=> fx_gx df dg cf cg; apply/cvg_ex => /=.
 exists (if f x < g x then 'D_v g x else 'D_v f x).
-exact: der_max.
+exact: der_max_subproof.
 Qed.
 
 Lemma derive_maxl f g x v : f x > g x ->
