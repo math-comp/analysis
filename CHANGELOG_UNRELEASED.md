@@ -304,6 +304,9 @@
 - in `lebesgue_integral_nonneg.v`:
   + lemma `integral_setU_EFin`
 
+- in `classical_sets.v`:
+  + lemma `mem_setT`
+
 ### Removed
 
 - in `weak_topology.v`:
