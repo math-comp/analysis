@@ -72,6 +72,13 @@
 - in `derive.v`:
   + lemmas `compact_EVT_max`, `compact_EVT_min`, `EVT_max_rV`, `EVT_min_rV`
 
+- in `functions.v`:
+  + lemmas `fun_maxC`, `fun_minC`, `min_fun_to_max`, `max_fun_to_min`
+
+- in `derive.v`:
+  + lemmas `derivable_max`, `derive_maxl`, `derive_maxr` `derivable_min`, `derive_minl`, `derive_minr`
+  + lemmas `derivable0`, `derive0`, `is_derive0`
+
 ### Changed
 
 - in `constructive_ereal.v`: fixed the infamous `%E` scope bug.
@@ -272,6 +279,13 @@
 - in `lebesgue_integral_nonneg.v`:
   + lemmas `integral_itv_bndo_bndc`, `integral_itv_obnd_cbnd`,
     `integral_itv_bndoo`
+
+- in `derive.v`:
+  + lemmas `near_eq_growth_rate`, `near_eq_derivable`, `near_eq_derive`,
+    `near_eq_is_derive` (one less hypothesis)
+
+- in `exp.v`:
+  + lemma `derivable_powR`
 
 ### Deprecated
 
