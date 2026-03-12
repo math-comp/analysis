@@ -83,6 +83,8 @@
 
 - in `separation_axioms.v`:
   + lemmas `limit_point_closed`
+- in `convex.v`:
+  + lemma `convex_setW`
 
 ### Changed
 
@@ -241,6 +243,9 @@
   + lemma `cvg_comp_shift`
   + lemma `ball_open_nbhs`
 
+- moved from `tvs.v` to `convex.v`
+  + definition `convex`, renamed to `convex_set`
+  
 ### Renamed
 
 - in `topology_structure.v`
@@ -291,6 +296,8 @@
 
 - in `exp.v`:
   + lemma `derivable_powR`
+- in `convex.v`:
+  + definition `convex_function` (from a realType as domain to a convex_lmodType as domain)
 
 ### Deprecated
 

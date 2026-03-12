@@ -2,8 +2,10 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat ssralg ssrnum vector.
 From mathcomp Require Import interval_inference.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality.
-From mathcomp Require Import set_interval reals topology num_normedtype.
+From mathcomp Require Import convex set_interval reals topology num_normedtype.
 From mathcomp Require Import pseudometric_normed_Zmodule.
 
 (**md**************************************************************************)
@@ -306,14 +308,10 @@ HB.instance Definition _ :=
 
 HB.end.
 
-Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
-  forall x y (lambda : R), x \in A -> y \in A ->
-  0 < lambda -> lambda < 1 -> lambda *: x + (1 - lambda) *: y \in A.
-
 HB.mixin Record Uniform_isTvs (R : numDomainType) E
     & Uniform E & GRing.Lmodule R E := {
-  locally_convex : exists2 B : set (set E),
-    (forall b, b \in B -> convex b) & basis B
+  locally_convex : exists2 B : set_system E,
+    (forall b, b \in B -> convex_set b) & basis B
 }.
 
 #[short(type="tvsType")]
@@ -360,8 +358,8 @@ HB.factory Record PreTopologicalLmod_isTvs (R : numDomainType) E
     & Topological E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
   scale_continuous : continuous (fun z : R^o * E => z.1 *: z.2) ;
-  locally_convex : exists2 B : set (set E),
-    (forall b, b \in B -> convex b) & basis B
+  locally_convex : exists2 B : set_system E,
+    (forall b, b \in B -> convex_set b) & basis B
   }.
 
 HB.builders Context R E & PreTopologicalLmod_isTvs R E.
@@ -511,37 +509,45 @@ rewrite (@le_lt_trans _ _ (`|k - l| * M)) ?ler_wpM2l -?ltr_pdivlMr//.
 by near: l; apply: cvgr_dist_lt; rewrite // divr_gt0.
 Unshelve. all: by end_near. Qed.
 
-Let standard_locally_convex :
-  exists2 B : set (set R^o), (forall b, b \in B -> convex b) & basis B.
+Local Open Scope convex_scope.
+
+Let standard_ball_convex_set (x : R^o) (r : R) : convex_set (ball x r).
+Proof.
+apply/convex_setW => z y; rewrite !inE -!ball_normE /= => zx yx l l0 l1.
+rewrite inE/=.
+rewrite [X in `|X|](_ : _ = (x - z : convex_lmodType _) <| l |>
+                            (x - y : convex_lmodType _)); last first.
+  by rewrite opprD -[in LHS](convmm l x) addrACA -scalerBr -scalerBr.
+rewrite (le_lt_trans (ler_normD _ _))// !normrM.
+rewrite (@ger0_norm _ l%:num)// (@ger0_norm _ l%:num.~) ?onem_ge0//.
+rewrite -[ltRHS]mul1r -(add_onemK l%:num) [ltRHS]mulrDl.
+by rewrite ltrD// ltr_pM2l// onem_gt0.
+Qed.
+
+Let standard_locally_convex_set :
+  exists2 B : set_system R^o, (forall b, b \in B -> convex_set b) & basis B.
 Proof.
 exists [set B | exists x r, B = ball x r].
-  move=> b; rewrite inE /= => [[x]] [r] -> z y l.
-  rewrite !inE -!ball_normE /= => zx yx l0; rewrite -subr_gt0 => l1.
-  have -> : x = l *: x + (1 - l) *: x by rewrite addrC scalerBl subrK scale1r.
-  rewrite [X in `|X|](_ : _ = l *: (x - z) + (1 - l) *: (x - y)); last first.
-    by rewrite opprD addrACA -scalerBr -scalerBr.
-  rewrite (@le_lt_trans _ _ (`|l| * `|x - z| + `|1 - l| * `|x - y|))//.
-    by rewrite -!normrM ler_normD.
-  rewrite (@lt_le_trans _ _ (`|l| * r + `|1 - l| * r ))//.
-    by rewrite ltr_leD// lter_pM2l// ?normrE ?gt_eqF// ltW.
-  by rewrite !gtr0_norm// -mulrDl addrC subrK mul1r.
+  by move=> B/= /[!inE]/= [[x]] [r] ->; exact: standard_ball_convex_set.
 split; first by move=> B [x] [r] ->; exact: ball_open.
 move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
-by exists (ball x r) => //; split; [exists x, r|exact: ballxx].
+by exists (ball x r) => //=; split; [exists x, r|exact: ballxx].
 Qed.
 
 HB.instance Definition _ :=
   PreTopologicalNmodule_isTopologicalNmodule.Build R^o standard_add_continuous.
 HB.instance Definition _ :=
   TopologicalNmodule_isTopologicalLmodule.Build R R^o standard_scale_continuous.
-HB.instance Definition _ := Uniform_isTvs.Build R R^o standard_locally_convex.
+HB.instance Definition _ :=
+  Uniform_isTvs.Build R R^o standard_locally_convex_set.
 
 End standard_topology.
 
 Section prod_Tvs.
 Context (K : numFieldType) (E F : tvsType K).
 
-Local Lemma prod_add_continuous : continuous (fun x : (E * F) * (E * F) => x.1 + x.2).
+Local Lemma prod_add_continuous :
+  continuous (fun x : (E * F) * (E * F) => x.1 + x.2).
 Proof.
 move => [/= xy1 xy2] /= U /= [] [A B] /= [nA nB] nU.
 have [/= A0 [A01 A02] nA1] := @add_continuous E (xy1.1, xy2.1) _ nA.
@@ -552,7 +558,8 @@ move => [[x1 y1][x2 y2]] /= [] [] a1 b1 [] a2 b2.
 by apply: nU; split; [exact: (nA1 (x1, x2))|exact: (nB1 (y1, y2))].
 Qed.
 
-Local Lemma prod_scale_continuous : continuous (fun z : K^o * (E * F) => z.1 *: z.2).
+Local Lemma prod_scale_continuous :
+  continuous (fun z : K^o * (E * F) => z.1 *: z.2).
 Proof.
 move => [/= r [x y]] /= U /= []/= [A B] /= [nA nB] nU.
 have [/= A0 [A01 A02] nA1] := @scale_continuous K E (r, x) _ nA.
@@ -564,7 +571,7 @@ by move=> [l [e f]] /= [] [Al Bl] [] Ae Be; apply: nU; split;
 Qed.
 
 Local Lemma prod_locally_convex :
-  exists2 B : set (set (E * F)), (forall b, b \in B -> convex b) & basis B.
+  exists2 B : set_system (E * F), (forall b, b \in B -> convex_set b) & basis B.
 Proof.
 have [Be Bcb Beb] := @locally_convex K E.
 have [Bf Bcf Bfb] := @locally_convex K F.
@@ -582,8 +589,10 @@ have : basis B.
   rewrite !nbhsE /=; split; first by exists a => //; split => //; exact: Beo.
   by exists b => //; split => // []; exact: Bfo.
 exists B => // => b; rewrite inE /= => [[]] bo [] be [] bf Bee [] Bff <-.
-move => [x1 y1] [x2 y2] l /[!inE] /= -[xe1 yf1] [xe2 yf2] l0 l1.
-by split; rewrite -inE; [apply: Bcb; rewrite ?inE|apply: Bcf; rewrite ?inE].
+move => [x1 y1] [x2 y2] l /[!inE] /= -[xe1 yf1] [xe2 yf2].
+split.
+  by apply/set_mem/Bcb; [exact/mem_set|exact/mem_set|exact/mem_set].
+by apply/set_mem/Bcf; [exact/mem_set|exact/mem_set|exact/mem_set].
 Qed.
 
 HB.instance Definition _ := PreTopologicalNmodule_isTopologicalNmodule.Build

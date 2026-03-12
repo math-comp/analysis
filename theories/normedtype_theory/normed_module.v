@@ -7,7 +7,7 @@ From mathcomp Require Import interval_inference fieldext falgebra.
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets filter functions cardinality.
 From mathcomp Require Import set_interval ereal reals topology real_interval.
-From mathcomp Require Import prodnormedzmodule tvs num_normedtype.
+From mathcomp Require Import convex prodnormedzmodule tvs num_normedtype.
 From mathcomp Require Import ereal_normedtype pseudometric_normed_Zmodule.
 
 (**md**************************************************************************)
@@ -111,21 +111,28 @@ rewrite (@le_lt_trans _ _ (`|k - l| * M)) ?ler_wpM2l -?ltr_pdivlMr//.
 by near: l; apply: cvgr_dist_lt; rewrite // divr_gt0.
 Unshelve. all: by end_near. Qed.
 
-(** NB: we have almost the same proof in `tvs.v` *)
-Let locally_convex :
-  exists2 B : set (set V), (forall b, b \in B -> convex b) & basis B.
+Local Open Scope convex_scope.
+
+Let ball_convex_set (x : convex_lmodType V) (r : K) : convex_set (ball x r).
 Proof.
-exists [set B | exists x r, B = ball x r].
-  move=> b; rewrite inE /= => [[x]] [r] -> z y l.
-  rewrite !inE -!ball_normE /= => zx yx l0; rewrite -subr_gt0 => l1.
-  have -> : x = l *: x + (1 - l) *: x by rewrite addrC scalerBl subrK scale1r.
-  rewrite [X in `|X|](_ : _ = l *: (x - z) + (1 - l) *: (x - y)); last first.
-    by rewrite opprD addrACA -scalerBr -scalerBr.
-  rewrite (@le_lt_trans _ _ (`|l| * `|x - z| + `|1 - l| * `|x - y|))//.
-    by rewrite -!normrZ ler_normD.
-  rewrite (@lt_le_trans _ _ (`|l| * r + `|1 - l| * r ))//.
-    by rewrite ltr_leD// lter_pM2l// ?normrE ?gt_eqF// ltW.
-  by rewrite !gtr0_norm// -mulrDl addrC subrK mul1r.
+apply/convex_setW => z y; rewrite !inE -!ball_normE /= => zx yx l l0 l1.
+rewrite inE/=.
+rewrite [X in `|X|](_ : _ = (x - z : convex_lmodType _) <| l |>
+                            (x - y : convex_lmodType _)); last first.
+  by rewrite opprD -[in LHS](convmm l x) addrACA -scalerBr -scalerBr.
+rewrite (le_lt_trans (ler_normD _ _))// !normrZ.
+rewrite (@ger0_norm _ l%:num)// (@ger0_norm _ l%:num.~) ?onem_ge0//.
+rewrite -[ltRHS]mul1r -(add_onemK l%:num) [ltRHS]mulrDl.
+by rewrite ltrD// ltr_pM2l// onem_gt0.
+Qed.
+
+(** NB: we have almost the same proof in `tvs.v` *)
+Let locally_convex_set :
+  exists2 B : set_system (convex_lmodType V),
+    (forall b, b \in B -> convex_set b) & basis B.
+Proof.
+exists [set B | exists (x : convex_lmodType V) r, B = ball x r].
+  by move=> b; rewrite inE => [[x]] [r] ->; exact: ball_convex_set.
 split; first by move=> B [x] [r] ->; exact: ball_open.
 move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
 by exists (ball x r) => //; split; [exists x, r|exact: ballxx].
@@ -135,7 +142,7 @@ HB.instance Definition _ :=
   PreTopologicalNmodule_isTopologicalNmodule.Build V add_continuous.
 HB.instance Definition _ :=
   TopologicalNmodule_isTopologicalLmodule.Build K V scale_continuous.
-HB.instance Definition _ := Uniform_isTvs.Build K V locally_convex.
+HB.instance Definition _ := Uniform_isTvs.Build K V locally_convex_set.
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_Tvs_isNormedModule.Build K V normrZ.
 
