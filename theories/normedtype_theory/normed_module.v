@@ -113,9 +113,9 @@ Unshelve. all: by end_near. Qed.
 
 Local Open Scope convex_scope.
 
-Let ball_convex (x : convex_lmodType V) (r : K) : convex (ball x r).
+Let ball_convex_set (x : convex_lmodType V) (r : K) : convex_set (ball x r).
 Proof.
-apply/convexW => z y; rewrite !inE -!ball_normE /= => zx yx l l0 l1.
+apply/convex_setW => z y; rewrite !inE -!ball_normE /= => zx yx l l0 l1.
 rewrite inE/=.
 rewrite [X in `|X|](_ : _ = (x - z : convex_lmodType _) <| l |>
                             (x - y : convex_lmodType _)); last first.
@@ -127,11 +127,12 @@ by rewrite ltrD// ltr_pM2l// onem_gt0.
 Qed.
 
 (** NB: we have almost the same proof in `tvs.v` *)
-Let locally_convex :
-  exists2 B : set (set (convex_lmodType V)), (forall b, b \in B -> convex b) & basis B.
+Let locally_convex_set :
+  exists2 B : set_system (convex_lmodType V),
+    (forall b, b \in B -> convex_set b) & basis B.
 Proof.
 exists [set B | exists (x : convex_lmodType V) r, B = ball x r].
-  by move=> b; rewrite inE => [[x]] [r] ->; exact: ball_convex.
+  by move=> b; rewrite inE => [[x]] [r] ->; exact: ball_convex_set.
 split; first by move=> B [x] [r] ->; exact: ball_open.
 move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
 by exists (ball x r) => //; split; [exists x, r|exact: ballxx].
@@ -141,7 +142,7 @@ HB.instance Definition _ :=
   PreTopologicalNmodule_isTopologicalNmodule.Build V add_continuous.
 HB.instance Definition _ :=
   TopologicalNmodule_isTopologicalLmodule.Build K V scale_continuous.
-HB.instance Definition _ := Uniform_isTvs.Build K V locally_convex.
+HB.instance Definition _ := Uniform_isTvs.Build K V locally_convex_set.
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_Tvs_isNormedModule.Build K V normrZ.
 

@@ -84,7 +84,7 @@
 - in `separation_axioms.v`:
   + lemmas `limit_point_closed`
 - in `convex.v`:
-  + lemma `convexW`
+  + lemma `convex_setW`
 
 ### Changed
 
@@ -244,7 +244,7 @@
   + lemma `ball_open_nbhs`
 
 - moved from `tvs.v` to `convex.v`
-  + definition `convex`
+  + definition `convex`, renamed to `convex_set`
   
 ### Renamed
 
