@@ -58,6 +58,97 @@
 - in `derive.v`:
   + lemmas `derivable_mxP`, `derive_mx`
 
+- in `measurable_function.v`:
+  + lemma `preimage_set_system_compS`
+
+- in `numfun.v`:
+  + defintions `funrpos`, `funrneg` with notations `^\+` and `^\-`
+  + lemmas `funrpos_ge0`, `funrneg_ge0`, `funrposN`, `funrnegN`, `ge0_funrposE`,
+    `ge0_funrnegE`, `le0_funrposE`, `le0_funrnegE`, `ge0_funrposM`, `ge0_funrnegM`,
+    `le0_funrposM`, `le0_funrnegM`, `funrposDneg`, `funrposBneg`,
+    `funrD_posD`, `funrpos_le`, `funrneg_le`
+  + lemmas `funerpos`, `funerneg`
+
+- in `measurable_structure.v`:
+  + definitions `preimage_display`, `g_sigma_algebra_preimageType`,
+    `g_sigma_algebra_preimage`
+  +  notations `.-preimage`, `.-preimage.-measurable`
+
+- in `measurable_realfun.v`:
+  + lemmas `measurable_funrpos`, `measurable_funrneg`
+
+- new file `independence.v`:
+  + definition `independent_events`
+  + definition `mutual_independence`
+  + lemma `eq_mutual_independence`
+  + definition `independence2`, `independence2P`
+  + lemmas `setI_closed_setT`, `setI_closed_set0`
+  + lemma `g_sigma_algebra_finite_measure_unique`
+  + lemma `mutual_independence_fset`
+  + lemma `mutual_independence_finiteS`
+  + theorem `mutual_independence_finite_g_sigma`
+  + lemma `mutual_dependence_bigcup`
+  + lemmas `g_sigma_algebra_preimage_comp`, `g_sigma_algebra_preimage_funrpos`,
+    `g_sigma_algebra_preimage_funrneg`
+  + definition `independent_RVs`
+  + lemma `independent_RVsD1`
+  + theorem `independent_generators`
+  + definition `independent_RVs2`
+  + lemmas `independent_RVs2_comp`, `independent_RVs2_funrposneg`,
+    `independent_RVs2_funrnegpos`, `independent_RVs2_funrnegneg`,
+    `independent_RVs2_funrpospos`
+  + definition `pairRV`, lemma `measurable_pairRV`
+  + lemmas `independent_RVs2_product_measure1`
+  + lemmas `independent_RVs2_setI_preimage`,
+    `independent_Lfun1_expectation_product_measure_lty`
+  + lemmas `expectationM_nnsfun`, `expectationM_ge0`,
+    `ge0_independent_expectationM`, `independent_Lfun1_expectationM_lty`,
+    `independent_Lfun1M`, `independent_expectationM`
+
+- in `numfun.v`
+  + lemmas `funeposE`, `funenegE`, `funepos_comp`, `funeneg_comp`
+
+- in `classical_sets.v`:
+  + lemmas `xsectionE`, `ysectionE`
+
+- file `constructive_ereal.v`:
+  + definition `iter_mule`
+  + lemma `prodEFin`
+
+- file `exp.v`:
+  + lemma `expR_sum`
+
+- file `lebesgue_integral.v`:
+  + lemma `measurable_fun_le`
+
+- in `trigo.v`:
+  + lemma `integral0oo_atan`
+
+- in `measure.v`:
+  + lemmas `mnormalize_id`, `measurable_fun_eqP`
+
+- in `ftc.v`:
+  + lemma `integrable_locally`
+
+- in `constructive_ereal.v`:
+  + lemma `EFin_bigmax`
+
+- in `mathcomp_extra.v`:
+  + lemmas `inr_inj`, `inl_inj`
+
+- in `classical_sets.v`:
+  + lemmas `in_set1`, `inr_in_set_inr`, `inl_in_set_inr`, `mem_image`, `mem_range`, `image_f`
+  + lemmas `inr_in_set_inl`, `inl_in_set_inl`
+
+- in `lebesgue_integral_approximation.v`:
+  + lemma `measurable_prod`
+
+- in `lebesgue_integrable.v`:
+  + lemma `integrable_norm`
+- in `order_topology.v`:
+  + structures `POrderedNbhs`, `POrderedTopological`, `POrderedUniform`, `POrderedPseudoMetric`,
+    `POrderedPointedTopological`
+
 - in `subtype_topology.v`:
   + lemma `within_continuous_comp`
 
@@ -71,6 +162,11 @@
 
 - in `derive.v`:
   + lemmas `compact_EVT_max`, `compact_EVT_min`, `EVT_max_rV`, `EVT_min_rV`
+- in `functions.v`:
+  + lemma `addBrfctE`
+
+- in `ereal.v`:
+  + lemma `ge0_addBefctE`
 
 ### Changed
 
@@ -228,6 +324,11 @@
   + lemma `near_shift`
   + lemma `cvg_comp_shift`
   + lemma `ball_open_nbhs`
+
+- in `numfun.v`:
+  + `fune_abse` renamed to `funeposDneg` and direction of the equality changed
+  + `funeposneg` renamed to `funeposBneg` and direction of the equality changed
+  + `funeD_posD` renamed to `funeDB` and direction of the equality changed
 
 ### Renamed
 

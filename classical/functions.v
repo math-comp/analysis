@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint rat.
 From HB Require Import structures.
 #[warning="-warn-library-file-internal-analysis"]
@@ -2702,6 +2702,10 @@ Proof. by elim: n => [//|n h]; rewrite funeqE=> ?; rewrite !mulrSr h. Qed.
 
 Lemma opprfctE (T : Type) (K : zmodType) (f : T -> K) : - f = (fun x => - f x).
 Proof. by []. Qed.
+
+Lemma addBrfctE (U : Type) (K : zmodType) :
+  @interchange (U -> K) (fun a b => a - b) (fun a b => a + b).
+Proof. by move=> a b c d; apply/funext => x; rewrite addrACA -opprD. Qed.
 
 Lemma mulrfctE (T : Type) (K : pzRingType) (f g : T -> K) :
   f * g = (fun x => f x * g x).
