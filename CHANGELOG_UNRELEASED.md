@@ -78,8 +78,6 @@
 - in `derive.v`:
   + lemmas `derivable_max`, `derive_maxl`, `derive_maxr` `derivable_min`, `derive_minl`, `derive_minr`
   + lemmas `derivable0`, `derive0`, `is_derive0`
-- in `normed_module.v`:
-  + lemmas `not_limit_point_set1`, `limit_point_closed`
 - in `topology_structure.v`:
   + lemma `not_limit_pointE`
 
