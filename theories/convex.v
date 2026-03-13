@@ -25,10 +25,16 @@ From mathcomp Require Import reals topology.
 (* For `R : numDomainType`, `E : lmodType R` and `R` itself are shown to be   *)
 (* convex spaces with the following aliases:                                  *)
 (* ```                                                                        *)
-(*       convex_lmodType E == E : lmodType R as a convex space                *)
-(*  convex_numDomainType R == R : numDomainType as a convex space             *)
+(*         convex_lmodType E == E : lmodType R as a convex space              *)
+(*    convex_numDomainType R == R : numDomainType as a convex space           *)
 (* ```                                                                        *)
 (*                                                                            *)
+(* ```                                                                        *)
+(*              convex_set A == A : set M is a convex set                     *)
+(*                              M is an Lmodule over R : numDomainType        *)
+(*         convex_function f == f : E -> R is a convex function               *)
+(*                              E is an Lmodule over R : numFieldType         *)
+(* ```                                                                        *)
 (******************************************************************************)
 
 Reserved Notation "x <| p |> y" (format "x  <| p |>  y", at level 49).
