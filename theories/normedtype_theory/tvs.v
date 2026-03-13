@@ -41,8 +41,6 @@ From mathcomp Require Import pseudometric_normed_Zmodule.
 (*         UniformLmodule K == HB class, join of UniformNmodule and Lmodule   *)
 (*                             with a uniformly continuous scaling operation  *)
 (*                             K is a numFieldType.                           *)
-(*                 convex A == A : set M is a convex set of elements of M     *)
-(*                             M is an Lmodule over R : numDomainType.        *)
 (*               tvsType R  == interface type for a locally convex            *)
 (*                             tvs on a numDomain R                           *)
 (*                             A tvs is constructed over a uniform space.     *)
