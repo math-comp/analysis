@@ -78,9 +78,9 @@ Section HBPreparation.
 Import Lingraph.
  (* TODO: getting rid of relations and linear relations to make Zorn act on functions only ? *)
 
-Variables (R : realType) (V : lmodType R).
+Variables (R : realType) (V : lmodType R) (F : pred V).
 
-Variables (F : subLmodType V) (phi : {linear F -> R}) (p : V -> R).
+Variables (F' : subLmodType F) (phi : {linear F' -> R}) (p : V -> R).
 
 Implicit Types (f g : graph V).
 
@@ -88,7 +88,7 @@ Hypothesis phi_le_p : forall v, (phi v) <= (p (val v)).
  
 Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
 
-Definition extend_graph f := forall (v : F), f (\val v) (phi v).
+Definition extend_graph f := forall (v : F'), f (\val v) (phi v).
 
 Definition le_graph p f :=
    forall v r, f v r -> r <= p v.
@@ -105,7 +105,7 @@ Definition le_extend_graph f :=
 Record zorn_type : Type := ZornType
    {carrier : graph V; specP : le_extend_graph carrier}.
 
-Let spec_phi : le_extend_graph (fun v r =>  exists2 y : F, v = val y & r = phi y).
+Let spec_phi : le_extend_graph (fun v r =>  exists2 y : F', v = val y & r = phi y).
 Proof.
 split.
 - by move=> v r1 r2 [y1 ->  ->] [y2 + ->] => /val_inj ->.
@@ -125,7 +125,7 @@ Qed.
 
 Definition zornS (z1 z2 : zorn_type):= 
    forall x y, (carrier z1 x y) ->  (carrier z2 x y ). 
- 
+
  (* Zorn applied to the relation of extending the graph of the first function *)
  Lemma zornS_ex : exists g : zorn_type, forall z, zornS g z -> z = g.
  Proof.
@@ -341,9 +341,9 @@ Import Lingraph.
    on R. We do not make use of the 'vector' interface as the latter enforces
    finite dimension. *)
   
- Variables (R : realType) (V : lmodType R).
+ Variables (R : realType) (V : lmodType R) (F : pred V).
 
- Variables (F : subLmodType V) (f : {linear F -> R}) (p : V -> R).
+ Variables (F' : subLmodType F) (f : {linear F' -> R}) (p : V -> R).
 
 
 (* MathComp seems to lack of an interface for submodules of V, so for now
@@ -351,12 +351,12 @@ Import Lingraph.
 
 Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
 
-Hypothesis f_bounded_by_p : forall (z : F), (f z  <= p (\val z)).
+Hypothesis f_bounded_by_p : forall (z : F'), (f z  <= p (\val z)).
 
 Theorem HahnBanach : exists g : {scalar V}, 
-  (forall x,  g x <= p x) /\ (forall (z : F), g (\val z) = f z). 
+  (forall x,  g x <= p x) /\ (forall (z : F'), g (\val z) = f z). 
 Proof.
-pose graphF (v : V) r := exists2 z : F, v = \val z & r = f z.
+pose graphF (v : V) r := exists2 z : F', v = \val z & r = f z.
 have [z zmax]:= zornS_ex f_bounded_by_p.
 have [g gP]:= (hb_witness p_cvx zmax).  
 have scalg : linear_for *%R g.
@@ -377,17 +377,18 @@ Qed.
 End HahnBanach.
 
 Section HBGeom.
-Variable (R : realType) (V : normedModType R) (F : subLmodType V) (f : {linear F -> R}).
+Variable (R : realType) (V : normedModType R) (F : pred V)
+(F' : subLmodType F) (f : {linear F' -> R}).
 
-Let setF := [set x : V  | exists (z : F), val z = x].
+Let setF := [set x : V  | exists (z : F'), val z = x].
 
 (* TODO : define (F : subNormedModType V) so as to have (f : {linear_continuous F ->
 R}), and to obtain the first hypothesis of the following theorem through the
 lemmas continuous_linear_bounded*)
 
 Theorem HB_geom_normed :
-   (exists  r , (r > 0 ) /\ (forall (z : F), (`|f z| ) <=  `|(val z)| * r)) ->
-  exists g: {scalar V}, (continuous (g : V -> R)) /\ (forall (x : F), (g (val x) = f x)).
+   (exists  r , (r > 0 ) /\ (forall (z : F'), (`|f z| ) <=  `|(val z)| * r)) ->
+  exists g: {scalar V}, (continuous (g : V -> R)) /\ (forall (x : F'), (g (val x) = f x)).
 Proof.
   move=> [r [ltr0 fxrx]].
   pose p:= fun x : V => `|x|*r.
@@ -402,7 +403,7 @@ Proof.
    have -> : `|l%:num| = l%:num by apply/normr_idP.
    have -> : `|(l%:num).~| = (l%:num).~ by apply/normr_idP; apply: onem_ge0.
    by rewrite !mulrA. 
-   have majfp : forall z : F, f z <= p (\val z). 
+   have majfp : forall z : F', f z <= p (\val z). 
    move => z; rewrite /(p _) ; apply : le_trans; last by []. 
    by apply : ler_norm.
  move: (HahnBanach convp majfp) => [ g  [majgp  F_eqgf] ] {majfp}.
