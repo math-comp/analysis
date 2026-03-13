@@ -103,37 +103,6 @@ apply: near_eq_cvg; near do rewrite subrK; exists M.
 by rewrite num_real.
 Unshelve. all: by end_near. Qed.
 
-Lemma left_right_continuousP {T : topologicalType} (f : R -> T) x :
-  f @ x^'- --> f x /\ f @ x^'+ --> f x <-> f @ x --> f x.
-Proof.
-split; last by move=> cts; split; exact: cvg_within_filter.
-move=> [+ +] U /= Uz => /(_ U Uz) + /(_ U Uz); near_simpl.
-rewrite !near_withinE => lf rf; apply: filter_app lf; apply: filter_app rf.
-near=> t => xlt xgt; have := @real_leVge R x t; rewrite !num_real.
-move=> /(_ isT isT) /orP; rewrite !le_eqVlt => -[|] /predU1P[|//].
-- by move=> <-; exact: nbhs_singleton.
-- by move=> ->; exact: nbhs_singleton.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvg_at_right_left_dnbhs (f : R -> R) (p : R) (l : R) :
-  f x @[x --> p^'+] --> l -> f x @[x --> p^'-] --> l ->
-  f x @[x --> p^'] --> l.
-Proof.
-move=> /cvgrPdist_le fppl /cvgrPdist_le fpnl; apply/cvgrPdist_le => e e0.
-have {fppl}[a /= a0 fppl] := fppl _ e0; have {fpnl}[b /= b0 fpnl] := fpnl _ e0.
-near=> t.
-have : t != p by near: t; exact: nbhs_dnbhs_neq.
-rewrite neq_lt => /orP[tp|pt].
-- apply: fpnl => //=; near: t.
-  exists (b / 2) => //=; first by rewrite divr_gt0.
-  move=> z/= + _ => /lt_le_trans; apply.
-  by rewrite ler_pdivrMr// ler_pMr// ler1n.
-- apply: fppl =>//=; near: t.
-  exists (a / 2) => //=; first by rewrite divr_gt0.
-  move=> z/= + _ => /lt_le_trans; apply.
-  by rewrite ler_pdivrMr// ler_pMr// ler1n.
-Unshelve. all: by end_near. Qed.
-
 End fun_cvg_realFieldType.
 
 Section cvgr_fun_cvg_seq.
@@ -197,7 +166,7 @@ split=> [/cvgrPdist_le fpl u [up /cvgrPdist_lt put]|pfl].
   apply/cvgrPdist_le => e /fpl [r /=] /put[n _ {}put] {}fpl.
   near=> t; apply: fpl => //=; apply: put.
   by near: t; exact: nbhs_infty_ge.
-apply: cvg_at_right_left_dnbhs.
+apply: (@cvg_at_right_left_dnbhs _ R^o).
 - by apply/cvg_at_rightP => u [pu ?]; apply: pfl; split => // n; rewrite gt_eqF.
 - by apply/cvg_at_leftP => u [pu ?]; apply: pfl; split => // n; rewrite lt_eqF.
 Unshelve. all: end_near. Qed.
@@ -2947,7 +2916,7 @@ Hypotheses (fa0 : f x @[x --> c] --> 0) (ga0 : g x @[x --> c] --> 0)
 Lemma lhopital :
   df x / dg x @[x --> c] --> l -> f x / g x @[x --> c^'] --> l.
 Proof.
-move=> fgcl; apply/cvg_at_right_left_dnbhs.
+move=> fgcl; apply/(@cvg_at_right_left_dnbhs _ R^o).
 - apply: (@lhopital_at_right R f df g dg c b l); try exact/cvg_at_right_filter.
   + by move: cab; rewrite in_itv/= => /andP[].
   + move=> x xac; apply: fdf; rewrite set_itv_splitU ?in_setU//=.

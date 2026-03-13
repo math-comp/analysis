@@ -94,7 +94,7 @@ Proof.
 move=> intf F x ax fx.
 have locf : locally_integrable setT f.
   by apply: open_integrable_locally => //; exact: openT.
-apply: cvg_at_right_left_dnbhs.
+apply: (@cvg_at_right_left_dnbhs _ R^o).
 - apply/cvg_at_rightP => d [d_gt0 d0].
   pose E x n := `[x, x + d n[%classic%R.
   have muE y n : mu (E y n) = (d n)%:E.
