@@ -376,38 +376,36 @@ Qed.
 
 End HahnBanach.
 
-Section Substructures.
-Context (R: numFieldType) (V : normedModType R).
-Variable (A : pred V).
 
-HB.instance Definition _ := NormedModule.on (subspace A).
+(* To add once this is rebased over linear_continuous *)
+(* Section Substructures. *)
+(* Context (R: numFieldType) (V : normedModType R). *)
+(* Variable (A : pred V). *)
 
-Check {linear_continuous (subspace A) -> R^o}.
+(* HB.instance Definition _ := NormedModule.on (subspace A). *)
 
-End Substructures.
+(* Check {linear_continuous (subspace A) -> R^o}. *)
+
+(* End Substructures. *)
 
 Section HBGeom.
-(*Variable (R : realType) (V : normedModType R) (F : pred V)
-(F' : subLmodType F) (f : {linear F' -> R}).*)
 
 Variable (R : realType) (V : normedModType R) (F : pred V)
+(F' : subLmodType F) (f : {linear F' -> R}).
+
+(* once this is rebased over linear_continuous
+Variable (R : realType) (V : normedModType R) (F : pred V)
 (f : {linear_continuous (subspace F) -> R}).
+*)
 
-
-(*Let setF := [set x : V  | exists (z : F'), val z = x].*)
-
-
-(* TODO : define (F : subNormedModType V) so as to have (f : {linear_continuous F ->
-R}), and to obtain the first hypothesis of the following theorem through the
-lemmas continuous_linear_bounded*)
- 
-Check continuous_linear_bounded. 
+Let setF := [set x : V  | exists (z : F'), val z = x].
 
 Theorem HB_geom_normed :
-  (* (exists  r , (r > 0 ) /\ (forall (z : F'), (`|f z| ) <=  `|(val z)| * r)) ->*)
+  exists  r , (r > 0 ) /\ (forall (z : F'), (`|f z| ) <=  `|(val z)| * r)) -> 
+(* hypothesis to delete once this is rebased over linear_continuous
+  and obtain through continuous_linear_bounded  *)
   exists g: {linear_continuous V -> R}, (forall x : V, F x -> (g x = f x)).
 Proof.
-  (*apply continuous_linear_bounded*)
   move=> [r [ltr0 fxrx]].
   pose p:= fun x : V => `|x|*r.
  have convp: (@convex_function _ _ [set: V] p).
