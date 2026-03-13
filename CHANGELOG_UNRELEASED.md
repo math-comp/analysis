@@ -248,6 +248,12 @@
 - moved from `tvs.v` to `convex.v`
   + definition `convex`, renamed to `convex_set`
   
+- moved from `realfun.v` to `metric_structure.v`:
+  + lemma `cvg_at_right_left_dnbhs` and generalized to `metricType R`
+
+- moved from `realfun.v` to `num_topology.v`:
+  + lemma `left_right_continuousP`
+
 ### Renamed
 
 - in `topology_structure.v`
