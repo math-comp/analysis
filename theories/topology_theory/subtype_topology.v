@@ -7,11 +7,12 @@ From mathcomp Require Import product_topology subspace_topology.
 
 (**md**************************************************************************)
 (* # Subtypes of topological spaces                                           *)
+(*                                                                            *)
 (* We have two distinct ways of building topologies as subsets of a           *)
 (* topological space `X`. One is the `subspace topology`, which is defined in *)
 (* `subspace_topology.v`. It builds a topology on X which 'isolates' a set A. *)
 (* The other, defined in this file, defines a topology on the sigma type      *)
-(* `set_type` in the weak topology by the inclusion. Note `subspace A` has    *)
+(* `set_type` in the initial topology by the inclusion. Note `subspace A` has *)
 (* the advantage that it preserves all the algebraic structure on X, but only *)
 (* the local behavior A (in particular, continuity). On the other hand        *)
 (* `set_type A` has the right global properties you'd expect for the subset   *)
