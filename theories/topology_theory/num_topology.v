@@ -171,6 +171,18 @@ apply; last by rewrite gtrBl.
 by rewrite /= opprB addrC subrK ger0_norm// gtr_pMr// invf_lt1// ltr1n.
 Qed.
 
+Lemma cvg_dnbhs_at_right (T : topologicalType) (f : R -> T) (p : R) (l : T) :
+  f x @[x --> p^'] --> l -> f x @[x --> p^'+] --> l.
+Proof.
+by apply: cvg_trans; apply: cvg_app; apply: within_subset=> r ?; rewrite gt_eqF.
+Qed.
+
+Lemma cvg_dnbhs_at_left (T : topologicalType) (f : R -> T) (p : R) (l : T) :
+  f x @[x --> p^'] --> l -> f x @[x --> p^'-] --> l.
+Proof.
+by apply: cvg_trans; apply: cvg_app; apply: within_subset=> r ?; rewrite lt_eqF.
+Qed.
+
 Lemma nbhs_right_gt x : \forall y \near x^'+, x < y.
 Proof. by rewrite near_withinE; apply: nearW. Qed.
 
@@ -239,6 +251,19 @@ Notation "x ^'+" := (at_right x) : classical_set_scope.
 
 #[global] Hint Extern 0 (Filter (nbhs _^'-)) =>
   (apply: at_left_proper_filter) : typeclass_instances.
+
+Lemma left_right_continuousP {R : realFieldType} {T : topologicalType}
+    (f : R -> T) x :
+  f @ x^'- --> f x /\ f @ x^'+ --> f x <-> f @ x --> f x.
+Proof.
+split; last by move=> cts; split; exact: cvg_within_filter.
+move=> [+ +] U /= Uz => /(_ U Uz) + /(_ U Uz); near_simpl.
+rewrite !near_withinE => lf rf; apply: filter_app lf; apply: filter_app rf.
+near=> t => xlt xgt; have := @real_leVge R x t; rewrite !num_real.
+move=> /(_ isT isT) /orP; rewrite !le_eqVlt => -[|] /predU1P[|//].
+- by move=> <-; exact: nbhs_singleton.
+- by move=> ->; exact: nbhs_singleton.
+Unshelve. all: by end_near. Qed.
 
 Lemma closure_sup (R : realType) (A : set R) :
   A !=set0 -> has_ubound A -> closure A (sup A).
