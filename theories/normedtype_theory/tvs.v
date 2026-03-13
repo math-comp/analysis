@@ -339,7 +339,7 @@ HB.mixin Record Uniform_isConvexTvs (R : numDomainType) E
     (forall b, b \in B -> convex_set b) & basis B
 }.
 
-#[short(type="ctvsType")]
+#[short(type="convextvsType")]
 HB.structure Definition ConvexTvs (R : numDomainType) :=
   {E of Uniform_isConvexTvs R E & Uniform E & TopologicalLmodule R E}.
 
@@ -379,7 +379,7 @@ Unshelve. all: by end_near. Qed.
 
 End properties_of_topologicalLmodule.
 
-HB.factory Record TopologicalLmod_isConvexTvs (R : numDomainType) E
+HB.factory Record PreTopologicalLmod_isConvexTvs (R : numDomainType) E
     & Topological E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
   scale_continuous : continuous (fun z : R^o * E => z.1 *: z.2) ;
@@ -387,7 +387,7 @@ HB.factory Record TopologicalLmod_isConvexTvs (R : numDomainType) E
     (forall b, b \in B -> convex_set b) & basis B
   }.
 
-HB.builders Context R E & TopologicalLmod_isConvexTvs R E.
+HB.builders Context R E & PreTopologicalLmod_isConvexTvs R E.
 
 Definition entourage : set_system (E * E) :=
   fun P => exists (U : set E), nbhs (0 : E) U  /\
@@ -477,7 +477,7 @@ HB.instance Definition _ := Nbhs_isUniform_mixin.Build E
 HB.end.
 
 Section Tvs_numDomain.
-Context (R : numDomainType) (E : ctvsType R) (U : set E).
+Context (R : numDomainType) (E : convextvsType R) (U : set E).
 
 Lemma nbhs0N : nbhs 0 U -> nbhs 0 (-%R @` U).
 Proof. exact/nbhs0N_subproof/scale_continuous. Qed.
@@ -492,7 +492,7 @@ End Tvs_numDomain.
 
 Section Tvs_numField.
 
-Lemma nbhs0Z (R : numFieldType) (E : ctvsType R) (U : set E) (r : R) :
+Lemma nbhs0Z (R : numFieldType) (E : convextvsType R) (U : set E) (r : R) :
   r != 0 -> nbhs 0 U -> nbhs 0 ( *:%R r @` U ).
 Proof.
 move=> r0 U0; have /= := scale_continuous (r^-1, 0) U.
@@ -501,7 +501,7 @@ near=> x => //=; exists (r^-1 *: x); last by rewrite scalerA divff// scale1r.
 by apply: (BU (r^-1, x)); split => //=;[exact: nbhs_singleton|near: x].
 Unshelve. all: by end_near. Qed.
 
-Lemma nbhsZ  (R : numFieldType) (E : ctvsType R) (U : set E) (r : R) (x :E) :
+Lemma nbhsZ  (R : numFieldType) (E : convextvsType R) (U : set E) (r : R) (x :E) :
   r != 0 -> nbhs x U -> nbhs (r *:x) ( *:%R r @` U ).
 Proof.
 move=> r0 U0; have /= := scale_continuous ((r^-1, r *: x)) U.
@@ -568,7 +568,7 @@ HB.instance Definition _ := Uniform_isConvexTvs.Build R R^o
 End standard_topology.
 
 Section prod_Tvs.
-Context (K : numFieldType) (E F : ctvsType K).
+Context (K : numFieldType) (E F : convextvsType K).
 
 Local Lemma prod_add_continuous :
   continuous (fun x : (E * F) * (E * F) => x.1 + x.2).
@@ -741,7 +741,7 @@ HB.instance Definition _ := @isLinearContinuous.Build R E S s (g \o f)
 End lcfun_comp.
 
 Section lcfun_lmodtype.
-  Context {R : numFieldType} {E F G: ctvsType R}.
+  Context {R : numFieldType} {E F G: convextvsType R}. 
     (* {s : GRing.Scale.law R F}. *)
 
 Implicit Types (r : R) (f g : {linear_continuous E -> F}) (h : {linear_continuous F -> G}).  
@@ -855,7 +855,44 @@ HB.instance Definition _ :=
 Check ({linear_continuous E -> F} : lmodType R).
 End lcfun_lmodtype.
 
+
+Section Substructures.
+Context (R: numFieldType) (V : convextvsType R).
+Variable (A : pred V).
+
+(*HB.instance Definition _ := GRing.Lmodule.on (subspace A).*)
+
+HB.instance Definition _ := ConvexTvs.on (subspace A).
+
+Check {linear_continuous (subspace A) -> R^o}.
+
+End Substructures.
+
+Module shouldnotwork.
+#[short(type="subConvextvsType")]
+HB.structure Definition SubConvexTvs (R : numDomainType) (V : convextvsType R)
+    (S : pred V) :=
+  { W of @GRing.SubLmodule R V S W (*& Subspace S W  *) &
+         @PreTopologicalLmod_isConvexTvs R W}.
+
+Section testsub.
+Context (R : numDomainType) (V : convextvsType R) (W : subConvextvsType V).
+
+Check (W : topologicalType).  (* What is this topology *)
+
+Lemma cval : continuous (val : W -> V).  
+Proof.
+apply/continuousP => A oA.
+Abort.
+
+End testsub.
+End shouldnotwork.
+
+
 (* make use of  {family fam, U -> V}  *)
+
+
+
 
 Section test.
 
