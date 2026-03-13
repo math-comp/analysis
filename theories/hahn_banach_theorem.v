@@ -32,31 +32,33 @@ Import GRing.Theory.
 Import Num.Theory.
 
  
-Module Linrel.
-Section Linrelsec.
+Module Lingraph.
+Section Lingraphsec.
 
- Variables (R : numDomainType) (V : lmodType R).
+Variables (R : numDomainType) (V : lmodType R).
 
- Definition linear_rel (f : V -> R -> Prop) :=
+Definition graph := V -> R -> Prop. 
+
+Definition linear_graph (f : graph) :=
    forall v1 v2 l r1 r2,  f v1 r1 -> f v2 r2 -> f (v1 + l *: v2) (r1 + l * r2).
 
- Variable f : V -> R -> Prop.
- Hypothesis lrf : linear_rel f.
+Variable f : graph.
+Hypothesis lrf : linear_graph f.
 
- Lemma linrel_00 x r : f x r -> f 0 0.
+Lemma lingraph_00 x r : f x r -> f 0 0.
  Proof.
  suff -> : f 0 0 = f (x + (-1) *: x) (r + (-1) * r) by move=> h; apply: lrf.
  by rewrite scaleNr mulNr mul1r scale1r !subrr.
  Qed.
 
- Lemma linrel_scale x r l : f x r -> f (l *: x) (l * r).
+ Lemma lingraph_scale x r l : f x r -> f (l *: x) (l * r).
  Proof.
  move=> fxr.
  have -> : f (l *: x) (l * r) = f (0 + l *: x) (0 + l * r) by rewrite !add0r.
- by apply: lrf=> //; apply: linrel_00 fxr.
+ by apply: lrf=> //; apply: lingraph_00 fxr.
  Qed.
 
- Lemma linrel_add x1 x2 r1 r2 : f x1 r1 -> f x2 r2 -> f (x1 - x2)(r1 - r2).
+ Lemma lingraph_add x1 x2 r1 r2 : f x1 r1 -> f x2 r2 -> f (x1 - x2)(r1 - r2).
  Proof.
      have -> : x1 - x2 = x1 + (-1) *: x2 by rewrite scaleNr scale1r.
      have -> : r1 - r2 = r1 + (-1) * r2 by rewrite mulNr mul1r.
@@ -68,59 +70,67 @@ Section Linrelsec.
    exists v' : V, exists r' : R, exists lambda : R,
          [/\ f v' r', v = v' + lambda *: w & r = r' + lambda * a].
 
-End Linrelsec.
-End Linrel.
+End Lingraphsec.
+End Lingraph.
 
 
 Section HBPreparation.
-Import Linrel.
+Import Lingraph.
  (* TODO: getting rid of relations and linear relations to make Zorn act on functions only ? *)
 
- Variables (R : realType) (V : lmodType R).
+Variables (R : realType) (V : lmodType R).
 
- Variables (F : subLmodType V) (phi : {linear F -> R}) (p : V -> R).
- 
-Hypothesis linphiF : forall v1 v2 l, F v1 -> F v2 ->
-                              phi (v1 + l *: v2) = phi v1 + l * (phi v2).
-Implicit Types (f g : V -> R -> Prop).
+Variables (F : subLmodType V) (phi : {linear F -> R}) (p : V -> R).
+
+Implicit Types (f g : graph V).
+
+Hypothesis phi_le_p : forall v, (phi v) <= (p (val v)).
  
 Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
 
-Definition prol f := forall v, F v -> f (val v) (phi v).
+Definition extend_graph f := forall (v : F), f (\val v) (phi v).
 
-Definition maj_by T p (f : T -> R -> Prop) :=
+Definition le_graph p f :=
    forall v r, f v r -> r <= p v.
 
-Definition functional f :=
+Definition functional_graph f :=
   forall v r1 r2, f v r1 -> f v r2 -> r1 = r2.
 
-Definition linear_rel (f : V -> R -> Prop) :=
+Definition linear_graph f :=
    forall v1 v2 l r1 r2,  f v1 r1 -> f v2 r2 -> f (v1 + l *: v2) (r1 + l * r2).
 
-Definition spec (f : V -> R -> Prop) :=
-   [/\ functional f, linear_rel f, maj_by p f &  prol f].
+Definition le_extend_graph f :=
+   [/\ functional_graph f, linear_graph f, le_graph p f &  extend_graph f].
 
 Record zorn_type : Type := ZornType
-   {carrier : V -> R -> Prop; specP : spec carrier}.
+   {carrier : graph V; specP : le_extend_graph carrier}.
 
-(*Variables (v : V) (r : R). Check (v \in (val @` [set: F])).*)
-Hypothesis spec_phi : spec (fun v r =>  exists2 y : F, v = val y & r = phi y).
+Let spec_phi : le_extend_graph (fun v r =>  exists2 y : F, v = val y & r = phi y).
+Proof.
+split.
+- by move=> v r1 r2 [y1 ->  ->] [y2 + ->] => /val_inj ->.
+- move => v1 v2 l r1 r2 [y1 -> ->] [y2 ->  ->].
+  by exists (y1 + l *: y2); rewrite !linearD !linearZ //.  
+- by move => r v [y -> ->].
+- by move => v; exists v.   
+Qed. 
 
 Definition zphi := ZornType spec_phi.
 
- Lemma zorn_type_eq z1 z2 : carrier z1 = carrier z2 -> z1 = z2.
- Proof.
- case: z1 => m1 pm1; case: z2 => m2 pm2 /= e; move: pm1 pm2; rewrite e => pm1 pm2.
- by congr ZornType; apply: Prop_irrelevance.
- Qed.
+Lemma zorn_type_eq z1 z2 : carrier z1 = carrier z2 -> z1 = z2.
+Proof.
+case: z1 => m1 pm1; case: z2 => m2 pm2 /= e; move: pm1 pm2; rewrite e => pm1 pm2.
+by congr ZornType; apply: Prop_irrelevance.
+Qed.
 
-  Definition zorn_rel (z1 z2 : zorn_type):= forall x y, (carrier z1 x y) ->  (carrier z2 x y ). 
+Definition zornS (z1 z2 : zorn_type):= 
+   forall x y, (carrier z1 x y) ->  (carrier z2 x y ). 
  
  (* Zorn applied to the relation of extending the graph of the first function *)
- Lemma zorn_rel_ex : exists g : zorn_type, forall z, zorn_rel g z -> z = g.
+ Lemma zornS_ex : exists g : zorn_type, forall z, zornS g z -> z = g.
  Proof.
- pose Rbool := (fun x y => `[< zorn_rel x y >]).
- have RboolP : forall z t, Rbool z t <-> zorn_rel z t by split; move => /asboolP //=. 
+ pose Rbool := (fun x y => `[< zornS x y >]).
+ have RboolP : forall z t, Rbool z t <-> zornS z t by split; move => /asboolP //=. 
  suff [t st]:  exists t : zorn_type, forall s : zorn_type, Rbool t s -> s = t. 
     by exists t;  move => z /RboolP tz; apply: st. 
          apply: (@Zorn zorn_type Rbool).
@@ -133,33 +143,33 @@ Definition zphi := ZornType spec_phi.
    by exists zphi => a Aa; elim: eA; exists a.
  (* g is the union of the graphs indexed by elements in a *)
  pose g v r := exists a, A a /\ (carrier a v r).
- have g_fun : functional g.
+ have g_fun : functional_graph g.
    move=> v r1 r2 [a [Aa avr1]] [b [Ab bvr2]].
    have [] : Rbool a b \/ Rbool b a by exact: Amax.
-      - rewrite /Rbool /RboolP /zorn_rel; case: b Ab bvr2 {Aa}.
+      - rewrite /Rbool /RboolP /zornS; case: b Ab bvr2 {Aa}.
         move => s2 [fs2 _ _ _] /= _ s2vr2 /asboolP ecas2.
      by move/ecas2: avr1 => /fs2 /(_ s2vr2).
-   - rewrite /Rbool /RboolP  /zorn_rel; case: a Aa avr1 {Ab} => s1 [fs1 _ _ _] /= _ s1vr1 /asboolP ecbs1.
+   - rewrite /Rbool /RboolP  /zornS; case: a Aa avr1 {Ab} => s1 [fs1 _ _ _] /= _ s1vr1 /asboolP ecbs1.
      by move/ecbs1: bvr2; apply: fs1.
- have g_lin : linear_rel g.
+ have g_lin : linear_graph g.
    move=> v1 v2 l r1 r2 [a1 [Aa1 c1]] [a2 [Aa2 c2]]. 
    have [/RboolP sc12 | /RboolP sc21] := Amax _ _ Aa1 Aa2.
    - have {c1 sc12 Aa1 a1} c1 :  carrier a2 v1 r1 by apply: sc12.
      exists a2; split=> //; case: a2 {Aa2} c2 c1 => c /= [_ hl _ _] *; exact: hl.
    - have {c2 sc21 Aa2 a2} c2 :  carrier a1 v2 r2 by apply: sc21.
      exists a1; split=> //; case: a1 {Aa1} c2 c1 => c /= [_ hl _ _] *; exact: hl.
- have g_majp : maj_by p g by move=> v r [[c [fs1 ls1 ms1 ps1]]] /= [_ /ms1].
- have g_prol : prol g.
+ have g_majp : le_graph p g by move=> v r [[c [fs1 ls1 ms1 ps1]]] /= [_ /ms1].
+ have g_prol : extend_graph g.
    move=> *; exists w; split=> //; case: w Aw => [c [_ _ _ hp]] _ //=; exact: hp.
- have spec_g : spec g by split.
+ have spec_g : le_extend_graph g by split.
  pose zg := ZornType spec_g.
- by  exists zg => [a Aa]; apply/RboolP; rewrite /zorn_rel  => v r cvr; exists a.
+ by  exists zg => [a Aa]; apply/RboolP; rewrite /zornS  => v r cvr; exists a.
  Qed. 
 
  
  Variable g : zorn_type.
 
- Hypothesis gP : forall z, zorn_rel g z -> z = g.
+ Hypothesis gP : forall z, zornS g z -> z = g.
 
  (*The next lemma proves that when z is of zorn_type, it can be extended on any
   real line directed by an arbitrary vector v *)
@@ -183,14 +193,14 @@ Definition zphi := ZornType spec_phi.
  Qed.
  
  Lemma domain_extend  (z : zorn_type) v :
-     exists2 ze : zorn_type, (zorn_rel z ze) & (exists r, (carrier ze)  v r).
+     exists2 ze : zorn_type, (zornS z ze) & (exists r, (carrier ze)  v r).
  Proof.
  case: (lem (exists r, (carrier z v r))).
    by case=> r rP; exists z => //; exists r.
  case: z => [c [fs1 ls1 ms1 ps1]] /= nzv.
  have c00 : c 0 0.
    have <- : phi 0 = 0 by rewrite linear0.
-   by move: ps1; rewrite /prol /= => /(_ 0 _) /=; rewrite GRing.val0; apply. 
+   by move: ps1; rewrite /extend_graph /= => /(_ 0) /=; rewrite GRing.val0; apply. 
  have [a aP] : exists a,  forall (x : V) (r lambda : R),
        c x r -> r + lambda * a <= p (x + lambda *: v).
    suff [a aP] : exists a,  forall (x : V) (r lambda : R),
@@ -265,13 +275,13 @@ Definition zphi := ZornType spec_phi.
    move=> x r cxr; exists x; exists r; exists 0; split=> //.
    - by rewrite scale0r addr0.
    - by rewrite mul0r addr0.
- have z'_prol : prol z'.
-   move=> x /ps1 cxphix; exists (val x); exists (phi x); exists 0; split=> //.
+ have z'_prol : extend_graph z'.
+  move=> x; exists (val x); exists (phi x); exists 0; split=> //.
    - by rewrite scale0r addr0.
    - by rewrite mul0r addr0.
- - have z'_maj_by_p : maj_by p z'.
+ - have z'_maj_by_p : le_graph p z'.
    by move=> x r [w [s [l [cws -> ->]]]]; apply: aP.
- - have z'_lin : linear_rel z'.
+ - have z'_lin : linear_graph z'.
    move=> x1 x2 l r1 r2 [w1 [s1 [m1 [cws1 -> ->]]]] [w2 [s2 [m2 [cws2 -> ->]]]].
    set w := (X in z' X _); set s := (X in z' _ X).
    have {w} -> : w = w1 + l *: w2 + (m1 + l * m2) *: v.
@@ -280,14 +290,15 @@ Definition zphi := ZornType spec_phi.
      by rewrite /s !mulrDr !mulrDl mulrA -!addrA [X in _ + X]addrCA.
    exists (w1 + l *: w2); exists (s1 + l * s2); exists (m1 + l * m2); split=> //.
    exact: ls1.
- - have z'_functional : functional z'.
+ - have z'_functional : functional_graph z'.
    move=> w r1 r2 [w1 [s1 [m1 [cws1 -> ->]]]] [w2 [s2 [m2 [cws2 e1 ->]]]].
    have h1 (x : V) (r l : R) : x = l *: v ->  c x r -> x = 0 /\ l = 0.
      move=> -> cxr; case: (l =P 0) => [-> | /eqP ln0]; first by rewrite scale0r.
      suff cvs: c v (l^-1 * r) by elim:nzv; exists (l^-1 * r).
      suff -> : v = l ^-1 *: (l *: v).
        have -> :
-       c ( l ^-1 *: (l *: v)) (l^-1 * r) =  c (0 + l ^-1 *: (l *: v)) (0 + l^-1 * r) by rewrite !add0r.
+       c ( l ^-1 *: (l *: v)) (l^-1 * r) =  
+       c (0 + l ^-1 *: (l *: v)) (0 + l^-1 * r) by rewrite !add0r.
        by apply: ls1=> //; apply: linrel_00 fxr.
      by rewrite scalerA mulVf ?scale1r.
    have [rw12 erw12] : exists r,  c (w1 - w2) r.
@@ -299,13 +310,13 @@ Definition zphi := ZornType spec_phi.
      by rewrite -subr_eq opprK e1.
    suff -> : s1 = s2 by rewrite subr_eq0=> /eqP->.
    by apply: fs1 cws2; move/eqP: ew12; rewrite subr_eq0=> /eqP<-.
- have z'_spec : spec z' by split.
+ have z'_spec : le_extend_graph z' by split.
  pose zz' := ZornType z'_spec.
- exists zz'; rewrite /zorn_rel => //=; exists a; exists 0; exists 0; exists 1.
+ exists zz'; rewrite /zornS => //=; exists a; exists 0; exists 0; exists 1.
  by rewrite add0r mul1r scale1r add0r; split.
  Qed.
 
- Lemma tot_g v : exists r, carrier g v r.
+ Let tot_g v : exists r, carrier g v r.
  Proof.
  have [z /gP sgz [r zr]]:= domain_extend g v.
  by exists r; rewrite -sgz.
@@ -323,8 +334,8 @@ Qed.
  End HBPreparation.
 
 
-Section HahnBanachold.
-Import Linrel.
+Section HahnBanach.
+Import Lingraph.
 (* Now we prove HahnBanach on functions*)
 (* We consider R a real (=ordered) field with supremum, and V a (left) module
    on R. We do not make use of the 'vector' interface as the latter enforces
@@ -340,61 +351,33 @@ Import Linrel.
 
 Hypothesis p_cvx : (@convex_function  R V [set: V]  p).
 
-Hypothesis f_bounded_by_p : forall (z : F), (f z  <= p (val z)).
+Hypothesis f_bounded_by_p : forall (z : F), (f z  <= p (\val z)).
 
-Theorem HahnBanachold : exists g : {scalar V}, 
+Theorem HahnBanach : exists g : {scalar V}, 
   (forall x,  g x <= p x) /\ (forall (z : F), g (\val z) = f z). 
+Proof.
 pose graphF (v : V) r := exists2 z : F, v = \val z & r = f z.
-have func_graphF : functional graphF.
-   by move=> _ _ _ [z1 -> ->] [z2] /val_inj -> ->.     
-have lin_graphF : linear_rel graphF. 
-  by move=> _ _ l _  _ [z1 [-> ->]] [z2 -> ->]; exists (z1 + l*: z2); by rewrite linearD linearZ.
-have maj_graphF : maj_by p graphF by move=> _ _ [z -> ->]; exact: f_bounded_by_p.
-have prol_graphF : prol f graphF by move=> v Fv; exists v. 
-have graphFP : spec f p graphF by split.
-have [z zmax]:= zorn_rel_ex graphFP.
-have [g gP]:= (hb_witness p_cvx zmax).
+have [z zmax]:= zornS_ex f_bounded_by_p.
+have [g gP]:= (hb_witness p_cvx zmax).  
 have scalg : linear_for *%R g.
   case: z {zmax} gP=> [c [_ ls1 _ _]] /= gP.
   have addg : additive g.
-     move=> w1 w2;  apply/gP.
-     apply: linrel_add.
-     exact: ls1.
-     by apply /gP.
-     by apply /gP.
+    by move=> w1 w2;  apply/gP; apply: lingraph_add =>//; apply/gP.
   suff scalg : scalable_for  *%R g.
-    move=> a u v.
-    rewrite -gP.
-    rewrite (addrC _ v).
-    rewrite (addrC _ (g v)).
-    apply: ls1.
-    by apply /gP.
-    by apply /gP.
-  by move=> w l; apply/gP; apply: linrel_scale=> //; apply/gP.
+    by move=> a u v; rewrite -gP (addrC _ v) (addrC _ (g v)); apply: ls1; apply /gP.
+  by move=> w l; apply/gP; apply: lingraph_scale=> //; apply/gP.
 pose H := GRing.isLinear.Build _ _ _ _ g scalg.
-pose g' : {linear V -> R | *%R} := HB.pack g H. simpl in *. 
+pose g' : {linear V -> R | *%R} := HB.pack g H. 
 exists g'.
-have gextf y : F y -> g (val y) = f y.
-  by move=> Fy; apply/gP; case: z {zmax gP} => [c [_ _ _ pf]] /=; exact: pf.
-split; last by move => z'; apply: gextf.  
-suff pmajg (y : F) :  g (val y) <= p (val y).
-  by case: z {zmax} gP => [c [_ _ bp _]] /= gP => x; apply: bp; apply/gP.
-by rewrite gextf //. 
+split; last first. 
+  by move => z'; apply/gP; case: z {zmax gP} => [c [_ _ _ pf]] /=; exact: pf.
+by case: z {zmax} gP => [c [_ _ bp _]] /= gP => x; apply: bp; apply/gP.
 Qed.
 
-End HahnBanachold.
+End HahnBanach.
 
 Section HBGeom.
 Variable (R : realType) (V : normedModType R) (F : subLmodType V) (f : {linear F -> R}).
-
-(*Looked a long time for within *)
-Definition continuousR_on (G : set V) (g : V -> R) :=
-  {within G, continuous g}.
-(*  (forall x, (g @ (within G (nbhs x))) --> g x).*)
-
-(*Do we need to have F x ?*)
-Definition continuousR_on_at (G : set V) (x : V) (g : V -> R)  :=
-  g @ (within G (nbhs x)) --> (g x).
 
 Let setF := [set x : V  | exists (z : F), val z = x].
 
@@ -422,7 +405,7 @@ Proof.
    have majfp : forall z : F, f z <= p (\val z). 
    move => z; rewrite /(p _) ; apply : le_trans; last by []. 
    by apply : ler_norm.
- move: (HahnBanachold convp majfp) => [ g  [majgp  F_eqgf] ] {majfp}.
+ move: (HahnBanach convp majfp) => [ g  [majgp  F_eqgf] ] {majfp}.
  exists g;  split; last by [].
   move=> x; rewrite /cvgP; apply: (continuousfor0_continuous).
   apply: bounded_linear_continuous.
