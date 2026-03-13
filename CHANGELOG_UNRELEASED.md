@@ -307,6 +307,10 @@
 - in `convex.v`:
   + definition `convex_function` (from a realType as domain to a convex_lmodType as domain)
 
+- in `subspace_topology.v`:
+  + `continuousFunType` -> `continuousSubspaceType`
+  + `ContinuousFun` -> `ContinuousSubspace`
+
 ### Deprecated
 
 - in `lebesgue_integral_nonneg.v`:
