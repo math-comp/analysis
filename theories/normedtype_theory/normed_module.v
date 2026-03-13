@@ -76,15 +76,15 @@ Local Open Scope ring_scope.
 
 (** Modules with a norm depending on a numDomain *)
 
-HB.mixin Record PseudoMetricNormedZmod_Tvs_isNormedModule K V
-    & PseudoMetricNormedZmod K V & Tvs K V := {
+HB.mixin Record PseudoMetricNormedZmod_ConvexTvs_isNormedModule K V
+    & PseudoMetricNormedZmod K V & ConvexTvs K V := {
   normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
 
 #[short(type="normedModType")]
 HB.structure Definition NormedModule (K : numDomainType) :=
-  {T of PseudoMetricNormedZmod K T & Tvs K T
-   & PseudoMetricNormedZmod_Tvs_isNormedModule K T}.
+  {T of PseudoMetricNormedZmod K T & ConvexTvs K T
+   & PseudoMetricNormedZmod_ConvexTvs_isNormedModule K T}.
 
 HB.factory Record PseudoMetricNormedZmod_Lmodule_isNormedModule (K : numFieldType) V
     & PseudoMetricNormedZmod K V & GRing.Lmodule K V := {
@@ -142,9 +142,10 @@ HB.instance Definition _ :=
   PreTopologicalNmodule_isTopologicalNmodule.Build V add_continuous.
 HB.instance Definition _ :=
   TopologicalNmodule_isTopologicalLmodule.Build K V scale_continuous.
-HB.instance Definition _ := Uniform_isTvs.Build K V locally_convex_set.
+HB.instance Definition _ := Uniform_isConvexTvs.Build K V locally_convex_set.
+
 HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Tvs_isNormedModule.Build K V normrZ.
+  PseudoMetricNormedZmod_ConvexTvs_isNormedModule.Build K V normrZ.
 
 HB.end.
 
@@ -154,7 +155,7 @@ Section standard_topology_normedMod.
 Variable R : numFieldType.
 
 HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Tvs_isNormedModule.Build R R^o (@normrM _).
+  PseudoMetricNormedZmod_ConvexTvs_isNormedModule.Build R R^o (@normrM _).
 
 End standard_topology_normedMod.
 
@@ -1631,7 +1632,7 @@ Lemma prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
 Proof. by rewrite prod_normE /= !normrZ maxr_pMr. Qed.
 
 HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Tvs_isNormedModule.Build K (U * V)%type
+  PseudoMetricNormedZmod_ConvexTvs_isNormedModule.Build K (U * V)%type
   prod_norm_scale.
 
 End prod_NormedModule.

@@ -339,9 +339,9 @@ evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   rewrite funeqE=> h.
   by rewrite -[_ - _]addrA addrC subrKA scalerDr addrC linearZ scalerA /g.
 apply: cvg_lim => //.
-pose g1 : R -> W := fun h => (h^-1 * h) *: 'd f a v.
-pose g2 : R -> W := fun h : R => h^-1 *: k (h *: v ).
-rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: cvgD.
+pose g1 := fun h => (h^-1 * h) *: 'd f a v.
+pose g2 := fun h : R => h^-1 *: k (h *: v ).
+rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: pseudometric_normed_Zmodule.cvgD.
   rewrite -(scale1r (_ _ v)); apply: cvgZr_tmp => /= X [e e0].
   rewrite /ball_ /= => eX.
   apply/nbhs_ballP.
@@ -432,7 +432,7 @@ Fact dadd (f g : V -> W) x :
   continuous ('d f x \+ 'd g x) /\
   (f + g) \o shift x = cst ((f + g) x) + ('d f x \+ 'd g x) +o_ 0 id.
 Proof.
-move=> df dg; split => [?|]; do ?exact: continuousD.
+move=> df dg; split => [?|]; do ?exact: normed_module.continuousD.
 apply/(@eqaddoE R); rewrite funeqE => y /=.
 by rewrite !fctE ![_ (_ + x)]diff_locallyx// addrACA addox addrACA.
 Qed.
@@ -441,7 +441,7 @@ Fact dopp (f : V -> W) x :
   differentiable f x -> continuous (- ('d f x : V -> W)) /\
   (- f) \o shift x = cst (- f x) \- 'd f x +o_ 0 id.
 Proof.
-move=> df; split; first by move=> ?; apply: continuousN.
+move=> df; split; first by move=> ?; apply: normed_module.continuousN.
 apply/eqaddoE; rewrite funeqE => y /=.
 by rewrite -[(- f) _]/(- (_ _)) diff_locallyx// !opprD oppox.
 Qed.
@@ -837,7 +837,7 @@ Fact dbilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
     (fun q => f p.1 q.2 + f q.1 p.2) +o_ (0 : U * V') id.
 Proof.
 move=> fc; split=> [q|].
-  by apply: (@continuousD _ _ _ (fun q => f p.1 q.2) (fun q => f q.1 p.2));
+  by apply: (@normed_module.continuousD _ _ _ (fun q => f p.1 q.2) (fun q => f q.1 p.2));
     move=> A /(fc (_.1, _.2)) /= /nbhs_ballP [_ /posnumP[e] fpqe_A];
     apply/nbhs_ballP; exists e%:num => //= r [? ?]; exact: (fpqe_A (_.1, _.2)).
 apply/eqaddoE; rewrite funeqE => q /=.
@@ -1147,7 +1147,7 @@ move=> df dg.
 evar (fg : R -> W); rewrite [X in X @ _](_ : _ = fg) /=; last first.
   rewrite funeqE => h.
   by rewrite !scalerDr scalerN scalerDr opprD addrACA -!scalerBr /fg.
-exact: cvgD.
+exact: pseudometric_normed_Zmodule.cvgD.
 Qed.
 
 Lemma deriveD f g (x v : V) : derivable f x v -> derivable g x v ->
@@ -1303,7 +1303,7 @@ evar (fg : R -> R); rewrite [X in X @ _](_ : _ = fg) /=; last first.
     by rewrite !scalerBr -addrA ![g x *: _]mulrC addKr.
   rewrite scalerDr scalerA mulrC -scalerA.
   by rewrite [_ *: (g x *: _)]scalerA mulrC -scalerA /fg.
-apply: cvgD; last exact: cvgZl_tmp df.
+apply: pseudometric_normed_Zmodule.cvgD; last exact: cvgZl_tmp df.
 apply: cvg_comp2 (@scale_continuous _ _ (_, _)) => /=; last exact: dg.
 suff : {for 0, continuous (fun h : R => f(h *: v + x))}.
   by move=> /continuous_withinNx; rewrite scale0r add0r.
@@ -1464,7 +1464,7 @@ pose g t : R := (sup (f @` A) - f t)^-1.
 have invf_continuous : {within A, continuous g}.
   rewrite continuous_subspace_in => t tA; apply: cvgV => //=.
     by rewrite subr_eq0 gt_eqF// AfsupfA//; rewrite inE in tA.
-  by apply: cvgD; [exact: cst_continuous | apply: cvgN; exact: cf].
+  by apply: pseudometric_normed_Zmodule.cvgD; [exact: cst_continuous | apply: cvgN; exact: cf].
 have /ex_strict_bound_gt0[k k_gt0 /= imVfltk] : bounded_set (g @` A).
   exact/compact_bounded/continuous_compact.
 have [_ [t tA <-]] : exists2 y, (f @` A) y & sup (f @` A) - k^-1 < y.
@@ -1482,7 +1482,7 @@ Lemma compact_EVT_min (T : topologicalType) (R : realType) (f : T -> R)
 Proof.
 move=> A0 cA cf.
 have /(compact_EVT_max A0 cA)[c cinA fcmin] : {within A, continuous (- f)}.
-  by move=> ?; apply: continuousN => ?; exact: cf.
+  by move=> ?; apply: normed_module.continuousN => ?; exact: cf.
 by exists c => // t tA; rewrite -lerN2 fcmin.
 Qed.
 
@@ -1621,8 +1621,8 @@ set g := f + (- ( *:%R^~ ((f b - f a) / (b - a)) : R -> R)).
 have gdrvbl x : x \in `]a, b[%R -> derivable g x 1.
   by move=> /fdrvbl dfx; apply/derivableB/derivable1_diffP.
 have gcont : {within `[a, b], continuous g}.
-  move=> x; apply: continuousD _ ; first exact: fcont.
-  exact/continuousN/continuous_subspaceT/scalel_continuous.
+  move=> x; apply: normed_module.continuousD _ ; first exact: fcont.
+  exact/normed_module.continuousN/continuous_subspaceT/scalel_continuous.
 have gaegb : g a = g b.
   rewrite /g -![(_ - _ : _ -> _) _]/(_ - _).
   apply/eqP; rewrite -subr_eq /= opprK addrAC -addrA -scalerBl.
@@ -1707,7 +1707,7 @@ apply: ger0_derive1_le.
 - move => x xab; exact/derivableN/df.
 - move => x xab; rewrite derive1E deriveN; last exact: df.
   by rewrite -derive1E oppr_ge0 dfle0.
-by move=> x; exact/continuousN/cf.
+by move=> x; exact/normed_module.continuousN/cf.
 Qed.
 
 Lemma ler0_derive1_le_cc :{within `[a, b], continuous f} ->
@@ -1814,7 +1814,7 @@ apply: gtr0_derive1_lt.
 - move => x xab; exact/derivableN/df.
 - move => x xab; rewrite derive1E deriveN; last exact: df.
   by rewrite -derive1E oppr_gt0 dflt0.
-by move=> x; exact/continuousN/cf.
+by move=> x; exact/normed_module.continuousN/cf.
 Qed.
 
 Lemma ltr0_derive1_lt_cc : {within `[a, b], continuous f} ->

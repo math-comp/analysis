@@ -85,6 +85,8 @@
   + lemmas `limit_point_closed`
 - in `convex.v`:
   + lemma `convex_setW`
+- in `convex.v`:
+  + lemma `convexW`
 
 ### Changed
 
@@ -245,7 +247,12 @@
 
 - moved from `tvs.v` to `convex.v`
   + definition `convex`, renamed to `convex_set`
+- moved from `tvs.v` to `convex.v`
+  + definition `convex`
   
+- in convex.v
+  + definition `convex_function` generalized from a realspace as domain to a lmodType as domain
+
 ### Renamed
 
 - in `topology_structure.v`

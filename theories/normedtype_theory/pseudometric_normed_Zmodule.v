@@ -124,8 +124,8 @@ Unshelve. all: by end_near. Qed.
 
 End at_left_right_topologicalType.
 
-HB.structure Definition NbhsNmodule := {M of Nbhs M & GRing.Nmodule M}.
-HB.structure Definition NbhsZmodule := {M of Nbhs M & GRing.Zmodule M}.
+(*HB.structure Definition NbhsNmodule := {M of Nbhs M & GRing.Nmodule M}.
+HB.structure Definition NbhsZmodule := {M of Nbhs M & GRing.Zmodule M}.*)
 HB.structure Definition PreTopologicalNmodule :=
   {M of Topological M & GRing.Nmodule M}.
 HB.structure Definition PreTopologicalZmodule :=
