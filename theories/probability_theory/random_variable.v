@@ -675,9 +675,9 @@ transitivity (- 'E_P[Y]).
     by apply: eq_integral => x _; rewrite opprK.
   by rewrite lee_fin/= oppr_ge0.
 transitivity (- \int[mu]_(s in `]-oo, 0%R]) P (Y @^-1` `[(- s)%R, +oo[)).
-  rewrite ge0_expectation_preimage ?ge0_integration_by_substitution0//.
-  by apply: (eq_measurable_fun (fun r:R => (fine (P (Y @^-1` `[r, +oo[ )))%:E))
-     => [r _|]; [rewrite fineK ?fin_num_measure | apply/measurable_EFinP].
+  rewrite ge0_expectation_preimage ?ge0_integration_by_substitution0//=.
+  move/measurable_EFinP : mfPleY; apply: eq_measurable_fun => r /= _.
+  by rewrite fineK// fin_num_measure.
 transitivity (- \int[mu]_(s in `]-oo, 0%R] `\ 0%R) P (Y @^-1` `[(- s)%R, +oo[)).
   congr -%E; rewrite setDitv1r integral_itv_bndo_bndc//=.
   apply/measurable_funTS => /=.
@@ -689,14 +689,14 @@ by rewrite (@comp_preimage _ _ _ _ _ -%R)/= opp_preimage_itvbndy/= opprK.
 Qed.
 
 Let preimage_funrpos (f : T -> R) r : (0 <= r)%R ->
-  (f^\+)%R @^-1` `]r, +oo[ = f @^-1` `]r, +oo[.
+  f^\+%R @^-1` `]r, +oo[ = f @^-1` `]r, +oo[.
 Proof.
 move=> r0; apply: eq_set => a/=.
 by rewrite !in_itv/= !andbT lt_max (ltNge r 0%R) r0 orbF.
 Qed.
 
 Let preimage_funrneg (f : T -> R) r : (r < 0)%R ->
-  (- f^\-)%R @^-1` `]-oo, r] = (f)%R @^-1` `]-oo, r].
+  (- f^\-)%R @^-1` `]-oo, r] = f @^-1` `]-oo, r].
 Proof.
 move=> r0; apply: eq_set => a/=.
 by rewrite !in_itv/= lerNl le_max lerN2 (leNgt _ 0%R) oppr_gt0 r0 orbF.
@@ -711,13 +711,12 @@ rewrite -[in LHS](funrposBneg X) expectationD; last 2 first.
 - exact/Lfun1_integrable/integrable_funrpos/Lfun1_integrable.
 - rewrite rpredN/=.
   exact/Lfun1_integrable/integrable_funrneg/Lfun1_integrable.
-rewrite (_ : 'E_P[X^\+] = \int[mu]_(r in `[0%R, +oo[) ccdf X r); last first.
-  rewrite ge0_expectation_ccdf/= => [|?]; last by rewrite funrpos_ge0.
-  apply: eq_integral => r; rewrite inE/= in_itv/= andbT => r0; congr (P _).
-  by rewrite preimage_funrpos.
-rewrite (_ : 'E_P[- X^\-] = - \int[mu]_(r in `]-oo, 0%R[) cdf X r)//.
-rewrite le0_expectation_cdf/= => [|x]; last by rewrite oppr_le0 funrneg_ge0.
-congr -%E; apply: eq_integral => r; rewrite inE/= in_itv/= => r0; congr (P _).
+rewrite (@ge0_expectation_ccdf X^\+%R); last by move=> ?; exact: funrpos_ge0.
+congr +%E.
+  apply: eq_integral => r /[!inE]/= r0y; congr (P _).
+  by rewrite preimage_funrpos// (itvP r0y).
+rewrite le0_expectation_cdf/=; last by move=> ?; rewrite oppr_le0 funrneg_ge0.
+congr -%E; apply: eq_integral => r /[!inE]/= rNy0; congr (P _).
 by rewrite preimage_funrneg.
 Qed.
 
