@@ -47,7 +47,7 @@
 
 - in `random_variable.v`
   + lemmas `lebesgue_integral_pmf`, `cdf_measurable`, `ccdf_measurable`,
-    `le0_expectation_cdf`
+    `le0_expectation_cdf`, `expectation_cdf_ccdf`
 
 - in `lebesgue_integral_nonneg.v`:
   + lemma `integral_setU`
@@ -94,6 +94,23 @@
 
 - in `measurable_function.v`:
   + lemma `preimage_set_system_compS`
+
+- in `functions.v`:
+  + lemma `addBrfctE`
+
+- in `numfun.v`:
+  + defintions `funrpos`, `funrneg` with notations `^\+` and `^\-`
+  + lemmas `funrpos_ge0`, `funrneg_ge0`, `funrposN`, `funrnegN`, `ge0_funrposE`,
+    `ge0_funrnegE`, `le0_funrposE`, `le0_funrnegE`, `ge0_funrposM`, `ge0_funrnegM`,
+    `le0_funrposM`, `le0_funrnegM`, `funrposDneg`, `funrposBneg`,
+    `funrD_posD`, `funrpos_le`, `funrneg_le`
+  + lemmas `funerpos`, `funerneg`
+
+- in `lebesgue_integrable.v`:
+  + lemmas `integrable_funrpos`, `integrable_funrneg`
+
+- in `measurable_realfun.v`:
+  + lemmas `measurable_funrpos`, `measurable_funrneg`
 
 ### Changed
 

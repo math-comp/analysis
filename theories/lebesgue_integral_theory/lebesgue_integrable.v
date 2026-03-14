@@ -372,6 +372,14 @@ have [M [_ mrt]] := bdA; apply: le_lt_trans.
 by rewrite lte_mul_pinfty.
 Qed.
 
+Lemma integrable_funrpos A f : measurable A ->
+  mu.-integrable A (EFin \o f) -> mu.-integrable A (EFin \o f^\+).
+Proof. by move/integrable_funepos => /[apply]; rewrite funerpos. Qed.
+
+Lemma integrable_funrneg A f : measurable A ->
+  mu.-integrable A (EFin \o f) -> mu.-integrable A (EFin \o f^\-).
+Proof. by move/integrable_funeneg => /[apply]; rewrite funerneg. Qed.
+
 End Rintegrable.
 
 Lemma integrable_indic_itv {R : realType} (a b : R) (b0 b1 : bool) :
