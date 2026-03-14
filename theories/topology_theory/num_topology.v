@@ -399,13 +399,17 @@ exists x => // z /=; rewrite sub0r normrN.
 by apply: le_lt_trans; rewrite ler_norm.
 Qed.
 
-Lemma lt_nbhsl {R : realType} (x a : R) : x < a ->
+Lemma lt_nbhsl {R : realFieldType} (x a : R) : x < a ->
   \forall y \near nbhs x, y < a.
 Proof.
 move=> xb; exists ((a - x) / 2) => /=; first by rewrite divr_gt0// subr_gt0.
 move=> r/=; rewrite ltr_pdivlMr// ltrBrDr; apply: le_lt_trans.
 by rewrite -lerBlDr -normrN opprB (le_trans (ler_norm _))// ler_peMr// ler1n.
 Qed.
+
+Lemma lt_le_nbhsl {R : realFieldType} (t x : R) :
+  x < t -> \forall y \near nbhs x, y <= t.
+Proof. by move/lt_nbhsl; apply: filterS => y /ltW. Qed.
 
 Lemma Nlt_nbhsl {R : realType} (x a : R) :
   - x < a -> \forall y \near nbhs x, - y < a.
@@ -450,6 +454,10 @@ have [uz|uz] := leP u z.
   by rewrite ger0_norm ?subr_ge0// subrK.
 by rewrite ltr0_norm ?subr_lt0// opprB addrAC -lerBlDr opprK lerD// ?ltW.
 Qed.
+
+Lemma lt_le_nbhsr {R : realFieldType} (t x : R) :
+  t < x -> \forall y \near nbhs x, t <= y.
+Proof. by move/lt_nbhsr; apply: filterS => y /ltW. Qed.
 
 Global Instance Proper_dnbhs_regular_numFieldType (R : numFieldType) (x : R^o) :
   ProperFilter x^'.
