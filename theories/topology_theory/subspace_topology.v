@@ -9,22 +9,22 @@ From mathcomp Require Import product_topology.
 (* # Subspaces of topological spaces                                          *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*               subspace A == for (A : set T), this is a copy of T with a    *)
-(*                             topology that ignores points outside A         *)
-(*          incl_subspace x == with x of type subspace A with (A : set T),    *)
-(*                             inclusion of subspace A into T                 *)
-(*          nbhs_subspace x == filter associated with x : subspace A          *)
-(*        from_subspace A f == function of type `subspace A -> U` given a     *)
-(*                             function f of type `A -> U`                    *)
-(*                             The purpose of this definition is to preserve  *)
-(*                             the pretty-printing of the notation            *)
-(*                             {within _, continuous _} below. Its use is     *)
-(*                             however likely to be later superseded by a     *)
-(*                             better (compositional) mechanism.              *)
-(* {within A, continuous f} := continuous (from_subspace A f))                *)
-(*           subspace_ent A == subspace entourages                            *)
-(*          subspace_ball A == balls of the pseudometric subspace structure   *)
-(*    continuousFunType A B == type of continuous functions from set A to     *)
+(*                 subspace A == for (A : set T), this is a copy of T with a  *)
+(*                               topology that ignores points outside A       *)
+(*            incl_subspace x == with x of type subspace A with (A : set T),  *)
+(*                               inclusion of subspace A into T               *)
+(*            nbhs_subspace x == filter associated with x : subspace A        *)
+(*          from_subspace A f == function of type `subspace A -> U` given a   *)
+(*                               function f of type `A -> U`                  *)
+(*                               The purpose of this definition is to         *)
+(*                               preserve the pretty-printing of the notation *)
+(*                               {within _, continuous _} below. Its use is   *)
+(*                               however likely to be later superseded by a   *)
+(*                               better (compositional) mechanism.            *)
+(*   {within A, continuous f} := continuous (from_subspace A f))              *)
+(*             subspace_ent A == subspace entourages                          *)
+(*            subspace_ball A == balls of the pseudometric subspace structure *)
+(* continuousSubspaceType A B == type of continuous functions from set A to   *)
 (*                             set B with domain subspace A                   *)
 (*                             The HB structure is ContinuousFun.             *)
 (* ```                                                                        *)
@@ -686,14 +686,19 @@ by split; rewrite continuous_subspace_in => + x ABx U nfxU => /(_ x ABx U nfxU);
 Qed.
 End subspace_product.
 
-#[short(type = "continuousFunType")]
-HB.structure Definition ContinuousFun {X Y : topologicalType}
+#[short(type = "continuousSubspaceType")]
+HB.structure Definition ContinuousSubspace {X Y : topologicalType}
     (A : set X) (B : set Y) :=
   {f of @isFun (subspace A) Y A B f & @Continuous (subspace A) Y f }.
 
+#[deprecated(since="mathcomp-analysis 1.16.0", note="renamed to `continuousSubspaceType`")]
+Notation continuousFunType := continuousSubspaceType.
+#[deprecated(since="mathcomp-analysis 1.16.0", note="renamed to `ContinuousSubspace`")]
+Notation ContinuousFun A B := (ContinuousSubspace A B).
+
 Section continuous_fun_comp.
 Context {X Y Z : topologicalType} (A : set X) (B : set Y) (C : set Z).
-Context {f : continuousFunType A B} {g : continuousFunType B C}.
+Context {f : continuousSubspaceType A B} {g : continuousSubspaceType B C}.
 
 Local Lemma continuous_comp_subproof : continuous (g \o f : subspace A -> Z).
 Proof.
