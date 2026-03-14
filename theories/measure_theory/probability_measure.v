@@ -189,7 +189,6 @@ apply/funext => x; rewrite /mnormalize/= probability_setT.
 by rewrite onee_eq0/= invr1 mule1.
 Qed.
 
-
 HB.instance Definition _ d (T : measurableType d) (R : realType) :=
   isPointed.Build (probability T R) (dirac point).
 

@@ -87,6 +87,13 @@
   + lemma `convex_setW`
 - in `num_topology.v`:
   + lemmas `cvg_dnbhs_at_right`, `cvg_dnbhs_at_left`
+- in `measurable_structure.v`:
+  + definitions `preimage_display`, `g_sigma_algebra_preimageType`,
+    `g_sigma_algebra_preimage`
+  +  notations `.-preimage`, `.-preimage.-measurable`
+
+- in `measurable_function.v`:
+  + lemma `preimage_set_system_compS`
 
 ### Changed
 
