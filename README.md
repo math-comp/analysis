@@ -97,8 +97,8 @@ Other work using MathComp-Analysis:
 - [Semantics of Probabilistic Programs using s-Finite Kernels in Dependent Type Theory](https://dl.acm.org/doi/pdf/10.1145/3732291) (2025)
 - [A Formal Foundation for Equational Reasoning on Probabilistic Programs](https://staff.aist.go.jp/reynald.affeldt/documents/eddy_aplas2025.pdf) (2025)
   doi:[10.1007/978-981-95-3585-9_3](https://doi.org/10.1007/978-981-95-3585-9_3)
-- [Cylindrical Algebraic Decomposition in Coq/Rocq](https://dl.acm.org/doi/epdf/10.1145/3779031.3779100) (2026)
-  doi:[3779031.3779100](https://doi.org/10.1145/3779031.3779100)
+- [Cylindrical Algebraic Decomposition in Coq/Rocq](https://dl.acm.org/doi/pdf/10.1145/3779031.3779100) (2026)
+  doi:[10.1145/3779031.3779100](https://doi.org/10.1145/3779031.3779100)
 
 ## About the stability of this library
 
