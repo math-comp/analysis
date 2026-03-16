@@ -62,7 +62,7 @@ make install
 
 Each file is documented in its header in ASCII.
 
-[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc/1_15_0/index.html) (using [`rocqnavi`](https://github.com/affeldt-aist/rocqnavi)).
+[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc/1_16_0/index.html) (using [`rocqnavi`](https://github.com/affeldt-aist/rocqnavi)).
 It includes inheritance diagrams for the mathematical structures that MathComp-Analysis adds on top of MathComp's ones.
 
 Overview presentations:
