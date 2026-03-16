@@ -117,16 +117,12 @@ Latest releases: [[1.16.0] - 2026-03-17](#1160---2026-03-17), [[1.15.0] - 2026-0
 
 - in `constructive_ereal.v`: fixed the infamous `%E` scope bug.
 
-- in `lebesgue_Rintegrable.v`:
-  + lemma `Rintegral_cst` (does not use `cst` anymore)
-
-
 - moved from `convex.v` to `realfun.v`
   + lemma `second_derivative_convex`
 
-
 - in `subspace_topology.v`:
   + lemmas `open_subspaceP` and `closed_subspaceP` (use `exists2` instead of `exists`)
+
 - moved from `measurable_structure.v` to `classical_sets.v`:
   + definitions `setI_closed`, `setU_closed`
 
@@ -137,14 +133,12 @@ Latest releases: [[1.16.0] - 2026-03-17](#1160---2026-03-17), [[1.15.0] - 2026-0
   + file `tvs.v`
 
 - moved from `tvs.v` to `pseudometric_normed_Zmodule.v`:
-  + definitions `NbhsNmodule`, `NbhsZmodule`, `PreTopologicalNmodule`, `PreTopologicalZmodule`,
-    `PreUniformNmodule`, `PreUniformZmodule`
+  + definitions `NbhsNmodule`, `NbhsZmodule`, `PreTopologicalNmodule`,
+    `PreTopologicalZmodule`, `PreUniformNmodule`, `PreUniformZmodule`
 
 - in `tvs.v`, turned into `Let`'s:
-  + local lemmas `standard_add_continuous`, `standard_scale_continuous`, `standard_locally_convex`
-
-- in `normed_module.v`, turned into `Let`'s:
-  + local lemmas `add_continuous`, `scale_continuous`, `locally_convex`
+  + local lemmas `standard_add_continuous`, `standard_scale_continuous`,
+    `standard_locally_convex`
 
 - moved from `normed_module.v` to `pseudometric_normed_Zmodule.v` and
   generalized from `normedModType` to `pseudoMetricNormedZmodType`
@@ -152,6 +146,9 @@ Latest releases: [[1.16.0] - 2026-03-17](#1160---2026-03-17), [[1.15.0] - 2026-0
   + lemma `near_shift`
   + lemma `cvg_comp_shift`
   + lemma `ball_open_nbhs`
+
+- in `normed_module.v`, turned into `Let`'s:
+  + local lemmas `add_continuous`, `scale_continuous`, `locally_convex`
 
 - moved from `tvs.v` to `convex.v`
   + definition `convex`, renamed to `convex_set`
@@ -161,6 +158,9 @@ Latest releases: [[1.16.0] - 2026-03-17](#1160---2026-03-17), [[1.15.0] - 2026-0
 
 - moved from `realfun.v` to `num_topology.v`:
   + lemma `left_right_continuousP`
+
+- in `lebesgue_Rintegrable.v`:
+  + lemma `Rintegral_cst` (does not use `cst` anymore)
 
 - split `probability.v` into directory `probability_theory` and move contents as:
   + file `probability.v`:
@@ -174,7 +174,7 @@ Latest releases: [[1.16.0] - 2026-03-17](#1160---2026-03-17), [[1.15.0] - 2026-0
       `derivable_oo_LRcontinuous_onemXnMr`, `derive_onemXn`, `Rintegral_onemXn`
     * definition `XMonemX`
     * lemmas `XMonemX_ge0`, `XMonemX_le1`, `XMonemX0n`, `XMonemXn0`, `XMonemX00`,
-      `XMonemXC`, XMonemXM`, `continuous_XMonemX`, `within_continuous_XMonemX`,
+      `XMonemXC`, `XMonemXM`, `continuous_XMonemX`, `within_continuous_XMonemX`,
       `measurable_XMonemX`, `bounded_XMonemX`, `integrable_XMonemX`,
       `integrable_XMonemX_restrict`, `integral_XMonemX_restrict`
     * definition `beta_fun`
@@ -185,7 +185,7 @@ Latest releases: [[1.16.0] - 2026-03-17](#1160---2026-03-17), [[1.15.0] - 2026-0
     * lemmas `measurable_beta_pdf`, `beta_pdf_ge0`, `beta_pdf_le_beta_funV`,
       `integrable_beta_pdf`, `bounded_beta_pdf_01`
     * definition `beta_prob`
-    * lemmas integral_beta_pdf`, `beta_prob01`, `beta_prob_fin_num`, `beta_prob_dom`,
+    * lemmas `integral_beta_pdf`, `beta_prob01`, `beta_prob_fin_num`, `beta_prob_dom`,
       `beta_prob_uniform`, `integral_beta_prob_bernoulli_prob_lty`,
       `integral_beta_prob_bernoulli_prob_onemX_lty`,
       `integral_beta_prob_bernoulli_prob_onem_lty`, `beta_prob_integrable`,
@@ -268,6 +268,93 @@ Latest releases: [[1.16.0] - 2026-03-17](#1160---2026-03-17), [[1.15.0] - 2026-0
     * definition `pmf`
     * lemmas `pmf_ge0`, `pmf_gt0_countable`, `pmf_measurable`, `dRV_expectation`,
       `expectation_pmf`
+
+### Renamed
+
+- in `set_interval.v`:
+  + `itv_is_ray` -> `itv_is_open_unbounded`
+  + `itv_is_bd_open` -> `itv_is_oo`
+
+- in `topology_structure.v`
+  + `closure_subset` -> `closureS`
+  + `closed_comp` -> `preimage_closed`
+  + `clopen_comp` -> `preimage_clopen`
+
+- `weak_topology.v` -> `initial_topology.v`
+  + `weak_topology` -> `initial_topology`
+  + `weak_continuous` -> `initial_continuous`
+  + `weak_ent` -> `initial_ent`
+  + `weak_ball` -> `initial_ball`
+  + `weak_ballE` -> `initial_ballE`
+  + `open_order_weak` -> `open_order_initial`
+  + `continuous_comp_weak` -> `continuous_comp_initial`
+
+- in `subspace_topology.v`:
+  + `weak_subspace_open` -> `initial_subspace_open`
+  + `continuousFunType` -> `continuousSubspaceType`
+  + `ContinuousFun` -> `ContinuousSubspace`
+
+- in `functions_spaces.v`:
+  + `weak_sep_cvg` -> `initial_sep_cvg`
+  + `weak_sep_nbhsE` -> `initial_sep_nbhsE`
+  + `weak_sep_openE` -> `initial_sep_openE`
+  + `join_product_weak` -> `join_product_initial`
+
+- in `one_point_compactification.v`:
+  + `one_point_compactification_weak_topology` ->
+    `one_point_compactification_initial_topology`
+
+- in `lebesgue_integral_nonneg.v`:
+  + `integral_setD1_EFin` -> `integral_setD1`
+
+### Generalized
+
+- in `convex.v`:
+  + definition `convex_function` (from a `realType` as domain to a
+    `convex_lmodType` as domain)
+
+- in `num_topology.v`:
+  + lemma `lt_nbhsl`
+
+- in `derive.v`:
+  + lemmas `near_eq_growth_rate`, `near_eq_derivable`, `near_eq_derive`,
+    `near_eq_is_derive` (one less hypothesis)
+
+- in `exp.v`:
+  + lemma `derivable_powR`
+
+- in `lebesgue_integral_nonneg.v`:
+  + lemmas `integral_itv_bndo_bndc`, `integral_itv_obnd_cbnd`,
+    `integral_itv_bndoo`
+
+### Deprecated
+
+- in `classical_sets.v`:
+  + lemma `mem_setT`
+
+- in `lebesgue_integral_nonneg.v`:
+  + lemma `integral_setU_EFin`
+
+### Removed
+
+- in `boolp.v`:
+  + notation `eq_exists2` (was deprecated since version 1.10.0)
+
+- in `simple_functions.v`:
+  + definition `max_sfun`
+
+- in `weak_topology.v`:
+  + lemmas `weak_ent_filter`, `weak_ent_refl`, `weak_ent_inv`,
+    `weak_ent_split`, `weak_ent_nbhs`, `weak_pseudo_metric_ball_center`,
+    `weak_pseudo_metric_entourageE`
+    (now `Let`'s in `initial_topology.v`)
+
+- in `measurable_realfun.v`:
+  + lemma `max_mfun_subproof` (has become a `Let`)
+
+- in `lebesgue_integral_nonneg.v`:
+  + lemma `integral_setU` (was deprecated since version 1.0.1)
+
 
 ## [1.15.0] - 2026-01-15
 
