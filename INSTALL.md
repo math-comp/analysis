@@ -3,7 +3,7 @@
 ## Requirements
 
 - [The Rocq Prover version ≥ 9.0](https://rocq-prover.org)
-- [Mathematical Components version ≥ 2.4.0](https://github.com/math-comp/math-comp)
+- [Mathematical Components version ≥ 2.5.0](https://github.com/math-comp/math-comp)
 - [Finmap library version ≥ 2.1.0](https://github.com/math-comp/finmap)
 - [Hierarchy builder version ≥ 1.8.0](https://github.com/math-comp/hierarchy-builder)
 - [bigenough ≥ 1.0.0](https://github.com/math-comp/bigenough)

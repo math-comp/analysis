@@ -24,10 +24,6 @@ in {
   ## when calling `nix-shell` and `nix-build` without the `--argstr job` argument
   shell-attribute = "mathcomp-analysis-single";
 
-  ## Set this when the package has no rocqPackages version yet
-  ## (either in nixpkgs or in .nix/rocq-overlays)
-  no-rocq-yet = true;
-
   ## Maybe the shortname of the library is different from
   ## the name of the nixpkgs attribute, if so, set it here:
   # pname = "{{shortname}}";
@@ -53,13 +49,14 @@ in {
   ## When generating GitHub Action CI, one workflow file
   ## will be created per bundle
 
-  bundles."9.0-2.4.0" = {
+  bundles."9.0-2.5.0" = {
     rocqPackages = {
       rocq-core.override.version = "9.0";
+      mathcomp.override.version = "2.5.0";
     };
     coqPackages = common-bundle // {
       coq.override.version = "9.0";
-      mathcomp.override.version = "2.4.0";
+      mathcomp.override.version = "2.5.0";
     };
   };
 
@@ -87,14 +84,15 @@ in {
       rocq-core.override.version = "master";
       stdlib.override.version = "master";
       rocq-elpi.override.version = "master";
-      rocq-elpi.override.elpi-version = "3.6.1";
       hierarchy-builder.override.version = "master";
+      mathcomp.override.version = "master";
+      mathcomp-bigenough.override.version = "master";
+      mathcomp-finmap.override.version = "master";
     };
     coqPackages = common-bundle // {
       coq.override.version = "master";
       stdlib.override.version = "master";
       coq-elpi.override.version = "master";
-      coq-elpi.override.elpi-version = "3.6.1";
       hierarchy-builder.override.version = "master";
       mathcomp.override.version = "master";
       mathcomp-bigenough.override.version = "master";

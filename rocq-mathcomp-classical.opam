@@ -16,7 +16,7 @@ build: [make "-C" "classical" "-j%{jobs}%"]
 install: [make "-C" "classical" "install"]
 depends: [
   "rocq-core" { (>= "9.0" & < "9.2~") | (= "dev") }
-  "rocq-mathcomp-ssreflect" { (>= "2.4.0" & < "2.6~") | (= "dev") }
+  "rocq-mathcomp-ssreflect" { (>= "2.5.0" & < "2.6~") | (= "dev") }
   "rocq-mathcomp-fingroup"
   "rocq-mathcomp-algebra"
   "rocq-mathcomp-finmap" { (>= "2.1.0") }
