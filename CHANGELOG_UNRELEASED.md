@@ -4,6 +4,9 @@
 
 ### Added
 
+- in `realfun.v`:
+  + lemma `derivable_sqrt`
+
 ### Changed
 
 ### Renamed
