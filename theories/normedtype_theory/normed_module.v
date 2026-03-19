@@ -2082,6 +2082,15 @@ Qed.
 
 End Closed_Ball_normedModType.
 
+(* NB: see also itv_closure *)
+Lemma closure_itvoo (R : realFieldType) (a b : R) : a < b ->
+  closure `]a, b[%classic = `[a, b]%classic.
+Proof.
+move=> ab.
+rewrite itv_center_shift// -ball_itv closure_ballE itv_center_shift//.
+by rewrite closed_ball_itv// divr_gt0// subr_gt0.
+Qed.
+
 Lemma open_subball {R : numFieldType} {M : normedModType R} (A : set M)
   (x : M) : open A -> A x -> \forall e \near 0^'+, ball x e `<=` A.
 Proof.

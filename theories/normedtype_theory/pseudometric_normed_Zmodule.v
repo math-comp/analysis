@@ -97,6 +97,16 @@ End Shift.
 Arguments shift {R} x / y.
 Notation center c := (shift (- c)).
 
+Lemma itv_center_shift {R : numFieldType} x y (a b : R) : (a < b) ->
+  let c := (a + b) / 2 in let r := (b - a) / 2 in
+  Interval (BSide x a) (BSide y b) =
+  Interval (BSide x (center r c (*c - r*) )) (BSide y (shift r c (*c + r*))).
+Proof.
+move=> ab c r; rewrite /shift /c /r -mulrBl addrKA opprK -mulrDl.
+rewrite [in X in _ = Interval _ X]addrC subrKA -!mulr2n.
+by rewrite -(mulr_natr a) -(mulr_natr b) !mulfK.
+Qed.
+
 Section at_left_right_topologicalType.
 Variables (R : numFieldType) (V : topologicalType) (f : R -> V) (x : R).
 

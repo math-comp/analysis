@@ -21,6 +21,15 @@
 - in `measurable_function.v`:
   + lemma `preimage_measurability`
 
+- in `realfun.v`:
+  + lemma `derivable_sqrt`
+
+- in `pseudometric_normed_Zmodule.v`:
+  + lemma `itv_center_shift`
+
+- in `normed_module.v`:
+  + lemmas `closure_itvoo`
+
 ### Changed
 
 - moved from `measurable_structure.v` to `classical_sets.v`:
