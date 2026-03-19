@@ -51,70 +51,16 @@ Global Hint Extern 0 (_ ≡μ _) => reflexivity : core.
 Local Open Scope classical_set_scope.
 Local Open Scope ereal_scope.
 
-(* from a PR in progress *)
-Definition preimage_display {T T'} : (T -> T') -> measure_display.
-Proof. exact. Qed.
-
-Definition g_sigma_algebra_preimageType d' (T : pointedType)
-  (T' : measurableType d') (f : T -> T') : Type := T.
-
-Definition g_sigma_algebra_preimage d' (T : pointedType)
-    (T' : measurableType d') (f : T -> T') :=
-  preimage_set_system setT f (@measurable _ T').
-
-Section preimage_generated_sigma_algebra.
-Context {d'} (T : pointedType) (T' : measurableType d').
-Variable f : T -> T'.
-
-Let preimage_set0 : g_sigma_algebra_preimage f set0.
-Proof.
-rewrite /g_sigma_algebra_preimage /preimage_set_system/=.
-by exists set0 => //; rewrite preimage_set0 setI0.
-Qed.
-
-Let preimage_setC A :
-  g_sigma_algebra_preimage f A -> g_sigma_algebra_preimage f (~` A).
-Proof.
-rewrite /g_sigma_algebra_preimage /preimage_set_system/= => -[B mB] <-{A}.
-by exists (~` B); [exact: measurableC|rewrite !setTI preimage_setC].
-Qed.
-
-Let preimage_bigcup (F : (set T)^nat) :
-  (forall i, g_sigma_algebra_preimage f (F i)) ->
-  g_sigma_algebra_preimage f (\bigcup_i (F i)).
-Proof.
-move=> mF; rewrite /g_sigma_algebra_preimage /preimage_set_system/=.
-pose g := fun i => sval (cid2 (mF i)).
-pose mg := fun i => svalP (cid2 (mF i)).
-exists (\bigcup_i g i).
-  by apply: bigcup_measurable => k; case: (mg k).
-rewrite setTI /g preimage_bigcup; apply: eq_bigcupr => k _.
-by case: (mg k) => _; rewrite setTI.
-Qed.
-
-HB.instance Definition _ := Pointed.on (g_sigma_algebra_preimageType f).
-
-HB.instance Definition _ := @isMeasurable.Build (preimage_display f)
-  (g_sigma_algebra_preimageType f) (g_sigma_algebra_preimage f)
-  preimage_set0 preimage_setC preimage_bigcup.
-
-End preimage_generated_sigma_algebra.
-(*/ from a PR in progress *)
-
-Notation "f .-preimage" := (preimage_display f) : measure_display_scope.
-Notation "f .-preimage.-measurable" :=
-  (measurable : set (set (g_sigma_algebra_preimageType f))) : classical_set_scope.
-
-Section rect_cross.
+Section rectangle_cross.
 Context {T1 T2 : Type}.
 Implicit Types (X : set_system T1) (Y : set_system T2).
 
-Definition rect X Y := [set U `*` V | U in X & V in Y].
+Definition rectangle X Y := [set U `*` V | U in X & V in Y].
 
 Definition cross X Y :=
   preimage_set_system setT fst X `|` preimage_set_system setT snd Y.
 
-End rect_cross.
+End rectangle_cross.
 
 Reserved Notation "A `x` B"  (at level 46, left associativity).
 Notation "A `x` B" := (cross A B) : classical_set_scope.
@@ -195,19 +141,19 @@ Lemma lem9 (X : set_system T1) (Y : set_system T2) :
   Y setT ->
 (*  sigma_algebra setT X ->
   sigma_algebra setT Y ->*)
-  RR (rect X Y) = RR (X `x` Y).
+  RR (rectangle X Y) = RR (X `x` Y).
 Proof.
 move=> sX sY; apply/seteqP; split; last first.
   apply: sub_sigma_algebra2.
   move=> A [|].
     rewrite /preimage_set_system/= => -[A1 XA1 <-{A}].
     rewrite -setXT setTI.
-    rewrite /rect/=.
+    rewrite /rectangle/=. (* TODO: lemma *)
     exists A1 =>//.
     by exists setT => //.
   rewrite /preimage_set_system/= => -[A1 XA1 <-{A}].
   rewrite -setTX setTI.
-  rewrite /rect/=.
+  rewrite /rectangle/=. (* TODO: lemma *)
   exists setT => //.
   by exists A1.
   (*  apply: sub_sigma_algebra2. (* TODO: rename that thing!! *) *)
@@ -236,7 +182,7 @@ Lemma lem17 (X : set_system T1) (Y : set_system T2) (Z : set_system T3) :
   X setT ->
   Y setT ->
   Z  setT ->
-  RR (X `x` RR (Y `x` Z)) = RR (rect X (rect Y Z)).
+  RR (X `x` RR (Y `x` Z)) = RR (rectangle X (rectangle Y Z)).
 Proof.
 move=> mX mY mZ.
 rewrite -(lem9 mY mZ).
@@ -882,8 +828,8 @@ have mU' : RR (@measurable _ X `x` RR (@measurable _ Y `x` @measurable _ Y')) U.
   done.
 rewrite lem17 in mU'; [|exact: measurableT..].
 red in mU'.
-apply: (measure_unique (rect d1.-measurable (rect d2.-measurable d2'.-measurable)) (fun=> setT)) => //.
-rewrite -/(RR (rect _ (rect _ _))).
+apply: (measure_unique (rectangle d1.-measurable (rectangle d2.-measurable d2'.-measurable)) (fun=> setT)) => //.
+rewrite -/(RR (rectangle _ (rectangle _ _))).
 by rewrite -lem17//.
 move=> /= P Q [P1 mP1 [P2 [P3 mP3 [P4 mP4]]]] HP2 Hp.
 move=> [Q1 mQ1 [Q2 [Q3 mQ3] [Q4 mQ4]]] HQ2 HQ.
