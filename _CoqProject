@@ -88,6 +88,8 @@ theories/normedtype_theory/urysohn.v
 theories/normedtype_theory/vitali_lemma.v
 theories/normedtype_theory/normedtype.v
 
+theories/hahn_banach_theorem.v
+
 theories/sequences.v
 theories/realfun.v
 theories/exp.v
