@@ -132,7 +132,7 @@ Unshelve. all: by end_near. Qed.
 
 Local Open Scope convex_scope.
 
-Let ball_convex_set (x : convex_lmodType V) (r : K) : convex_set (ball x r).
+Lemma ball_convex_set (x : convex_lmodType V) (r : K) : convex_set (ball x r).
 Proof.
 apply/convex_setW => z y; rewrite !inE -!ball_normE /= => zx yx l l0 l1.
 rewrite inE/=.
@@ -145,16 +145,24 @@ rewrite -[ltRHS]mul1r -(add_onemK l%:num) [ltRHS]mulrDl.
 by rewrite ltrD// ltr_pM2l// onem_gt0.
 Qed.
 
+#[local] Lemma ball_balanced_set (r : K) : balanced_set (ball (0 : V) r).
+Proof.
+move=> t /= t1 z /= [y].
+rewrite -ball_normE /= !sub0r !normrN => + <-.
+by rewrite normrZ; apply: le_lt_trans; rewrite ler_piMl.
+Qed.
+
 (** NB: we have almost the same proof in `tvs.v` *)
 Let locally_convex_set :
   exists2 B : set_system (convex_lmodType V),
-    (forall b, b \in B -> convex_set b) & basis B.
+    (forall b, b \in B -> absolutely_convex_set b) & (nbhs_basis 0) B.
 Proof.
-exists [set B | exists (x : convex_lmodType V) r, B = ball x r].
-  by move=> b; rewrite inE => [[x]] [r] ->; exact: ball_convex_set.
-split; first by move=> B [x] [r] ->; exact: ball_open.
-move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
-by exists (ball x r) => //; split; [exists x, r|exact: ballxx].
+exists [set B | exists2 r, 0 < r &  B = ball 0 r].
+  move=> b; rewrite inE /= => -[r _ ->]; split; first by exact: ball_convex_set.
+  by exact: ball_balanced_set.
+split; first by move=> /= a [r r0 ->]; apply: nbhsx_ballx.
+move=> /= b; rewrite -nbhs_ballE => -[r /= r0] b0r /=.
+by exists (ball 0 r)=> //; exists r.
 Qed.
 
 HB.instance Definition _ :=
@@ -2011,10 +2019,6 @@ apply/(@cvgrPdist_lt _ _ _ (nbhs x)) => e e_gt0; near=> z; rewrite -linearB.
 rewrite (le_lt_trans (fr r _ _))// -?ltr_pdivlMl//.
 by near: z; apply: cvgr_dist_lt => //; rewrite mulrC divr_gt0.
 Unshelve. all: by end_near. Qed.
-
-Lemma continuousfor0_continuous (f : {linear V -> W}) :
-  {for 0, continuous f} -> continuous f.
-Proof. by move=> /continuous_linear_bounded/bounded_linear_continuous. Qed.
 
 Lemma linear_bounded_continuous (f : {linear V -> W}) :
   bounded_near f (nbhs 0) <-> continuous f.

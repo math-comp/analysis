@@ -671,7 +671,27 @@ Proof.
 by elim/big_ind2 : _ => *; rewrite ?norm0// (le_trans (ler_normD _ _))// lerD.
 Qed.
 
+Lemma distC (v w : L) : norm (v - w) = norm (w - v).
+Proof.
+by rewrite -(normN (v - w)) opprB.
+Qed.
+
 End Theory.
+
+Section realTheory.
+Variables (K : realDomainType) (L : lmodType K) (norm : SemiNorm.type L).
+
+Lemma seminorm_normrB x y: `|norm x - norm y| <= norm (x - y).
+Proof.
+have [pxy | pyx] := leP (norm x) (norm y).
+  rewrite ler0_norm ?subr_le0 // opprB.
+  rewrite lerBlDl; rewrite  -(@normN _ _ norm (x-y)) opprB.
+  by rewrite (le_trans _ (ler_normD _ _ )) // addrC subrK.
+rewrite gtr0_norm ?subr_gt0 // lerBlDl.
+by rewrite (le_trans _ (ler_normD _ _ )) // addrC subrK.
+Qed.
+
+End realTheory.
 End Theory.
 
 Module Import Exports. HB.reexport. End Exports.
