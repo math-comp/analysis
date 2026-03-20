@@ -1136,12 +1136,12 @@ by rewrite setTI => -[].
 Qed.
 
 Lemma closed_Ndense {d} {T : topologicalType d} (A : set T) :
-  A != [set: T] -> closed A ->  ~ dense A.
+ (A != [set: T]) -> closed A ->  ~ (dense A).
 Proof.
-move=> AT.
-have A0 : (~` A) !=set0 by apply/set0P; contra: AT; rewrite -setCT => /setC_inj.
-rewrite -openC => /[swap] /(_ _) /[swap] oNA /(_ _ A0 oNA).
-by rewrite setICl => /set0P; rewrite eqxx.
+move=> /setTPn [t] nAt.
+have A0: (~` A) !=set0 by exists t.
+rewrite -openC => /[swap] /(_ _) /[swap] oA /(_ (~` A) A0 oA).
+by move=> -[a [+ Aa]]; move=> /(_ Aa).
 Qed.
 
 Section basis.

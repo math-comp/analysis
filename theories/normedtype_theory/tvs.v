@@ -209,6 +209,48 @@ HB.structure Definition TopologicalLmodule d (K : numDomainType) :=
   {M of TopologicalZmodule d M & GRing.Lmodule K M
         & TopologicalZmodule_isTopologicalLmodule d K M}.
 
+(* TBD when PR#2166 is merged *)
+Lemma accessible_field (K : numFieldType) : accessible_space K^o.
+Proof.
+move=> x y xy.
+exists (ball x (`|x-y|/2)); split; rewrite ?inE /=.
+    exact: pseudo_ball_open.
+  by apply: ballxx; rewrite mulr_gt0 ?normr_gt0 ?invr_gt0 ?subr_eq0.
+rewrite /ball /= ltr_pdivlMr //= gtr_pMr ?normr_gt0 ?subr_eq0 //.
+by rewrite ltrn1.
+Qed.
+
+Section TopologicalLmodule_theory.
+Context {E : Type} {d} {R : numFieldType} {F : topologicalLmodType d R}
+  {d'} {G : topologicalLmodType d' R}.
+
+Lemma continuousfor0_continuous (f : {linear F -> G}) :
+  {for 0, continuous f} -> continuous f.
+Proof.
+move=> cont0 x.
+suff: (f y - f x)@[y --> x] --> (0 : G).
+  have -> : (fun y => f y - f x) = (fun y => f (y - x)).
+    by apply/funext => y; rewrite linearB.
+  move=> fxfy /= A nA /=.
+  pose B := [set y - f x | y in A].
+  have /fxfy : nbhs 0 B.
+    have -> : B = (+%R^~ (- (- f x))) @^-1` A.
+      rewrite opprK; apply/seteqP; split.
+        by move=> y [/= g Ag <-]; rewrite subrK.
+       move=> g/= Agfx; eexists; first exact: Agfx.
+       by rewrite addrK.
+    have:= @continuous_shift _ _ (0 : G) (f x) A.
+    by rewrite opprK add0r => /(_ nA); exact.
+  rewrite /nbhs /=; apply/filterS => z /=; rewrite /B /=.
+  by move=> [y Ay]; rewrite linearB => /subIr <-.
+have -> : (fun y => f y - f x) = (fun y => f (y - x)).
+  by apply/funext => y; rewrite linearB.
+apply: cvg_comp; last by rewrite -(linear0 f); exact: cont0.
+by move => A nA /=; apply: continuous_shift; rewrite subrr.
+Qed.
+
+End TopologicalLmodule_theory.
+
 Section TopologicalLmodule_theory.
 Context {d} {R : numFieldType} (E : topologicalLmodType d R).
 
@@ -296,37 +338,6 @@ by rewrite nbhsE => /=; exists U => //; split; rewrite // openE.
 Qed.
 
 End TopologicalLmodule_numField.
-
-Section TopologicalLmodule_theory.
-Context {E : Type} {d} {R : numFieldType} {F : topologicalLmodType d R}
-  {d'} {G : topologicalLmodType d' R}.
-
-Lemma continuousfor0_continuous (f : {linear F -> G}) :
-  {for 0, continuous f} -> continuous f.
-Proof.
-move=> cont0 x.
-suff: (f y - f x)@[y --> x] --> (0 : G).
-  have -> : (fun y => f y - f x) = (fun y => f (y - x)).
-    by apply/funext => y; rewrite linearB.
-  move=> fxfy /= A nA /=.
-  pose B := [set y - f x | y in A].
-  have /fxfy : nbhs 0 B.
-    have -> : B = (+%R^~ (- (- f x))) @^-1` A.
-      rewrite opprK; apply/seteqP; split.
-        by move=> y [/= g Ag <-]; rewrite subrK.
-       move=> g/= Agfx; eexists; first exact: Agfx.
-       by rewrite addrK.
-    have:= @continuous_shift _ _ (0 : G) (f x) A.
-    by rewrite opprK add0r => /(_ nA); exact.
-  rewrite /nbhs /=; apply/filterS => z /=; rewrite /B /=.
-  by move=> [y Ay]; rewrite linearB => /subIr <-.
-have -> : (fun y => f y - f x) = (fun y => f (y - x)).
-  by apply/funext => y; rewrite linearB.
-apply: cvg_comp; last by rewrite -(linear0 f); exact: cont0.
-by move => A nA /=; apply: continuous_shift; rewrite subrr.
-Qed.
-
-End TopologicalLmodule_theory.
 
 Section topologicalLmodType_realFieldType.
 Context {d} {R : realFieldType} {E : topologicalLmodType d R}.
@@ -429,7 +440,7 @@ Qed.
 End ConvexTvs_theory.
 
 Section SubLmodule_isSubConvexTvs.
-Context d (R : numFieldType) (V : convexTvsType d R)
+Context {R : numFieldType} {d} {V : convexTvsType d R}
   (S : pred V) (U : subLmodType S).
 
 Definition init_subconvextvs := sub_initial_topology U.
@@ -1244,7 +1255,7 @@ End lcfunproperties.
 Local Open Scope convex_scope.
 
 Section openbasis.
-Context {d} {R : realType} {E : convexTvsType d R}.
+Context {R : realFieldType} {d} {E : convexTvsType d R}.
 
 Definition nbhsbasis_convextvs := sval (cid2 (@locally_convex _ _ E)).
 
@@ -1309,16 +1320,16 @@ by rewrite /ball_ /= sub0r normrN gtr0_norm ?divr_gt0// gtr_pMr// invf_lt1// ltr
 Qed.
 
 End openbasis.
-Arguments basis_opennbhsbasis {d R} E.
-Arguments has_open_nbhs_basis {d R} E.
+Arguments basis_opennbhsbasis {R d} E.
+Arguments has_open_nbhs_basis {R d} E.
 
 (**md This section shows that every convexTvsType admits a basis of closed
   absolutely convex sets *)
 Section closedbasis.
-Context {d} {R : realType} {E : convexTvsType d R}.
+Context {R : realFieldType} {d} {E : convexTvsType d R}.
 
 Definition closed_nbhsbasis_ctvs :=
-  [set closure b | b in @nbhsbasis_convextvs d R E].
+  [set closure b | b in @nbhsbasis_convextvs R d E].
 
 Lemma has_closed_nbhs_basis :
   nbhs_basis 0 closed_nbhsbasis_ctvs
@@ -1743,7 +1754,7 @@ by rewrite gtr_pMl.
 Qed.
 
 Theorem seminorm_convextvs :
-  continuous (id : E -> seminormE) /\ (continuous (id : seminormE -> E)).
+  continuous (id : E -> seminormE) /\ continuous (id : seminormE -> E).
 Proof.
 pose B := open_nbhsbasis_convextvs.
 split=> x a.
