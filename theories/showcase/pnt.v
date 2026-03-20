@@ -129,7 +129,7 @@ by rewrite leq_add2l.
 Qed.
 
 Definition P (k N : nat) := 
-  [set n : 'I_N.+1 |all (fun p => p < prime_seq k) (primes n)]%SET.
+  [set n : 'I_N.+1 | all (fun p => p < prime_seq k) (primes n)]%SET.
 Definition G (k N : nat) := ~: (P k N).
 
 Lemma cardPcardG : forall k N, #|G k N| + #|P k N| = N.+1.
@@ -1148,7 +1148,7 @@ have {1}-> : 2 = `|floor (1 : R)|.+1 by rewrite floor1.
 under eq_bigr do rewrite -[ln _]mul1r.
 move=> /(@congr1 _ _ EFin _ _).
 rewrite (@Abel_continuous _ _ _ (@ln R) (fun=> 1%R)); first last.
-- apply: (@subspace_eq_continuous R^o _ R^o GRing.inv).
+- apply: (@subspace_eq_continuous R^o _ _ GRing.inv).
     move=> a; rewrite inE/= in_itv/= => /andP[] a1 _; rewrite derive1E.
     by rewrite (@derive_val _ _ _ _ _ _ _ (is_derive1_ln (lt_le_trans _ a1))).
   apply: continuous_in_subspaceT => a.
@@ -1186,7 +1186,7 @@ have f_measurable : measurable_fun `[1%R, x] (EFin \o f).
   apply/measurable_fun_bigcup => i.
     by apply: measurableI; apply: measurable_itv.
   apply: (@eq_measurable_fun _ _ _ _ _ (fun x : R => i.+1%:R / x)%R); last first.
-    apply: (measurableT_comp (@mulrl_measurable R^o_ _)).
+    apply: (measurableT_comp (@mulrl_measurable R^o _ _)).
     exact: invr_measurable.
   move=> a; rewrite in_setI => /andP[] _.
   rewrite inE/= in_itv/= addn1 => /andP[] ia ai.
@@ -1715,7 +1715,7 @@ rewrite [RHS]/(_ && _)/=; case: (ltgtP a 1%R) => [a1|a1|->].
   by apply: ltr0_neq0; rewrite subr_lt0.
 rewrite implyTb.
 have [->|b1] := eqVneq b 1%R.
-  rewrite (@ge0_continuous_FTC2y R^o _ (fun x => ln (ln x))%R _ +oo%E).
+  rewrite (@ge0_continuous_FTC2y _ _ (fun x => ln (ln x))%R _ +oo%E).
   - by [].
   - by move=> x _; apply: expR_ge0.
   - exact: (continuous_in_subspaceT (fC0 _ _)).
@@ -1788,7 +1788,7 @@ set u := fun n => if prime n then (ln n%:R / n%:R)%R else 0%R : R.
 set f := fun t : R^o => ((ln t)^-1)%R : R^o.
 set R0 := fun t : R =>
   (\sum_(2 <= p < `|floor t|.+1 | prime p) (ln p%:R / p%:R) - ln t)%R.
-rewrite [in X in let _ := _ in X]big_mkcond big_ltn /=; last first.
+rewrite big_mkcond big_ltn /=; last first.
   by rewrite ltnS -(absz_nat 2) lez_abs2 // floor_ge_int_tmp ltW.
 rewrite big_nat /=.
 set a := (1 - (ln (ln 2))%:E +
@@ -1844,13 +1844,12 @@ rewrite -Sfl2eq3 -big_nat EFinD (@Abel_continuous _ _ _ f u); last first.
 under eq_integral => t. rewrite set_itvcc inE => /= /andP [] tle2 _.
   rewrite -big_mkcond -derivef // mulrN EFinN. over.
 rewrite integral_ge0N => /= [|t /andP [] tge2 tltx]; last first.
-  rewrite EFinM. apply: mule_ge0; last first.
-    rewrite lee_fin invr_ge0. apply: mulr_ge0; last exact: sqr_ge0.
+  rewrite lee_fin. apply: mulr_ge0; last first.
+    rewrite invr_ge0. apply: mulr_ge0; last exact: sqr_ge0.
     exact: (@le_trans _ _ 2%R).
-  rewrite -sumEFin /=. apply: sume_ge0 => p primep.
-  rewrite EFinM. apply: mule_ge0.
+  apply: sumr_ge0 => p primep. apply: mulr_ge0.
     by apply: ln_ge0; rewrite ler1n prime_gt0.
-  by rewrite lee_fin invr_ge0 ler0n.
+  by rewrite invr_ge0 ler0n.
 rewrite oppeK -!big_mkcond /f Sfl2eq3 ![X in (_ - (X / _))%R]big_ltn_cond/=.
 rewrite [X in ((_ + X) / _)%R]big_geq // addr0 [X in (X / _)%R]mulrC.
 rewrite -[X in (_ - X)%R]mulrA divff; last first.
@@ -2003,8 +2002,8 @@ under [X in (_ + (_ - X))%E]eq_integral => t.
 move=> /=.
 have integrable_R0': lebesgue_measure.-integrable `[2%R, +oo[
     (fun x : R^o => ((x * ln x ^+ 2)^-1)%:E).
-  move: (@bertrand_integrable R^o 1 2) => /(_ _)/wrap[].
-    by apply/andP; split=> //=; rewrite lexx/= (ltr_nat _ 1 2).
+  move: (@bertrand_integrable R^o 1 2).
+  rewrite -[_ <^l _]/(_ && _)/= lexx/= (ltr_nat _ 1 2).
   apply: eq_integrable => // t; rewrite inE/= in_itv/= andbT => t2.
   rewrite mul1r expRN expRD expRM_natl lnK; last exact: (lt_le_trans _ t2).
   by rewrite lnK//; apply/ln_gt0/(lt_le_trans _ t2); rewrite (ltr_nat _ 1 2).
@@ -2028,19 +2027,19 @@ have -> : (\int_(t in `[2%R, x]) (R0 t / (t * ln t ^+ 2))%:E -
   - rewrite fin_numN; apply: integrable_fin_num => //.
     apply: (integrableS _ _ _ integrable_R0) => // t /=.
     by rewrite !in_itv/= !andbT => xt; apply/ltW/(lt_trans _ xt).
-  - rewrite -oppeD; last first.
-      apply /fin_num_adde_defl /integral_fune_fin_num => //.
-      apply: (integrableS _ _ _ integrable_R0) => // t /=.
-      by rewrite !in_itv/= => /andP[] ->.
-    rewrite -integral_setU_EFin //; last first.
-    + apply /disj_setPS => t /= [] /andP [] tltx _ /andP [] _ tgex.
-      suff: (x < x)%R by rewrite ltxx.
-      exact: (lt_le_trans tltx).
-    + apply: (measurable_funS _ _ measurable_fun_R0') => // t /=.
-      by rewrite !in_itv/= !andbT => -[/(lt_trans xgt2)/ltW|/andP[] ->].
-    + rewrite [in X in _ == X](@itv_bndbnd_setU _ _ _ (BRight x)) //=.
-        by rewrite setUC.
-      by rewrite ltW // ltBRight_leBLeft ltW //.
+  rewrite -oppeD; last first.
+    apply /fin_num_adde_defl /integral_fune_fin_num => //.
+    apply: (integrableS _ _ _ integrable_R0) => // t /=.
+    by rewrite !in_itv/= => /andP[] ->.
+  rewrite -integral_setU_EFin //; last first.
+  - apply /disj_setPS => t /= [] /andP [] tltx _ /andP [] _ tgex.
+    suff: (x < x)%R by rewrite ltxx.
+    exact: (lt_le_trans tltx).
+  - apply: (measurable_funS _ _ measurable_fun_R0') => // t /=.
+    by rewrite !in_itv/= !andbT => -[/(lt_trans xgt2)/ltW|/andP[] ->].
+  - rewrite [in X in _ == X](@itv_bndbnd_setU _ _ _ (BRight x)) //=.
+      by rewrite setUC.
+    by rewrite ltW // ltBRight_leBLeft ltW //.
 apply: (le_trans (lee_abs_sub _ _)). rewrite EFinM abseM.
 apply: (le_trans (leeD (lee_wpmul2r _ (lee_tofin (Mertens1 _)))
     (le_abse_integral lebesgue_measure _ _))) => //.
@@ -2068,15 +2067,16 @@ apply: (le_trans (leeD2l _ (@le_integral _ _ _ lebesgue_measure _ _ _
   + apply: measurableT_comp; first exact: normr_measurable.
     apply: (measurable_funS _ _ measurable_fun_R0) => // t /=.
     by rewrite !in_itv/= !andbT => /(lt_trans xgt2)/ltW.
-  + exists C. split => [|t Cltt x0 /= /andP [] x0ltx _]; first exact: gtr0_real.
+  + exists C. split=> [|t Cltt x0 /=]; first exact: gtr0_real.
+   rewrite in_itv/= andbT => x0ltx.
     rewrite normr_id; apply: (le_trans (Mertens1 _) _); last exact: ltW.
-    by apply: (lt_trans (lt_trans _ xgt2)) => //; rewrite ltr1n.
+    by apply/ltW/(lt_trans (lt_trans _ xgt2)) => //; rewrite ltr1n.
   + apply: integrableS integrable_R0' => // t/=; rewrite !in_itv/= !andbT.
     by move=> /(lt_trans xgt2)/ltW.
 - apply: integrableZl => //.
   apply: integrableS integrable_R0' => // t/=; rewrite !in_itv/= !andbT.
   by move=> /(lt_trans xgt2)/ltW.
-- rewrite inE => /= /andP [] xltt _. apply: lee_wpmul2r.
+- rewrite inE/= in_itv/= andbT => xltt. apply: lee_wpmul2r.
   - rewrite lee_fin invr_ge0 mulr_ge0 //.
     - apply: (@le_trans _ _ x); last exact: ltW.
       by apply: (@le_trans _ _ 2%R) => //; apply: ltW.
@@ -2084,9 +2084,7 @@ apply: (le_trans (leeD2l _ (@le_integral _ _ _ lebesgue_measure _ _ _
       apply: (@le_trans _ _ 2%R); first exact: ler1n.
       exact: ltW.
   - rewrite lee_fin Mertens1 //.
-    apply: (@lt_trans _ _ x) => //.
-    apply: (@lt_trans _ _ 2%R) => //.
-    exact: ltr1n.
+    apply/ltW/(lt_trans _ xltt)/(lt_trans _ xgt2)/ltr1n.
 rewrite integralZl //; last first.
   apply: integrableS integrable_R0' => // t/=; rewrite !in_itv/= !andbT.
   by move=> /(lt_trans xgt2)/ltW.
