@@ -521,7 +521,6 @@ Definition openU_from (T : Type) (I : Type) (D : set I) (b : I -> set T) :=
 #[deprecated(since="mathcomp-analysis 1.17.0", use=openU_from)]
 Notation open_from := openU_from (only parsing).
 
-
 (** Topology defined by a base of open sets *)
 
 HB.factory Record isBaseTopological T & Choice T := {

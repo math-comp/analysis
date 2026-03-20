@@ -84,6 +84,7 @@ From mathcomp Require Import pseudometric_normed_Zmodule.
 (*   and F are convexTvs.                                                     *)
 (******************************************************************************)
 
+
 Reserved Notation "'{' 'linear_continuous' U '->' V '|' s '}'"
   (at level 0, U at level 98, V at level 99,
    format "{ 'linear_continuous'  U  ->  V  |  s }").
@@ -245,7 +246,7 @@ HB.structure Definition TopologicalZmodule :=
         & TopologicalNmodule_isTopologicalZmodule M}.
 
 Section TopologicalZmoduleTheory.
-Variables (M : topologicalZmodType).
+Variables (M : topologicalZmodType) (E : topologicalType).
 
 Lemma sub_continuous : continuous (fun x : M * M => x.1 - x.2).
 Proof.
@@ -463,7 +464,7 @@ HB.instance Definition _ :=
 HB.end.
 
 Section UniformZmoduleTheory.
-Variables (M : UniformZmodule.type).
+Variables (M: UniformZmodule.type).
 
 Lemma sub_unif_continuous : unif_continuous (fun x : M * M => x.1 - x.2).
 Proof.
@@ -479,6 +480,8 @@ apply: (@filterS _ _ entourage_filter
 exists (U1, ((fun xy : M * M => (- xy.1, - xy.2)) @^-1` U2)); first by split.
 by move=> /= [] [] a1 a2 [] b1 b2/= [] aU bU; exists (a1, b1, (a2, b2)).
 Qed.
+
+
 
 End UniformZmoduleTheory.
 
@@ -1458,7 +1461,6 @@ End lcfunproperties.
 
 Local Open Scope convex_scope.
 
-(* TODO *)
 Lemma convD (R : numDomainType) (E : lmodType R) (t : {i01 R}) (x y z' : convex_lmodType E) :
   x <| t |> y + z' = (x + z' : convex_lmodType _) <| t |> (y + z').
 Proof.
@@ -1597,7 +1599,6 @@ apply: supS; first by apply/nonemptyN.
 by apply/has_inf_supN.
 by apply: image_subset.
 Qed.
-(* END TO BE MOVED *)
 
 (* TODO : factorise*)
 #[local] Lemma ler_gaugeD:
@@ -1843,10 +1844,6 @@ by rewrite [X in _ + X*_]ger0_norm ?onem_ge0 // lt_conv.
 Qed.
 
 Lemma balanced_seminorm_subbasis : seminorm_subbasis `<=` @balanced_set _ E.
-Proof.
-move => _ [p Pp [r r0] ->] /= s s1 z /= [x].
-rewrite /ball /ball_ /= !sub0r !normrN => pixr <-.
-rewrite normZ normrM normr_id.
 apply: le_lt_trans pixr.
 by rewrite ler_piMl ?normr_ge0.
 Qed.
