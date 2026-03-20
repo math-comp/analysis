@@ -3,7 +3,7 @@ From mathcomp Require Import boot order algebra interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp contra classical_sets filter.
-From mathcomp Require Import reals convex topology normedtype.
+From mathcomp Require Import reals convex topology normedtype unstable.
 
 (**md**************************************************************************)
 (* # The Hahn-Banach theorem                                                  *)
