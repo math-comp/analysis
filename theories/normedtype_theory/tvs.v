@@ -321,6 +321,7 @@ Qed.
 End TopologicalLmodule_theory.
 
 Section topologicalLmodType_realFieldType.
+
 Context {R : realFieldType} {E : topologicalLmodType R}.
 Implicit Type x : E.
 
