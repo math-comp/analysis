@@ -118,5 +118,6 @@ html: build $(DOCDIR)/dependency_graph.dot
 	-structure-graph $(DOCDIR)/hierarchy_graph.dot \
         -index-blacklist etc/rocqnavi_index-blacklist \
         -show-type-information-using-coqtop-process \
+	-external https://math-comp.github.io/htmldoc_2_5_0/ mathcomp.order \
 	-external https://math-comp.github.io/htmldoc_2_5_0/ mathcomp.ssreflect \
 	-external https://math-comp.github.io/htmldoc_2_5_0/ mathcomp.algebra
