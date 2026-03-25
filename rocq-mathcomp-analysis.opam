@@ -19,6 +19,7 @@ depends: [
   "rocq-mathcomp-solvable"
   "rocq-mathcomp-field"
   "rocq-mathcomp-bigenough" { (>= "1.0.0") }
+  "rocq-navi" {= "0.4.1" & with-doc}
 ]
 
 conflicts: [ "coq-mathcomp-analysis" { < "1.16~" } ]
