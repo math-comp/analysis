@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.reals.prodnormedzmodule</title>
-<meta name="description" content="Documentation of Coq module mathcomp.reals.prodnormedzmodule" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 2e5e368" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -74,6 +74,7 @@
 <li><a href="mathcomp.analysis.normedtype_theory.normedtype.html">normedtype</a></li>
 <li><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html">num_normedtype</a></li>
 <li><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html">pseudometric_normed_Zmodule</a></li>
+<li><a href="mathcomp.analysis.normedtype_theory.tvs.html">tvs</a></li>
 <li><a href="mathcomp.analysis.normedtype_theory.urysohn.html">urysohn</a></li>
 <li><a href="mathcomp.analysis.normedtype_theory.vitali_lemma.html">vitali_lemma</a></li>
           </ul>
@@ -106,6 +107,7 @@
 <li><a href="mathcomp.analysis.topology_theory.compact.html">compact</a></li>
 <li><a href="mathcomp.analysis.topology_theory.connected.html">connected</a></li>
 <li><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></li>
+<li><a href="mathcomp.analysis.topology_theory.function_spaces.html">function_spaces</a></li>
 <li><a href="mathcomp.analysis.topology_theory.initial_topology.html">initial_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.matrix_topology.html">matrix_topology</a></li>
 <li><a href="mathcomp.analysis.topology_theory.metric_structure.html">metric_structure</a></li>
@@ -139,7 +141,6 @@
 <li><a href="mathcomp.analysis.esum.html">esum</a></li>
 <li><a href="mathcomp.analysis.exp.html">exp</a></li>
 <li><a href="mathcomp.analysis.ftc.html">ftc</a></li>
-<li><a href="mathcomp.analysis.function_spaces.html">function_spaces</a></li>
 <li><a href="mathcomp.analysis.gauss_integral.html">gauss_integral</a></li>
 <li><a href="mathcomp.analysis.hoelder.html">hoelder</a></li>
 <li><a href="mathcomp.analysis.kernel.html">kernel</a></li>
@@ -152,7 +153,6 @@
 <li><a href="mathcomp.analysis.realfun.html">realfun</a></li>
 <li><a href="mathcomp.analysis.sequences.html">sequences</a></li>
 <li><a href="mathcomp.analysis.trigo.html">trigo</a></li>
-<li><a href="mathcomp.analysis.tvs.html">tvs</a></li>
           </ul>
           </details>
           </li>
@@ -224,12 +224,15 @@
   <div class="coq">
 
     <div class="content">
-      <p><a href="./index.html">Top</a></p>
+      <p>
+        <a href="./index.html">Top</a>
+        
+      </p>
       <h1 class="title">Module mathcomp.reals.prodnormedzmodule</h1>
 <span class="vernacular">From</span><span class="id"> HB</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for HB.structures">structures</a></span>.<br/>
-<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_ssreflect_compat.html">all_ssreflect_compat</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.fingroup.fingroup">fingroup</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html">ssralg</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.poly.html">poly</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.ssrnum.html">ssrnum</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_ssreflect_compat.html">all_ssreflect_compat</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.fingroup.fingroup">fingroup</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html">ssralg</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.poly.html">poly</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.ssrnum.html">ssrnum</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_classical.html">all_classical</a></span>.<br/>
-<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html">interval_inference</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html">interval_inference</a></span>.<br/>
 <br/>
 <div class="ssrdoc md">
 This file equips the product of two normedZmodTypes with a canonical
@@ -238,376 +241,64 @@ convenience during the rebase of MathComp-Analysis on top of MathComp 1.1.
 The contents is likely to be moved elsewhere.
 </div>
 <br/>
-<span class="gallina-kwd">Set</span><span class="id"> SsrOldRewriteGoalsOrder</span>.  <br/>
+<span class="vernacular">Unset</span><span class="id"> SsrOldRewriteGoalsOrder</span>.  <br/>
 <span class="gallina-kwd">Set</span><span class="vernacular"> Implicit</span><span class="vernacular"> Arguments</span>.<br/>
 <span class="vernacular">Unset</span><span class="vernacular"> Strict</span><span class="vernacular"> Implicit</span>.<br/>
 <span class="vernacular">Unset</span><span class="vernacular"> Printing</span><span class="vernacular"> Implicit</span><span class="vernacular"> Defensive</span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
-<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">Order</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.TTheory">TTheory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory">Theory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.ssrnum.html#Num.Theory">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.ssrnum.html#Num.Theory">Theory</a></span>.<br/>
+<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.TTheory">Order</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.TTheory">TTheory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory">Theory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.ssrnum.html#Num.Theory">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.ssrnum.html#Num.Theory">Theory</a></span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> Linear1</span>.<br/>
-<span class="vernacular">Context</span> (<span id="Linear1.R" class="id"><a name="Linear1.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.PzRing.Exports.pzRingType">pzRingType</a></span>) (<span id="Linear1.U" class="id"><a name="Linear1.U" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Lmodule.Exports.lmodType">lmodType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#R:1">R</a></span>) (<span id="Linear1.V" class="id"><a name="Linear1.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.nmodule#Algebra.Zmodule.Exports.zmodType">zmodType</a></span>) (<span id="Linear1.s" class="id"><a name="Linear1.s" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#R:1">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#V:3">V</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#V:3">V</a></span>).<br/>
-<span id="Linear_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Linear_type__canonical__eqtype_Equality" class="" title="Linear_type__canonical__eqtype_Equality :
-forall [R : pzRingType],
-lmodType R ->
-forall [V : GRing.Zmodule.Exports.zmodType], (R -> V -> V) -> eqType
-
-Linear_type__canonical__eqtype_Equality is not universe polymorphic
-Arguments Linear_type__canonical__eqtype_Equality [R] U [V] s%_function_scope
-Linear_type__canonical__eqtype_Equality is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.Linear_type__canonical__eqtype_Equality
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 24, characters 0-60
-">HB</a></span></span>.<span id="Linear_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Linear_type__canonical__eqtype_Equality" class="" title="Linear_type__canonical__eqtype_Equality :
-forall [R : pzRingType],
-lmodType R ->
-forall [V : GRing.Zmodule.Exports.zmodType], (R -> V -> V) -> eqType
-
-Linear_type__canonical__eqtype_Equality is not universe polymorphic
-Arguments Linear_type__canonical__eqtype_Equality [R] U [V] s%_function_scope
-Linear_type__canonical__eqtype_Equality is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.Linear_type__canonical__eqtype_Equality
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 24, characters 0-60
-">instance</a></span></span><span class="vernacular"> Definition</span><span id="Linear_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Linear_type__canonical__eqtype_Equality" class="" title="Linear_type__canonical__eqtype_Equality :
-forall [R : pzRingType],
-lmodType R ->
-forall [V : GRing.Zmodule.Exports.zmodType], (R -> V -> V) -> eqType
-
-Linear_type__canonical__eqtype_Equality is not universe polymorphic
-Arguments Linear_type__canonical__eqtype_Equality [R] U [V] s%_function_scope
-Linear_type__canonical__eqtype_Equality is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.Linear_type__canonical__eqtype_Equality
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 24, characters 0-60
-"> _</a></span></span><span id="Linear_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Linear_type__canonical__eqtype_Equality" class="" title="Linear_type__canonical__eqtype_Equality :
-forall [R : pzRingType],
-lmodType R ->
-forall [V : GRing.Zmodule.Exports.zmodType], (R -> V -> V) -> eqType
-
-Linear_type__canonical__eqtype_Equality is not universe polymorphic
-Arguments Linear_type__canonical__eqtype_Equality [R] U [V] s%_function_scope
-Linear_type__canonical__eqtype_Equality is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.Linear_type__canonical__eqtype_Equality
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 24, characters 0-60
-"> :=</a></span></span><span id="Linear_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Linear_type__canonical__eqtype_Equality" class="" title="Linear_type__canonical__eqtype_Equality :
-forall [R : pzRingType],
-lmodType R ->
-forall [V : GRing.Zmodule.Exports.zmodType], (R -> V -> V) -> eqType
-
-Linear_type__canonical__eqtype_Equality is not universe polymorphic
-Arguments Linear_type__canonical__eqtype_Equality [R] U [V] s%_function_scope
-Linear_type__canonical__eqtype_Equality is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.Linear_type__canonical__eqtype_Equality
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 24, characters 0-60
-"> gen_eqMixin</a></span></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8">{linear</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear1.U">U</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> -&gt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear1.V">V</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> |</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear1.s">s</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8">}</a></span>.<br/>
-<span id="Linear_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Linear_type__canonical__choice_Choice" class="" title="Linear_type__canonical__choice_Choice :
-forall [R : pzRingType],
-lmodType R ->
-forall [V : GRing.Zmodule.Exports.zmodType], (R -> V -> V) -> choiceType
-
-Linear_type__canonical__choice_Choice is not universe polymorphic
-Arguments Linear_type__canonical__choice_Choice [R] U [V] s%_function_scope
-Linear_type__canonical__choice_Choice is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.Linear_type__canonical__choice_Choice
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 25, characters 0-64
-">HB</a></span></span>.<span id="Linear_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Linear_type__canonical__choice_Choice" class="" title="Linear_type__canonical__choice_Choice :
-forall [R : pzRingType],
-lmodType R ->
-forall [V : GRing.Zmodule.Exports.zmodType], (R -> V -> V) -> choiceType
-
-Linear_type__canonical__choice_Choice is not universe polymorphic
-Arguments Linear_type__canonical__choice_Choice [R] U [V] s%_function_scope
-Linear_type__canonical__choice_Choice is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.Linear_type__canonical__choice_Choice
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 25, characters 0-64
-">instance</a></span></span><span class="vernacular"> Definition</span><span id="Linear_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Linear_type__canonical__choice_Choice" class="" title="Linear_type__canonical__choice_Choice :
-forall [R : pzRingType],
-lmodType R ->
-forall [V : GRing.Zmodule.Exports.zmodType], (R -> V -> V) -> choiceType
-
-Linear_type__canonical__choice_Choice is not universe polymorphic
-Arguments Linear_type__canonical__choice_Choice [R] U [V] s%_function_scope
-Linear_type__canonical__choice_Choice is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.Linear_type__canonical__choice_Choice
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 25, characters 0-64
-"> _</a></span></span><span id="Linear_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Linear_type__canonical__choice_Choice" class="" title="Linear_type__canonical__choice_Choice :
-forall [R : pzRingType],
-lmodType R ->
-forall [V : GRing.Zmodule.Exports.zmodType], (R -> V -> V) -> choiceType
-
-Linear_type__canonical__choice_Choice is not universe polymorphic
-Arguments Linear_type__canonical__choice_Choice [R] U [V] s%_function_scope
-Linear_type__canonical__choice_Choice is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.Linear_type__canonical__choice_Choice
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 25, characters 0-64
-"> :=</a></span></span><span id="Linear_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Linear_type__canonical__choice_Choice" class="" title="Linear_type__canonical__choice_Choice :
-forall [R : pzRingType],
-lmodType R ->
-forall [V : GRing.Zmodule.Exports.zmodType], (R -> V -> V) -> choiceType
-
-Linear_type__canonical__choice_Choice is not universe polymorphic
-Arguments Linear_type__canonical__choice_Choice [R] U [V] s%_function_scope
-Linear_type__canonical__choice_Choice is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.Linear_type__canonical__choice_Choice
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 25, characters 0-64
-"> gen_choiceMixin</a></span></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8">{linear</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear1.U">U</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> -&gt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear1.V">V</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> |</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear1.s">s</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8">}</a></span>.<br/>
+<span class="vernacular">Context</span> (<span id="Linear1.R" class="id"><a name="Linear1.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.PzRing.Exports.pzRingType">pzRingType</a></span>) (<span id="Linear1.U" class="id"><a name="Linear1.U" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Lmodule.Exports.lmodType">lmodType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#R:1">R</a></span>) (<span id="Linear1.V" class="id"><a name="Linear1.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.nmodule#Algebra.Zmodule.Exports.zmodType">zmodType</a></span>) (<span id="Linear1.s" class="id"><a name="Linear1.s" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#R:1">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#V:3">V</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#V:3">V</a></span>).<br/>
+<span id="Linear_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Linear_type__canonical__eqtype_Equality" class="">HB</a></span></span>.<span id="Linear_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Linear_type__canonical__eqtype_Equality" class="">instance</a></span></span><span id="Linear_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Linear_type__canonical__eqtype_Equality" class=""> Definition</a></span></span><span id="Linear_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Linear_type__canonical__eqtype_Equality" class=""> _</a></span></span><span id="Linear_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Linear_type__canonical__eqtype_Equality" class=""> :=</a></span></span><span id="Linear_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="Linear_type__canonical__eqtype_Equality" class=""> gen_eqMixin</a></span></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8">{linear</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear1.U">U</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> -&gt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear1.V">V</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> |</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear1.s">s</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8">}</a></span>.<br/>
+<span id="Linear_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Linear_type__canonical__choice_Choice" class="">HB</a></span></span>.<span id="Linear_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Linear_type__canonical__choice_Choice" class="">instance</a></span></span><span id="Linear_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Linear_type__canonical__choice_Choice" class=""> Definition</a></span></span><span id="Linear_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Linear_type__canonical__choice_Choice" class=""> _</a></span></span><span id="Linear_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Linear_type__canonical__choice_Choice" class=""> :=</a></span></span><span id="Linear_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_3" class="id"><a name="Linear_type__canonical__choice_Choice" class=""> gen_choiceMixin</a></span></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8">{linear</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear1.U">U</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> -&gt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear1.V">V</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> |</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear1.s">s</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8">}</a></span>.<br/>
 <span class="vernacular">End</span><span class="id"> Linear1</span>.<br/>
 <span class="vernacular">Section</span><span class="id"> Linear2</span>.<br/>
-<span class="vernacular">Context</span> (<span id="Linear2.R" class="id"><a name="Linear2.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.PzRing.Exports.pzRingType">pzRingType</a></span>) (<span id="Linear2.U" class="id"><a name="Linear2.U" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Lmodule.Exports.lmodType">lmodType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#R:5">R</a></span>) (<span id="Linear2.V" class="id"><a name="Linear2.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.nmodule#Algebra.Zmodule.Exports.zmodType">zmodType</a></span>) (<span id="Linear2.s" class="id"><a name="Linear2.s" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Scale.law">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Scale.law">Scale</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Scale.law">law</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#R:5">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#V:7">V</a></span>).<br/>
-<span id="Linear_type__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_5" class="id"><a name="Linear_type__canonical__classical_sets_Pointed" class="" title="Linear_type__canonical__classical_sets_Pointed :
-forall [R : pzRingType],
-lmodType R ->
-forall [V : GRing.Zmodule.Exports.zmodType],
-GRing.Scale.law R V -> pointedType
-
-Linear_type__canonical__classical_sets_Pointed is not universe polymorphic
-Arguments Linear_type__canonical__classical_sets_Pointed [R] U [V] s
-Linear_type__canonical__classical_sets_Pointed is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.Linear_type__canonical__classical_sets_Pointed
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 29, characters 0-90
-">HB</a></span></span>.<span id="Linear_type__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_5" class="id"><a name="Linear_type__canonical__classical_sets_Pointed" class="" title="Linear_type__canonical__classical_sets_Pointed :
-forall [R : pzRingType],
-lmodType R ->
-forall [V : GRing.Zmodule.Exports.zmodType],
-GRing.Scale.law R V -> pointedType
-
-Linear_type__canonical__classical_sets_Pointed is not universe polymorphic
-Arguments Linear_type__canonical__classical_sets_Pointed [R] U [V] s
-Linear_type__canonical__classical_sets_Pointed is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.Linear_type__canonical__classical_sets_Pointed
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 29, characters 0-90
-">instance</a></span></span><span class="vernacular"> Definition</span><span id="Linear_type__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_5" class="id"><a name="Linear_type__canonical__classical_sets_Pointed" class="" title="Linear_type__canonical__classical_sets_Pointed :
-forall [R : pzRingType],
-lmodType R ->
-forall [V : GRing.Zmodule.Exports.zmodType],
-GRing.Scale.law R V -> pointedType
-
-Linear_type__canonical__classical_sets_Pointed is not universe polymorphic
-Arguments Linear_type__canonical__classical_sets_Pointed [R] U [V] s
-Linear_type__canonical__classical_sets_Pointed is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.Linear_type__canonical__classical_sets_Pointed
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 29, characters 0-90
-"> _</a></span></span><span id="Linear_type__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_5" class="id"><a name="Linear_type__canonical__classical_sets_Pointed" class="" title="Linear_type__canonical__classical_sets_Pointed :
-forall [R : pzRingType],
-lmodType R ->
-forall [V : GRing.Zmodule.Exports.zmodType],
-GRing.Scale.law R V -> pointedType
-
-Linear_type__canonical__classical_sets_Pointed is not universe polymorphic
-Arguments Linear_type__canonical__classical_sets_Pointed [R] U [V] s
-Linear_type__canonical__classical_sets_Pointed is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.Linear_type__canonical__classical_sets_Pointed
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 29, characters 0-90
-"> :=</a></span></span><br/>
-&nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#isPointed.Build">isPointed</a></span>.<span class="id"><a href="mathcomp.classical.classical_sets.html#isPointed.Build">Build</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8">{linear</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear2.U">U</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> -&gt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear2.V">V</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> |</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Scale.Law.sort">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Scale.Law.sort">Scale</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Scale.Law.sort">Law</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Scale.Law.sort">sort</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear2.s">s</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8">}</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#95d9fce2be73172d8ac56972e606629a">\0</a></span>.<br/>
+<span class="vernacular">Context</span> (<span id="Linear2.R" class="id"><a name="Linear2.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.PzRing.Exports.pzRingType">pzRingType</a></span>) (<span id="Linear2.U" class="id"><a name="Linear2.U" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Lmodule.Exports.lmodType">lmodType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#R:5">R</a></span>) (<span id="Linear2.V" class="id"><a name="Linear2.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.nmodule#Algebra.Zmodule.Exports.zmodType">zmodType</a></span>) (<span id="Linear2.s" class="id"><a name="Linear2.s" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Scale.law">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Scale.law">Scale</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Scale.law">law</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#R:5">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#V:7">V</a></span>).<br/>
+<span id="Linear_type__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_5" class="id"><a name="Linear_type__canonical__classical_sets_Pointed" class="">HB</a></span></span>.<span id="Linear_type__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_5" class="id"><a name="Linear_type__canonical__classical_sets_Pointed" class="">instance</a></span></span><span id="Linear_type__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_5" class="id"><a name="Linear_type__canonical__classical_sets_Pointed" class=""> Definition</a></span></span><span id="Linear_type__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_5" class="id"><a name="Linear_type__canonical__classical_sets_Pointed" class=""> _</a></span></span><span id="Linear_type__canonical__classical_sets_Pointed" class="id"><span id="HB_unnamed_factory_5" class="id"><a name="Linear_type__canonical__classical_sets_Pointed" class=""> :=</a></span></span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#isPointed.Build">isPointed</a></span>.<span class="id"><a href="mathcomp.classical.classical_sets.html#isPointed.Build">Build</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8">{linear</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear2.U">U</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> -&gt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear2.V">V</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> |</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Scale.Law.sort">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Scale.Law.sort">Scale</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Scale.Law.sort">Law</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Scale.Law.sort">sort</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#Linear2.s">s</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#28fc6133c857cdc570eb245f10f0b6b8">}</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#95d9fce2be73172d8ac56972e606629a">\0</a></span>.<br/>
 <span class="vernacular">End</span><span class="id"> Linear2</span>.<br/>
 <br/>
 <span class="vernacular">Module</span><span class="id"> </span><span id="ProdNormedZmodule" class="id"><a name="ProdNormedZmodule" class="">ProdNormedZmodule</a></span>.<br/>
 <span class="vernacular">Section</span><span class="id"> ProdNormedZmodule</span>.<br/>
-<span class="vernacular">Context</span><span class="id"> {</span><span id="ProdNormedZmodule.ProdNormedZmodule.R" class="id"><a name="ProdNormedZmodule.ProdNormedZmodule.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span><span class="id">}</span><span class="id"> {</span><span id="ProdNormedZmodule.ProdNormedZmodule.U" class="id"><a name="ProdNormedZmodule.ProdNormedZmodule.U" class="">U</a></span><span class="id"> </span><span id="ProdNormedZmodule.ProdNormedZmodule.V" class="id"><a name="ProdNormedZmodule.ProdNormedZmodule.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.NormedZmodule.Exports.normedZmodType">normedZmodType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#R:9">R</a></span><span class="id">}</span>.<br/>
+<span class="vernacular">Context</span><span class="id"> {</span><span id="ProdNormedZmodule.ProdNormedZmodule.R" class="id"><a name="ProdNormedZmodule.ProdNormedZmodule.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span><span class="id">}</span><span class="id"> {</span><span id="ProdNormedZmodule.ProdNormedZmodule.U" class="id"><a name="ProdNormedZmodule.ProdNormedZmodule.U" class="">U</a></span><span class="id"> </span><span id="ProdNormedZmodule.ProdNormedZmodule.V" class="id"><a name="ProdNormedZmodule.ProdNormedZmodule.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.NormedZmodule.Exports.normedZmodType">normedZmodType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#R:9">R</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="ProdNormedZmodule.norm" class="id"><a name="ProdNormedZmodule.norm" class="" title="ProdNormedZmodule.norm :
-forall {R : numDomainType} {U V : normedZmodType R}, U * V -> R
-
-ProdNormedZmodule.norm is not universe polymorphic
-Arguments ProdNormedZmodule.norm {R U V} x
-ProdNormedZmodule.norm is transparent
-Expands to: Constant mathcomp.reals.prodnormedzmodule.ProdNormedZmodule.norm
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 37, characters 11-15
-">norm</a></span> (<span id="x:12" class="id"><a name="x:12" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.V">V</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.R">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.max">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.max">max</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:12">x</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:12">x</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ProdNormedZmodule.norm" class="id"><div name="ProdNormedZmodule.norm" class=" tooltip">norm<span class='tooltip-area'></span></div></span> (<span id="x:12" class="id"><a name="x:12" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.V">V</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.R">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.max">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.max">max</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:12">x</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:12">x</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="ProdNormedZmodule.normD" class="id"><a name="ProdNormedZmodule.normD" class="" title="ProdNormedZmodule.normD :
-forall {R : numDomainType} {U V : normedZmodType R}
-  (x y : Datatypes_prod__canonical__Algebra_BaseAddMagma U V),
-(ProdNormedZmodule.norm (x + y) <=
- ProdNormedZmodule.norm x + ProdNormedZmodule.norm y)%R
-
-ProdNormedZmodule.normD is not universe polymorphic
-Arguments ProdNormedZmodule.normD {R U V} (x y)%_ring_scope
-ProdNormedZmodule.normD is opaque
-Expands to: Constant mathcomp.reals.prodnormedzmodule.ProdNormedZmodule.normD
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 39, characters 6-11
-">normD</a></span><span class="id"> </span><span id="x:13" class="id"><a name="x:13" class="">x</a></span><span class="id"> </span><span id="y:14" class="id"><a name="y:14" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span> (<span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:13">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#y:14">y</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:13">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#y:14">y</a></span>.<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="ProdNormedZmodule.normD" class="id"><a name="ProdNormedZmodule.normD" class="">normD</a></span><span class="id"> </span><span id="x:13" class="id"><a name="x:13" class="">x</a></span><span class="id"> </span><span id="y:14" class="id"><a name="y:14" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span> (<span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:13">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#y:14">y</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:13">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#y:14">y</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
-<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#num_ge_max">num_ge_max</a></span><span class="id"> !</span>(<span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.le_trans">le_trans</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ler_normD">ler_normD</a></span><span class="id"> _</span><span class="id"> _</span>))<span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.lerD">lerD</a></span><span class="id">//;</span><br/>
-<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.comparable_le_max">comparable_le_max</a></span><span class="id"> ?</span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.lexx">lexx</a></span><span class="id"> ?</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#orbT">orbT</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.real_comparable">real_comparable</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#num_ge_max">num_ge_max</a></span><span class="id"> !</span>(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.le_trans">le_trans</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ler_normD">ler_normD</a></span><span class="id"> _</span><span class="id"> _</span>))<span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.lerD">lerD</a></span><span class="id">//;</span><br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.comparable_le_max">comparable_le_max</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.lexx">lexx</a></span><span class="id"> ?</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#orbT">orbT</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.real_comparable">real_comparable</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="ProdNormedZmodule.norm_eq0" class="id"><a name="ProdNormedZmodule.norm_eq0" class="" title="ProdNormedZmodule.norm_eq0 :
-forall {R : numDomainType} {U V : normedZmodType R} [x : U * V],
-ProdNormedZmodule.norm x = 0%R -> x = 0%R
-
-ProdNormedZmodule.norm_eq0 is not universe polymorphic
-Arguments ProdNormedZmodule.norm_eq0 {R U V} [x] _
-ProdNormedZmodule.norm_eq0 is opaque
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.ProdNormedZmodule.norm_eq0
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 45, characters 6-14
-">norm_eq0</a></span><span class="id"> </span><span id="x:15" class="id"><a name="x:15" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:15">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:15">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span>.<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="ProdNormedZmodule.norm_eq0" class="id"><a name="ProdNormedZmodule.norm_eq0" class="">norm_eq0</a></span><span class="id"> </span><span id="x:15" class="id"><a name="x:15" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:15">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:15">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
-<span class="id">case:</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> x1</span><span class="id"> x2</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.order.order#Order.POrderTheory.eq_le">eq_le</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.interval_inference.html#num_ge_max">num_ge_max</a></span><span class="id"> 2!</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.normr_le0">normr_le0</a></span><span class="id"> -</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#andbA">andbA</a></span><span class="id">/=</span>.<br/>
+<span class="id">case:</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> x1</span><span class="id"> x2</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.eq_le">eq_le</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#num_ge_max">num_ge_max</a></span><span class="id"> 2!</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.normr_le0">normr_le0</a></span><span class="id"> -</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#andbA">andbA</a></span><span class="id">/=</span>.<br/>
 <span class="gallina-kwd">by</span><span class="id"> case/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#and3P">and3P</a></span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id"> -&gt;</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id"> -&gt;</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="ProdNormedZmodule.normMn" class="id"><a name="ProdNormedZmodule.normMn" class="" title="ProdNormedZmodule.normMn :
-forall {R : numDomainType} {U V : normedZmodType R}
-  (x : Datatypes_prod__canonical__Algebra_BaseAddUMagma U V) 
-  (n : nat),
-ProdNormedZmodule.norm (x *+ n)%R = (ProdNormedZmodule.norm x *+ n)%R
-
-ProdNormedZmodule.normMn is not universe polymorphic
-Arguments ProdNormedZmodule.normMn {R U V} x%_ring_scope n%_nat_scope
-ProdNormedZmodule.normMn is opaque
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.ProdNormedZmodule.normMn
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 51, characters 6-12
-">normMn</a></span><span class="id"> </span><span id="x:16" class="id"><a name="x:16" class="">x</a></span><span class="id"> </span><span id="n:17" class="id"><a name="n:17" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span> (<span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:16">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#n:17">n</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span> (<span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:16">x</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#n:17">n</a></span>.<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="ProdNormedZmodule.normMn" class="id"><a name="ProdNormedZmodule.normMn" class="">normMn</a></span><span class="id"> </span><span id="x:16" class="id"><a name="x:16" class="">x</a></span><span class="id"> </span><span id="n:17" class="id"><a name="n:17" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span> (<span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:16">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#n:17">n</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span> (<span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:16">x</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#n:17">n</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
-<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#pairMnE">pairMnE</a></span><span class="id"> -</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr_natl">mulr_natl</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.maxr_pMr">maxr_pMr</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr_natl">mulr_natl</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.normrMn">normrMn</a></span>. Qed.</div></details>
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#pairMnE">pairMnE</a></span><span class="id"> -</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr_natl">mulr_natl</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.maxr_pMr">maxr_pMr</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr_natl">mulr_natl</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.normrMn">normrMn</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="ProdNormedZmodule.normrN" class="id"><a name="ProdNormedZmodule.normrN" class="" title="ProdNormedZmodule.normrN :
-forall {R : numDomainType} {U V : normedZmodType R}
-  (x : Datatypes_prod__canonical__Algebra_BaseZmodule U V),
-ProdNormedZmodule.norm (- x)%R = ProdNormedZmodule.norm x
-
-ProdNormedZmodule.normrN is not universe polymorphic
-Arguments ProdNormedZmodule.normrN {R U V} x%_ring_scope
-ProdNormedZmodule.normrN is opaque
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.ProdNormedZmodule.normrN
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 54, characters 6-12
-">normrN</a></span><span class="id"> </span><span id="x:18" class="id"><a name="x:18" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:18">x</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:18">x</a></span>.<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="ProdNormedZmodule.normrN" class="id"><a name="ProdNormedZmodule.normrN" class="">normrN</a></span><span class="id"> </span><span id="x:18" class="id"><a name="x:18" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:18">x</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:18">x</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
-<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id">/=</span><span class="id"> !</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.normrN">normrN</a></span>. Qed.</div></details>
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm">norm</a></span><span class="id">/=</span><span class="id"> !</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.normrN">normrN</a></span>. Qed.</div></details>
 <br/>
-<span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_11" class="id"><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_SemiNormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_10" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_Zmodule_isSemiNormed" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_SemiNormedZmodule_isPositiveDefinite" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_7" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="" title="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule :
-forall {R : numDomainType},
-normedZmodType R -> normedZmodType R -> normedZmodType R
-
-ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule is not universe polymorphic
-Arguments ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule
-  {R U V}
-ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 57, characters 0-111
-">#[export]</a></span></span></span></span></span></span></span><br/>
-<span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_11" class="id"><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_SemiNormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_10" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_Zmodule_isSemiNormed" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_SemiNormedZmodule_isPositiveDefinite" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_7" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="" title="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule :
-forall {R : numDomainType},
-normedZmodType R -> normedZmodType R -> normedZmodType R
-
-ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule is not universe polymorphic
-Arguments ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule
-  {R U V}
-ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 57, characters 0-111
-">HB</a></span></span></span></span></span></span></span>.<span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_11" class="id"><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_SemiNormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_10" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_Zmodule_isSemiNormed" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_SemiNormedZmodule_isPositiveDefinite" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_7" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="" title="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule :
-forall {R : numDomainType},
-normedZmodType R -> normedZmodType R -> normedZmodType R
-
-ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule is not universe polymorphic
-Arguments ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule
-  {R U V}
-ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 57, characters 0-111
-">instance</a></span></span></span></span></span></span></span><span class="vernacular"> Definition</span><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_11" class="id"><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_SemiNormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_10" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_Zmodule_isSemiNormed" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_SemiNormedZmodule_isPositiveDefinite" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_7" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="" title="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule :
-forall {R : numDomainType},
-normedZmodType R -> normedZmodType R -> normedZmodType R
-
-ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule is not universe polymorphic
-Arguments ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule
-  {R U V}
-ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 57, characters 0-111
-"> _</a></span></span></span></span></span></span></span><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_11" class="id"><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_SemiNormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_10" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_Zmodule_isSemiNormed" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_SemiNormedZmodule_isPositiveDefinite" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_7" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="" title="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule :
-forall {R : numDomainType},
-normedZmodType R -> normedZmodType R -> normedZmodType R
-
-ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule is not universe polymorphic
-Arguments ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule
-  {R U V}
-ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 57, characters 0-111
-"> :=</a></span></span></span></span></span></span></span><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_11" class="id"><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_SemiNormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_10" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_Zmodule_isSemiNormed" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_SemiNormedZmodule_isPositiveDefinite" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_7" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="" title="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule :
-forall {R : numDomainType},
-normedZmodType R -> normedZmodType R -> normedZmodType R
-
-ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule is not universe polymorphic
-Arguments ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule
-  {R U V}
-ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 57, characters 0-111
-"> Num</a></span></span></span></span></span></span></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Zmodule_isNormed.Build">Zmodule_isNormed</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#Num.Zmodule_isNormed.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.R">R</a></span> (<span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.V">V</a></span>)<span class="id">%type</span><br/>
+<span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_11" class="id"><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_SemiNormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_10" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_Zmodule_isSemiNormed" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_SemiNormedZmodule_isPositiveDefinite" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_7" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="">#[export]</a></span></span></span></span></span></span></span><br/>
+<span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_11" class="id"><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_SemiNormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_10" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_Zmodule_isSemiNormed" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_SemiNormedZmodule_isPositiveDefinite" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_7" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="">HB</a></span></span></span></span></span></span></span>.<span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_11" class="id"><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_SemiNormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_10" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_Zmodule_isSemiNormed" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_SemiNormedZmodule_isPositiveDefinite" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_7" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="">instance</a></span></span></span></span></span></span></span><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_11" class="id"><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_SemiNormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_10" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_Zmodule_isSemiNormed" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_SemiNormedZmodule_isPositiveDefinite" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_7" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class=""> Definition</a></span></span></span></span></span></span></span><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_11" class="id"><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_SemiNormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_10" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_Zmodule_isSemiNormed" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_SemiNormedZmodule_isPositiveDefinite" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_7" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class=""> _</a></span></span></span></span></span></span></span><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_11" class="id"><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_SemiNormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_10" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_Zmodule_isSemiNormed" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_SemiNormedZmodule_isPositiveDefinite" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_7" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class=""> :=</a></span></span></span></span></span></span></span><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_11" class="id"><span id="ProdNormedZmodule.Datatypes_prod__canonical__Num_SemiNormedZmodule" class="id"><span id="ProdNormedZmodule.HB_unnamed_mixin_10" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_Zmodule_isSemiNormed" class="id"><span id="ProdNormedZmodule.Num_Zmodule_isNormed__to__Num_SemiNormedZmodule_isPositiveDefinite" class="id"><span id="ProdNormedZmodule.HB_unnamed_factory_7" class="id"><a name="ProdNormedZmodule.Datatypes_prod__canonical__Num_NormedZmodule" class=""> Num</a></span></span></span></span></span></span></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Zmodule_isNormed.Build">Zmodule_isNormed</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Zmodule_isNormed.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.R">R</a></span> (<span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.V">V</a></span>)<span class="id">%type</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.normD">normD</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.norm_eq0">norm_eq0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.normMn">normMn</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.normrN">normrN</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="ProdNormedZmodule.prod_normE" class="id"><a name="ProdNormedZmodule.prod_normE" class="" title="ProdNormedZmodule.prod_normE :
-forall {R : numDomainType} {U V : normedZmodType R} (x : U * V),
-`|x|%R = Num.max `|x.1|%R `|x.2|%R
-
-ProdNormedZmodule.prod_normE is not universe polymorphic
-Arguments ProdNormedZmodule.prod_normE {R U V} x
-ProdNormedZmodule.prod_normE is opaque
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.ProdNormedZmodule.prod_normE
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 61, characters 6-16
-">prod_normE</a></span> (<span id="x:19" class="id"><a name="x:19" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.V">V</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:19">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.max">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.max">max</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:19">x</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:19">x</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_4_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span>.<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="ProdNormedZmodule.prod_normE" class="id"><a name="ProdNormedZmodule.prod_normE" class="">prod_normE</a></span> (<span id="x:19" class="id"><a name="x:19" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.ProdNormedZmodule.V">V</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:19">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.max">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.max">max</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:19">x</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#x:19">x</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
@@ -615,24 +306,13 @@ library mathcomp.reals.prodnormedzmodule, line 61, characters 6-16
 <br/>
 <span class="vernacular">End</span><span class="id"> ProdNormedZmodule</span>.<br/>
 <br/>
-<span class="vernacular">Module</span><span class="vernacular"> Exports</span>.<br/>
+<span class="vernacular">Module</span><span class="id"> </span><span id="ProdNormedZmodule.Exports" class="id"><a name="ProdNormedZmodule.Exports" class="">Exports</a></span>.<br/>
 <span class="id">HB</span>.<span class="id">reexport</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="ProdNormedZmodule.Exports.prod_normE" class="id"><a name="ProdNormedZmodule.Exports.prod_normE" class="" title="prod_normE :
-forall [R : numDomainType] [U V : normedZmodType R] (x : U * V),
-`|x|%R = Num.max `|x.1|%R `|x.2|%R
-
-prod_normE is not universe polymorphic
-Arguments prod_normE [R U V] x
-prod_normE is transparent
-Expands to: Constant
-            mathcomp.reals.prodnormedzmodule.ProdNormedZmodule.Exports.prod_normE
-Declared in
-library mathcomp.reals.prodnormedzmodule, line 68, characters 11-21
-">prod_normE</a></span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.prod_normE">prod_normE</a></span>.<br/>
-<span class="vernacular">End</span><span class="vernacular"> Exports</span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ProdNormedZmodule.Exports.prod_normE" class="id"><div name="ProdNormedZmodule.Exports.prod_normE" class=" tooltip">prod_normE<span class='tooltip-area'></span></div></span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.prod_normE">prod_normE</a></span>.<br/>
+<span class="vernacular">End</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.Exports">Exports</a></span>.<br/>
 <br/>
 <span class="vernacular">End</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule">ProdNormedZmodule</a></span>.<br/>
-<span class="vernacular">Export</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.Exports">ProdNormedZmodule</a></span>.<span class="vernacular">Exports</span>.<br/>
+<span class="vernacular">Export</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.Exports">ProdNormedZmodule</a></span>.<span class="id"><a href="mathcomp.reals.prodnormedzmodule.html#ProdNormedZmodule.Exports">Exports</a></span>.<br/>
 
       <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>
     </div>

@@ -29,7 +29,7 @@ function setUpSavingDetails() {
 	      if (item.includes('details-')) {
 	          var id = item.split('details-')[1];
 	          var status = window.localStorage.getItem(item)
-	          if (status == 'open' || status == 'undefined'){
+	          if (status == 'open') {
 		            $("#"+CSS.escape(id)).attr('open',true)
 	          }
 	      }
